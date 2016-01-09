@@ -507,36 +507,4 @@ void CEncodedFrameDepacketizer::ClearFrame(int index, int frame)
 	}
 }
 
-void *CEncodedFrameDepacketizer::CreateEncodedFrameDepacketizerThread(void* param)
-{
-	CEncodedFramePacketizer *pThis = (CEncodedFramePacketizer*)param;
-
-	return NULL;
-}
-
-void CEncodedFrameDepacketizer::StartEncodedFrameDepacketizerThread()
-{
-	std::thread t(CreateEncodedFrameDepacketizerThread, this);
-
-	t.detach();
-
-	return;
-}
-
-void CEncodedFrameDepacketizer::StopEncodedFrameDepacketizerThread()
-{
-	if (m_pEncodedFrameDepacketizerThread != NULL)
-	{
-		Locker lock(*m_pEncodedFrameDepacketizerMutex);
-
-		/*delete m_pEncodedFrameDepacketizerThread;
-
-		m_pEncodedFrameDepacketizerThread = NULL;*/
-	}
-
-}
-
-
-
-
 

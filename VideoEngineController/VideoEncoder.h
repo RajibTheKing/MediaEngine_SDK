@@ -24,7 +24,6 @@ class CCommonElementsBucket;
 
 class CVideoEncoder
 {
-
 public:
 
 	CVideoEncoder(CCommonElementsBucket* sharedObject);
@@ -32,11 +31,6 @@ public:
 
 	int CreateVideoEncoder(int iWidth, int iHeight);
 	int EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer);
-	CEncodedFramePacketizer* GetEncodedFramePacketizer();
-	void StartVideoEncoderThread();
-	void StopVideoEncoderThread();
-
-	static void *CreateVideoEncoderThread(void* param);
 
 private:
 
@@ -44,15 +38,11 @@ private:
 	int m_iWidth;
 
 	ISVCEncoder* m_pSVCVideoEncoder;
-	CEncodedFramePacketizer* m_pCEncodedFramePacketizer;
 	CCommonElementsBucket* m_pCommonElementsBucket;
 
 protected:
 
-	std::thread* m_pVideoEncoderThread;
-
 	SmartPointer<CLockHandler> m_pMediaSocketMutex;
-
 };
 
 #endif

@@ -45,7 +45,9 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 		m_bFirstFrame(true),
 		m_iTimeStampDiff(0),
 		m_b1stDecodedFrame(true),
-		m_ll1stDecodedFrameTimeStamp(0)
+		m_ll1stDecodedFrameTimeStamp(0),
+		m_pEncodedFramePacketizer(NULL),
+		m_pVideoEncoder(NULL)
 {
 	fpsCnt=0;
 	g_FPSController.Reset();
@@ -61,7 +63,9 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 	sessionMediaList.ClearAllFromVideoEncoderList();
 
 	m_pEncodedFrameDepacketizer = NULL;
+	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject);
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject,this);
+
 	g_FriendID = fname;
 
 	ExpectedFramePacketPair.first = 0;
@@ -79,12 +83,28 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 
 CVideoCallSession::~CVideoCallSession()
 {
-	StopDecodingThread();
 	StopDepacketizationThread();
+	StopDecodingThread();
+
 	StopEncodingThread();
 
+	if(NULL!=m_pVideoEncoder)
+	{
+		delete m_pVideoEncoder;
+		m_pVideoEncoder = NULL;
+	}
+
+	if(NULL!=m_pEncodedFramePacketizer)
+	{
+		delete m_pEncodedFramePacketizer;
+		m_pEncodedFramePacketizer = NULL;
+	}
+
 	if(NULL!=m_pEncodedFrameDepacketizer)
+	{
 		delete m_pEncodedFrameDepacketizer;
+		m_pEncodedFrameDepacketizer = NULL;
+	}
 
 	if (NULL != m_pVideoDecoder)
 	{
@@ -338,7 +358,8 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 //			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::EncodingThreadProcedure m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
 //			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "$ENCODEING$ To Parser");
-			m_pVideoEncoder->GetEncodedFramePacketizer()->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
+			//m_pVideoEncoder->GetEncodedFramePacketizer()->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
+			m_pEncodedFramePacketizer->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
 			++m_iFrameNumber;
 			//CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::EncodingThreadProcedure2 m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(CVideoCallSession::m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
 

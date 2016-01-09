@@ -40,12 +40,6 @@ public:
 	int CreateNewIndex(int frame);
 	void ClearFrame(int index, int frame);
 	//int GetPacketLength(unsigned char *packetData, int start_index);
-	void StartEncodedFrameDepacketizerThread();
-	void StopEncodedFrameDepacketizerThread();
-//	void FrameDroppedFPS(int frame);
-//	void FrameCompleteFPS(int frame);
-
-	static void *CreateEncodedFrameDepacketizerThread(void* param);
 
 	map<int, int> m_mFrameTimeStamp;
 

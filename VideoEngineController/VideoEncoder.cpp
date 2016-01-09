@@ -8,39 +8,24 @@
 
 
 CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
-
 m_pCommonElementsBucket(sharedObject),
 m_pSVCVideoEncoder(NULL)
-
 {
 	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
 
 	m_pMediaSocketMutex.reset(new CLockHandler);
-	m_pVideoEncoderThread = NULL;
 
 	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoEncoder::CVideoEncoder Video Encoder Created");
 }
 
 CVideoEncoder::~CVideoEncoder()
 {
-/*	if (m_pVideoEncoderThread)
-	{
-		delete m_pVideoEncoderThread;
-		m_pVideoEncoderThread = NULL;
-	}*/
-    
-    if(NULL != m_pSVCVideoEncoder)
+	if(NULL != m_pSVCVideoEncoder)
     {
         m_pSVCVideoEncoder->Uninitialize();
         
         m_pSVCVideoEncoder = NULL;
     }
-
-	if (NULL != m_pCEncodedFramePacketizer)
-	{
-		delete m_pCEncodedFramePacketizer;
-		m_pCEncodedFramePacketizer = NULL;
-	}
 
 	SHARED_PTR_DELETE(m_pMediaSocketMutex);
 }
@@ -95,8 +80,6 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	}
 
 	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
-
-	m_pCEncodedFramePacketizer = new CEncodedFramePacketizer(m_pCommonElementsBucket);
 
 	return 1;
 }
@@ -180,46 +163,3 @@ int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_siz
 
 	return iFrameSize;
 }
-
-CEncodedFramePacketizer* CVideoEncoder::GetEncodedFramePacketizer()
-{
-	return m_pCEncodedFramePacketizer;
-}
-
-void *CVideoEncoder::CreateVideoEncoderThread(void* param)
-{
-	CVideoEncoder *pThis = (CVideoEncoder*)param;
-//	pThis->CreateVideoEncoderSDP();
-
-	return NULL;
-}
-
-void CVideoEncoder::StartVideoEncoderThread()
-{
-//	if (m_pVideoEncoderThread != NULL)
-//	{
-//        CLogPrinter::Write(CLogPrinter::ERRORS, "already StartVideoEncoderThread is running");
-//		return;
-//	}
-	std::thread t(CreateVideoEncoderThread, this);
-	t.detach();
-
-	return;
-}
-
-void CVideoEncoder::StopVideoEncoderThread()
-{
-	if (m_pVideoEncoderThread != NULL)
-	{
-		Locker lock(*m_pMediaSocketMutex);
-
-		/*delete m_pVideoEncoderThread;
-		m_pVideoEncoderThread = NULL;*/
-	}
-
-}
-
-
-
-
-
