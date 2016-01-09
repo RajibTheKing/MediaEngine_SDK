@@ -59,25 +59,6 @@ void CVideoEncoderListHandler::ClearAllFromVideoEncoderList()
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	map<LongLong, CVideoEncoder*>::iterator mediaSearch = VideoEncoderList.begin();
-
-	if (mediaSearch == VideoEncoderList.end())
-	{
-		return;
-	}
-
-	for (; mediaSearch != VideoEncoderList.end(); ++mediaSearch)
-	{
-		CVideoEncoder *cVideoEncoder = mediaSearch->second;
-
-		/*if (NULL != cVideoEncoder)
-		{
-			delete cVideoEncoder;
-
-			cVideoEncoder = NULL;
-		}	*/
-	}
-
 	if (false == VideoEncoderList.empty())
 		VideoEncoderList.clear();
 }

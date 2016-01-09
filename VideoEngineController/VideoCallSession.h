@@ -99,7 +99,9 @@ private:
 	LongLong friendID;
 	int m_iFrameNumber;
 	CVideoEncoderListHandler sessionMediaList;
+
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;
+	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
 	CCommonElementsBucket* m_pCommonElementsBucket;
 	CVideoEncoder *m_pVideoEncoder;
 	CVideoDecoder *m_pVideoDecoder;
