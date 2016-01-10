@@ -169,9 +169,15 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
 #ifdef	RETRANSMISSION_ENABLED
-	if(  ((in_data[4] >> 7) & 1)  ||  ((in_data[4] >> 6) & 1)  ) //If MiniPacket or RetransMitted packet
+	if(  ((in_data[4] >> 7) & 1) /* ||  ((in_data[4] >> 6) & 1) */ ) //If MiniPacket or RetransMitted packet
     {
+        CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT RETRANSMITTED PACKET");
 		m_pRetransVideoPacketQueue.Queue(in_data,in_size);
+    }
+    else if(((in_data[4] >> 6) & 1))
+    {
+        CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT MINI PACKET");
+        m_pMiniPacketQueue.Queue(in_data, in_size);
     }
 	else
 #endif
@@ -470,7 +476,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
 	Tools toolsObject;
 	unsigned char temp;
-	int frameSize,queSize=0,retQueuSize=0,consicutiveRetransmittedPkt=0;
+	int frameSize,queSize=0,retQueuSize=0, miniPacketQueueSize = 0,consicutiveRetransmittedPkt=0;
 	int frameNumber,packetNumber;
 	m_iCountRecResPack = 0;
 
@@ -480,14 +486,19 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 		queSize = m_pVideoPacketQueue.GetQueueSize();
 #ifdef	RETRANSMISSION_ENABLED
 		retQueuSize = m_pRetransVideoPacketQueue.GetQueueSize();
+        miniPacketQueueSize = m_pMiniPacketQueue.GetQueueSize();
 		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
 #endif
-		if (0 == queSize && 0 == retQueuSize)
+		if (0 == queSize && 0 == retQueuSize && 0 == miniPacketQueueSize)
 			toolsObject.SOSleep(10);
 		else
 		{
 #ifdef	RETRANSMISSION_ENABLED
-			if(retQueuSize>0 && consicutiveRetransmittedPkt<2)
+            if(miniPacketQueueSize !=0)
+            {
+                frameSize = m_pMiniPacketQueue.DeQueue(m_PacketToBeMerged);
+            }
+			else if(retQueuSize>0 && consicutiveRetransmittedPkt<2)
 			{
 			//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "RT QueueSize"+ m_Tools.IntegertoStringConvert(retQueuSize));
 				frameSize = m_pRetransVideoPacketQueue.DeQueue(m_PacketToBeMerged);
@@ -548,24 +559,30 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                             requestFramePacketPair.first = ExpectedFramePacketPair.first;
                             requestFramePacketPair.second = ExpectedFramePacketPair.second;
                             
+                            int iSendCounter = 0;
                             while(requestFramePacketPair.second < iNumberOfPacketsInCurrentFrame)
                             {
+                                if(iSendCounter && requestFramePacketPair.first %8 ==0) m_Tools.SOSleep(1);
                                 if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
                                 {
                                     CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
                                 }
+                                iSendCounter ++;
                                 requestFramePacketPair.second ++;
                             }
                             
                             requestFramePacketPair.first = currentFramePacketPair.first;
                             requestFramePacketPair.second = 0;
                             
+                            iSendCounter = 0;
                             while(requestFramePacketPair.second < currentFramePacketPair.second)
                             {
+                                if(iSendCounter && requestFramePacketPair.first %8 ==0) m_Tools.SOSleep(1);
                                 if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
                                 {
                                     CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
                                 }
+                                iSendCounter ++;
                                 requestFramePacketPair.second ++;
                             }
                             
@@ -583,12 +600,15 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                         requestFramePacketPair.first = ExpectedFramePacketPair.first;
                         requestFramePacketPair.second = ExpectedFramePacketPair.second;
                         
+                        int iSendCounter = 0;
                         while(requestFramePacketPair.second < currentFramePacketPair.second)
                         {
+                            if(iSendCounter && requestFramePacketPair.first %8 ==0) m_Tools.SOSleep(1);
                             if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
                             {
                                 CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
                             }
+                            iSendCounter ++;
                             requestFramePacketPair.second ++;
                         }
                     }
@@ -756,6 +776,10 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
+    if(resendFrameNumber %8 !=0)//faltu frame, dorkar nai
+    {
+        return;
+    }
     
     CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
                                             ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber));

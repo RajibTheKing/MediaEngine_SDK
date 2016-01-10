@@ -110,6 +110,7 @@ private:
 	CDecodingBuffer m_DecodingBuffer;
 	CVideoPacketQueue m_pVideoPacketQueue;
 	CVideoPacketQueue m_pRetransVideoPacketQueue;
+    CVideoPacketQueue m_pMiniPacketQueue;
 
 	unsigned char m_EncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_ConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
