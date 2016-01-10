@@ -96,12 +96,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 		}
 
 #ifdef	RETRANSMISSION_ENABLED
-		startPoint += RESEND_INFO_SIZE;
-
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (iTimeStampDiff >> f) & 0xFF;
-		}
+	
 #endif
 		startPoint = PACKET_HEADER_LENGTH+1;
 		memcpy(m_Packet + startPoint, in_data + readPacketLength, m_PacketSize);
@@ -147,11 +142,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 			m_Packet[startPoint++] = (packetSize >> f) & 0xFF;
 		}
 #ifdef	RETRANSMISSION_ENABLED
-		startPoint += RESEND_INFO_SIZE;
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (iTimeStampDiff >> f) & 0xFF;
-		}
+
 #endif
 		startPoint = PACKET_HEADER_LENGTH+1;
 		memcpy(m_Packet + startPoint, in_data + readPacketLength, packetSize);
@@ -294,14 +285,14 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 				ExpectedFramePacketDeQueue.pop_front();
 			}*/
 #ifdef	RETRANSMISSION_ENABLED
-			for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
+			/*for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
 			{
 				m_EncodedFrame[startPoint ++] = (FramePacketToSend.first >> f) & 0xFF;
 			}
 			for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendPacketNumber
 			{
 				m_EncodedFrame[startPoint ++] = (FramePacketToSend.second >> f) & 0xFF;
-			}
+			}*/
 #endif
 //			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
 

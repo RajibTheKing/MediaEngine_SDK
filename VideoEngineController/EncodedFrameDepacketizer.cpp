@@ -90,8 +90,10 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	// CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding called");
     bool bIsRetransmitted=false;
+    bool bIsMiniPacket = in_data[SIGNAL_BYTE_INDEX]&(1<<5);
+    
     int firstByte = 0;
-    if(in_size>PACKET_HEADER_LENGTH)
+    if(!bIsMiniPacket)
     {
         firstByte = in_data[SIGNAL_BYTE_INDEX];
         
@@ -133,7 +135,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	startIndex += 4;
 
 #ifdef	RETRANSMISSION_ENABLED
-	int resendframe = m_Tools.GetIntFromChar(in_data, startIndex);
+	/*int resendframe = m_Tools.GetIntFromChar(in_data, startIndex);
 
 	startIndex += 4;
 
@@ -147,7 +149,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
 
-	startIndex += 4;
+	startIndex += 4;*/
 #endif
 
 	int index;
@@ -169,17 +171,19 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#()() Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
 		}
 	}
+    
 
-	if(resendframe != -1 && resendpacket != -1) //This block is for resending packets and has no relation with the packet passed to this function
+	if(bIsMiniPacket) //This block is for resending packets and has no relation with the packet passed to this function
 	{
         
         CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::King-->PushPacketForDecoding Resend Packet Found resendframe: "+
-                                   m_Tools.IntegertoStringConvert(resendframe) + " resendpacket: "+ m_Tools.IntegertoStringConvert(resendpacket)+
-                                   "in_size: "+m_Tools.IntegertoStringConvert(in_size));
+                                   m_Tools.IntegertoStringConvert(frameNumber) + " resendpacket: "+ m_Tools.IntegertoStringConvert(packetNumber)+
+                                   "   in_size: "+m_Tools.IntegertoStringConvert(in_size));
+        
         
         
 		++m_iCountReqResendPacket;
-		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,resendframe, resendpacket );
+		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber );
 		/*resendQueue.getPacketForFrameAndPacketNo(resendframe, resendpacket);*/
 
 		if(resendPacketLength != -1)
@@ -189,9 +193,9 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			if(g_FriendID != -1)
 			{
 				m_iCountResendPktSent++;
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Resend Packet Found resendframe: "+
+				/*CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Resend Packet Found resendframe: "+
 																m_Tools.IntegertoStringConvert(resendframe) + " resendpacket: "+ m_Tools.IntegertoStringConvert(resendpacket)+
-																" resendpacketLenght: "+ m_Tools.IntegertoStringConvert(resendPacketLength));
+																" resendpacketLenght: "+ m_Tools.IntegertoStringConvert(resendPacketLength));*/
 
 				m_pCommonElementsBucket->SendFunctionPointer(g_FriendID, 2, m_pPacketToResend, PACKET_HEADER_LENGTH + resendPacketLength);
 				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#() RetransPKT USED = " + m_Tools.IntegertoStringConvert(m_iRetransPktUsed) + " DROPED = " + m_Tools.IntegertoStringConvert(m_iRetransPktDrpd) );

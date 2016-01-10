@@ -169,8 +169,10 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
 #ifdef	RETRANSMISSION_ENABLED
-	if(((in_data[4] >> 7) & 1) || in_size == PACKET_HEADER_LENGTH)
+	if(  ((in_data[4] >> 7) & 1)  ||  ((in_data[4] >> 6) & 1)  ) //If MiniPacket or RetransMitted packet
+    {
 		m_pRetransVideoPacketQueue.Queue(in_data,in_size);
+    }
 	else
 #endif
 	{
@@ -506,9 +508,12 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 
 			bool bRetransmitted = (m_PacketToBeMerged[4] >> 7) & 1;
-			m_PacketToBeMerged[4] &= ~(1<<7); //Removed the Retransmit flag from the LMB of packet size
+            bool bMiniPacket = (m_PacketToBeMerged[4] >> 6) & 1;
+       
+			m_PacketToBeMerged[4] &= ~(1<<7); //Removed the Retransmit flag from the LMB of Number of Packets
+            m_PacketToBeMerged[4] &= ~(1<<6); //Removed the MiniPacket flag from the LMB of Number of Packets
 
-			if(!bRetransmitted && frameSize>PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE)
+			if(!bRetransmitted && !bMiniPacket)
 			{
 				int iNumberOfPackets = -1;
 				temp = m_PacketToBeMerged[SIGNAL_BYTE_INDEX];
@@ -516,45 +521,107 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]=temp;
 
-//				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::currentFramePacketPair: FrameNumber: "+
-//						m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNo : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second)+
-//						" NumberOfPacket : "+  m_Tools.IntegertoStringConvert(iNumberOfPackets));
-				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second) && ExpectedFramePacketPair.first % ENCODER_KEY_FRAME_RATE < MAX_BLOCK_RETRANSMISSION)
+				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
-                    /*
-					while(ExpectedFramePacketDeQueue.size() > EXPECTED_FRAME_PACKET_QUEUE_SIZE)
-					{
-						ExpectedFramePacketDeQueue.pop_back();
-					}
-                     
-					CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "RETRANSMISSION # "+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first) + "~"+  m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second) + "  MOD: "+  m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first%ENCODER_KEY_FRAME_RATE));
-					ExpectedFramePacketDeQueue.push_back(ExpectedFramePacketPair);//send minipacket
-                    */
                     
-                    CreateAndSendMiniPacket(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
+                    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Current(FN,PN) = ("
+                                               + m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
+                                               + ","
+                                               + m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
+                                               + ") and Expected(FN,PN) = ("
+                                               + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first)
+                                               + ","
+                                               + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
+                                               + ")" );
+                    
+                    if(currentFramePacketPair.first != ExpectedFramePacketPair.first) //different frame received
+                    {
+                        if(currentFramePacketPair.first - ExpectedFramePacketPair.first == 2) //one complete frame missed, maybe it was a mini frame containing only 1 packet
+                        {
+                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 1");
+                            CreateAndSendMiniPacket(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
+                        }
+                        else if(currentFramePacketPair.first - ExpectedFramePacketPair.first == 1) //last packets from last frame and some packets from current misssed
+                        {
+                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 2");
+                            pair<int, int> requestFramePacketPair;
+                            requestFramePacketPair.first = ExpectedFramePacketPair.first;
+                            requestFramePacketPair.second = ExpectedFramePacketPair.second;
+                            
+                            while(requestFramePacketPair.second < iNumberOfPacketsInCurrentFrame)
+                            {
+                                if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
+                                {
+                                    CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
+                                }
+                                requestFramePacketPair.second ++;
+                            }
+                            
+                            requestFramePacketPair.first = currentFramePacketPair.first;
+                            requestFramePacketPair.second = 0;
+                            
+                            while(requestFramePacketPair.second < currentFramePacketPair.second)
+                            {
+                                if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
+                                {
+                                    CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
+                                }
+                                requestFramePacketPair.second ++;
+                            }
+                            
+                        }
+                        else//we dont handle burst frame miss
+                        {
+                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 3-- killed");
+                        }
+                        
+                    }
+                    else //packet missed from same frame
+                    {
+                        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 4");
+                        pair<int, int> requestFramePacketPair;
+                        requestFramePacketPair.first = ExpectedFramePacketPair.first;
+                        requestFramePacketPair.second = ExpectedFramePacketPair.second;
+                        
+                        while(requestFramePacketPair.second < currentFramePacketPair.second)
+                        {
+                            if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
+                            {
+                                CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
+                            }
+                            requestFramePacketPair.second ++;
+                        }
+                    }
+                    
                     
 					g_timeInt.setTime(ExpectedFramePacketPair.first,ExpectedFramePacketPair.second);
                     
                     
 				}
 				UpdateExpectedFramePacketPair(currentFramePacketPair, iNumberOfPackets);
-//				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ExpFramePacketPair: ExpFrameNumber: "+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first) + " ExpPacketNo. : "+  m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)+ " iNumberOfPacketsInCurrentFrame : "+  m_Tools.IntegertoStringConvert(iNumberOfPacketsInCurrentFrame));
+
 			}
-			else
+			else if (bRetransmitted)
 			{
 				int iNumberOfPackets = -1;
-				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-//				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::currentFramePacketPair: ###########Retransmitted FrameNumber: "+
-//																m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNo : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second)+
-//																" NumberOfPacket : "+  m_Tools.IntegertoStringConvert(iNumberOfPackets)  + " m_iCountReQResPack : "+  m_Tools.IntegertoStringConvert(++m_iCountReQResPack));
-
-
-				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<4);
+                
+				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<4); //the retransmitted flag is moved to signal byte
+                
+                pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
+                
+                
+                CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
 			}
+            else if (bMiniPacket)
+            {
+                int iNumberOfPackets = -1;
+                pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
+                CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
+                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
+            }
 
 
-//			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::reqrec: m_iCountRecResPack  "+
-//															m_Tools.IntegertoStringConvert(m_iCountRecResPack) + " m_iCountReQResPack : "+  m_Tools.IntegertoStringConvert(m_iCountReQResPack));
+
 #endif
 			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged,frameSize);
 
@@ -673,7 +740,7 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 	int iPackeNumber = currentFramePacketPair.second;
 	if(iPackeNumber == iNumberOfPackets - 1)//Last Packet In a Frame
 	{
-		iNumberOfPacketsInCurrentFrame = 0;
+		iNumberOfPacketsInCurrentFrame = 1;//next frame has at least 1 packet, it will be updated when a packet is received
 		ExpectedFramePacketPair.first = iFrameNumber + 1;
 		ExpectedFramePacketPair.second = 0;
 	}
@@ -689,6 +756,7 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
+    
     CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
                                             ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber));
     int startFraction = SIZE_OF_INT_MINUS_8;
@@ -696,48 +764,28 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
     int startPoint = 1;
     
     
-    int frameNumber = 555; //dummy FrameNumber
-    int numberOfPackets = 17; //dummy numberOfPackets
-    int packetNumber = 5; //dummy PacketNumber
-    int PacketSize = 24; //dummyPacketSize
-    //int resendFrameNumber = 7777; //Dummy ResendFramenumber
-    //int resendPacketNumber = 7; //Dummy ResendPacketNumber
+    int numberOfPackets = 1000; //dummy numberOfPackets
     
     
     for (int f = startFraction; f >= 0; f -= fractionInterval)
     {
-        m_miniPacket[startPoint++] = (frameNumber >> f) & 0xFF;
+        m_miniPacket[startPoint++] = (resendFrameNumber >> f) & 0xFF; //resend Frame Number
     }
     
     for (int f = startFraction; f >= 0; f -= fractionInterval)
     {
-        m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF;
+        m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF; //Dummy numberOfPackets 1000
     }
+    
+    m_miniPacket[4 + 1] |= 1<<6; //MiniPacket Flag
     
     for (int f = startFraction; f >= 0; f -= fractionInterval)
     {
-        m_miniPacket[startPoint++] = (packetNumber >> f) & 0xFF;
+        m_miniPacket[startPoint++] = (resendPacketNumber >> f) & 0xFF; //resend packet Number
     }
-    
-    for (int f = startFraction; f >= 0; f -= fractionInterval)
-    {
-        m_miniPacket[startPoint++] = (PacketSize >> f) & 0xFF;
-    }
-    
-    for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
-    {
-        m_miniPacket[startPoint++] = (resendFrameNumber >> f) & 0xFF;
-    }
-    for (int f = startFraction; f >= 0; f -= fractionInterval) //ResendPacketNumber
-    {
-        m_miniPacket[startPoint++] = (resendPacketNumber >> f) & 0xFF;
-    }
-
-    
-    startPoint = PACKET_HEADER_LENGTH+1;
-    
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
-    m_pCommonElementsBucket->SendFunctionPointer(friendID,2,m_miniPacket,PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
+    
+    m_pCommonElementsBucket->SendFunctionPointer(friendID,2,m_miniPacket,MINI_PACKET_LENGTH_WITH_MEDIA_TYPE);
     
     //m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
     
