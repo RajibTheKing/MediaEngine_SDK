@@ -41,7 +41,7 @@ public:
 	void ClearFrame(int index, int frame);
 	//int GetPacketLength(unsigned char *packetData, int start_index);
 
-	map<int, int> m_mFrameTimeStamp;
+	//map<int, int> m_mFrameTimeStamp;
 
 	Tools m_Tools;
 

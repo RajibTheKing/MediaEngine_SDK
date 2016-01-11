@@ -303,8 +303,10 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 //			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
 
             m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+            
+            toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
 
-			toolsObject.SOSleep(5);
+			
         }
     }
     

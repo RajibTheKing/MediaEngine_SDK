@@ -562,7 +562,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                             int iSendCounter = 0;
                             while(requestFramePacketPair.second < iNumberOfPacketsInCurrentFrame)
                             {
-                                if(iSendCounter && requestFramePacketPair.first %8 ==0) m_Tools.SOSleep(1);
+                                if(iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
                                 if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
                                 {
                                     CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -577,7 +577,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                             iSendCounter = 0;
                             while(requestFramePacketPair.second < currentFramePacketPair.second)
                             {
-                                if(iSendCounter && requestFramePacketPair.first %8 ==0) m_Tools.SOSleep(1);
+                                if(iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
                                 if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
                                 {
                                     CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -587,9 +587,24 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                             }
                             
                         }
-                        else//we dont handle burst frame miss
+                        else//we dont handle burst frame miss, but 1st packets of the current frame should come
                         {
-                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 3-- killed");
+                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 3-- killed previous frames");
+                            pair<int, int> requestFramePacketPair;
+                            requestFramePacketPair.first = currentFramePacketPair.first;
+                            requestFramePacketPair.second = 0;
+                            
+                            int iSendCounter = 0;
+                            while(requestFramePacketPair.second < currentFramePacketPair.second)
+                            {
+                                if(iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+                                if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
+                                {
+                                    CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
+                                }
+                                iSendCounter ++;
+                                requestFramePacketPair.second ++;
+                            }
                         }
                         
                     }
@@ -603,7 +618,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                         int iSendCounter = 0;
                         while(requestFramePacketPair.second < currentFramePacketPair.second)
                         {
-                            if(iSendCounter && requestFramePacketPair.first %8 ==0) m_Tools.SOSleep(1);
+                            if(iSendCounter /* && requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
                             if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
                             {
                                 CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -776,10 +791,13 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
+    /*
     if(resendFrameNumber %8 !=0)//faltu frame, dorkar nai
     {
         return;
     }
+    */
+    
     
     CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
                                             ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber));
