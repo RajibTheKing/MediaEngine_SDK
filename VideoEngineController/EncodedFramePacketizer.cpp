@@ -95,9 +95,12 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 			m_Packet[startPoint++] = (m_PacketSize >> f) & 0xFF;
 		}
 
-#ifdef	RETRANSMISSION_ENABLED
-	
-#endif
+        
+        for (int f = startFraction; f >= 0; f -= fractionInterval)
+        {
+            m_Packet[startPoint++] = (iTimeStampDiff >> f) & 0xFF;
+        }
+        
 		startPoint = PACKET_HEADER_LENGTH+1;
 		memcpy(m_Packet + startPoint, in_data + readPacketLength, m_PacketSize);
 		startPoint += m_PacketSize;
@@ -141,9 +144,12 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 		{
 			m_Packet[startPoint++] = (packetSize >> f) & 0xFF;
 		}
-#ifdef	RETRANSMISSION_ENABLED
-
-#endif
+        
+        for (int f = startFraction; f >= 0; f -= fractionInterval)
+        {
+            m_Packet[startPoint++] = (iTimeStampDiff >> f) & 0xFF;
+        }
+        
 		startPoint = PACKET_HEADER_LENGTH+1;
 		memcpy(m_Packet + startPoint, in_data + readPacketLength, packetSize);
 		startPoint +=  packetSize;
