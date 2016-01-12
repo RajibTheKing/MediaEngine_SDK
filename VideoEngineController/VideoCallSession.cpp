@@ -551,6 +551,26 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                         {
                             CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 1");
                             CreateAndSendMiniPacket(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
+                            pair<int, int> requestFramePacketPair;
+
+							requestFramePacketPair.first = currentFramePacketPair.first;
+
+							requestFramePacketPair.second = 0;
+
+							int iSendCounter = 0;
+
+							while(requestFramePacketPair.second < currentFramePacketPair.second) //
+							{
+								if(iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+
+								if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
+								{
+									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
+								}
+
+								iSendCounter ++;
+								requestFramePacketPair.second ++;
+							}
                         }
                         else if(currentFramePacketPair.first - ExpectedFramePacketPair.first == 1) //last packets from last frame and some packets from current misssed
                         {
@@ -587,24 +607,27 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                             }
                             
                         }
-                        else//we dont handle burst frame miss, but 1st packets of the current frame should come
+                        else//we dont handle burst frame miss, but 1st packets of the current frame should come, only if it is an iFrame
                         {
                             CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 3-- killed previous frames");
-                            pair<int, int> requestFramePacketPair;
-                            requestFramePacketPair.first = currentFramePacketPair.first;
-                            requestFramePacketPair.second = 0;
-                            
-                            int iSendCounter = 0;
-                            while(requestFramePacketPair.second < currentFramePacketPair.second)
-                            {
-                                if(iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-                                if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-                                {
-                                    CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-                                }
-                                iSendCounter ++;
-                                requestFramePacketPair.second ++;
-                            }
+                           	if(currentFramePacketPair.first % 8 == 0)
+							{
+								pair<int, int> requestFramePacketPair;
+								requestFramePacketPair.first = currentFramePacketPair.first;
+								requestFramePacketPair.second = 0;
+
+								int iSendCounter = 0;
+								while(requestFramePacketPair.second < currentFramePacketPair.second)
+								{
+									if(iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+									if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
+									{
+										CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
+									}
+									iSendCounter ++;
+									requestFramePacketPair.second ++;
+								}
+							}
                         }
                         
                     }
@@ -752,10 +775,10 @@ void CVideoCallSession::DecodingThreadProcedure()
 			intervalTime = 1000/opponentFPS;
 			decodingTime = toolsObject.CurrentTimestamp() - firstTime;
 
-			if(intervalTime > decodingTime+5)
-				toolsObject.SOSleep(intervalTime-decodingTime-5);
-			else
-				toolsObject.SOSleep(1);
+//			if(intervalTime > decodingTime+5)
+//				toolsObject.SOSleep(intervalTime-decodingTime-5);
+//			else
+				toolsObject.SOSleep(5);
 		}
 	}
 
