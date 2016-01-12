@@ -13,6 +13,7 @@
 #include "ColorConverter.h"
 #include "DecodingBuffer.h"
 #include "EncodingBuffer.h"
+#include "RenderingBuffer.h"
 #include "EncodedFrameDepacketizer.h"
 #include "VideoPacketQueue.h"
 #include "Tools.h"
@@ -64,6 +65,11 @@ public:
 	void DecodingThreadProcedure();
 	static void *CreateDecodingThread(void* param);
 
+	void StartRenderingThread();
+	void StopRenderingThread();
+	void RenderingThreadProcedure();
+	static void *CreateVideoRenderingThread(void* param);
+
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int timeStampDiff);
     
     void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
@@ -111,6 +117,7 @@ private:
 	CVideoPacketQueue m_pVideoPacketQueue;
 	CVideoPacketQueue m_pRetransVideoPacketQueue;
     CVideoPacketQueue m_pMiniPacketQueue;
+	CRenderingBuffer m_RenderingBuffer;
 
 	unsigned char m_EncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_ConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
@@ -124,6 +131,7 @@ private:
 	unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+	unsigned char m_RenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	CColorConverter *m_pColorConverter;
 
@@ -140,6 +148,9 @@ private:
 
 	bool bDecodingThreadRunning;
 	bool bDecodingThreadClosed;
+
+	bool bRenderingThreadRunning;
+	bool bRenderingThreadClosed;
     
     unsigned char m_miniPacket[PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE];
 
@@ -150,6 +161,8 @@ protected:
 	SmartPointer<std::thread> pDecodingThread;
 
 	SmartPointer<std::thread> pDepacketizationThread;
+
+	SmartPointer<std::thread> pRenderingThread;
 
 	SmartPointer<CLockHandler> m_pSessionMutex;
 };
