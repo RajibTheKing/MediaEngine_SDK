@@ -72,7 +72,7 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 	ExpectedFramePacketPair.second = 0;
 	iNumberOfPacketsInCurrentFrame = 0;
 
-
+	StartRenderingThread();
 	StartEncodingThread();
 	StartDepacketizationThread();
 	StartDecodingThread();
@@ -87,6 +87,7 @@ CVideoCallSession::~CVideoCallSession()
 	StopDecodingThread();
 
 	StopEncodingThread();
+	StopRenderingThread();
 
 	if(NULL!=m_pVideoEncoder)
 	{
@@ -805,12 +806,12 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
-    /*
+
     if(resendFrameNumber %8 !=0)//faltu frame, dorkar nai
     {
         return;
     }
-    */
+
     
     
     CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
@@ -930,7 +931,7 @@ void CVideoCallSession::RenderingThreadProcedure()
 	Tools toolsObject;
 	int frameSize,nFrameNumber,intervalTime;
 	unsigned int nTimeStampDiff;
-	long long firstTime,decodingTime;
+	long long firstTime,decodingTime,firstFrameEncodingTime;
 	int videoHeight, videoWidth;
 
 	while (bRenderingThreadRunning)
@@ -948,19 +949,23 @@ void CVideoCallSession::RenderingThreadProcedure()
 			{
 				if(m_b1stDecodedFrame)
 				{
-					m_ll1stDecodedFrameTimeStamp = m_Tools.CurrentTimestamp();
-
+					m_ll1stDecodedFrameTimeStamp = firstTime;
+					firstFrameEncodingTime = nTimeStampDiff;
 					m_b1stDecodedFrame = false;
 				}
 
-				int DecodingDelay = m_Tools.CurrentTimestamp() + nTimeStampDiff - m_ll1stDecodedFrameTimeStamp;
+				int DecodingDelay = nTimeStampDiff - firstFrameEncodingTime + m_ll1stDecodedFrameTimeStamp - firstTime;
 
 				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
-
-				toolsObject.SOSleep(DecodingDelay-1);
+				if(DecodingDelay>5)
+					toolsObject.SOSleep(DecodingDelay-5);
+				else
+					toolsObject.SOSleep(1);
 
 				m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(friendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+
 			}
+//			toolsObject.SOSleep(1);
 		}
 	}
 
