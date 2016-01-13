@@ -42,6 +42,7 @@
 		DA2A7B0B1C38ED5400E6AFF8 /* Globals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B091C38ED5400E6AFF8 /* Globals.cpp */; };
 		DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */; };
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
+		DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -136,6 +137,8 @@
 		DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FPSController.cpp; path = VideoEngineController/FPSController.cpp; sourceTree = "<group>"; };
 		DA2A7B101C38ED8200E6AFF8 /* FPSController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FPSController.h; path = VideoEngineController/FPSController.h; sourceTree = "<group>"; };
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
+		DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderingBuffer.cpp; path = VideoEngineController/RenderingBuffer.cpp; sourceTree = "<group>"; };
+		DAAB12211C464B23001A4B91 /* RenderingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderingBuffer.h; path = VideoEngineController/RenderingBuffer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +235,8 @@
 				188587D51C0AEEAC00B1F435 /* macros.h */,
 				DA2A7B061C38ED4500E6AFF8 /* PairMap.cpp */,
 				DA2A7B071C38ED4500E6AFF8 /* PairMap.h */,
+				DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */,
+				DAAB12211C464B23001A4B91 /* RenderingBuffer.h */,
 				DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */,
 				DA2A7B0D1C38ED5E00E6AFF8 /* ResendingBuffer.h */,
 				9D25D6DC1C316D2C00BBDB63 /* SendingBuffer.cpp */,
@@ -327,6 +332,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */,
 				9D25D6DE1C316D2C00BBDB63 /* SendingBuffer.cpp in Sources */,
 				188588031C0AEEBC00B1F435 /* ColorConverter.cpp in Sources */,
 				188587FA1C0AEEAC00B1F435 /* VideoEncoderListHandler.cpp in Sources */,
