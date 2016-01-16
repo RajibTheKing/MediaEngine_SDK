@@ -1,98 +1,71 @@
 
 #include "ResendingBuffer.h"
 
+#include "SmartPointer.h"
+#include "LockHandler.h"
+#include "ThreadTools.h"
 #include <string.h>
 #include "LogPrinter.h"
+#include "Size.h"
 
 CResendingBuffer::CResendingBuffer() :
-
 m_iPushIndex(0),
-m_iPopIndex(0),
-m_iQueueSize(0),
-m_iQueueCapacity(1000)
-
+m_iQueueCapacity(RESENDING_BUFFER_SIZE)
 {
+	memset(m_BufferFrameNumber,-1, sizeof(m_BufferFrameNumber));
 	m_pChannelMutex.reset(new CLockHandler);
 }
 
 CResendingBuffer::~CResendingBuffer()
 {
-/*	if (m_pChannelMutex.get())
-		m_pChannelMutex.reset();*/
+	SHARED_PTR_DELETE(m_pChannelMutex);
 }
 
 void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, int packetNumber)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::Queue b4 lock");
 	Locker lock(*m_pChannelMutex);
-	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock");
 
-    memcpy(m_Buffer[m_iPushIndex], frame, length);
+	memcpy(m_Buffer[m_iPushIndex], frame, length);
+
+	resendingMapIterator = resendingMap.find(make_pair(m_BufferFrameNumber[m_iPushIndex],m_BufferPacketNumber[m_iPushIndex]));
+
+	if(resendingMapIterator != resendingMap.end())
+		resendingMap.erase(resendingMapIterator);
 
     m_BufferDataLength[m_iPushIndex] = length;
-    
-    reverseResendingMapIterator = reverseResendingMap.find(m_iPushIndex);
-    resendingMapIterator = resendingMap.find(reverseResendingMapIterator->second);
-    
-    if(resendingMapIterator != resendingMap.end())
-        resendingMap.erase(resendingMapIterator);
-    
-    resendingMap[std::make_pair(frameNumber, packetNumber)] = m_iPushIndex;
-    reverseResendingMap[m_iPushIndex] = std::make_pair(frameNumber, packetNumber);
+	m_BufferFrameNumber[m_iPushIndex] = frameNumber;
+	m_BufferPacketNumber[m_iPushIndex] = packetNumber;
+
+	resendingMap[ make_pair(frameNumber,packetNumber)] = m_iPushIndex;
 
     IncreamentIndex(m_iPushIndex);
-
-    if (m_iQueueSize != m_iQueueCapacity)
-        m_iQueueSize++;
 }
 
 int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::DeQueue b4 lock");
 	Locker lock(*m_pChannelMutex);
-	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock");
 
-	if (m_iQueueSize <= 0)
-	{
+	resendingMapIterator = resendingMap.find(make_pair(frameNumber, packetNumber));
+	if(resendingMapIterator == resendingMap.end())
 		return -1;
-	}
-	else
-	{
-        resendingMapIterator = resendingMap.find(std::make_pair(frameNumber, packetNumber));
-        
-        if(resendingMapIterator == resendingMap.end())
-            return -1;
-        
-        m_iPopIndex = resendingMapIterator->second;
-        
-		int length = m_BufferDataLength[m_iPopIndex];
 
-		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
+	m_iPopIndex = resendingMapIterator->second;
+	resendingMap.erase(resendingMapIterator);
+	memcpy(decodeBuffer, m_Buffer[m_iPopIndex], m_BufferDataLength[m_iPopIndex]);
 
-		m_iQueueSize--;
-        
-        resendingMap.erase(resendingMapIterator);
-        
-        reverseResendingMapIterator = reverseResendingMap.find(m_iPopIndex);
-        
-        if(reverseResendingMapIterator != reverseResendingMap.end())
-            reverseResendingMap.erase(reverseResendingMapIterator);
-
-		return length;
-	}
+	return m_BufferDataLength[m_iPopIndex];
 }
 
 void CResendingBuffer::IncreamentIndex(int &index)
 {
 	index++;
-
-	if (index >= m_iQueueCapacity)
+	if (index >=m_iQueueCapacity)
 		index = 0;
 }
 
-int CResendingBuffer::GetQueueSize()
-{
-	Locker lock(*m_pChannelMutex);
-
-	return m_iQueueSize;
-}
+//int CResendingBuffer::GetQueueSize()
+//{
+//	Locker lock(*m_pChannelMutex);
+//
+//	return 0;
+//}
