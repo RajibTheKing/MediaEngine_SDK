@@ -1,36 +1,37 @@
 LOCAL_PATH := $(call my-dir)
 
 ARCHITECTURE := armeabi-v7a
+PRECOMPILED_LIBRARIES := ../../../RingIDSDK/jni/precompiled
 
 $(warning $(ARCHITECTURE))
 # Prebuilt libssl
 include $(CLEAR_VARS)
 LOCAL_MODULE := openh264lib
-LOCAL_SRC_FILES := precompiled/libopenh264.a
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libopenh264.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt IPVConnectivityDll
 include $(CLEAR_VARS)
 LOCAL_MODULE := IPVConnectivityDll
-LOCAL_SRC_FILES := precompiled/$(ARCHITECTURE)/libIPVConnectivityDll.a
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libIPVConnectivityDll.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt IPVConnectivityManager
 include $(CLEAR_VARS)
 LOCAL_MODULE := IPVConnectivityManager
-LOCAL_SRC_FILES := precompiled/$(ARCHITECTURE)/libIPVConnectivityManager.a
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libIPVConnectivityManager.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt IPVSocket
 include $(CLEAR_VARS)
 LOCAL_MODULE := IPVSocket
-LOCAL_SRC_FILES := precompiled/$(ARCHITECTURE)/libIPVSocket.a
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libIPVSocket.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt IPVStunMessage
 include $(CLEAR_VARS)
 LOCAL_MODULE := IPVStunMessage
-LOCAL_SRC_FILES := precompiled/$(ARCHITECTURE)/libIPVStunMessage.a
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libIPVStunMessage.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 #  VideoEngineController
