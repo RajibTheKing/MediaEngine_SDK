@@ -9,7 +9,8 @@
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 
-#define IPVLongType long long
+typedef long long IPVLongType;
+#include <stdio.h>
 
 #include <string>
 #include <fstream>
@@ -17,9 +18,15 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <stdarg.h>
+
 #else
 #include <sys/time.h>
 #endif 
+
+
+#define printg(X,...) _RPT1(0,X,__VA_ARGS__)
+#define printf(...) printg(__VA_ARGS__,"")
 
 using namespace std;
 

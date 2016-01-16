@@ -102,7 +102,7 @@ void CLogPrinter::SetPriority(Priority maxPriority)
 
 void CLogPrinter::Write(Priority priority, const std::string message)
 {
-//	printf("%s\n", message.c_str());
+	printf("%s\n", message.c_str());
     
     if(isLogEnable)
     {
@@ -145,6 +145,8 @@ void CLogPrinter::Write(Priority priority, const std::string message)
 
 void CLogPrinter::WriteSpecific(Priority priority, const std::string message)
 {
+	printf("WindowsDesktop --> %s\n", message.c_str());
+
     if(isLogEnable)
     {
         
