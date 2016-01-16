@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{99D73CE9-BE72-460B-A0F3-E688C0E4FB99}</ProjectGuid>
+    <RootNamespace>MediaEngine_Windows</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
+    <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DESKTOP_C_SHARP_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>welsdcore.lib;WelsDecPlus.lib;welsecore.lib;WelsEncPlus.lib;WelsVP.lib;g729test.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioDecoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\CommonElementsBucket.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Controller.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\DecodingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\EncodedFrameDepacketizer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\EncodingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\EventNotifier.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\FPSController.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Globals.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\ResendingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoCallSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoCallSessionListHandler.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoDecoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoEncoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoEncoderListHandler.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioDecoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioEncoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
+    <ClInclude Include="..\..\VideoEngineController\codec_api.h" />
+    <ClInclude Include="..\..\VideoEngineController\codec_app_def.h" />
+    <ClInclude Include="..\..\VideoEngineController\codec_def.h" />
+    <ClInclude Include="..\..\VideoEngineController\codec_ver.h" />
+    <ClInclude Include="..\..\VideoEngineController\CommonElementsBucket.h" />
+    <ClInclude Include="..\..\VideoEngineController\Controller.h" />
+    <ClInclude Include="..\..\VideoEngineController\DecodingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\EncodedFrameDepacketizer.h" />
+    <ClInclude Include="..\..\VideoEngineController\EncodedFramePacketizer.h" />
+    <ClInclude Include="..\..\VideoEngineController\EncodingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\EventNotifier.h" />
+    <ClInclude Include="..\..\VideoEngineController\FPSController.h" />
+    <ClInclude Include="..\..\VideoEngineController\G729CodecNative.h" />
+    <ClInclude Include="..\..\VideoEngineController\Globals.h" />
+    <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
+    <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
+    <ClInclude Include="..\..\VideoEngineController\macros.h" />
+    <ClInclude Include="..\..\VideoEngineController\PairMap.h" />
+    <ClInclude Include="..\..\VideoEngineController\ResendingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.h" />
+    <ClInclude Include="..\..\VideoEngineController\SendingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\Size.h" />
+    <ClInclude Include="..\..\VideoEngineController\ThreadTools.h" />
+    <ClInclude Include="..\..\VideoEngineController\Tools.h" />
+    <ClInclude Include="..\..\VideoEngineController\typedef.h" />
+    <ClInclude Include="..\..\VideoEngineController\typedefs.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoCallSession.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoCallSessionListHandler.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoDecoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoEncoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoEncoderListHandler.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\VideoEngineController\libopenh264.a" />
+    <None Include="..\..\VideoEngineController\Makefile" />
+    <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj" />
+    <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
