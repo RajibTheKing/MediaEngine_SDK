@@ -39,6 +39,7 @@ public:
 	void MoveForward(int frame);
 	int CreateNewIndex(int frame);
 	void ClearFrame(int index, int frame);
+	int GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight);
 	//int GetPacketLength(unsigned char *packetData, int start_index);
 
 	map<int, int> m_mFrameTimeStamp;
@@ -46,6 +47,12 @@ public:
 	Tools m_Tools;
 
 private:
+	int ProcessFrame(unsigned char *data,int index,int frameNumber,int &nFramNumber);
+	int GetEncodingTime(int nFrameNumber);
+	bool m_bIsDpkgBufferFilledUp;
+	int m_iFirstFrameReceived;
+
+	queue<int>m_IframeQueue;
 	int SafeFinder(int Data);
 
 	int m_iRetransPktDrpd;
@@ -56,7 +63,7 @@ private:
 	int m_iCountReqResendPacket;
 	int m_iMaxFrameNumRecvd;
 	int m_iMaxFrameNumRecvdOld;
-	long long m_LastDecoderSentTime;
+	long long m_FirstFrameEncodingTime;
 	unsigned int timeStamp;
 
 	LongLong lastTimeStamp;
