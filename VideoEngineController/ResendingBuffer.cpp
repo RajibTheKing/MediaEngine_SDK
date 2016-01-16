@@ -9,7 +9,7 @@ CResendingBuffer::CResendingBuffer() :
 m_iPushIndex(0),
 m_iPopIndex(0),
 m_iQueueSize(0),
-m_iQueueCapacity(300)
+m_iQueueCapacity(1000)
 
 {
 	m_pChannelMutex.reset(new CLockHandler);
@@ -23,9 +23,9 @@ CResendingBuffer::~CResendingBuffer()
 
 void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, int packetNumber)
 {
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue b4 lock");
+	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::Queue b4 lock");
 	Locker lock(*m_pChannelMutex);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock");
+	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock");
 
     memcpy(m_Buffer[m_iPushIndex], frame, length);
 
@@ -48,9 +48,9 @@ void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, 
 
 int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber)
 {
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue b4 lock");
+	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::DeQueue b4 lock");
 	Locker lock(*m_pChannelMutex);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock");
+	CLogPrinter::Write(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock");
 
 	if (m_iQueueSize <= 0)
 	{

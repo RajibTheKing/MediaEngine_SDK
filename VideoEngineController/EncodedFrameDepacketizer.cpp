@@ -90,8 +90,10 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	// CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding called");
     bool bIsRetransmitted=false;
+    bool bIsMiniPacket = in_data[SIGNAL_BYTE_INDEX]&(1<<5);
+    
     int firstByte = 0;
-    if(in_size>PACKET_HEADER_LENGTH)
+    if(!bIsMiniPacket)
     {
         firstByte = in_data[SIGNAL_BYTE_INDEX];
         
@@ -131,24 +133,19 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	int packetLength = m_Tools.GetIntFromChar(in_data, startIndex);
 
 	startIndex += 4;
-
-#ifdef	RETRANSMISSION_ENABLED
-	int resendframe = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	int resendpacket = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	unsigned int timeStampDiff = m_Tools.GetIntFromChar(in_data, startIndex);
-
-//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::timeStampDiff "+ m_Tools.IntegertoStringConvert(timeStampDiff));
-
-	m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
-
-	startIndex += 4;
-#endif
+    
+    unsigned int timeStampDiff = -1;
+    if(!bIsMiniPacket)
+    {
+        timeStampDiff = m_Tools.GetIntFromChar(in_data, startIndex);
+//        m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
+        startIndex += 4;
+        
+        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::timeStampDiff "+ m_Tools.IntegertoStringConvert(timeStampDiff));
+    }
+    
+    
+    
 
 	int index;
 
@@ -169,17 +166,19 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#()() Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
 		}
 	}
+    
 
-	if(resendframe != -1 && resendpacket != -1) //This block is for resending packets and has no relation with the packet passed to this function
+	if(bIsMiniPacket) //This block is for resending packets and has no relation with the packet passed to this function
 	{
         
         CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::King-->PushPacketForDecoding Resend Packet Found resendframe: "+
-                                   m_Tools.IntegertoStringConvert(resendframe) + " resendpacket: "+ m_Tools.IntegertoStringConvert(resendpacket)+
-                                   "in_size: "+m_Tools.IntegertoStringConvert(in_size));
+                                   m_Tools.IntegertoStringConvert(frameNumber) + " resendpacket: "+ m_Tools.IntegertoStringConvert(packetNumber)+
+                                   "   in_size: "+m_Tools.IntegertoStringConvert(in_size));
+        
         
         
 		++m_iCountReqResendPacket;
-		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,resendframe, resendpacket );
+		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber );
 		/*resendQueue.getPacketForFrameAndPacketNo(resendframe, resendpacket);*/
 
 		if(resendPacketLength != -1)
@@ -189,9 +188,9 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			if(g_FriendID != -1)
 			{
 				m_iCountResendPktSent++;
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Resend Packet Found resendframe: "+
+				/*CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Resend Packet Found resendframe: "+
 																m_Tools.IntegertoStringConvert(resendframe) + " resendpacket: "+ m_Tools.IntegertoStringConvert(resendpacket)+
-																" resendpacketLenght: "+ m_Tools.IntegertoStringConvert(resendPacketLength));
+																" resendpacketLenght: "+ m_Tools.IntegertoStringConvert(resendPacketLength));*/
 
 				m_pCommonElementsBucket->SendFunctionPointer(g_FriendID, 2, m_pPacketToResend, PACKET_HEADER_LENGTH + resendPacketLength);
 				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#() RetransPKT USED = " + m_Tools.IntegertoStringConvert(m_iRetransPktUsed) + " DROPED = " + m_Tools.IntegertoStringConvert(m_iRetransPktDrpd) );
@@ -228,7 +227,11 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	if (frameNumber < m_FrontFrame)		//Very old frame
 	{
 		if(bIsRetransmitted)
-			++m_iRetransPktDrpd;
+        {
+            ++m_iRetransPktDrpd;
+            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer:: m_iRetransPktDrpd = "+m_Tools.IntegertoStringConvert(m_iRetransPktDrpd) );
+        }
+        
 		return -1;
 	}
 	else if (frameNumber > m_BackFrame)
@@ -282,8 +285,13 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	}
 
 	if(bIsRetransmitted)
-		++m_iRetransPktUsed;
-
+    {
+        ++m_iRetransPktUsed;
+        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer:: m_iRetransPktUsed = "+m_Tools.IntegertoStringConvert(m_iRetransPktUsed) );
+    }
+    
+    
+    
 	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber);
 //	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer:: m_FrontFrame : "+m_Tools.IntegertoStringConvert(m_FrontFrame) + " :: m_iMaxFrameNumRecvd: "+ m_Tools.IntegertoStringConvert(m_iMaxFrameNumRecvd) + " :: diff: "+ m_Tools.IntegertoStringConvert(m_iMaxFrameNumRecvd-m_FrontFrame));
 
@@ -292,6 +300,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 #ifdef RETRANSMISSION_ENABLED
 	if(m_FrontFrame + TIME_DELAY_FOR_RETRANSMISSION * m_VideoCallSession->opponentFPS >= m_iMaxFrameNumRecvd) return -1;
+
 
 	long long curTime = m_Tools.CurrentTimestamp();
 	int minTimeDiff = 1000/m_VideoCallSession->opponentFPS;
@@ -309,10 +318,10 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	}
 
 	timeStamp = m_mFrameTimeStamp[m_FrontFrame];
-	m_mFrameTimeStamp.erase (m_FrontFrame);
-//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: timeStamp: " + m_Tools.IntegertoStringConvert(timeStamp) + " m_FrontFrame: "+ m_Tools.IntegertoStringConvert(m_FrontFrame));
 
-	m_VideoCallSession->PushFrameForDecoding( m_CVideoPacketBuffer[index].m_pFrameData, m_CVideoPacketBuffer[index].m_FrameSize, m_FrontFrame, timeStamp );
+	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: timeStamp: " + m_Tools.IntegertoStringConvert(timeStamp) + " m_FrontFrame: "+ m_Tools.IntegertoStringConvert(m_FrontFrame));
+
+	m_VideoCallSession->PushFrameForDecoding( m_CVideoPacketBuffer[index].m_pFrameData, m_CVideoPacketBuffer[index].m_FrameSize, m_FrontFrame, timeStampDiff );
 	g_FPSController.NotifyFrameComplete(m_FrontFrame);
 	MoveForward(m_FrontFrame);
 
@@ -324,7 +333,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	if (frameNumber == m_FrontFrame)
 	{
-		m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[index].m_pFrameData, m_CVideoPacketBuffer[index].m_FrameSize,m_FrontFrame, 0);	//Send front frame
+		timeStamp = m_mFrameTimeStamp[frameNumber];
+		m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[index].m_pFrameData, m_CVideoPacketBuffer[index].m_FrameSize,m_FrontFrame, timeStampDiff);	//Send front frame
 		g_FPSController.NotifyFrameComplete(frameNumber);
 		MoveForward(frameNumber);
 
@@ -336,7 +346,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 			if (m_CVideoPacketBuffer[inIndex].IsComplete())
 			{
-				m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[inIndex].m_pFrameData, m_CVideoPacketBuffer[inIndex].m_FrameSize,frame, 0);
+				timeStamp = m_mFrameTimeStamp[frame];
+				m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[inIndex].m_pFrameData, m_CVideoPacketBuffer[inIndex].m_FrameSize,frame, timeStampDiff);
 				g_FPSController.NotifyFrameComplete(frame);
 				MoveForward(frame);
 			}
@@ -371,7 +382,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			MoveForward(frame);
 		}
 
-		m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[index].m_pFrameData, m_CVideoPacketBuffer[index].m_FrameSize,frameNumber, 0);		//Send I-Frame
+		timeStamp = m_mFrameTimeStamp[frameNumber];
+		m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[index].m_pFrameData, m_CVideoPacketBuffer[index].m_FrameSize,frameNumber, timeStampDiff);		//Send I-Frame
 		g_FPSController.NotifyFrameComplete(frameNumber);
 		MoveForward(frameNumber);
 
@@ -383,7 +395,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 			if (m_CVideoPacketBuffer[inIndex].IsComplete())
 			{
-				m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[inIndex].m_pFrameData, m_CVideoPacketBuffer[inIndex].m_FrameSize, frame, 0);
+				timeStamp = m_mFrameTimeStamp[frame];
+				m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[inIndex].m_pFrameData, m_CVideoPacketBuffer[inIndex].m_FrameSize, frame, timeStampDiff);
 				g_FPSController.NotifyFrameComplete(frame);
 				MoveForward(frame);
 			}
@@ -478,13 +491,14 @@ void CEncodedFrameDepacketizer::ClearAndDeliverFrame(int frame)
 
 	if (m_CVideoPacketBuffer[indexInside].IsComplete() && frame+m_VideoCallSession->opponentFPS>m_FrontFrame)
 	{
-		timeStamp = m_mFrameTimeStamp[m_FrontFrame];
-		m_mFrameTimeStamp.erase (m_FrontFrame);
+		//timeStamp = m_mFrameTimeStamp[m_FrontFrame];
+		//m_mFrameTimeStamp.erase (m_FrontFrame);
 		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: timeStamp: " + m_Tools.IntegertoStringConvert(timeStamp));
 
+		timeStamp = m_mFrameTimeStamp[frame];
 		m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[indexInside].m_pFrameData,
 													 m_CVideoPacketBuffer[indexInside].m_FrameSize,
-													 frame, m_FrontFrame);
+													 frame, m_mFrameTimeStamp[frame]);
 		g_FPSController.NotifyFrameComplete(frame);
 	}
 	else {
@@ -496,6 +510,9 @@ void CEncodedFrameDepacketizer::ClearAndDeliverFrame(int frame)
 
 void CEncodedFrameDepacketizer::ClearFrame(int index, int frame)
 {
+	if(m_mFrameTimeStamp.find(frame)!=m_mFrameTimeStamp.end())
+		m_mFrameTimeStamp.erase(frame);
+
 	if(-1<index && index<=DEPACKETIZATION_BUFFER_SIZE)
 	{
 		m_CVideoPacketBuffer[index].Reset();
