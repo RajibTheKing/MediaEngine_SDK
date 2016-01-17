@@ -755,8 +755,8 @@ void CVideoCallSession::DecodingThreadProcedure()
 		decodingTime =  toolsObject.CurrentTimestamp() - currentTime;
 
 		if(nFrameLength>-1)
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # Expected Time: "+m_Tools.IntegertoStringConvert(nExpectedTime)+"  Len: "+m_Tools.IntegertoStringConvert(nFrameLength) +"  FrameNo: "
-													   +m_Tools.IntegertoStringConvert(nFrameNumber)+"  EncodingTime: "+m_Tools.IntegertoStringConvert(nEncodingTime));
+			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # Get Time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  Len: "+m_Tools.IntegertoStringConvert(nFrameLength) +"  FrameNo: "
+													   +m_Tools.IntegertoStringConvert(nFrameNumber));
 
 		if (-1 == nFrameLength) {
 			toolsObject.SOSleep(10);
