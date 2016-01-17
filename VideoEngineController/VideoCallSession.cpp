@@ -463,6 +463,8 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 
 #endif
 
+
+	printf("00000 Queue framenumber = %d\n", nFramNumber);
 	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 
 	return 1;
@@ -952,6 +954,8 @@ void CVideoCallSession::RenderingThreadProcedure()
 		{
 			firstTime = toolsObject.CurrentTimestamp();
 			frameSize = m_RenderingBuffer.DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth);
+
+			printf("00000 DeQueue framenumber = %d\n", nFrameNumber);
 
 			if(frameSize>0)
 			{

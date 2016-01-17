@@ -85,6 +85,9 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 			m_Packet[startPoint++] = (numberOfPackets >> f) & 0xFF;
 		}
 
+		printf("00000 FrameNumber = %d, numberOfPackets =%d packetNumber = %d,\n in_size = %d, in_size / m_PacketSize = %d, in_size * 1.0 / m_PacketSize * 1.0 = %f\n",
+			frameNumber, numberOfPackets, packetNumber, in_size, in_size / m_PacketSize, in_size * 1.0 / m_PacketSize * 1.0);
+
 		for (int f = startFraction; f >= 0; f -= fractionInterval)
 		{
 			m_Packet[startPoint++] = (packetNumber >> f) & 0xFF;
