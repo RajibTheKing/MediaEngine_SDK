@@ -784,7 +784,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 			if(maxDecodingTime < decodingTime)
 				maxDecodingTime = decodingTime;
 
-			if(framCounter%100==0)
+//			if(framCounter%100==0)
 				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # AverageTime: "+m_Tools.DoubleToString(decodingTimeAverage/framCounter)+"  MaxDecodingTime: "+m_Tools.IntegertoStringConvert(maxDecodingTime) );
 
 			//decodingTime = toolsObject.CurrentTimestamp() - nTimeStampBeforeDecoding;
