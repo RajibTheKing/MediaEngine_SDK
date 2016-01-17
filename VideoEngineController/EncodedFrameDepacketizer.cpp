@@ -221,22 +221,29 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
 									   "GetReceivedFrame: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 		}
+//		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
+//														m_Tools.IntegertoStringConvert(
+//																frameNumber) + " pkt: " +
+//														m_Tools.IntegertoStringConvert(
+//																packetNumber) + " ~ " +
+//														m_Tools.IntegertoStringConvert(
+//																numberOfPackets) + " #FPS own:" +
+//														m_Tools.IntegertoStringConvert(
+//																m_VideoCallSession->ownFPS) +
+//														" Oppo: " + m_Tools.IntegertoStringConvert(
+//				                                        m_VideoCallSession->opponentFPS)
+//																	+ " #Resend Request:" +
+//														m_Tools.IntegertoStringConvert(
+//																m_iCountReqResendPacket) +
+//														" SENT: " + m_Tools.IntegertoStringConvert(
+//				m_iCountResendPktSent)+" Avl Idx: "+m_Tools.IntegertoStringConvert(nAvailableIndex) + "  BufferGood: "+m_Tools.IntegertoStringConvert(bIsBufferGood));
 		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
 														m_Tools.IntegertoStringConvert(
 																frameNumber) + " pkt: " +
 														m_Tools.IntegertoStringConvert(
 																packetNumber) + " ~ " +
 														m_Tools.IntegertoStringConvert(
-																numberOfPackets) + " #FPS own:" +
-														m_Tools.IntegertoStringConvert(
-																m_VideoCallSession->ownFPS) +
-														" Oppo: " + m_Tools.IntegertoStringConvert(
-				                                        m_VideoCallSession->opponentFPS)
-																	+ " #Resend Request:" +
-														m_Tools.IntegertoStringConvert(
-																m_iCountReqResendPacket) +
-														" SENT: " + m_Tools.IntegertoStringConvert(
-				m_iCountResendPktSent)+" Avl Idx: "+m_Tools.IntegertoStringConvert(nAvailableIndex) + "  BufferGood: "+m_Tools.IntegertoStringConvert(bIsBufferGood));
+																numberOfPackets) +" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex));
 	}
 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
@@ -245,8 +252,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	{
 		if(bIsRetransmitted)
 			++m_iRetransPktDrpd;
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Delay Packet  = "+ m_Tools.IntegertoStringConvert(frameNumber)
-		+"  ##  "+ m_Tools.IntegertoStringConvert(m_FrontFrame)+"  <-->  "+ m_Tools.IntegertoStringConvert(m_BackFrame));
+//		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Delay Packet  = "+ m_Tools.IntegertoStringConvert(frameNumber)
+//		+"  ##  "+ m_Tools.IntegertoStringConvert(m_FrontFrame)+"  <-->  "+ m_Tools.IntegertoStringConvert(m_BackFrame));
 		return -1;
 	}
 	else if(m_FrontFrame>m_BackFrame)	//IF BUFFER IS EMPTY
@@ -260,8 +267,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			CreateNewIndex(frame);
 
 		index = CreateNewIndex(m_BackFrame);
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "GetReceivedFrame:: NEW BUFFER  = "
-														+ m_Tools.IntegertoStringConvert(m_FrontFrame)+" @ "+ m_Tools.IntegertoStringConvert(m_FrontFrame));
+//		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "GetReceivedFrame:: NEW BUFFER  = "
+//														+ m_Tools.IntegertoStringConvert(m_FrontFrame)+" @ "+ m_Tools.IntegertoStringConvert(m_FrontFrame));
 	}
 	else if (frameNumber > m_BackFrame)
 	{
@@ -360,11 +367,17 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 
 	nEcodingTime = GetEncodingTime(m_FrontFrame);
 
+//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
+//							   " GetReceivedFrame : Fron: " +
+//							   m_Tools.IntegertoStringConvert(m_FrontFrame)+" Back: "+m_Tools.IntegertoStringConvert(m_BackFrame) +"  Rng: [ "+m_Tools.IntegertoStringConvert(m_iFirstFrameReceived)+" @ "
+//							   +m_Tools.IntegertoStringConvert(m_iMaxFrameNumRecvd)+"] Time# Ex: "+m_Tools.IntegertoStringConvert(nExpectedTime)
+//							   + " En: "+m_Tools.IntegertoStringConvert(nEcodingTime));
+
 	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
-							   " GetReceivedFrame : Fron: " +
-							   m_Tools.IntegertoStringConvert(m_FrontFrame)+" Back: "+m_Tools.IntegertoStringConvert(m_BackFrame) +"  Rng: [ "+m_Tools.IntegertoStringConvert(m_iFirstFrameReceived)+" @ "
-							   +m_Tools.IntegertoStringConvert(m_iMaxFrameNumRecvd)+"] Time# Ex: "+m_Tools.IntegertoStringConvert(nExpectedTime)
-							   + " En: "+m_Tools.IntegertoStringConvert(nEcodingTime));
+							   " GetReceivedFrame: Fron: " +
+							   m_Tools.IntegertoStringConvert(m_FrontFrame)+" Back: "+m_Tools.IntegertoStringConvert(m_BackFrame) +" Time#  "+m_Tools.IntegertoStringConvert(nExpectedTime)
+							   + " > "+m_Tools.IntegertoStringConvert(nEcodingTime));
+
 
 //	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
 //							   " GetReceivedFrame : Encoding time: "+m_Tools.IntegertoStringConvert(nEcodingTime));
