@@ -243,7 +243,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 														m_Tools.IntegertoStringConvert(
 																packetNumber) + " ~ " +
 														m_Tools.IntegertoStringConvert(
-																numberOfPackets) +" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex));
+																numberOfPackets) +" T: "+m_Tools.IntegertoStringConvert(timeStampDiff)+" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex));
 	}
 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
