@@ -114,6 +114,9 @@
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\RenderingBuffer.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h">
@@ -247,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h">
       <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\RenderingBuffer.h">
+      <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -89,6 +89,7 @@
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\RenderingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\ResendingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
     <ClInclude Include="..\..\VideoEngineController\PairMap.h" />
+    <ClInclude Include="..\..\VideoEngineController\RenderingBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\ResendingBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\SendingBuffer.h" />
