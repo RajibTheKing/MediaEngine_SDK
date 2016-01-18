@@ -87,47 +87,30 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
 	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 0");
 
 	if (NULL == m_pSVCVideoEncoder){
 		cout << "OpenH264 encoder NULL!\n";
 		return 0;
 	}
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 1");
 
 	SFrameBSInfo frameBSInfo;
-
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 2");
 	SSourcePicture sourcePicture;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 3");
 	sourcePicture.iColorFormat = videoFormatI420;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 4");
 	sourcePicture.uiTimeStamp = 0;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 5");
 	sourcePicture.iPicWidth = m_iWidth;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 6");
 	sourcePicture.iPicHeight = m_iHeight;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 7");
 	sourcePicture.iStride[0] = m_iWidth;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 8");
 	sourcePicture.iStride[1] = sourcePicture.iStride[2] = sourcePicture.iStride[0] >> 1;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 9");
 	sourcePicture.pData[0] = (unsigned char *)in_data;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 10");
 	sourcePicture.pData[1] = sourcePicture.pData[0] + (m_iWidth * m_iHeight);
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 11");
 	sourcePicture.pData[2] = sourcePicture.pData[1] + (m_iWidth * m_iHeight >> 2);
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 12");
 
 	int iRet = m_pSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 13");
-	//cout << "OpenH264 encoding returned " << iRet + " " << ((int)frameBSInfo.eFrameType) << " " << (frameBSInfo.iLayerNum) + " " << (frameBSInfo.iFrameSizeInBytes);
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 14");
-	if (iRet != 0){
-        
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoEncoder::EncodeAndTransfer Encode FAILED");
-    
+	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode OpenH264 encoding returned" + m_Tools.IntegertoStringConvert(iRet));
+	
+	if (iRet != 0){       
+        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoEncoder::EncodeAndTransfer Encode FAILED");   
 		return 0;
 	}
 	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 15");
@@ -136,11 +119,9 @@ int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_siz
 	{
 		return 0;
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 16");
+	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode Successful");
 	int iFrameSize = 0;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 17");
 	int copy_index = 0;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 18");
 	for (int iLayer = 0; iLayer < frameBSInfo.iLayerNum; iLayer++){
 		SLayerBSInfo* pLayerBsInfo = &frameBSInfo.sLayerInfo[iLayer];
 		CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoder::Encode 19");
