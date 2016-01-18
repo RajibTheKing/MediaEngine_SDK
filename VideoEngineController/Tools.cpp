@@ -207,7 +207,6 @@ LongLong  Tools::CurrentTimestamp()
 
 void Tools::WriteToFile(short* in_Data, int count)
 {
-	printf("Writing to shortFile.pcm\n");
 	if (m_fpShort == NULL)
 	{
 		m_fpShort = fopen("shortFile.pcm", "wb");
@@ -217,8 +216,6 @@ void Tools::WriteToFile(short* in_Data, int count)
 
 void Tools::WriteToFile(unsigned char* in_Data, int count)
 {
-
-	printf("Writing to bytefile.test\n");
 	if (m_fpByte == NULL)
 	{
 		m_fpByte = fopen("byteFile.test", "wb");
