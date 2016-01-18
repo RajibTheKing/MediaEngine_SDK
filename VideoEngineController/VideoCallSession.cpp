@@ -341,6 +341,9 @@ void CVideoCallSession::EncodingThreadProcedure()
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
+#elif defined(_DESKTOP_C_SHARP_)
+
+			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
 
 #else
 
@@ -440,6 +443,7 @@ void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 
 void CVideoCallSession::PushFrameForDecoding(unsigned char *in_data, unsigned int nFrameSize,int nFramNumber, unsigned int timeStampDiff)
 {
+	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "\n\nPPPPPPPPPPPPPPPPPPPPPPPPPPP CVideoCallSession::PushFrameForDecoding --> NewFrameFound, nFrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 	m_DecodingBuffer.Queue(nFramNumber, in_data, nFrameSize, timeStampDiff);
 }
 
@@ -451,12 +455,14 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-
+#elif defined(_DESKTOP_C_SHARP_)
+	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
 #else
 
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 
 #endif
+
 
 	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 
@@ -754,10 +760,13 @@ void CVideoCallSession::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-		//CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
+		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure running");
 
 		if (m_DecodingBuffer.GetQueueSize() == 0)
+		{
+			CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure empty");
 			toolsObject.SOSleep(5);
+		}
 		else
 		{
 			//firstTime = toolsObject.CurrentTimestamp();

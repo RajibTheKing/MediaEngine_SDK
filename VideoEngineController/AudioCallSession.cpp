@@ -71,9 +71,10 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
 	//m_pAudioDecoder->CreateAudioDecoder();
 
 	m_pG729CodecNative = new G729CodecNative();
-	m_pG729CodecNative->Open();
+	int iRet = m_pG729CodecNative->Open();
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized");
+	CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
+
 }
 
 int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
@@ -216,7 +217,7 @@ void CAudioCallSession::EncodingThreadProcedure()
         {
             frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame);
 
-            CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1");
+            CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1, frameSize = " + m_Tools.IntegertoStringConvert(frameSize));
             int size;
 
 
@@ -325,7 +326,9 @@ void CAudioCallSession::DecodingThreadProcedure()
             size = m_pG729CodecNative->Decode(m_DecodingFrame, frameSize, m_DecodedFrame);
 
             CLogPrinter::Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure size " + m_Tools.IntegertoStringConvert(size));
-            
+#if defined(DUMP_DECODED_AUDIO)
+			m_Tools.WriteToFile(m_DecodedFrame, size);
+#endif
             m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(friendID, size, m_DecodedFrame);
             
             CLogPrinter::Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure 3");

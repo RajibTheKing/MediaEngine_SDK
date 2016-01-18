@@ -6,7 +6,19 @@
 #endif
 
 
+Tools::Tools()
+{
+	m_fpByte = NULL;
+	m_fpShort = NULL;
+}
 
+Tools::~Tools()
+{
+	if (m_fpByte != NULL)
+		fclose(m_fpByte);
+	if (m_fpShort != NULL)
+		fclose(m_fpShort);
+}
 std::string Tools::DoubleToString(double value){
 	stringstream ss;
 	ss<<value;
@@ -191,4 +203,23 @@ LongLong  Tools::CurrentTimestamp()
 
 	return now;
 #endif
+}
+
+void Tools::WriteToFile(short* in_Data, int count)
+{
+	if (m_fpShort == NULL)
+	{
+		m_fpShort = fopen("shortFile.pcm", "wb");
+	}
+	fwrite(in_Data, 2, count, m_fpShort);
+}
+
+void Tools::WriteToFile(unsigned char* in_Data, int count)
+{
+	if (m_fpByte == NULL)
+	{
+		m_fpByte = fopen("byteFile.test", "wb");
+	}
+	fwrite(in_Data, 1, count, m_fpByte);
+
 }

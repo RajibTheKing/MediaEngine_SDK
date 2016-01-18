@@ -5,8 +5,8 @@
 
 #ifdef _WIN32
 
-#include <ws2tcpip.h>
-#include <winsock2.h> //can also be winsock.h
+//#include <ws2tcpip.h>
+//#include <winsock2.h> //can also be winsock.h
 // Need to link with Ws2_32.lib
 #pragma comment(lib,"Ws2_32.lib")
 #else
