@@ -437,7 +437,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 //		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " GetReceivedFrame# : Complete Frame EncodingTime "+m_Tools.IntegertoStringConvert(nEcodingTime)+"  Frame: "+m_Tools.IntegertoStringConvert(nFramNumber));
 		return nFrameLength;
 	}
-	else
+	else if(m_FrontFrame < m_iMaxFrameNumRecvd)
 	{
 		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # IncompleteFrame Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame));
 		g_FPSController.NotifyFrameDropped(m_FrontFrame);
