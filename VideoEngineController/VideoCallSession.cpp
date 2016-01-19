@@ -308,6 +308,9 @@ void CVideoCallSession::EncodingThreadProcedure()
 	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize, encodedFrameSize;
+	long long encodingTime, encodingTimeStamp, nMaxEncodingTime = 0;
+	double dbTotalEncodingTime=0;
+	int iEncodedFrameCounter=0;
 
 	while (bEncodingThreadRunning)
 	{
@@ -358,8 +361,16 @@ void CVideoCallSession::EncodingThreadProcedure()
 			}
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure Converted to 420");
-
+			encodingTimeStamp = toolsObject.CurrentTimestamp();
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+			encodingTime  = toolsObject.CurrentTimestamp() - encodingTimeStamp;
+			dbTotalEncodingTime += encodingTime;
+			++ iEncodedFrameCounter;
+			nMaxEncodingTime = max(nMaxEncodingTime,encodingTime);
+
+			if(0 == (7&iEncodedFrameCounter)){
+				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force: AVG EncodingTime = "+ m_Tools.DoubleToString(dbTotalEncodingTime/iEncodedFrameCounter)+" ~ "+m_Tools.IntegertoStringConvert(nMaxEncodingTime));
+			}
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 
@@ -755,7 +766,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 	Tools toolsObject;
 	int frameSize,nFrameNumber,intervalTime;
 	unsigned int nTimeStampDiff;
-	long long firstTime,decodingTime;
+	long long firstTime,decodingTime,nMaxDecodingTime=0;
 	int nDecodingStatus, fps = -1;
 	double dbAverageDecodingTime, dbTotalDecodingTime = 0;
 	int nOponnentFPS, nMaxProcessableByMine;
@@ -782,14 +793,14 @@ void CVideoCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame,frameSize,nFrameNumber, nTimeStampDiff);
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, frameSize, nFrameNumber, nTimeStampDiff);
 //			toolsObject.SOSleep(100);
 
 			if(nDecodingStatus > 0) {
 				decodingTime = toolsObject.CurrentTimestamp() - firstTime;
 				dbTotalDecodingTime += decodingTime;
 				++ m_iDecodedFrameCounter;
-
+				nMaxDecodingTime = max(nMaxDecodingTime, decodingTime);
 				if( 0 == (m_iDecodedFrameCounter & 3) )
 				{
 					dbAverageDecodingTime = dbTotalDecodingTime / m_iDecodedFrameCounter;
@@ -799,7 +810,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 					if(fps<FPS_MAXIMUM)
 						g_FPSController.SetMaxOwnProcessableFPS(fps);
 				}
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Decoding-time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
+				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Max Decoding-time: "+m_Tools.IntegertoStringConvert(nMaxDecodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
 			}
 
 //			if(intervalTime > decodingTime+5)

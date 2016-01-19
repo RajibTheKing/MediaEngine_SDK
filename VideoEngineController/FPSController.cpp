@@ -93,8 +93,8 @@ unsigned char CFPSController::GetFPSSignalByte()
         m_SignalQue.pop();
     }
     ret |= (changeSignal << 6);
-    if(ret&(1<<5))
-        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# Force: ------------------------Sent------------------------------------->   2");
+//    if(ret&(1<<5))
+//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# Force: ------------------------Sent------------------------------------->   2");
 //    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: ------------------------------------------------------------->   "+ m_Tools.IntegertoStringConvert((int)changeSignal)+"~"+ m_Tools.IntegertoStringConvert((int)ret));
     return ret;
 }
@@ -108,9 +108,9 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
     int bIsForceFPS =  (signalByte & (1 << 5) ) >> 5;
     int FPSChangeSignal = (signalByte >> 6);
     int opponentFPS = 15 & signalByte;
-    int tmp = signalByte>>5;
-    if(tmp)
-        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# Force: Signal>   "+ m_Tools.IntegertoStringConvert(tmp));
+//    int tmp = signalByte>>5;
+//    if(tmp)
+//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# Force: Signal>   "+ m_Tools.IntegertoStringConvert(tmp));
     if(bIsForceFPS)
     {
         Locker lock(*m_pMutex);
