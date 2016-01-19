@@ -448,6 +448,9 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 {
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 
+	if(0 == m_decodedFrameSize)
+		return 0;
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
@@ -460,7 +463,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 
 	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 
-	return 1;
+	return m_decodedFrameSize;
 }
 
 void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
@@ -470,10 +473,12 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 	unsigned char temp;
 	int frameSize,queSize=0,retQueuSize=0, miniPacketQueueSize = 0,consicutiveRetransmittedPkt=0;
 	int frameNumber,packetNumber;
+	bool bIsMiniPacket;
 	m_iCountRecResPack = 0;
 
 	while (bDepacketizationThreadRunning)
 	{
+		bIsMiniPacket = false;
 		//CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
 		queSize = m_pVideoPacketQueue.GetQueueSize();
 #ifdef	RETRANSMISSION_ENABLED
@@ -658,8 +663,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<4); //the retransmitted flag is moved to signal byte
                 
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-                
-                
+
                 CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
 			}
             else if (bMiniPacket)
@@ -667,13 +671,14 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                 int iNumberOfPackets = -1;
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
                 CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
-                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
+//                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
+				bIsMiniPacket = true;
             }
 
 
 
 #endif
-			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged,frameSize);
+			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, bIsMiniPacket);
 
 			toolsObject.SOSleep(1);
 		}
@@ -751,6 +756,11 @@ void CVideoCallSession::DecodingThreadProcedure()
 	int frameSize,nFrameNumber,intervalTime;
 	unsigned int nTimeStampDiff;
 	long long firstTime,decodingTime;
+	int nDecodingStatus, fps = -1;
+	double dbAverageDecodingTime, dbTotalDecodingTime = 0;
+	int nOponnentFPS, nMaxProcessableByMine;
+	m_iDecodedFrameCounter = 0;
+
 
 	while (bDecodingThreadRunning)
 	{
@@ -760,12 +770,37 @@ void CVideoCallSession::DecodingThreadProcedure()
 			toolsObject.SOSleep(5);
 		else
 		{
-			//firstTime = toolsObject.CurrentTimestamp();
+			firstTime = toolsObject.CurrentTimestamp();
 			frameSize = m_DecodingBuffer.DeQueue(nFrameNumber, nTimeStampDiff, m_PacketizedFrame);
 
-			DecodeAndSendToClient(m_PacketizedFrame,frameSize,nFrameNumber, nTimeStampDiff);
-			//intervalTime = 1000/opponentFPS;
-			//decodingTime = toolsObject.CurrentTimestamp() - firstTime;
+			nOponnentFPS = g_FPSController.GetOpponentFPS();
+			nMaxProcessableByMine = g_FPSController.GetMaxOwnProcessableFPS();
+
+			if( nOponnentFPS > 1 + nMaxProcessableByMine  && (nFrameNumber & 7) > 3 ) {
+				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: Frame: "+m_Tools.IntegertoStringConvert(nFrameNumber)+"  FPS: "+m_Tools.IntegertoStringConvert(nOponnentFPS)+" ~"+toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
+				toolsObject.SOSleep(5);
+				continue;
+			}
+
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame,frameSize,nFrameNumber, nTimeStampDiff);
+//			toolsObject.SOSleep(100);
+
+			if(nDecodingStatus > 0) {
+				decodingTime = toolsObject.CurrentTimestamp() - firstTime;
+				dbTotalDecodingTime += decodingTime;
+				++ m_iDecodedFrameCounter;
+
+				if( 0 == (m_iDecodedFrameCounter & 3) )
+				{
+					dbAverageDecodingTime = dbTotalDecodingTime / m_iDecodedFrameCounter;
+					dbAverageDecodingTime *=1.5;
+					fps = 1000 / dbAverageDecodingTime;
+
+					if(fps<FPS_MAXIMUM)
+						g_FPSController.SetMaxOwnProcessableFPS(fps);
+				}
+				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Decoding-time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
+			}
 
 //			if(intervalTime > decodingTime+5)
 //				toolsObject.SOSleep(intervalTime-decodingTime-5);

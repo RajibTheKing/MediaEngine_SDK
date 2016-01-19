@@ -83,21 +83,20 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 
 
 
-int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size)
+int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket)
 {
 
 	//	LOGE("CEncodedFrameDepacketizer::PushPacketForDecoding called");
 
 	// CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding called");
-    bool bIsRetransmitted=false;
-    bool bIsMiniPacket = in_data[SIGNAL_BYTE_INDEX]&(1<<5);
+    bool bIsRetransmitted = false;
     
     int firstByte = 0;
     if(!bIsMiniPacket)
     {
         firstByte = in_data[SIGNAL_BYTE_INDEX];
         
-        if(in_data[SIGNAL_BYTE_INDEX]&(1<<4))
+        if( in_data[SIGNAL_BYTE_INDEX] & (1<<4) )
         {
             bIsRetransmitted = true;
         }
