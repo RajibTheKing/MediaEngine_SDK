@@ -169,7 +169,13 @@ int Tools::GetIntFromChar(unsigned char *packetData, int index,int nLenght)
 	return result;
 }
 
+#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
 #define USE_CPP_11_TIME
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_)
+#define USE_WINDOWS_TIME
+#else
+#define USE_LINUX_TIME
+#endif
 
 #ifdef  USE_CPP_11_TIME
 #include <ctime>
@@ -179,29 +185,27 @@ int Tools::GetIntFromChar(unsigned char *packetData, int index,int nLenght)
 LongLong  Tools::CurrentTimestamp()
 {
 
-#ifndef USE_CPP_11_TIME
+#if defined(USE_LINUX_TIME)
 	struct timeval te;
 	gettimeofday(&te, NULL); // get current time
 	LongLong milliseconds =  te.tv_sec* + te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
 	// printf("milliseconds: %lld\n", milliseconds);
 	return milliseconds;
-#else
-
-
+#elif defined(USE_WINDOWS_TIME)
+	// Get current time from the clock, using microseconds resolution
+	return GetTickCount64();
+#elif defined(USE_CPP_11_TIME)
 	namespace sc = std::chrono;
-
 	auto time = sc::system_clock::now(); // get the current time
-
 	auto since_epoch = time.time_since_epoch(); // get the duration since epoch
-
 	// I don't know what system_clock returns
 	// I think it's uint64_t nanoseconds since epoch
 	// Either way this duration_cast will do the right thing
 	auto millis = sc::duration_cast<sc::milliseconds>(since_epoch);
-
 	long long now = millis.count(); // just like java (new Date()).getTime();
-
 	return now;
+#else
+	return 0;
 #endif
 }
 
