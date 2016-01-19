@@ -62,10 +62,8 @@ LongLong CCommonElementsBucket::GetUsername()
 
 void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
 {
-    //printf("CCommonElementsBucket::SetSendFunctionPointer called\n");
     
     SendFunctionPointer = callBackFunctionPointer;
     
-    //printf("CCommonElementsBucket::SetSendFunctionPointer ended\n");
 }
 

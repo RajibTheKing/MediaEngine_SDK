@@ -20,6 +20,7 @@ namespace IPV
 	class thread;
 }
 
+
 class CCommonElementsBucket;
 
 class CVideoEncoder
@@ -36,6 +37,7 @@ private:
 
 	int m_iHeight;
 	int m_iWidth;
+	Tools m_Tools;
 
 	ISVCEncoder* m_pSVCVideoEncoder;
 	CCommonElementsBucket* m_pCommonElementsBucket;

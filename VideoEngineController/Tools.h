@@ -21,6 +21,9 @@ class Tools
 {
 public:
 
+	Tools();
+	~Tools();
+
 	void SOSleep(int Timeout);
 	LongLong CurrentTimestamp();
 	std::string DoubleToString(double value);
@@ -33,6 +36,11 @@ public:
 	static pair<int, int> GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets);
 	static int GetIntFromChar(unsigned char *packetData, int index);
 	static int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
+	void WriteToFile(short* in_Data, int count);
+	void WriteToFile(unsigned char* in_Data, int count);
+
+	FILE *m_fpShort, *m_fpByte;
+
 };
 #define funcline(...) CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, std::string(__func__) + " : " + Tools::IntegertoStringConvert(__LINE__) + ":" + std::string(__VA_ARGS__));
 #endif

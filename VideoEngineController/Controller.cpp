@@ -428,7 +428,6 @@ void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunct
 
 void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
 {
-    //printf("CController::SetSendFunctionPointer called\n");
     
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }

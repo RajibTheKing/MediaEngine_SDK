@@ -344,7 +344,22 @@ void CVideoCallSession::EncodingThreadProcedure()
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
+#elif defined(_DESKTOP_C_SHARP_)
 
+			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
+
+
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+
+			this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+
+			long long enctime = m_Tools.CurrentTimestamp();
+
+			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+
+			//printf("enctime = %lld\n", m_Tools.CurrentTimestamp() - enctime);
+
+			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 #else
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type));
@@ -451,6 +466,7 @@ void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 
 void CVideoCallSession::PushFrameForDecoding(unsigned char *in_data, unsigned int nFrameSize,int nFramNumber, unsigned int timeStampDiff)
 {
+	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "\n\nPPPPPPPPPPPPPPPPPPPPPPPPPPP CVideoCallSession::PushFrameForDecoding --> NewFrameFound, nFrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 	m_DecodingBuffer.Queue(nFramNumber, in_data, nFrameSize, timeStampDiff);
 }
 
@@ -465,12 +481,15 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-
+#elif defined(_DESKTOP_C_SHARP_)
+	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+	this->m_pColorConverter->ConvertI420ToYV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #else
 
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-
 #endif
+
 
 	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 
@@ -775,10 +794,13 @@ void CVideoCallSession::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-		//CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
+		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure running");
 
 		if (m_DecodingBuffer.GetQueueSize() == 0)
+		{
+			CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure empty");
 			toolsObject.SOSleep(5);
+		}
 		else
 		{
 			firstTime = toolsObject.CurrentTimestamp();

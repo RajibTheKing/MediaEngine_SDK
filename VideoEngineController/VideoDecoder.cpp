@@ -72,7 +72,7 @@ int CVideoDecoder::Decode(unsigned char *in_data, unsigned int in_size, unsigned
 {
 	if (!m_pSVCVideoDecoder)
 	{
-		cout << "OpenH264 decoder NULL!\n";
+		//cout << "OpenH264 decoder NULL!\n";
 		return 0;
 	}
 
