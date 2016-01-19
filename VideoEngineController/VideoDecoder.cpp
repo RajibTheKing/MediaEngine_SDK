@@ -30,8 +30,11 @@ int CVideoDecoder::CreateVideoDecoder()
 	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::CreateVideoDecoder");
 
 	long iRet = WelsCreateDecoder(&m_pSVCVideoDecoder);
-	if (iRet != 0 || NULL == m_pSVCVideoDecoder){
+
+	if (iRet != 0 || NULL == m_pSVCVideoDecoder)
+	{
 		CLogPrinter::Write(CLogPrinter::INFO, "Unable to create OpenH264 decoder");
+
 		return -1;
 	}
 
@@ -43,7 +46,9 @@ int CVideoDecoder::CreateVideoDecoder()
 	decParam.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_DEFAULT;
 
 	iRet = m_pSVCVideoDecoder->Initialize(&decParam);
-	if (iRet != 0){
+
+	if (iRet != 0)
+	{
 		CLogPrinter::Write(CLogPrinter::INFO, "Unable to initialize OpenH264 decoder");
 		return -1;
 	}
@@ -65,44 +70,53 @@ int CVideoDecoder::CreateVideoDecoder()
 
 int CVideoDecoder::Decode(unsigned char *in_data, unsigned int in_size, unsigned char *out_data, int &iVideoHeight, int &iVideoWidth)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode called");
-	if (!m_pSVCVideoDecoder){
+	if (!m_pSVCVideoDecoder)
+	{
 		cout << "OpenH264 decoder NULL!\n";
 		return 0;
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode started");
 
 	int strides[2] = { 0 };
 	unsigned char *outputPlanes[3] = { NULL };
 	DECODING_STATE decodingState = m_pSVCVideoDecoder->DecodeFrame(in_data, in_size, outputPlanes, strides, iVideoWidth, iVideoHeight);
-	//cout << "OpenH264 decoding of length " << in_size << " returned " << decodingState << ",  stride = " << strides[0] << " " << strides[1] << ",  width = " << iVideoWidth << ",  height = " << iVideoHeight << "\n";
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode OpenH264 decoding of length " + Tools::IntegertoStringConvert(in_size) + " returned " + Tools::IntegertoStringConvert(decodingState) + ", stride = " + Tools::IntegertoStringConvert(strides[0]) + " " + Tools::IntegertoStringConvert(strides[1]) + ", width = " + Tools::IntegertoStringConvert(iVideoWidth) + ", height = " + Tools::IntegertoStringConvert(iVideoHeight));
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 1");
-	if (decodingState != 0){
-		//cout << "OpenH264 decoding failed " << (int)decodingState;
+
+	if (decodingState != 0)
+	{
         CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecoder::Decode OpenH264 Decoding FAILED");
 		return 0;
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 2");
-	int retsize = 0;
-	for (int plane = 0; plane < 3; plane++){
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 3");
-		unsigned char *from = outputPlanes[plane];
-		int stride = strides[plane ? 1 : 0];
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 4");
-		// Copy one row at a time, skip the extra portion in the stride 
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode iVideoWidth " + Tools::IntegertoStringConvert(iVideoWidth));
-		for (int row = 0; row < iVideoHeight >> (plane ? 1 : 0); row++){
-			//		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 5");
-			size_t w_count = iVideoWidth >> (plane ? 1 : 0);
-			CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode iVideoWidth " + Tools::IntegertoStringConvert(iVideoWidth) + " row " + Tools::IntegertoStringConvert(row) + " retSize " + Tools::IntegertoStringConvert(retsize) + " wCount " + Tools::IntegertoStringConvert(w_count));
 
+	int retsize = 0;
+
+	{
+		int plane = 0;
+		unsigned char *from = outputPlanes[plane];
+		int stride = strides[0];
+
+		for (int row = 0; row < iVideoHeight; row++)
+		{
+			size_t w_count = iVideoWidth;
 			memcpy(out_data + retsize, from, w_count);
 			retsize += w_count;
 			from += stride;
 		}
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 6 " + Tools::IntegertoStringConvert(retsize));
+
+	for (int plane = 1; plane < 3; plane++)
+	{
+		unsigned char *from = outputPlanes[plane];
+		int stride = strides[1];
+		int halfiVideoHeight = iVideoHeight >> 1;
+		int halfiVideoWidth = iVideoWidth >> 1;
+
+		for (int row = 0; row < halfiVideoHeight; row++)
+		{
+			size_t w_count = halfiVideoWidth;
+			memcpy(out_data + retsize, from, w_count);
+			retsize += w_count;
+			from += stride;
+		}
+	}
 
 	return retsize;
 }
