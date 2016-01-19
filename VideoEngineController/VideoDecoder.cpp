@@ -65,44 +65,43 @@ int CVideoDecoder::CreateVideoDecoder()
 
 int CVideoDecoder::Decode(unsigned char *in_data, unsigned int in_size, unsigned char *out_data, int &iVideoHeight, int &iVideoWidth)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode called");
+	//CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode called");
 	if (!m_pSVCVideoDecoder){
 		cout << "OpenH264 decoder NULL!\n";
 		return 0;
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode started");
+	//CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode started");
 
 	int strides[2] = { 0 };
 	unsigned char *outputPlanes[3] = { NULL };
 	DECODING_STATE decodingState = m_pSVCVideoDecoder->DecodeFrame(in_data, in_size, outputPlanes, strides, iVideoWidth, iVideoHeight);
-	//cout << "OpenH264 decoding of length " << in_size << " returned " << decodingState << ",  stride = " << strides[0] << " " << strides[1] << ",  width = " << iVideoWidth << ",  height = " << iVideoHeight << "\n";
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode OpenH264 decoding of length " + Tools::IntegertoStringConvert(in_size) + " returned " + Tools::IntegertoStringConvert(decodingState) + ", stride = " + Tools::IntegertoStringConvert(strides[0]) + " " + Tools::IntegertoStringConvert(strides[1]) + ", width = " + Tools::IntegertoStringConvert(iVideoWidth) + ", height = " + Tools::IntegertoStringConvert(iVideoHeight));
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 1");
+
+	//CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode OpenH264 decoding of length " + Tools::IntegertoStringConvert(in_size) + " returned " + Tools::IntegertoStringConvert(decodingState) + ", stride = " + Tools::IntegertoStringConvert(strides[0]) + " " + Tools::IntegertoStringConvert(strides[1]) + ", width = " + Tools::IntegertoStringConvert(iVideoWidth) + ", height = " + Tools::IntegertoStringConvert(iVideoHeight));
+
 	if (decodingState != 0){
 		//cout << "OpenH264 decoding failed " << (int)decodingState;
+		
         CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecoder::Decode OpenH264 Decoding FAILED");
 		return 0;
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 2");
+	//CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode decodingState 0");
 	int retsize = 0;
 	for (int plane = 0; plane < 3; plane++){
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 3");
+		
 		unsigned char *from = outputPlanes[plane];
 		int stride = strides[plane ? 1 : 0];
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 4");
+		
 		// Copy one row at a time, skip the extra portion in the stride 
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode iVideoWidth " + Tools::IntegertoStringConvert(iVideoWidth));
+		
 		for (int row = 0; row < iVideoHeight >> (plane ? 1 : 0); row++){
-			//		CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 5");
 			size_t w_count = iVideoWidth >> (plane ? 1 : 0);
-			CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode iVideoWidth " + Tools::IntegertoStringConvert(iVideoWidth) + " row " + Tools::IntegertoStringConvert(row) + " retSize " + Tools::IntegertoStringConvert(retsize) + " wCount " + Tools::IntegertoStringConvert(w_count));
 
 			memcpy(out_data + retsize, from, w_count);
 			retsize += w_count;
 			from += stride;
 		}
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decode 6 " + Tools::IntegertoStringConvert(retsize));
+	//CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::Decoding successful, retsize = " + Tools::IntegertoStringConvert(retsize));
 
 	return retsize;
 }
