@@ -9,7 +9,7 @@ CResendingBuffer::CResendingBuffer() :
 m_iPushIndex(0),
 m_iPopIndex(0),
 m_iQueueSize(0),
-m_iQueueCapacity(300)
+m_iQueueCapacity(RESENDING_BUFFER_SIZE)
 
 {
 	m_pChannelMutex.reset(new CLockHandler);
