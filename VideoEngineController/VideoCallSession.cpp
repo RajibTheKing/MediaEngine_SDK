@@ -57,7 +57,7 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 
 //	FPS=10;
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
 	m_pSessionMutex.reset(new CLockHandler);
 	friendID = fname;
 	sessionMediaList.ClearAllFromVideoEncoderList();
@@ -78,7 +78,7 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 	StartDecodingThread();
 
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
 }
 
 CVideoCallSession::~CVideoCallSession()
@@ -133,14 +133,14 @@ LongLong CVideoCallSession::GetFriendID()
 
 void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
 
 	if (sessionMediaList.IsVideoEncoderExist(iVideoHeight, iVideoWidth))
 	{
 		return;
 	}
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession 2");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession 2");
 
 	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
 
@@ -157,7 +157,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_ClientFrameCounter = 0;
 	m_EncodingFrameCounter = 0;
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
 }
 
 CVideoEncoder* CVideoCallSession::GetVideoEncoder()
@@ -172,12 +172,12 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 #ifdef	RETRANSMISSION_ENABLED
 	if(  ((in_data[4] >> 7) & 1) /* ||  ((in_data[4] >> 6) & 1) */ ) //If MiniPacket or RetransMitted packet
     {
-        CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT RETRANSMITTED PACKET");
+        CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT RETRANSMITTED PACKET");
 		m_pRetransVideoPacketQueue.Queue(in_data,in_size);
     }
     else if(((in_data[4] >> 6) & 1))
     {
-        CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT MINI PACKET");
+        CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT MINI PACKET");
         m_pMiniPacketQueue.Queue(in_data, in_size);
     }
 	else
@@ -191,7 +191,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
 
 	LongLong currentTimeStamp = m_Tools.CurrentTimestamp();
 
@@ -214,16 +214,16 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding 2");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding 2");
 	//this->m_pColorConverter->ConvertNV12ToI420(m_EncodingFrame);
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding Converted to 420");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding Converted to 420");
 
 #endif
 
 	int returnedValue = m_EncodingBuffer.Queue(in_data, in_size);
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding pushed to encoder queue");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding pushed to encoder queue");
 
 	return returnedValue;
 }
@@ -262,19 +262,19 @@ void CVideoCallSession::StopEncodingThread()
 
 void CVideoCallSession::StartEncodingThread()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 1");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 1");
 
 	if (pEncodingThread.get())
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 2");
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 2");
 		pEncodingThread.reset();
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
 		return;
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 4");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 4");
 	bEncodingThreadRunning = true;
 	bEncodingThreadClosed = false;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 5");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -290,7 +290,7 @@ void CVideoCallSession::StartEncodingThread()
     
 #endif
     
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread Encoding Thread started");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread Encoding Thread started");
 
 	return;
 }
@@ -305,7 +305,7 @@ void *CVideoCallSession::CreateVideoEncodingThread(void* param)
 
 void CVideoCallSession::EncodingThreadProcedure()
 {
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize, encodedFrameSize;
 	long long encodingTime, encodingTimeStamp, nMaxEncodingTime = 0;
@@ -314,14 +314,14 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 	while (bEncodingThreadRunning)
 	{
-		//CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
+		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
 
 		if (m_EncodingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
 		else
 		{
 			frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame);
-//			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "Before Processable");
+//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Before Processable");
 			if(!g_FPSController.IsProcessableFrame())
 			{
 				toolsObject.SOSleep(10);
@@ -336,14 +336,14 @@ void CVideoCallSession::EncodingThreadProcedure()
 			m_iTimeStampDiff = toolsObject.CurrentTimestamp() - m_ll1stFrameTimeStamp;
 
 
-//			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "$ENCODEING$");
+//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$ENCODEING$");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
             
             this->m_pColorConverter->ConvertNV12ToI420(m_EncodingFrame);
 			
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
 
-			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
+			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 #elif defined(_DESKTOP_C_SHARP_)
 
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
@@ -359,23 +359,23 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 			//printf("enctime = %lld\n", m_Tools.CurrentTimestamp() - enctime);
 
-			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
+			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 #else
 
-			CLogPrinter::Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type));
+			CLogPrinter_Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type));
 
 			if(orientation_type == ORIENTATION_90_MIRRORED)
 			{
-				CLogPrinter::Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type)+ "  ORIENTATION_90_MIRRORED");
+				CLogPrinter_Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type)+ "  ORIENTATION_90_MIRRORED");
 				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
 			}
 			else if(orientation_type == ORIENTATION_0_MIRRORED)
 			{
-				CLogPrinter::Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type) + " ORIENTATION_0_MIRRORED ");
+				CLogPrinter_Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type) + " ORIENTATION_0_MIRRORED ");
 				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam(m_EncodingFrame, m_ConvertedEncodingFrame);
 			}
 
-			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure Converted to 420");
+			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure Converted to 420");
 			encodingTimeStamp = toolsObject.CurrentTimestamp();
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
 			encodingTime  = toolsObject.CurrentTimestamp() - encodingTimeStamp;
@@ -384,19 +384,19 @@ void CVideoCallSession::EncodingThreadProcedure()
 			nMaxEncodingTime = max(nMaxEncodingTime,encodingTime);
 
 			if(0 == (7&iEncodedFrameCounter)){
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force: AVG EncodingTime = "+ m_Tools.DoubleToString(dbTotalEncodingTime/iEncodedFrameCounter)+" ~ "+m_Tools.IntegertoStringConvert(nMaxEncodingTime));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force: AVG EncodingTime = "+ m_Tools.DoubleToString(dbTotalEncodingTime/iEncodedFrameCounter)+" ~ "+m_Tools.IntegertoStringConvert(nMaxEncodingTime));
 			}
 
-			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
+			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 
 #endif
 
-//			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::EncodingThreadProcedure m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
-//			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "$ENCODEING$ To Parser");
+//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::EncodingThreadProcedure m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
+//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$ENCODEING$ To Parser");
 			//m_pVideoEncoder->GetEncodedFramePacketizer()->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
 			m_pEncodedFramePacketizer->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
 			++m_iFrameNumber;
-			//CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::EncodingThreadProcedure2 m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(CVideoCallSession::m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
+			//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::EncodingThreadProcedure2 m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(CVideoCallSession::m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
 
 			toolsObject.SOSleep(1);
 
@@ -405,7 +405,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 	bEncodingThreadClosed = true;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
 void CVideoCallSession::StopDepacketizationThread()
@@ -423,18 +423,18 @@ void CVideoCallSession::StopDepacketizationThread()
 
 void CVideoCallSession::StartDepacketizationThread()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
 	if (pDepacketizationThread.get())
 	{
-//		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 2");
+//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 2");
 		pDepacketizationThread.reset();
-//		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
+//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
 		return;
 	}
-//	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 4");
+//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 4");
 	bDepacketizationThreadRunning = true;
 	bDepacketizationThreadClosed = false;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 5");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 5");
  
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -450,7 +450,7 @@ void CVideoCallSession::StartDepacketizationThread()
 
 #endif
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
 
 	return;
 }
@@ -466,7 +466,7 @@ void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 
 void CVideoCallSession::PushFrameForDecoding(unsigned char *in_data, unsigned int nFrameSize,int nFramNumber, unsigned int timeStampDiff)
 {
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "\n\nPPPPPPPPPPPPPPPPPPPPPPPPPPP CVideoCallSession::PushFrameForDecoding --> NewFrameFound, nFrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "\n\nPPPPPPPPPPPPPPPPPPPPPPPPPPP CVideoCallSession::PushFrameForDecoding --> NewFrameFound, nFrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 	m_DecodingBuffer.Queue(nFramNumber, in_data, nFrameSize, timeStampDiff);
 }
 
@@ -482,7 +482,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #elif defined(_DESKTOP_C_SHARP_)
-	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
+	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 	this->m_pColorConverter->ConvertI420ToYV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #else
@@ -498,7 +498,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 
 void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 {
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
 	Tools toolsObject;
 	unsigned char temp;
 	int frameSize,queSize=0,retQueuSize=0, miniPacketQueueSize = 0,consicutiveRetransmittedPkt=0;
@@ -509,12 +509,12 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 	while (bDepacketizationThreadRunning)
 	{
 		bIsMiniPacket = false;
-		//CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
+		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
 		queSize = m_pVideoPacketQueue.GetQueueSize();
 #ifdef	RETRANSMISSION_ENABLED
 		retQueuSize = m_pRetransVideoPacketQueue.GetQueueSize();
         miniPacketQueueSize = m_pMiniPacketQueue.GetQueueSize();
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
 #endif
 		if (0 == queSize && 0 == retQueuSize && 0 == miniPacketQueueSize)
 			toolsObject.SOSleep(10);
@@ -527,7 +527,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
             }
 			else if(retQueuSize>0 && consicutiveRetransmittedPkt<2)
 			{
-			//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "RT QueueSize"+ m_Tools.IntegertoStringConvert(retQueuSize));
+			//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "RT QueueSize"+ m_Tools.IntegertoStringConvert(retQueuSize));
 				frameSize = m_pRetransVideoPacketQueue.DeQueue(m_PacketToBeMerged);
 				++consicutiveRetransmittedPkt;
 			}
@@ -562,7 +562,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
                     
-                    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Current(FN,PN) = ("
+                    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Current(FN,PN) = ("
                                                + m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
                                                + ","
                                                + m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
@@ -576,7 +576,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                     {
                         if(currentFramePacketPair.first - ExpectedFramePacketPair.first == 2) //one complete frame missed, maybe it was a mini frame containing only 1 packet
                         {
-                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 1");
+                            CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 1");
                             CreateAndSendMiniPacket(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
                             pair<int, int> requestFramePacketPair;
 
@@ -601,7 +601,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                         }
                         else if(currentFramePacketPair.first - ExpectedFramePacketPair.first == 1) //last packets from last frame and some packets from current misssed
                         {
-                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 2");
+                            CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 2");
                             pair<int, int> requestFramePacketPair;
                             requestFramePacketPair.first = ExpectedFramePacketPair.first;
                             requestFramePacketPair.second = ExpectedFramePacketPair.second;
@@ -636,7 +636,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                         }
                         else//we dont handle burst frame miss, but 1st packets of the current frame should come, only if it is an iFrame
                         {
-                            CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 3-- killed previous frames");
+                            CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 3-- killed previous frames");
                            	if(currentFramePacketPair.first % 8 == 0)
 							{
 								pair<int, int> requestFramePacketPair;
@@ -660,7 +660,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                     }
                     else //packet missed from same frame
                     {
-                        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 4");
+                        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 4");
                         pair<int, int> requestFramePacketPair;
                         requestFramePacketPair.first = ExpectedFramePacketPair.first;
                         requestFramePacketPair.second = ExpectedFramePacketPair.second;
@@ -694,13 +694,13 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                 
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
 
-                CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
+                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
 			}
             else if (bMiniPacket)
             {
                 int iNumberOfPackets = -1;
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-                CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
+                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
 //                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
 				bIsMiniPacket = true;
             }
@@ -716,7 +716,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 	bDepacketizationThreadClosed = true;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
 }
 
 
@@ -735,22 +735,22 @@ void CVideoCallSession::StopDecodingThread()
 
 void CVideoCallSession::StartDecodingThread()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
 
 	if (pDecodingThread.get())
 	{
-//		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 2");
+//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 2");
 		pDecodingThread.reset();
-//		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
+//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
 		return;
 	}
 
-//	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 4");
+//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 4");
 
 	bDecodingThreadRunning = true;
 	bDecodingThreadClosed = false;
 
-//	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 5");
+//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 5");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -766,7 +766,7 @@ void CVideoCallSession::StartDecodingThread()
 
 #endif
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
 
 	return;
 }
@@ -781,7 +781,7 @@ void *CVideoCallSession::CreateDecodingThread(void* param)
 
 void CVideoCallSession::DecodingThreadProcedure()
 {
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
 	Tools toolsObject;
 	int frameSize,nFrameNumber,intervalTime;
 	unsigned int nTimeStampDiff;
@@ -794,11 +794,11 @@ void CVideoCallSession::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure running");
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure running");
 
 		if (m_DecodingBuffer.GetQueueSize() == 0)
 		{
-			CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure empty");
+			CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure empty");
 			toolsObject.SOSleep(5);
 		}
 		else
@@ -844,7 +844,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 
 	bDecodingThreadClosed = true;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
 }
 
 CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
@@ -869,7 +869,7 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 		ExpectedFramePacketPair.second = iPackeNumber + 1;
 	}
 
-	//CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CController::UpdateExpectedFramePacketPair: ExFrameNumber: "+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first) + " ExPacketNo. : "+  m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)+ " ExNumberOfPacket : "+  m_Tools.IntegertoStringConvert(iNumberOfPacketsInCurrentFrame));
+	//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::UpdateExpectedFramePacketPair: ExFrameNumber: "+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first) + " ExPacketNo. : "+  m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)+ " ExNumberOfPacket : "+  m_Tools.IntegertoStringConvert(iNumberOfPacketsInCurrentFrame));
 }
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
@@ -882,7 +882,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 
     
     
-    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
+    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
                                             ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber));
     int startFraction = SIZE_OF_INT_MINUS_8;
     int fractionInterval = BYTE_SIZE;
@@ -952,19 +952,19 @@ void CVideoCallSession::StopRenderingThread()
 
 void CVideoCallSession::StartRenderingThread()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 1");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 1");
 
 	if (pRenderingThread.get())
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 2");
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 2");
 		pRenderingThread.reset();
-		CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 3");
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 3");
 		return;
 	}
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 4");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 4");
 	bRenderingThreadRunning = true;
 	bRenderingThreadClosed = false;
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 5");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread 5");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -980,7 +980,7 @@ void CVideoCallSession::StartRenderingThread()
 
 #endif
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread Rendering Thread started");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread Rendering Thread started");
 
 	return;
 }
@@ -995,7 +995,7 @@ void *CVideoCallSession::CreateVideoRenderingThread(void* param)
 
 void CVideoCallSession::RenderingThreadProcedure()
 {
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Started EncodingThreadProcedure.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize,nFrameNumber,intervalTime;
 	unsigned int nTimeStampDiff;
@@ -1004,7 +1004,7 @@ void CVideoCallSession::RenderingThreadProcedure()
 
 	while (bRenderingThreadRunning)
 	{
-		//CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::RenderingThreadProcedure");
+		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::RenderingThreadProcedure");
 
 		if (m_RenderingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
@@ -1024,7 +1024,7 @@ void CVideoCallSession::RenderingThreadProcedure()
 
 				int DecodingDelay = nTimeStampDiff - firstFrameEncodingTime + m_ll1stDecodedFrameTimeStamp - firstTime;
 
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
 				if(DecodingDelay>5)
 					toolsObject.SOSleep(DecodingDelay-5);
 				else
@@ -1039,7 +1039,7 @@ void CVideoCallSession::RenderingThreadProcedure()
 
 	bRenderingThreadClosed = true;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Stopped EncodingThreadProcedure");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
 

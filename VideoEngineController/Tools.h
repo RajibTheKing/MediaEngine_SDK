@@ -42,5 +42,5 @@ public:
 	FILE *m_fpShort, *m_fpByte;
 
 };
-#define funcline(...) CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, std::string(__func__) + " : " + Tools::IntegertoStringConvert(__LINE__) + ":" + std::string(__VA_ARGS__));
+#define funcline(...) CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, std::string(__func__) + " : " + Tools::IntegertoStringConvert(__LINE__) + ":" + std::string(__VA_ARGS__));
 #endif

@@ -137,7 +137,7 @@ pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNum
 	iNumberOfPackets = GetIntFromChar(packet, 4);
 	int iPackeNumber = GetIntFromChar(packet, 8);
 
-	//CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CController::currentFramePacketPair: FrameNumber: "+ Tools::IntegertoStringConvert(iFrameNumber) + " PacketNo. : "+  Tools::IntegertoStringConvert(iPackeNumber)+ " NumberOfPacket : "+  Tools::IntegertoStringConvert(iNumberOfPackets));
+	//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::currentFramePacketPair: FrameNumber: "+ Tools::IntegertoStringConvert(iFrameNumber) + " PacketNo. : "+  Tools::IntegertoStringConvert(iPackeNumber)+ " NumberOfPacket : "+  Tools::IntegertoStringConvert(iNumberOfPackets));
 
 	FramePacketPair.first = iFrameNumber;
 	FramePacketPair.second = iPackeNumber;

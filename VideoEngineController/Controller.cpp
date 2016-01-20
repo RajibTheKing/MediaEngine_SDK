@@ -9,7 +9,7 @@
 CController::CController()
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
 	
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
@@ -18,7 +18,7 @@ CController::CController()
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
 
 CController::CController(const char* sLoggerPath, int iLoggerPrintLevel) :
@@ -26,7 +26,7 @@ logFilePath(sLoggerPath),
 iLoggerPrintLevel(iLoggerPrintLevel)
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
 
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
@@ -35,7 +35,7 @@ iLoggerPrintLevel(iLoggerPrintLevel)
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
 
 void CController::SetLoggerPath(std::string sLoggerPath)
@@ -54,7 +54,7 @@ bool CController::SetLoggingState(bool loggingState, int logLevel)
 
 CController::~CController()
 {
-	CLogPrinter::Write(CLogPrinter::WARNING, "CController::~CController()");
+	CLogPrinter_Write(CLogPrinter::WARNING, "CController::~CController()");
 
 	if (NULL != m_pCommonElementsBucket)
 	{
@@ -67,14 +67,14 @@ CController::~CController()
     SHARED_PTR_DELETE(m_pAudioSendMutex);
     SHARED_PTR_DELETE(m_pAudioReceiveMutex);
 
-	CLogPrinter::Write(CLogPrinter::WARNING, "CController::~CController() removed everything");
+	CLogPrinter_Write(CLogPrinter::WARNING, "CController::~CController() removed everything");
 }
 
 bool CController::SetUserName(const LongLong& lUserName)
 {
 	m_pCommonElementsBucket->SetUserName(lUserName);
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::SetUserName() user name: " + m_Tools.LongLongtoStringConvert(lUserName));
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::SetUserName() user name: " + m_Tools.LongLongtoStringConvert(lUserName));
 
 	return true;
 }
@@ -88,11 +88,11 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CController::StartAudioCall");
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall");
 
 	if (!bExist)
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket);
 
@@ -100,7 +100,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::StartAudioCall Session started");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session started");
 
 		return true;
 	}
@@ -114,7 +114,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 {
 	CVideoCallSession* pVideoSession;
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CController::StartVideoCall called");
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartVideoCall called");
     
     //Locker lock1(*m_pVideoSendMutex);
     //Locker lock2(*m_pVideoReceiveMutex);
@@ -123,7 +123,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 
 	if (!bExist)
 	{
-		CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
 		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket);
 
@@ -131,7 +131,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
-		CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
 
 		return true;
 	}
@@ -145,7 +145,7 @@ int CController::EncodeAndTransfer(const LongLong& lFriendID, unsigned char *in_
 {
 	CVideoCallSession* pVideoSession;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
     
     Locker lock(*m_pVideoSendMutex);
 
@@ -153,11 +153,11 @@ int CController::EncodeAndTransfer(const LongLong& lFriendID, unsigned char *in_
 
 	if (bExist)
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::EncodeAndTransfer getting encoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::EncodeAndTransfer getting encoder");
 
 		CVideoEncoder *pVideoEncoder = pVideoSession->GetVideoEncoder();
 
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::EncodeAndTransfer got encoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::EncodeAndTransfer got encoder");
 
 		if (pVideoEncoder)
 			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
@@ -174,7 +174,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 {
 	CVideoCallSession* pVideoSession = NULL;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::PushPacketForDecoding called");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushPacketForDecoding called");
 
 //	LOGE("CController::PushPacketForDecoding");
     
@@ -192,7 +192,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 //		CEncodedFrameDepacketizer *p_CEncodedFrameDepacketizer = pCVideoDecoder->GetEncodedFrameDepacketizer();
 //		CEncodedFrameDepacketizer *p_CEncodedFrameDepacketizer = pVideoSession->GetEncodedFrameDepacketizer();
 //		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
-//		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
+//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
 			return pVideoSession->PushPacketForMerging(++in_data, in_size-1);
 		else
@@ -208,7 +208,7 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 {
 	CAudioCallSession* pAudioSession;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called");
 
 	//	LOGE("CController::PushPacketForDecoding");
     
@@ -222,19 +222,19 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 	{
 				//LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
         
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
+        CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
         
 		CAudioDecoder *pCAudioDecoder = pAudioSession->GetAudioDecoder();
 
 		//if (pCAudioDecoder)
         {
-            CLogPrinter::Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
+            CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
             return pAudioSession->DecodeAudioData(in_data, in_size);
         }
 			
 		/*else
         {
-            CLogPrinter::Write(CLogPrinter::DEBUGS, "pCAudioDecoder doesnt exist");
+            CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder doesnt exist");
 			return -1;
         }*/
 	}
@@ -248,19 +248,19 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 {
 	CAudioCallSession* pAudioSession;
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CController::SendAudioData");
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData");
     
     Locker lock(*m_pAudioSendMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CController::SendAudioData audio session exists");
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData audio session exists");
 
 	if (bExist)
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::SendAudioData getting encoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData getting encoder");
 		CAudioEncoder *pAudioEncoder = pAudioSession->GetAudioEncoder();
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::SendAudioData got encoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData got encoder");
 
 		//if (pAudioEncoder)
 		{
@@ -279,7 +279,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 {
 	CVideoCallSession* pVideoSession;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
     
     Locker lock(*m_pVideoSendMutex);
 
@@ -287,11 +287,11 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 
 	if (bExist)
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::EncodeAndTransfer getting encoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::EncodeAndTransfer getting encoder");
 
 //		CVideoEncoder *pVideoEncoder = pVideoSession->GetVideoEncoder();
 
-		CLogPrinter::Write(CLogPrinter::INFO, "CController::EncodeAndTransfer got encoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::EncodeAndTransfer got encoder");
 
 		if (pVideoSession)
 		{
@@ -336,12 +336,12 @@ void CController::initializeEventHandler()
 {
 	m_pCommonElementsBucket->m_pEventNotifier = &m_EventNotifier;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::initializeEventHandler() EventHandler Initialized");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::initializeEventHandler() EventHandler Initialized");
 }
 
 bool CController::StopAudioCall(const LongLong& lFriendID)
 {
-    CLogPrinter::Write(CLogPrinter::ERRORS, "CController::StopAudioCall() called.");
+    CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() called.");
     
     Locker lock1(*m_pAudioSendMutex);
     Locker lock2(*m_pAudioReceiveMutex);
@@ -352,20 +352,20 @@ bool CController::StopAudioCall(const LongLong& lFriendID)
     
     if (NULL == m_pSession)
     {
-        CLogPrinter::Write(CLogPrinter::ERRORS, "CController::StopAudioCall() Session Does not Exist.");
+        CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() Session Does not Exist.");
         return false;
     }
 
     bool bReturnedValue = m_pCommonElementsBucket->m_pAudioCallSessionList->RemoveFromAudioSessionList(lFriendID);
 
-	CLogPrinter::Write(CLogPrinter::ERRORS, "CController::StopAudioCall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
+	CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
     
     return bReturnedValue;
 }
 
 bool CController::StopVideoCall(const LongLong& lFriendID)
 {
-    CLogPrinter::Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
+    CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
     
     Locker lock1(*m_pVideoSendMutex);
     Locker lock2(*m_pVideoReceiveMutex);
@@ -376,20 +376,20 @@ bool CController::StopVideoCall(const LongLong& lFriendID)
     
     if (NULL == m_pSession)
     {
-        CLogPrinter::Write(CLogPrinter::ERRORS, "CController::StopVideoCall() Session Does not Exist.");
+        CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() Session Does not Exist.");
         return false;
     }
     
     bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
     
-    CLogPrinter::Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
+    CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
     
     return bReturnedValue;
 }
 
 void CController::UninitializeLibrary()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
 
 	m_pCommonElementsBucket->m_pVideoCallSessionList->ClearAllFromVideoSessionList();
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();

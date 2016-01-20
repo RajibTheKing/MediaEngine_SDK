@@ -21,7 +21,7 @@ m_UVPlaneMidPoint(m_YPlaneLength + m_VPlaneLength),
 m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
+	CLogPrinter_Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
 
 	for (int i = 0; i < 481; i++)
 		for (int j = 0; j < 641; j++)
@@ -29,7 +29,7 @@ m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 			m_Multiplication[i][j] = i*j;
 		}
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CColorConverter::CColorConverter Prepared");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CColorConverter::CColorConverter Prepared");
 }
 
 CColorConverter::~CColorConverter()

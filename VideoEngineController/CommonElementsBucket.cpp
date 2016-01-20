@@ -13,7 +13,7 @@ sharedMutex(NULL)
     m_pAudioCallSessionList = new CAudioCallSessionListHandler();
 	m_pVideoEncoderList = new CVideoEncoderListHandler();
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CCommonElementsBucket::CCommonElementsBucket() common bucket created");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CCommonElementsBucket::CCommonElementsBucket() common bucket created");
 }
 
 CCommonElementsBucket::~CCommonElementsBucket()

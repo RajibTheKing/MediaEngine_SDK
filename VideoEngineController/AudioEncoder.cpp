@@ -12,7 +12,7 @@ m_pCommonElementsBucket(sharedObject)
 	m_pMediaSocketMutex.reset(new CLockHandler);
 	m_pAudioEncoderThread = NULL;
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioEncoder::CAudioEncoder");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::CAudioEncoder");
 }
 
 CAudioEncoder::~CAudioEncoder()
@@ -34,14 +34,14 @@ CAudioEncoder::~CAudioEncoder()
 
 int CAudioEncoder::CreateAudioEncoder()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioEncoder::CreateAudioEncoder");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::CreateAudioEncoder");
 
 	return 1;
 }
 
 int CAudioEncoder::Encode(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioEncoder::EncodeAudioData");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::EncodeAudioData");
 
 	int size = Encode(in_data, in_size, out_buffer);
 
@@ -50,7 +50,7 @@ int CAudioEncoder::Encode(short *in_data, unsigned int in_size, unsigned char *o
 
 int CAudioEncoder::Decode(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioEncoder::EncodeAudioData");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::EncodeAudioData");
 
 	int size = Decode(in_data, in_size, out_buffer);
 
@@ -69,7 +69,7 @@ void CAudioEncoder::StartAudioEncoderThread()
 {
 	//	if (m_pAudioEncoderThread != NULL)
 	//	{
-	//        CLogPrinter::Write(CLogPrinter::ERRORS, "already StartAudioEncoderThread is running");
+	//        CLogPrinter_Write(CLogPrinter::ERRORS, "already StartAudioEncoderThread is running");
 	//		return;
 	//	}
 	std::thread t(CreateAudioEncoderThread, this);

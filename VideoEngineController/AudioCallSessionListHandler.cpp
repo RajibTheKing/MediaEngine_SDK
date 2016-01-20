@@ -17,7 +17,7 @@ void CAudioCallSessionListHandler::AddToAudioSessionList(LongLong friendName, CA
 
 	m_mAudioSessionList.insert(make_pair(friendName, videoSession));
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSessionListHandler::AddToAudioSessionList added video Session");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSessionListHandler::AddToAudioSessionList added video Session");
 }
 
 CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(LongLong friendName)

@@ -12,7 +12,7 @@ m_pDecodingBuffer(decodingBuffer),
 m_pSVCVideoDecoder(NULL)
 
 {
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoDecoder::CVideoDecoder video decoder created");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecoder::CVideoDecoder video decoder created");
 }
 
 CVideoDecoder::~CVideoDecoder()
@@ -27,13 +27,13 @@ CVideoDecoder::~CVideoDecoder()
 
 int CVideoDecoder::CreateVideoDecoder()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoDecoder::CreateVideoDecoder");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoDecoder::CreateVideoDecoder");
 
 	long iRet = WelsCreateDecoder(&m_pSVCVideoDecoder);
 
 	if (iRet != 0 || NULL == m_pSVCVideoDecoder)
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "Unable to create OpenH264 decoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "Unable to create OpenH264 decoder");
 
 		return -1;
 	}
@@ -49,7 +49,7 @@ int CVideoDecoder::CreateVideoDecoder()
 
 	if (iRet != 0)
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "Unable to initialize OpenH264 decoder");
+		CLogPrinter_Write(CLogPrinter::INFO, "Unable to initialize OpenH264 decoder");
 		return -1;
 	}
 
@@ -63,7 +63,7 @@ int CVideoDecoder::CreateVideoDecoder()
 	SET_DECODER_OPTION(DECODER_OPTION_DATAFORMAT, videoFormatI420);
 	SET_DECODER_OPTION(DECODER_OPTION_END_OF_STREAM, 0);
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoDecoder::CreateVideoDecoder open h264 video decoder initialized");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecoder::CreateVideoDecoder open h264 video decoder initialized");
 
 	return 1;
 }
@@ -72,7 +72,7 @@ int CVideoDecoder::Decode(unsigned char *in_data, unsigned int in_size, unsigned
 {
 	if (!m_pSVCVideoDecoder)
 	{
-		//cout << "OpenH264 decoder NULL!\n";
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecoder::Decode pSVCVideoDecoder == NULL");
 		return 0;
 	}
 
@@ -82,7 +82,7 @@ int CVideoDecoder::Decode(unsigned char *in_data, unsigned int in_size, unsigned
 
 	if (decodingState != 0)
 	{
-        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecoder::Decode OpenH264 Decoding FAILED");
+        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecoder::Decode OpenH264 Decoding FAILED");
 		return 0;
 	}
 
