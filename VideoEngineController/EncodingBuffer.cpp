@@ -2,6 +2,7 @@
 #include "EncodingBuffer.h"
 
 #include <string.h>
+#include "LogPrinter.h"
 
 CEncodingBuffer::CEncodingBuffer() :
 m_iPushIndex(0),

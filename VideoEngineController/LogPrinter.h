@@ -3,13 +3,19 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-//#define __PRINT_LOG__
+#define __PRINT_LOG__
 //#define __EXACT_LOG__
 #define __SPECIFIC_LOG__
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 
-#define IPVLongType long long
+#ifdef TARGET_OS_WINDOWS_PHONE
+typedef __int64 IPVLongType;
+#else
+typedef long long IPVLongType;
+#endif
+
+#include <stdio.h>
 
 #include <string>
 #include <fstream>
@@ -17,9 +23,16 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <stdarg.h>
+
 #else
 #include <sys/time.h>
 #endif 
+
+#if defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_WINDOWS_PHONE)
+#define printg(X,...) _RPT1(0,X,__VA_ARGS__)
+#define printf(...) printg(__VA_ARGS__,"")
+#endif
 
 using namespace std;
 

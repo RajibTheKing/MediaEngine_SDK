@@ -92,6 +92,23 @@ int CColorConverter::ConvertI420ToNV12(unsigned char *convertingData, int iVideo
 	return UVPlaneEnd;
 }
 
+int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
+{
+	int i, j, k;
+
+	int YPlaneLength = iVideoHeight*iVideoWidth;
+	int VPlaneLength = YPlaneLength >> 2;
+	int UPlaneLength = YPlaneLength >> 2;
+	int UVPlaneMidPoint = YPlaneLength + VPlaneLength;
+	int UVPlaneEnd = UVPlaneMidPoint + VPlaneLength;
+
+	memcpy(m_pTempPlane, convertingData + YPlaneLength, UPlaneLength);
+	memcpy(convertingData + YPlaneLength, convertingData + YPlaneLength + UPlaneLength, VPlaneLength);
+	memcpy(convertingData + YPlaneLength + UPlaneLength, m_pTempPlane, UPlaneLength);
+
+	return UVPlaneEnd;
+}
+
 int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData)
 {
 	int i, j, k;
@@ -168,6 +185,36 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 			int ind = ( m_Multiplication[y][halfWidth] + x) * 2;
 			pData[vIndex++] = m_pFrame[dimention + ind];
 			pData[i++] = m_pFrame[dimention + ind + 1];
+		}
+}
+
+void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData)
+{
+	int iWidth = m_iVideoHeight;
+	int iHeight = m_iVideoWidth;
+
+	int i = 0;
+
+	for (int x = iWidth - 1; x >-1; --x)
+	{
+		for (int y = iHeight - 1; y > -1; --y)
+		{
+			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
+			i++;
+		}
+	}
+
+	int halfWidth = iWidth / 2;
+	int halfHeight = iHeight / 2;
+	int dimention = m_Multiplication[iHeight][iWidth];
+	int vIndex = dimention + m_Multiplication[halfHeight][halfWidth];
+
+	for (int x = halfWidth - 1; x>-1; --x)
+		for (int y = halfHeight - 1; y > -1; --y)
+		{
+			int ind = (m_Multiplication[y][halfWidth] + x) * 2;
+			pData[vIndex++] = m_pFrame[dimention + ind + 1];
+			pData[i++] = m_pFrame[dimention + ind];
 		}
 }
 

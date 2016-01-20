@@ -34,7 +34,7 @@ public:
 	CEncodedFrameDepacketizer(CCommonElementsBucket* sharedObject, CVideoCallSession *pVideoCallSession);
 	~CEncodedFrameDepacketizer();
 
-	int Depacketize(unsigned char *in_data, unsigned int in_size);
+	int Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket);
 	void ClearAndDeliverFrame(int frame);
 	void MoveForward(int frame);
 	int CreateNewIndex(int frame);

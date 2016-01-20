@@ -23,7 +23,7 @@ void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLent
 {
 	//notifyClientMethodWithVideoDataE(200, data, dataLenth, iVideoHeight, iVideoWidth);
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent " + Tools::IntegertoStringConvert(eventType));
+    CLogPrinter::Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber));
     
     notifyClientWithVideoDataCallback(eventType, data, dataLenth, iVideoHeight, iVideoWidth);
 }

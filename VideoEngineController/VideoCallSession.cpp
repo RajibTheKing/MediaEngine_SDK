@@ -308,6 +308,9 @@ void CVideoCallSession::EncodingThreadProcedure()
 	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize, encodedFrameSize;
+	long long encodingTime, encodingTimeStamp, nMaxEncodingTime = 0;
+	double dbTotalEncodingTime=0;
+	int iEncodedFrameCounter=0;
 
 	while (bEncodingThreadRunning)
 	{
@@ -341,7 +344,22 @@ void CVideoCallSession::EncodingThreadProcedure()
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
+#elif defined(_DESKTOP_C_SHARP_)
 
+			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
+
+
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+
+			this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+
+			long long enctime = m_Tools.CurrentTimestamp();
+
+			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+
+			//printf("enctime = %lld\n", m_Tools.CurrentTimestamp() - enctime);
+
+			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 #else
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "orientation_type : "+  m_Tools.IntegertoStringConvert(orientation_type));
@@ -358,8 +376,16 @@ void CVideoCallSession::EncodingThreadProcedure()
 			}
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure Converted to 420");
-
+			encodingTimeStamp = toolsObject.CurrentTimestamp();
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+			encodingTime  = toolsObject.CurrentTimestamp() - encodingTimeStamp;
+			dbTotalEncodingTime += encodingTime;
+			++ iEncodedFrameCounter;
+			nMaxEncodingTime = max(nMaxEncodingTime,encodingTime);
+
+			if(0 == (7&iEncodedFrameCounter)){
+				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force: AVG EncodingTime = "+ m_Tools.DoubleToString(dbTotalEncodingTime/iEncodedFrameCounter)+" ~ "+m_Tools.IntegertoStringConvert(nMaxEncodingTime));
+			}
 
 			CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 
@@ -451,7 +477,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 		return -1;
 
 	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
-	return 1;
+	return m_decodedFrameSize;
 }
 
 void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
@@ -461,10 +487,12 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 	unsigned char temp;
 	int frameSize,queSize=0,retQueuSize=0, miniPacketQueueSize = 0,consicutiveRetransmittedPkt=0;
 	int frameNumber,packetNumber;
+	bool bIsMiniPacket;
 	m_iCountRecResPack = 0;
 
 	while (bDepacketizationThreadRunning)
 	{
+		bIsMiniPacket = false;
 		//CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
 		queSize = m_pVideoPacketQueue.GetQueueSize();
 #ifdef	RETRANSMISSION_ENABLED
@@ -639,8 +667,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<4); //the retransmitted flag is moved to signal byte
                 
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-                
-                
+
                 CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
 			}
             else if (bMiniPacket)
@@ -648,13 +675,14 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                 int iNumberOfPackets = -1;
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
                 CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
-                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
+//                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
+				bIsMiniPacket = true;
             }
 
 
 
 #endif
-			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged,frameSize);
+			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, bIsMiniPacket);
 
 			toolsObject.SOSleep(1);
 		}
@@ -730,19 +758,24 @@ void CVideoCallSession::DecodingThreadProcedure()
 	CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
 	Tools toolsObject;
 
-	int nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
+	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
 	unsigned int nTimeStampDiff;
-	long long nTimeStampBeforeDecoding, nFirstFrameDecodingTime, nFirstFrameEncodingTime,nListTimeStampOfWork,currentTime,nShiftedTime;
+	long long nTimeStampBeforeDecoding, nFirstFrameDecodingTime, nFirstFrameEncodingTime, currentTime, nShiftedTime;
+	long long nMaxDecodingTime=0;
 	int RenderFaildCounter=0;
 	int nExpectedTime;
 	bool bIsSendableToClient = true;
+
+
+	int nDecodingStatus, fps = -1;
+	double dbAverageDecodingTime, dbTotalDecodingTime = 0;
+	int nOponnentFPS, nMaxProcessableByMine;
+	m_iDecodedFrameCounter = 0;
+
 	nFirstFrameDecodingTime = -1;
 	nExpectedTime = -1;
 	long long maxDecodingTime=0,framCounter=0,decodingTime, nBeforeDecodingTime;
 	double decodingTimeAverage=0;
-
-	nListTimeStampOfWork = toolsObject.CurrentTimestamp();
-
 
 	while (bDecodingThreadRunning)
 	{
@@ -763,8 +796,9 @@ void CVideoCallSession::DecodingThreadProcedure()
 		}
 		else
 		{
+			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
 			if(-1 == nFirstFrameDecodingTime)
-				nTimeStampBeforeDecoding = toolsObject.CurrentTimestamp();
+				nTimeStampBeforeDecoding = nBeforeDecodingTime;
 
 
 #ifdef RENDER_CONTROL
@@ -773,21 +807,35 @@ void CVideoCallSession::DecodingThreadProcedure()
 			bIsSendableToClient =  true;
 #endif
 
-			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
+			nOponnentFPS = g_FPSController.GetOpponentFPS();
+			nMaxProcessableByMine = g_FPSController.GetMaxOwnProcessableFPS();
 
-			DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nTimeStampDiff);
+			if( nOponnentFPS > 1 + nMaxProcessableByMine  && (nFrameNumber & 7) > 3 ) {
+				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: Frame: "+m_Tools.IntegertoStringConvert(nFrameNumber)+"  FPS: "+m_Tools.IntegertoStringConvert(nOponnentFPS)+" ~"+toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
+				toolsObject.SOSleep(5);
+				continue;
+			}
 
-			decodingTime = toolsObject.CurrentTimestamp() - nBeforeDecodingTime;
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nTimeStampDiff);
+//			toolsObject.SOSleep(100);
 
-			decodingTimeAverage +=decodingTime;
-			++framCounter;
-			if(maxDecodingTime < decodingTime)
-				maxDecodingTime = decodingTime;
+			if(nDecodingStatus > 0) {
+				decodingTime = toolsObject.CurrentTimestamp() - nBeforeDecodingTime;
+				dbTotalDecodingTime += decodingTime;
+				++ m_iDecodedFrameCounter;
+				nMaxDecodingTime = max(nMaxDecodingTime, decodingTime);
+				if( 0 == (m_iDecodedFrameCounter & 3) )
+				{
+					dbAverageDecodingTime = dbTotalDecodingTime / m_iDecodedFrameCounter;
+					dbAverageDecodingTime *=1.5;
+					fps = 1000 / dbAverageDecodingTime;
 
-//			if(framCounter%100==0)
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # AverageTime: "+m_Tools.DoubleToString(decodingTimeAverage/framCounter)+"  MaxDecodingTime: "+m_Tools.IntegertoStringConvert(maxDecodingTime) );
+					if(fps<FPS_MAXIMUM)
+						g_FPSController.SetMaxOwnProcessableFPS(fps);
+				}
+				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Max Decoding-time: "+m_Tools.IntegertoStringConvert(nMaxDecodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
+			}
 
-			//decodingTime = toolsObject.CurrentTimestamp() - nTimeStampBeforeDecoding;
 			if(!bIsSendableToClient) {
 				RenderFaildCounter++;
 				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
@@ -795,6 +843,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 										   m_Tools.IntegertoStringConvert(nExpectedTime) + " ^ " +
 										   m_Tools.IntegertoStringConvert(nEncodingTime)+"   ----> CNT: "+m_Tools.IntegertoStringConvert(RenderFaildCounter));
 			}
+			
 			if(-1 == nFirstFrameDecodingTime)
 			{
 				nFirstFrameDecodingTime = nTimeStampBeforeDecoding;

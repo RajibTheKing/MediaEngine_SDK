@@ -23,9 +23,11 @@ public:
 
 	int ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	int ConvertI420ToNV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
+	int ConvertI420ToYV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	int ConvertNV12ToI420(unsigned char *convertingData);
 	int ConvertNV21ToI420(unsigned char *convertingData);
 	void mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData);
+	void mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
 
 private:
@@ -39,6 +41,7 @@ private:
 
 	unsigned char m_pVPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
+	unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 
 	int m_Multiplication[481][641];
 };
