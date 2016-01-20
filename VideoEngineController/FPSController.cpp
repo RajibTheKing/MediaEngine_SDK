@@ -72,7 +72,7 @@ unsigned char CFPSController::GetFPSSignalByte()
     }
     ret |= (changeSignal << 6);
 
-//    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: ------------------------------------------------------------->   "+ m_Tools.IntegertoStringConvert((int)changeSignal)+"~"+ m_Tools.IntegertoStringConvert((int)ret));
+//    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: ------------------------------------------------------------->   "+ m_Tools.IntegertoStringConvert((int)changeSignal)+"~"+ m_Tools.IntegertoStringConvert((int)ret));
     return ret;
 }
 
@@ -92,7 +92,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
     }
 
 //    if(FPSChangeSignal)
-//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: -------------------------------------------------------SET------>   "+ m_Tools.IntegertoStringConvert(FPSChangeSignal));
+//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: -------------------------------------------------------SET------>   "+ m_Tools.IntegertoStringConvert(FPSChangeSignal));
 
     if(FPSChangeSignal == 1)
     {
@@ -125,7 +125,7 @@ int CFPSController::NotifyFrameComplete(int framNumber)
             m_SignalQue.push(2);
         }
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
-//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: @@@@@@@@@@@@@@@@@@@@@@@@@   FPS INCREASE  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: @@@@@@@@@@@@@@@@@@@@@@@@@   FPS INCREASE  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     }
     else if(bIsIntervalOver)
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
@@ -137,7 +137,7 @@ int CFPSController::NotifyFrameDropped(int framNumber)
 {
     m_iFrameDropIntervalCounter++;
 
-//    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: FRAME DROP------------> "+m_Tools.IntegertoStringConvert(framNumber)+" CNT: "+m_Tools.IntegertoStringConvert(m_iFrameDropIntervalCounter));
+//    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: FRAME DROP------------> "+m_Tools.IntegertoStringConvert(framNumber)+" CNT: "+m_Tools.IntegertoStringConvert(m_iFrameDropIntervalCounter));
 
     LongLong diffTimeStamp = m_Tools.CurrentTimestamp() - m_LastIntervalStartingTime;
     bool bIsIntervalOver = diffTimeStamp <= 3*1000;
@@ -152,7 +152,7 @@ int CFPSController::NotifyFrameDropped(int framNumber)
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
 
         m_iFrameDropIntervalCounter=0;
-//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: *************************   FPS DECREASING  ***********************************************************");
+//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: *************************   FPS DECREASING  ***********************************************************");
     }
     else if(!bIsIntervalOver)
     {
@@ -167,7 +167,7 @@ bool CFPSController::IsProcessableFrame()
 {
     Tools tools;
 
-//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: ClientFPS "+tools.DoubleToString(m_ClientFPS));
+//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: ClientFPS "+tools.DoubleToString(m_ClientFPS));
 
     if(m_nOwnFPS+FPS_COMPARISON_EPS > m_ClientFPS) return true;
 
@@ -186,7 +186,7 @@ bool CFPSController::IsProcessableFrame()
     if(m_EncodingFrameCounter == indx)
     {
         m_DropSum+=ratio;
-//		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "PushPacketForDecoding -> Indx = "+m_Tools.IntegertoStringConvert(indx) + "  ClientFPS: " +m_Tools.IntegertoStringConvert((int)m_ClientFPS)
+//		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "PushPacketForDecoding -> Indx = "+m_Tools.IntegertoStringConvert(indx) + "  ClientFPS: " +m_Tools.IntegertoStringConvert((int)m_ClientFPS)
 //                                                      +"m_nOwnFPS = " + m_Tools.IntegertoStringConvert(m_nOwnFPS)+ ",  m_DropSum =" + m_Tools.DoubleToString(m_DropSum));
         return false;
     }

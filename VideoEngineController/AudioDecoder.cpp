@@ -9,7 +9,7 @@ CAudioDecoder::CAudioDecoder(CCommonElementsBucket* sharedObject) :
 m_pCommonElementsBucket(sharedObject)
 
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioDecoder::CAudioDecoder");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioDecoder::CAudioDecoder");
 }
 
 CAudioDecoder::~CAudioDecoder()
@@ -19,14 +19,14 @@ CAudioDecoder::~CAudioDecoder()
 
 int CAudioDecoder::CreateAudioDecoder()
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioDecoder::CreateAudioDecoder");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioDecoder::CreateAudioDecoder");
 	
 	return 1;
 }
 
 int CAudioDecoder::Decode(unsigned char *in_data, unsigned int in_size, unsigned char *out_data)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioDecoder::Decode called");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioDecoder::Decode called");
 
 	return 1;
 }

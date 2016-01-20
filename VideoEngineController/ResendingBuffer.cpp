@@ -23,49 +23,49 @@ CResendingBuffer::~CResendingBuffer()
 
 void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, int packetNumber)
 {
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue b4 lock");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue b4 lock");
 	Locker lock(*m_pChannelMutex);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock");
 
     memcpy(m_Buffer[m_iPushIndex], frame, length);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.1");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.1");
 
     m_BufferDataLength[m_iPushIndex] = length;
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.2");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.2");
     
     reverseResendingMapIterator = reverseResendingMap.find(m_iPushIndex);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.3");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.3");
 
 	if (reverseResendingMapIterator != reverseResendingMap.end())
 	{
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.4");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.4");
 		resendingMapIterator = resendingMap.find(reverseResendingMapIterator->second);
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.5");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 0.5");
 	}
 	else
 	{
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 1");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 1");
 		return;
 	}
     
 
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 2");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 2");
     
     if(resendingMapIterator != resendingMap.end())
 	{
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 3");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 3");
 		resendingMap.erase(resendingMapIterator);
 	}
         
     
 
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 4");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 4");
     resendingMap[std::make_pair(frameNumber, packetNumber)] = m_iPushIndex;
     reverseResendingMap[m_iPushIndex] = std::make_pair(frameNumber, packetNumber);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 5");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 5");
 
     IncreamentIndex(m_iPushIndex);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 6");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::Queue 8r lock 6");
 
     if (m_iQueueSize != m_iQueueCapacity)
         m_iQueueSize++;
@@ -73,23 +73,23 @@ void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, 
 
 int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber)
 {
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue b4 lock");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue b4 lock");
 	Locker lock(*m_pChannelMutex);
-	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock");
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock");
 
 	if (m_iQueueSize <= 0)
 	{
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 1");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 1");
 		return -1;
 	}
 	else
 	{
         resendingMapIterator = resendingMap.find(std::make_pair(frameNumber, packetNumber));
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 2");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 2");
         
 		if (resendingMapIterator == resendingMap.end())
 		{
-			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 3");
+			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 3");
 			return -1;
 		}
             
@@ -101,20 +101,20 @@ int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int 
 		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
 
 		m_iQueueSize--;
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 4");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 4");
         resendingMap.erase(resendingMapIterator);
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 5");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 5");
         
         reverseResendingMapIterator = reverseResendingMap.find(m_iPopIndex);
         
 		if (reverseResendingMapIterator != reverseResendingMap.end())
 		{
-			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 6");
+			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 6");
 			reverseResendingMap.erase(reverseResendingMapIterator);
-			CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 7");
+			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 7");
 		}
             
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 8");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CResendingBuffer::DeQueue 8r lock 8");
 		return length;
 	}
 }

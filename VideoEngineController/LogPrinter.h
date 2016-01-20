@@ -75,5 +75,12 @@ private:
 
 };
 
+#ifdef __PRINT_LOG__
+#define CLogPrinter_Write(...) CLogPrinter::Write(__VA_ARGS__)
+#define CLogPrinter_WriteSpecific(...) CLogPrinter::WriteSpecific(__VA_ARGS__)
+#else
+#define CLogPrinter_Write(...)
+#define CLogPrinter_WriteSpecific(...)
+#endif
 
 #endif
