@@ -87,29 +87,29 @@ int CInterfaceOfAudioVideoEngine::EncodeAndTransfer(const IPVLongType lFriendID,
 
 int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size)
 {
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding called");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding called");
     
     if((int)in_data[0]==AUDIO_PACKET_MEDIA_TYPE)
     {
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding AUDIO data in Video");
+        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding AUDIO data in Video");
         
         return -1;
     }
     else if((int)in_data[0]==VIDEO_PACKET_MEDIA_TYPE)
     {
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding CORRECT video data");
+        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding CORRECT video data");
     }
     else
     {
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding unknown data");
+        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding unknown data");
         
         return -1;
     }
     
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding 2called");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding 2called");
     
 /*    for(int i=0;i<10;i++)
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding in_data[" + Tools::IntegertoStringConvert(i) + "] " + Tools::IntegertoStringConvert(in_data[i]));*/
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding in_data[" + Tools::IntegertoStringConvert(i) + "] " + Tools::IntegertoStringConvert(in_data[i]));*/
     
 	if (m_pController == NULL)
 	{
@@ -123,7 +123,7 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType lFrien
 
 int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size)
 {
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding called");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding called");
     
     int iReturnedValue = 0;
     
@@ -133,13 +133,13 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType lFriend
     }
     else if(in_data == nullptr)
     {
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
+        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
         
         return 0;
     }
     else if(in_data == NULL)
     {
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
+        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
         
         return 0;
     }

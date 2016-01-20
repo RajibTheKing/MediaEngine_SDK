@@ -22,7 +22,7 @@ m_pCommonElementsBucket(sharedObject)
     StartEncodingThread();
     StartDecodingThread();
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
 CAudioCallSession::~CAudioCallSession()
@@ -60,7 +60,7 @@ LongLong CAudioCallSession::GetFriendID()
 
 void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
 	//this->m_pAudioEncoder = new CAudioEncoder(m_pCommonElementsBucket);
 
@@ -73,16 +73,16 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
 	m_pG729CodecNative = new G729CodecNative();
 	int iRet = m_pG729CodecNative->Open();
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
 }
 
 int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
 {
-    /*CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1");
+    /*CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1");
 	int size = m_pG729CodecNative->Encode(in_data, in_size, &m_EncodedFrame[1]);
     m_EncodingFrame[0] = 0;
-    CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
 
 	//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodingFrame);
     
@@ -90,11 +90,11 @@ int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
      
     return 1;*/
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
     
     int returnedValue = m_EncodingBuffer.Queue(in_data, in_size);
     
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
 
     return returnedValue;
 }
@@ -103,19 +103,19 @@ int CAudioCallSession::DecodeAudioData(unsigned char *in_data, unsigned int in_s
 {
     if(in_size > 200)
     {
-        CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
+        CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
         return 0;
     }
     
-    /*CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData in_size " + m_Tools.IntegertoStringConvert(in_size));
+    /*CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData in_size " + m_Tools.IntegertoStringConvert(in_size));
     
 	int size = m_pG729CodecNative->Decode(&in_data[1], in_size-1, m_DecodedFrame);
     
-    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData size " + m_Tools.IntegertoStringConvert(size));
+    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData size " + m_Tools.IntegertoStringConvert(size));
     
 	m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(friendID, size, m_DecodedFrame);
     
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData 3");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData 3");
      
     return 1;*/
     
@@ -154,25 +154,25 @@ void CAudioCallSession::StopEncodingThread()
 
 void CAudioCallSession::StartEncodingThread()
 {
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 1");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 1");
     
     if (pEncodingThread.get())
     {
-        CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 2");
+        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 2");
         
         pEncodingThread.reset();
         
-        CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 3");
+        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 3");
         
         return;
     }
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 4");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 4");
     
     bEncodingThreadRunning = true;
     bEncodingThreadClosed = false;
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 5");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -188,7 +188,7 @@ void CAudioCallSession::StartEncodingThread()
     
 #endif
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread Encoding Thread started");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread Encoding Thread started");
     
     return;
 }
@@ -203,13 +203,13 @@ void *CAudioCallSession::CreateAudioEncodingThread(void* param)
 
 void CAudioCallSession::EncodingThreadProcedure()
 {
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
     Tools toolsObject;
     int frameSize, encodedFrameSize;
     
     while (bEncodingThreadRunning)
     {
-        CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
+        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
         
         if (m_EncodingBuffer.GetQueueSize() == 0)
             toolsObject.SOSleep(10);
@@ -217,7 +217,7 @@ void CAudioCallSession::EncodingThreadProcedure()
         {
             frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame);
 
-            CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1, frameSize = " + m_Tools.IntegertoStringConvert(frameSize));
+            CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1, frameSize = " + m_Tools.IntegertoStringConvert(frameSize));
             int size;
 
 
@@ -225,7 +225,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             m_EncodedFrame[0] = 0;
             
-            CLogPrinter::Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
+            CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
             
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
             
@@ -238,7 +238,7 @@ void CAudioCallSession::EncodingThreadProcedure()
     
     bEncodingThreadClosed = true;
     
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
 void CAudioCallSession::StopDecodingThread()
@@ -256,25 +256,25 @@ void CAudioCallSession::StopDecodingThread()
 
 void CAudioCallSession::StartDecodingThread()
 {
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 1");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 1");
     
     if (pDecodingThread.get())
     {
-        CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 2");
+        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 2");
         
         pDecodingThread.reset();
         
-        CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 3");
+        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 3");
         
         return;
     }
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 4");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 4");
     
     bDecodingThreadRunning = true;
     bDecodingThreadClosed = false;
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 5");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -290,7 +290,7 @@ void CAudioCallSession::StartDecodingThread()
     
 #endif
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread Decoding Thread started");
+    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread Decoding Thread started");
     
     return;
 }
@@ -305,13 +305,13 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 
 void CAudioCallSession::DecodingThreadProcedure()
 {
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
     Tools toolsObject;
     int frameSize;
     
     while (bDecodingThreadRunning)
     {
-        //CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure");
+        //CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure");
         
         if (m_DecodingBuffer.GetQueueSize() == 0)
             toolsObject.SOSleep(10);
@@ -319,19 +319,19 @@ void CAudioCallSession::DecodingThreadProcedure()
         {
             frameSize = m_DecodingBuffer.DeQueue(m_DecodingFrame);
             
-            CLogPrinter::Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure frameSize " + m_Tools.IntegertoStringConvert(frameSize));
+            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure frameSize " + m_Tools.IntegertoStringConvert(frameSize));
 
             int size;
 
             size = m_pG729CodecNative->Decode(m_DecodingFrame, frameSize, m_DecodedFrame);
 
-            CLogPrinter::Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure size " + m_Tools.IntegertoStringConvert(size));
+            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure size " + m_Tools.IntegertoStringConvert(size));
 #if defined(DUMP_DECODED_AUDIO)
 			m_Tools.WriteToFile(m_DecodedFrame, size);
 #endif
             m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(friendID, size, m_DecodedFrame);
             
-            CLogPrinter::Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure 3");
+            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure 3");
 
             toolsObject.SOSleep(1);
         }
@@ -339,6 +339,6 @@ void CAudioCallSession::DecodingThreadProcedure()
     
     bDecodingThreadClosed = true;
     
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CVideoCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 

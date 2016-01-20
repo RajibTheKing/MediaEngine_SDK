@@ -15,11 +15,11 @@ void CVideoEncoderListHandler::AddToVideoEncoderList(LongLong lFriendID, CVideoE
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoderListHandler::CVideoEncoderListHandler");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoderListHandler::CVideoEncoderListHandler");
 
 	VideoEncoderList.insert(make_pair(lFriendID, cVideoEncoder));
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoEncoderListHandler::CVideoEncoderListHandler 2");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoderListHandler::CVideoEncoderListHandler 2");
 }
 
 CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderList(LongLong lFriendID)

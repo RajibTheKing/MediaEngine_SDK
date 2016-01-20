@@ -36,13 +36,19 @@ public:
 
     int NotifyFrameComplete(int framNumber);
     int NotifyFrameDropped(int framNumber);
+    void SetMaxOwnProcessableFPS(int fps);
+    int GetMaxOwnProcessableFPS();
 
 private:
+    int m_nFPSForceSignalCounter;
     queue<int>m_SignalQue;
     int m_EncodingFrameCounter;
     double m_DropSum;
     double m_ClientFPS;
     int m_nFPSChangeSignal;
+    int m_nForceFPSFlag;
+    int m_nMaxOwnProcessableFPS;
+    int m_nMaxOpponentProcessableFPS;
     int m_iFrameDropIntervalCounter;
 //    int m_iFrameCompletedIntervalCounter;
     int m_nOwnFPS;

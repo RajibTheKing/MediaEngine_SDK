@@ -17,7 +17,7 @@ void CVideoCallSessionListHandler::AddToVideoSessionList(LongLong friendName, CV
 
 	m_mVideoSessionList.insert(make_pair(friendName, videoSession));
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSessionListHandler::AddToVideoSessionList added video Session");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSessionListHandler::AddToVideoSessionList added video Session");
 }
 
 CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionList(LongLong friendName)

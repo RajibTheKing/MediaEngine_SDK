@@ -14,7 +14,9 @@ CFPSController::CFPSController(){
     m_iFrameDropIntervalCounter=0;
     m_EncodingFrameCounter = 0;
     m_DropSum = 0;
-
+    m_nForceFPSFlag = 0;
+    m_nMaxOwnProcessableFPS = m_nMaxOpponentProcessableFPS = FPS_MAXIMUM;
+    m_nFPSForceSignalCounter = 0;
 }
 
 CFPSController::~CFPSController(){
@@ -49,6 +51,17 @@ void CFPSController::SetOwnFPS(int nOwnFPS){
     m_nOwnFPS = nOwnFPS;
 }
 
+void CFPSController::SetMaxOwnProcessableFPS(int fps){
+    Locker lock(*m_pMutex);
+    m_nFPSForceSignalCounter = 2;
+    m_nMaxOwnProcessableFPS = fps;
+}
+
+int CFPSController::GetMaxOwnProcessableFPS(){
+    return m_nMaxOwnProcessableFPS;
+}
+
+
 void CFPSController::SetClientFPS(double fps){
     Locker lock(*m_pMutex);
     m_ClientFPS = fps;
@@ -59,8 +72,17 @@ unsigned char CFPSController::GetFPSSignalByte()
     unsigned char ret = m_nOwnFPS;
     unsigned char changeSignal = 0;
 
+    if(m_nFPSForceSignalCounter > 0)
     {
-        Locker lock(*m_pMutex);
+//        Locker lock(*m_pMutex);
+        --m_nFPSForceSignalCounter;
+        ret =  m_nMaxOwnProcessableFPS;
+        ret |= (1<<5);
+        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: ------------------------Sent------------------------------------->   ");
+    }
+    else
+    {
+        //Locker lock(*m_pMutex);
         int tmp = floor(m_ClientFPS+0.5);
         if(m_nOwnFPS > tmp)
             ret = tmp;
@@ -72,42 +94,54 @@ unsigned char CFPSController::GetFPSSignalByte()
     }
     ret |= (changeSignal << 6);
 
-//    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: ------------------------------------------------------------->   "+ m_Tools.IntegertoStringConvert((int)changeSignal)+"~"+ m_Tools.IntegertoStringConvert((int)ret));
     return ret;
 }
 
 
 void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 {
-    signalByte &= 0xCF;
+    signalByte &= 0xEF;
     if(0==signalByte)   return;
-
-    int FPSChangeSignal = (signalByte>>6);
-    int opponentFPS = 15&signalByte;
-
-    if(opponentFPS != m_nOpponentFPS)
+    int bIsForceFPS =  (signalByte & (1 << 5) ) >> 5;
+    int FPSChangeSignal = (signalByte >> 6);
+    int opponentFPS = 15 & signalByte;
+//    int tmp = signalByte>>5;
+//    if(tmp)
+//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: Signal>   "+ m_Tools.IntegertoStringConvert(tmp));
+    if(bIsForceFPS)
     {
         Locker lock(*m_pMutex);
-        m_nOpponentFPS = opponentFPS;
+
+        if(FPS_MAXIMUM > opponentFPS)
+            m_nMaxOpponentProcessableFPS = opponentFPS;
+        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# Force: -----------------GOT-------------------------------------->   "+ m_Tools.IntegertoStringConvert(m_nMaxOpponentProcessableFPS));
+        if(m_nOwnFPS > m_nMaxOpponentProcessableFPS)
+            m_nOwnFPS = m_nMaxOpponentProcessableFPS;
     }
+    else if (opponentFPS != m_nOpponentFPS) {
+            Locker lock(*m_pMutex);
+            m_nOpponentFPS = opponentFPS;
+        }
 
 //    if(FPSChangeSignal)
-//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: -------------------------------------------------------SET------>   "+ m_Tools.IntegertoStringConvert(FPSChangeSignal));
+//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: -------------------------------------------------------SET------>   "+ m_Tools.IntegertoStringConvert(FPSChangeSignal));
 
-    if(FPSChangeSignal == 1)
-    {
-        if(m_nOpponentFPS<MAX_DIFF_TO_DROP_FPS+m_nOwnFPS &&  m_nOwnFPS>FPS_MINIMUM)
-        {
+    if (FPSChangeSignal == 1) {
+        if (m_nOwnFPS > FPS_MINIMUM) {
             Locker lock(*m_pMutex);
             m_nOwnFPS--;
         }
     }
-    else if(FPSChangeSignal == 2) {
-        if(m_nOwnFPS < FPS_MAXIMUM && m_nOwnFPS+1 < m_ClientFPS+0.1) {
+    else if (FPSChangeSignal == 2) {
+        if (m_nOwnFPS < FPS_MAXIMUM  && m_nOwnFPS < m_nMaxOpponentProcessableFPS && m_nOwnFPS < m_ClientFPS + 0.1) {
             Locker lock(*m_pMutex);
             m_nOwnFPS++;
         }
     }
+
+    if (m_nOwnFPS > m_ClientFPS)
+        m_nOwnFPS = m_ClientFPS;
+
 }
 
 int CFPSController::NotifyFrameComplete(int framNumber)
@@ -125,7 +159,7 @@ int CFPSController::NotifyFrameComplete(int framNumber)
             m_SignalQue.push(2);
         }
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
-//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: @@@@@@@@@@@@@@@@@@@@@@@@@   FPS INCREASE  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: @@@@@@@@@@@@@@@@@@@@@@@@@   FPS INCREASE  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     }
     else if(bIsIntervalOver)
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
@@ -137,7 +171,7 @@ int CFPSController::NotifyFrameDropped(int framNumber)
 {
     m_iFrameDropIntervalCounter++;
 
-//    CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: FRAME DROP------------> "+m_Tools.IntegertoStringConvert(framNumber)+" CNT: "+m_Tools.IntegertoStringConvert(m_iFrameDropIntervalCounter));
+//    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: FRAME DROP------------> "+m_Tools.IntegertoStringConvert(framNumber)+" CNT: "+m_Tools.IntegertoStringConvert(m_iFrameDropIntervalCounter));
 
     LongLong diffTimeStamp = m_Tools.CurrentTimestamp() - m_LastIntervalStartingTime;
     bool bIsIntervalOver = diffTimeStamp <= 3*1000;
@@ -152,7 +186,7 @@ int CFPSController::NotifyFrameDropped(int framNumber)
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
 
         m_iFrameDropIntervalCounter=0;
-//        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: *************************   FPS DECREASING  ***********************************************************");
+//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: *************************   FPS DECREASING  ***********************************************************");
     }
     else if(!bIsIntervalOver)
     {
@@ -167,9 +201,9 @@ bool CFPSController::IsProcessableFrame()
 {
     Tools tools;
 
-//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: ClientFPS "+tools.DoubleToString(m_ClientFPS));
+//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: ClientFPS "+tools.DoubleToString(m_ClientFPS));
 
-    if(m_nOwnFPS+FPS_COMPARISON_EPS > m_ClientFPS) return true;
+    if(m_nOwnFPS + FPS_COMPARISON_EPS > m_ClientFPS) return true;
 
     double diff = m_ClientFPS - m_nOwnFPS;
 
@@ -186,7 +220,7 @@ bool CFPSController::IsProcessableFrame()
     if(m_EncodingFrameCounter == indx)
     {
         m_DropSum+=ratio;
-//		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "PushPacketForDecoding -> Indx = "+m_Tools.IntegertoStringConvert(indx) + "  ClientFPS: " +m_Tools.IntegertoStringConvert((int)m_ClientFPS)
+//		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "PushPacketForDecoding -> Indx = "+m_Tools.IntegertoStringConvert(indx) + "  ClientFPS: " +m_Tools.IntegertoStringConvert((int)m_ClientFPS)
 //                                                      +"m_nOwnFPS = " + m_Tools.IntegertoStringConvert(m_nOwnFPS)+ ",  m_DropSum =" + m_Tools.DoubleToString(m_DropSum));
         return false;
     }

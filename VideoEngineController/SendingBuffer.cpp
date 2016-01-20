@@ -23,7 +23,7 @@ CSendingBuffer::~CSendingBuffer()
 
 int CSendingBuffer::Queue(LongLong lFriendID, unsigned char *frame, int length)
 {
-//	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::Queue b4 lock");
+//	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::Queue b4 lock");
 	Locker lock(*m_pChannelMutex);
     
     memcpy(m_Buffer[m_iPushIndex], frame, length);
@@ -49,9 +49,9 @@ int CSendingBuffer::Queue(LongLong lFriendID, unsigned char *frame, int length)
 
 int CSendingBuffer::DeQueue(LongLong &lFriendID, unsigned char *decodeBuffer)
 {
-//	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::deQueue b4 lock");
+//	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::deQueue b4 lock");
 	Locker lock(*m_pChannelMutex);
-//	CLogPrinter::WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::deQueue 84 lock");
+//	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::deQueue 84 lock");
 
 	if (m_iQueueSize <= 0)
 	{

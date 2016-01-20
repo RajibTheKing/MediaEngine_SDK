@@ -20,14 +20,14 @@ CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedOb
 		m_PacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
 		m_pCommonElementsBucket(sharedObject)
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::CEncodedFramePacketizer");
+	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::CEncodedFramePacketizer");
 
 	m_pEncodedFrameParsingMutex.reset(new CLockHandler);
 	m_pEncodedFrameParsingThread = NULL;
     
     StartSendingThread();
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::CEncodedFramePacketizer Created");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::CEncodedFramePacketizer Created");
 }
 
 CEncodedFramePacketizer::~CEncodedFramePacketizer()
@@ -46,7 +46,7 @@ CEncodedFramePacketizer::~CEncodedFramePacketizer()
 int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_data, unsigned int in_size, int frameNumber,
 											   unsigned int iTimeStampDiff)
 {
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
 
 	int packetizedSize = m_PacketSize;
 
@@ -57,11 +57,11 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 
 	int numberOfPackets = in_size / m_PacketSize;
 
-	CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize in_size " + m_Tools.IntegertoStringConvert(in_size) + " m_PacketSize " + m_Tools.IntegertoStringConvert(m_PacketSize));
+	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize in_size " + m_Tools.IntegertoStringConvert(in_size) + " m_PacketSize " + m_Tools.IntegertoStringConvert(m_PacketSize));
 
 	if (in_size % m_PacketSize != 0 )
 	{
-		CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize increased" );
+		CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize increased" );
 
 		numberOfPackets++;
 	}
@@ -108,7 +108,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 
 		//m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, m_PacketSize, packetHeaderSize + m_PacketSize, m_Packet);
 
-		CLogPrinter::WriteSpecific(CLogPrinter::INFO, "Parsing..>>>");
+		CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Parsing..>>>");
         m_Packet[0] = VIDEO_PACKET_MEDIA_TYPE;
 
 		m_SendingBuffer.Queue(lFriendID, m_Packet, packetHeaderSize + m_PacketSize);
@@ -116,14 +116,14 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
     //    m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,packetHeaderSize + m_PacketSize);
 	}
 
-	//CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetNumber) + " " + m_Tools.IntegertoStringConvert(numberOfPackets) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
+	//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetNumber) + " " + m_Tools.IntegertoStringConvert(numberOfPackets) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
 
 	if (packetNumber < numberOfPackets )
 	{
 		int startPoint = 1;
 		int packetSize = in_size - ( packetizedSize - m_PacketSize );
 
-		//CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetSize) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
+		//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetSize) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
 
 		for (int f = startFraction; f >= 0; f -= fractionInterval)
 		{
@@ -220,19 +220,19 @@ void CEncodedFramePacketizer::StopSendingThread()
 
 void CEncodedFramePacketizer::StartSendingThread()
 {
-    CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 1");
+    CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 1");
     
     if (pSendingThread.get())
     {
-        CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 2");
+        CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 2");
         pSendingThread.reset();
-        CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartDecodingThread 3");
+        CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartDecodingThread 3");
         return;
     }
-    CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 4");
+    CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 4");
     bSendingThreadRunning = true;
     bSendingThreadClosed = false;
-    CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 5");
+    CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -248,7 +248,7 @@ void CEncodedFramePacketizer::StartSendingThread()
     
 #endif
     
-    CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread Encoding Thread started");
+    CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread Encoding Thread started");
     
     return;
 }
@@ -263,7 +263,7 @@ void *CEncodedFramePacketizer::CreateVideoSendingThread(void* param)
 
 void CEncodedFramePacketizer::SendingThreadProcedure()
 {
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 
 	Tools toolsObject;
     int packetSize;
@@ -274,7 +274,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
     
     while (bSendingThreadRunning)
     {
-        //CLogPrinter::Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
+        //CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
         
         if (m_SendingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
@@ -300,13 +300,13 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 				m_EncodedFrame[startPoint ++] = (FramePacketToSend.second >> f) & 0xFF;
 			}*/
 #endif
-//			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
+//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
 
 #ifdef	FPS_CHANGE_SIGNALING
 			unsigned char signal = g_FPSController.GetFPSSignalByte();
 			m_EncodedFrame[1+SIGNAL_BYTE_INDEX] = signal;
 #endif
-//			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
+//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
 
             m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
             
@@ -318,7 +318,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
     
     bSendingThreadClosed = true;
     
-    CLogPrinter::Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
 

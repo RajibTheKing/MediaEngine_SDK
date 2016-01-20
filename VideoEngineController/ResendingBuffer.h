@@ -4,11 +4,12 @@
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
+#include "Size.h"
 
 #include <map>
 
-#define MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE 1000
-#define MAX_VIDEO_PACKET_RESENDING_PACKET_SIZE 508
+//#define RESENDING_BUFFER_SIZE 1000
+//#define MAX_VIDEO_PACKET_SIZE 508
 
 class CResendingBuffer
 {
@@ -36,10 +37,10 @@ private:
     std::map<std::pair<int,int>,int>::iterator resendingMapIterator;
     std::map<int,std::pair<int,int>>::iterator reverseResendingMapIterator;
 
-	unsigned char m_Buffer[MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_RESENDING_PACKET_SIZE];
-	int m_BufferDataLength[MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE];
-	LongLong m_BufferFrameNumber[MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE];
-	int m_BufferIndexState[MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE];
+	unsigned char m_Buffer[RESENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SIZE];
+	int m_BufferDataLength[RESENDING_BUFFER_SIZE];
+	LongLong m_BufferFrameNumber[RESENDING_BUFFER_SIZE];
+	int m_BufferIndexState[RESENDING_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pChannelMutex;
 };
