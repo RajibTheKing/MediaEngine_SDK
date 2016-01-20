@@ -142,8 +142,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		timeStampDiff = m_Tools.GetIntFromChar(in_data, startIndex);
 		m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
 		startIndex += 4;
-
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::timeStampDiff "+ m_Tools.IntegertoStringConvert(timeStampDiff));
 	}
 
 	int index;
@@ -212,14 +210,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		int nAvailableIndex = m_AvailableIndexes.size();
 		int bIsBufferGood = (DEPACKETIZATION_BUFFER_SIZE == nAvailableIndex + m_BackFrame-m_FrontFrame);
 
-		if(bIsBufferGood==0) {
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
-									   "GetReceivedFrame: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
-									   "GetReceivedFrame: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
-									   "GetReceivedFrame: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-		}
 //		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
 //														m_Tools.IntegertoStringConvert(
 //																frameNumber) + " pkt: " +
@@ -261,8 +251,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	}
 	else if(m_FrontFrame>m_BackFrame)	//IF BUFFER IS EMPTY
 	{
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "GetReceivedFrame:: EMPTY BUFFER  = "+ m_Tools.IntegertoStringConvert(frameNumber)+
-				" ["+ m_Tools.IntegertoStringConvert(m_FrontFrame)+" @ "+ m_Tools.IntegertoStringConvert(m_FrontFrame));
+//		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "GetReceivedFrame:: EMPTY BUFFER  = "+ m_Tools.IntegertoStringConvert(frameNumber)+
+//				" ["+ m_Tools.IntegertoStringConvert(m_FrontFrame)+" @ "+ m_Tools.IntegertoStringConvert(m_FrontFrame));
 		m_FrontFrame=max(m_FrontFrame,frameNumber-3);
 		m_BackFrame = frameNumber;
 
