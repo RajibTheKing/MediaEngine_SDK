@@ -242,7 +242,11 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 														m_Tools.IntegertoStringConvert(
 																packetNumber) + " ~ " +
 														m_Tools.IntegertoStringConvert(
-																numberOfPackets) +" T: "+m_Tools.IntegertoStringConvert(timeStampDiff)+" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex));
+																numberOfPackets) +" T: "+m_Tools.IntegertoStringConvert(timeStampDiff)+" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex)+ " #FPS own:" +
+														m_Tools.IntegertoStringConvert(
+																m_VideoCallSession->ownFPS) +
+														" Oppo: " + m_Tools.IntegertoStringConvert(
+				                                        m_VideoCallSession->opponentFPS));
 	}
 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
