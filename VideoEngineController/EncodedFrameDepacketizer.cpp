@@ -61,6 +61,8 @@ CEncodedFrameDepacketizer::CEncodedFrameDepacketizer(CCommonElementsBucket* shar
 		CreateNewIndex(frame);
 	}
 
+	//packetHeader();
+
 	m_VideoCallSession = pVideoCallSession;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::CEncodedFrameDepacketizer created");
@@ -83,7 +85,7 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 
 
 
-int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket)
+int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket, CPacketHeader &packetHeader)
 {
 
 	//	LOGE("CEncodedFrameDepacketizer::PushPacketForDecoding called");
@@ -94,9 +96,9 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     int firstByte = 0;
     if(!bIsMiniPacket)
     {
-        firstByte = in_data[SIGNAL_BYTE_INDEX];
+        firstByte = in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
         
-        if( in_data[SIGNAL_BYTE_INDEX] & (1<<4) )
+        if(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]&(1<<4))
         {
             bIsRetransmitted = true;
         }
@@ -104,7 +106,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
         {
             
 #ifdef FPS_CHANGE_SIGNALING
-            g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX]);
+            g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
             m_VideoCallSession->ownFPS = g_FPSController.GetOwnFPS();
             m_VideoCallSession->opponentFPS = g_FPSController.GetOpponentFPS();
 #endif
@@ -113,7 +115,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     
     
     
-	in_data[SIGNAL_BYTE_INDEX]=0;
+	/*in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=0;
 
 	int startIndex = 0;
 
@@ -131,19 +133,23 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	int packetLength = m_Tools.GetIntFromChar(in_data, startIndex);
 
-	startIndex += 4;
-    
-    unsigned int timeStampDiff = -1;
+	startIndex += 4;*/
+
+
+	int frameNumber = packetHeader.getFrameNumber();
+	int numberOfPackets = packetHeader.getNumberOfPacket();
+	int packetNumber = packetHeader.getPacketNumber();
+	int packetLength = packetHeader.getPacketLength();
+    unsigned int timeStampDiff = 0;
+
     if(!bIsMiniPacket)
     {
-        timeStampDiff = m_Tools.GetIntFromChar(in_data, startIndex);
-//        m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
-        startIndex += 4;
-        
-        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::timeStampDiff "+ m_Tools.IntegertoStringConvert(timeStampDiff));
+        timeStampDiff = packetHeader.getTimeStamp();
+        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::timeStampDiff "+ m_Tools.IntegertoStringConvert(timeStampDiff));
     }
-    
-    
+
+	CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "FN: " + m_Tools.IntegertoStringConvert(frameNumber)
+													+ " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
     
 
 	int index;
@@ -204,7 +210,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 #endif
 	//if(frameNumber%50==0)
 	{
-		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $$$#( fram: " +
+		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $$$#( fram: " +
 														m_Tools.IntegertoStringConvert(
 																frameNumber) + " pkt: " +
 														m_Tools.IntegertoStringConvert(
