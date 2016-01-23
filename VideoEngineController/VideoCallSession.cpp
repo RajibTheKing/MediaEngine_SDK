@@ -809,7 +809,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 	unsigned int nTimeStampDiff;
 	long long firstTime,decodingTime,nMaxDecodingTime=0;
 	int nDecodingStatus, fps = -1;
-	double dbAverageDecodingTime, dbTotalDecodingTime = 0;
+	double dbAverageDecodingTime = 0, dbTotalDecodingTime = 0;
 	int nOponnentFPS, nMaxProcessableByMine;
 	m_iDecodedFrameCounter = 0;
 
