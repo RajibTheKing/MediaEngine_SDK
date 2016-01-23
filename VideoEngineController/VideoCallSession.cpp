@@ -170,19 +170,20 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
 #ifdef	RETRANSMISSION_ENABLED
-	if(  ((in_data[4] >> 7) & 1) /* ||  ((in_data[4] >> 6) & 1) */ ) //If MiniPacket or RetransMitted packet
+	if(  ((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> 7) & 1) /* ||  ((in_data[4] >> 6) & 1) */ ) //If MiniPacket or RetransMitted packet
     {
-        CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT RETRANSMITTED PACKET");
+        CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT RETRANSMITTED PACKET");
 		m_pRetransVideoPacketQueue.Queue(in_data,in_size);
     }
-    else if(((in_data[4] >> 6) & 1))
+    else if(((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> 6) & 1))
     {
-        CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::PushPacketForMerging --> GOT MINI PACKET");
+        CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
         m_pMiniPacketQueue.Queue(in_data, in_size);
     }
 	else
 #endif
 	{
+		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
 		m_pVideoPacketQueue.Queue(in_data, in_size);
 	}
 
@@ -523,7 +524,8 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 #ifdef	RETRANSMISSION_ENABLED
 		retQueuSize = m_pRetransVideoPacketQueue.GetQueueSize();
         miniPacketQueueSize = m_pMiniPacketQueue.GetQueueSize();
-		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
+		if(queSize + retQueuSize + miniPacketQueueSize > 0)
+			CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "QUEUE_SIZE miniPacketQueueSize: "+m_Tools.IntegertoStringConvert(miniPacketQueueSize)+" :: "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
 #endif
 		if (0 == queSize && 0 == retQueuSize && 0 == miniPacketQueueSize)
 			toolsObject.SOSleep(10);
@@ -552,33 +554,28 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				frameSize = m_pRetransVideoPacketQueue.DeQueue(m_PacketToBeMerged);
 				++consicutiveRetransmittedPkt;
 			}
+			m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
+
+			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
+														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 
 
-			bool bRetransmitted = (m_PacketToBeMerged[4] >> 7) & 1;
-            bool bMiniPacket = (m_PacketToBeMerged[4] >> 6) & 1;
+			bool bRetransmitted = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> 7) & 1;
+            bool bMiniPacket = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> 6) & 1;
+
+			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Current(FN,PN)--->>>");
        
-			m_PacketToBeMerged[4] &= ~(1<<7); //Removed the Retransmit flag from the LMB of Number of Packets
-            m_PacketToBeMerged[4] &= ~(1<<6); //Removed the MiniPacket flag from the LMB of Number of Packets
+			m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] &= ~(1<<7); //Removed the Retransmit flag from the LMB of Number of Packets
+            m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] &= ~(1<<6); //Removed the MiniPacket flag from the LMB of Number of Packets
 
 			if(!bRetransmitted && !bMiniPacket)
 			{
 				int iNumberOfPackets = -1;
-				temp = m_PacketToBeMerged[SIGNAL_BYTE_INDEX];
-				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]=0;
-				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-
-				/*if (currentFramePacketPair != ExpectedFramePacketPair)
-				{
-					printf("CVideoCallSession::Current(FN,PN) = (%d, %d), Expected = (%d,%d)\n", currentFramePacketPair.first, currentFramePacketPair.second,
-						ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
-					if (ExpectedFramePacketPair.first % 8 == 0)
-					{
-						printf("Iframe packet missed\n");
-					}
-				}*/
-
-				
-				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]=temp;
+//				temp = m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
+//				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=0;
+//				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
+				pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(),m_RcvdPacketHeader.getPacketNumber());
+//				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=temp;
 
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
@@ -711,7 +708,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			{
 				int iNumberOfPackets = -1;
                 
-				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<4); //the retransmitted flag is moved to signal byte
+				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]|=(1<<4); //the retransmitted flag is moved to signal byte
                 
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
                 
@@ -730,7 +727,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 
 #endif
-			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, bIsMiniPacket);
+			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, bIsMiniPacket, m_RcvdPacketHeader);
 
 			toolsObject.SOSleep(1);
 		}
@@ -921,7 +918,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
         m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF; //Dummy numberOfPackets 1000
     }
     
-    m_miniPacket[4 + 1] |= 1<<6; //MiniPacket Flag
+    m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<6; //MiniPacket Flag
     
     for (int f = startFraction; f >= 0; f -= fractionInterval)
     {

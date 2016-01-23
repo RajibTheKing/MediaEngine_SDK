@@ -16,6 +16,7 @@
 #include "AudioVideoEngineDefinitions.h"
 #include "Size.h"
 #include "Tools.h"
+#include "PacketHeader.h"
 
 
 namespace IPV
@@ -34,7 +35,7 @@ public:
 	CEncodedFrameDepacketizer(CCommonElementsBucket* sharedObject, CVideoCallSession *pVideoCallSession);
 	~CEncodedFrameDepacketizer();
 
-	int Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket);
+	int Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket, CPacketHeader &packetHeader);
 	void ClearAndDeliverFrame(int frame);
 	void MoveForward(int frame);
 	int CreateNewIndex(int frame);
@@ -75,6 +76,8 @@ private:
 	CVideoCallSession* m_VideoCallSession;
 
 	CVideoPacketBuffer m_CVideoPacketBuffer[DEPACKETIZATION_BUFFER_SIZE + 1];
+
+	CPacketHeader PacketHeader;
 
 	unsigned char * m_pPacketToResend;
 
