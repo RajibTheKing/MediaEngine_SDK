@@ -567,7 +567,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]=0;
 				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
 
-				if (currentFramePacketPair != ExpectedFramePacketPair)
+				/*if (currentFramePacketPair != ExpectedFramePacketPair)
 				{
 					printf("CVideoCallSession::Current(FN,PN) = (%d, %d), Expected = (%d,%d)\n", currentFramePacketPair.first, currentFramePacketPair.second,
 						ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
@@ -575,7 +575,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 					{
 						printf("Iframe packet missed\n");
 					}
-				}
+				}*/
 
 				
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]=temp;
@@ -715,7 +715,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                 
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
                 
-				printf("Retransmitted: FrameNumber = %d, PacketNumber = %d\n", currentFramePacketPair.first, currentFramePacketPair.second);
+				//printf("Retransmitted: FrameNumber = %d, PacketNumber = %d\n", currentFramePacketPair.first, currentFramePacketPair.second);
                 CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
 			}
             else if (bMiniPacket)
