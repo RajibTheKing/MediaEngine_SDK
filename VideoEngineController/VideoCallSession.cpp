@@ -351,7 +351,16 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 
-			this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			if (orientation_type == ORIENTATION_90_MIRRORED)
+			{
+				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			}
+			else if (orientation_type == ORIENTATION_0_MIRRORED)
+			{
+				CLogPrinter_Write(CLogPrinter::DEBUGS, "orientation_type : " + m_Tools.IntegertoStringConvert(orientation_type) + " ORIENTATION_0_MIRRORED ");
+				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420ForBackCam(m_EncodingFrame, m_ConvertedEncodingFrame);
+			}
+			
 
 			long long enctime = m_Tools.CurrentTimestamp();
 
@@ -557,6 +566,18 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				temp = m_PacketToBeMerged[SIGNAL_BYTE_INDEX];
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]=0;
 				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
+
+				/*if (currentFramePacketPair != ExpectedFramePacketPair)
+				{
+					printf("CVideoCallSession::Current(FN,PN) = (%d, %d), Expected = (%d,%d)\n", currentFramePacketPair.first, currentFramePacketPair.second,
+						ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
+					if (ExpectedFramePacketPair.first % 8 == 0)
+					{
+						printf("Iframe packet missed\n");
+					}
+				}*/
+
+				
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]=temp;
 
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
@@ -693,7 +714,8 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<4); //the retransmitted flag is moved to signal byte
                 
                 pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-
+                
+				//printf("Retransmitted: FrameNumber = %d, PacketNumber = %d\n", currentFramePacketPair.first, currentFramePacketPair.second);
                 CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
 			}
             else if (bMiniPacket)
@@ -787,7 +809,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 	unsigned int nTimeStampDiff;
 	long long firstTime,decodingTime,nMaxDecodingTime=0;
 	int nDecodingStatus, fps = -1;
-	double dbAverageDecodingTime, dbTotalDecodingTime = 0;
+	double dbAverageDecodingTime = 0, dbTotalDecodingTime = 0;
 	int nOponnentFPS, nMaxProcessableByMine;
 	m_iDecodedFrameCounter = 0;
 
@@ -874,13 +896,10 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
-
     if(resendFrameNumber %8 !=0)//faltu frame, dorkar nai
     {
         return;
     }
-
-    
     
     CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
                                             ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber));
