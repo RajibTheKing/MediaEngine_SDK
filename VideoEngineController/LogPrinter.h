@@ -5,8 +5,8 @@
 
 //#define __PRINT_LOG__
 //#define __EXACT_LOG__
-//#define __SPECIFIC_LOG__
-//#define __SPECIFIC_LOG2__
+#define __SPECIFIC_LOG__
+#define __SPECIFIC_LOG2__
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 

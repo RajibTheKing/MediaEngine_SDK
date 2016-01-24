@@ -907,24 +907,27 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
     
     
     int numberOfPackets = 1000; //dummy numberOfPackets
+
+	CPacketHeader PacketHeader;
+	PacketHeader.setPacketHeader(resendFrameNumber, numberOfPackets, resendPacketNumber,0 , 0, 0, 0);
+	PacketHeader.GetHeaderInByteArray(m_miniPacket+1);
     
-    
-    for (int f = startFraction; f >= 0; f -= fractionInterval)
-    {
-        m_miniPacket[startPoint++] = (resendFrameNumber >> f) & 0xFF; //resend Frame Number
-    }
-    
-    for (int f = startFraction; f >= 0; f -= fractionInterval)
-    {
-        m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF; //Dummy numberOfPackets 1000
-    }
+//    for (int f = startFraction; f >= 0; f -= fractionInterval)
+//    {
+//        m_miniPacket[startPoint++] = (resendFrameNumber >> f) & 0xFF; //resend Frame Number
+//    }
+//
+//    for (int f = startFraction; f >= 0; f -= fractionInterval)
+//    {
+//        m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF; //Dummy numberOfPackets 1000
+//    }
     
     m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<6; //MiniPacket Flag
     
-    for (int f = startFraction; f >= 0; f -= fractionInterval)
-    {
-        m_miniPacket[startPoint++] = (resendPacketNumber >> f) & 0xFF; //resend packet Number
-    }
+//    for (int f = startFraction; f >= 0; f -= fractionInterval)
+//    {
+//        m_miniPacket[startPoint++] = (resendPacketNumber >> f) & 0xFF; //resend packet Number
+//    }
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
     
     m_pCommonElementsBucket->SendFunctionPointer(friendID,2,m_miniPacket,MINI_PACKET_LENGTH_WITH_MEDIA_TYPE);
