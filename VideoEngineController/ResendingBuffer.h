@@ -7,7 +7,7 @@
 
 #include <map>
 
-#define MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE 1000
+#define MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE 500
 #define MAX_VIDEO_PACKET_RESENDING_PACKET_SIZE 508
 
 class CResendingBuffer
@@ -20,7 +20,7 @@ public:
 	int DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber);
 	void IncreamentIndex(int &index);
 
-//	int GetQueueSize();
+	//	int GetQueueSize();
 
 private:
 
@@ -28,8 +28,8 @@ private:
 	int m_iPopIndex;
 	int m_iQueueCapacity;
 
-    std::map< std::pair<int,int>, int> resendingMap;
-    std::map< std::pair<int, int>, int>::iterator resendingMapIterator;
+	std::map< std::pair<int, int>, int> resendingMap;
+	std::map< std::pair<int, int>, int>::iterator resendingMapIterator;
 
 
 	unsigned char m_Buffer[MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_RESENDING_PACKET_SIZE];

@@ -167,6 +167,28 @@ void CLogPrinter::WriteSpecific(Priority priority, const std::string message)
     }
 }
 
+void CLogPrinter::WriteSpecific2(Priority priority, const std::string message)
+{
+
+    if(isLogEnable)
+    {
+
+
+
+#if defined(TARGET_OS_IPHONE)
+        cout<<PRIORITY_NAMES[priority] << "--> "<<message<<endl;
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_)
+		printf("%s ---> %s\n",PRIORITY_NAMES[priority].c_str(), message.c_str());
+#elif defined(__ANDROID__)
+
+        LOGE("%s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
+
+#endif
+
+
+    }
+}
+
 std::string CLogPrinter::GetDateTime()
 {
 

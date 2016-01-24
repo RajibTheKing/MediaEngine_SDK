@@ -3,9 +3,10 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#define __PRINT_LOG__
+//#define __PRINT_LOG__
 //#define __EXACT_LOG__
-#define __SPECIFIC_LOG__
+//#define __SPECIFIC_LOG__
+//#define __SPECIFIC_LOG2__
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 
@@ -61,6 +62,7 @@ public:
 	static void Write(Priority priority, const std::string message);
 	static void SetLoggerPath(std::string location);
     static void WriteSpecific(Priority priority, const std::string message);
+    static void WriteSpecific2(Priority priority, const std::string message);
     static bool SetLoggingState(bool loggingState, int logLevel);
 
 private:
@@ -74,6 +76,24 @@ private:
     static bool isLogEnable;
 
 };
+
+#ifdef __PRINT_LOG__
+#define CLogPrinter_Write(...) CLogPrinter::Write(__VA_ARGS__)
+#else
+#define CLogPrinter_Write(...)
+#endif
+
+#ifdef __SPECIFIC_LOG__
+#define CLogPrinter_WriteSpecific(...) CLogPrinter::WriteSpecific(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific(...)
+#endif
+
+#ifdef __SPECIFIC_LOG2__
+#define CLogPrinter_WriteSpecific2(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific2(...)
+#endif
 
 
 #endif

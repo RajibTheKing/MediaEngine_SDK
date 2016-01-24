@@ -93,6 +93,9 @@ private:
 	int m_iCountRecResPack;
 	int m_iCountReQResPack;
 	int m_iDecodedFrameCounter;
+
+	CPacketHeader m_RcvdPacketHeader;
+	
 	long long m_ll1stFrameTimeStamp;
 	bool m_bFirstFrame;
 	unsigned  int m_iTimeStampDiff;

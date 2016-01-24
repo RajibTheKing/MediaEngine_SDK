@@ -21,7 +21,7 @@ m_UVPlaneMidPoint(m_YPlaneLength + m_VPlaneLength),
 m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 
 {
-	CLogPrinter::Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
+	CLogPrinter_Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
 
 	for (int i = 0; i < 481; i++)
 		for (int j = 0; j < 641; j++)
@@ -29,7 +29,7 @@ m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 			m_Multiplication[i][j] = i*j;
 		}
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CColorConverter::CColorConverter Prepared");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CColorConverter::CColorConverter Prepared");
 }
 
 CColorConverter::~CColorConverter()
@@ -247,5 +247,37 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *
 			int ind = ( m_Multiplication[y][halfWidth] + x) * 2;
 			pData[vIndex++] = m_pFrame[dimention + ind];
 			pData[i++] = m_pFrame[dimention + ind + 1];
+		}
+}
+
+void CColorConverter::mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData)
+{
+	int iWidth = m_iVideoHeight;
+	int iHeight = m_iVideoWidth;
+
+	int i = 0;
+
+	//	for (int x = iWidth - 1; x >-1; --x)
+	for (int x = 0; x < iWidth; x++)
+	{
+		for (int y = iHeight - 1; y > -1; --y)
+		{
+			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
+			i++;
+		}
+	}
+
+	int halfWidth = iWidth / 2;
+	int halfHeight = iHeight / 2;
+	int dimention = m_Multiplication[iHeight][iWidth];
+	int vIndex = dimention + m_Multiplication[halfHeight][halfWidth];
+
+	//	for (int x = halfWidth - 1; x>-1; --x)
+	for (int x = 0; x < halfWidth; x++)
+		for (int y = halfHeight - 1; y > -1; --y)
+		{
+			int ind = (m_Multiplication[y][halfWidth] + x) * 2;
+			pData[vIndex++] = m_pFrame[dimention + ind + 1];
+			pData[i++] = m_pFrame[dimention + ind];
 		}
 }

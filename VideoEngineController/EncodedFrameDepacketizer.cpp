@@ -48,7 +48,7 @@ CEncodedFrameDepacketizer::CEncodedFrameDepacketizer(CCommonElementsBucket* shar
 	lastTimeStamp = m_Tools.CurrentTimestamp();
 
 	fpsCompleteFrame=0;
-	CLogPrinter::Write(CLogPrinter::INFO, "CEncodedFrameDepacketizer::CEncodedFrameDepacketizer");
+	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFrameDepacketizer::CEncodedFrameDepacketizer");
 	
 	m_pPacketToResend = new unsigned char[MAX_VIDEO_PACKET_SIZE];
 
@@ -64,9 +64,11 @@ CEncodedFrameDepacketizer::CEncodedFrameDepacketizer(CCommonElementsBucket* shar
 		CreateNewIndex(frame);
 	}
 
+	//packetHeader();
+
 	m_VideoCallSession = pVideoCallSession;
 
-	CLogPrinter::Write(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::CEncodedFrameDepacketizer created");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::CEncodedFrameDepacketizer created");
 }
 
 CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
@@ -86,63 +88,44 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 
 
 
-int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket)
+int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket, CPacketHeader &packetHeader)
 {
-
-	//	LOGE("CEncodedFrameDepacketizer::PushPacketForDecoding called");
-
-	// CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding called");
     bool bIsRetransmitted = false;
     
     int firstByte = 0;
     if(!bIsMiniPacket)
     {
-        firstByte = in_data[SIGNAL_BYTE_INDEX];
+        firstByte = in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
         
-        if( in_data[SIGNAL_BYTE_INDEX] & (1<<4) )
+        if(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]&(1<<4))
         {
             bIsRetransmitted = true;
         }
         else
         {
-            
 #ifdef FPS_CHANGE_SIGNALING
-            g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX]);
+            g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
             m_VideoCallSession->ownFPS = g_FPSController.GetOwnFPS();
             m_VideoCallSession->opponentFPS = g_FPSController.GetOpponentFPS();
 #endif
         }
     }
-    
-    
-    
-	in_data[SIGNAL_BYTE_INDEX]=0;
 
-	int startIndex = 0;
+	int frameNumber = packetHeader.getFrameNumber();
+	int numberOfPackets = packetHeader.getNumberOfPacket();
+	int packetNumber = packetHeader.getPacketNumber();
+	int packetLength = packetHeader.getPacketLength();
+    unsigned int timeStampDiff = 0;
 
-	int frameNumber = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	int numberOfPackets = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	int packetNumber = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	int packetLength = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	unsigned int timeStampDiff = -1;
-	if(!bIsMiniPacket)
-	{
-		timeStampDiff = m_Tools.GetIntFromChar(in_data, startIndex);
+    if(!bIsMiniPacket)
+    {
+		timeStampDiff = packetHeader.getTimeStamp();
 		m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
-		startIndex += 4;
-	}
+    }
+
+	CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "FN: " + m_Tools.IntegertoStringConvert(frameNumber)
+													+ " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
+    
 
 	int index;
 
@@ -156,31 +139,26 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	}
 
 #ifdef	RETRANSMISSION_ENABLED
-	if(bIsRetransmitted)
-	{
+	if(bIsRetransmitted) {
 		long long td = g_timeInt.getTimeDiff(frameNumber,packetNumber);
 		if(td!=-1)
 		{
 			rtSum+=td;
 			rtCnt++;
 			rtAvg = rtSum/rtCnt;
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#()() Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#()() Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
 		}
 	}
     
 
 	if(bIsMiniPacket) //This block is for resending packets and has no relation with the packet passed to this function
 	{
-        
-        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::King-->PushPacketForDecoding Resend Packet Found resendframe: "+
+        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::King-->PushPacketForDecoding Resend Packet Found resendframe: "+
                                    m_Tools.IntegertoStringConvert(frameNumber) + " resendpacket: "+ m_Tools.IntegertoStringConvert(packetNumber)+
                                    "   in_size: "+m_Tools.IntegertoStringConvert(in_size));
-        
-        
-        
+
 		++m_iCountReqResendPacket;
 		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber );
-		/*resendQueue.getPacketForFrameAndPacketNo(resendframe, resendpacket);*/
 
 		if(resendPacketLength != -1)
 		{
@@ -189,16 +167,16 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			if(g_FriendID != -1)
 			{
 				m_iCountResendPktSent++;
-				/*CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Resend Packet Found resendframe: "+
+				/*CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Resend Packet Found resendframe: "+
 																m_Tools.IntegertoStringConvert(resendframe) + " resendpacket: "+ m_Tools.IntegertoStringConvert(resendpacket)+
 																" resendpacketLenght: "+ m_Tools.IntegertoStringConvert(resendPacketLength));*/
 
 				m_pCommonElementsBucket->SendFunctionPointer(g_FriendID, 2, m_pPacketToResend, PACKET_HEADER_LENGTH + resendPacketLength);
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#() RetransPKT USED = " + m_Tools.IntegertoStringConvert(m_iRetransPktUsed) + " DROPED = " + m_Tools.IntegertoStringConvert(m_iRetransPktDrpd) );
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#() RetransPKT USED = " + m_Tools.IntegertoStringConvert(m_iRetransPktUsed) + " DROPED = " + m_Tools.IntegertoStringConvert(m_iRetransPktDrpd) );
 			}
 			else
 			{
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding g_FriendID == -1" );
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding g_FriendID == -1" );
 			}
 		}
         return -1;
@@ -514,7 +492,7 @@ int CEncodedFrameDepacketizer::SafeFinder(int Data)
 	std::map<int, int>::iterator it = m_FrameTracker.find(Data);
 	if(it == m_FrameTracker.end())
 	{
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "To learn how to use maps: search Isearch.SafeFinder.net. SafeFinder:: Invalid Index," );
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "To learn how to use maps: search Isearch.SafeFinder.net. SafeFinder:: Invalid Index," );
 		return -1;
 	}
 	int index = it->second;
@@ -522,7 +500,7 @@ int CEncodedFrameDepacketizer::SafeFinder(int Data)
 		return index;
 	else
 	{
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "To learn how to use maps: search Isearch.SafeFinder.net. SafeFinder:: Index out of range. Index : "+Tools::IntegertoStringConvert(index));
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "To learn how to use maps: search Isearch.SafeFinder.net. SafeFinder:: Index out of range. Index : "+Tools::IntegertoStringConvert(index));
 		return -1;
 	}
 #else
@@ -581,7 +559,7 @@ void CEncodedFrameDepacketizer::ClearAndDeliverFrame(int frame)
 //	int indexInside = m_FrameTracker.find(frame)->second;
 	int indexInside = SafeFinder(frame);
 	if(0 > indexInside || indexInside>DEPACKETIZATION_BUFFER_SIZE) {
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "ClearAndDeliverFrame:: Invalid Index  ########################################### "+Tools::IntegertoStringConvert(indexInside) );
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ClearAndDeliverFrame:: Invalid Index  ########################################### "+Tools::IntegertoStringConvert(indexInside) );
 		return;
 	}
 
@@ -622,7 +600,7 @@ void CEncodedFrameDepacketizer::ClearFrame(int index, int frame)
 		m_FrameTracker.erase(frame);
 	}
 	else{
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::ClearFrame, InvalidIndex = " + m_Tools.IntegertoStringConvert(index) + ", frame = " + m_Tools.IntegertoStringConvert(frame) + "###############################");
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::ClearFrame, InvalidIndex = " + m_Tools.IntegertoStringConvert(index) + ", frame = " + m_Tools.IntegertoStringConvert(frame) + "###############################");
 	}
 }
 

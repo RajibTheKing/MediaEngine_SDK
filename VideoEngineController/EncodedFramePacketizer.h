@@ -14,6 +14,7 @@
 #include "SendingBuffer.h"
 #include "Size.h"
 #include "Tools.h"
+#include "PacketHeader.h"
 
 namespace IPV
 {
@@ -45,6 +46,8 @@ public:
 private:
 	Tools m_Tools;
 	int m_PacketSize;
+
+	CPacketHeader PacketHeader;
     
     CSendingBuffer m_SendingBuffer;//
     

@@ -10,9 +10,9 @@
 
 CResendingBuffer::CResendingBuffer() :
 m_iPushIndex(0),
-m_iQueueCapacity(RESENDING_BUFFER_SIZE)
+m_iQueueCapacity(MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE)
 {
-	memset(m_BufferFrameNumber,-1, sizeof(m_BufferFrameNumber));
+	memset(m_BufferFrameNumber, -1, sizeof(m_BufferFrameNumber));
 	m_pChannelMutex.reset(new CLockHandler);
 }
 
@@ -27,18 +27,18 @@ void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, 
 
 	memcpy(m_Buffer[m_iPushIndex], frame, length);
 
-	resendingMapIterator = resendingMap.find(make_pair(m_BufferFrameNumber[m_iPushIndex],m_BufferPacketNumber[m_iPushIndex]));
+	resendingMapIterator = resendingMap.find(make_pair(m_BufferFrameNumber[m_iPushIndex], m_BufferPacketNumber[m_iPushIndex]));
 
-	if(resendingMapIterator != resendingMap.end())
+	if (resendingMapIterator != resendingMap.end())
 		resendingMap.erase(resendingMapIterator);
 
-    m_BufferDataLength[m_iPushIndex] = length;
+	m_BufferDataLength[m_iPushIndex] = length;
 	m_BufferFrameNumber[m_iPushIndex] = frameNumber;
 	m_BufferPacketNumber[m_iPushIndex] = packetNumber;
 
-	resendingMap[ make_pair(frameNumber,packetNumber)] = m_iPushIndex;
+	resendingMap[make_pair(frameNumber, packetNumber)] = m_iPushIndex;
 
-    IncreamentIndex(m_iPushIndex);
+	IncreamentIndex(m_iPushIndex);
 }
 
 int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber)
@@ -46,7 +46,7 @@ int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int 
 	Locker lock(*m_pChannelMutex);
 
 	resendingMapIterator = resendingMap.find(make_pair(frameNumber, packetNumber));
-	if(resendingMapIterator == resendingMap.end())
+	if (resendingMapIterator == resendingMap.end())
 		return -1;
 
 	m_iPopIndex = resendingMapIterator->second;
@@ -59,7 +59,7 @@ int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int 
 void CResendingBuffer::IncreamentIndex(int &index)
 {
 	index++;
-	if (index >=m_iQueueCapacity)
+	if (index >= m_iQueueCapacity)
 		index = 0;
 }
 
