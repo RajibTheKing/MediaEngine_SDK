@@ -655,7 +655,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                         else//we dont handle burst frame miss, but 1st packets of the current frame should come, only if it is an iFrame
                         {
                             CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 3-- killed previous frames");
-                           	if(currentFramePacketPair.first % 8 == 0)
+                           	if(currentFramePacketPair.first % I_INTRA_PERIOD == 0)
 							{
 								pair<int, int> requestFramePacketPair;
 								requestFramePacketPair.first = currentFramePacketPair.first;
@@ -893,7 +893,8 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
-    if(resendFrameNumber %8 !=0)//faltu frame, dorkar nai
+
+    if(resendFrameNumber % I_INTRA_PERIOD !=0)//faltu frame, dorkar nai
     {
         return;
     }
