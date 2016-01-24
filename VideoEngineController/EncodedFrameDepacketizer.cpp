@@ -373,7 +373,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 //		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Else if --MIS -- MATCH ______________________________________" + m_Tools.IntegertoStringConvert(frameNumber));
 
 
-	if(0 == frameNumber%8)		//If frameNumber is a I-Frame
+	if(0 == frameNumber%I_INTRA_PERIOD)		//If frameNumber is a I-Frame
 	{
 		for (int frame = m_FrontFrame; frame < frameNumber; frame++)		//Remove all frames before I-Frame
 		{

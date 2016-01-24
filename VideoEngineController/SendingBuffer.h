@@ -4,9 +4,8 @@
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
+#include "Size.h"
 
-#define MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE 300
-#define MAX_VIDEO_PACKET_SENDING_PACKET_SIZE 1024
 
 class CSendingBuffer
 {

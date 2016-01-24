@@ -5,6 +5,8 @@
 #include "Tools.h"
 
 #define BITRATE_MAX 1000 * 5000
+#define FRAME_RATE 30
+#define I_INTRA_PERIOD 8
 
 
 CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
@@ -44,7 +46,7 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	m_pSVCVideoEncoder->GetDefaultParams(&encParam);
 	encParam.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encParam.iTemporalLayerNum = 0;
-	encParam.uiIntraPeriod = 8;
+	encParam.uiIntraPeriod = I_INTRA_PERIOD;
 	encParam.eSpsPpsIdStrategy = INCREASING_ID;
 	encParam.bEnableSSEI = false;
 	encParam.bEnableFrameCroppingFlag = true;
@@ -67,7 +69,7 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	pDLayer->uiProfileIdc = PRO_BASELINE;
 	encParam.iPicWidth = pDLayer->iVideoWidth = m_iWidth;
 	encParam.iPicHeight = pDLayer->iVideoHeight = m_iHeight;
-	encParam.fMaxFrameRate = pDLayer->fFrameRate = (float)30;
+	encParam.fMaxFrameRate = pDLayer->fFrameRate = (float)FRAME_RATE;
 	encParam.iTargetBitrate = pDLayer->iSpatialBitrate = BITRATE_MAX;
 	pDLayer->iDLayerQp = 24;
 	pDLayer->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
@@ -89,7 +91,7 @@ int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_siz
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
 
 	if (NULL == m_pSVCVideoEncoder){
-		cout << "OpenH264 encoder NULL!\n";
+		CLogPrinter_Write("OpenH264 encoder NULL!");
 		return 0;
 	}
 
@@ -107,40 +109,30 @@ int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_siz
 	sourcePicture.pData[2] = sourcePicture.pData[1] + (m_iWidth * m_iHeight >> 2);
 
 	int iRet = m_pSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode OpenH264 encoding returned" + m_Tools.IntegertoStringConvert(iRet));
 	
 	if (iRet != 0){       
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoEncoder::EncodeAndTransfer Encode FAILED");   
 		return 0;
 	}
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode 15");
 	// fixed issue in case dismatch source picture introduced by frame skipped, 1/12/2010
 	if (videoFrameTypeSkip == frameBSInfo.eFrameType || videoFrameTypeInvalid == frameBSInfo.eFrameType)
 	{
 		return 0;
 	}
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode Successful");
 	int iFrameSize = 0;
 	int copy_index = 0;
 	for (int iLayer = 0; iLayer < frameBSInfo.iLayerNum; iLayer++){
 		SLayerBSInfo* pLayerBsInfo = &frameBSInfo.sLayerInfo[iLayer];
-		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode 19");
 		if (pLayerBsInfo){
-			CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode 20");
 			int iLayerSize = 0;
 			for (int iNalIdx = pLayerBsInfo->iNalCount - 1; iNalIdx >= 0; iNalIdx--){
-				CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode 22");
 				iLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIdx];
 			}
-			CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode 23");
 			memcpy(out_buffer + copy_index, pLayerBsInfo->pBsBuf, iLayerSize);
-			CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode 24");
 			copy_index += iLayerSize;
 			iFrameSize += iLayerSize;
 		}
 	}
-
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::Encode done encoding --- > iFrameSize = "+Tools::IntegertoStringConvert(iFrameSize));
 
 	return iFrameSize;
 }
