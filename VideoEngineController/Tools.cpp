@@ -124,7 +124,7 @@ void Tools::SOSleep(int Timeout)
 }
 
 
-pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets)
+/*pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets)
 {
 	pair<int, int> FramePacketPair = {-1, -1};
 
@@ -143,7 +143,7 @@ pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNum
 	FramePacketPair.second = iPackeNumber;
 
 	return FramePacketPair;
-}
+}*/
 
 int Tools::GetIntFromChar(unsigned char *packetData, int index)
 {

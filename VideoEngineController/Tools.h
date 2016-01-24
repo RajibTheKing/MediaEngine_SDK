@@ -33,7 +33,7 @@ public:
 	static std::string LongLongToString(LongLong value);
 
 
-	static pair<int, int> GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets);
+//	static pair<int, int> GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets);
 	static int GetIntFromChar(unsigned char *packetData, int index);
 	static int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
 	void WriteToFile(short* in_Data, int count);

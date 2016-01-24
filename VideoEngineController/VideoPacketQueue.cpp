@@ -31,7 +31,7 @@ int CVideoPacketQueue::Queue(unsigned char *frame, int length)
 #ifdef	RETRANSMISSION_ENABLED
 	Tools tools;
 	int frameNumber = tools.GetIntFromChar(frame,1,3);
-	int pktNumber = tools.GetIntFromChar(frame,8);
+	int pktNumber = frame[5];
 
 	m_FrameInQueue.insert(frameNumber*MAX_NUMBER_OF_PACKETS + pktNumber);
 #endif
@@ -69,7 +69,7 @@ int CVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
 	Locker lock(*m_pChannelMutex);
 #ifdef	RETRANSMISSION_ENABLED
 	int frameNumber = Tools::GetIntFromChar(decodeBuffer,1,3);
-	int pktNumber = Tools::GetIntFromChar(decodeBuffer,8);
+	int pktNumber = decodeBuffer[5];
 
 #ifdef CRASH_CHECK
 	if(m_FrameInQueue.find(frameNumber*MAX_NUMBER_OF_PACKETS + pktNumber) != m_FrameInQueue.end())

@@ -570,7 +570,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 			if(!bRetransmitted && !bMiniPacket)
 			{
-				int iNumberOfPackets = -1;
+				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
 //				temp = m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
 //				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=0;
 //				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
@@ -706,20 +706,20 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			}
 			else if (bRetransmitted)
 			{
-				int iNumberOfPackets = -1;
+				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
                 
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]|=(1<<4); //the retransmitted flag is moved to signal byte
-                
-                pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
+
                 
 				//printf("Retransmitted: FrameNumber = %d, PacketNumber = %d\n", currentFramePacketPair.first, currentFramePacketPair.second);
-                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
+                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+															   + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 			}
             else if (bMiniPacket)
             {
-                int iNumberOfPackets = -1;
-                pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
+                int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
+                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+															   + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 //                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
 				bIsMiniPacket = true;
             }
