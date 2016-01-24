@@ -75,36 +75,10 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 		if(packetNumber>MAX_NUMBER_OF_PACKETS)
 			return -1;
 
-		/*for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (frameNumber >> f) & 0xFF;
-		}
-
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (numberOfPackets >> f) & 0xFF;
-		}
-
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (packetNumber >> f) & 0xFF;
-		}
-
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (m_PacketSize >> f) & 0xFF;
-		}
-
-        
-        for (int f = startFraction; f >= 0; f -= fractionInterval)
-        {
-            m_Packet[startPoint++] = (iTimeStampDiff >> f) & 0xFF;
-        }*/
-
-		PacketHeader.setPacketHeader(0, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize);
+		PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize);
 		int nHeaderLen = PacketHeader.GetHeaderInByteArray(m_Packet+1);
 
-		PacketHeader.setPacketHeader(m_Packet+1);
+		//PacketHeader.setPacketHeader(m_Packet+1);
 
 		//CLogPrinter::WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(PacketHeader.getTimeStamp()));
 
@@ -131,32 +105,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 
 		//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetSize) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
 
-		/*for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (frameNumber >> f) & 0xFF;
-		}
-
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (numberOfPackets >> f) & 0xFF;
-		}
-
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (packetNumber >> f) & 0xFF;
-		}
-
-		for (int f = startFraction; f >= 0; f -= fractionInterval)
-		{
-			m_Packet[startPoint++] = (packetSize >> f) & 0xFF;
-		}
-        
-        for (int f = startFraction; f >= 0; f -= fractionInterval)
-        {
-            m_Packet[startPoint++] = (iTimeStampDiff >> f) & 0xFF;
-        }*/
-
-		PacketHeader.setPacketHeader(0, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
+		PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
 		int nHeaderLen = PacketHeader.GetHeaderInByteArray(m_Packet+1);
 
 		startPoint = nHeaderLen + 1;

@@ -9,7 +9,7 @@ public:
     ~CPacketHeader();
 
     void setPacketHeader(unsigned char *headerData);
-    void setPacketHeader(unsigned char VersionCode, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
+    void setPacketHeader(unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
                   unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength);
 
 

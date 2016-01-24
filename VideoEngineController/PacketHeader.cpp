@@ -6,7 +6,7 @@
 
 CPacketHeader::CPacketHeader()
 {
-    m_cVersionCode = 0;    // 1 byte
+    m_cVersionCode = VIDEO_VERSION_CODE;    // 1 byte
     m_iFrameNumber = 0;     // 3 byte
     m_iNumberOfPacket = 0;  // 1 byte
     m_iPacketNumber = 0;    // 1 byte
@@ -30,10 +30,10 @@ void CPacketHeader::setPacketHeader(unsigned char *headerData)
     setPacketLength(headerData + 12);
 }
 
-void CPacketHeader::setPacketHeader(unsigned char VersionCode, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
+void CPacketHeader::setPacketHeader(unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
                              unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength)
 {
-    setVersionCode(VersionCode);
+    m_cVersionCode = VIDEO_VERSION_CODE;
     setFrameNumber(FrameNumber);
     setNumberOfPacket(NumberOfPacket);
     setPacketNumber(PacketNumber);

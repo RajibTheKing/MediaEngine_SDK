@@ -87,10 +87,6 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 
 int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket, CPacketHeader &packetHeader)
 {
-
-	//	LOGE("CEncodedFrameDepacketizer::PushPacketForDecoding called");
-
-	// CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding called");
     bool bIsRetransmitted = false;
     
     int firstByte = 0;
@@ -104,7 +100,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
         }
         else
         {
-            
 #ifdef FPS_CHANGE_SIGNALING
             g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
             m_VideoCallSession->ownFPS = g_FPSController.GetOwnFPS();
@@ -112,29 +107,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 #endif
         }
     }
-    
-    
-    
-	/*in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=0;
-
-	int startIndex = 0;
-
-	int frameNumber = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	int numberOfPackets = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	int packetNumber = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;
-
-	int packetLength = m_Tools.GetIntFromChar(in_data, startIndex);
-
-	startIndex += 4;*/
-
 
 	int frameNumber = packetHeader.getFrameNumber();
 	int numberOfPackets = packetHeader.getNumberOfPacket();
@@ -154,14 +126,12 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	int index;
 
-	if(in_size>PACKET_HEADER_LENGTH && frameNumber > m_iMaxFrameNumRecvd)
-	{
+	if(in_size>PACKET_HEADER_LENGTH && frameNumber > m_iMaxFrameNumRecvd) {
 		m_iMaxFrameNumRecvd = frameNumber;
 	}
 
 #ifdef	RETRANSMISSION_ENABLED
-	if(bIsRetransmitted)
-	{
+	if(bIsRetransmitted) {
 		long long td = g_timeInt.getTimeDiff(frameNumber,packetNumber);
 		if(td!=-1)
 		{
@@ -175,16 +145,12 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	if(bIsMiniPacket) //This block is for resending packets and has no relation with the packet passed to this function
 	{
-        
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::King-->PushPacketForDecoding Resend Packet Found resendframe: "+
                                    m_Tools.IntegertoStringConvert(frameNumber) + " resendpacket: "+ m_Tools.IntegertoStringConvert(packetNumber)+
                                    "   in_size: "+m_Tools.IntegertoStringConvert(in_size));
-        
-        
-        
+
 		++m_iCountReqResendPacket;
 		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber );
-		/*resendQueue.getPacketForFrameAndPacketNo(resendframe, resendpacket);*/
 
 		if(resendPacketLength != -1)
 		{
