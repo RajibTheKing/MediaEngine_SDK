@@ -579,6 +579,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
+                    printf("-->Current(FN, PN) = (%d,%d) --> Expected(FN, PN) = (%d, %d)\n", currentFramePacketPair.first, currentFramePacketPair.second, ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
                     
                     CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Current(FN,PN) = ("
                                                + m_Tools.IntegertoStringConvert(currentFramePacketPair.first)

@@ -169,6 +169,7 @@ int CFPSController::NotifyFrameComplete(int framNumber)
 
 int CFPSController::NotifyFrameDropped(int framNumber)
 {
+    printf("TheKing--> Dropped %d\n", framNumber);
     m_iFrameDropIntervalCounter++;
 
 //    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: FRAME DROP------------> "+m_Tools.IntegertoStringConvert(framNumber)+" CNT: "+m_Tools.IntegertoStringConvert(m_iFrameDropIntervalCounter));
