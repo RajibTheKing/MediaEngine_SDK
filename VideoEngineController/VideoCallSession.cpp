@@ -4,6 +4,12 @@
 #include "Tools.h"
 #include "Globals.h"
 
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+map<int, int> g_TraceRetransmittedFrame;
+#endif
+
+
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 	#include <dispatch/dispatch.h>
 #endif
@@ -30,7 +36,6 @@ extern CFPSController g_FPSController;
 
 
 
-
 //extern int g_MY_FPS;
 
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
@@ -49,6 +54,9 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 		m_pEncodedFramePacketizer(NULL),
 		m_pVideoEncoder(NULL)
 {
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+    g_TraceRetransmittedFrame.clear();
+#endif
 	fpsCnt=0;
 	g_FPSController.Reset();
 //	g_MY_FPS =
@@ -367,7 +375,6 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
 
-			//printf("enctime = %lld\n", m_Tools.CurrentTimestamp() - enctime);
 
 			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 #else
@@ -473,9 +480,17 @@ void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 	return NULL;
 }
 
+int iValuableFrameUsedCounter = 0;
 
 void CVideoCallSession::PushFrameForDecoding(unsigned char *in_data, unsigned int nFrameSize,int nFramNumber, unsigned int timeStampDiff)
 {
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+    if(g_TraceRetransmittedFrame[nFramNumber] == 1)
+    {
+        CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"Very valuable frame used "+m_Tools.IntegertoStringConvert(nFramNumber)  +", counter =  "+m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter) );
+        iValuableFrameUsedCounter++;
+    }
+#endif
 	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "\n\nPPPPPPPPPPPPPPPPPPPPPPPPPPP CVideoCallSession::PushFrameForDecoding --> NewFrameFound, nFrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 	m_DecodingBuffer.Queue(nFramNumber, in_data, nFrameSize, timeStampDiff);
 }
@@ -707,11 +722,14 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			else if (bRetransmitted)
 			{
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+                
+                g_TraceRetransmittedFrame[m_RcvdPacketHeader.getFrameNumber()] = 1;
+#endif
                 
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]|=(1<<4); //the retransmitted flag is moved to signal byte
 
                 
-				//printf("Retransmitted: FrameNumber = %d, PacketNumber = %d\n", currentFramePacketPair.first, currentFramePacketPair.second);
                 CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
 															   + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 			}

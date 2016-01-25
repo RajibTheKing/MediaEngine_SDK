@@ -42,6 +42,8 @@ public:
     void StopSendingThread();//
     void SendingThreadProcedure();//
     static void *CreateVideoSendingThread(void* param);//
+    
+    int GetSleepTime();
 
 private:
 	Tools m_Tools;

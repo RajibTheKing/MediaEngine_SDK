@@ -221,6 +221,13 @@ void *CEncodedFramePacketizer::CreateVideoSendingThread(void* param)
     return NULL;
 }
 
+#ifdef PACKET_SEND_STATISTICS_ENABLED
+int iPacketCounter = 0;
+int iPrevFrameNumer = 0;
+int iNumberOfPacketsInLastFrame = 0;
+int iNumberOfPacketsActuallySentFromLastFrame = 0;
+#endif
+
 void CEncodedFramePacketizer::SendingThreadProcedure()
 {
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -271,6 +278,44 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 			packetHeader.setPacketHeader(m_EncodedFrame+1);
 
+#ifdef PACKET_SEND_STATISTICS_ENABLED
+            
+            int iNumberOfPackets = -1;
+            
+            iNumberOfPackets = packetHeader.getNumberOfPacket();
+            
+            pair<int, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
+            
+            if (FramePacketPair.first != iPrevFrameNumer)
+            {
+                //CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,"iNumberOfPacketsActuallySentFromLastFrame = %d, iNumberOfPacketsInLastFrame = %d, currentframenumber = %d\n",
+                //	iNumberOfPacketsActuallySentFromLastFrame, iNumberOfPacketsInLastFrame, FramePacketPair.first);
+                
+                if (iNumberOfPacketsActuallySentFromLastFrame != iNumberOfPacketsInLastFrame)
+                {
+                    CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"******* iNumberOfPacketsActuallySentFromLastFrame = "
+                                               + m_Tools.IntegertoStringConvert(iNumberOfPacketsActuallySentFromLastFrame)
+                                               + " iNumberOfPacketsInLastFrame = "
+                                               + m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrame)
+                                               + " currentframenumber = "
+                                               + m_Tools.IntegertoStringConvert(FramePacketPair.first)
+                                               + " m_SendingBuffersize = "
+                                               + m_Tools.IntegertoStringConvert(m_SendingBuffer.GetQueueSize()));
+                                               
+                }
+              
+                
+                iNumberOfPacketsInLastFrame = iNumberOfPackets;
+                iNumberOfPacketsActuallySentFromLastFrame = 1;
+                iPrevFrameNumer = FramePacketPair.first;
+            }
+            else
+            {
+                iNumberOfPacketsActuallySentFromLastFrame++;
+            }
+#endif
+            
+
 			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(packetHeader.getFrameNumber())
 														  + "  pNo : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketNumber())
 														  + "  Npkt : "+ m_Tools.IntegertoStringConvert(packetHeader.getNumberOfPacket())
@@ -280,10 +325,12 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 														  + " tmDiff : " + m_Tools.IntegertoStringConvert(packetHeader.getTimeStamp()));
 
 
+
 			m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
             
-            toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
-
+            //toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
+            
+            toolsObject.SOSleep(GetSleepTime());
 			
         }
     }
@@ -292,5 +339,23 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
+
+int CEncodedFramePacketizer::GetSleepTime()
+{
+    int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0);
+    int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer.GetQueueSize() + 1.0);
+    
+    if (SleepTimeDependingOnFPS < SleepTimeDependingOnQueueSize)
+    {
+        return SleepTimeDependingOnFPS;
+    }
+    else
+    {
+        return SleepTimeDependingOnQueueSize;
+    }
+}
+
+
+
 
 
