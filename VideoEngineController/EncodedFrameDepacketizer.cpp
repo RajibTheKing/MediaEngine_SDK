@@ -156,7 +156,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 		if(resendPacketLength != -1)
 		{
-			m_pPacketToResend[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (1<<7); //Retransmitted packet flag added
+			m_pPacketToResend[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (1<<7); //Retransmitted packet flag added
 
 			if(g_FriendID != -1)
 			{

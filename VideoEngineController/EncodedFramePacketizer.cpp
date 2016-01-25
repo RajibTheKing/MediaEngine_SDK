@@ -282,9 +282,9 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
             
             int iNumberOfPackets = -1;
             
-            iNumberOfPackets = PacketHeader.getNumberOfPacket();
+            iNumberOfPackets = packetHeader.getNumberOfPacket();
             
-            pair<int, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(PacketHeader.getFrameNumber(), PacketHeader.getPacketNumber());
+            pair<int, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
             
             if (FramePacketPair.first != iPrevFrameNumer)
             {
@@ -293,8 +293,15 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
                 
                 if (iNumberOfPacketsActuallySentFromLastFrame != iNumberOfPacketsInLastFrame)
                 {
-                    printf("******* iNumberOfPacketsActuallySentFromLastFrame = %d, iNumberOfPacketsInLastFrame = %d, currentframenumber = %d, m_SendingBuffersize = %d\n",
-                                              iNumberOfPacketsActuallySentFromLastFrame, iNumberOfPacketsInLastFrame, FramePacketPair.first, m_SendingBuffer.GetQueueSize());
+                    CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"******* iNumberOfPacketsActuallySentFromLastFrame = "
+                                               + m_Tools.IntegertoStringConvert(iNumberOfPacketsActuallySentFromLastFrame)
+                                               + " iNumberOfPacketsInLastFrame = "
+                                               + m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrame)
+                                               + " currentframenumber = "
+                                               + m_Tools.IntegertoStringConvert(FramePacketPair.first)
+                                               + " m_SendingBuffersize = "
+                                               + m_Tools.IntegertoStringConvert(m_SendingBuffer.GetQueueSize()));
+                                               
                 }
               
                 
@@ -305,18 +312,17 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
             else
             {
                 iNumberOfPacketsActuallySentFromLastFrame++;
-                //printf("&&&&&&&&&&&&&&&& Outoff my calculation, iNumberOfPackets = %d, FrameNumber = %d, PacketNumber = %d\n", iNumberOfPackets, PacketHeader.getFrameNumber(), PacketHeader.getPacketNumber());
             }
 #endif
             
 
-			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(PacketHeader.getFrameNumber())
-														  + "  pNo : "+ m_Tools.IntegertoStringConvert(PacketHeader.getPacketNumber())
-														  + "  Npkt : "+ m_Tools.IntegertoStringConvert(PacketHeader.getNumberOfPacket())
-														  + "  FPS : "+ m_Tools.IntegertoStringConvert(PacketHeader.getFPS())
-														  + "  Rt : "+ m_Tools.IntegertoStringConvert(PacketHeader.getRetransSignal())
-														  + "  Len : "+ m_Tools.IntegertoStringConvert(PacketHeader.getPacketLength())
-														  + " tmDiff : " + m_Tools.IntegertoStringConvert(PacketHeader.getTimeStamp()));
+			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(packetHeader.getFrameNumber())
+														  + "  pNo : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketNumber())
+														  + "  Npkt : "+ m_Tools.IntegertoStringConvert(packetHeader.getNumberOfPacket())
+														  + "  FPS : "+ m_Tools.IntegertoStringConvert(packetHeader.getFPS())
+														  + "  Rt : "+ m_Tools.IntegertoStringConvert(packetHeader.getRetransSignal())
+														  + "  Len : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketLength())
+														  + " tmDiff : " + m_Tools.IntegertoStringConvert(packetHeader.getTimeStamp()));
 
 
 
