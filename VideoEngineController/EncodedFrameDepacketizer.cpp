@@ -126,12 +126,14 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	int index;
 
-	if(in_size>PACKET_HEADER_LENGTH && frameNumber > m_iMaxFrameNumRecvd) {
+	if(in_size>PACKET_HEADER_LENGTH && frameNumber > m_iMaxFrameNumRecvd)
+	{
 		m_iMaxFrameNumRecvd = frameNumber;
 	}
 
 #ifdef	RETRANSMISSION_ENABLED
-	if(bIsRetransmitted) {
+	if(bIsRetransmitted)
+	{
 		long long td = g_timeInt.getTimeDiff(frameNumber,packetNumber);
 		if(td!=-1)
 		{
@@ -154,7 +156,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 		if(resendPacketLength != -1)
 		{
-			m_pPacketToResend[4 + 1] |= (1<<7); //Retransmitted packet flag added
+			m_pPacketToResend[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (1<<7); //Retransmitted packet flag added
 
 			if(g_FriendID != -1)
 			{

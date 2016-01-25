@@ -47,7 +47,7 @@ private:
 	Tools m_Tools;
 	int m_PacketSize;
 
-	CPacketHeader PacketHeader;
+	CPacketHeader m_PacketHeader;
     
     CSendingBuffer m_SendingBuffer;//
     

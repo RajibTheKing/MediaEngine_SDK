@@ -203,8 +203,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 		{//Block for LOCK
 			Locker lock(*m_pSessionMutex);
-			g_FPSController.SetClientFPS(1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter));
-//			m_ClientFPS = 1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter);
+			g_FPSController.SetClientFPS(1000 / ( m_ClientFPSDiffSum / m_ClientFrameCounter ));
+    //		m_ClientFPS = 1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter);
 	//		m_ClientFPS = 1000/(currentTimeStamp - m_LastTimeStampClientFPS);
 		}
 
