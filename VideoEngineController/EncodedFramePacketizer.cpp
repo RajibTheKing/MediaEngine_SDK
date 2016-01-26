@@ -75,12 +75,12 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 		if(packetNumber>MAX_NUMBER_OF_PACKETS)
 			return -1;
 
-		PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize);
-		int nHeaderLen = PacketHeader.GetHeaderInByteArray(m_Packet+1);
+		m_PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize);
+		int nHeaderLen = m_PacketHeader.GetHeaderInByteArray(m_Packet+1);
 
-		//PacketHeader.setPacketHeader(m_Packet+1);
+		//m_PacketHeader.setPacketHeader(m_Packet+1);
 
-		//CLogPrinter::WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(PacketHeader.getTimeStamp()));
+		//CLogPrinter::WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
 
 		startPoint = nHeaderLen + 1;
 		memcpy(m_Packet + startPoint, in_data + readPacketLength, m_PacketSize);
@@ -105,14 +105,14 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 
 		//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetSize) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
 
-		PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
-		int nHeaderLen = PacketHeader.GetHeaderInByteArray(m_Packet+1);
+		m_PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
+		int nHeaderLen = m_PacketHeader.GetHeaderInByteArray(m_Packet+1);
 
 		startPoint = nHeaderLen + 1;
 		memcpy(m_Packet + startPoint, in_data + readPacketLength, packetSize);
 		startPoint +=  packetSize;
 
-		//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(PacketHeader.getTimeStamp()));
+		//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
 
 		//m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, packetSize, packetHeaderSize + packetSize, m_Packet);
 
@@ -221,6 +221,13 @@ void *CEncodedFramePacketizer::CreateVideoSendingThread(void* param)
     return NULL;
 }
 
+#ifdef PACKET_SEND_STATISTICS_ENABLED
+int iPacketCounter = 0;
+int iPrevFrameNumer = 0;
+int iNumberOfPacketsInLastFrame = 0;
+int iNumberOfPacketsActuallySentFromLastFrame = 0;
+#endif
+
 void CEncodedFramePacketizer::SendingThreadProcedure()
 {
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -269,21 +276,61 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 #endif
 //			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
 
-			PacketHeader.setPacketHeader(m_EncodedFrame+1);
+			packetHeader.setPacketHeader(m_EncodedFrame+1);
 
-			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(PacketHeader.getFrameNumber())
-														  + "  pNo : "+ m_Tools.IntegertoStringConvert(PacketHeader.getPacketNumber())
-														  + "  Npkt : "+ m_Tools.IntegertoStringConvert(PacketHeader.getNumberOfPacket())
-														  + "  FPS : "+ m_Tools.IntegertoStringConvert(PacketHeader.getFPS())
-														  + "  Rt : "+ m_Tools.IntegertoStringConvert(PacketHeader.getRetransSignal())
-														  + "  Len : "+ m_Tools.IntegertoStringConvert(PacketHeader.getPacketLength())
-														  + " tmDiff : " + m_Tools.IntegertoStringConvert(PacketHeader.getTimeStamp()));
+#ifdef PACKET_SEND_STATISTICS_ENABLED
+            
+            int iNumberOfPackets = -1;
+            
+            iNumberOfPackets = packetHeader.getNumberOfPacket();
+            
+            pair<int, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
+            
+            if (FramePacketPair.first != iPrevFrameNumer)
+            {
+                //CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,"iNumberOfPacketsActuallySentFromLastFrame = %d, iNumberOfPacketsInLastFrame = %d, currentframenumber = %d\n",
+                //	iNumberOfPacketsActuallySentFromLastFrame, iNumberOfPacketsInLastFrame, FramePacketPair.first);
+                
+                if (iNumberOfPacketsActuallySentFromLastFrame != iNumberOfPacketsInLastFrame)
+                {
+                    CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"******* iNumberOfPacketsActuallySentFromLastFrame = "
+                                               + m_Tools.IntegertoStringConvert(iNumberOfPacketsActuallySentFromLastFrame)
+                                               + " iNumberOfPacketsInLastFrame = "
+                                               + m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrame)
+                                               + " currentframenumber = "
+                                               + m_Tools.IntegertoStringConvert(FramePacketPair.first)
+                                               + " m_SendingBuffersize = "
+                                               + m_Tools.IntegertoStringConvert(m_SendingBuffer.GetQueueSize()));
+                                               
+                }
+              
+                
+                iNumberOfPacketsInLastFrame = iNumberOfPackets;
+                iNumberOfPacketsActuallySentFromLastFrame = 1;
+                iPrevFrameNumer = FramePacketPair.first;
+            }
+            else
+            {
+                iNumberOfPacketsActuallySentFromLastFrame++;
+            }
+#endif
+            
+
+			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(packetHeader.getFrameNumber())
+														  + "  pNo : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketNumber())
+														  + "  Npkt : "+ m_Tools.IntegertoStringConvert(packetHeader.getNumberOfPacket())
+														  + "  FPS : "+ m_Tools.IntegertoStringConvert(packetHeader.getFPS())
+														  + "  Rt : "+ m_Tools.IntegertoStringConvert(packetHeader.getRetransSignal())
+														  + "  Len : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketLength())
+														  + " tmDiff : " + m_Tools.IntegertoStringConvert(packetHeader.getTimeStamp()));
+
 
 
 			m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
             
-            toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
-
+            //toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
+            
+            toolsObject.SOSleep(GetSleepTime());
 			
         }
     }
@@ -292,5 +339,23 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
+
+int CEncodedFramePacketizer::GetSleepTime()
+{
+    int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0);
+    int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer.GetQueueSize() + 1.0);
+    
+    if (SleepTimeDependingOnFPS < SleepTimeDependingOnQueueSize)
+    {
+        return SleepTimeDependingOnFPS;
+    }
+    else
+    {
+        return SleepTimeDependingOnQueueSize;
+    }
+}
+
+
+
 
 

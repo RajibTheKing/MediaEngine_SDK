@@ -4,6 +4,12 @@
 #include "Tools.h"
 #include "Globals.h"
 
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+map<int, int> g_TraceRetransmittedFrame;
+#endif
+
+
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 	#include <dispatch/dispatch.h>
 #endif
@@ -30,7 +36,6 @@ extern CFPSController g_FPSController;
 
 
 
-
 //extern int g_MY_FPS;
 
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
@@ -49,6 +54,9 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 		m_pEncodedFramePacketizer(NULL),
 		m_pVideoEncoder(NULL)
 {
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+    g_TraceRetransmittedFrame.clear();
+#endif
 	fpsCnt=0;
 	g_FPSController.Reset();
 //	g_MY_FPS =
@@ -203,8 +211,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 		{//Block for LOCK
 			Locker lock(*m_pSessionMutex);
-			g_FPSController.SetClientFPS(1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter));
-//			m_ClientFPS = 1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter);
+			g_FPSController.SetClientFPS(1000 / ( m_ClientFPSDiffSum / m_ClientFrameCounter ));
+    //		m_ClientFPS = 1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter);
 	//		m_ClientFPS = 1000/(currentTimeStamp - m_LastTimeStampClientFPS);
 		}
 
@@ -473,9 +481,18 @@ void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 	return NULL;
 }
 
+int iValuableFrameUsedCounter = 0;
 
 void CVideoCallSession::PushFrameForDecoding(unsigned char *in_data, unsigned int nFrameSize,int nFramNumber, unsigned int timeStampDiff)
 {
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+    if(g_TraceRetransmittedFrame[nFramNumber] == 1)
+    {
+        CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"Very valuable frame used "+m_Tools.IntegertoStringConvert(nFramNumber)  +", counter =  "+m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter) );
+        iValuableFrameUsedCounter++;
+    }
+#endif
+	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "\n\nPPPPPPPPPPPPPPPPPPPPPPPPPPP CVideoCallSession::PushFrameForDecoding --> NewFrameFound, nFrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 	m_DecodingBuffer.Queue(nFramNumber, in_data, nFrameSize, timeStampDiff);
 }
 
@@ -553,7 +570,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 			if(!bRetransmitted && !bMiniPacket)
 			{
-				int iNumberOfPackets = -1;
+				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
 //				temp = m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
 //				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=0;
 //				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
@@ -679,20 +696,23 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			}
 			else if (bRetransmitted)
 			{
-				int iNumberOfPackets = -1;
+				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+                
+                g_TraceRetransmittedFrame[m_RcvdPacketHeader.getFrameNumber()] = 1;
+#endif
                 
 				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]|=(1<<4); //the retransmitted flag is moved to signal byte
+
                 
-                pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-                
-				//printf("Retransmitted: FrameNumber = %d, PacketNumber = %d\n", currentFramePacketPair.first, currentFramePacketPair.second);
-                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
+                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+															   + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 			}
             else if (bMiniPacket)
             {
-                int iNumberOfPackets = -1;
-                pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
-                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first) + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(currentFramePacketPair.second));
+                int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
+                CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+															   + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 //                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
 				bIsMiniPacket = true;
             }
@@ -921,24 +941,27 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
     
     
     int numberOfPackets = 1000; //dummy numberOfPackets
+
+	CPacketHeader PacketHeader;
+	PacketHeader.setPacketHeader(resendFrameNumber, numberOfPackets, resendPacketNumber,0 , 0, 0, 0);
+	PacketHeader.GetHeaderInByteArray(m_miniPacket+1);
     
-    
-    for (int f = startFraction; f >= 0; f -= fractionInterval)
-    {
-        m_miniPacket[startPoint++] = (resendFrameNumber >> f) & 0xFF; //resend Frame Number
-    }
-    
-    for (int f = startFraction; f >= 0; f -= fractionInterval)
-    {
-        m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF; //Dummy numberOfPackets 1000
-    }
+//    for (int f = startFraction; f >= 0; f -= fractionInterval)
+//    {
+//        m_miniPacket[startPoint++] = (resendFrameNumber >> f) & 0xFF; //resend Frame Number
+//    }
+//
+//    for (int f = startFraction; f >= 0; f -= fractionInterval)
+//    {
+//        m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF; //Dummy numberOfPackets 1000
+//    }
     
     m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<6; //MiniPacket Flag
     
-    for (int f = startFraction; f >= 0; f -= fractionInterval)
-    {
-        m_miniPacket[startPoint++] = (resendPacketNumber >> f) & 0xFF; //resend packet Number
-    }
+//    for (int f = startFraction; f >= 0; f -= fractionInterval)
+//    {
+//        m_miniPacket[startPoint++] = (resendPacketNumber >> f) & 0xFF; //resend packet Number
+//    }
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
     
     m_pCommonElementsBucket->SendFunctionPointer(friendID,2,m_miniPacket,MINI_PACKET_LENGTH_WITH_MEDIA_TYPE);
@@ -1048,11 +1071,16 @@ void CVideoCallSession::RenderingThreadProcedure()
 				continue;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
 	this->m_pColorConverter->ConvertI420ToNV12(m_RenderingFrame, videoHeight, videoWidth);
+#elif defined(_DESKTOP_C_SHARP_)
+//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+	this->m_pColorConverter->ConvertI420ToYV12(m_RenderingFrame, videoHeight, videoWidth);
 #else
+
 	this->m_pColorConverter->ConvertI420ToNV21(m_RenderingFrame, videoHeight, videoWidth);
 #endif
-
 			if(m_b1stDecodedFrame)
 			{
 				m_ll1stDecodedFrameTimeStamp = firstTime;

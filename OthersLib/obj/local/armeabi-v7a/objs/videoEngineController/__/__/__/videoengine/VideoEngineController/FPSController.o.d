@@ -449,7 +449,8 @@ D:/Current/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/obj/
  D:/Current/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h \
  D:/Android/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/queue \
  D:/Android/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/sstream \
- D:/Current/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h
+ D:/Current/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h \
+ D:/Android/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/map
 
 D:/Current/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/FPSController.h:
 
@@ -1350,3 +1351,5 @@ D:/Android/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/queue:
 D:/Android/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/sstream:
 
 D:/Current/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h:
+
+D:/Android/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/map:
