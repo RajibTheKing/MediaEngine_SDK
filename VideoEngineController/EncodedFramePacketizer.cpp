@@ -75,7 +75,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 		if(packetNumber>MAX_NUMBER_OF_PACKETS)
 			return -1;
 
-		m_PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize);
+		m_PacketHeader.setPacketHeader(0,frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize);
 		int nHeaderLen = m_PacketHeader.GetHeaderInByteArray(m_Packet+1);
 
 		//m_PacketHeader.setPacketHeader(m_Packet+1);
@@ -105,7 +105,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 
 		//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetSize) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
 
-		m_PacketHeader.setPacketHeader(frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
+		m_PacketHeader.setPacketHeader(0,frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
 		int nHeaderLen = m_PacketHeader.GetHeaderInByteArray(m_Packet+1);
 
 		startPoint = nHeaderLen + 1;
@@ -253,6 +253,9 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
 			pair<int,int> FramePacketToSend = {-1, -1};
 
+
+			packetHeader.setPacketHeader(m_EncodedFrame+1);
+
 			/*if(ExpectedFramePacketDeQueue.size() > 0)
 			{
 				FramePacketToSend = ExpectedFramePacketDeQueue.front();
@@ -276,7 +279,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 #endif
 //			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
 
-			packetHeader.setPacketHeader(m_EncodedFrame+1);
+
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
             
