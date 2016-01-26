@@ -147,7 +147,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			rtSum+=td;
 			rtCnt++;
 			rtAvg = rtSum/rtCnt;
-			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#()() Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
+			CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#()() Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
 		}
 	}
     
@@ -189,33 +189,33 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		int nAvailableIndex = m_AvailableIndexes.size();
 		int bIsBufferGood = (DEPACKETIZATION_BUFFER_SIZE == nAvailableIndex + m_BackFrame-m_FrontFrame);
 
-//		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
-//														m_Tools.IntegertoStringConvert(
-//																frameNumber) + " pkt: " +
-//														m_Tools.IntegertoStringConvert(
-//																packetNumber) + " ~ " +
-//														m_Tools.IntegertoStringConvert(
-//																numberOfPackets) + " #FPS own:" +
-//														m_Tools.IntegertoStringConvert(
-//																m_VideoCallSession->ownFPS) +
-//														" Oppo: " + m_Tools.IntegertoStringConvert(
-//				                                        m_VideoCallSession->opponentFPS)
-//																	+ " #Resend Request:" +
-//														m_Tools.IntegertoStringConvert(
-//																m_iCountReqResendPacket) +
-//														" SENT: " + m_Tools.IntegertoStringConvert(
-//				m_iCountResendPktSent)+" Avl Idx: "+m_Tools.IntegertoStringConvert(nAvailableIndex) + "  BufferGood: "+m_Tools.IntegertoStringConvert(bIsBufferGood));
 		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
 														m_Tools.IntegertoStringConvert(
 																frameNumber) + " pkt: " +
 														m_Tools.IntegertoStringConvert(
 																packetNumber) + " ~ " +
 														m_Tools.IntegertoStringConvert(
-																numberOfPackets) +" T: "+m_Tools.IntegertoStringConvert(timeStampDiff)+" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex)+ " #FPS own:" +
+																numberOfPackets) + " #FPS own:" +
 														m_Tools.IntegertoStringConvert(
 																m_VideoCallSession->ownFPS) +
 														" Oppo: " + m_Tools.IntegertoStringConvert(
-				                                        m_VideoCallSession->opponentFPS));
+				                                        m_VideoCallSession->opponentFPS)
+																	+ " #Resend Request:" +
+														m_Tools.IntegertoStringConvert(
+																m_iCountReqResendPacket) +
+														" SENT: " + m_Tools.IntegertoStringConvert(
+				m_iCountResendPktSent)+" Avl Idx: "+m_Tools.IntegertoStringConvert(nAvailableIndex) );
+//		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
+//														m_Tools.IntegertoStringConvert(
+//																frameNumber) + " pkt: " +
+//														m_Tools.IntegertoStringConvert(
+//																packetNumber) + " ~ " +
+//														m_Tools.IntegertoStringConvert(
+//																numberOfPackets) +" T: "+m_Tools.IntegertoStringConvert(timeStampDiff)+" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex)+ " #FPS own:" +
+//														m_Tools.IntegertoStringConvert(
+//																m_VideoCallSession->ownFPS) +
+//														" Oppo: " + m_Tools.IntegertoStringConvert(
+//				                                        m_VideoCallSession->opponentFPS));
 	}
 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
@@ -319,7 +319,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	if(bIsRetransmitted)
 		++m_iRetransPktUsed;
 	if(frameNumber%50==0)
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
+		CLogPrinter::WriteSpecific2(CLogPrinter::DEBUGS,
 							   "$$$ Retransmited PKT#  Used : " +
 							   m_Tools.IntegertoStringConvert(m_iRetransPktUsed)+"  Dropped: "+m_Tools.IntegertoStringConvert(m_iRetransPktDrpd));
 
