@@ -42,12 +42,14 @@ public:
     void StopSendingThread();//
     void SendingThreadProcedure();//
     static void *CreateVideoSendingThread(void* param);//
+    
+    int GetSleepTime();
 
 private:
 	Tools m_Tools;
 	int m_PacketSize;
 
-	CPacketHeader PacketHeader;
+	CPacketHeader m_PacketHeader;
     
     CSendingBuffer m_SendingBuffer;//
     

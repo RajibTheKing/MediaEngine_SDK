@@ -5,7 +5,11 @@
 #include "FPSController.h"
 #include "Size.h"
 #include <math.h>
+#include <map>
 
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+extern map<int,int> g_TraceRetransmittedFrame;
+#endif
 
 CFPSController::CFPSController(){
     m_pMutex.reset(new CLockHandler);
@@ -167,8 +171,30 @@ int CFPSController::NotifyFrameComplete(int framNumber)
     return 1;
 }
 
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+int counterDroppedValuableframe = 0;
+int counterUsedValuableframe = 0;
+#endif
+#ifdef FRAME_USAGE_STATISTICS_ENABLED
+int counterDroppedframe = 0;
+#endif
 int CFPSController::NotifyFrameDropped(int framNumber)
 {
+    
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+    if(g_TraceRetransmittedFrame[framNumber] == 1)
+    {
+        CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"Very Valuable frame dropped "+m_Tools.IntegertoStringConvert(framNumber)  +", counterDroppedframe =  "+m_Tools.IntegertoStringConvert(counterDroppedValuableframe) );
+        counterDroppedValuableframe++;
+        
+    }
+#endif
+    
+#ifdef FRAME_USAGE_STATISTICS_ENABLED
+    
+    CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"Frame Dropped "+m_Tools.IntegertoStringConvert(framNumber)  +", counter =  "+m_Tools.IntegertoStringConvert(counterDroppedframe) );
+    counterDroppedframe++;
+#endif
     m_iFrameDropIntervalCounter++;
 
 //    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: FRAME DROP------------> "+m_Tools.IntegertoStringConvert(framNumber)+" CNT: "+m_Tools.IntegertoStringConvert(m_iFrameDropIntervalCounter));
