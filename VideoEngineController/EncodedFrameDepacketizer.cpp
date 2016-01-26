@@ -163,7 +163,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 		if(resendPacketLength != -1)
 		{
-			m_pPacketToResend[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (1<<7); //Retransmitted packet flag added
+			m_pPacketToResend[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (1<<BIT_INDEX_RETRANS_PACKET); //Retransmitted packet flag added
 
 			if(g_FriendID != -1)
 			{
@@ -224,8 +224,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	{
 		if(bIsRetransmitted)
 			++m_iRetransPktDrpd;
-//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Delay Packet  = "+ m_Tools.IntegertoStringConvert(frameNumber)
-//		+"  ##  "+ m_Tools.IntegertoStringConvert(m_FrontFrame)+"  <-->  "+ m_Tools.IntegertoStringConvert(m_BackFrame));
+
 		return -1;
 	}
 	else if(m_FrontFrame>m_BackFrame)	//IF BUFFER IS EMPTY
@@ -319,6 +318,10 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	if(bIsRetransmitted)
 		++m_iRetransPktUsed;
+	if(frameNumber%50==0)
+		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
+							   "$$$ Retransmited PKT#  Used : " +
+							   m_Tools.IntegertoStringConvert(m_iRetransPktUsed)+"  Dropped: "+m_Tools.IntegertoStringConvert(m_iRetransPktDrpd));
 
 	m_CVideoPacketBuffer[index].SetNumberOfPackets(numberOfPackets);
 	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber);
