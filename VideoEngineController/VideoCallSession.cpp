@@ -1091,10 +1091,15 @@ void CVideoCallSession::RenderingThreadProcedure()
 			int DecodingDelay = nTimeStampDiff - firstFrameEncodingTime + m_ll1stDecodedFrameTimeStamp - firstTime;
 
 //			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
+#ifdef RENDERING_DELAY
 			if(DecodingDelay>5)
 				toolsObject.SOSleep(DecodingDelay-5);
 			else
 				toolsObject.SOSleep(1);
+#else
+			toolsObject.SOSleep(5);
+#endif
+
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(friendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
 		}
