@@ -375,6 +375,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
 
+			//printf("enctime = %lld\n", m_Tools.CurrentTimestamp() - enctime);
 
 			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 #else
@@ -499,25 +500,10 @@ void CVideoCallSession::PushFrameForDecoding(unsigned char *in_data, unsigned in
 int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int nTimeStampDiff)
 {
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-
-	if(0 == m_decodedFrameSize)
-		return 0;
-
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
-	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-#elif defined(_DESKTOP_C_SHARP_)
-	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
-#elif defined(TARGET_OS_WINDOWS_PHONE)
-	this->m_pColorConverter->ConvertI420ToYV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-#else
-
-	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-#endif
-
+	if(1 > m_decodedFrameSize)
+		return -1;
 
 	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
-
 	return m_decodedFrameSize;
 }
 
@@ -539,8 +525,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 #ifdef	RETRANSMISSION_ENABLED
 		retQueuSize = m_pRetransVideoPacketQueue.GetQueueSize();
         miniPacketQueueSize = m_pMiniPacketQueue.GetQueueSize();
-		if(queSize + retQueuSize + miniPacketQueueSize > 0)
-			CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "QUEUE_SIZE miniPacketQueueSize: "+m_Tools.IntegertoStringConvert(miniPacketQueueSize)+" :: "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
+//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
 #endif
 		if (0 == queSize && 0 == retQueuSize && 0 == miniPacketQueueSize)
 			toolsObject.SOSleep(10);
@@ -611,23 +596,18 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                         {
                             CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ExpectedFramePacketPair case 1");
                             CreateAndSendMiniPacket(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
-                            pair<int, int> requestFramePacketPair;
-
+							pair<int, int> requestFramePacketPair;
 							requestFramePacketPair.first = currentFramePacketPair.first;
-
 							requestFramePacketPair.second = 0;
 
 							int iSendCounter = 0;
-
 							while(requestFramePacketPair.second < currentFramePacketPair.second) //
 							{
 								if(iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-
 								if(!m_pVideoPacketQueue.PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
 								{
 									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
 								}
-
 								iSendCounter ++;
 								requestFramePacketPair.second ++;
 							}
@@ -710,11 +690,6 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                             requestFramePacketPair.second ++;
                         }
                     }
-                    
-                    
-					g_timeInt.setTime(ExpectedFramePacketPair.first,ExpectedFramePacketPair.second);
-                    
-                    
 				}
 				UpdateExpectedFramePacketPair(currentFramePacketPair, iNumberOfPackets);
 
@@ -820,28 +795,55 @@ void CVideoCallSession::DecodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
 	Tools toolsObject;
-	int frameSize,nFrameNumber,intervalTime;
+
+	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
 	unsigned int nTimeStampDiff;
-	long long firstTime,decodingTime,nMaxDecodingTime=0;
+	long long nTimeStampBeforeDecoding, nFirstFrameDecodingTime, nFirstFrameEncodingTime, currentTime, nShiftedTime;
+	long long nMaxDecodingTime=0;
+	int RenderFaildCounter=0;
+	int nExpectedTime;
+	bool bIsSendableToClient = true;
+
+
 	int nDecodingStatus, fps = -1;
 	double dbAverageDecodingTime = 0, dbTotalDecodingTime = 0;
 	int nOponnentFPS, nMaxProcessableByMine;
 	m_iDecodedFrameCounter = 0;
 
+	nFirstFrameDecodingTime = -1;
+	nExpectedTime = -1;
+	long long maxDecodingTime=0,framCounter=0,decodingTime, nBeforeDecodingTime;
+	double decodingTimeAverage=0;
 
 	while (bDecodingThreadRunning)
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure running");
+		currentTime = toolsObject.CurrentTimestamp();
+		if(-1 != nFirstFrameDecodingTime)
+			nExpectedTime = currentTime - nShiftedTime;
 
-		if (m_DecodingBuffer.GetQueueSize() == 0)
-		{
-			CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure empty");
-			toolsObject.SOSleep(5);
+
+		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0);
+		decodingTime =  toolsObject.CurrentTimestamp() - currentTime;
+
+		if(nFrameLength>-1)
+			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # Get Time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  Len: "+m_Tools.IntegertoStringConvert(nFrameLength) +"  FrameNo: "
+													   +m_Tools.IntegertoStringConvert(nFrameNumber));
+
+		if (-1 == nFrameLength) {
+			toolsObject.SOSleep(10);
 		}
 		else
 		{
-			firstTime = toolsObject.CurrentTimestamp();
-			frameSize = m_DecodingBuffer.DeQueue(nFrameNumber, nTimeStampDiff, m_PacketizedFrame);
+			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
+			if(-1 == nFirstFrameDecodingTime)
+				nTimeStampBeforeDecoding = nBeforeDecodingTime;
+
+
+#ifdef RENDER_CONTROL
+			bIsSendableToClient =  (200 > nExpectedTime-nEncodingTime || nExpectedTime==-1 );
+#else
+			bIsSendableToClient =  true;
+#endif
 
 			nOponnentFPS = g_FPSController.GetOpponentFPS();
 			nMaxProcessableByMine = g_FPSController.GetMaxOwnProcessableFPS();
@@ -852,11 +854,11 @@ void CVideoCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, frameSize, nFrameNumber, nTimeStampDiff);
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nTimeStampDiff);
 //			toolsObject.SOSleep(100);
 
 			if(nDecodingStatus > 0) {
-				decodingTime = toolsObject.CurrentTimestamp() - firstTime;
+				decodingTime = toolsObject.CurrentTimestamp() - nBeforeDecodingTime;
 				dbTotalDecodingTime += decodingTime;
 				++ m_iDecodedFrameCounter;
 				nMaxDecodingTime = max(nMaxDecodingTime, decodingTime);
@@ -872,10 +874,22 @@ void CVideoCallSession::DecodingThreadProcedure()
 				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Max Decoding-time: "+m_Tools.IntegertoStringConvert(nMaxDecodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
 			}
 
-//			if(intervalTime > decodingTime+5)
-//				toolsObject.SOSleep(intervalTime-decodingTime-5);
-//			else
-				toolsObject.SOSleep(3);
+			if(!bIsSendableToClient) {
+				RenderFaildCounter++;
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
+										   " GetReceivedFrame # NOT RENDERABLE *  " +
+										   m_Tools.IntegertoStringConvert(nExpectedTime) + " ^ " +
+										   m_Tools.IntegertoStringConvert(nEncodingTime)+"   ----> CNT: "+m_Tools.IntegertoStringConvert(RenderFaildCounter));
+			}
+			
+			if(-1 == nFirstFrameDecodingTime)
+			{
+				nFirstFrameDecodingTime = nTimeStampBeforeDecoding;
+				nFirstFrameEncodingTime = nEncodingTime;
+				nShiftedTime = nFirstFrameDecodingTime-nEncodingTime;
+			}
+
+			toolsObject.SOSleep(5);
 		}
 	}
 
@@ -916,7 +930,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
     {
         return;
     }
-    
+
+
+	g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
     CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
                                             ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber));
     int startFraction = SIZE_OF_INT_MINUS_8;
@@ -1051,27 +1067,36 @@ void CVideoCallSession::RenderingThreadProcedure()
 			firstTime = toolsObject.CurrentTimestamp();
 			frameSize = m_RenderingBuffer.DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth);
 
-			if(frameSize>0)
+			if(frameSize<1)
+				continue;
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	this->m_pColorConverter->ConvertI420ToNV12(m_RenderingFrame, videoHeight, videoWidth);
+#elif defined(_DESKTOP_C_SHARP_)
+//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+	this->m_pColorConverter->ConvertI420ToYV12(m_RenderingFrame, videoHeight, videoWidth);
+#else
+
+	this->m_pColorConverter->ConvertI420ToNV21(m_RenderingFrame, videoHeight, videoWidth);
+#endif
+			if(m_b1stDecodedFrame)
 			{
-				if(m_b1stDecodedFrame)
-				{
-					m_ll1stDecodedFrameTimeStamp = firstTime;
-					firstFrameEncodingTime = nTimeStampDiff;
-					m_b1stDecodedFrame = false;
-				}
-
-				int DecodingDelay = nTimeStampDiff - firstFrameEncodingTime + m_ll1stDecodedFrameTimeStamp - firstTime;
-
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
-				if(DecodingDelay>5)
-					toolsObject.SOSleep(DecodingDelay-5);
-				else
-					toolsObject.SOSleep(1);
-
-				m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(friendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
-
+				m_ll1stDecodedFrameTimeStamp = firstTime;
+				firstFrameEncodingTime = nTimeStampDiff;
+				m_b1stDecodedFrame = false;
 			}
-//			toolsObject.SOSleep(1);
+
+			int DecodingDelay = nTimeStampDiff - firstFrameEncodingTime + m_ll1stDecodedFrameTimeStamp - firstTime;
+
+//			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
+			if(DecodingDelay>5)
+				toolsObject.SOSleep(DecodingDelay-5);
+			else
+				toolsObject.SOSleep(1);
+
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(friendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
 		}
 	}
 
