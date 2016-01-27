@@ -48,81 +48,81 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
 
+//	unsigned char uchOpponentVersion = 0;	//NO VERSION
+	unsigned char uchOpponentVersion = VIDEO_VERSION_CODE;	//NO VERSION
+
+	int nHeaderLenWithoutMedia = PACKET_HEADER_LENGTH_NO_VERSION;
+
+	if(uchOpponentVersion)
+		nHeaderLenWithoutMedia = PACKET_HEADER_LENGTH;
+
+	int nPacketHeaderLenghtWithMedia = nHeaderLenWithoutMedia + 1;
+
+
+	m_PacketSize = MAX_VIDEO_PACKET_SIZE - nPacketHeaderLenghtWithMedia;
 	int packetizedSize = m_PacketSize;
 
-	int startFraction = SIZE_OF_INT_MINUS_8;
-	int fractionInterval = BYTE_SIZE;
-	int packetHeaderSize = PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
-	int readPacketLength;
+	int readPacketLength = 0;
 
-	int numberOfPackets = in_size / m_PacketSize;
+	int numberOfPackets = (in_size + m_PacketSize - 1) / m_PacketSize;
+
+	if(numberOfPackets > MAX_NUMBER_OF_PACKETS)
+		return -1;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize in_size " + m_Tools.IntegertoStringConvert(in_size) + " m_PacketSize " + m_Tools.IntegertoStringConvert(m_PacketSize));
 
-	if (in_size % m_PacketSize != 0 )
+	for (int packetNumber = 0; readPacketLength < in_size; packetNumber++, readPacketLength += m_PacketSize)
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize increased" );
+		if(m_PacketSize + readPacketLength > in_size)
+			m_PacketSize = in_size - readPacketLength;
 
-		numberOfPackets++;
-	}
+		m_PacketHeader.setPacketHeader(uchOpponentVersion, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize + nPacketHeaderLenghtWithMedia);
 
-	int packetNumber;
+		m_PacketHeader.GetHeaderInByteArray(m_Packet + 1);
 
-	for (packetNumber = 0, readPacketLength = 0; (unsigned int)packetizedSize <= in_size; packetNumber++, readPacketLength += m_PacketSize)
-	{
-		int startPoint = 1;
+//		m_PacketHeader.setPacketHeader(m_Packet+1);
+//		CLogPrinter::WriteSpecific2(CLogPrinter::INFO, "$$--> Lenght "+m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketLength())+"  # TS: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
 
-		if(packetNumber>MAX_NUMBER_OF_PACKETS)
-			return -1;
+		m_Packet[0] = VIDEO_PACKET_MEDIA_TYPE;
+		memcpy(m_Packet + nPacketHeaderLenghtWithMedia, in_data + readPacketLength, m_PacketSize);
 
-		m_PacketHeader.setPacketHeader(0,frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize);
-		int nHeaderLen = m_PacketHeader.GetHeaderInByteArray(m_Packet+1);
+		//m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, m_PacketSize, nPacketHeaderLenghtWithMedia + m_PacketSize, m_Packet);
 
-		//m_PacketHeader.setPacketHeader(m_Packet+1);
+		m_PacketHeader.setPacketHeader(m_Packet+1);
+		CLogPrinter::WriteSpecific2(CLogPrinter::INFO, "$$--> Lenght "+m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketLength())+"  # TS: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
 
-		//CLogPrinter::WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
-
-		startPoint = nHeaderLen + 1;
-		memcpy(m_Packet + startPoint, in_data + readPacketLength, m_PacketSize);
-		startPoint += m_PacketSize;
-		packetizedSize += m_PacketSize;
-
-		//m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, m_PacketSize, packetHeaderSize + m_PacketSize, m_Packet);
-
-        m_Packet[0] = VIDEO_PACKET_MEDIA_TYPE;
-
-		m_SendingBuffer.Queue(lFriendID, m_Packet, packetHeaderSize + m_PacketSize);
-        g_ResendBuffer.Queue(m_Packet, packetHeaderSize + m_PacketSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
-    //    m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,packetHeaderSize + m_PacketSize);
+		m_SendingBuffer.Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize);
+        g_ResendBuffer.Queue(m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
+    //    m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,nPacketHeaderLenghtWithMedia + m_PacketSize);
 	}
 
 	//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetNumber) + " " + m_Tools.IntegertoStringConvert(numberOfPackets) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
 
-	if (packetNumber < numberOfPackets )
-	{
-		int startPoint = 1;
-		int packetSize = in_size - ( packetizedSize - m_PacketSize );
-
-		//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetSize) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
-
-		m_PacketHeader.setPacketHeader(0,frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
-		int nHeaderLen = m_PacketHeader.GetHeaderInByteArray(m_Packet+1);
-
-		startPoint = nHeaderLen + 1;
-		memcpy(m_Packet + startPoint, in_data + readPacketLength, packetSize);
-		startPoint +=  packetSize;
-
-		//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
-
-		//m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, packetSize, packetHeaderSize + packetSize, m_Packet);
-
-		m_Packet[0] = VIDEO_PACKET_MEDIA_TYPE;
-
-		m_SendingBuffer.Queue(lFriendID, m_Packet, packetHeaderSize + packetSize);
-    	
-		g_ResendBuffer.Queue(m_Packet, packetHeaderSize + packetSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
-    //     m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,packetHeaderSize + packetSize);
-	}
+//	if (packetNumber < numberOfPackets )
+//	{
+//		int startPoint = 1;
+//		int packetSize = in_size - ( packetizedSize - m_PacketSize );
+//
+//		//CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize packetSize " + m_Tools.IntegertoStringConvert(packetSize) + " " + m_Tools.IntegertoStringConvert(packetizedSize) + " " + m_Tools.IntegertoStringConvert(m_PacketSize) + " " + m_Tools.IntegertoStringConvert(in_size));
+//
+//		m_PacketHeader.setPacketHeader(0,frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, packetSize);
+//		int nHeaderLenWithoutMedia = m_PacketHeader.GetHeaderInByteArray(m_Packet+1);
+//
+//		startPoint = nHeaderLenWithoutMedia + 1;
+//		memcpy(m_Packet + startPoint, in_data + readPacketLength, packetSize);
+//		startPoint +=  packetSize;
+//
+//		//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Parsing..>>> "+m_Tools.IntegertoStringConvert(frameNumber)+" FN: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketNumber()) + " tmDiff : " + m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
+//
+//		//m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, packetSize, nPacketHeaderLenghtWithMedia + packetSize, m_Packet);
+//
+//		m_Packet[0] = VIDEO_PACKET_MEDIA_TYPE;
+//
+//		m_SendingBuffer.Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + packetSize);
+//
+//		g_ResendBuffer.Queue(m_Packet, nPacketHeaderLenghtWithMedia + packetSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
+//    //     m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,nPacketHeaderLenghtWithMedia + packetSize);
+//	}
 
 	return 1;
 }
@@ -296,7 +296,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
                 
                 if (iNumberOfPacketsActuallySentFromLastFrame != iNumberOfPacketsInLastFrame)
                 {
-                    CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"******* iNumberOfPacketsActuallySentFromLastFrame = "
+                    CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"$$-->******* iNumberOfPacketsActuallySentFromLastFrame = "
                                                + m_Tools.IntegertoStringConvert(iNumberOfPacketsActuallySentFromLastFrame)
                                                + " iNumberOfPacketsInLastFrame = "
                                                + m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrame)

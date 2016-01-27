@@ -23,7 +23,7 @@ CPacketHeader::~CPacketHeader()
 
 void CPacketHeader::setPacketHeader(unsigned char *headerData)
 {
-    if(headerData[VERSION_BYTE_INDEX]) {
+    if(headerData[VERSION_BYTE_INDEX]) {        //Version > 0
         setFPS(headerData);
         setFrameNumber(headerData + 1);
         setRetransSignal(headerData + 4);
@@ -32,7 +32,6 @@ void CPacketHeader::setPacketHeader(unsigned char *headerData)
         setPacketNumber(headerData + 7);
         setTimeStamp(headerData + 8);
         setPacketLength(headerData + 12);
-        CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "Wrong Place");
     }
     else
     {
@@ -78,18 +77,18 @@ int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
         data[index++] = m_iNumberOfPacket;
         data[index++] = m_iPacketNumber;
 
-        data[index++] = m_iTimeStamp >> 24;
-        data[index++] = m_iTimeStamp >> 16;
-        data[index++] = m_iTimeStamp >> 8;
+        data[index++] = (m_iTimeStamp >> 24);
+        data[index++] = (m_iTimeStamp >> 16);
+        data[index++] = (m_iTimeStamp >> 8);
         data[index++] = m_iTimeStamp;
 
-        data[index++] = m_iPacketLength >> 8;
+        data[index++] = (m_iPacketLength >> 8);
         data[index++] = m_iPacketLength;
         return PACKET_HEADER_LENGTH;
     }
     else
     {
-        memset(data, 0, HEADER_LENGHT_NO_VERSION);
+        memset(data, 0, PACKET_HEADER_LENGTH_NO_VERSION);
 
         index = 0;
         data[index] = m_iFPS;
@@ -112,15 +111,15 @@ int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
         data[index] = m_iPacketNumber;
 
         index = 14;
-        data[index++] = m_iPacketLength >> 8;
+        data[index++] = (m_iPacketLength >> 8);
         data[index++] = m_iPacketLength;
 
         index = 16;
-        data[index++] = m_iTimeStamp >> 24;
-        data[index++] = m_iTimeStamp >> 16;
-        data[index++] = m_iTimeStamp >> 8;
+        data[index++] = (m_iTimeStamp >> 24);
+        data[index++] = (m_iTimeStamp >> 16);
+        data[index++] = (m_iTimeStamp >> 8);
         data[index++] = m_iTimeStamp;
-        return PACKET_HEADER_LENGTH;
+        return PACKET_HEADER_LENGTH_NO_VERSION;
     }
     return 1;
 }
