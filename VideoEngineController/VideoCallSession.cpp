@@ -34,7 +34,9 @@ extern CFPSController g_FPSController;
 #define ORIENTATION_180_NOT_MIRRORED 7
 #define ORIENTATION_270_NOT_MIRRORED 8
 
-
+extern bool g_bIsVersionDetectableOpponent;
+extern unsigned char g_uchSendPacketVersion;
+extern int g_uchOpponentVersion;
 
 //extern int g_MY_FPS;
 
@@ -943,8 +945,8 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
     int numberOfPackets = 1000; //dummy numberOfPackets
 
 	CPacketHeader PacketHeader;
-	PacketHeader.setPacketHeader(0,resendFrameNumber, numberOfPackets, resendPacketNumber,0 , 0, 0, 0);
-	PacketHeader.GetHeaderInByteArray(m_miniPacket+1);
+	PacketHeader.setPacketHeader(g_uchSendPacketVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
+	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
     
 //    for (int f = startFraction; f >= 0; f -= fractionInterval)
 //    {
@@ -964,7 +966,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 //    }
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
     
-    m_pCommonElementsBucket->SendFunctionPointer(friendID,2,m_miniPacket,MINI_PACKET_LENGTH_WITH_MEDIA_TYPE);
+    m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,MINI_PACKET_LENGTH_WITH_MEDIA_TYPE);
     
     //m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
     

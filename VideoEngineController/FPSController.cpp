@@ -98,6 +98,10 @@ unsigned char CFPSController::GetFPSSignalByte()
     }
     ret |= (changeSignal << 6);
 
+#ifdef FIRST_BUILD_COMPATIBLE
+    ret |= (1<<4);
+#endif
+
     return ret;
 }
 
