@@ -179,6 +179,14 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
+#ifdef FIRST_BUILD_COMPATIBLE
+	if( in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]& (1<<4) )
+	{
+		g_bIsVersionDetectableOpponent = true;
+		g_uchSendPacketVersion = VIDEO_VERSION_CODE;
+	}
+#endif
+
 #ifdef	RETRANSMISSION_ENABLED
 	if(  ((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1) /* ||  ((in_data[4] >> 6) & 1) */ ) //If MiniPacket or RetransMitted packet
     {
