@@ -943,7 +943,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
     int numberOfPackets = 1000; //dummy numberOfPackets
 
 	CPacketHeader PacketHeader;
-	PacketHeader.setPacketHeader(resendFrameNumber, numberOfPackets, resendPacketNumber,0 , 0, 0, 0);
+	PacketHeader.setPacketHeader(0,resendFrameNumber, numberOfPackets, resendPacketNumber,0 , 0, 0, 0);
 	PacketHeader.GetHeaderInByteArray(m_miniPacket+1);
     
 //    for (int f = startFraction; f >= 0; f -= fractionInterval)
