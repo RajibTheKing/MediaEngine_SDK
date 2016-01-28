@@ -90,7 +90,9 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 	SHARED_PTR_DELETE(m_pEncodedFrameDepacketizerMutex);
 }
 
-
+int g_iGeneralVideoPacket=0;
+int g_iMiniPacket=0;
+int g_iRetPacket=0;
 
 int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket, CPacketHeader &packetHeader)
 {
@@ -108,6 +110,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
         else
         {
 #ifdef FPS_CHANGE_SIGNALING
+			++ g_iGeneralVideoPacket;
             g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
             m_VideoCallSession->ownFPS = g_FPSController.GetOwnFPS();
             m_VideoCallSession->opponentFPS = g_FPSController.GetOpponentFPS();
@@ -145,15 +148,17 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 #ifdef	RETRANSMISSION_ENABLED
 	if(bIsRetransmitted)
 	{
+		++g_iRetPacket;
 		long long td = g_timeInt.getTimeDiff(frameNumber,packetNumber);
 		if(td!=-1)
 		{
 			rtSum+=td;
 			rtCnt++;
 			rtAvg = rtSum/rtCnt;
-			CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#()() Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
+			CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "$$$# Retransmitted Time:"+m_Tools.DoubleToString(rtAvg)+"  This: "+m_Tools.IntegertoStringConvert(td));
 		}
 	}
+	else ++g_iGeneralVideoPacket;
     
 
 	if(bIsMiniPacket) //This block is for resending packets and has no relation with the packet passed to this function
@@ -161,7 +166,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::King-->PushPacketForDecoding Resend Packet Found resendframe: "+
                                    m_Tools.IntegertoStringConvert(frameNumber) + " resendpacket: "+ m_Tools.IntegertoStringConvert(packetNumber)+
                                    "   in_size: "+m_Tools.IntegertoStringConvert(in_size));
-
+		g_iMiniPacket++;
 		++m_iCountReqResendPacket;
 		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber );
 
@@ -192,6 +197,16 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	{
 		int nAvailableIndex = m_AvailableIndexes.size();
 		int bIsBufferGood = (DEPACKETIZATION_BUFFER_SIZE == nAvailableIndex + m_BackFrame-m_FrontFrame);
+
+
+
+//CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "Packet:: $$$#( General: " +
+//		m_Tools.IntegertoStringConvert(
+//		g_iGeneralVideoPacket) + " Mini: " +
+//		m_Tools.IntegertoStringConvert(
+//		g_iMiniPacket) + " Ret: " +
+//		m_Tools.IntegertoStringConvert(
+//				g_iRetPacket));
 
 		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
 														m_Tools.IntegertoStringConvert(

@@ -180,7 +180,7 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
 #ifdef FIRST_BUILD_COMPATIBLE
-	if( !g_bIsVersionDetectableOpponent && in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & (1<<4) )
+	if( !g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) ==  0xC0)
 	{
 		g_bIsVersionDetectableOpponent = true;
 		g_uchSendPacketVersion = VIDEO_VERSION_CODE;
