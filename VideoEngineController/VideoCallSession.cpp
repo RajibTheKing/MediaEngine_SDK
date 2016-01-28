@@ -567,14 +567,11 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			}
 			m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
 
-			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
-														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
-
+//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
+//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 
 			bool bRetransmitted = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1;
             bool bMiniPacket = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1;
-
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Current(FN,PN)--->>>");
        
 			m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] &= ~(1<<BIT_INDEX_RETRANS_PACKET); //Removed the Retransmit flag from the LMB of Number of Packets
             m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] &= ~(1<<BIT_INDEX_MINI_PACKET); //Removed the MiniPacket flag from the LMB of Number of Packets
@@ -582,11 +579,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			if(!bRetransmitted && !bMiniPacket)
 			{
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-//				temp = m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
-//				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=0;
-//				pair<int, int> currentFramePacketPair = m_Tools.GetFramePacketFromHeader(m_PacketToBeMerged , iNumberOfPackets);
 				pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(),m_RcvdPacketHeader.getPacketNumber());
-//				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]=temp;
 
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
