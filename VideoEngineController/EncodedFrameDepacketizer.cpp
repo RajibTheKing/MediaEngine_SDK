@@ -11,6 +11,10 @@
 //#define LOG_TAG "dbg1"
 //#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+extern bool g_bIsVersionDetectableOpponent;
+extern unsigned char g_uchSendPacketVersion;
+extern int g_uchOpponentVersion;
+
 
 extern CResendingBuffer g_ResendBuffer;
 extern PairMap g_timeInt;
@@ -204,7 +208,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 														m_Tools.IntegertoStringConvert(
 																m_iCountReqResendPacket) +
 														" SENT: " + m_Tools.IntegertoStringConvert(
-				m_iCountResendPktSent)+" Avl Idx: "+m_Tools.IntegertoStringConvert(nAvailableIndex) );
+				m_iCountResendPktSent)+" Avl Idx: "+m_Tools.IntegertoStringConvert(nAvailableIndex) +"  Version : "+m_Tools.IntegertoStringConvert( g_uchSendPacketVersion));
 //		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
 //														m_Tools.IntegertoStringConvert(
 //																frameNumber) + " pkt: " +

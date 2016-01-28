@@ -10,7 +10,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-//extern int isFPSChange();
+extern bool g_bIsVersionDetectableOpponent;
+extern unsigned char g_uchSendPacketVersion;
+extern int g_uchOpponentVersion;
 
 extern deque<pair<int,int>> ExpectedFramePacketDeQueue;
 CResendingBuffer g_ResendBuffer;
@@ -48,8 +50,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
 
-//	unsigned char uchOpponentVersion = 0;	//NO VERSION
-	unsigned char uchOpponentVersion = VIDEO_VERSION_CODE;	//NO VERSION
+    unsigned char uchOpponentVersion = g_uchSendPacketVersion;
 
 	int nHeaderLenWithoutMedia = PACKET_HEADER_LENGTH_NO_VERSION;
 
