@@ -124,12 +124,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	int packetLength = packetHeader.getPacketLength();
     unsigned int timeStampDiff = 0;
 
-    if(!bIsMiniPacket)
-    {
-		timeStampDiff = packetHeader.getTimeStamp();
-		m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
-    }
-
 	CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "FN: " + m_Tools.IntegertoStringConvert(frameNumber)
 													+ " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
     
@@ -238,6 +232,9 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	}
 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
+
+	timeStampDiff = packetHeader.getTimeStamp();
+	m_mFrameTimeStamp.insert(make_pair(frameNumber, timeStampDiff));
 
 	if (frameNumber < m_FrontFrame)		//Very old frame
 	{
