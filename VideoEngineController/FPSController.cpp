@@ -15,6 +15,7 @@ CFPSController::CFPSController(){
     m_pMutex.reset(new CLockHandler);
     m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
     m_ClientFPS = m_nOwnFPS = m_nOpponentFPS = FPS_BEGINNING;
+    m_nOwnBitRate = BITRATE_BEGINNING;
     m_iFrameDropIntervalCounter=0;
     m_EncodingFrameCounter = 0;
     m_DropSum = 0;
@@ -257,4 +258,10 @@ bool CFPSController::IsProcessableFrame()
     }
 
     return true;
+}
+
+
+void CFPSController::SetEncoder(CVideoEncoder *videoEncoder)
+{
+    m_pVideoEncoder = videoEncoder;
 }

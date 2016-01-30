@@ -33,6 +33,10 @@ public:
 	int CreateVideoEncoder(int iWidth, int iHeight);
 	int EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer);
 
+	void SetBitrate(int iFps);
+	void SetFramerate(int iFps);
+	void SetMaxBitrate(int iFps);
+
 private:
 
 	int m_iHeight;

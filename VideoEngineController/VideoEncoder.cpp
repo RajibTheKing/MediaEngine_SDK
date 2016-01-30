@@ -3,6 +3,7 @@
 #include "DefinedDataTypes.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "codec_def.h"
 
 #define BITRATE_MAX 1000 * 5000
 #define FRAME_RATE 30
@@ -54,7 +55,15 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	encParam.iLoopFilterAlphaC0Offset = 0;
 	encParam.iLoopFilterBetaOffset = 0;
 	encParam.iMultipleThreadIdc = 0;
-	encParam.iRCMode = RC_OFF_MODE;
+#ifdef BITRATE_ENABLED
+	encParam.iRCMode = RC_BITRATE_MODE;//RC_OFF_MODE;
+	encParam.iMinQp = 0;
+	encParam.iMaxQp = 52;
+#else
+ 	encParam.iRCMode = RC_OFF_MODE;
+#endif
+
+
 	encParam.bEnableDenoise = false;
 	encParam.bEnableSceneChangeDetect = false;
 	encParam.bEnableBackgroundDetection = true;
@@ -65,8 +74,10 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	encParam.bPrefixNalAddingCtrl = false;
 	encParam.iSpatialLayerNum = 1;
 
+
+
 	SSpatialLayerConfig *pDLayer = &encParam.sSpatialLayers[0];
-	pDLayer->uiProfileIdc = PRO_BASELINE;
+	pDLayer->uiProfileIdc = PRO_BASELINE;//;
 	encParam.iPicWidth = pDLayer->iVideoWidth = m_iWidth;
 	encParam.iPicHeight = pDLayer->iVideoHeight = m_iHeight;
 	encParam.fMaxFrameRate = pDLayer->fFrameRate = (float)FRAME_RATE;
@@ -81,9 +92,91 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 		return 0;
 	}
 
+#ifdef BITRATE_ENABLED
+	SetBitrate(12);
+	SetMaxBitrate(12);
+#endif
+
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
 
 	return 1;
+}
+
+void CVideoEncoder::SetBitrate(int iFps)
+{
+	int iBitRate = iFps*50000;
+
+	SBitrateInfo targetEncoderBitrateInfo;
+
+		targetEncoderBitrateInfo.iLayer = SPATIAL_LAYER_0;
+		targetEncoderBitrateInfo.iBitrate = (iBitRate);
+
+		int iRet;
+		if(m_pSVCVideoEncoder)
+		{
+			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
+			if (iRet != 0)
+			{
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+			}
+			else
+			{
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+			}
+		}
+
+
+}
+
+void CVideoEncoder::SetMaxBitrate(int iFps)
+{
+	int iBitRate = iFps*50000;
+
+	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
+	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
+	maxEncoderBitRateInfo.iBitrate = (iBitRate);
+
+		int iRet;
+		if(m_pSVCVideoEncoder)
+		{
+			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
+			if (iRet != 0){
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+			}
+			else
+			{
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder max bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+			}
+
+		}
+
+
+}
+
+void CVideoEncoder::SetFramerate(int iFps)
+{
+	/*SRateThresholds FrameRateTh;
+	FrameRateTh.iMinThresholdFrameRate = iFps;
+	FrameRateTh.iHeight = m_iHeight;
+	FrameRateTh.iWidth = m_iWidth;
+	FrameRateTh.iSkipFrameRate = 1;
+	FrameRateTh.iSkipFrameStep = 2;
+	FrameRateTh.iThresholdOfMaxRate = 15;
+	FrameRateTh.iThresholdOfMinRate = 8;
+
+	int iRet;
+	if(m_pSVCVideoEncoder)
+	{
+		iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_FRAME_RATE, &FrameRateTh);
+		if (iRet != 0){
+			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set framerate---<< "+ Tools::IntegertoStringConvert(iFps));
+
+		}
+		else
+		{
+			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder framerate set to---<< " + Tools::IntegertoStringConvert(iFps));
+		}
+	}*/
 }
 
 int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer)
@@ -109,9 +202,9 @@ int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_siz
 	sourcePicture.pData[2] = sourcePicture.pData[1] + (m_iWidth * m_iHeight >> 2);
 
 	int iRet = m_pSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
-	
-	if (iRet != 0){       
-        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoEncoder::EncodeAndTransfer Encode FAILED");   
+
+	if (iRet != 0){
+        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoEncoder::EncodeAndTransfer Encode FAILED");
 		return 0;
 	}
 	// fixed issue in case dismatch source picture introduced by frame skipped, 1/12/2010

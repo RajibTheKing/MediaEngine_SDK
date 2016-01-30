@@ -11,6 +11,7 @@
 #include "ThreadTools.h"
 #include "LockHandler.h"
 #include "Tools.h"
+#include "VideoEncoder.h"
 
 #define FPS_SHOULD_SAME 0
 #define FPS_SHOULD_INCREASE 1
@@ -39,6 +40,8 @@ public:
     void SetMaxOwnProcessableFPS(int fps);
     int GetMaxOwnProcessableFPS();
 
+    void SetEncoder(CVideoEncoder *videoEncoder);
+
 private:
     int m_nFPSForceSignalCounter;
     queue<int>m_SignalQue;
@@ -53,9 +56,14 @@ private:
 //    int m_iFrameCompletedIntervalCounter;
     int m_nOwnFPS;
     int m_nOpponentFPS;
+
+    int m_nOwnBitRate;
+
     long long m_LastIntervalStartingTime;
     SmartPointer<CLockHandler> m_pMutex;
     Tools m_Tools;
+
+    CVideoEncoder *m_pVideoEncoder;
 };
 
 
