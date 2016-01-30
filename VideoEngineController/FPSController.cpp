@@ -140,12 +140,16 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
         if (m_nOwnFPS > FPS_MINIMUM) {
             Locker lock(*m_pMutex);
             m_nOwnFPS--;
+            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
+            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
         }
     }
     else if (FPSChangeSignal == 2) {
         if (m_nOwnFPS < FPS_MAXIMUM  && m_nOwnFPS < m_nMaxOpponentProcessableFPS && m_nOwnFPS < m_ClientFPS + 0.1) {
             Locker lock(*m_pMutex);
             m_nOwnFPS++;
+            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
+            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
         }
     }
 

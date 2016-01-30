@@ -5,10 +5,6 @@
 #include "Tools.h"
 #include "codec_def.h"
 
-#define BITRATE_MAX 1000 * 5000
-#define FRAME_RATE 30
-#define I_INTRA_PERIOD 8
-
 
 CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject),
@@ -93,8 +89,8 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	}
 
 #ifdef BITRATE_ENABLED
-	SetBitrate(12);
-	SetMaxBitrate(12);
+	SetBitrate(FPS_BEGINNING);
+	SetMaxBitrate(FPS_BEGINNING);
 #endif
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
@@ -104,7 +100,8 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 
 void CVideoEncoder::SetBitrate(int iFps)
 {
-	int iBitRate = iFps*50000;
+	iFps = max(iFps,FPS_MINIMUM);
+	int iBitRate = THRESHOLD_BITRATE + (iFps - FPS_MINIMUM) * BITRATE_CHANGE_FACTOR;
 
 	SBitrateInfo targetEncoderBitrateInfo;
 
@@ -117,20 +114,19 @@ void CVideoEncoder::SetBitrate(int iFps)
 			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
 			if (iRet != 0)
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$ #####################################################CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
 			}
 			else
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$************** BITRATE SET : " + Tools::IntegertoStringConvert(iBitRate));
 			}
 		}
-
-
 }
 
 void CVideoEncoder::SetMaxBitrate(int iFps)
 {
-	int iBitRate = iFps*50000;
+	iFps = max(iFps,FPS_MINIMUM);
+	int iBitRate = BITRATE_MAX_DIFF + THRESHOLD_BITRATE + (iFps - FPS_MINIMUM) * BITRATE_CHANGE_FACTOR;
 
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
@@ -141,16 +137,14 @@ void CVideoEncoder::SetMaxBitrate(int iFps)
 		{
 			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
 			if (iRet != 0){
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$ #####################################################CreateVideoEncoder unable to set MAX bitrate "+ Tools::IntegertoStringConvert(iBitRate));
 			}
 			else
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder max bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$************** MAX BITRATE SET:  " + Tools::IntegertoStringConvert(iBitRate));
 			}
 
 		}
-
-
 }
 
 void CVideoEncoder::SetFramerate(int iFps)
