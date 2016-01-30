@@ -94,29 +94,22 @@ int g_iGeneralVideoPacket=0;
 int g_iMiniPacket=0;
 int g_iRetPacket=0;
 
-int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, bool bIsMiniPacket, CPacketHeader &packetHeader)
+int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader)
 {
-    bool bIsRetransmitted = false;
-    
+    bool bIsRetransmitted = (PacketType == RETRANSMITTED_PACKET_TYPE);
+    bool bIsMiniPacket = (PacketType == MINI_PACKET_TYPE);
     int firstByte = 0;
-    if(!bIsMiniPacket)
-    {
-        firstByte = in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
-        
-        if(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]&(1<<4))
-        {
-            bIsRetransmitted = true;
-        }
-        else
-        {
+
 #ifdef FPS_CHANGE_SIGNALING
-			++ g_iGeneralVideoPacket;
-            g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
-            m_VideoCallSession->ownFPS = g_FPSController.GetOwnFPS();
-            m_VideoCallSession->opponentFPS = g_FPSController.GetOpponentFPS();
-#endif
-        }
+    if(NORMAL_PACKET_TYPE == PacketType)
+    {
+		++ g_iGeneralVideoPacket;
+        firstByte = in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
+		g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
+		m_VideoCallSession->ownFPS = g_FPSController.GetOwnFPS();
+		m_VideoCallSession->opponentFPS = g_FPSController.GetOpponentFPS();
     }
+#endif
 
 	int frameNumber = packetHeader.getFrameNumber();
 	int numberOfPackets = packetHeader.getNumberOfPacket();
@@ -572,34 +565,6 @@ int CEncodedFrameDepacketizer::CreateNewIndex(int frame)
 	m_CVideoPacketBuffer[newIndex].Reset();
 
 	return newIndex;
-}
-
-void CEncodedFrameDepacketizer::ClearAndDeliverFrame(int frame)
-{
-//	int indexInside = m_FrameTracker.find(frame)->second;
-	int indexInside = SafeFinder(frame);
-	if(0 > indexInside || indexInside>DEPACKETIZATION_BUFFER_SIZE) {
-		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "ClearAndDeliverFrame:: Invalid Index  ########################################### "+Tools::IntegertoStringConvert(indexInside) );
-		return;
-	}
-
-
-	if (m_CVideoPacketBuffer[indexInside].IsComplete() && frame+m_VideoCallSession->opponentFPS>m_FrontFrame)
-	{
-		timeStamp = m_mFrameTimeStamp[m_FrontFrame];
-		m_mFrameTimeStamp.erase (m_FrontFrame);
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: timeStamp: " + m_Tools.IntegertoStringConvert(timeStamp));
-
-		m_VideoCallSession->PushFrameForDecoding(m_CVideoPacketBuffer[indexInside].m_pFrameData,
-													 m_CVideoPacketBuffer[indexInside].m_FrameSize,
-													 frame, timeStamp);
-		g_FPSController.NotifyFrameComplete(frame);
-	}
-	else {
-		g_FPSController.NotifyFrameDropped(frame);
-	}
-
-	ClearFrame(indexInside, frame);
 }
 
 void CEncodedFrameDepacketizer::ClearFrame(int index, int frame)

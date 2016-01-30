@@ -494,22 +494,18 @@ void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 
 int iValuableFrameUsedCounter = 0;
 
-void CVideoCallSession::PushFrameForDecoding(unsigned char *in_data, unsigned int nFrameSize,int nFramNumber, unsigned int timeStampDiff)
-{
-#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
-    if(g_TraceRetransmittedFrame[nFramNumber] == 1)
-    {
-        CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"Very valuable frame used "+m_Tools.IntegertoStringConvert(nFramNumber)  +", counter =  "+m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter) );
-        iValuableFrameUsedCounter++;
-    }
-#endif
-	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "\n\nPPPPPPPPPPPPPPPPPPPPPPPPPPP CVideoCallSession::PushFrameForDecoding --> NewFrameFound, nFrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
-	m_DecodingBuffer.Queue(nFramNumber, in_data, nFrameSize, timeStampDiff);
-}
-
-
 int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int nTimeStampDiff)
 {
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+	if(g_TraceRetransmittedFrame[nFramNumber] == 1)
+	{
+		CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"Very valuable frame used "+m_Tools.IntegertoStringConvert(nFramNumber)  +", counter =  "+m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter) );
+		iValuableFrameUsedCounter++;
+	}
+	CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"$$$Very Valuable Retransmission packet used counter =  "+m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
+
+#endif
+
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 	if(1 > m_decodedFrameSize)
 		return -1;
@@ -572,9 +568,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 			bool bRetransmitted = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1;
             bool bMiniPacket = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1;
-       
-			m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] &= ~(1<<BIT_INDEX_RETRANS_PACKET); //Removed the Retransmit flag from the LMB of Number of Packets
-            m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] &= ~(1<<BIT_INDEX_MINI_PACKET); //Removed the MiniPacket flag from the LMB of Number of Packets
+			m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] = 0;
 
 			if(!bRetransmitted && !bMiniPacket)
 			{
@@ -705,10 +699,6 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                 
                 g_TraceRetransmittedFrame[m_RcvdPacketHeader.getFrameNumber()] = 1;
 #endif
-                
-				m_PacketToBeMerged[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]|=(1<<4); //the retransmitted flag is moved to signal byte
-
-                
                 CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
 															   + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 			}
@@ -720,11 +710,14 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 //                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
 				bIsMiniPacket = true;
             }
-
-
-
 #endif
-			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, bIsMiniPacket, m_RcvdPacketHeader);
+			int CurrentPacketType = NORMAL_PACKET_TYPE;
+			if(bIsMiniPacket)
+				CurrentPacketType = MINI_PACKET_TYPE;
+			else if(bRetransmitted)
+				CurrentPacketType = RETRANSMITTED_PACKET_TYPE;
+
+			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, CurrentPacketType, m_RcvdPacketHeader);
 
 			toolsObject.SOSleep(1);
 		}

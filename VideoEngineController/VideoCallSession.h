@@ -70,8 +70,6 @@ public:
 	void RenderingThreadProcedure();
 	static void *CreateVideoRenderingThread(void* param);
 
-	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int timeStampDiff);
-    
     void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
 
 	int orientation_type;
