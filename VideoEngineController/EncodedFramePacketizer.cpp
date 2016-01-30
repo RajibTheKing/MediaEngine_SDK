@@ -315,7 +315,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 int CEncodedFramePacketizer::GetSleepTime()
 {
-    int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0);
+    int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * FPS_MAXIMUM * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0);
     int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer.GetQueueSize() + 1.0);
     
     if (SleepTimeDependingOnFPS < SleepTimeDependingOnQueueSize)

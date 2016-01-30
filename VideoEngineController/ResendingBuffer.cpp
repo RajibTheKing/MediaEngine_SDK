@@ -6,11 +6,11 @@
 #include "ThreadTools.h"
 #include <string.h>
 #include "LogPrinter.h"
-#include "Size.h"
+
 
 CResendingBuffer::CResendingBuffer() :
 m_iPushIndex(0),
-m_iQueueCapacity(MAX_VIDEO_PACKET_RESENDING_BUFFER_SIZE)
+m_iQueueCapacity(RESENDING_BUFFER_SIZE)
 {
 	memset(m_BufferFrameNumber, -1, sizeof(m_BufferFrameNumber));
 	m_pChannelMutex.reset(new CLockHandler);
