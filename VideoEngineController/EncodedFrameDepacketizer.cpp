@@ -314,7 +314,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		index = SafeFinder(frameNumber);
 
 		if(index == -1) {
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
 									   "CEncodedFrameDepacketizer::PushPacketForDecoding Invalid Index : " +
 									   m_Tools.IntegertoStringConvert(index));
 			return -1;
@@ -327,14 +327,14 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	if(frameNumber == m_iFirstFrameReceived)
 		m_FirstFrameEncodingTime = timeStampDiff;
 
-//	CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS,
+//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
 //							   " GetReceivedFrame : PushPacketForDecoding  InsertTime " +
 //							   m_Tools.IntegertoStringConvert(frameNumber)+" == "+m_Tools.IntegertoStringConvert(timeStampDiff));
 
 	if(bIsRetransmitted)
 		++m_iRetransPktUsed;
 	if(frameNumber%50==0)
-		CLogPrinter::WriteSpecific2(CLogPrinter::DEBUGS,
+		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS,
 							   "$$$ Retransmited PKT#  Used : " +
 							   m_Tools.IntegertoStringConvert(m_iRetransPktUsed)+"  Dropped: "+m_Tools.IntegertoStringConvert(m_iRetransPktDrpd));
 
@@ -387,7 +387,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 	{
 //		if(nEcodingTime == -1 && nRight && m_FrontFrame < m_iMaxFrameNumRecvd)	{
 		if(nEcodingTime == -1 && m_FrontFrame < m_iMaxFrameNumRecvd)	{
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # No Pkt Found Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame));
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # No Pkt Found Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame));
 //			g_FPSController.NotifyFrameDropped(m_FrontFrame);
 			MoveForward(m_FrontFrame);
 			return -1;
@@ -395,7 +395,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 
 		if(-1 != nExpectedTime && nEcodingTime > nExpectedTime)
 		{
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Test 1");
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Test 1");
 			return -1;
 		}
 	}
@@ -469,9 +469,9 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 
 #if 0
 	if(0 == frameNumber%8 && m_CVideoPacketBuffer[index].IsIFrame()==false)
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " if--MIS -- MATCH ______________________________________" + m_Tools.IntegertoStringConvert(frameNumber));
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " if--MIS -- MATCH ______________________________________" + m_Tools.IntegertoStringConvert(frameNumber));
 	else if(0 != frameNumber%8 && m_CVideoPacketBuffer[index].IsIFrame())
-		CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, " Else if --MIS -- MATCH ______________________________________" + m_Tools.IntegertoStringConvert(frameNumber));
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Else if --MIS -- MATCH ______________________________________" + m_Tools.IntegertoStringConvert(frameNumber));
 #endif
 
 	//If frameNumber is a I-Frame
