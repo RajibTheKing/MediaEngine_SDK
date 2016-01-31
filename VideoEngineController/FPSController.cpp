@@ -124,7 +124,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 
         if(FPS_MAXIMUM > opponentFPS)
             m_nMaxOpponentProcessableFPS = opponentFPS;
-        CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "# Force: -----------------GOT-------------------------------------->   "+ m_Tools.IntegertoStringConvert(m_nMaxOpponentProcessableFPS));
+        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: -----------------GOT-------------------------------------->   "+ m_Tools.IntegertoStringConvert(m_nMaxOpponentProcessableFPS));
         if(m_nOwnFPS > m_nMaxOpponentProcessableFPS) {
             m_nOwnFPS = m_nMaxOpponentProcessableFPS;
             m_pVideoEncoder->SetBitrate(m_nOwnFPS);

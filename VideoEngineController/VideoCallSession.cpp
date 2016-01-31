@@ -843,7 +843,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 		decodingTime =  toolsObject.CurrentTimestamp() - currentTime;
 
 		if(nFrameLength>-1)
-			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # Get Time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  Len: "+m_Tools.IntegertoStringConvert(nFrameLength) +"  FrameNo: "
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # Get Time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  Len: "+m_Tools.IntegertoStringConvert(nFrameLength) +"  FrameNo: "
 													   +m_Tools.IntegertoStringConvert(nFrameNumber));
 
 		if (-1 == nFrameLength) {
@@ -866,7 +866,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 			nMaxProcessableByMine = g_FPSController.GetMaxOwnProcessableFPS();
 
 			if( nOponnentFPS > 1 + nMaxProcessableByMine  && (nFrameNumber & 7) > 3 ) {
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: Frame: "+m_Tools.IntegertoStringConvert(nFrameNumber)+"  FPS: "+m_Tools.IntegertoStringConvert(nOponnentFPS)+" ~"+toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: Frame: "+m_Tools.IntegertoStringConvert(nFrameNumber)+"  FPS: "+m_Tools.IntegertoStringConvert(nOponnentFPS)+" ~"+toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
 				continue;
 			}
@@ -888,7 +888,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 					if(fps<FPS_MAXIMUM)
 						g_FPSController.SetMaxOwnProcessableFPS(fps);
 				}
-				CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Max Decoding-time: "+m_Tools.IntegertoStringConvert(nMaxDecodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Max Decoding-time: "+m_Tools.IntegertoStringConvert(nMaxDecodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
 			}
 
 			if(!bIsSendableToClient) {
@@ -1112,7 +1112,7 @@ void CVideoCallSession::RenderingThreadProcedure()
 
 			int DecodingDelay = nTimeStampDiff - firstFrameEncodingTime + m_ll1stDecodedFrameTimeStamp - firstTime;
 
-//			CLogPrinter::WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
+//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
 #ifdef RENDERING_DELAY
 			if(DecodingDelay>5)
 				toolsObject.SOSleep(DecodingDelay-5);
