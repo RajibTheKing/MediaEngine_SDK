@@ -220,7 +220,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
         {
             int timeDiffForQueue;
             packetSize = m_SendingBuffer.DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
-            CLogPrinter::WriteForQueueTime(CLogPrinter::INFO, " m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
+            CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
 			pair<int,int> FramePacketToSend = {-1, -1};
@@ -303,7 +303,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 			m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
 
-            CLogPrinter::WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));
+            CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));
             
             //toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
             
