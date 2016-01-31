@@ -7,9 +7,9 @@
 //#define __EXACT_LOG__
 #define __SPECIFIC_LOG__
 #define __SPECIFIC_LOG2__
-#define __OPERATION_TIME_LOG__
-#define __QUEUE_TIME_LOG__
-#define __PACKET_LOSS_INFO_LOG__
+//#define __OPERATION_TIME_LOG__
+//#define __QUEUE_TIME_LOG__
+//#define __PACKET_LOSS_INFO_LOG__
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 
@@ -105,7 +105,7 @@ private:
 #ifdef __OPERATION_TIME_LOG__
 #define CLogPrinter_WriteForOperationTime(...) CLogPrinter::WriteForOperationTime(__VA_ARGS__)
 #else
-#define CLogPrinter_WriteForOperationTime(...)
+#define CLogPrinter_WriteForOperationTime(...) 0
 #endif
 
 #ifdef __QUEUE_TIME_LOG__
