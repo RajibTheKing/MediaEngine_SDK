@@ -102,5 +102,23 @@ private:
 #define CLogPrinter_WriteSpecific2(...)
 #endif
 
+#ifdef __OPERATION_TIME_LOG__
+#define CLogPrinter_WriteForOperationTime(...) CLogPrinter::WriteForOperationTime(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteForOperationTime(...)
+#endif
+
+#ifdef __QUEUE_TIME_LOG__
+#define CLogPrinter_WriteForQueueTime(...) CLogPrinter::WriteForQueueTime(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteForQueueTime(...)
+#endif
+
+#ifdef __PACKET_LOSS_INFO_LOG__
+#define CLogPrinter_WriteForPacketLossInfo(...) CLogPrinter::WriteForPacketLossInfo(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteForPacketLossInfo(...)
+#endif
+
 
 #endif
