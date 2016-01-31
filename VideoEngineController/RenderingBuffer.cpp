@@ -30,7 +30,7 @@ int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, u
     m_BufferFrameNumber[m_iPushIndex] = frameNumber;
 	m_VideoHeights[m_iPushIndex] = videoHeight;
 	m_VideoWidths[m_iPushIndex] = videoWidth;
-
+	m_BufferInsertionTime[m_iPushIndex] = m_Tools.CurrentTimestamp();
 	m_BufferTimeStamp[m_iPushIndex] = timeStampDiff;
     
     if (m_iQueueSize == m_iQueueCapacity)
@@ -49,7 +49,7 @@ int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, u
     return 1;
 }
 
-int CRenderingBuffer::DeQueue(int &frameNumber, unsigned int &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth)
+int CRenderingBuffer::DeQueue(int &frameNumber, unsigned int &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth, int &timeDiff)
 {
 	Locker lock(*m_pChannelMutex);
 
@@ -70,6 +70,8 @@ int CRenderingBuffer::DeQueue(int &frameNumber, unsigned int &timeStampDiff, uns
 		timeStampDiff = m_BufferTimeStamp[m_iPopIndex];
 
 		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
+
+		timeDiff = m_Tools.CurrentTimestamp() - m_BufferInsertionTime[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
 

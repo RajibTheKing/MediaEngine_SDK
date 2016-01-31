@@ -21,15 +21,17 @@ CSendingBuffer::~CSendingBuffer()
 		m_pChannelMutex.reset();*/
 }
 
-int CSendingBuffer::Queue(LongLong lFriendID, unsigned char *frame, int length)
+int CSendingBuffer::Queue(LongLong lFriendID, unsigned char *frame, int length, int frameNumber, int packetNumber)
 {
 //	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::Queue b4 lock");
 	Locker lock(*m_pChannelMutex);
     
     memcpy(m_Buffer[m_iPushIndex], frame, length);
     m_BufferDataLength[m_iPushIndex] = length;
-    m_BufferFrameNumber[m_iPushIndex] = lFriendID;
-    
+	m_BufferFriendIDs[m_iPushIndex] = lFriendID;
+	m_BufferFrameNumber[m_iPushIndex] = frameNumber;
+	m_BufferPacketNumber[m_iPushIndex] = packetNumber;
+	m_BufferInsertionTime[m_iPushIndex] = m_Tools.CurrentTimestamp();
 
 	if (m_iQueueSize == m_iQueueCapacity)
 	{
@@ -47,7 +49,7 @@ int CSendingBuffer::Queue(LongLong lFriendID, unsigned char *frame, int length)
     return 1;
 }
 
-int CSendingBuffer::DeQueue(LongLong &lFriendID, unsigned char *decodeBuffer)
+int CSendingBuffer::DeQueue(LongLong &lFriendID, unsigned char *decodeBuffer, int &frameNumber, int &packetNumber, int &timeDiff)
 {
 //	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::deQueue b4 lock");
 	Locker lock(*m_pChannelMutex);
@@ -61,9 +63,13 @@ int CSendingBuffer::DeQueue(LongLong &lFriendID, unsigned char *decodeBuffer)
 	{
 		int length = m_BufferDataLength[m_iPopIndex];
 
-		lFriendID = m_BufferFrameNumber[m_iPopIndex];
+		lFriendID = m_BufferFriendIDs[m_iPopIndex];
+		frameNumber = m_BufferFrameNumber[m_iPopIndex];
+		packetNumber = m_BufferPacketNumber[m_iPopIndex];
 
 		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
+
+		timeDiff = m_Tools.CurrentTimestamp() - m_BufferInsertionTime[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
 

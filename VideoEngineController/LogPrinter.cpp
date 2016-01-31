@@ -222,6 +222,105 @@ std::string CLogPrinter::GetDateTime()
 
 }
 
+long long CLogPrinter::WriteForOperationTime(Priority priority, const std::string message, long long prevTime)
+{
+#ifdef __OPERATION_TIME_LOG__
+	long long timeDiff = 0;
+	if(isLogEnable)
+	{
+		timeDiff = GetTimeDifference(prevTime);
+		if(prevTime==0) return timeDiff;
+#ifdef TARGET_OS_IPHONE
+
+		cout<< "OperatTime: " << timeDiff <<" :" << "--> "<<message<<endl;
+
+#elif __ANDROID__
+
+		LOGE("OperatTime: %lld ---> %s ", timeDiff, message.c_str());
+
+#endif
+
+	}
+
+	return timeDiff;
+#endif
+}
+void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)
+{
+	if(isLogEnable)
+	{
+
+#ifdef __QUEUE_TIME_LOG__
+
+
+#ifdef TARGET_OS_IPHONE
+
+		cout<< "QueueTime: " << PRIORITY_NAMES[priority] << "--> "<<message<<endl;
+
+#elif __ANDROID__
+
+		LOGE("QueueTime: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
+
+#endif
+
+#endif
+
+	}
+}
+void CLogPrinter::WriteForPacketLossInfo(Priority priority, const std::string message)
+{
+	if(isLogEnable)
+	{
+
+#ifdef __PACKET_LOSS_INFO_LOG__
+
+
+#ifdef TARGET_OS_IPHONE
+
+		cout<<"PacketLoss: " << PRIORITY_NAMES[priority] << "--> "<<message<<endl;
+
+#elif __ANDROID__
+
+		LOGE("PacketLoss: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
+
+#endif
+
+#endif
+
+	}
+}
+
+long long  CLogPrinter::GetTimeDifference(long long prevTime)
+{
+
+#ifndef USE_CPP_11_TIME
+	struct timeval te;
+	gettimeofday(&te, NULL); // get current time
+	long long milliseconds =  te.tv_sec* + te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+	// printf("milliseconds: %lld\n", milliseconds);
+	return milliseconds - prevTime;
+#else
+
+
+	namespace sc = std::chrono;
+
+	auto time = sc::system_clock::now(); // get the current time
+
+	auto since_epoch = time.time_since_epoch(); // get the duration since epoch
+
+	// I don't know what system_clock returns
+	// I think it's uint64_t nanoseconds since epoch
+	// Either way this duration_cast will do the right thing
+	auto millis = sc::duration_cast<sc::milliseconds>(since_epoch);
+
+	long long now = millis.count(); // just like java (new Date()).getTime();
+
+	return now - prevTime;
+#endif
+}
+
+
+
 
 
 
