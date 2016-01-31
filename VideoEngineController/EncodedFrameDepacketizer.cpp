@@ -119,7 +119,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "FN: " + m_Tools.IntegertoStringConvert(frameNumber)
 													+ " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
-    
+
+	CLogPrinter::WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Receiving frameNumber: "+ m_Tools.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ m_Tools.IntegertoStringConvert(packetNumber));
 
 	int index;
 
@@ -155,7 +156,12 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
                                    "   in_size: "+m_Tools.IntegertoStringConvert(in_size));
 		g_iMiniPacket++;
 		++m_iCountReqResendPacket;
-		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber );
+
+		int timeDiffForQueue;
+
+		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber, timeDiffForQueue );
+
+		CLogPrinter::WriteForQueueTime(CLogPrinter::DEBUGS, " g_ResendBuffer "+ m_Tools.IntegertoStringConvert(timeDiffForQueue));
 
 		if(resendPacketLength != -1)
 		{

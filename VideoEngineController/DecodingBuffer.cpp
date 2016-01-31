@@ -30,6 +30,7 @@ int CDecodingBuffer::Queue(int frameNumber, unsigned char *frame, int length, un
     m_BufferFrameNumber[m_iPushIndex] = frameNumber;
 
 	m_BufferTimeStamp[m_iPushIndex] = timeStampDiff;
+	m_BufferInsertionTime[m_iPushIndex] = m_Tools.CurrentTimestamp();
     
     if (m_iQueueSize == m_iQueueCapacity)
     {
@@ -47,7 +48,7 @@ int CDecodingBuffer::Queue(int frameNumber, unsigned char *frame, int length, un
     return 1;
 }
 
-int CDecodingBuffer::DeQueue(int &frameNumber, unsigned int &timeStampDiff, unsigned char *decodeBuffer)
+int CDecodingBuffer::DeQueue(int &frameNumber, unsigned int &timeStampDiff, unsigned char *decodeBuffer, int &timeDiffForQueue)
 {
 	Locker lock(*m_pChannelMutex);
 
@@ -64,6 +65,8 @@ int CDecodingBuffer::DeQueue(int &frameNumber, unsigned int &timeStampDiff, unsi
 		timeStampDiff = m_BufferTimeStamp[m_iPopIndex];
 
 		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
+
+		timeDiffForQueue = m_Tools.CurrentTimestamp() - m_BufferInsertionTime[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
 

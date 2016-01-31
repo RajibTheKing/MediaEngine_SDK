@@ -4,6 +4,7 @@
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
+#include "Tools.h"
 
 #define MAX_VIDEO_ENCODER_BUFFER_SIZE 45
 #define MAX_VIDEO_ENCODER_FRAME_SIZE (352 * 288 * 3)/2+1
@@ -17,7 +18,7 @@ public:
 	~CEncodingBuffer();
 
 	int Queue(unsigned char *frame, int length);
-	int DeQueue(unsigned char *decodeBuffer);
+	int DeQueue(unsigned char *decodeBuffer, int &timeDiff);
 	void IncreamentIndex(int &index);
 	int GetQueueSize();
 
@@ -29,9 +30,12 @@ private:
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
+	Tools m_Tools;
+
 	unsigned char m_Buffer[MAX_VIDEO_ENCODER_BUFFER_SIZE][MAX_VIDEO_ENCODER_FRAME_SIZE];
 	int m_BufferDataLength[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 	int m_BufferIndexState[MAX_VIDEO_ENCODER_BUFFER_SIZE];
+	long long m_BufferInsertionTime[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pChannelMutex;
 };

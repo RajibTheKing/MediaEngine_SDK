@@ -7,6 +7,9 @@
 //#define __EXACT_LOG__
 #define __SPECIFIC_LOG__
 #define __SPECIFIC_LOG2__
+#define __OPERATION_TIME_LOG__
+#define __QUEUE_TIME_LOG__
+#define __PACKET_LOSS_INFO_LOG__
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 
@@ -64,6 +67,10 @@ public:
     static void WriteSpecific(Priority priority, const std::string message);
     static void WriteSpecific2(Priority priority, const std::string message);
     static bool SetLoggingState(bool loggingState, int logLevel);
+	static long long WriteForOperationTime(Priority priority, const std::string message, long long prevTime = 0);
+	static void WriteForQueueTime(Priority priority, const std::string message);
+	static void WriteForPacketLossInfo(Priority priority, const std::string message);
+	static long long GetTimeDifference(long long prevTime);
 
 private:
 

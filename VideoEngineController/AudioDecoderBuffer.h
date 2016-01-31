@@ -4,6 +4,7 @@
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
+#include "Tools.h"
 
 #define MAX_AUDIO_DECODER_BUFFER_SIZE 30
 #define MAX_AUDIO_DECODER_FRAME_SIZE 4096
@@ -29,9 +30,12 @@ private:
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
+	Tools m_Tools;
+
 	unsigned char m_Buffer[MAX_AUDIO_DECODER_BUFFER_SIZE][MAX_AUDIO_DECODER_FRAME_SIZE];
 	int m_BufferDataLength[MAX_AUDIO_DECODER_BUFFER_SIZE];
 	int m_BufferIndexState[MAX_AUDIO_DECODER_BUFFER_SIZE];
+	long long m_BufferInsertionTime[MAX_AUDIO_DECODER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pChannelMutex;
 };

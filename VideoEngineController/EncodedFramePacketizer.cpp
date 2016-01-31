@@ -89,7 +89,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 //		m_PacketHeader.setPacketHeader(m_Packet+1);
 //		CLogPrinter::WriteSpecific2(CLogPrinter::INFO, "$$--> Lenght "+m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketLength())+"  # TS: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
 
-		m_SendingBuffer.Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize);
+        m_SendingBuffer.Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);
         g_ResendBuffer.Queue(m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
     //    m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,nPacketHeaderLenghtWithMedia + m_PacketSize);
 	}
@@ -207,7 +207,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
     LongLong lFriendID;
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
-	int fpsSignal;
+	int fpsSignal, frameNumber, packetNumber;
 	CPacketHeader packetHeader;
     
     while (bSendingThreadRunning)
@@ -218,7 +218,9 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 			toolsObject.SOSleep(10);
         else
         {
-            packetSize = m_SendingBuffer.DeQueue(lFriendID, m_EncodedFrame);
+            int timeDiffForQueue;
+            packetSize = m_SendingBuffer.DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
+            CLogPrinter::WriteForQueueTime(CLogPrinter::INFO, " m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
 			pair<int,int> FramePacketToSend = {-1, -1};
@@ -300,6 +302,8 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 
 			m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+
+            CLogPrinter::WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));
             
             //toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
             

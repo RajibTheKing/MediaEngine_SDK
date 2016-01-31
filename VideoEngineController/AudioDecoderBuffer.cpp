@@ -24,6 +24,7 @@ int CAudioDecoderBuffer::Queue(unsigned char *frame, int length)
 	memcpy(m_Buffer[m_iPushIndex], frame, length);
 
 	m_BufferDataLength[m_iPushIndex] = length;
+	m_BufferInsertionTime[m_iPushIndex] =  m_Tools.CurrentTimestamp();
 
 	if (m_iQueueSize == m_iQueueCapacity)
 	{

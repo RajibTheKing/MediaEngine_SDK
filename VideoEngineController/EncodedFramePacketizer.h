@@ -31,8 +31,8 @@ public:
 	CEncodedFramePacketizer(CCommonElementsBucket* sharedObject);
 	~CEncodedFramePacketizer();
 
-	int Packetize(LongLong lFriendID, unsigned char *in_data, unsigned int in_size, int frameNumber,
-							  unsigned int iTimeStampDiff);
+	int Packetize(LongLong lFriendID, unsigned char *in_data, unsigned int in_size, int frameNumber, unsigned int iTimeStampDiff);
+
 	void StartEncodedFrameParsingThread();
 	void StopEncodedFrameParsingThread();
 

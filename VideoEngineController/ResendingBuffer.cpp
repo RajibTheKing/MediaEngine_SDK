@@ -38,10 +38,12 @@ void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, 
 
 	resendingMap[make_pair(frameNumber, packetNumber)] = m_iPushIndex;
 
+	m_BufferInsertionTime[m_iPushIndex] = m_Tools.CurrentTimestamp();
+
 	IncreamentIndex(m_iPushIndex);
 }
 
-int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber)
+int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber, int &timeStampDiff)
 {
 	Locker lock(*m_pChannelMutex);
 
@@ -52,6 +54,8 @@ int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int 
 	m_iPopIndex = resendingMapIterator->second;
 	resendingMap.erase(resendingMapIterator);
 	memcpy(decodeBuffer, m_Buffer[m_iPopIndex], m_BufferDataLength[m_iPopIndex]);
+
+	timeStampDiff = m_Tools.CurrentTimestamp() - m_BufferInsertionTime[m_iPopIndex];
 
 	return m_BufferDataLength[m_iPopIndex];
 }
