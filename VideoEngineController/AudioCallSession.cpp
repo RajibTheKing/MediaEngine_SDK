@@ -154,25 +154,25 @@ void CAudioCallSession::StopEncodingThread()
 
 void CAudioCallSession::StartEncodingThread()
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 1");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 1");
     
     if (pEncodingThread.get())
     {
-        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 2");
+        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 2");
         
         pEncodingThread.reset();
         
-        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 3");
+        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 3");
         
         return;
     }
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 4");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 4");
     
     bEncodingThreadRunning = true;
     bEncodingThreadClosed = false;
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 5");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -188,7 +188,7 @@ void CAudioCallSession::StartEncodingThread()
     
 #endif
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread Encoding Thread started");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread Encoding Thread started");
     
     return;
 }
@@ -203,13 +203,13 @@ void *CAudioCallSession::CreateAudioEncodingThread(void* param)
 
 void CAudioCallSession::EncodingThreadProcedure()
 {
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
     Tools toolsObject;
     int frameSize, encodedFrameSize;
     
     while (bEncodingThreadRunning)
     {
-        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
+        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodingThreadProcedure");
         
         if (m_EncodingBuffer.GetQueueSize() == 0)
             toolsObject.SOSleep(10);
@@ -256,25 +256,25 @@ void CAudioCallSession::StopDecodingThread()
 
 void CAudioCallSession::StartDecodingThread()
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 1");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 1");
     
     if (pDecodingThread.get())
     {
-        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 2");
+        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 2");
         
         pDecodingThread.reset();
         
-        CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 3");
+        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 3");
         
         return;
     }
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 4");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 4");
     
     bDecodingThreadRunning = true;
     bDecodingThreadClosed = false;
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread 5");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -290,7 +290,7 @@ void CAudioCallSession::StartDecodingThread()
     
 #endif
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDecodingThread Decoding Thread started");
+    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread Decoding Thread started");
     
     return;
 }
@@ -305,13 +305,13 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 
 void CAudioCallSession::DecodingThreadProcedure()
 {
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
     Tools toolsObject;
     int frameSize;
     
     while (bDecodingThreadRunning)
     {
-        //CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DecodingThreadProcedure");
+        //CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::DecodingThreadProcedure");
         
         if (m_DecodingBuffer.GetQueueSize() == 0)
             toolsObject.SOSleep(10);
@@ -339,6 +339,6 @@ void CAudioCallSession::DecodingThreadProcedure()
     
     bDecodingThreadClosed = true;
     
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
+    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 
