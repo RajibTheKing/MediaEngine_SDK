@@ -7,6 +7,7 @@
 //#define __EXACT_LOG__
 #define __SPECIFIC_LOG__
 #define __SPECIFIC_LOG2__
+//#define __SPECIFIC_LOG3__
 //#define __OPERATION_TIME_LOG__
 //#define __QUEUE_TIME_LOG__
 //#define __PACKET_LOSS_INFO_LOG__
@@ -100,6 +101,12 @@ private:
 #define CLogPrinter_WriteSpecific2(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteSpecific2(...)
+#endif
+
+#ifdef __SPECIFIC_LOG3__
+#define CLogPrinter_WriteSpecific3(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific3(...)
 #endif
 
 #ifdef __OPERATION_TIME_LOG__

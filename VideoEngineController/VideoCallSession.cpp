@@ -38,7 +38,11 @@ extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
 
+int g_OppNotifiedByterate = 0;
+
 //extern int g_MY_FPS;
+
+CVideoCallSession *g_VideoCallSession;
 
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
 
@@ -54,7 +58,24 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 		m_b1stDecodedFrame(true),
 		m_ll1stDecodedFrameTimeStamp(0),
 		m_pEncodedFramePacketizer(NULL),
-		m_pVideoEncoder(NULL)
+		m_ByteRcvInBandSlot(0),
+		m_SlotResetLeftRange(GetUniquePacketID(0,0)),
+		m_SlotResetRightRange(GetUniquePacketID(FRAME_RATE,0)),
+		m_pVideoEncoder(NULL),
+        m_bSkipFirstByteCalculation(true),
+        m_bGotOppBandwidth(0),
+        m_ByteRcvInSlotInverval(0),
+        m_ByteSendInSlotInverval(0),
+        m_RecvMegaSlotInvervalCounter(0),
+        m_SendMegaSlotInervalCounter(0),
+        m_miniPacketBandCounter(0),
+        m_ByteSendInMegaSlotInverval(0),
+        m_ByteRecvInMegaSlotInterval(0),
+        m_SlotIntervalCounter(0),
+        m_bMegSlotCounterShouldStop(true),
+        m_bsetBitrateCalled(false),
+        m_iConsecutiveGoodMegaSlot(0),
+        m_iPreviousByterate(BITRATE_MAX/8)
 {
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
     g_TraceRetransmittedFrame.clear();
@@ -87,7 +108,11 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 	StartDepacketizationThread();
 	StartDecodingThread();
 
-
+	g_VideoCallSession = this;
+    
+    m_FrameCounterbeforeEncoding = 0;
+    
+    m_BandWidthRatioHelper.clear();
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
 }
 
@@ -181,7 +206,7 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
 #ifdef FIRST_BUILD_COMPATIBLE
-	if( !g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) ==  0xC0)
+	if( !g_bIsVersionDetectableOpponent && in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & (1<<4) )
 	{
 		g_bIsVersionDetectableOpponent = true;
 		g_uchSendPacketVersion = VIDEO_VERSION_CODE;
@@ -198,13 +223,85 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
     else if(((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1))
     {
         CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
-        m_pMiniPacketQueue.Queue(in_data, in_size);
+        CPacketHeader tempHeader;
+        tempHeader.setPacketHeader(in_data);
+        int packetNumber = tempHeader.getPacketNumber();
+        if(packetNumber == INVALID_PACKET_NUMBER)
+        {
+            printf("TheKing--> OPPBAND_FOUND = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
+            
+            m_bGotOppBandwidth++;
+            g_OppNotifiedByterate = tempHeader.getTimeStamp();
+            
+            if(m_BandWidthRatioHelper.find(tempHeader.getFrameNumber()) == m_BandWidthRatioHelper.end())
+            {
+                printf("TheKing--> Not Found SLOT = %d\n", tempHeader.getFrameNumber());
+                return false;
+            }
+            
+            m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper[tempHeader.getFrameNumber()];
+            m_ByteRecvInMegaSlotInterval+=tempHeader.getTimeStamp();
+            m_SlotIntervalCounter++;
+            if(m_SlotIntervalCounter%MEGA_SLOT_INTERVAL == 0)
+            {
+                double MegaRatio =  (m_ByteRecvInMegaSlotInterval *1.0) / (1.0 * m_ByteSendInMegaSlotInverval) * 100.0;
+                
+                printf("Theking--> &&&&&&&& MegaSlot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_SlotIntervalCounter, m_ByteSendInMegaSlotInverval, m_ByteRecvInMegaSlotInterval,MegaRatio);
+                
+                
+                
+                int iNeedToChange = NeedToChangeBitRate(MegaRatio);
+
+				CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, " $$$*( INFO# Rcv: "+Tools::IntegertoStringConvert(m_ByteRecvInMegaSlotInterval)
+																           +" Snd: "+Tools::IntegertoStringConvert(m_ByteSendInMegaSlotInverval)
+																+" Change : "+Tools::IntegertoStringConvert(iNeedToChange));
+
+
+                if(iNeedToChange == BITRATE_CHANGE_DOWN)
+                {
+                    g_OppNotifiedByterate = m_ByteRecvInMegaSlotInterval/MEGA_SLOT_INTERVAL;
+                    
+                    printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", g_OppNotifiedByterate);
+                    
+                    m_bsetBitrateCalled = false;
+                    m_bMegSlotCounterShouldStop = true;
+                }
+                else if(iNeedToChange == BITRATE_CHANGE_UP)
+                {
+                    
+                    g_OppNotifiedByterate = m_iPreviousByterate*1.2;
+                    
+                    printf("@@@@@@@@@, BITRATE_CHANGE_UP --> %d\n", g_OppNotifiedByterate);
+                    
+                    m_bsetBitrateCalled = false;
+                    m_bMegSlotCounterShouldStop = true;
+                }
+                else
+                {
+                    printf("@@@@@@@@@, BITRATE_CHANGE_NO --> %d\n", g_OppNotifiedByterate);
+                }
+                
+                m_ByteRecvInMegaSlotInterval = 0;
+                m_ByteSendInMegaSlotInverval = 0;
+                
+            }
+            
+            
+            printf("TheKing--> g_OppNotifiedByteRate = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
+            
+            double ratio =  (tempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper[tempHeader.getFrameNumber()]) * 100.0;
+            
+            printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", ratio);
+            
+        }
+        else
+            m_pMiniPacketQueue.Queue(in_data, in_size);
     }
 	else
 #endif
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
-		m_pVideoPacketQueue.Queue(in_data, in_size);
+
 	}
 
 	return true;
@@ -323,16 +420,22 @@ void *CVideoCallSession::CreateVideoEncodingThread(void* param)
 
 	return NULL;
 }
-
+int countFrame = 0;
+int countFrameFor15 = 0;
+int countFrameSize = 0;
+long long encodeTimeStampFor15;
 void CVideoCallSession::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize, encodedFrameSize;
-	long long encodingTime, encodingTimeStamp, nMaxEncodingTime = 0;
+	long long encodingTime, encodingTimeStamp, nMaxEncodingTime = 0, currentTimeStamp;
 	double dbTotalEncodingTime=0;
 	int iEncodedFrameCounter=0;
-	long long currentTimeStamp;
+	encodingTimeStamp = toolsObject.CurrentTimestamp();
+	long long encodingTimeFahadTest = 0;
+
+	long long iterationtime = toolsObject.CurrentTimestamp();
 
 	while (bEncodingThreadRunning)
 	{
@@ -342,6 +445,8 @@ void CVideoCallSession::EncodingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else
 		{
+			long long sleepTimeStamp1 = toolsObject.CurrentTimestamp();//total time
+
 			int timeDiff;
 			frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame, timeDiff);
 			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " &*&*&* m_EncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
@@ -351,6 +456,12 @@ void CVideoCallSession::EncodingThreadProcedure()
 				toolsObject.SOSleep(10);
 				continue;
 			}
+			countFrameFor15++;
+			if(countFrameFor15%2!=0){
+				toolsObject.SOSleep(2);
+				continue;
+			}
+
 			if(m_bFirstFrame)
 			{
 				m_ll1stFrameTimeStamp = toolsObject.CurrentTimestamp();
@@ -358,6 +469,49 @@ void CVideoCallSession::EncodingThreadProcedure()
 			}
 
 			m_iTimeStampDiff = toolsObject.CurrentTimestamp() - m_ll1stFrameTimeStamp;
+            
+            
+            if(m_FrameCounterbeforeEncoding++ % FRAME_RATE == 0 && g_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)
+            {
+                
+                int bitrate_tolerance = 0;
+                if(m_bGotOppBandwidth == 1)
+                {
+                    bitrate_tolerance = 100000;
+                    printf("VampireEngg--> First Time Bitrate Tolerance = %d\n", bitrate_tolerance);
+                }
+                
+                int iRet = -1, iRet2 = -1;
+                int iCurrentBitRate = g_OppNotifiedByterate*8 - bitrate_tolerance;
+				CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, " $$$*( SET BITRATE :"+ m_Tools.IntegertoStringConvert(iCurrentBitRate)+"  Pre: "+ m_Tools.IntegertoStringConvert(m_iPreviousByterate));
+                printf("VampireEngg--> iCurrentBitRate = %d, g_OppNotifiedByteRate = %d\n", iCurrentBitRate, g_OppNotifiedByterate);
+                
+                if(iCurrentBitRate < m_pVideoEncoder->GetBitrate())
+                {
+                    iRet = m_pVideoEncoder->SetBitrate(iCurrentBitRate);
+                    
+                    if(iRet == 0) //First Initialization Successful
+                        iRet2 = m_pVideoEncoder->SetMaxBitrate(iCurrentBitRate);
+                   
+                }
+                else
+                {
+                    iRet = m_pVideoEncoder->SetMaxBitrate(iCurrentBitRate);
+                    
+                    if(iRet == 0) //First Initialization Successful
+                        iRet2 = m_pVideoEncoder->SetBitrate(iCurrentBitRate);
+                }
+                
+                if(iRet == 0 && iRet2 ==0) //We are intentionally skipping status of setbitrate operation success
+                {
+                    m_iPreviousByterate = iCurrentBitRate/8;
+                    
+                    m_bMegSlotCounterShouldStop = false;
+                }
+                
+                m_bsetBitrateCalled = true;
+               
+            }
 
 
 //			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$ENCODEING$");
@@ -419,22 +573,50 @@ void CVideoCallSession::EncodingThreadProcedure()
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertNV12ToI420 ", currentTimeStamp);
 
 			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure Converted to 420");
+
 			encodingTimeStamp = toolsObject.CurrentTimestamp();
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 			encodingTime  = toolsObject.CurrentTimestamp() - encodingTimeStamp;
+
+			encodeTimeStampFor15 += encodingTime;
+
+
+			long long sleepTimeStamp3 = toolsObject.CurrentTimestamp(); //packetization time
+
+			countFrameSize = countFrameSize + encodedFrameSize;
+			if(countFrame >= 15)
+			{
+				encodingTimeFahadTest  = toolsObject.CurrentTimestamp() - encodingTimeFahadTest;
+				CLogPrinter_WriteSpecific3(CLogPrinter::DEBUGS, "Encoded "+Tools::IntegertoStringConvert(countFrame)+" frames Size: " + Tools::IntegertoStringConvert(countFrameSize*8) + " encodeTimeStampFor15 : " + Tools::IntegertoStringConvert(encodeTimeStampFor15)+  " Full_Lop: " + Tools::IntegertoStringConvert(encodingTimeFahadTest));
+				encodingTimeFahadTest = toolsObject.CurrentTimestamp();
+				countFrame = 0;
+				countFrameSize= 0;
+				encodeTimeStampFor15 = 0;
+			}
+			countFrame++;
+
 			dbTotalEncodingTime += encodingTime;
 			++ iEncodedFrameCounter;
 			nMaxEncodingTime = max(nMaxEncodingTime,encodingTime);
 
-			if(0 == (7&iEncodedFrameCounter)){
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force: AVG EncodingTime = "+ m_Tools.DoubleToString(dbTotalEncodingTime/iEncodedFrameCounter)+" ~ "+m_Tools.IntegertoStringConvert(nMaxEncodingTime));
-			}
-
-			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 
 #endif
+            
+            m_ByteSendInSlotInverval+=encodedFrameSize;
+            if(m_FrameCounterbeforeEncoding % FRAME_RATE == 0)
+            {
+                
+                    
+                int ratioHelperIndex = (m_FrameCounterbeforeEncoding - FRAME_RATE) / FRAME_RATE;
+                if(m_bMegSlotCounterShouldStop == false)
+                {
+                    printf("VampireEngg--> ***************m_ByteSendInSlotInverval = (%d, %d)\n", ratioHelperIndex, m_ByteSendInSlotInverval);
+                    m_BandWidthRatioHelper[ratioHelperIndex] = m_ByteSendInSlotInverval;
+                }
+                    
+                m_ByteSendInSlotInverval = 0;
+            }
+            
 
 //			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoCallSession::EncodingThreadProcedure m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
 //			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$ENCODEING$ To Parser");
@@ -534,6 +716,9 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 	return m_decodedFrameSize;
 }
 
+
+int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
+bool gbStopFPSSending = false;
 void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
@@ -543,6 +728,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 	int frameNumber,packetNumber;
 	bool bIsMiniPacket;
 	m_iCountRecResPack = 0;
+	int iPacketType = NORMAL_PACKET;
 
 	while (bDepacketizationThreadRunning)
 	{
@@ -558,6 +744,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			toolsObject.SOSleep(10);
 		else
 		{
+			g_iPacketCounterSinceNotifying ++;
 #ifdef	RETRANSMISSION_ENABLED
             if(miniPacketQueueSize !=0)
             {
@@ -592,13 +779,75 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 			if(!bRetransmitted && !bMiniPacket)
 			{
+
+				iPacketType = NORMAL_PACKET;
+#ifdef BITRATE_CONTROL_BASED_ON_BANDWIDTH
+                if(GetUniquePacketID(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber()) >= m_SlotResetLeftRange
+                   && GetUniquePacketID(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber()) < m_SlotResetRightRange)
+                {
+                    m_ByteRcvInBandSlot +=  (m_RcvdPacketHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
+                }
+                else
+                {
+                    
+                    printf("VampireEngg--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
+                    
+                    /*
+                    if(m_bSkipFirstByteCalculation == false)
+                    {
+                        m_ByteRcvInSlotInverval+=m_ByteRcvInBandSlot;
+                        m_RecvMegaSlotInvervalCounter++;
+                    }
+                    
+                    if(m_RecvMegaSlotInvervalCounter%MEGA_SLOT_INTERVAL==0)
+                    {
+                        printf("VampireEngg--> ##############################m_ByteRcvInSlotInverval = (%d, %d)\n", m_RecvMegaSlotInvervalCounter, m_ByteRcvInSlotInverval);
+                        m_ByteRcvInSlotInverval =  0;
+                    }*/
+                    
+                    
+                    
+                    int SlotResetLeftRangeInFrame = (m_RcvdPacketHeader.getFrameNumber() - (m_RcvdPacketHeader.getFrameNumber() % FRAME_RATE));
+                    m_SlotResetLeftRange = GetUniquePacketID(SlotResetLeftRangeInFrame, 0);
+
+                    
+                    int SlotResetRightRangeInFrame = SlotResetLeftRangeInFrame + FRAME_RATE;
+                    m_SlotResetRightRange = GetUniquePacketID(SlotResetRightRangeInFrame , 0);
+                    
+                    
+                    if(m_bSkipFirstByteCalculation == true)
+                    {
+                        m_bSkipFirstByteCalculation = false;
+                    }
+                    else
+                    {
+                        m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;//if we miss all frames of the previous slot it will be wrong
+                        m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
+                        printf("VampireEngg--> m_miniPacketBandCounter = %d\n", m_miniPacketBandCounter);
+                        
+                        CreateAndSendMiniPacket((m_ByteRcvInBandSlot), INVALID_PACKET_NUMBER);
+                    }
+                    
+                    m_ByteRcvInBandSlot = m_RcvdPacketHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
+                    
+                    //printf("VampireEnggUpt--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
+                    
+
+                }
+#if 0
+
+#endif
+#endif
+
+
+
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
 				pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(),m_RcvdPacketHeader.getPacketNumber());
 
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
-                    
-                    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Current(FN,PN) = ("
+
+                    string sMsg = "CVideoCallSession::Current(FN,PN) = ("
                                                + m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
                                                + ","
                                                + m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
@@ -606,7 +855,20 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                                                + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first)
                                                + ","
                                                + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
-                                               + ")" );
+                                               + ")" ;
+                    printf("%s\n", sMsg.c_str());
+
+					if(g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
+					{
+						g_FPSController.NotifyFrameDropped(currentFramePacketPair.first);
+						g_iPacketCounterSinceNotifying = 0;
+						gbStopFPSSending = false;
+					}
+					else
+					{
+						gbStopFPSSending = true;
+					}
+
                     
                     if(currentFramePacketPair.first != ExpectedFramePacketPair.first) //different frame received
                     {
@@ -714,6 +976,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			}
 			else if (bRetransmitted)
 			{
+				iPacketType = RETRANSMITTED_PACKET;
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
                 
@@ -727,7 +990,6 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                 int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
                 CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
 															   + " PacketNumber. : "+  m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
-//                m_PacketToBeMerged[SIGNAL_BYTE_INDEX]|=(1<<5); //the mini packet flag is moved to signal byte
 				bIsMiniPacket = true;
             }
 #endif
@@ -943,15 +1205,24 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
 
-    if(resendFrameNumber % I_INTRA_PERIOD !=0)//faltu frame, dorkar nai
+    /*if( resendFrameNumber % I_INTRA_PERIOD !=0 )//faltu frame, dorkar nai
     {
         return;
-    }
+    }*/
 
 
 	g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
-    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
-                                            ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber));
+    
+    if(resendPacketNumber == INVALID_PACKET_NUMBER)
+    {
+        string sMsg = "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
+        ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber);
+        
+        //printf("VampireEngg--> %s\n", sMsg.c_str());
+    }
+    
+    
+    
     int startFraction = SIZE_OF_INT_MINUS_8;
     int fractionInterval = BYTE_SIZE;
     int startPoint = 1;
@@ -960,7 +1231,16 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
     int numberOfPackets = 1000; //dummy numberOfPackets
 
 	CPacketHeader PacketHeader;
-	PacketHeader.setPacketHeader(g_uchSendPacketVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
+    if (resendPacketNumber == INVALID_PACKET_NUMBER) {
+        //m_miniPacketBandCounter++;
+        
+        if(!g_uchSendPacketVersion) return;
+        
+        PacketHeader.setPacketHeader(g_uchSendPacketVersion, m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
+    }
+    else
+        PacketHeader.setPacketHeader(g_uchSendPacketVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
+    
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
     
 //    for (int f = startFraction; f >= 0; f -= fractionInterval)
@@ -981,7 +1261,10 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 //    }
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
     
-    m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,MINI_PACKET_LENGTH_WITH_MEDIA_TYPE);
+    if(g_uchSendPacketVersion)
+        m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
+    else
+        m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
     
     //m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
     
@@ -1132,6 +1415,35 @@ void CVideoCallSession::RenderingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
+int CVideoCallSession::GetUniquePacketID(int fn, int pn)
+{
+    return fn*MAX_PACKET_NUMBER  + pn;
+}
+
+int CVideoCallSession::NeedToChangeBitRate(double dataReceivedRatio)
+{
+    
+    if(dataReceivedRatio < NORMAL_BITRATE_RATIO_IN_MEGA_SLOT)
+    {
+        m_iConsecutiveGoodMegaSlot = 0;
+        return BITRATE_CHANGE_DOWN;
+        
+    }
+    else if(dataReceivedRatio > GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
+    {
+        m_iConsecutiveGoodMegaSlot++;
+        if(m_iConsecutiveGoodMegaSlot == GOOD_MEGASLOT_TO_UP)
+        {
+            m_iConsecutiveGoodMegaSlot = 0;
+            return BITRATE_CHANGE_UP;
+        }
+    }
+    else
+    {
+        m_iConsecutiveGoodMegaSlot = 0;
+    }
+    return BITRATE_CHANGE_NO;
+}
 
 
 

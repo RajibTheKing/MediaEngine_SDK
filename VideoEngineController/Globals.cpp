@@ -6,7 +6,12 @@
 
 CFPSController g_FPSController;
 PairMap g_timeInt;
+
+#ifdef FIRST_BUILD_COMPATIBLE
 bool g_bIsVersionDetectableOpponent = false;
 unsigned char g_uchSendPacketVersion = 0;
-//unsigned char g_uchSendPacketVersion = VIDEO_VERSION_CODE;
+#else
+bool g_bIsVersionDetectableOpponent = true;
+unsigned char g_uchSendPacketVersion = 1;
+#endif
 int g_uchOpponentVersion = -1;

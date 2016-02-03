@@ -4,10 +4,14 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 #include "codec_def.h"
+#include "size.h"
 
+extern int g_OppNotifiedByterate;
 
 CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject),
+m_iMaxBitrate(BITRATE_MAX),
+m_iBitrate(BITRATE_MAX - 25000),
 m_pSVCVideoEncoder(NULL)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
@@ -77,7 +81,9 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	encParam.iPicWidth = pDLayer->iVideoWidth = m_iWidth;
 	encParam.iPicHeight = pDLayer->iVideoHeight = m_iHeight;
 	encParam.fMaxFrameRate = pDLayer->fFrameRate = (float)FRAME_RATE;
-	encParam.iTargetBitrate = pDLayer->iSpatialBitrate = BITRATE_MAX;
+	encParam.iTargetBitrate = pDLayer->iSpatialBitrate = BITRATE_MAX - 25000;
+    encParam.iTargetBitrate = pDLayer->iMaxSpatialBitrate = BITRATE_MAX;
+    
 	pDLayer->iDLayerQp = 24;
 	pDLayer->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
 
@@ -89,8 +95,8 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	}
 
 #ifdef BITRATE_ENABLED
-	SetBitrate(FPS_BEGINNING);
-	SetMaxBitrate(FPS_BEGINNING);
+//	SetBitrate(12);
+//	SetMaxBitrate(12);
 #endif
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
@@ -98,11 +104,15 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	return 1;
 }
 
-void CVideoEncoder::SetBitrate(int iFps)
+int CVideoEncoder::SetBitrate(int iFps)
 {
-	iFps = max(iFps,FPS_MINIMUM);
-	int iBitRate = THRESHOLD_BITRATE + (iFps - FPS_MINIMUM) * BITRATE_CHANGE_FACTOR;
-
+	int iBitRate = iFps - (iFps%25000);
+    
+    if(iBitRate<BITRATE_MIN || iBitRate>BITRATE_MAX)
+    {
+        return -1;
+    }
+    
 	SBitrateInfo targetEncoderBitrateInfo;
 
 		targetEncoderBitrateInfo.iLayer = SPATIAL_LAYER_0;
@@ -114,20 +124,36 @@ void CVideoEncoder::SetBitrate(int iFps)
 			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
 			if (iRet != 0)
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$ #####################################################CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+                
+                
 			}
 			else
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$************** BITRATE SET : " + Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+                
+                m_iBitrate = iBitRate;
 			}
 		}
+    
+    printf("VampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
+    
+    
+    return iRet;
+
 }
 
-void CVideoEncoder::SetMaxBitrate(int iFps)
+int CVideoEncoder::SetMaxBitrate(int iFps)
 {
-	iFps = max(iFps,FPS_MINIMUM);
-	int iBitRate = BITRATE_MAX_DIFF + THRESHOLD_BITRATE + (iFps - FPS_MINIMUM) * BITRATE_CHANGE_FACTOR;
-
+    iFps = iFps * 1.25;
+	int iBitRate = iFps - (iFps%25000);
+    
+    if(iBitRate<BITRATE_MIN || iBitRate>BITRATE_MAX)
+    {
+        return -1;
+    }
+    
+    
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
 	maxEncoderBitRateInfo.iBitrate = (iBitRate);
@@ -137,14 +163,21 @@ void CVideoEncoder::SetMaxBitrate(int iFps)
 		{
 			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
 			if (iRet != 0){
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$ #####################################################CreateVideoEncoder unable to set MAX bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+                
+                
 			}
 			else
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$************** MAX BITRATE SET:  " + Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder max bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+                
+                m_iMaxBitrate = iBitRate;
 			}
 
 		}
+    
+    printf("VampireEngg--> SetmaxBitrate(%d) = %d\n", iBitRate, iRet);
+    return iRet;
 }
 
 void CVideoEncoder::SetFramerate(int iFps)
@@ -223,3 +256,14 @@ int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_siz
 
 	return iFrameSize;
 }
+
+int CVideoEncoder::GetBitrate()
+{
+    return m_iBitrate;
+}
+int CVideoEncoder::GetMaxBitrate()
+{
+    return m_iMaxBitrate;
+}
+
+

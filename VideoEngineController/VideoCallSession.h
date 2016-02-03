@@ -70,8 +70,15 @@ public:
 	void RenderingThreadProcedure();
 	static void *CreateVideoRenderingThread(void* param);
 
+	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int timeStampDiff);
+    
     void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
-
+    int GetUniquePacketID(int fn, int pn);
+    
+    int NeedToChangeBitRate(double LossPercentage);
+    int m_iConsecutiveGoodMegaSlot;
+    int m_iPreviousByterate;
+    
 	int orientation_type;
 	int ownFPS;
 	LongLong m_LastTimeStampClientFPS;
@@ -82,6 +89,7 @@ public:
 	int opponentFPS;
 	int fpsCnt;
 	int m_EncodingFrameCounter;
+    bool m_bSkipFirstByteCalculation;
 
 //	void increaseFPS();
 //	void decreaseFPS();
@@ -91,6 +99,28 @@ private:
 	int m_iCountRecResPack;
 	int m_iCountReQResPack;
 	int m_iDecodedFrameCounter;
+	int m_ByteRcvInBandSlot;
+    int m_ByteRcvInSlotInverval;
+    int m_ByteSendInSlotInverval;
+    
+    int m_ByteSendInMegaSlotInverval;
+    int m_ByteRecvInMegaSlotInterval;
+    int m_SlotIntervalCounter;
+    bool m_bMegSlotCounterShouldStop;
+    bool m_bsetBitrateCalled;
+    
+    
+    int m_RecvMegaSlotInvervalCounter;
+    int m_SendMegaSlotInervalCounter;
+    int m_miniPacketBandCounter;
+	//int m_SlotResetFrameNumber;
+	//int m_PrevSlotResetFrameNumber;
+    
+    int m_SlotResetLeftRange;
+    int m_SlotResetRightRange;
+    
+    int m_FrameCounterbeforeEncoding;
+    int m_bGotOppBandwidth;
 
 	CPacketHeader m_RcvdPacketHeader;
 	
@@ -99,6 +129,7 @@ private:
 	unsigned  int m_iTimeStampDiff;
 	bool m_b1stDecodedFrame;
 	long long m_ll1stDecodedFrameTimeStamp;
+	bool slotframefound = false;
 
 
 	Tools m_Tools;
@@ -152,8 +183,9 @@ private:
 
 	bool bRenderingThreadRunning;
 	bool bRenderingThreadClosed;
+    map<int, int> m_BandWidthRatioHelper;
     
-    unsigned char m_miniPacket[PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE];
+    unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
 
 protected:
 
