@@ -430,7 +430,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 	else if(m_FrontFrame < m_iMaxFrameNumRecvd)
 	{
 		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # IncompleteFrame Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame));
-		g_FPSController.NotifyFrameDropped(m_FrontFrame);
+//		g_FPSController.NotifyFrameDropped(m_FrontFrame);
 		MoveForward(m_FrontFrame);
 		return -1;
 	}
@@ -482,8 +482,8 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 		if(-1 == inIndex)
 			continue;
 
-		if(!m_CVideoPacketBuffer[inIndex].IsComplete())
-			g_FPSController.NotifyFrameDropped(frame);
+//		if(!m_CVideoPacketBuffer[inIndex].IsComplete())
+//			g_FPSController.NotifyFrameDropped(frame);
 
 		MoveForward(frame);
 	}
@@ -498,7 +498,7 @@ int CEncodedFrameDepacketizer::ProcessFrame(unsigned char *data,int index,int fr
 	memcpy(data,m_CVideoPacketBuffer[index].m_pFrameData,m_CVideoPacketBuffer[index].m_FrameSize);		//Send I-Frame
 	int nFrameLength = m_CVideoPacketBuffer[index].m_FrameSize;
 	nFramNumber = frameNumber;
-	g_FPSController.NotifyFrameComplete(frameNumber);
+//	g_FPSController.NotifyFrameComplete(frameNumber);
 	MoveForward(frameNumber);
 
 	return nFrameLength;

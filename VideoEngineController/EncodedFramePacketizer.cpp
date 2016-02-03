@@ -245,10 +245,9 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 #endif
 //			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
 
-#ifdef	FPS_CHANGE_SIGNALING
 			unsigned char signal = g_FPSController.GetFPSSignalByte();
 			m_EncodedFrame[ 1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
-#endif
+
 //			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
 
 

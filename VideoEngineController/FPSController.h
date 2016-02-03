@@ -35,8 +35,6 @@ public:
     void SetFPSSignalByte(unsigned char signal);
     bool IsProcessableFrame();
 
-    int NotifyFrameComplete(int framNumber);
-    int NotifyFrameDropped(int framNumber);
     void SetMaxOwnProcessableFPS(int fps);
     int GetMaxOwnProcessableFPS();
 

@@ -103,11 +103,6 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 	ExpectedFramePacketPair.second = 0;
 	iNumberOfPacketsInCurrentFrame = 0;
 
-	StartRenderingThread();
-	StartEncodingThread();
-	StartDepacketizationThread();
-	StartDecodingThread();
-
 	g_VideoCallSession = this;
     
     m_FrameCounterbeforeEncoding = 0;
@@ -193,6 +188,11 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_ClientFrameCounter = 0;
 	m_EncodingFrameCounter = 0;
 
+	StartRenderingThread();
+	StartEncodingThread();
+	StartDepacketizationThread();
+	StartDecodingThread();
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
 }
 
@@ -206,7 +206,7 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
 #ifdef FIRST_BUILD_COMPATIBLE
-	if( !g_bIsVersionDetectableOpponent && in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & (1<<4) )
+	if( !g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]  & 0xC0) ==  0xC0 )
 	{
 		g_bIsVersionDetectableOpponent = true;
 		g_uchSendPacketVersion = VIDEO_VERSION_CODE;
@@ -301,7 +301,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 #endif
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
-
+		m_pVideoPacketQueue.Queue(in_data, in_size);
 	}
 
 	return true;
@@ -573,9 +573,10 @@ void CVideoCallSession::EncodingThreadProcedure()
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertNV12ToI420 ", currentTimeStamp);
 
 			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure Converted to 420");
-
 			encodingTimeStamp = toolsObject.CurrentTimestamp();
+			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 			encodingTime  = toolsObject.CurrentTimestamp() - encodingTimeStamp;
 
 			encodeTimeStampFor15 += encodingTime;
@@ -860,7 +861,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 					if(g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
 					{
-						g_FPSController.NotifyFrameDropped(currentFramePacketPair.first);
+//						g_FPSController.NotifyFrameDropped(currentFramePacketPair.first);
 						g_iPacketCounterSinceNotifying = 0;
 						gbStopFPSSending = false;
 					}
@@ -1081,8 +1082,6 @@ void CVideoCallSession::DecodingThreadProcedure()
 	long long nMaxDecodingTime=0;
 	int RenderFaildCounter=0;
 	int nExpectedTime;
-	bool bIsSendableToClient = true;
-
 
 	int nDecodingStatus, fps = -1;
 	double dbAverageDecodingTime = 0, dbTotalDecodingTime = 0;
@@ -1117,13 +1116,6 @@ void CVideoCallSession::DecodingThreadProcedure()
 			if(-1 == nFirstFrameDecodingTime)
 				nTimeStampBeforeDecoding = nBeforeDecodingTime;
 
-
-#ifdef RENDER_CONTROL
-			bIsSendableToClient =  (200 > nExpectedTime-nEncodingTime || nExpectedTime==-1 );
-#else
-			bIsSendableToClient =  true;
-#endif
-
 			nOponnentFPS = g_FPSController.GetOpponentFPS();
 			nMaxProcessableByMine = g_FPSController.GetMaxOwnProcessableFPS();
 
@@ -1151,14 +1143,6 @@ void CVideoCallSession::DecodingThreadProcedure()
 						g_FPSController.SetMaxOwnProcessableFPS(fps);
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Max Decoding-time: "+m_Tools.IntegertoStringConvert(nMaxDecodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
-			}
-
-			if(!bIsSendableToClient) {
-				RenderFaildCounter++;
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
-										   " GetReceivedFrame # NOT RENDERABLE *  " +
-										   m_Tools.IntegertoStringConvert(nExpectedTime) + " ^ " +
-										   m_Tools.IntegertoStringConvert(nEncodingTime)+"   ----> CNT: "+m_Tools.IntegertoStringConvert(RenderFaildCounter));
 			}
 			
 			if(-1 == nFirstFrameDecodingTime)
@@ -1204,70 +1188,39 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int,int> currentFrame
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
 {
+	unsigned char uchVersion = g_uchSendPacketVersion;
 
-    /*if( resendFrameNumber % I_INTRA_PERIOD !=0 )//faltu frame, dorkar nai
+    if( 0 == uchVersion && INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
     {
         return;
-    }*/
-
-
-	g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
-    
-    if(resendPacketNumber == INVALID_PACKET_NUMBER)
-    {
-        string sMsg = "CVideoCallSession::CreateAndSendMiniPacket() resendFrameNumber = " + m_Tools.IntegertoStringConvert(resendFrameNumber) +
-        ", resendPacketNumber = " + m_Tools.IntegertoStringConvert(resendPacketNumber);
-        
-        //printf("VampireEngg--> %s\n", sMsg.c_str());
     }
-    
-    
-    
-    int startFraction = SIZE_OF_INT_MINUS_8;
-    int fractionInterval = BYTE_SIZE;
-    int startPoint = 1;
-    
-    
+
     int numberOfPackets = 1000; //dummy numberOfPackets
 
 	CPacketHeader PacketHeader;
     if (resendPacketNumber == INVALID_PACKET_NUMBER) {
         //m_miniPacketBandCounter++;
+        if(0 == uchVersion) return;
         
-        if(!g_uchSendPacketVersion) return;
-        
-        PacketHeader.setPacketHeader(g_uchSendPacketVersion, m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
+        PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
     }
-    else
-        PacketHeader.setPacketHeader(g_uchSendPacketVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
-    
+    else {
+		PacketHeader.setPacketHeader(uchVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
+		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
+	}
+
+	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
+
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
-    
-//    for (int f = startFraction; f >= 0; f -= fractionInterval)
-//    {
-//        m_miniPacket[startPoint++] = (resendFrameNumber >> f) & 0xFF; //resend Frame Number
-//    }
-//
-//    for (int f = startFraction; f >= 0; f -= fractionInterval)
-//    {
-//        m_miniPacket[startPoint++] = (numberOfPackets >> f) & 0xFF; //Dummy numberOfPackets 1000
-//    }
-    
+
     m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; //MiniPacket Flag
-    
-//    for (int f = startFraction; f >= 0; f -= fractionInterval)
-//    {
-//        m_miniPacket[startPoint++] = (resendPacketNumber >> f) & 0xFF; //resend packet Number
-//    }
-    m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
-    
-    if(g_uchSendPacketVersion)
+
+    if(uchVersion)
         m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
     else
         m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
     
     //m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
-    
 }
 
 

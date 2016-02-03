@@ -124,13 +124,13 @@ int CVideoEncoder::SetBitrate(int iFps)
 			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
 			if (iRet != 0)
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
                 
                 
 			}
 			else
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
                 
                 m_iBitrate = iBitRate;
 			}
@@ -152,8 +152,8 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
     {
         return -1;
     }
-    
-    
+
+
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
 	maxEncoderBitRateInfo.iBitrate = (iBitRate);
@@ -163,13 +163,13 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
 		{
 			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
 			if (iRet != 0){
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
                 
                 
 			}
 			else
 			{
-				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder max bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
+				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder max bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
                 
                 m_iMaxBitrate = iBitRate;
 			}
