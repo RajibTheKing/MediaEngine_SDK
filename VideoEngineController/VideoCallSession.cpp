@@ -75,7 +75,8 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
         m_bMegSlotCounterShouldStop(true),
         m_bsetBitrateCalled(false),
         m_iConsecutiveGoodMegaSlot(0),
-        m_iPreviousByterate(BITRATE_MAX/8)
+        m_iPreviousByterate(BITRATE_MAX/8),
+		m_LastSendingSlot(0)
 {
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
     g_TraceRetransmittedFrame.clear();
@@ -236,6 +237,10 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
             if(m_BandWidthRatioHelper.find(tempHeader.getFrameNumber()) == m_BandWidthRatioHelper.end())
             {
                 printf("TheKing--> Not Found SLOT = %d\n", tempHeader.getFrameNumber());
+				if(m_LastSendingSlot<=tempHeader.getFrameNumber())
+				{
+					m_bMegSlotCounterShouldStop = false;
+				}
                 return false;
             }
             
@@ -268,8 +273,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
                 }
                 else if(iNeedToChange == BITRATE_CHANGE_UP)
                 {
-                    
-                    g_OppNotifiedByterate = m_iPreviousByterate*1.2;
+
+					g_OppNotifiedByterate = m_iPreviousByterate * BITRATE_INC_FACTOR;
                     
                     printf("@@@@@@@@@, BITRATE_CHANGE_UP --> %d\n", g_OppNotifiedByterate);
                     
@@ -469,18 +474,14 @@ void CVideoCallSession::EncodingThreadProcedure()
 			}
 
 			m_iTimeStampDiff = toolsObject.CurrentTimestamp() - m_ll1stFrameTimeStamp;
-            
-            
-            if(m_FrameCounterbeforeEncoding++ % FRAME_RATE == 0 && g_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)
-            {
-                
-                int bitrate_tolerance = 0;
-                if(m_bGotOppBandwidth == 1)
-                {
-                    bitrate_tolerance = 100000;
-                    printf("VampireEngg--> First Time Bitrate Tolerance = %d\n", bitrate_tolerance);
-                }
-                
+
+
+			m_FrameCounterbeforeEncoding++;
+
+			if(m_FrameCounterbeforeEncoding%FRAME_RATE == 0 && g_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)
+			{
+				int bitrate_tolerance = g_OppNotifiedByterate*0.2;
+
                 int iRet = -1, iRet2 = -1;
                 int iCurrentBitRate = g_OppNotifiedByterate*8 - bitrate_tolerance;
 				CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, " $$$*( SET BITRATE :"+ m_Tools.IntegertoStringConvert(iCurrentBitRate)+"  Pre: "+ m_Tools.IntegertoStringConvert(m_iPreviousByterate));
@@ -612,6 +613,7 @@ void CVideoCallSession::EncodingThreadProcedure()
                 if(m_bMegSlotCounterShouldStop == false)
                 {
                     printf("VampireEngg--> ***************m_ByteSendInSlotInverval = (%d, %d)\n", ratioHelperIndex, m_ByteSendInSlotInverval);
+					m_LastSendingSlot = ratioHelperIndex;
                     m_BandWidthRatioHelper[ratioHelperIndex] = m_ByteSendInSlotInverval;
                 }
                     

@@ -184,7 +184,8 @@ private:
 	bool bRenderingThreadRunning;
 	bool bRenderingThreadClosed;
     map<int, int> m_BandWidthRatioHelper;
-    
+	int m_LastSendingSlot;
+
     unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
 
 protected:
