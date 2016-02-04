@@ -185,7 +185,12 @@ private:
 	bool bRenderingThreadClosed;
     map<int, int> m_BandWidthRatioHelper;
 	int m_LastSendingSlot;
-
+    
+    int m_iGoodSlotCounter;
+    int m_iNormalSlotCounter;
+    int m_SlotCounter;
+    double m_PrevMegaSlotStatus;
+    
     unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
 
 protected:
