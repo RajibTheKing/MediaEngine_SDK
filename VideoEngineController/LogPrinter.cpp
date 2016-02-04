@@ -244,6 +244,7 @@ long long CLogPrinter::WriteForOperationTime(Priority priority, const std::strin
 
 	return timeDiff;
 #endif
+    return -1;
 }
 void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)
 {

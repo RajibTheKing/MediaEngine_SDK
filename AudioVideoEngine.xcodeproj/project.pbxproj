@@ -44,6 +44,7 @@
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
 		DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */; };
 		DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */; };
+		DAF780BE1C63095B000A8565 /* BandwidthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAF780BC1C63095B000A8565 /* BandwidthController.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -142,6 +143,8 @@
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
 		DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderingBuffer.cpp; path = VideoEngineController/RenderingBuffer.cpp; sourceTree = "<group>"; };
 		DAAB12211C464B23001A4B91 /* RenderingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderingBuffer.h; path = VideoEngineController/RenderingBuffer.h; sourceTree = "<group>"; };
+		DAF780BC1C63095B000A8565 /* BandwidthController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BandwidthController.cpp; path = VideoEngineController/BandwidthController.cpp; sourceTree = "<group>"; };
+		DAF780BD1C63095B000A8565 /* BandwidthController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BandwidthController.h; path = VideoEngineController/BandwidthController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,6 +211,8 @@
 				9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */,
 				9D00A8B51C1BF161001A52BC /* AudioEncoderBuffer.h */,
 				188587BF1C0AEEAC00B1F435 /* AudioVideoEngineDefinitions.h */,
+				DAF780BC1C63095B000A8565 /* BandwidthController.cpp */,
+				DAF780BD1C63095B000A8565 /* BandwidthController.h */,
 				188587C01C0AEEAC00B1F435 /* codec_api.h */,
 				188587C11C0AEEAC00B1F435 /* codec_app_def.h */,
 				188587C21C0AEEAC00B1F435 /* codec_def.h */,
@@ -360,6 +365,7 @@
 				188587FB1C0AEEAC00B1F435 /* VideoPacketBuffer.cpp in Sources */,
 				9D9910381C296914007BA91C /* VideoPacketQueue.cpp in Sources */,
 				188587F91C0AEEAC00B1F435 /* VideoEncoder.cpp in Sources */,
+				DAF780BE1C63095B000A8565 /* BandwidthController.cpp in Sources */,
 				188587F21C0AEEAC00B1F435 /* EventNotifier.cpp in Sources */,
 				188587ED1C0AEEAC00B1F435 /* CommonElementsBucket.cpp in Sources */,
 				DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */,
