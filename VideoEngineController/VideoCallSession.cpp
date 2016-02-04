@@ -264,7 +264,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
                 if(iNeedToChange == BITRATE_CHANGE_DOWN)
                 {
-                    g_OppNotifiedByterate = m_ByteRecvInMegaSlotInterval/MEGA_SLOT_INTERVAL;
+                    g_OppNotifiedByterate = BITRATE_DECREMENT_FACTOR * (m_ByteRecvInMegaSlotInterval/MEGA_SLOT_INTERVAL);
                     
                     printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", g_OppNotifiedByterate);
                     
@@ -274,7 +274,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
                 else if(iNeedToChange == BITRATE_CHANGE_UP)
                 {
 
-					g_OppNotifiedByterate = m_iPreviousByterate * BITRATE_INC_FACTOR;
+					g_OppNotifiedByterate = m_iPreviousByterate * BITRATE_INCREAMENT_FACTOR;
                     
                     printf("@@@@@@@@@, BITRATE_CHANGE_UP --> %d\n", g_OppNotifiedByterate);
                     
@@ -441,6 +441,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 	long long encodingTimeFahadTest = 0;
 
 	long long iterationtime = toolsObject.CurrentTimestamp();
+	int nFirstTimeDecrease = 100000;
 
 	while (bEncodingThreadRunning)
 	{
@@ -461,11 +462,6 @@ void CVideoCallSession::EncodingThreadProcedure()
 				toolsObject.SOSleep(10);
 				continue;
 			}
-			countFrameFor15++;
-			if(countFrameFor15%2!=0){
-				toolsObject.SOSleep(2);
-				continue;
-			}
 
 			if(m_bFirstFrame)
 			{
@@ -480,10 +476,11 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 			if(m_FrameCounterbeforeEncoding%FRAME_RATE == 0 && g_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)
 			{
-				int bitrate_tolerance = g_OppNotifiedByterate*0.2;
 
                 int iRet = -1, iRet2 = -1;
-                int iCurrentBitRate = g_OppNotifiedByterate*8 - bitrate_tolerance;
+                int iCurrentBitRate = g_OppNotifiedByterate* 8 - nFirstTimeDecrease;
+				nFirstTimeDecrease = 0;
+
 				CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, " $$$*( SET BITRATE :"+ m_Tools.IntegertoStringConvert(iCurrentBitRate)+"  Pre: "+ m_Tools.IntegertoStringConvert(m_iPreviousByterate));
                 printf("VampireEngg--> iCurrentBitRate = %d, g_OppNotifiedByteRate = %d\n", iCurrentBitRate, g_OppNotifiedByterate);
                 
