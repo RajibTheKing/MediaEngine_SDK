@@ -301,7 +301,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
             double ratio =  (tempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt(tempHeader.getFrameNumber())) * 100.0;
             
             //printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", ratio);
-            
+
+			m_BandWidthRatioHelper.erase(tempHeader.getFrameNumber());
         }
         else
             m_pMiniPacketQueue.Queue(in_data, in_size);

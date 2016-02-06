@@ -22,6 +22,7 @@ public:
 	int getElementAt(int index);
 	int end();
 	int insert(int index, int element);
+	void erase(int index);
 
 private:
 

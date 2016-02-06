@@ -52,3 +52,13 @@ int CSynchronizedMap::insert(int index, int element)
 
 	m_STLMap[index] = element;
 }
+
+void CSynchronizedMap::erase(int index)
+{
+	Locker lock(*m_pSynchronizedMapMutex);
+
+	if(m_STLMap.find(index) != m_STLMap.end())
+	{
+		m_STLMap.erase(index);
+	}
+}
