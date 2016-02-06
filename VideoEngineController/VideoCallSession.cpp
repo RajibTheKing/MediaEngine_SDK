@@ -108,6 +108,10 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
     
     m_FrameCounterbeforeEncoding = 0;
     
+    m_iGoodSlotCounter = 0;
+    m_iNormalSlotCounter = 0;
+    m_SlotCounter = 0;
+    
     m_BandWidthRatioHelper.clear();
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
 }
@@ -1189,7 +1193,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 {
 	unsigned char uchVersion = g_uchSendPacketVersion;
 
-    if( 0 == uchVersion && INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
+    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
     {
         return;
     }
@@ -1374,26 +1378,60 @@ int CVideoCallSession::GetUniquePacketID(int fn, int pn)
 
 int CVideoCallSession::NeedToChangeBitRate(double dataReceivedRatio)
 {
+    m_SlotCounter++;
     
     if(dataReceivedRatio < NORMAL_BITRATE_RATIO_IN_MEGA_SLOT)
     {
-        m_iConsecutiveGoodMegaSlot = 0;
+        m_iGoodSlotCounter = 0;
+        m_iNormalSlotCounter = 0;
+        m_SlotCounter = 0;
+        
+        //m_iConsecutiveGoodMegaSlot = 0;
+        m_PrevMegaSlotStatus = dataReceivedRatio;
         return BITRATE_CHANGE_DOWN;
         
     }
+    else if(dataReceivedRatio>=NORMAL_BITRATE_RATIO_IN_MEGA_SLOT && dataReceivedRatio<=GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
+    {
+        m_iNormalSlotCounter++;
+    }
     else if(dataReceivedRatio > GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
     {
-        m_iConsecutiveGoodMegaSlot++;
+        m_iGoodSlotCounter++;
+        /*m_iConsecutiveGoodMegaSlot++;
         if(m_iConsecutiveGoodMegaSlot == GOOD_MEGASLOT_TO_UP)
         {
             m_iConsecutiveGoodMegaSlot = 0;
             return BITRATE_CHANGE_UP;
-        }
+        }*/
+        
+        
     }
     else
     {
-        m_iConsecutiveGoodMegaSlot = 0;
+  //      m_iConsecutiveGoodMegaSlot = 0;
     }
+    
+    
+    if(m_SlotCounter >= GOOD_MEGASLOT_TO_UP)
+    {
+        int temp = GOOD_MEGASLOT_TO_UP * 0.9;
+        
+        if(m_iGoodSlotCounter>=temp && m_PrevMegaSlotStatus>GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
+        {
+            m_iGoodSlotCounter = 0;
+            m_iNormalSlotCounter = 0;
+            m_SlotCounter = 0;
+            
+            m_PrevMegaSlotStatus = dataReceivedRatio;
+            
+            return BITRATE_CHANGE_UP;
+        }
+        
+    }
+    
+    
+    m_PrevMegaSlotStatus = dataReceivedRatio;
     return BITRATE_CHANGE_NO;
 }
 
