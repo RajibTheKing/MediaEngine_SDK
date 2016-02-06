@@ -225,13 +225,13 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT RETRANSMITTED PACKET");
 		m_pRetransVideoPacketQueue.Queue(in_data,in_size);
     }
-    else if(((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1))
+    else if(((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1)) // It is a minipacket
     {
         CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
         CPacketHeader tempHeader;
         tempHeader.setPacketHeader(in_data);
         int packetNumber = tempHeader.getPacketNumber();
-        if(packetNumber == INVALID_PACKET_NUMBER)
+        if(packetNumber == INVALID_PACKET_NUMBER)	// bandwidth related minipacket
         {
             ////printf("TheKing--> OPPBAND_FOUND = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
             
@@ -248,7 +248,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
                 return false;
             }
             
-            m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper[tempHeader.getFrameNumber()];
+            m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(tempHeader.getFrameNumber());
             m_ByteRecvInMegaSlotInterval+=tempHeader.getTimeStamp();
             m_SlotIntervalCounter++;
             if(m_SlotIntervalCounter%MEGA_SLOT_INTERVAL == 0)
@@ -298,7 +298,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
             
             //printf("TheKing--> g_OppNotifiedByteRate = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
             
-            double ratio =  (tempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper[tempHeader.getFrameNumber()]) * 100.0;
+            double ratio =  (tempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt(tempHeader.getFrameNumber())) * 100.0;
             
             //printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", ratio);
             
@@ -615,7 +615,7 @@ void CVideoCallSession::EncodingThreadProcedure()
                 {
                     //printf("VampireEngg--> ***************m_ByteSendInSlotInverval = (%d, %d)\n", ratioHelperIndex, m_ByteSendInSlotInverval);
 					m_LastSendingSlot = ratioHelperIndex;
-                    m_BandWidthRatioHelper[ratioHelperIndex] = m_ByteSendInSlotInverval;
+                    m_BandWidthRatioHelper.insert(ratioHelperIndex, m_ByteSendInSlotInverval);
                 }
                     
                 m_ByteSendInSlotInverval = 0;
