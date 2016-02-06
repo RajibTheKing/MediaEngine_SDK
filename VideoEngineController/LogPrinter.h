@@ -5,8 +5,8 @@
 
 //#define __PRINT_LOG__
 //#define __EXACT_LOG__
-#define __SPECIFIC_LOG__
-#define __SPECIFIC_LOG2__
+//#define __SPECIFIC_LOG__
+//#define __SPECIFIC_LOG2__
 //#define __SPECIFIC_LOG3__
 //#define __OPERATION_TIME_LOG__
 //#define __QUEUE_TIME_LOG__
@@ -71,7 +71,9 @@ public:
 	static long long WriteForOperationTime(Priority priority, const std::string message, long long prevTime = 0);
 	static void WriteForQueueTime(Priority priority, const std::string message);
 	static void WriteForPacketLossInfo(Priority priority, const std::string message);
+#ifdef __OPERATION_TIME_LOG__
 	static long long GetTimeDifference(long long prevTime);
+#endif
 
 private:
 

@@ -135,7 +135,7 @@ int CVideoEncoder::SetBitrate(int iFps)
 			}
 		}
     
-    printf("VampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
+    //printf("VampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
     
     
     return iRet;
@@ -174,7 +174,7 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
 
 		}
     
-    printf("VampireEngg--> SetmaxBitrate(%d) = %d\n", iBitRate, iRet);
+    //printf("VampireEngg--> SetmaxBitrate(%d) = %d\n", iBitRate, iRet);
     return iRet;
 }
 

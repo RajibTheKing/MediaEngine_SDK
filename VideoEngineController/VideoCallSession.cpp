@@ -233,14 +233,14 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         int packetNumber = tempHeader.getPacketNumber();
         if(packetNumber == INVALID_PACKET_NUMBER)
         {
-            printf("TheKing--> OPPBAND_FOUND = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
+            ////printf("TheKing--> OPPBAND_FOUND = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
             
             m_bGotOppBandwidth++;
             g_OppNotifiedByterate = tempHeader.getTimeStamp();
             
             if(m_BandWidthRatioHelper.find(tempHeader.getFrameNumber()) == m_BandWidthRatioHelper.end())
             {
-                printf("TheKing--> Not Found SLOT = %d\n", tempHeader.getFrameNumber());
+                ////printf("TheKing--> Not Found SLOT = %d\n", tempHeader.getFrameNumber());
 				if(m_LastSendingSlot<=tempHeader.getFrameNumber())
 				{
 					m_bMegSlotCounterShouldStop = false;
@@ -255,7 +255,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
             {
                 double MegaRatio =  (m_ByteRecvInMegaSlotInterval *1.0) / (1.0 * m_ByteSendInMegaSlotInverval) * 100.0;
                 
-                printf("Theking--> &&&&&&&& MegaSlot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_SlotIntervalCounter, m_ByteSendInMegaSlotInverval, m_ByteRecvInMegaSlotInterval,MegaRatio);
+                //printf("Theking--> &&&&&&&& MegaSlot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_SlotIntervalCounter, m_ByteSendInMegaSlotInverval, m_ByteRecvInMegaSlotInterval,MegaRatio);
                 
                 
                 
@@ -270,7 +270,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
                 {
                     g_OppNotifiedByterate = BITRATE_DECREMENT_FACTOR * (m_ByteRecvInMegaSlotInterval/MEGA_SLOT_INTERVAL);
                     
-                    printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", g_OppNotifiedByterate);
+                    //printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", g_OppNotifiedByterate);
                     
                     m_bsetBitrateCalled = false;
                     m_bMegSlotCounterShouldStop = true;
@@ -280,14 +280,14 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 					g_OppNotifiedByterate = m_iPreviousByterate * BITRATE_INCREAMENT_FACTOR;
                     
-                    printf("@@@@@@@@@, BITRATE_CHANGE_UP --> %d\n", g_OppNotifiedByterate);
+                    //printf("@@@@@@@@@, BITRATE_CHANGE_UP --> %d\n", g_OppNotifiedByterate);
                     
                     m_bsetBitrateCalled = false;
                     m_bMegSlotCounterShouldStop = true;
                 }
                 else
                 {
-                    printf("@@@@@@@@@, BITRATE_CHANGE_NO --> %d\n", g_OppNotifiedByterate);
+                    //printf("@@@@@@@@@, BITRATE_CHANGE_NO --> %d\n", g_OppNotifiedByterate);
                 }
                 
                 m_ByteRecvInMegaSlotInterval = 0;
@@ -296,11 +296,11 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
             }
             
             
-            printf("TheKing--> g_OppNotifiedByteRate = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
+            //printf("TheKing--> g_OppNotifiedByteRate = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
             
             double ratio =  (tempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper[tempHeader.getFrameNumber()]) * 100.0;
             
-            printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", ratio);
+            //printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", ratio);
             
         }
         else
@@ -486,7 +486,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 				nFirstTimeDecrease = 0;
 
 				CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, " $$$*( SET BITRATE :"+ m_Tools.IntegertoStringConvert(iCurrentBitRate)+"  Pre: "+ m_Tools.IntegertoStringConvert(m_iPreviousByterate));
-                printf("VampireEngg--> iCurrentBitRate = %d, g_OppNotifiedByteRate = %d\n", iCurrentBitRate, g_OppNotifiedByterate);
+                //printf("VampireEngg--> iCurrentBitRate = %d, g_OppNotifiedByteRate = %d\n", iCurrentBitRate, g_OppNotifiedByterate);
                 
                 if(iCurrentBitRate < m_pVideoEncoder->GetBitrate())
                 {
@@ -613,7 +613,7 @@ void CVideoCallSession::EncodingThreadProcedure()
                 int ratioHelperIndex = (m_FrameCounterbeforeEncoding - FRAME_RATE) / FRAME_RATE;
                 if(m_bMegSlotCounterShouldStop == false)
                 {
-                    printf("VampireEngg--> ***************m_ByteSendInSlotInverval = (%d, %d)\n", ratioHelperIndex, m_ByteSendInSlotInverval);
+                    //printf("VampireEngg--> ***************m_ByteSendInSlotInverval = (%d, %d)\n", ratioHelperIndex, m_ByteSendInSlotInverval);
 					m_LastSendingSlot = ratioHelperIndex;
                     m_BandWidthRatioHelper[ratioHelperIndex] = m_ByteSendInSlotInverval;
                 }
@@ -794,7 +794,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                 else
                 {
                     
-                    printf("VampireEngg--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
+                   // printf("VampireEngg--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
                     
                     /*
                     if(m_bSkipFirstByteCalculation == false)
@@ -805,7 +805,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                     
                     if(m_RecvMegaSlotInvervalCounter%MEGA_SLOT_INTERVAL==0)
                     {
-                        printf("VampireEngg--> ##############################m_ByteRcvInSlotInverval = (%d, %d)\n", m_RecvMegaSlotInvervalCounter, m_ByteRcvInSlotInverval);
+                        //printf("VampireEngg--> ##############################m_ByteRcvInSlotInverval = (%d, %d)\n", m_RecvMegaSlotInvervalCounter, m_ByteRcvInSlotInverval);
                         m_ByteRcvInSlotInverval =  0;
                     }*/
                     
@@ -827,7 +827,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                     {
                         m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;//if we miss all frames of the previous slot it will be wrong
                         m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
-                        printf("VampireEngg--> m_miniPacketBandCounter = %d\n", m_miniPacketBandCounter);
+                        //printf("VampireEngg--> m_miniPacketBandCounter = %d\n", m_miniPacketBandCounter);
                         
                         CreateAndSendMiniPacket((m_ByteRcvInBandSlot), INVALID_PACKET_NUMBER);
                     }
@@ -860,7 +860,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                                                + ","
                                                + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
                                                + ")" ;
-                    printf("%s\n", sMsg.c_str());
+                    //printf("%s\n", sMsg.c_str());
 
 					if(g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
 					{
@@ -1080,7 +1080,7 @@ void CVideoCallSession::DecodingThreadProcedure()
 	Tools toolsObject;
 
 	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
-	unsigned int nTimeStampDiff;
+	unsigned int nTimeStampDiff=0;
 	long long nTimeStampBeforeDecoding, nFirstFrameDecodingTime, nFirstFrameEncodingTime, currentTime, nShiftedTime;
 	long long nMaxDecodingTime=0;
 	int RenderFaildCounter=0;
