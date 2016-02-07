@@ -124,8 +124,6 @@ int CVideoEncoder::SetBitrate(int iFps)
 			if (iRet != 0)
 			{
 				CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
-                
-                
 			}
 			else
 			{
@@ -149,7 +147,7 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
     
-    if(iBitRate>BITRATE_MAX) iBitRate = BITRATE_MAX;
+    if(iBitRate>BITRATE_MAX+100000) iBitRate = BITRATE_MAX+100000;
 
 
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;

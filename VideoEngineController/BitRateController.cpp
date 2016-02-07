@@ -53,8 +53,8 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
         }
         return false;
     }
-
-    m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(tempHeader.getFrameNumber());
+    int iSlotNumber = tempHeader.getFrameNumber();
+    m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(iSlotNumber);
     m_ByteRecvInMegaSlotInterval+=tempHeader.getTimeStamp();
     m_SlotIntervalCounter++;
     if(m_SlotIntervalCounter%MEGA_SLOT_INTERVAL == 0)
@@ -67,9 +67,14 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
 
         int iNeedToChange = NeedToChangeBitRate(MegaRatio);
 
-        CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "BR~  BR: "+ Tools::IntegertoStringConvert(m_iPreviousByterate*8)+" Send: "+Tools::IntegertoStringConvert(m_ByteSendInMegaSlotInverval *8)
+        CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS, "BR~  BR: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())
+                                                        +" MBR: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate())
+                                                        +" Send: "+Tools::IntegertoStringConvert(m_ByteSendInMegaSlotInverval *8)
                                                         +" Rcv: "+Tools::IntegertoStringConvert(m_ByteRecvInMegaSlotInterval*8)
-                                                        +" Change : "+Tools::IntegertoStringConvert(iNeedToChange)+ " Ratio: "+m_Tools.DoubleToString(MegaRatio)+ "  IsBitRateCross: "+ Tools::IntegertoStringConvert(m_iPreviousByterate < m_ByteSendInMegaSlotInverval));
+                                                        +" Change : "+Tools::IntegertoStringConvert(iNeedToChange)+ " Ratio: "+m_Tools.DoubleToString(MegaRatio)
+                                                        + "  B-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate() < m_ByteSendInMegaSlotInverval)
+                                                        + "  M-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate() < m_ByteSendInMegaSlotInverval)
+        +" SlotNo: "+Tools::IntegertoStringConvert(iSlotNumber));
 
         if(iNeedToChange == BITRATE_CHANGE_DOWN)
         {
@@ -141,7 +146,7 @@ bool BitRateController::UpdateBitrate()
 
         if(iRet == 0 && iRet2 ==0) //We are intentionally skipping status of setbitrate operation success
         {
-            m_iPreviousByterate = iCurrentBitRate/8;
+            m_iPreviousByterate = min(BITRATE_MAX ,iCurrentBitRate)/8;
 
             m_bMegSlotCounterShouldStop = false;
         }
