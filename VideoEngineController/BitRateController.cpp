@@ -41,7 +41,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
 
     int packetNumber = tempHeader.getPacketNumber();
 
-    m_bGotOppBandwidth++;
+//    m_bGotOppBandwidth++;
     m_OppNotifiedByterate = tempHeader.getTimeStamp();
 
     if(m_BandWidthRatioHelper.find(tempHeader.getFrameNumber()) == m_BandWidthRatioHelper.end())
@@ -57,7 +57,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
     m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(iSlotNumber);
     m_ByteRecvInMegaSlotInterval+=tempHeader.getTimeStamp();
     m_SlotIntervalCounter++;
-    if(m_SlotIntervalCounter%MEGA_SLOT_INTERVAL == 0)
+    if(m_SlotIntervalCounter % MEGA_SLOT_INTERVAL == 0)
     {
         double MegaRatio =  (m_ByteRecvInMegaSlotInterval *1.0) / (1.0 * m_ByteSendInMegaSlotInverval) * 100.0;
 
@@ -159,11 +159,14 @@ bool BitRateController::UpdateBitrate()
 
 void BitRateController::NotifyEncodedFrame(int nFrameSize){
 
+    if(0 == nFrameSize)
+    {
+        CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS, "BR~  Failed :"+ Tools::IntegertoStringConvert(m_FrameCounterbeforeEncoding)
+                                                        +" Mod : "+ Tools::IntegertoStringConvert(m_FrameCounterbeforeEncoding % 8));
+    }
     m_ByteSendInSlotInverval+=nFrameSize;
     if(m_FrameCounterbeforeEncoding % FRAME_RATE == 0)
     {
-
-
         int ratioHelperIndex = (m_FrameCounterbeforeEncoding - FRAME_RATE) / FRAME_RATE;
         if(m_bMegSlotCounterShouldStop == false)
         {

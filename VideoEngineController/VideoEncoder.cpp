@@ -146,8 +146,8 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
 	int iBitRate = iFps - (iFps%25000);
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
-    
-    if(iBitRate>BITRATE_MAX+100000) iBitRate = BITRATE_MAX+100000;
+
+    if(iBitRate>BITRATE_MAX) iBitRate = BITRATE_MAX;
 
 
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
