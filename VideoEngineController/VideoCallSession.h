@@ -19,6 +19,7 @@
 #include "Tools.h"
 #include "PairMap.h"
 #include "RetransmitVideoPacketQueue.h"
+#include "BitRateController.h"
 
 #include <queue>
 #include <utility>
@@ -143,6 +144,8 @@ private:
 	CCommonElementsBucket* m_pCommonElementsBucket;
 	CVideoEncoder *m_pVideoEncoder;
 	CVideoDecoder *m_pVideoDecoder;
+
+	BitRateController m_BitRateController;
 
 	CEncodingBuffer m_EncodingBuffer;
 	CDecodingBuffer m_DecodingBuffer;
