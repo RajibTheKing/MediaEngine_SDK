@@ -1320,9 +1320,11 @@ void CVideoCallSession::RenderingThreadProcedure()
 	Tools toolsObject;
 	int frameSize,nFrameNumber,intervalTime;
 	unsigned int nTimeStampDiff;
-	long long firstTime,decodingTime,firstFrameEncodingTime;
+	long long currentFrameTime,decodingTime,firstFrameEncodingTime;
 	int videoHeight, videoWidth;
 	long long currentTimeStamp;
+	int prevTimeStamp=0;
+	int minTimeGap = 51;
 
 	while (bRenderingThreadRunning)
 	{
@@ -1332,46 +1334,45 @@ void CVideoCallSession::RenderingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else
 		{
-			firstTime = toolsObject.CurrentTimestamp();
+
 			int timeDiffForQueue;
+
 			frameSize = m_RenderingBuffer.DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
 			CLogPrinter_WriteForQueueTime(CLogPrinter::DEBUGS, " m_RenderingBuffer "+ toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
-			if(frameSize<1)
+			currentFrameTime = toolsObject.CurrentTimestamp();
+
+			if(m_b1stDecodedFrame)
+			{
+				m_ll1stDecodedFrameTimeStamp = currentFrameTime;
+				firstFrameEncodingTime = nTimeStampDiff;
+				m_b1stDecodedFrame = false;
+			}
+			else
+			{
+				minTimeGap = nTimeStampDiff - prevTimeStamp ;
+			}
+
+			prevTimeStamp = nTimeStampDiff;
+
+			if(frameSize<1 && minTimeGap < 50)
 				continue;
 
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertI420ToNV21 ");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	this->m_pColorConverter->ConvertI420ToNV12(m_RenderingFrame, videoHeight, videoWidth);
+			this->m_pColorConverter->ConvertI420ToNV12(m_RenderingFrame, videoHeight, videoWidth);
 #elif defined(_DESKTOP_C_SHARP_)
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
 #elif defined(TARGET_OS_WINDOWS_PHONE)
-	this->m_pColorConverter->ConvertI420ToYV12(m_RenderingFrame, videoHeight, videoWidth);
+			this->m_pColorConverter->ConvertI420ToYV12(m_RenderingFrame, videoHeight, videoWidth);
 #else
 
-	this->m_pColorConverter->ConvertI420ToNV21(m_RenderingFrame, videoHeight, videoWidth);
+			this->m_pColorConverter->ConvertI420ToNV21(m_RenderingFrame, videoHeight, videoWidth);
 #endif
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertI420ToNV21 ", currentTimeStamp);
-			if(m_b1stDecodedFrame)
-			{
-				m_ll1stDecodedFrameTimeStamp = firstTime;
-				firstFrameEncodingTime = nTimeStampDiff;
-				m_b1stDecodedFrame = false;
-			}
 
-			int DecodingDelay = nTimeStampDiff - firstFrameEncodingTime + m_ll1stDecodedFrameTimeStamp - firstTime;
-
-//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() n timeStampDiff: "+m_Tools.IntegertoStringConvert(nTimeStampDiff)+ " ::DecodingDelay: "+ m_Tools.IntegertoStringConvert(DecodingDelay));
-#ifdef RENDERING_DELAY
-			if(DecodingDelay>5)
-				toolsObject.SOSleep(DecodingDelay-5);
-			else
-				toolsObject.SOSleep(1);
-#else
 			toolsObject.SOSleep(5);
-#endif
-
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(friendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
 		}
