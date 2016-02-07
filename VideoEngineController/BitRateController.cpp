@@ -72,8 +72,8 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
                                                         +" Send: "+Tools::IntegertoStringConvert(m_ByteSendInMegaSlotInverval *8)
                                                         +" Rcv: "+Tools::IntegertoStringConvert(m_ByteRecvInMegaSlotInterval*8)
                                                         +" Change : "+Tools::IntegertoStringConvert(iNeedToChange)+ " Ratio: "+m_Tools.DoubleToString(MegaRatio)
-                                                        + "  B-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate() < m_ByteSendInMegaSlotInverval)
-                                                        + "  M-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate() < m_ByteSendInMegaSlotInverval)
+                                                        + "  B-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate() - m_ByteSendInMegaSlotInverval)
+                                                        + "  M-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate() - m_ByteSendInMegaSlotInverval)
         +" SlotNo: "+Tools::IntegertoStringConvert(iSlotNumber));
 
         if(iNeedToChange == BITRATE_CHANGE_DOWN)
