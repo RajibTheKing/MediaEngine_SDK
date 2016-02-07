@@ -21,7 +21,7 @@ public:
 	int find(int index);
 	int getElementAt(int index);
 	int end();
-	int insert(int index, int element);
+	void insert(int index, int element);
 	void erase(int index);
 
 private:

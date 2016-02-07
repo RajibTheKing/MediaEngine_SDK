@@ -49,7 +49,7 @@ int CSynchronizedMap::end()
 	return -1;
 }
 
-int CSynchronizedMap::insert(int index, int element)
+void CSynchronizedMap::insert(int index, int element)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
