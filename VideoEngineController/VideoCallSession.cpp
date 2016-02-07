@@ -537,11 +537,10 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
-			//frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
 			printf("WinD--> CVideoCallSession::EncodingThreadProcedure frameSIze: %d\n", frameSize);
-			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
-			//if (encodedFrameSize > 0)
-				//m_Tools.WriteToFile(m_EncodedFrame, encodedFrameSize);
+			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+
 			printf("WinD--> CVideoCallSession::EncodingThreadProcedure encodedFrameSize: %d\n", encodedFrameSize);
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 
@@ -724,7 +723,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 
 	long long currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-	m_Tools.WriteToFile(m_DecodedFrame, m_decodedFrameSize);
+
 	CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Decode ", currentTimeStamp);
 	if(1 > m_decodedFrameSize)
 		return -1;
@@ -1353,8 +1352,8 @@ void CVideoCallSession::RenderingThreadProcedure()
 	this->m_pColorConverter->ConvertI420ToNV12(m_RenderingFrame, videoHeight, videoWidth);
 #elif defined(_DESKTOP_C_SHARP_)
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
-			//frameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_RenderingFrame, m_RenderingRGBFrame, videoHeight, videoWidth);
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(friendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+			frameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_RenderingFrame, m_RenderingRGBFrame, videoHeight, videoWidth);
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(friendID, nFrameNumber, frameSize, m_RenderingRGBFrame, videoHeight, videoWidth);
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 	this->m_pColorConverter->ConvertI420ToYV12(m_RenderingFrame, videoHeight, videoWidth);
 #else
