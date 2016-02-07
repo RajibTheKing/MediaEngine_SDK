@@ -313,8 +313,10 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-            if(g_BandWidthController.IsSendeablePacket(packetSize))
+			if(g_BandWidthController.IsSendeablePacket(packetSize))
 #endif
+
+			printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 			m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
 
             CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));

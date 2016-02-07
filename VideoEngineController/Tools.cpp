@@ -169,9 +169,9 @@ int Tools::GetIntFromChar(unsigned char *packetData, int index,int nLenght)
 	return result;
 }
 
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined (_DESKTOP_C_SHARP_)
 #define USE_CPP_11_TIME
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_)
+#elif defined(TARGET_OS_WINDOWS_PHONE)
 #define USE_WINDOWS_TIME
 #else
 #define USE_LINUX_TIME
@@ -193,6 +193,7 @@ LongLong  Tools::CurrentTimestamp()
 	return milliseconds;
 #elif defined(USE_WINDOWS_TIME)
 	// Get current time from the clock, using microseconds resolution
+	printf("%lld GetTickCount\n", GetTickCount64());
 	return GetTickCount64();
 #elif defined(USE_CPP_11_TIME)
 	namespace sc = std::chrono;
@@ -224,6 +225,7 @@ void Tools::WriteToFile(unsigned char* in_Data, int count)
 	{
 		m_fpByte = fopen("byteFile.test", "wb");
 	}
-	fwrite(in_Data, 1, count, m_fpByte);
+	int iWrite = fwrite(in_Data, 1, count, m_fpByte);
+	printf("filwrite: %d\n", iWrite);
 
 }

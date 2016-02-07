@@ -37,6 +37,7 @@ typedef long long IPVLongType;
 #if defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_WINDOWS_PHONE)
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
 #define printf(...) printg(__VA_ARGS__,"")
+#define printf(...)
 #endif
 
 using namespace std;
