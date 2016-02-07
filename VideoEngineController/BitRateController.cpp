@@ -133,8 +133,7 @@ bool BitRateController::UpdateBitrate()
             iRet = m_pVideoEncoder->SetBitrate(iCurrentBitRate);
 
             if(iRet == 0) //First Initialization Successful
-                iRet2 = m_pVideoEncoder->SetMaxBitrate(iCurrentBitRate);
-
+                iRet2 = m_pVideoEncoder->SetMaxBitrate(m_pVideoEncoder->GetBitrate());
         }
         else
         {
@@ -146,7 +145,7 @@ bool BitRateController::UpdateBitrate()
 
         if(iRet == 0 && iRet2 ==0) //We are intentionally skipping status of setbitrate operation success
         {
-            m_iPreviousByterate = min(BITRATE_MAX ,iCurrentBitRate)/8;
+            m_iPreviousByterate = m_pVideoEncoder->GetBitrate()/8;
 
             m_bMegSlotCounterShouldStop = false;
         }
