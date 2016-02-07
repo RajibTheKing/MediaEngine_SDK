@@ -24,7 +24,7 @@ public:
     int NeedToChangeBitRate(double dataReceivedRatio);
 
 private:
-
+    Tools m_Tools;
     int m_iGoodSlotCounter;
     int m_iNormalSlotCounter;
     int m_SlotCounter;
