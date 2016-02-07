@@ -448,7 +448,6 @@ void CVideoCallSession::EncodingThreadProcedure()
 	long long encodingTimeFahadTest = 0;
 
 	long long iterationtime = toolsObject.CurrentTimestamp();
-	int nFirstTimeDecrease = 100000;
 
 	while (bEncodingThreadRunning)
 	{

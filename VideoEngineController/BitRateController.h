@@ -42,7 +42,7 @@ private:
     int m_ByteSendInSlotInverval;
     int m_ByteSendInMegaSlotInverval;
     int m_ByteRecvInMegaSlotInterval;
-    int nFirstTimeDecrease;
+    double dFirstTimeDecrease;
     bool m_bMegSlotCounterShouldStop;
     bool m_bsetBitrateCalled;
     CSynchronizedMap m_BandWidthRatioHelper;

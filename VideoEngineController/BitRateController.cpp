@@ -19,7 +19,7 @@ BitRateController::BitRateController():
     m_FrameCounterbeforeEncoding(0),
     m_LastSendingSlot(0)
 {
-    nFirstTimeDecrease = 100000;
+    dFirstTimeDecrease = BITRATE_DECREMENT_FACTOR;
     m_OppNotifiedByterate = 0;
 
     m_iGoodSlotCounter = 0;
@@ -123,8 +123,8 @@ bool BitRateController::UpdateBitrate()
     if(m_FrameCounterbeforeEncoding%FRAME_RATE == 0 && m_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)
     {
         int iRet = -1, iRet2 = -1;
-        int iCurrentBitRate = m_OppNotifiedByterate* 8 - nFirstTimeDecrease;
-        nFirstTimeDecrease = 0;
+        int iCurrentBitRate = m_OppNotifiedByterate * 8  * dFirstTimeDecrease;
+        dFirstTimeDecrease = 1;
 
         //printf("VampireEngg--> iCurrentBitRate = %d, g_OppNotifiedByteRate = %d\n", iCurrentBitRate, m_OppNotifiedByterate);
 
