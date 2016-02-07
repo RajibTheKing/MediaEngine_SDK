@@ -10,7 +10,7 @@
 #include "LockHandler.h"
 #include "Tools.h"
 #include "VideoEncoder.h"
-#include <map>
+#include "SynchronizedMap.h"
 
 class BitRateController {
 public:
@@ -45,9 +45,8 @@ private:
     int nFirstTimeDecrease;
     bool m_bMegSlotCounterShouldStop;
     bool m_bsetBitrateCalled;
-    std::map<int, int> m_BandWidthRatioHelper;
+    CSynchronizedMap m_BandWidthRatioHelper;
     CVideoEncoder *m_pVideoEncoder;
-    SmartPointer<CLockHandler> m_pUpdateMutex;
 };
 
 

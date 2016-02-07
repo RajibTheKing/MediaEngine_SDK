@@ -1,6 +1,8 @@
 
 #include "SynchronizedMap.h"
-
+#include "SmartPointer.h"
+#include "EventNotifier.h"
+#include "ThreadTools.h"
 #include <string.h>
 #include "LogPrinter.h"
 
@@ -11,6 +13,7 @@ CSynchronizedMap::CSynchronizedMap()
 
 CSynchronizedMap::~CSynchronizedMap()
 {
+	SHARED_PTR_DELETE(m_pSynchronizedMapMutex);
 /*	if (m_pSynchronizedMapMutex.get())
 		m_pSynchronizedMapMutex.reset();*/
 }
@@ -46,7 +49,7 @@ int CSynchronizedMap::end()
 	return -1;
 }
 
-int CSynchronizedMap::insert(int index, int element)
+void CSynchronizedMap::insert(int index, int element)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
