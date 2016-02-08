@@ -67,14 +67,15 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
 
         int iNeedToChange = NeedToChangeBitRate(MegaRatio);
 
-        CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS, "BR~  BR: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())
+        string sMsg = "TheKing-->  BR: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())
                                                         +" MBR: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate())
                                                         +" Send: "+Tools::IntegertoStringConvert(m_ByteSendInMegaSlotInverval *8)
                                                         +" Rcv: "+Tools::IntegertoStringConvert(m_ByteRecvInMegaSlotInterval*8)
                                                         +" Change : "+Tools::IntegertoStringConvert(iNeedToChange)+ " Ratio: "+m_Tools.DoubleToString(MegaRatio)
-                                                        + "  B-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate() - m_ByteSendInMegaSlotInverval)
-                                                        + "  M-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate() - m_ByteSendInMegaSlotInverval)
-        +" SlotNo: "+Tools::IntegertoStringConvert(iSlotNumber));
+                                                        /*+ "  B-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate() - m_ByteSendInMegaSlotInverval)
+                                                        + "  M-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate() - m_ByteSendInMegaSlotInverval)*/
+        +" SlotNo: "+Tools::IntegertoStringConvert(iSlotNumber);
+        printf("%s\n", sMsg.c_str());
 
         if(iNeedToChange == BITRATE_CHANGE_DOWN)
         {
