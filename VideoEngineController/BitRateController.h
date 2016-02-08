@@ -20,7 +20,7 @@ public:
     void SetEncoder(CVideoEncoder* VideEnocder);
     bool HandleBitrateMiniPacket(CPacketHeader &tempHeader);
     bool UpdateBitrate();
-    void NotifyEncodedFrame(int nFrameSize);
+    void NotifyEncodedFrame(int &nFrameSize);
     int NeedToChangeBitRate(double dataReceivedRatio);
 
 private:

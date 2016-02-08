@@ -156,7 +156,7 @@ bool BitRateController::UpdateBitrate()
     return false;
 }
 
-void BitRateController::NotifyEncodedFrame(int nFrameSize){
+void BitRateController::NotifyEncodedFrame(int &nFrameSize){
 
     if(0 == nFrameSize)
     {
@@ -166,6 +166,17 @@ void BitRateController::NotifyEncodedFrame(int nFrameSize){
     m_ByteSendInSlotInverval+=nFrameSize;
     if(m_FrameCounterbeforeEncoding % FRAME_RATE == 0)
     {
+#ifdef USE_FIXED_BITRATE_PER_SLOT
+        int addsize = 0;
+        if(m_ByteSendInSlotInverval < m_pVideoEncoder->GetBitrate() * FIXED_BITRATE_TOLERANCE / 8)
+        {
+            addsize = m_pVideoEncoder->GetBitrate() * FIXED_BITRATE_TOLERANCE / 8- m_ByteSendInSlotInverval;
+            m_ByteSendInSlotInverval += addsize;
+            nFrameSize += addsize;
+        }
+        printf("VampireEngg--> m_ByteSendInSlotIn = %d, encodedSize = %d, addsize = %d\n", m_ByteSendInSlotInverval, nFrameSize, addsize);
+#endif
+        
         int ratioHelperIndex = (m_FrameCounterbeforeEncoding - FRAME_RATE) / FRAME_RATE;
         if(m_bMegSlotCounterShouldStop == false)
         {
