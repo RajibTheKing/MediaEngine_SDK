@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <string>
-#include <map>
 #include "Size.h"
 
 #include "VideoEncoder.h"
@@ -19,6 +18,8 @@
 #include "Tools.h"
 #include "PairMap.h"
 #include "RetransmitVideoPacketQueue.h"
+#include "BitRateController.h"
+#include "SynchronizedMap.h"
 
 #include <queue>
 #include <utility>
@@ -144,6 +145,8 @@ private:
 	CVideoEncoder *m_pVideoEncoder;
 	CVideoDecoder *m_pVideoDecoder;
 
+	BitRateController m_BitRateController;
+
 	CEncodingBuffer m_EncodingBuffer;
 	CDecodingBuffer m_DecodingBuffer;
 	CVideoPacketQueue m_pVideoPacketQueue;
@@ -185,7 +188,7 @@ private:
 
 	bool bRenderingThreadRunning;
 	bool bRenderingThreadClosed;
-    map<int, int> m_BandWidthRatioHelper;
+	CSynchronizedMap m_BandWidthRatioHelper;
 	int m_LastSendingSlot;
     
     int m_iGoodSlotCounter;

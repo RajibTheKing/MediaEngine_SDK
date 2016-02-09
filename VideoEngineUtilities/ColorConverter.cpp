@@ -2,6 +2,11 @@
 #include "ColorConverter.h"
 #include "../VideoEngineController/LogPrinter.h"
 
+
+#if defined(__ANDROID__)
+typedef unsigned char byte;
+#endif
+
 double dconversionmatrix[3][3] = { 0.299, 0.587, 0.114,
 								   -0.14317, -0.28886, 0.436,
 								   0.615, -0.51499, -0.10001 };
