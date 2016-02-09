@@ -106,7 +106,11 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 
 int CVideoEncoder::SetBitrate(int iFps)
 {
+#ifdef USE_FIXED_BITRATE_PER_SLOT
+    int iBitRate = iFps;// - (iFps%25000);
+#else
 	int iBitRate = iFps - (iFps%25000);
+#endif
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
     
@@ -124,6 +128,7 @@ int CVideoEncoder::SetBitrate(int iFps)
 			if (iRet != 0)
 			{
 				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
+                printf("FAAATTTTTAAAALLLLLL: setbitrate, iBitRate = %d\n", iBitRate);
 			}
 			else
 			{
@@ -142,12 +147,17 @@ int CVideoEncoder::SetBitrate(int iFps)
 
 int CVideoEncoder::SetMaxBitrate(int iFps)
 {
-    iFps = iFps * 1.25;
+	iFps = iFps * MAX_BITRATE_MULTIPLICATION_FACTOR;
+
+#ifdef USE_FIXED_BITRATE_PER_SLOT
+	int iBitRate = iFps;
+#else
 	int iBitRate = iFps - (iFps%25000);
+#endif
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
 
-    if(iBitRate>BITRATE_MAX) iBitRate = BITRATE_MAX;
+    if(iBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE) iBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
 
 
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
@@ -161,7 +171,7 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
 			if (iRet != 0){
 				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
                 
-                
+                printf("FAAATTTTTAAAALLLLLL: SetMaxBitRate, iBitRate = %d\n", iBitRate);
 			}
 			else
 			{

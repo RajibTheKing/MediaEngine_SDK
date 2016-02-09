@@ -313,6 +313,86 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 #endif
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
+        
+        /*
+        int frameNumber = ((int)in_data[1]<<16) + ((int)in_data[2]<<8) + in_data[3];
+        int length ;
+        
+        if(g_bIsVersionDetectableOpponent && in_data[VERSION_BYTE_INDEX])
+        {
+            length = ((int)in_data[12]<<8) + in_data[13];
+            
+        }
+        else
+        {
+            length = ((int)in_data[14]<<8) + in_data[15];
+        }
+        */
+        
+        
+        
+        
+#ifdef BITRATE_CONTROL_BASED_ON_BANDWIDTH
+        CPacketHeader NowRecvHeader;
+        NowRecvHeader.setPacketHeader(in_data);
+        
+        if(GetUniquePacketID(NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber()) >= m_SlotResetLeftRange
+           && GetUniquePacketID(NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber()) < m_SlotResetRightRange)
+        {
+            m_ByteRcvInBandSlot +=  (NowRecvHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
+        }
+        else
+        {
+            
+            printf("VampireEngg--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber());
+            
+            /*
+             if(m_bSkipFirstByteCalculation == false)
+             {
+             m_ByteRcvInSlotInverval+=m_ByteRcvInBandSlot;
+             m_RecvMegaSlotInvervalCounter++;
+             }
+             
+             if(m_RecvMegaSlotInvervalCounter%MEGA_SLOT_INTERVAL==0)
+             {
+             //printf("VampireEngg--> ##############################m_ByteRcvInSlotInverval = (%d, %d)\n", m_RecvMegaSlotInvervalCounter, m_ByteRcvInSlotInverval);
+             m_ByteRcvInSlotInverval =  0;
+             }*/
+            
+            
+            
+            int SlotResetLeftRangeInFrame = (NowRecvHeader.getFrameNumber() - (NowRecvHeader.getFrameNumber() % FRAME_RATE));
+            m_SlotResetLeftRange = GetUniquePacketID(SlotResetLeftRangeInFrame, 0);
+            
+            
+            int SlotResetRightRangeInFrame = SlotResetLeftRangeInFrame + FRAME_RATE;
+            m_SlotResetRightRange = GetUniquePacketID(SlotResetRightRangeInFrame , 0);
+            
+            
+            if(m_bSkipFirstByteCalculation == true)
+            {
+                m_bSkipFirstByteCalculation = false;
+            }
+            else
+            {
+                m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;//if we miss all frames of the previous slot it will be wrong
+                m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
+                //printf("VampireEngg--> m_miniPacketBandCounter = %d\n", m_miniPacketBandCounter);
+                
+                CreateAndSendMiniPacket((m_ByteRcvInBandSlot), INVALID_PACKET_NUMBER);
+            }
+            
+            m_ByteRcvInBandSlot = NowRecvHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
+            
+            //printf("VampireEnggUpt--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber());
+            
+            
+        }
+        
+#endif
+        
+        
+        
 		m_pVideoPacketQueue.Queue(in_data, in_size);
 	}
 
@@ -811,63 +891,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			{
 
 				iPacketType = NORMAL_PACKET;
-#ifdef BITRATE_CONTROL_BASED_ON_BANDWIDTH
-                if(GetUniquePacketID(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber()) >= m_SlotResetLeftRange
-                   && GetUniquePacketID(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber()) < m_SlotResetRightRange)
-                {
-                    m_ByteRcvInBandSlot +=  (m_RcvdPacketHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
-                }
-                else
-                {
-                    
-                   // printf("VampireEngg--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
-                    
-                    /*
-                    if(m_bSkipFirstByteCalculation == false)
-                    {
-                        m_ByteRcvInSlotInverval+=m_ByteRcvInBandSlot;
-                        m_RecvMegaSlotInvervalCounter++;
-                    }
-                    
-                    if(m_RecvMegaSlotInvervalCounter%MEGA_SLOT_INTERVAL==0)
-                    {
-                        //printf("VampireEngg--> ##############################m_ByteRcvInSlotInverval = (%d, %d)\n", m_RecvMegaSlotInvervalCounter, m_ByteRcvInSlotInverval);
-                        m_ByteRcvInSlotInverval =  0;
-                    }*/
-                    
-                    
-                    
-                    int SlotResetLeftRangeInFrame = (m_RcvdPacketHeader.getFrameNumber() - (m_RcvdPacketHeader.getFrameNumber() % FRAME_RATE));
-                    m_SlotResetLeftRange = GetUniquePacketID(SlotResetLeftRangeInFrame, 0);
 
-                    
-                    int SlotResetRightRangeInFrame = SlotResetLeftRangeInFrame + FRAME_RATE;
-                    m_SlotResetRightRange = GetUniquePacketID(SlotResetRightRangeInFrame , 0);
-                    
-                    
-                    if(m_bSkipFirstByteCalculation == true)
-                    {
-                        m_bSkipFirstByteCalculation = false;
-                    }
-                    else
-                    {
-                        m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;//if we miss all frames of the previous slot it will be wrong
-                        m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
-                        //printf("VampireEngg--> m_miniPacketBandCounter = %d\n", m_miniPacketBandCounter);
-                        
-                        CreateAndSendMiniPacket((m_ByteRcvInBandSlot), INVALID_PACKET_NUMBER);
-                    }
-                    
-                    m_ByteRcvInBandSlot = m_RcvdPacketHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
-                    
-                    //printf("VampireEnggUpt--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
-                    
-
-                }
-#if 0
-
-#endif
-#endif
 
 
 
@@ -1219,7 +1243,8 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 {
 	unsigned char uchVersion = g_uchSendPacketVersion;
 
-    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
+//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
+    if(INVALID_PACKET_NUMBER !=resendPacketNumber) //
     {
         return;
     }
