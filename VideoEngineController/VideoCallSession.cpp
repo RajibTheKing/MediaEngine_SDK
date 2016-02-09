@@ -1243,7 +1243,8 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 {
 	unsigned char uchVersion = g_uchSendPacketVersion;
 
-    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
+//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
+    if(INVALID_PACKET_NUMBER !=resendPacketNumber) //
     {
         return;
     }
