@@ -22,7 +22,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -39,6 +39,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
+    <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
@@ -63,6 +68,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DESKTOP_C_SHARP_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
