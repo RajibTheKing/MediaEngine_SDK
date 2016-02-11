@@ -118,11 +118,22 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 
 CVideoCallSession::~CVideoCallSession()
 {
+	printf("CVideoCallSession::~CVideoCallSession() called 1.\n");
+
 	StopDepacketizationThread();
+
+	printf("CVideoCallSession::~CVideoCallSession() called 2.\n");
+
 	StopDecodingThread();
 
+	printf("CVideoCallSession::~CVideoCallSession() called 3.\n");
+
 	StopEncodingThread();
+
+	printf("CVideoCallSession::~CVideoCallSession() called 4.\n");
 	StopRenderingThread();
+
+	printf("CVideoCallSession::~CVideoCallSession() called 5.\n");
 
 	if(NULL!=m_pVideoEncoder)
 	{
@@ -156,9 +167,13 @@ CVideoCallSession::~CVideoCallSession()
 		m_pColorConverter = NULL;
 	}
 
+	printf("CVideoCallSession::~CVideoCallSession() called 6.\n");
+
 	friendID = -1;
 
 	SHARED_PTR_DELETE(m_pSessionMutex);
+
+	printf("CVideoCallSession::~CVideoCallSession() called 7.\n");
 }
 
 LongLong CVideoCallSession::GetFriendID()
@@ -461,10 +476,18 @@ void CVideoCallSession::StopEncodingThread()
 {
 	//if (pInternalThread.get())
 	{
+		printf("CVideoCallSession::StopEncodingThread() called 1.\n");
+
 		bEncodingThreadRunning = false;
 
 		while (!bEncodingThreadClosed)
+		{
+			printf("CVideoCallSession::StopEncodingThread() called 2.\n");
+
 			m_Tools.SOSleep(5);
+
+			printf("CVideoCallSession::StopEncodingThread() called 3.\n");
+		}
 	}
 
 	//pInternalThread.reset();
@@ -727,12 +750,24 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 void CVideoCallSession::StopDepacketizationThread()
 {
+
+	printf("CVideoCallSession::StopDepacketizationThread() called 1.\n");
+
 	//if (pDepacketizationThread.get())
 	{
 		bDepacketizationThreadRunning = false;
+		Tools toolsObject;
 
 		while (!bDepacketizationThreadClosed)
+		{
+			printf("CVideoCallSession::StopDepacketizationThread() called 2.\n");
+
+			//std::this_thread::sleep_for(std::chrono::milliseconds(Timeout));
+
 			m_Tools.SOSleep(5);
+
+			printf("CVideoCallSession::StopDepacketizationThread() called 3.\n");
+		}
 	}
 
 	//pDepacketizationThread.reset();
@@ -1069,10 +1104,18 @@ void CVideoCallSession::StopDecodingThread()
 {
 	//if (pDepacketizationThread.get())
 	{
+		printf("CVideoCallSession::StopDecodingThread() called 1.\n");
+
 		bDecodingThreadRunning = false;
 
 		while (!bDecodingThreadClosed)
+		{
+			printf("CVideoCallSession::StopDecodingThread() called 2.\n");
+
 			m_Tools.SOSleep(5);
+
+			printf("CVideoCallSession::StopDecodingThread() called 3.\n");
+		}
 	}
 
 	//pDepacketizationThread.reset();
@@ -1302,10 +1345,18 @@ void CVideoCallSession::StopRenderingThread()
 {
 	//if (pInternalThread.get())
 	{
+		printf("CVideoCallSession::StopRenderingThread() called 1.\n");
+
 		bRenderingThreadRunning = false;
 
 		while (!bRenderingThreadClosed)
+		{
+			printf("CVideoCallSession::StopRenderingThread() called 2.\n");
+
 			m_Tools.SOSleep(5);
+
+			printf("CVideoCallSession::StopRenderingThread() called 3.\n");
+		}
 	}
 
 	//pInternalThread.reset();

@@ -366,21 +366,29 @@ bool CController::StopAudioCall(const LongLong& lFriendID)
 bool CController::StopVideoCall(const LongLong& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
-    
+	printf("CController::StopVideoCall() called 1.\n");
     Locker lock1(*m_pVideoSendMutex);
     Locker lock2(*m_pVideoReceiveMutex);
     
+	printf("CController::StopVideoCall() called 2.\n");
     CVideoCallSession *m_pSession;
     
     m_pSession = m_pCommonElementsBucket->m_pVideoCallSessionList->GetFromVideoSessionList(lFriendID);
+
+	printf("CController::StopVideoCall() called 3.\n");
     
     if (NULL == m_pSession)
     {
+		printf("CController::StopVideoCall() called 4.\n");
         CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() Session Does not Exist.");
         return false;
     }
+
+	printf("CController::StopVideoCall() called 5.\n");
     
     bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
+
+	printf("CController::StopVideoCall() called 6.\n");
     
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
     
