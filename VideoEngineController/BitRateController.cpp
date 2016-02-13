@@ -75,7 +75,6 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
                                                         /*+ "  B-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate() - m_ByteSendInMegaSlotInverval)
                                                         + "  M-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate() - m_ByteSendInMegaSlotInverval)*/
         +" SlotNo: "+Tools::IntegertoStringConvert(iSlotNumber);
-        printf("%s\n", sMsg.c_str());
 
         if(iNeedToChange == BITRATE_CHANGE_DOWN)
         {

@@ -177,7 +177,7 @@ int CFPSController::NotifyFrameComplete(int framNumber)
         {
             Locker lock(*m_pMutex);
             m_nFPSChangeSignal = 2;
-            m_SignalQue.push(2);
+//            m_SignalQue.push(2);
         }
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
 //        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: @@@@@@@@@@@@@@@@@@@@@@@@@   FPS INCREASE  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
@@ -224,7 +224,7 @@ int CFPSController::NotifyFrameDropped(int framNumber)
         {
             Locker lock(*m_pMutex);
             m_nFPSChangeSignal = 1;
-            m_SignalQue.push(1);
+//            m_SignalQue.push(1);
         }
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
 

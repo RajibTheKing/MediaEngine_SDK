@@ -16,6 +16,14 @@ m_iQueueCapacity(RESENDING_BUFFER_SIZE)
 	m_pChannelMutex.reset(new CLockHandler);
 }
 
+void CResendingBuffer::Reset()
+{
+	m_iPushIndex = 0;
+	m_iQueueCapacity = RESENDING_BUFFER_SIZE;
+	resendingMap.clear();
+	memset(m_BufferFrameNumber, -1, sizeof(m_BufferFrameNumber));
+}
+
 CResendingBuffer::~CResendingBuffer()
 {
 	SHARED_PTR_DELETE(m_pChannelMutex);

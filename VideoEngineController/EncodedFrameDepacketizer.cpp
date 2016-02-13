@@ -341,8 +341,11 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	m_CVideoPacketBuffer[index].SetNumberOfPackets(numberOfPackets);
 	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber);
 
+#ifndef RETRANSMISSION_ENABLED
 	if(0 == frameNumber%8)
 		m_IframeQueue.push(frameNumber);
+#endif
+
 	return 1;
 }
 

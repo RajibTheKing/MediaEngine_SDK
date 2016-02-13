@@ -1,8 +1,14 @@
 #include "Tools.h"
 #ifdef _WIN32
 #include <windows.h>
+#include "LogPrinter.h"
 #else
 #include <sys/time.h>
+#endif
+
+#ifdef TARGET_OS_WINDOWS_PHONE
+#include <thread>
+#include <chrono>
 #endif
 
 
@@ -21,7 +27,7 @@ Tools::~Tools()
 }
 std::string Tools::DoubleToString(double value){
 	stringstream ss;
-	ss<<value;
+	ss << value;
 	return ss.str();
 }
 
@@ -69,7 +75,6 @@ std::string Tools::IntegertoStringConvert(int number)
 	return (std::string)buf;
 }
 
-
 std::string Tools::LongLongtoStringConvert(long long number)
 {
 	char buf[22];
@@ -105,12 +110,19 @@ std::string Tools::LongLongtoStringConvert(long long number)
 	return (std::string)buf;
 }
 
+int iSOSleepCountHandler = 0;
 void Tools::SOSleep(int Timeout)
 {
-
-#ifdef _WIN32 
-
+	iSOSleepCountHandler++;
+#ifdef _DESKTOP_C_SHARP_ 
 	Sleep(Timeout);
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+	printf("Going to sleep for %d, %d\n", Timeout, iSOSleepCountHandler);
+	std::this_thread::sleep_for(std::chrono::milliseconds(Timeout));
+	iSOSleepCountHandler--;
+
+	printf("EndSleep sleep for %d, %d\n", Timeout, iSOSleepCountHandler);
+
 #else
 
 	timespec t;
@@ -122,27 +134,49 @@ void Tools::SOSleep(int Timeout)
 #endif
 
 }
+/*
+void Tools::SOSleepS(int Timeout)
+{
 
+#ifdef _DESKTOP_C_SHARP_ 
+	Sleep(Timeout);
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+	printf("Going to sleep for %d\n", Timeout);
+	std::this_thread::sleep_for(std::chrono::milliseconds(Timeout));
+	printf("Done Going to sleep for %d\n", Timeout);
+
+#else
+
+	timespec t;
+	u_int32_t seconds = Timeout / 1000;
+	t.tv_sec = seconds;
+	t.tv_nsec = (Timeout - (seconds * 1000)) * (1000 * 1000);
+	nanosleep(&t, NULL);
+
+#endif
+
+}
+*/
 
 /*pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets)
 {
-	pair<int, int> FramePacketPair = {-1, -1};
+pair<int, int> FramePacketPair = {-1, -1};
 
-	if(!packet)
-	{
-		return FramePacketPair;
-	}
-	int iFrameNumber = GetIntFromChar(packet, 0);
-	iFrameNumber &= ~(0xFF << ((sizeof(int)-1) * 8 ));
-	iNumberOfPackets = GetIntFromChar(packet, 4);
-	int iPackeNumber = GetIntFromChar(packet, 8);
+if(!packet)
+{
+return FramePacketPair;
+}
+int iFrameNumber = GetIntFromChar(packet, 0);
+iFrameNumber &= ~(0xFF << ((sizeof(int)-1) * 8 ));
+iNumberOfPackets = GetIntFromChar(packet, 4);
+int iPackeNumber = GetIntFromChar(packet, 8);
 
-	//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::currentFramePacketPair: FrameNumber: "+ Tools::IntegertoStringConvert(iFrameNumber) + " PacketNo. : "+  Tools::IntegertoStringConvert(iPackeNumber)+ " NumberOfPacket : "+  Tools::IntegertoStringConvert(iNumberOfPackets));
+//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::currentFramePacketPair: FrameNumber: "+ Tools::IntegertoStringConvert(iFrameNumber) + " PacketNo. : "+  Tools::IntegertoStringConvert(iPackeNumber)+ " NumberOfPacket : "+  Tools::IntegertoStringConvert(iNumberOfPackets));
 
-	FramePacketPair.first = iFrameNumber;
-	FramePacketPair.second = iPackeNumber;
+FramePacketPair.first = iFrameNumber;
+FramePacketPair.second = iPackeNumber;
 
-	return FramePacketPair;
+return FramePacketPair;
 }*/
 
 int Tools::GetIntFromChar(unsigned char *packetData, int index)
@@ -155,13 +189,13 @@ int Tools::GetIntFromChar(unsigned char *packetData, int index)
 	return result;
 }
 
-int Tools::GetIntFromChar(unsigned char *packetData, int index,int nLenght)
+int Tools::GetIntFromChar(unsigned char *packetData, int index, int nLenght)
 {
 	int result = 0;
 	int interval = 8;
-	int startPoint =  interval * (nLenght-1);
-	if(nLenght<=0) return -1;
-	for(int i=startPoint; i >= 0 ; i-=interval)
+	int startPoint = interval * (nLenght - 1);
+	if (nLenght <= 0) return -1;
+	for (int i = startPoint; i >= 0; i -= interval)
 	{
 		result += (packetData[index++] & 0xFF) << i;
 	}
@@ -188,7 +222,7 @@ LongLong  Tools::CurrentTimestamp()
 #if defined(USE_LINUX_TIME)
 	struct timeval te;
 	gettimeofday(&te, NULL); // get current time
-	LongLong milliseconds =  te.tv_sec* + te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+	LongLong milliseconds = te.tv_sec* +te.tv_sec * 1000LL + te.tv_usec / 1000; // caculate milliseconds
 	// printf("milliseconds: %lld\n", milliseconds);
 	return milliseconds;
 #elif defined(USE_WINDOWS_TIME)
