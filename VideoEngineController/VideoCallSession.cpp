@@ -3,6 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 #include "Globals.h"
+#include "ResendingBuffer.h"
 
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 map<int, int> g_TraceRetransmittedFrame;
@@ -25,6 +26,14 @@ deque<pair<int,int>> ExpectedFramePacketDeQueue;
 extern long long g_FriendID;
 extern CFPSController g_FPSController;
 
+
+int countFrame = 0;
+int countFrameFor15 = 0;
+int countFrameSize = 0;
+long long encodeTimeStampFor15;
+int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
+bool gbStopFPSSending = false;
+
 #define ORIENTATION_0_MIRRORED 1
 #define ORIENTATION_90_MIRRORED 2
 #define ORIENTATION_180_MIRRORED 3
@@ -37,6 +46,7 @@ extern CFPSController g_FPSController;
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
+extern CResendingBuffer g_ResendBuffer;
 
 int g_OppNotifiedByterate = 0;
 
@@ -89,6 +99,21 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 	g_bIsVersionDetectableOpponent = true;
 	g_uchSendPacketVersion = 1;
 #endif
+
+	//Resetting Global Variables.
+	countFrame = 0;
+	countFrameFor15 = 0;
+	countFrameSize = 0;
+	encodeTimeStampFor15 = 0;
+	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
+	g_ResendBuffer.Reset();
+	gbStopFPSSending = false;
+
+#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
+	g_TraceRetransmittedFrame.clear();
+#endif
+
+
 
 	fpsCnt=0;
 	g_FPSController.Reset();
@@ -544,10 +569,7 @@ void *CVideoCallSession::CreateVideoEncodingThread(void* param)
 
 	return NULL;
 }
-int countFrame = 0;
-int countFrameFor15 = 0;
-int countFrameSize = 0;
-long long encodeTimeStampFor15;
+
 void CVideoCallSession::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -864,8 +886,6 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 }
 
 
-int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
-bool gbStopFPSSending = false;
 void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
@@ -916,7 +936,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 				++consicutiveRetransmittedPkt;
 			}
 			m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
-
+			CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS, "!@# Versions: "+ m_Tools.IntegertoStringConvert(g_uchSendPacketVersion));
 //			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
 //														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 

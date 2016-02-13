@@ -17,7 +17,7 @@ extern int g_uchOpponentVersion;
 BandwidthController g_BandWidthController;
 
 extern deque<pair<int,int>> ExpectedFramePacketDeQueue;
-CResendingBuffer g_ResendBuffer;
+extern CResendingBuffer g_ResendBuffer;
 extern CFPSController g_FPSController;
 
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedObject) :

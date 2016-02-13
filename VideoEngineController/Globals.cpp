@@ -3,8 +3,10 @@
 //
 
 #include "Globals.h"
+#include "ResendingBuffer.h"
 
 CFPSController g_FPSController;
+CResendingBuffer g_ResendBuffer;
 PairMap g_timeInt;
 
 bool g_bIsVersionDetectableOpponent = false;
