@@ -39,6 +39,8 @@ typedef long long IPVLongType;
 #define printf(...) printg(__VA_ARGS__,"")
 #endif
 
+#define printf(...)
+
 using namespace std;
 
 class CLogPrinter
