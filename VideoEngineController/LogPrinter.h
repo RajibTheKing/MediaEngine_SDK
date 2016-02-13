@@ -6,7 +6,7 @@
 //#define __PRINT_LOG__
 //#define __EXACT_LOG__
 //#define __SPECIFIC_LOG__
-#define __SPECIFIC_LOG4__
+//#define __SPECIFIC_LOG4__
 //#define __SPECIFIC_LOG3__
 //#define __OPERATION_TIME_LOG__
 //#define __QUEUE_TIME_LOG__

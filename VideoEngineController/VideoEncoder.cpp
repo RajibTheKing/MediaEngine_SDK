@@ -128,7 +128,7 @@ int CVideoEncoder::SetBitrate(int iFps)
 			if (iRet != 0)
 			{
 				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
-                printf("FAAATTTTTAAAALLLLLL: setbitrate, iBitRate = %d\n", iBitRate);
+                //printf("FAAATTTTTAAAALLLLLL: setbitrate, iBitRate = %d\n", iBitRate);
 			}
 			else
 			{
@@ -171,7 +171,7 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
 			if (iRet != 0){
 				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
                 
-                printf("FAAATTTTTAAAALLLLLL: SetMaxBitRate, iBitRate = %d\n", iBitRate);
+                //printf("FAAATTTTTAAAALLLLLL: SetMaxBitRate, iBitRate = %d\n", iBitRate);
 			}
 			else
 			{

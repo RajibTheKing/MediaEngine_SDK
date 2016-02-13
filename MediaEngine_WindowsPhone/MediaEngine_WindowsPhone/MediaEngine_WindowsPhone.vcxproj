@@ -138,6 +138,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
+    <ClInclude Include="..\..\VideoEngineController\BitRateController.h" />
     <ClInclude Include="..\..\VideoEngineController\codec_api.h" />
     <ClInclude Include="..\..\VideoEngineController\codec_app_def.h" />
     <ClInclude Include="..\..\VideoEngineController\codec_def.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\SendingBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\Size.h" />
+    <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h" />
     <ClInclude Include="..\..\VideoEngineController\ThreadTools.h" />
     <ClInclude Include="..\..\VideoEngineController\Tools.h" />
     <ClInclude Include="..\..\VideoEngineController\typedef.h" />
@@ -187,6 +189,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\CommonElementsBucket.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Controller.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DecodingBuffer.cpp" />
@@ -204,6 +207,7 @@
     <ClCompile Include="..\..\VideoEngineController\ResendingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSessionListHandler.cpp" />
