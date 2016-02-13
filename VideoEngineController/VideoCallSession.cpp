@@ -81,6 +81,15 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
     g_TraceRetransmittedFrame.clear();
 #endif
+
+#ifdef FIRST_BUILD_COMPATIBLE
+	g_bIsVersionDetectableOpponent = false;
+	g_uchSendPacketVersion = 0;
+#else
+	g_bIsVersionDetectableOpponent = true;
+	g_uchSendPacketVersion = 1;
+#endif
+
 	fpsCnt=0;
 	g_FPSController.Reset();
 //	g_MY_FPS =
