@@ -155,6 +155,12 @@
     <ClInclude Include="..\..\VideoEngineController\PacketHeader.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\BitRateController.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -257,6 +263,12 @@
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
