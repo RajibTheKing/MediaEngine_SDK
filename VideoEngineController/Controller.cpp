@@ -295,6 +295,9 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 
 		if (pVideoSession)
 		{
+			if (in_size > 202752)
+				return -1;
+
 			pVideoSession->orientation_type = orientation_type;
 			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
 		}
@@ -366,22 +369,23 @@ bool CController::StopAudioCall(const LongLong& lFriendID)
 bool CController::StopVideoCall(const LongLong& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
-    
+
     Locker lock1(*m_pVideoSendMutex);
     Locker lock2(*m_pVideoReceiveMutex);
-    
+
     CVideoCallSession *m_pSession;
     
     m_pSession = m_pCommonElementsBucket->m_pVideoCallSessionList->GetFromVideoSessionList(lFriendID);
-    
+
     if (NULL == m_pSession)
     {
+		printf("CController::StopVideoCall() called 4.\n");
         CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() Session Does not Exist.");
         return false;
     }
-    
+
     bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
-    
+
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
     
     return bReturnedValue;

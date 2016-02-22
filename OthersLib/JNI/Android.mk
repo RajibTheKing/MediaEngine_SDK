@@ -71,6 +71,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/SendingBuffer.cpp \
 			../../../videoengine/VideoEngineController/RenderingBuffer.cpp \
 			../../../videoengine/VideoEngineController/VideoPacketQueue.cpp \
+			../../../videoengine/VideoEngineController/SynchronizedMap.cpp \
 			../../../videoengine/VideoEngineController/VideoEncoderListHandler.cpp \
             ../../../videoengine/VideoEngineController/VideoPacketBuffer.cpp \
             ../../../videoengine/VideoEngineController/EncodedFrameDepacketizer.cpp \
@@ -82,6 +83,8 @@ LOCAL_SRC_FILES := \
             ../../../videoengine/VideoEngineController/Globals.cpp \
             ../../../videoengine/VideoEngineController/PacketHeader.cpp \
 			../../../videoengine/VideoEngineController/DepacketizationBufferIndex.cpp \
+			../../../videoengine/VideoEngineController/BandwidthController.cpp \
+			../../../videoengine/VideoEngineController/BitRateController.cpp \
 
 include $(BUILD_STATIC_LIBRARY)
 

@@ -5,6 +5,7 @@
 #include "VideoPacketBuffer.h"
 #include "ResendingBuffer.h"
 #include "Globals.h"
+#include "BandwidthController.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -13,9 +14,10 @@
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
+BandwidthController g_BandWidthController;
 
 extern deque<pair<int,int>> ExpectedFramePacketDeQueue;
-CResendingBuffer g_ResendBuffer;
+extern CResendingBuffer g_ResendBuffer;
 extern CFPSController g_FPSController;
 
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedObject) :
@@ -198,6 +200,11 @@ int iNumberOfPacketsInLastFrame = 0;
 int iNumberOfPacketsActuallySentFromLastFrame = 0;
 #endif
 
+#ifdef  BANDWIDTH_CONTROLLING_TEST
+std::vector<int>g_TimePeriodInterval;
+std::vector<int>g_BandWidthList;
+#endif
+
 void CEncodedFramePacketizer::SendingThreadProcedure()
 {
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -209,6 +216,12 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 	int fractionInterval = BYTE_SIZE;
 	int fpsSignal, frameNumber, packetNumber;
 	CPacketHeader packetHeader;
+
+#ifdef  BANDWIDTH_CONTROLLING_TEST
+    g_BandWidthList.push_back(100*1024);    g_TimePeriodInterval.push_back(40*1000);
+    g_BandWidthList.push_back(60*1024);    g_TimePeriodInterval.push_back(20*1000);
+    g_BandWidthController.SetTimeInterval(g_BandWidthList,g_TimePeriodInterval);
+#endif
     
     while (bSendingThreadRunning)
     {
@@ -245,10 +258,9 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 #endif
 //			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
 
-#ifdef	FPS_CHANGE_SIGNALING
 			unsigned char signal = g_FPSController.GetFPSSignalByte();
 			m_EncodedFrame[ 1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
-#endif
+
 //			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
 
 
@@ -300,7 +312,11 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 //														  + " tmDiff : " + m_Tools.IntegertoStringConvert(packetHeader.getTimeStamp()));
 
 
+#ifdef  BANDWIDTH_CONTROLLING_TEST
+			if(g_BandWidthController.IsSendeablePacket(packetSize))
+#endif
 
+			printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 			m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
 
             CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));

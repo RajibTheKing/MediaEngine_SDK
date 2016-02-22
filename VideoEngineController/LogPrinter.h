@@ -5,8 +5,9 @@
 
 //#define __PRINT_LOG__
 //#define __EXACT_LOG__
-#define __SPECIFIC_LOG__
-#define __SPECIFIC_LOG2__
+//#define __SPECIFIC_LOG__
+//#define __SPECIFIC_LOG4__
+//#define __SPECIFIC_LOG3__
 //#define __OPERATION_TIME_LOG__
 //#define __QUEUE_TIME_LOG__
 //#define __PACKET_LOSS_INFO_LOG__
@@ -36,7 +37,10 @@ typedef long long IPVLongType;
 #if defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_WINDOWS_PHONE)
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
 #define printf(...) printg(__VA_ARGS__,"")
+#define printf(...)
 #endif
+
+#define printf(...)
 
 using namespace std;
 
@@ -70,7 +74,9 @@ public:
 	static long long WriteForOperationTime(Priority priority, const std::string message, long long prevTime = 0);
 	static void WriteForQueueTime(Priority priority, const std::string message);
 	static void WriteForPacketLossInfo(Priority priority, const std::string message);
+#ifdef __OPERATION_TIME_LOG__
 	static long long GetTimeDifference(long long prevTime);
+#endif
 
 private:
 
@@ -100,6 +106,19 @@ private:
 #define CLogPrinter_WriteSpecific2(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteSpecific2(...)
+#endif
+
+#ifdef __SPECIFIC_LOG3__
+#define CLogPrinter_WriteSpecific3(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific3(...)
+#endif
+
+
+#ifdef __SPECIFIC_LOG4__
+#define CLogPrinter_WriteSpecific4(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific4(...)
 #endif
 
 #ifdef __OPERATION_TIME_LOG__

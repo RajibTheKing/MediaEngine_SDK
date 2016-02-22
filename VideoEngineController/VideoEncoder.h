@@ -33,15 +33,20 @@ public:
 	int CreateVideoEncoder(int iWidth, int iHeight);
 	int EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer);
 
-	void SetBitrate(int iFps);
+    int SetBitrate(int iFps);
 	void SetFramerate(int iFps);
-	void SetMaxBitrate(int iFps);
+	int SetMaxBitrate(int iFps);
+    int GetBitrate();
+    int GetMaxBitrate();
 
 private:
 
 	int m_iHeight;
 	int m_iWidth;
 	Tools m_Tools;
+    
+    int m_iMaxBitrate;
+    int m_iBitrate;
 
 	ISVCEncoder* m_pSVCVideoEncoder;
 	CCommonElementsBucket* m_pCommonElementsBucket;

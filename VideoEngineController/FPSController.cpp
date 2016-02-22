@@ -85,19 +85,19 @@ unsigned char CFPSController::GetFPSSignalByte()
         ret |= (1<<5);
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: ------------------------Sent------------------------------------->   ");
     }
-    else
+    else if(m_ClientFPS < FPS_MAXIMUM)
     {
         //Locker lock(*m_pMutex);
-        int tmp = floor(m_ClientFPS+0.5);
+        int tmp = m_ClientFPS+0.5;
         if(m_nOwnFPS > tmp)
             ret = tmp;
     }
 
-    if(!m_SignalQue.empty()) {
-        changeSignal = m_SignalQue.front();
-        m_SignalQue.pop();
-    }
-    ret |= (changeSignal << 6);
+//    if(!m_SignalQue.empty()) {
+//        changeSignal = m_SignalQue.front();
+//        m_SignalQue.pop();
+//    }
+//    ret |= (changeSignal << 6);
 
 #ifdef FIRST_BUILD_COMPATIBLE
     if(changeSignal == 0)
@@ -115,20 +115,18 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
     int bIsForceFPS =  (signalByte & (1 << 5) ) >> 5;
     int FPSChangeSignal = (signalByte >> 6);
     int opponentFPS = 15 & signalByte;
-//    int tmp = signalByte>>5;
-//    if(tmp)
-//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: Signal>   "+ m_Tools.IntegertoStringConvert(tmp));
+
     if(bIsForceFPS)
     {
         Locker lock(*m_pMutex);
 
-        if(FPS_MAXIMUM > opponentFPS)
+        if(FPS_MAXIMUM >= opponentFPS)
             m_nMaxOpponentProcessableFPS = opponentFPS;
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: -----------------GOT-------------------------------------->   "+ m_Tools.IntegertoStringConvert(m_nMaxOpponentProcessableFPS));
         if(m_nOwnFPS > m_nMaxOpponentProcessableFPS) {
             m_nOwnFPS = m_nMaxOpponentProcessableFPS;
-            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
-            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
+//            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
+//            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
         }
     }
     else if (opponentFPS != m_nOpponentFPS) {
@@ -136,23 +134,28 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
             m_nOpponentFPS = opponentFPS;
         }
 
-//    if(FPSChangeSignal)
-//        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# SIGNAL: -------------------------------------------------------SET------>   "+ m_Tools.IntegertoStringConvert(FPSChangeSignal));
+    if(FPSChangeSignal && FPSChangeSignal < 3)
+        CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "$$$*(# SIGNAL: -------------------------------------------------------SET------>   "+ m_Tools.IntegertoStringConvert(FPSChangeSignal));
 
     if (FPSChangeSignal == 1) {
         if (m_nOwnFPS > FPS_MINIMUM) {
-            Locker lock(*m_pMutex);
-            m_nOwnFPS--;
-            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
-            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
+//            Locker lock(*m_pMutex);
+//            m_nOwnFPS--;
+            int nCurrentBitRate = m_pVideoEncoder->GetBitrate();
+            int nNewBitRate = nCurrentBitRate *=0.85;
+
+            m_pVideoEncoder->SetBitrate( nNewBitRate );
+            m_pVideoEncoder->SetMaxBitrate(nNewBitRate);
         }
     }
     else if (FPSChangeSignal == 2) {
         if (m_nOwnFPS < FPS_MAXIMUM  && m_nOwnFPS < m_nMaxOpponentProcessableFPS && m_nOwnFPS < m_ClientFPS + 0.1) {
-            Locker lock(*m_pMutex);
-            m_nOwnFPS++;
-            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
-            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
+//            Locker lock(*m_pMutex);
+//            m_nOwnFPS++;
+            int nCurrentBitRate = m_pVideoEncoder->GetBitrate();
+            int nNewBitRate = nCurrentBitRate *=1.15;
+            m_pVideoEncoder->SetMaxBitrate(nNewBitRate);
+            m_pVideoEncoder->SetBitrate(nNewBitRate);
         }
     }
 
@@ -161,6 +164,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 
 }
 
+#if 0
 int CFPSController::NotifyFrameComplete(int framNumber)
 {
 //    m_iFrameCompletedIntervalCounter++;
@@ -173,7 +177,7 @@ int CFPSController::NotifyFrameComplete(int framNumber)
         {
             Locker lock(*m_pMutex);
             m_nFPSChangeSignal = 2;
-            m_SignalQue.push(2);
+//            m_SignalQue.push(2);
         }
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
 //        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: @@@@@@@@@@@@@@@@@@@@@@@@@   FPS INCREASE  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
@@ -220,7 +224,7 @@ int CFPSController::NotifyFrameDropped(int framNumber)
         {
             Locker lock(*m_pMutex);
             m_nFPSChangeSignal = 1;
-            m_SignalQue.push(1);
+//            m_SignalQue.push(1);
         }
         m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
 
@@ -235,6 +239,8 @@ int CFPSController::NotifyFrameDropped(int framNumber)
     
     return 1;
 }
+
+#endif
 
 bool CFPSController::IsProcessableFrame()
 {

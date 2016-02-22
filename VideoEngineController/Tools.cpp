@@ -21,7 +21,7 @@ Tools::~Tools()
 }
 std::string Tools::DoubleToString(double value){
 	stringstream ss;
-	ss<<value;
+	ss << value;
 	return ss.str();
 }
 
@@ -126,23 +126,23 @@ void Tools::SOSleep(int Timeout)
 
 /*pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets)
 {
-	pair<int, int> FramePacketPair = {-1, -1};
+pair<int, int> FramePacketPair = {-1, -1};
 
-	if(!packet)
-	{
-		return FramePacketPair;
-	}
-	int iFrameNumber = GetIntFromChar(packet, 0);
-	iFrameNumber &= ~(0xFF << ((sizeof(int)-1) * 8 ));
-	iNumberOfPackets = GetIntFromChar(packet, 4);
-	int iPackeNumber = GetIntFromChar(packet, 8);
+if(!packet)
+{
+return FramePacketPair;
+}
+int iFrameNumber = GetIntFromChar(packet, 0);
+iFrameNumber &= ~(0xFF << ((sizeof(int)-1) * 8 ));
+iNumberOfPackets = GetIntFromChar(packet, 4);
+int iPackeNumber = GetIntFromChar(packet, 8);
 
-	//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::currentFramePacketPair: FrameNumber: "+ Tools::IntegertoStringConvert(iFrameNumber) + " PacketNo. : "+  Tools::IntegertoStringConvert(iPackeNumber)+ " NumberOfPacket : "+  Tools::IntegertoStringConvert(iNumberOfPackets));
+//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::currentFramePacketPair: FrameNumber: "+ Tools::IntegertoStringConvert(iFrameNumber) + " PacketNo. : "+  Tools::IntegertoStringConvert(iPackeNumber)+ " NumberOfPacket : "+  Tools::IntegertoStringConvert(iNumberOfPackets));
 
-	FramePacketPair.first = iFrameNumber;
-	FramePacketPair.second = iPackeNumber;
+FramePacketPair.first = iFrameNumber;
+FramePacketPair.second = iPackeNumber;
 
-	return FramePacketPair;
+return FramePacketPair;
 }*/
 
 int Tools::GetIntFromChar(unsigned char *packetData, int index)
@@ -155,13 +155,13 @@ int Tools::GetIntFromChar(unsigned char *packetData, int index)
 	return result;
 }
 
-int Tools::GetIntFromChar(unsigned char *packetData, int index,int nLenght)
+int Tools::GetIntFromChar(unsigned char *packetData, int index, int nLenght)
 {
 	int result = 0;
 	int interval = 8;
-	int startPoint =  interval * (nLenght-1);
-	if(nLenght<=0) return -1;
-	for(int i=startPoint; i >= 0 ; i-=interval)
+	int startPoint = interval * (nLenght - 1);
+	if (nLenght <= 0) return -1;
+	for (int i = startPoint; i >= 0; i -= interval)
 	{
 		result += (packetData[index++] & 0xFF) << i;
 	}
@@ -188,7 +188,7 @@ LongLong  Tools::CurrentTimestamp()
 #if defined(USE_LINUX_TIME)
 	struct timeval te;
 	gettimeofday(&te, NULL); // get current time
-	LongLong milliseconds =  te.tv_sec* + te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+	LongLong milliseconds = te.tv_sec* +te.tv_sec * 1000LL + te.tv_usec / 1000; // caculate milliseconds
 	// printf("milliseconds: %lld\n", milliseconds);
 	return milliseconds;
 #elif defined(USE_WINDOWS_TIME)

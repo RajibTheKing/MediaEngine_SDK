@@ -39,7 +39,7 @@ int CRetransmitVideoPacketQueue::Queue(unsigned char *frame, int length)
 		return 1;
 	}
 }
-
+/*
 bool CRetransmitVideoPacketQueue::PacketExists(int iFrameNUmber, int iPacketNumber)
 {
 	for(int i = 0; i < m_iQueueSize; i ++)
@@ -57,6 +57,7 @@ bool CRetransmitVideoPacketQueue::PacketExists(int iFrameNUmber, int iPacketNumb
 	return false;
 
 }
+*/
 
 int CRetransmitVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
 {

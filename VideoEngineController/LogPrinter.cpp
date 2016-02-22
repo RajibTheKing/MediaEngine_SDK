@@ -244,6 +244,7 @@ long long CLogPrinter::WriteForOperationTime(Priority priority, const std::strin
 
 	return timeDiff;
 #endif
+    return -1;
 }
 void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)
 {
@@ -290,6 +291,8 @@ void CLogPrinter::WriteForPacketLossInfo(Priority priority, const std::string me
 	}
 }
 
+#ifdef __OPERATION_TIME_LOG__
+
 long long  CLogPrinter::GetTimeDifference(long long prevTime)
 {
 
@@ -318,7 +321,7 @@ long long  CLogPrinter::GetTimeDifference(long long prevTime)
 	return now - prevTime;
 #endif
 }
-
+#endif
 
 
 

@@ -17,6 +17,9 @@ public:
 	void Queue(unsigned char *frame, int length, int frameNumber, int packetNumber);
 	int DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber, int &timeStampDiff);
 	void IncreamentIndex(int &index);
+	void Reset();
+
+
 
 	//	int GetQueueSize();
 
