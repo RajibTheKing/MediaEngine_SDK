@@ -313,6 +313,7 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *
 
 int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width)
 {
+	
 
 	int yIndex = 0;
 	int uIndex = width * height;
