@@ -91,6 +91,9 @@ public:
 	int fpsCnt;
 	int m_EncodingFrameCounter;
     bool m_bSkipFirstByteCalculation;
+    
+    int m_iDePacketizeCounter;
+    long long m_TimeFor100Depacketize;
 
 //	void increaseFPS();
 //	void decreaseFPS();

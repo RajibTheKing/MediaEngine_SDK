@@ -376,7 +376,7 @@ bool CController::StopVideoCall(const LongLong& lFriendID)
 
     if (NULL == m_pSession)
     {
-		printf("CController::StopVideoCall() called 4.\n");
+		//printf("CController::StopVideoCall() called 4.\n");
         CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() Session Does not Exist.");
         return false;
     }

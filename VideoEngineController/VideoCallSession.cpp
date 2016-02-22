@@ -86,7 +86,9 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
         m_bsetBitrateCalled(false),
         m_iConsecutiveGoodMegaSlot(0),
         m_iPreviousByterate(BITRATE_MAX/8),
-		m_LastSendingSlot(0)
+		m_LastSendingSlot(0),
+        m_iDePacketizeCounter(0),
+        m_TimeFor100Depacketize(0)
 {
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
     g_TraceRetransmittedFrame.clear();
@@ -1117,7 +1119,17 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			else if(bRetransmitted)
 				CurrentPacketType = RETRANSMITTED_PACKET_TYPE;
 
+            long long DepacketizeTime = m_Tools.CurrentTimestamp();
 			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, CurrentPacketType, m_RcvdPacketHeader);
+            long long DepacketizeTimeDif = m_Tools.CurrentTimestamp() - DepacketizeTime;
+            m_TimeFor100Depacketize += DepacketizeTimeDif;
+            m_iDePacketizeCounter ++;
+            if(m_iDePacketizeCounter>=100)
+            {
+                printf("m_TimeFor100Depacketize = %d\n", m_TimeFor100Depacketize);
+                m_iDePacketizeCounter = 0;
+                m_TimeFor100Depacketize = 0;
+            }
 
 			toolsObject.SOSleep(1);
 		}

@@ -39,7 +39,7 @@ typedef long long IPVLongType;
 #define printf(...) printg(__VA_ARGS__,"")
 #endif
 
-#define printf(...)
+//#define printf(...)
 
 using namespace std;
 
