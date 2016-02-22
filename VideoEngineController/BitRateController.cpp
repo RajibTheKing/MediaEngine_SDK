@@ -88,7 +88,8 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
         else if(iNeedToChange == BITRATE_CHANGE_UP)
         {
 
-            m_OppNotifiedByterate = m_iPreviousByterate * BITRATE_INCREAMENT_FACTOR;
+            //m_OppNotifiedByterate = m_iPreviousByterate * BITRATE_INCREAMENT_FACTOR;
+            m_OppNotifiedByterate = m_iPreviousByterate + BITRATE_INCREAMENT_DIFFERENCE/8;
 
             //printf("@@@@@@@@@, BITRATE_CHANGE_UP --> %d\n", m_OppNotifiedByterate);
 

@@ -218,8 +218,8 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 	CPacketHeader packetHeader;
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-    g_BandWidthList.push_back(100*1024);    g_TimePeriodInterval.push_back(40*1000);
-    g_BandWidthList.push_back(60*1024);    g_TimePeriodInterval.push_back(20*1000);
+    g_BandWidthList.push_back(8*1024);    g_TimePeriodInterval.push_back(20*1000);
+    g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(500*1000);
     g_BandWidthController.SetTimeInterval(g_BandWidthList,g_TimePeriodInterval);
 #endif
     
