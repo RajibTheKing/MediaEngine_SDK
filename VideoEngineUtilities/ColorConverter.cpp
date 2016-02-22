@@ -3,7 +3,7 @@
 #include "../VideoEngineController/LogPrinter.h"
 
 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 typedef unsigned char byte;
 #endif
 
