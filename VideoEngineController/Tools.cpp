@@ -1,14 +1,8 @@
 #include "Tools.h"
 #ifdef _WIN32
 #include <windows.h>
-#include "LogPrinter.h"
 #else
 #include <sys/time.h>
-#endif
-
-#ifdef TARGET_OS_WINDOWS_PHONE
-#include <thread>
-#include <chrono>
 #endif
 
 
@@ -75,6 +69,7 @@ std::string Tools::IntegertoStringConvert(int number)
 	return (std::string)buf;
 }
 
+
 std::string Tools::LongLongtoStringConvert(long long number)
 {
 	char buf[22];
@@ -110,19 +105,12 @@ std::string Tools::LongLongtoStringConvert(long long number)
 	return (std::string)buf;
 }
 
-int iSOSleepCountHandler = 0;
 void Tools::SOSleep(int Timeout)
 {
-	iSOSleepCountHandler++;
-#ifdef _DESKTOP_C_SHARP_ 
+
+#ifdef _WIN32 
+
 	Sleep(Timeout);
-#elif defined(TARGET_OS_WINDOWS_PHONE)
-	printf("Going to sleep for %d, %d\n", Timeout, iSOSleepCountHandler);
-	std::this_thread::sleep_for(std::chrono::milliseconds(Timeout));
-	iSOSleepCountHandler--;
-
-	printf("EndSleep sleep for %d, %d\n", Timeout, iSOSleepCountHandler);
-
 #else
 
 	timespec t;
@@ -134,29 +122,7 @@ void Tools::SOSleep(int Timeout)
 #endif
 
 }
-/*
-void Tools::SOSleepS(int Timeout)
-{
 
-#ifdef _DESKTOP_C_SHARP_ 
-	Sleep(Timeout);
-#elif defined(TARGET_OS_WINDOWS_PHONE)
-	printf("Going to sleep for %d\n", Timeout);
-	std::this_thread::sleep_for(std::chrono::milliseconds(Timeout));
-	printf("Done Going to sleep for %d\n", Timeout);
-
-#else
-
-	timespec t;
-	u_int32_t seconds = Timeout / 1000;
-	t.tv_sec = seconds;
-	t.tv_nsec = (Timeout - (seconds * 1000)) * (1000 * 1000);
-	nanosleep(&t, NULL);
-
-#endif
-
-}
-*/
 
 /*pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets)
 {
@@ -203,9 +169,9 @@ int Tools::GetIntFromChar(unsigned char *packetData, int index, int nLenght)
 	return result;
 }
 
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined (_DESKTOP_C_SHARP_)
+#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
 #define USE_CPP_11_TIME
-#elif defined(TARGET_OS_WINDOWS_PHONE)
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_)
 #define USE_WINDOWS_TIME
 #else
 #define USE_LINUX_TIME
@@ -227,7 +193,6 @@ LongLong  Tools::CurrentTimestamp()
 	return milliseconds;
 #elif defined(USE_WINDOWS_TIME)
 	// Get current time from the clock, using microseconds resolution
-	printf("%lld GetTickCount\n", GetTickCount64());
 	return GetTickCount64();
 #elif defined(USE_CPP_11_TIME)
 	namespace sc = std::chrono;
@@ -259,7 +224,6 @@ void Tools::WriteToFile(unsigned char* in_Data, int count)
 	{
 		m_fpByte = fopen("byteFile.test", "wb");
 	}
-	int iWrite = fwrite(in_Data, 1, count, m_fpByte);
-	printf("filwrite: %d\n", iWrite);
+	fwrite(in_Data, 1, count, m_fpByte);
 
 }

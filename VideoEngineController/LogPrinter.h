@@ -40,6 +40,8 @@ typedef long long IPVLongType;
 #define printf(...)
 #endif
 
+#define printf(...)
+
 using namespace std;
 
 class CLogPrinter
