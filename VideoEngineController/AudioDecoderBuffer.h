@@ -31,6 +31,10 @@ private:
 	int m_iQueueSize;
 
 	Tools m_Tools;
+    long long m_lPrevOverFlowTime;
+    long long m_lSumOverFlowTime;
+    double m_dAvgOverFlowTime;
+    int m_iOverFlowCount;
 
 	unsigned char m_Buffer[MAX_AUDIO_DECODER_BUFFER_SIZE][MAX_AUDIO_DECODER_FRAME_SIZE];
 	int m_BufferDataLength[MAX_AUDIO_DECODER_BUFFER_SIZE];

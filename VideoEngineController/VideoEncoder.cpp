@@ -124,6 +124,7 @@ int CVideoEncoder::SetBitrate(int iFps)
 		int iRet;
 		if(m_pSVCVideoEncoder)
 		{
+            
 			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
 			if (iRet != 0)
 			{
@@ -138,7 +139,7 @@ int CVideoEncoder::SetBitrate(int iFps)
 			}
 		}
     
-    //printf("VampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
+    printf("FVampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
     
     
     return iRet;
@@ -182,7 +183,7 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
 
 		}
     
-    //printf("VampireEngg--> SetmaxBitrate(%d) = %d\n", iBitRate, iRet);
+    printf("FVampireEngg--> SetmaxBitrate(%d) = %d\n", iBitRate, iRet);
     return iRet;
 }
 
