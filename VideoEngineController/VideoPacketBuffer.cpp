@@ -47,7 +47,7 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *in_data, unsigned int in
 		m_NumberOfGotPackets++;
 
 		if(in_data[VERSION_BYTE_INDEX]) {
-			nPacketDataLength = in_size - PACKET_HEADER_LENGTH;
+			nPacketDataLength = (in_size-1) - PACKET_HEADER_LENGTH;
 			memcpy(m_pFrameData + packetNumber * ( MAX_VIDEO_PACKET_SIZE - PACKET_HEADER_LENGTH - 1),
 				   in_data + PACKET_HEADER_LENGTH, nPacketDataLength);
 		}
