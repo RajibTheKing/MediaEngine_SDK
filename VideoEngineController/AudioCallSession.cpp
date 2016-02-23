@@ -76,7 +76,8 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
 }
-
+long long iMS = -1;
+int iAudioDataCounter = 0;
 int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
 {
     /*CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1");
@@ -91,6 +92,16 @@ int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
     return 1;*/
     
     CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+    
+    
+    /*iAudioDataCounter++;
+    if(iMS == -1) iMS = m_Tools.CurrentTimestamp();
+    if(m_Tools.CurrentTimestamp() - iMS >= 1000)
+    {
+        printf("TheVampire--> Number of AudioData in 1Sec = %d\n", iAudioDataCounter);
+        iAudioDataCounter = 0;
+        iMS = m_Tools.CurrentTimestamp();
+    }*/
     
     int returnedValue = m_EncodingBuffer.Queue(in_data, in_size);
     

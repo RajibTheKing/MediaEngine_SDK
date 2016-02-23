@@ -209,6 +209,7 @@ LongLong  Tools::CurrentTimestamp()
 #endif
 }
 
+
 void Tools::WriteToFile(short* in_Data, int count)
 {
 	if (m_fpShort == NULL)

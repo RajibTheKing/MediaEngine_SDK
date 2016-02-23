@@ -38,8 +38,12 @@ public:
 	static int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
 	void WriteToFile(short* in_Data, int count);
 	void WriteToFile(unsigned char* in_Data, int count);
+    
+    void InitializeFilePointerIOS();
 
 	FILE *m_fpShort, *m_fpByte;
+    FILE *m_FileForDumpIOS;
+    
 
 };
 #define funcline(...) CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, std::string(__func__) + " : " + Tools::IntegertoStringConvert(__LINE__) + ":" + std::string(__VA_ARGS__));
