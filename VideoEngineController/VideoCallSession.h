@@ -171,6 +171,8 @@ private:
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_RenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
+	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];// windows
+
 	CColorConverter *m_pColorConverter;
 
 	bool bEncodingThreadRunning;

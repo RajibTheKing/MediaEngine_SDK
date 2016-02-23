@@ -596,8 +596,10 @@ void CVideoCallSession::EncodingThreadProcedure()
 			long long sleepTimeStamp1 = toolsObject.CurrentTimestamp();//total time
 
 			int timeDiff;
+			printf("WinD--> CVideoCallSession::EncodingThreadProcedure 1\n");
 			frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame, timeDiff);
 			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " &*&*&* m_EncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
+			printf("WinD--> CVideoCallSession::EncodingThreadProcedure dequeu2\n");
 //			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Before Processable");
 			if(!g_FPSController.IsProcessableFrame())
 			{
@@ -669,8 +671,13 @@ void CVideoCallSession::EncodingThreadProcedure()
 			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
 #elif defined(_DESKTOP_C_SHARP_)
 
+
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
-			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
+			frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			printf("WinD--> CVideoCallSession::EncodingThreadProcedure frameSIze: %d\n", frameSize);
+			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+
+			printf("WinD--> CVideoCallSession::EncodingThreadProcedure encodedFrameSize: %d\n", encodedFrameSize);
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
@@ -852,6 +859,7 @@ int iValuableFrameUsedCounter = 0;
 
 int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int nTimeStampDiff)
 {
+	printf("Wind--> DecodeAndSendToClient 0\n");
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 	if(g_TraceRetransmittedFrame[nFramNumber] == 1)
 	{
@@ -864,6 +872,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 
 	long long currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
+
 	CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Decode ", currentTimeStamp);
 
 	if(1 > m_decodedFrameSize)
@@ -875,6 +884,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #elif defined(_DESKTOP_C_SHARP_)
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
+	m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_DecodedFrame, m_RenderingRGBFrame, m_decodingHeight, m_decodingWidth);
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 	this->m_pColorConverter->ConvertI420ToYV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #else
@@ -882,9 +892,14 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
 	CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertI420ToNV21 ", currentTimeStamp);
+#if defined(_DESKTOP_C_SHARP_)
+	m_RenderingBuffer.Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	return m_decodedFrameSize;
+#else
 
 	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
+#endif
 }
 
 
@@ -1232,12 +1247,15 @@ void CVideoCallSession::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
+
+
 		currentTime = toolsObject.CurrentTimestamp();
 		if(-1 != nFirstFrameDecodingTime)
-			nExpectedTime = currentTime - nShiftedTime;
+			nExpectedTime = currentTime - nShiftedTime; 
 
 
 		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0);
+		//printf("FrameLength:  %d\n", nFrameLength);
 		decodingTime =  toolsObject.CurrentTimestamp() - currentTime;
 
 		if(nFrameLength>-1)
@@ -1261,8 +1279,10 @@ void CVideoCallSession::DecodingThreadProcedure()
 				toolsObject.SOSleep(5);
 				continue;
 			}
-
+			
 			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nTimeStampDiff);
+			printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
+			
 //			toolsObject.SOSleep(100);
 
 			if(nDecodingStatus > 0) {

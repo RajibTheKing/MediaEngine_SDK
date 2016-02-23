@@ -26,10 +26,15 @@ public:
 	int ConvertI420ToYV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	int ConvertNV12ToI420(unsigned char *convertingData);
 	int ConvertNV21ToI420(unsigned char *convertingData);
+	int ConvertYUY2ToI420(unsigned char * input, unsigned char * output);
+
 	void mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
+
+	int ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width);
+
 
 private:
 
