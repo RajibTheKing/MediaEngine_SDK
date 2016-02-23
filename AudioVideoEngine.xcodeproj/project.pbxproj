@@ -43,6 +43,7 @@
 		DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */; };
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
 		DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */; };
+		DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */; };
 		DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */; };
 		DAA0F0E31C675A5F009E0F39 /* SynchronizedMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */; };
 		DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */; };
@@ -143,6 +144,8 @@
 		DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PacketHeader.cpp; path = VideoEngineController/PacketHeader.cpp; sourceTree = "<group>"; };
 		DA3AF4BA1C55F67400E566BB /* PacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PacketHeader.h; path = VideoEngineController/PacketHeader.h; sourceTree = "<group>"; };
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
+		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
+		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
 		DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BitRateController.cpp; path = VideoEngineController/BitRateController.cpp; sourceTree = "<group>"; };
 		DAA0F0DF1C675A3C009E0F39 /* BitRateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BitRateController.h; path = VideoEngineController/BitRateController.h; sourceTree = "<group>"; };
 		DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SynchronizedMap.cpp; path = VideoEngineController/SynchronizedMap.cpp; sourceTree = "<group>"; };
@@ -172,6 +175,7 @@
 		1852B33E1BCE1D3A000FF5C4 = {
 			isa = PBXGroup;
 			children = (
+				DA63DA791C7C6D9100EF3793 /* ExtraFiles */,
 				18EB83691C0ED768006738CB /* openh264 */,
 				1887672E1C0ACD5500899605 /* libG729Library.a */,
 				18AAB7741C0059320069154C /* VideoEngineController */,
@@ -296,6 +300,15 @@
 			path = openh264;
 			sourceTree = "<group>";
 		};
+		DA63DA791C7C6D9100EF3793 /* ExtraFiles */ = {
+			isa = PBXGroup;
+			children = (
+				DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */,
+				DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */,
+			);
+			name = ExtraFiles;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -371,6 +384,7 @@
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
 				188587EC1C0AEEAC00B1F435 /* AudioEncoder.cpp in Sources */,
 				188587F11C0AEEAC00B1F435 /* EncodingBuffer.cpp in Sources */,
+				DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */,
 				188587F71C0AEEAC00B1F435 /* VideoCallSessionListHandler.cpp in Sources */,
 				188587F01C0AEEAC00B1F435 /* EncodedFramePacketizer.cpp in Sources */,
 				188587FB1C0AEEAC00B1F435 /* VideoPacketBuffer.cpp in Sources */,
