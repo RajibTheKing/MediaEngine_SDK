@@ -82,7 +82,7 @@ int CVideoDecoder::Decode(unsigned char *in_data, unsigned int in_size, unsigned
 
 	if (decodingState != 0)
 	{
-        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecoder::Decode OpenH264 Decoding FAILED");
+        printf("CVideoDecoder::Decode OpenH264 Decoding FAILEDDDDDDDDDD, %d\n", decodingState);
 		return 0;
 	}
 

@@ -4,6 +4,7 @@
 #include "Tools.h"
 #include "Globals.h"
 #include "ResendingBuffer.h"
+#include "Helper_IOS.h"
 
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 map<int, int> g_TraceRetransmittedFrame;
@@ -263,6 +264,11 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
+    CPacketHeader oHeader;
+    oHeader.setPacketHeader(in_data);
+    
+    printf("TheVampire--> Received Len = %d,...... (FN, PN) = (%d, %d) , NumberOfPacket = %d\n", in_size, oHeader.getFrameNumber(), oHeader.getPacketNumber(), oHeader.getNumberOfPacket());
+    
 #ifdef FIRST_BUILD_COMPATIBLE
 	if( !g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]  & 0xC0) ==  0xC0 )
 	{
@@ -596,10 +602,8 @@ void CVideoCallSession::EncodingThreadProcedure()
 			long long sleepTimeStamp1 = toolsObject.CurrentTimestamp();//total time
 
 			int timeDiff;
-			printf("WinD--> CVideoCallSession::EncodingThreadProcedure 1\n");
 			frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame, timeDiff);
 			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " &*&*&* m_EncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
-			printf("WinD--> CVideoCallSession::EncodingThreadProcedure dequeu2\n");
 //			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Before Processable");
 			if(!g_FPSController.IsProcessableFrame())
 			{
@@ -666,6 +670,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
+            
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 
 			CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure video data encoded");
@@ -674,10 +679,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 			frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
-			printf("WinD--> CVideoCallSession::EncodingThreadProcedure frameSIze: %d\n", frameSize);
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
-
-			printf("WinD--> CVideoCallSession::EncodingThreadProcedure encodedFrameSize: %d\n", encodedFrameSize);
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
@@ -773,6 +775,18 @@ void CVideoCallSession::EncodingThreadProcedure()
 //			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$ENCODEING$ To Parser");
 			//m_pVideoEncoder->GetEncodedFramePacketizer()->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+            //- (void)WriteToFile:(const char *)path withData:(unsigned char *)data dataLength:(int)datalen
+            
+            /*
+            if(m_iFrameNumber<200)
+            {
+                string str ="/Encode/"+m_Tools.IntegertoStringConvert(m_iFrameNumber) + "_" + m_Tools.IntegertoStringConvert(encodedFrameSize);
+                str+=".dump";
+                [[Helper_IOS GetInstance] WriteToFile:str.c_str() withData:m_EncodedFrame dataLength:encodedFrameSize];
+            }
+            */
+            
+            
 			m_pEncodedFramePacketizer->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Packetize " , currentTimeStamp);
 			++m_iFrameNumber;
@@ -859,7 +873,6 @@ int iValuableFrameUsedCounter = 0;
 
 int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int nTimeStampDiff)
 {
-	printf("Wind--> DecodeAndSendToClient 0\n");
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 	if(g_TraceRetransmittedFrame[nFramNumber] == 1)
 	{
@@ -978,6 +991,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
 				pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(),m_RcvdPacketHeader.getPacketNumber());
+                
 
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue.PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
@@ -991,7 +1005,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
                                                + ","
                                                + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
                                                + ")" ;
-                    //printf("%s\n", sMsg.c_str());
+                    printf("%s\n", sMsg.c_str());
 
 					if(g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
 					{
@@ -1259,8 +1273,11 @@ void CVideoCallSession::DecodingThreadProcedure()
 		decodingTime =  toolsObject.CurrentTimestamp() - currentTime;
 
 		if(nFrameLength>-1)
-			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # Get Time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  Len: "+m_Tools.IntegertoStringConvert(nFrameLength) +"  FrameNo: "
-													   +m_Tools.IntegertoStringConvert(nFrameNumber));
+        {
+            
+            printf("MaksudVai--> nFrameNumber = %d\n", nFrameNumber);
+        }
+        
 
 		if (-1 == nFrameLength) {
 			toolsObject.SOSleep(10);
@@ -1280,8 +1297,17 @@ void CVideoCallSession::DecodingThreadProcedure()
 				continue;
 			}
 			
+            /*
+            if(nFrameNumber<200)
+            {
+                string str = "/Decode/" + m_Tools.IntegertoStringConvert(nFrameNumber) + "_" + m_Tools.IntegertoStringConvert(nFrameLength);
+                str+=".dump";
+                [[Helper_IOS GetInstance] WriteToFile:str.c_str() withData:m_PacketizedFrame dataLength:nFrameLength];
+            }
+            */
+            
+            
 			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nTimeStampDiff);
-			printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 			
 //			toolsObject.SOSleep(100);
 
