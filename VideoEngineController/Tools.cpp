@@ -189,7 +189,6 @@ LongLong  Tools::CurrentTimestamp()
 	struct timeval te;
 	gettimeofday(&te, NULL); // get current time
 	LongLong milliseconds = te.tv_sec* +te.tv_sec * 1000LL + te.tv_usec / 1000; // caculate milliseconds
-	// printf("milliseconds: %lld\n", milliseconds);
 	return milliseconds;
 #elif defined(USE_WINDOWS_TIME)
 	// Get current time from the clock, using microseconds resolution

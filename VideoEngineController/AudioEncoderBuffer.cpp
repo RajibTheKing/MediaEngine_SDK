@@ -32,6 +32,7 @@ int CAudioEncoderBuffer::Queue(short *frame, int length)
 
 	if (m_iQueueSize == m_iQueueCapacity)
 	{
+        /*
         if(m_lPrevOverFlowTime == -1)
         {
             m_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
@@ -45,6 +46,8 @@ int CAudioEncoderBuffer::Queue(short *frame, int length)
             printf("TheVampire--> OverFlow Difftime = %lld, m_dAvgOverFlowTimeDif = %lf\n", lOverFlowTime, m_dAvgOverFlowTime);
             m_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
         }
+        */
+        
 		IncreamentIndex(m_iPopIndex);
 	}
 	else

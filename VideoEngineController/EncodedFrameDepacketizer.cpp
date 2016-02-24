@@ -337,9 +337,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS,
 							   "$$$ Retransmited PKT#  Used : " +
 							   m_Tools.IntegertoStringConvert(m_iRetransPktUsed)+"  Dropped: "+m_Tools.IntegertoStringConvert(m_iRetransPktDrpd));
-    
-    
-    printf("PacketPushCheck--> FN,PN = %d,%d #### index = %d\n", frameNumber, packetNumber, index);
 	m_CVideoPacketBuffer[index].SetNumberOfPackets(numberOfPackets);
 	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber);
 
@@ -434,9 +431,6 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 	}
 	else if(m_FrontFrame < m_iMaxFrameNumRecvd)
 	{
-        string sMss = " GetReceivedFrame # IncompleteFrame Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame);
-        printf("MaksudVai--> %s\n", sMss.c_str());
-        
 //		g_FPSController.NotifyFrameDropped(m_FrontFrame);
 		MoveForward(m_FrontFrame);
 		return -1;

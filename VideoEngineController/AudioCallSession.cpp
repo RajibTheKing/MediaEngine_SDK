@@ -76,20 +76,12 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
 }
+
 long long iMS = -1;
 int iAudioDataCounter = 0;
+
 int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
 {
-    /*CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1");
-	int size = m_pG729CodecNative->Encode(in_data, in_size, &m_EncodedFrame[1]);
-    m_EncodingFrame[0] = 0;
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
-
-	//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodingFrame);
-    
-    m_pCommonElementsBucket->SendFunctionPointer(friendID,1,m_EncodedFrame,size);
-     
-    return 1;*/
     
     CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
     

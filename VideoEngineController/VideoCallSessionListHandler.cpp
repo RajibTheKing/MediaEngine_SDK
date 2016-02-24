@@ -52,47 +52,32 @@ CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionListinIndex(
 
 bool CVideoCallSessionListHandler::RemoveFromVideoSessionList(LongLong friendName)
 {
-	printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 0.\n");
 
 	Locker lock(*m_pVideoSessionListMutex);
 
-	printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 1.\n");
-
 	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.find(friendName);
-
-	printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 2.\n");
 
 	if (videoSessionSearch == m_mVideoSessionList.end())
 	{
-		printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 3.\n");
 
 		return false;
 	}
 	else
 	{
-		printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 4.\n");
 
 		CVideoCallSession *videoSession = videoSessionSearch->second;
 
-		printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 5.\n");
-
 		if (NULL == videoSession)
 		{
-			printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 6.\n");
 
 			return false;
 		}
-		printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 7.\n");
 
 		delete videoSession;
 		videoSession = NULL;
 
-		printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 8.\n");
-
         if(false == m_mVideoSessionList.empty())
             m_mVideoSessionList.erase(friendName);
-
-		printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 9.\n");
 
 		return true;
 	}
