@@ -1120,8 +1120,13 @@ void CVideoCallSession::DecodingThreadProcedure()
 
 
 		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0);
+        //printf("FrameLength:  %d\n", nFrameLength);
         
 		decodingTime =  toolsObject.CurrentTimestamp() - currentTime;
+
+        if(nFrameLength>-1)
+            CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # Get Time: "+m_Tools.IntegertoStringConvert(decodingTime)+"  Len: "+m_Tools.IntegertoStringConvert(nFrameLength) +"  FrameNo: "+m_Tools.IntegertoStringConvert(nFrameNumber));
+        
 
 		if (-1 == nFrameLength) {
 			toolsObject.SOSleep(10);
@@ -1152,7 +1157,7 @@ void CVideoCallSession::DecodingThreadProcedure()
             
             
 			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nTimeStampDiff);
-			
+			//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 //			toolsObject.SOSleep(100);
 
 			if(nDecodingStatus > 0) {

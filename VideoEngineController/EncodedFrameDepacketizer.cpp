@@ -431,6 +431,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 	}
 	else if(m_FrontFrame < m_iMaxFrameNumRecvd)
 	{
+        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # IncompleteFrame Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame));
 //		g_FPSController.NotifyFrameDropped(m_FrontFrame);
 		MoveForward(m_FrontFrame);
 		return -1;
