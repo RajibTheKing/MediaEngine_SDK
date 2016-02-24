@@ -52,7 +52,7 @@ CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionListinIndex(
 
 bool CVideoCallSessionListHandler::RemoveFromVideoSessionList(LongLong friendName)
 {
-
+    //printf("CVideoCallSessionListHandler::RemoveFromVideoSessionList() called 0.\n");
 	Locker lock(*m_pVideoSessionListMutex);
 
 	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.find(friendName);
