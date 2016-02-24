@@ -79,7 +79,10 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 		if(m_PacketSize + readPacketLength > in_size)
 			m_PacketSize = in_size - readPacketLength;
 
-		m_PacketHeader.setPacketHeader(uchOpponentVersion, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize + nPacketHeaderLenghtWithMedia);
+		//m_PacketHeader.setPacketHeader(uchOpponentVersion, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize + nPacketHeaderLenghtWithMedia);
+        
+        m_PacketHeader.setPacketHeader(uchOpponentVersion, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, uchOpponentVersion ? m_PacketSize + nPacketHeaderLenghtWithMedia : m_PacketSize);
+        
 
 		m_PacketHeader.GetHeaderInByteArray(m_Packet + 1);
 
