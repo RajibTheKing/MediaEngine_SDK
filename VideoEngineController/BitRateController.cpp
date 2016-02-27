@@ -6,7 +6,11 @@
 #include "PacketHeader.h"
 #include "Size.h"
 #include "LogPrinter.h"
+#include "CommonElementsBucket.h"
 
+
+double m_fTotalDataInSlots;
+double m_fAverageData;
 
 BitRateController::BitRateController():
     m_ByteRecvInMegaSlotInterval(0),
@@ -17,7 +21,10 @@ BitRateController::BitRateController():
     m_bGotOppBandwidth(0),
     m_ByteSendInSlotInverval(0),
     m_FrameCounterbeforeEncoding(0),
-    m_LastSendingSlot(0)
+    m_LastSendingSlot(0),
+    m_fTotalDataInSlots(0.0),
+    m_fAverageData(0.0),
+    m_iStopNotificationController(0)
 {
     dFirstTimeDecrease = BITRATE_DECREMENT_FACTOR;
     m_OppNotifiedByterate = 0;
@@ -30,6 +37,11 @@ BitRateController::BitRateController():
 
 BitRateController::~BitRateController(){
 
+}
+
+void BitRateController::SetSharedObject(CCommonElementsBucket* sharedObject)
+{
+    m_pCommonElementsBucket = sharedObject;
 }
 
 void BitRateController::SetEncoder(CVideoEncoder* pVideEnocder){
@@ -56,7 +68,9 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
     int iSlotNumber = tempHeader.getFrameNumber();
     m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(iSlotNumber);
     m_ByteRecvInMegaSlotInterval+=tempHeader.getTimeStamp();
-    m_SlotIntervalCounter++;
+    
+    NeedToNotifyClient(m_OppNotifiedByterate);
+    
     if(m_SlotIntervalCounter % MEGA_SLOT_INTERVAL == 0)
     {
         double MegaRatio =  (m_ByteRecvInMegaSlotInterval *1.0) / (1.0 * m_ByteSendInMegaSlotInverval) * 100.0;
@@ -80,8 +94,8 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader){
         {
             m_OppNotifiedByterate = BITRATE_DECREMENT_FACTOR * (m_ByteRecvInMegaSlotInterval/MEGA_SLOT_INTERVAL);
 
-            //printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", g_OppNotifiedByterate);
-
+            //printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", m_OppNotifiedByterate);
+    
             m_bsetBitrateCalled = false;
             m_bMegSlotCounterShouldStop = true;
         }
@@ -246,4 +260,45 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 
     m_PrevMegaSlotStatus = dataReceivedRatio;
     return BITRATE_CHANGE_NO;
+}
+
+int BitRateController::NeedToNotifyClient(int iCurrentByte)
+{
+    m_SlotIntervalCounter++;
+    m_fTotalDataInSlots+=m_OppNotifiedByterate;
+    m_fAverageData = (m_fTotalDataInSlots * 1.0) / (m_SlotIntervalCounter * 1.0);
+   // printf("TheKing--> m_fAverageByteData = %lf\n", m_fAverageData);
+    
+    iCurrentByte*=8;
+    printf("TheKing--> iCurrentBits = %d\n", iCurrentByte);
+    if(iCurrentByte<=BITRATE_LOW && iCurrentByte >= BITRATE_MIN)
+    {
+        m_iStopNotificationController = 0;
+        m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, 202);
+    }
+    else if(iCurrentByte<BITRATE_MIN)
+    {
+        m_iStopNotificationController++;
+        if(m_iStopNotificationController >= STOP_NOTIFICATION_SENDING_COUNTER)
+        {
+            m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, 203);
+        }
+    }
+    else
+    {
+        m_iStopNotificationController = 0;
+    }
+    
+    
+    
+    
+    if(m_SlotIntervalCounter%BITRATE_AVERAGE_TIME == 0)
+    {
+        m_SlotIntervalCounter = 0;
+        m_fTotalDataInSlots=0;
+        m_fAverageData = 0;
+    }
+    
+    
+    return 0;
 }

@@ -28,6 +28,20 @@ void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLent
     notifyClientWithVideoDataCallback(eventType, data, dataLenth, iVideoHeight, iVideoWidth);
 }
 
+void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
+{
+    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType));
+    
+    if(eventType == VIDEO_QUALITY_LOW)
+    {
+        printf("Video quality low\n");
+    }
+    else if(eventType == VIDEO_SHOULD_STOP)
+    {
+        printf("Video must stop\n");
+    }
+}
+
 void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[])
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 1");

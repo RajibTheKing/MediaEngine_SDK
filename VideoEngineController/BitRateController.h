@@ -12,16 +12,22 @@
 #include "VideoEncoder.h"
 #include "SynchronizedMap.h"
 
+//#include "CommonElementsBucket.h"
+
+class CCommonElementsBucket;
+
 class BitRateController {
 public:
     BitRateController();
     ~BitRateController();
 
+    void SetSharedObject(CCommonElementsBucket* sharedObject);
     void SetEncoder(CVideoEncoder* VideEnocder);
     bool HandleBitrateMiniPacket(CPacketHeader &tempHeader);
     bool UpdateBitrate();
     void NotifyEncodedFrame(int &nFrameSize);
     int NeedToChangeBitRate(double dataReceivedRatio);
+    int NeedToNotifyClient(int iCurrentByte);
 
 private:
     Tools m_Tools;
@@ -38,6 +44,10 @@ private:
 
     int m_bGotOppBandwidth;
     int m_SlotIntervalCounter;
+    double m_fTotalDataInSlots;
+    double m_fAverageData;
+    
+    CCommonElementsBucket* m_pCommonElementsBucket;
 
     int m_ByteSendInSlotInverval;
     int m_ByteSendInMegaSlotInverval;
@@ -45,8 +55,12 @@ private:
     double dFirstTimeDecrease;
     bool m_bMegSlotCounterShouldStop;
     bool m_bsetBitrateCalled;
+    int m_iStopNotificationController;
+    
     CSynchronizedMap m_BandWidthRatioHelper;
     CVideoEncoder *m_pVideoEncoder;
+    
+    
 };
 
 

@@ -15,6 +15,7 @@ public:
 	void fireVideoEvent(int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth);
 	void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);
 	void fireAudioEvent(int eventType, int dataLenth, short data[]);
+    void fireVideoNotificationEvent(int callID, int eventType);
     
     void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
     void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int));
@@ -23,6 +24,9 @@ public:
 
 	static const int ENCODED_PACKET = 200;
 	static const int MERGED_VIDEO_FRAME = 201;
+    
+    static const int VIDEO_QUALITY_LOW = 202;
+    static const int VIDEO_SHOULD_STOP = 203;
 };
 
 #endif

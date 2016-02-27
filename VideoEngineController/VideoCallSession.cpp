@@ -149,6 +149,8 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
     m_iNormalSlotCounter = 0;
     m_SlotCounter = 0;
     
+    m_BitRateController.SetSharedObject(sharedObject);
+    
     m_BandWidthRatioHelper.clear();
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
 }
