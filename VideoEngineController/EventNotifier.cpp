@@ -34,11 +34,11 @@ void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
     
     if(eventType == VIDEO_QUALITY_LOW)
     {
-        printf("Video quality low\n");
+		CLogPrinter_Write(CLogPrinter::INFO, "Video quality low\n");
     }
     else if(eventType == VIDEO_SHOULD_STOP)
     {
-        printf("Video must stop\n");
+		CLogPrinter_Write(CLogPrinter::INFO, "Video must stop\n");
     }
 }
 
