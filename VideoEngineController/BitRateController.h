@@ -46,6 +46,10 @@ private:
     int m_SlotIntervalCounter;
     double m_fTotalDataInSlots;
     double m_fAverageData;
+
+	bool m_bVideoQualityLowNotified;
+	bool m_bVideoQualityHighNotified;
+	bool m_bVideoShouldStopNotified;
     
     CCommonElementsBucket* m_pCommonElementsBucket;
 

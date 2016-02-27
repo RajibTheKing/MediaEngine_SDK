@@ -39,6 +39,10 @@ void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
     {
 		CLogPrinter_Write(CLogPrinter::INFO, "Video quality low\n");
     }
+	else if (eventType == VIDEO_QUALITY_HIGH)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "Video quality high\n");
+	}
     else if(eventType == VIDEO_SHOULD_STOP)
     {
 		CLogPrinter_Write(CLogPrinter::INFO, "Video must stop\n");

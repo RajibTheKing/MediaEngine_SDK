@@ -27,6 +27,7 @@ public:
 	static const int MERGED_VIDEO_FRAME = 201;
     
     static const int VIDEO_QUALITY_LOW = 202;
+	static const int VIDEO_QUALITY_HIGH = 204;
     static const int VIDEO_SHOULD_STOP = 203;
 };
 

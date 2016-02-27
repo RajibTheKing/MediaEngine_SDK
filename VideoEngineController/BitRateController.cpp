@@ -274,23 +274,42 @@ int BitRateController::NeedToNotifyClient(int iCurrentByte)
     if(iCurrentByte<BITRATE_LOW && iCurrentByte >= BITRATE_MIN)
     {
         m_iStopNotificationController = 0;
-        m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, 202);
+
+		if (false == m_bVideoQualityLowNotified)
+		{
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_QUALITY_LOW);
+
+			m_bVideoQualityLowNotified = true;
+			m_bVideoQualityHighNotified = false;
+			m_bVideoShouldStopNotified = false;
+		}
     }
     else if(iCurrentByte<BITRATE_MIN)
     {
         m_iStopNotificationController++;
-        if(m_iStopNotificationController >= STOP_NOTIFICATION_SENDING_COUNTER)
+
+		if (false == m_bVideoShouldStopNotified && m_iStopNotificationController >= STOP_NOTIFICATION_SENDING_COUNTER)
         {
-            m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, 203);
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_SHOULD_STOP);
+
+			m_bVideoShouldStopNotified = true;
+			m_bVideoQualityHighNotified = false;
+			m_bVideoQualityLowNotified = false;
         }
     }
-    else
-    {
-        m_iStopNotificationController = 0;
-    }
-    
-    
-    
+	else if (iCurrentByte >= BITRATE_LOW)
+	{
+		m_iStopNotificationController = 0;
+
+		if (false == m_bVideoQualityHighNotified)
+		{
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_QUALITY_HIGH);
+
+			m_bVideoQualityHighNotified = true;
+			m_bVideoQualityLowNotified = false;
+			m_bVideoShouldStopNotified = false;
+		}
+	}  
     
     if(m_SlotIntervalCounter%BITRATE_AVERAGE_TIME == 0)
     {
