@@ -271,7 +271,7 @@ int BitRateController::NeedToNotifyClient(int iCurrentByte)
     
     iCurrentByte*=8;
     printf("TheKing--> iCurrentBits = %d\n", iCurrentByte);
-    if(iCurrentByte<=BITRATE_LOW && iCurrentByte >= BITRATE_MIN)
+    if(iCurrentByte<BITRATE_LOW && iCurrentByte >= BITRATE_MIN)
     {
         m_iStopNotificationController = 0;
         m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, 202);
