@@ -419,6 +419,11 @@ void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPoi
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }
 
+void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
+{
+	m_EventNotifier.SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
+}
+
 void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
     m_EventNotifier.SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);

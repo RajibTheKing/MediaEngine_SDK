@@ -282,6 +282,14 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*ca
 	}
 }
 
+void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
+{
+	if (NULL != m_pController)
+	{
+		m_pController->SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
+	}
+}
+
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
 	if (NULL != m_pController)

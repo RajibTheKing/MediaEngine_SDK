@@ -5,6 +5,7 @@
 
 void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
 void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int) = NULL;
+void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
 void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
 void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
 
@@ -31,6 +32,8 @@ void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLent
 void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType));
+
+	notifyClientWithVideoNotificationCallback(callID, eventType);
     
     if(eventType == VIDEO_QUALITY_LOW)
     {
@@ -72,6 +75,11 @@ void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPoi
 void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int))
 {
     notifyClientWithVideoDataCallback = callBackFunctionPointer;
+}
+
+void CEventNotifier::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
+{
+	notifyClientWithVideoNotificationCallback = callBackFunctionPointer;
 }
 
 void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
