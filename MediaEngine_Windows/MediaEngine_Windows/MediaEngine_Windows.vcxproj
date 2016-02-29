@@ -110,6 +110,7 @@
     <ClCompile Include="..\..\VideoEngineController\VideoDecoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoderListHandler.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="..\..\VideoEngineController\VideoDecoder.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoder.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoderListHandler.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />

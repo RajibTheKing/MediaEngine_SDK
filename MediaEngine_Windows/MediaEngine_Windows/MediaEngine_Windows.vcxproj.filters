@@ -129,6 +129,9 @@
     <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h">
@@ -276,6 +279,9 @@
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>
