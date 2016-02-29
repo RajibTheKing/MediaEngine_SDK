@@ -822,7 +822,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 	return m_decodedFrameSize;
 #else
 
-	m_RenderingBuffer.Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame,m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #endif
 }
