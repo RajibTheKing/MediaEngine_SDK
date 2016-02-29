@@ -481,9 +481,8 @@ void *CVideoCallSession::CreateVideoEncodingThread(void* param)
 /*
 	CVideoCallSession *pThis = (CVideoCallSession*)param;
 	pThis->EncodingThreadProcedure();
-
-	return NULL;
 */
+	return NULL;
 }
 
 void CVideoCallSession::EncodingThreadProcedure()
