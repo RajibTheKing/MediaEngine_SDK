@@ -28,10 +28,10 @@ extern long long g_FriendID;
 extern CFPSController g_FPSController;
 
 
-int countFrame = 0;
-int countFrameFor15 = 0;
-int countFrameSize = 0;
-long long encodeTimeStampFor15;
+//int countFrame = 0;
+//int countFrameFor15 = 0;
+//int countFrameSize = 0;
+//long long encodeTimeStampFor15;
 int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
 bool gbStopFPSSending = false;
 
@@ -104,10 +104,10 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 #endif
 
 	//Resetting Global Variables.
-	countFrame = 0;
-	countFrameFor15 = 0;
-	countFrameSize = 0;
-	encodeTimeStampFor15 = 0;
+//	countFrame = 0;
+//	countFrameFor15 = 0;
+//	countFrameSize = 0;
+//	encodeTimeStampFor15 = 0;
 	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
 	g_ResendBuffer.Reset();
 	gbStopFPSSending = false;
@@ -242,6 +242,8 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoDecoder->CreateVideoDecoder();
 
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
+
+	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID,m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
 
@@ -391,6 +393,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size);
 
+	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding Queue packetSize " + Tools::IntegertoStringConvert(in_size));
+
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding pushed to encoder queue");
 
 	return returnedValue;
@@ -417,6 +421,8 @@ sessionMediaList.ResetAllInVideoEncoderList();
 
 void CVideoCallSession::StopEncodingThread()
 {
+	m_pVideoEncodingThread->StopEncodingThread();
+/*
 	//if (pInternalThread.get())
 	{
 
@@ -429,10 +435,14 @@ void CVideoCallSession::StopEncodingThread()
 	}
 
 	//pInternalThread.reset();
+*/
 }
 
 void CVideoCallSession::StartEncodingThread()
 {
+	m_pVideoEncodingThread->StartEncodingThread();
+
+/*
 	if (pEncodingThread.get())
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread 2");
@@ -462,18 +472,24 @@ void CVideoCallSession::StartEncodingThread()
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartedInternalThread Encoding Thread started");
 
 	return;
+*/
+
 }
 
 void *CVideoCallSession::CreateVideoEncodingThread(void* param)
 {
+/*
 	CVideoCallSession *pThis = (CVideoCallSession*)param;
 	pThis->EncodingThreadProcedure();
 
 	return NULL;
+*/
 }
 
 void CVideoCallSession::EncodingThreadProcedure()
 {
+
+/*
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize, encodedFrameSize;
@@ -673,14 +689,14 @@ void CVideoCallSession::EncodingThreadProcedure()
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
             //- (void)WriteToFile:(const char *)path withData:(unsigned char *)data dataLength:(int)datalen
             
-            /*
-            if(m_iFrameNumber<200)
-            {
-                string str ="/Encode/"+m_Tools.IntegertoStringConvert(m_iFrameNumber) + "_" + m_Tools.IntegertoStringConvert(encodedFrameSize);
-                str+=".dump";
-                [[Helper_IOS GetInstance] WriteToFile:str.c_str() withData:m_EncodedFrame dataLength:encodedFrameSize];
-            }
-            */
+            
+        //    if(m_iFrameNumber<200)
+        //    {
+        //        string str ="/Encode/"+m_Tools.IntegertoStringConvert(m_iFrameNumber) + "_" + m_Tools.IntegertoStringConvert(encodedFrameSize);
+        //        str+=".dump";
+        //        [[Helper_IOS GetInstance] WriteToFile:str.c_str() withData:m_EncodedFrame dataLength:encodedFrameSize];
+        //    }
+            
             
             
 			m_pEncodedFramePacketizer->Packetize(friendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
@@ -696,6 +712,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 	bEncodingThreadClosed = true;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+*/
 }
 
 void CVideoCallSession::StopDepacketizationThread()

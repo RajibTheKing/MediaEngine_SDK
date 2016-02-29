@@ -20,6 +20,7 @@
 #include "RetransmitVideoPacketQueue.h"
 #include "BitRateController.h"
 #include "SynchronizedMap.h"
+#include "VideoEncodingThread.h"
 
 #include <queue>
 #include <utility>
@@ -94,6 +95,8 @@ public:
     
     int m_iDePacketizeCounter;
     long long m_TimeFor100Depacketize;
+
+	CVideoEncodingThread *m_pVideoEncodingThread;
 
 //	void increaseFPS();
 //	void decreaseFPS();
