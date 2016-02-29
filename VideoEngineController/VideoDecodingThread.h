@@ -10,6 +10,7 @@
 #include "VideoDecoder.h"
 #include "ColorConverter.h"
 #include "DecodingBuffer.h"
+#include "FPSController.h"
 
 #include <thread>
 

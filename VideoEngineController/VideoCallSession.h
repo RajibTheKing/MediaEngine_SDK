@@ -22,6 +22,7 @@
 #include "SynchronizedMap.h"
 #include "VideoEncodingThread.h"
 #include "RenderingThread.h"
+#include "VideoDecodingThread.h"
 
 #include <queue>
 #include <utility>
@@ -99,7 +100,8 @@ public:
 
 	CVideoEncodingThread *m_pVideoEncodingThread;
 
-	CVideoRenderingThread * m_pVideoRenderingThread;
+	CVideoRenderingThread *m_pVideoRenderingThread;
+	CVideoDecodingThread *m_pVideoDecodingThread;
 
 	//	void increaseFPS();
 	//	void decreaseFPS();
