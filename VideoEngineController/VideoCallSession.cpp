@@ -167,6 +167,24 @@ CVideoCallSession::~CVideoCallSession()
 	StopEncodingThread();
 	StopRenderingThread();
 
+	if (NULL != m_pVideoEncodingThread)
+	{
+		delete m_pVideoEncodingThread;
+		m_pVideoEncodingThread = NULL;
+	}
+
+	if (NULL != m_pVideoRenderingThread)
+	{
+		delete m_pVideoRenderingThread;
+		m_pVideoRenderingThread = NULL;
+	}
+
+	if (NULL != m_pVideoEncodingThread)
+	{
+		delete m_pVideoEncodingThread;
+		m_pVideoEncodingThread = NULL;
+	}
+
 	if (NULL != m_BitRateController)
 	{
 		delete m_BitRateController;
