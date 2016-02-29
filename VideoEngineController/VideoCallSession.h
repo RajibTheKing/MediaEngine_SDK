@@ -148,9 +148,9 @@ private:
 	CVideoEncoder *m_pVideoEncoder;
 	CVideoDecoder *m_pVideoDecoder;
 
-	BitRateController m_BitRateController;
+	BitRateController *m_BitRateController;
 
-	CEncodingBuffer m_EncodingBuffer;
+	CEncodingBuffer *m_EncodingBuffer;
 	CDecodingBuffer m_DecodingBuffer;
 	CVideoPacketQueue m_pVideoPacketQueue;
 	CVideoPacketQueue m_pRetransVideoPacketQueue;

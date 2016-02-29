@@ -135,6 +135,9 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject);
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject,this);
 
+	m_BitRateController = new BitRateController();
+	m_EncodingBuffer = new CEncodingBuffer();
+
 	g_FriendID = fname;
 
 	ExpectedFramePacketPair.first = 0;
@@ -149,7 +152,7 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
     m_iNormalSlotCounter = 0;
     m_SlotCounter = 0;
     
-    m_BitRateController.SetSharedObject(sharedObject);
+    m_BitRateController->SetSharedObject(sharedObject);
     
     m_BandWidthRatioHelper.clear();
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
@@ -162,6 +165,19 @@ CVideoCallSession::~CVideoCallSession()
 	StopDecodingThread();
 	StopEncodingThread();
 	StopRenderingThread();
+
+	if (NULL != m_BitRateController)
+	{
+		delete m_BitRateController;
+		m_BitRateController = NULL;
+	}
+
+	if (NULL != m_EncodingBuffer)
+	{
+		delete m_EncodingBuffer;
+		m_EncodingBuffer = NULL;
+	}
+
 	if(NULL!=m_pVideoEncoder)
 	{
 		delete m_pVideoEncoder;
@@ -219,7 +235,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth);
 
 	g_FPSController.SetEncoder(m_pVideoEncoder);
-	m_BitRateController.SetEncoder(m_pVideoEncoder);
+	m_BitRateController->SetEncoder(m_pVideoEncoder);
 
 	this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket, &m_DecodingBuffer);
 
@@ -373,7 +389,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 #endif
 
-	int returnedValue = m_EncodingBuffer.Queue(in_data, in_size);
+	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding pushed to encoder queue");
 
@@ -473,14 +489,14 @@ void CVideoCallSession::EncodingThreadProcedure()
 	{
 		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
 
-		if (m_EncodingBuffer.GetQueueSize() == 0)
+		if (m_EncodingBuffer->GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
 		else
 		{
 			long long sleepTimeStamp1 = toolsObject.CurrentTimestamp();//total time
 
 			int timeDiff;
-			frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame, timeDiff);
+			frameSize = m_EncodingBuffer->DeQueue(m_EncodingFrame, timeDiff);
 			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " &*&*&* m_EncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 //			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Before Processable");
 			if(!g_FPSController.IsProcessableFrame())
@@ -499,7 +515,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 
 			m_FrameCounterbeforeEncoding++;
-			m_BitRateController.UpdateBitrate();
+			m_BitRateController->UpdateBitrate();
 
 //			if(m_FrameCounterbeforeEncoding%FRAME_RATE == 0 && g_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)
 //			{
@@ -632,7 +648,7 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 
 #endif
-			m_BitRateController.NotifyEncodedFrame(encodedFrameSize);
+			m_BitRateController->NotifyEncodedFrame(encodedFrameSize);
             
 //            m_ByteSendInSlotInverval+=encodedFrameSize;
 //            if(m_FrameCounterbeforeEncoding % FRAME_RATE == 0)
@@ -849,7 +865,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 			if(bMiniPacket && m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER)
 			{
-				m_BitRateController.HandleBitrateMiniPacket(m_RcvdPacketHeader);
+				m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
 				toolsObject.SOSleep(1);
 				continue;
 			}
