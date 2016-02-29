@@ -69,6 +69,7 @@ LOCAL_SRC_FILES := \
             ../../../videoengine/VideoEngineController/VideoDecoder.cpp \
 			../../../videoengine/VideoEngineController/VideoEncoder.cpp \
 			../../../videoengine/VideoEngineController/VideoEncodingThread.cpp \
+			../../../videoengine/VideoEngineController/VideoDecodingThread.cpp \
 			../../../videoengine/VideoEngineController/RenderingThread.cpp \
 			../../../videoengine/VideoEngineController/SendingBuffer.cpp \
 			../../../videoengine/VideoEngineController/RenderingBuffer.cpp \
