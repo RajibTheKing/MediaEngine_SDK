@@ -43,10 +43,10 @@ public:
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
-	void InitializeVideoSession(LongLong lFriendID,int iVideoHeight, int iVideoWidth);
+	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size);
-	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int nTimeStampDiff);
+	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff);
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 
@@ -73,15 +73,15 @@ public:
 	void RenderingThreadProcedure();
 	static void *CreateVideoRenderingThread(void* param);
 
-	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int timeStampDiff);
-    
-    void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
-    int GetUniquePacketID(int fn, int pn);
-    
-    int NeedToChangeBitRate(double LossPercentage);
-    int m_iConsecutiveGoodMegaSlot;
-    int m_iPreviousByterate;
-    
+	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
+
+	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
+	int GetUniquePacketID(int fn, int pn);
+
+	int NeedToChangeBitRate(double LossPercentage);
+	int m_iConsecutiveGoodMegaSlot;
+	int m_iPreviousByterate;
+
 	int orientation_type;
 	int ownFPS;
 	LongLong m_LastTimeStampClientFPS;
@@ -92,48 +92,48 @@ public:
 	int opponentFPS;
 	int fpsCnt;
 	int m_EncodingFrameCounter;
-    bool m_bSkipFirstByteCalculation;
-    
-    int m_iDePacketizeCounter;
-    long long m_TimeFor100Depacketize;
+	bool m_bSkipFirstByteCalculation;
+
+	int m_iDePacketizeCounter;
+	long long m_TimeFor100Depacketize;
 
 	CVideoEncodingThread *m_pVideoEncodingThread;
 
 	CVideoRenderingThread * m_pVideoRenderingThread;
 
-//	void increaseFPS();
-//	void decreaseFPS();
-//	bool isProcessable();
+	//	void increaseFPS();
+	//	void decreaseFPS();
+	//	bool isProcessable();
 
 private:
 	int m_iCountRecResPack;
 	int m_iCountReQResPack;
 	int m_iDecodedFrameCounter;
 	int m_ByteRcvInBandSlot;
-    int m_ByteRcvInSlotInverval;
-    int m_ByteSendInSlotInverval;
-    
-    int m_ByteSendInMegaSlotInverval;
-    int m_ByteRecvInMegaSlotInterval;
-    int m_SlotIntervalCounter;
-    bool m_bMegSlotCounterShouldStop;
-    bool m_bsetBitrateCalled;
-    
-    
-    int m_RecvMegaSlotInvervalCounter;
-    int m_SendMegaSlotInervalCounter;
-    int m_miniPacketBandCounter;
+	int m_ByteRcvInSlotInverval;
+	int m_ByteSendInSlotInverval;
+
+	int m_ByteSendInMegaSlotInverval;
+	int m_ByteRecvInMegaSlotInterval;
+	int m_SlotIntervalCounter;
+	bool m_bMegSlotCounterShouldStop;
+	bool m_bsetBitrateCalled;
+
+
+	int m_RecvMegaSlotInvervalCounter;
+	int m_SendMegaSlotInervalCounter;
+	int m_miniPacketBandCounter;
 	//int m_SlotResetFrameNumber;
 	//int m_PrevSlotResetFrameNumber;
-    
-    int m_SlotResetLeftRange;
-    int m_SlotResetRightRange;
-    
-    int m_FrameCounterbeforeEncoding;
-    int m_bGotOppBandwidth;
+
+	int m_SlotResetLeftRange;
+	int m_SlotResetRightRange;
+
+	int m_FrameCounterbeforeEncoding;
+	int m_bGotOppBandwidth;
 
 	CPacketHeader m_RcvdPacketHeader;
-	
+
 	long long m_ll1stFrameTimeStamp;
 	bool m_bFirstFrame;
 	unsigned  int m_iTimeStampDiff;
@@ -160,7 +160,7 @@ private:
 	CDecodingBuffer m_DecodingBuffer;
 	CVideoPacketQueue m_pVideoPacketQueue;
 	CVideoPacketQueue m_pRetransVideoPacketQueue;
-    CVideoPacketQueue m_pMiniPacketQueue;
+	CVideoPacketQueue m_pMiniPacketQueue;
 	CRenderingBuffer *m_RenderingBuffer;
 
 	unsigned char m_EncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
@@ -199,13 +199,13 @@ private:
 	bool bRenderingThreadClosed;
 	CSynchronizedMap m_BandWidthRatioHelper;
 	int m_LastSendingSlot;
-    
-    int m_iGoodSlotCounter;
-    int m_iNormalSlotCounter;
-    int m_SlotCounter;
-    double m_PrevMegaSlotStatus;
-    
-    unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
+
+	int m_iGoodSlotCounter;
+	int m_iNormalSlotCounter;
+	int m_SlotCounter;
+	double m_PrevMegaSlotStatus;
+
+	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
 
 protected:
 
