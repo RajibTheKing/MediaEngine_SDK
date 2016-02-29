@@ -137,6 +137,7 @@ CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* shar
 
 	m_BitRateController = new BitRateController();
 	m_EncodingBuffer = new CEncodingBuffer();
+	m_RenderingBuffer = new CRenderingBuffer();
 
 	g_FriendID = fname;
 
@@ -170,6 +171,12 @@ CVideoCallSession::~CVideoCallSession()
 	{
 		delete m_BitRateController;
 		m_BitRateController = NULL;
+	}
+
+	if (NULL != m_RenderingBuffer)
+	{
+		delete m_RenderingBuffer;
+		m_RenderingBuffer = NULL;
 	}
 
 	if (NULL != m_EncodingBuffer)
@@ -811,7 +818,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 #endif
 	CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertI420ToNV21 ", currentTimeStamp);
 #if defined(_DESKTOP_C_SHARP_)
-	m_RenderingBuffer.Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #else
 
@@ -1385,14 +1392,14 @@ void CVideoCallSession::RenderingThreadProcedure()
 	{
 		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::RenderingThreadProcedure");
 
-		if (m_RenderingBuffer.GetQueueSize() == 0)
+		if (m_RenderingBuffer->GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
 		else
 		{
 
 			int timeDiffForQueue;
 
-			frameSize = m_RenderingBuffer.DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
+			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
 			CLogPrinter_WriteForQueueTime(CLogPrinter::DEBUGS, " m_RenderingBuffer "+ toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			currentFrameTime = toolsObject.CurrentTimestamp();

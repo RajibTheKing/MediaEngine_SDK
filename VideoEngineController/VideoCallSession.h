@@ -158,7 +158,7 @@ private:
 	CVideoPacketQueue m_pVideoPacketQueue;
 	CVideoPacketQueue m_pRetransVideoPacketQueue;
     CVideoPacketQueue m_pMiniPacketQueue;
-	CRenderingBuffer m_RenderingBuffer;
+	CRenderingBuffer *m_RenderingBuffer;
 
 	unsigned char m_EncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_ConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
