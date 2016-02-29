@@ -3,12 +3,13 @@
 
 int iValuableFrameUsedCounter = 0;
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter) :
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController) :
 
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
 m_pVideoDecoder(videoDecoder),
-m_pColorConverter(colorConverter)
+m_pColorConverter(colorConverter),
+g_FPSController(FPSController)
 
 {
 
@@ -128,14 +129,14 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			if (-1 == nFirstFrameDecodingTime)
 				nTimeStampBeforeDecoding = nBeforeDecodingTime;
 
-			/*nOponnentFPS = g_FPSController->GetOpponentFPS();
+			nOponnentFPS = g_FPSController->GetOpponentFPS();
 			nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
 
 			if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
 				continue;
-			}*/
+			}
 
 			/*
 			if(nFrameNumber<200)
@@ -162,8 +163,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					dbAverageDecodingTime *= 1.5;
 					fps = 1000 / dbAverageDecodingTime;
 
-				/*	if (fps<FPS_MAXIMUM)
-						g_FPSController->SetMaxOwnProcessableFPS(fps);*/
+					if (fps<FPS_MAXIMUM)
+						g_FPSController->SetMaxOwnProcessableFPS(fps);
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
 			}
