@@ -829,6 +829,8 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 	return m_decodedFrameSize;
 #endif
 */
+
+	return 0;
 }
 
 
@@ -1143,9 +1145,8 @@ void *CVideoCallSession::CreateDecodingThread(void* param)
 /*
 	CVideoCallSession *pThis = (CVideoCallSession*)param;
 	pThis->DecodingThreadProcedure();
-
-	return NULL;
 */
+	return NULL;
 }
 
 void CVideoCallSession::DecodingThreadProcedure()
