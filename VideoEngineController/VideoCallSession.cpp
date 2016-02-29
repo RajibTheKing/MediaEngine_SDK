@@ -251,6 +251,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID,m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer);
+	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
 
@@ -1323,6 +1324,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 
 void CVideoCallSession::StopRenderingThread()
 {
+	m_pVideoRenderingThread->StopRenderingThread();
+
+/*
 	//if (pInternalThread.get())
 	{
 
@@ -1335,11 +1339,14 @@ void CVideoCallSession::StopRenderingThread()
 	}
 
 	//pInternalThread.reset();
+*/
 }
 
 void CVideoCallSession::StartRenderingThread()
 {
+	m_pVideoRenderingThread->StartRenderingThread();
 
+/*
 	if (pRenderingThread.get())
 	{
 		pRenderingThread.reset();
@@ -1366,18 +1373,21 @@ void CVideoCallSession::StartRenderingThread()
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread Rendering Thread started");
 
 	return;
+*/
 }
 
 void *CVideoCallSession::CreateVideoRenderingThread(void* param)
 {
+/*
 	CVideoCallSession *pThis = (CVideoCallSession*)param;
 	pThis->RenderingThreadProcedure();
-
+*/
 	return NULL;
 }
 
 void CVideoCallSession::RenderingThreadProcedure()
 {
+/*
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize,nFrameNumber,intervalTime;
@@ -1429,6 +1439,7 @@ void CVideoCallSession::RenderingThreadProcedure()
 	bRenderingThreadClosed = true;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Stopped EncodingThreadProcedure");
+*/
 }
 
 int CVideoCallSession::GetUniquePacketID(int fn, int pn)

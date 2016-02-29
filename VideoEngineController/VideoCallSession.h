@@ -21,6 +21,7 @@
 #include "BitRateController.h"
 #include "SynchronizedMap.h"
 #include "VideoEncodingThread.h"
+#include "RenderingThread.h"
 
 #include <queue>
 #include <utility>
@@ -97,6 +98,8 @@ public:
     long long m_TimeFor100Depacketize;
 
 	CVideoEncodingThread *m_pVideoEncodingThread;
+
+	CVideoRenderingThread * m_pVideoRenderingThread;
 
 //	void increaseFPS();
 //	void decreaseFPS();
