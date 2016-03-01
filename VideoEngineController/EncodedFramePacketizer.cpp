@@ -28,6 +28,8 @@ CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedOb
 
 	m_pEncodedFrameParsingMutex.reset(new CLockHandler);
 	m_pEncodedFrameParsingThread = NULL;
+
+	m_SendingBuffer = new CSendingBuffer();
     
     StartSendingThread();
 
@@ -95,7 +97,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 //		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$--> Lenght "+m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketLength())+"  # TS: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
 
 		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize Queue lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(nPacketHeaderLenghtWithMedia + m_PacketSize));
-        m_SendingBuffer.Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);
+        m_SendingBuffer->Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);
         g_ResendBuffer.Queue(m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
     //    m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,nPacketHeaderLenghtWithMedia + m_PacketSize);
 	}
@@ -245,13 +247,13 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
     {
         CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure");
         
-        if (m_SendingBuffer.GetQueueSize() == 0)
+        if (m_SendingBuffer->GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
         else
         {
             int timeDiffForQueue;
 
-            packetSize = m_SendingBuffer.DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
+            packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
 
 			CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure Deque lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
 
@@ -309,7 +311,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
                                                + " currentframenumber = "
                                                + m_Tools.IntegertoStringConvert(FramePacketPair.first)
                                                + " m_SendingBuffersize = "
-                                               + m_Tools.IntegertoStringConvert(m_SendingBuffer.GetQueueSize()));
+                                               + m_Tools.IntegertoStringConvert(m_SendingBuffer->GetQueueSize()));
                                                
                 }
               
@@ -363,7 +365,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 int CEncodedFramePacketizer::GetSleepTime()
 {
     int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * FPS_MAXIMUM * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0);
-    int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer.GetQueueSize() + 1.0);
+    int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer->GetQueueSize() + 1.0);
     
     if (SleepTimeDependingOnFPS < SleepTimeDependingOnQueueSize)
     {

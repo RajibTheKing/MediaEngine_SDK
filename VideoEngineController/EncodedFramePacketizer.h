@@ -51,7 +51,7 @@ private:
 
 	CPacketHeader m_PacketHeader;
     
-    CSendingBuffer m_SendingBuffer;//
+    CSendingBuffer *m_SendingBuffer;//
     
     unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];//
 
