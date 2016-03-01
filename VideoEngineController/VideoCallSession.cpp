@@ -749,7 +749,9 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 void CVideoCallSession::StopDepacketizationThread()
 {
+	m_pVideoDepacketizationThread->StopDepacketizationThread();
 
+/*
 	//if (pDepacketizationThread.get())
 	{
 		bDepacketizationThreadRunning = false;
@@ -762,10 +764,14 @@ void CVideoCallSession::StopDepacketizationThread()
 	}
 
 	//pDepacketizationThread.reset();
+*/
 }
 
 void CVideoCallSession::StartDepacketizationThread()
 {
+	m_pVideoDepacketizationThread->StartDepacketizationThread();
+
+/*
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
 	if (pDepacketizationThread.get())
 	{
@@ -796,13 +802,15 @@ void CVideoCallSession::StartDepacketizationThread()
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
 
 	return;
+*/
 }
 
 void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 {
+/*
 	CVideoCallSession *pThis = (CVideoCallSession*)param;
 	pThis->DepacketizationThreadProcedure();
-
+*/
 	return NULL;
 }
 
@@ -860,6 +868,7 @@ int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned in
 
 void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 {
+/*
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
 	Tools toolsObject;
 	unsigned char temp;
@@ -937,29 +946,29 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue->PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
-					/*
-					string sMsg = "CVideoCallSession::Current(FN,PN) = ("
-					+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
-					+ ","
-					+ m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
-					+ ") and Expected(FN,PN) = ("
-					+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first)
-					+ ","
-					+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
-					+ ")" ;
-					printf("%s\n", sMsg.c_str());
-					*/
+					
+				//	string sMsg = "CVideoCallSession::Current(FN,PN) = ("
+				//	+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
+				//	+ ","
+				//	+ m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
+				//	+ ") and Expected(FN,PN) = ("
+				//	+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first)
+				//	+ ","
+				//	+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
+				//	+ ")" ;
+				//	printf("%s\n", sMsg.c_str());
+					
 
-				/*	if (g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
-					{
+				//	if (g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
+				//	{
 						//						g_FPSController.NotifyFrameDropped(currentFramePacketPair.first);
-						g_iPacketCounterSinceNotifying = 0;
-						gbStopFPSSending = false;
-					}
-					else
-					{
-						gbStopFPSSending = true;
-					}*/
+				//		g_iPacketCounterSinceNotifying = 0;
+				//		gbStopFPSSending = false;
+				//	}
+				//	else
+				//	{
+				//		gbStopFPSSending = true;
+				//	}
 
 
 					if (currentFramePacketPair.first != ExpectedFramePacketPair.first) //different frame received
@@ -975,7 +984,8 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 							int iSendCounter = 0;
 							while (requestFramePacketPair.second < currentFramePacketPair.second) //
 							{
-								if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+								//if (iSendCounter && requestFramePacketPair.first %8 ==0) m_Tools.SOSleep(1);
+								if (iSendCounter) m_Tools.SOSleep(1);
 								if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
 								{
 									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -994,7 +1004,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 							int iSendCounter = 0;
 							while (requestFramePacketPair.second < iNumberOfPacketsInCurrentFrame)
 							{
-								if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+								if (iSendCounter) m_Tools.SOSleep(1);
 								if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
 								{
 									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -1009,7 +1019,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 							iSendCounter = 0;
 							while (requestFramePacketPair.second < currentFramePacketPair.second)
 							{
-								if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+								if (iSendCounter) m_Tools.SOSleep(1);
 								if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
 								{
 									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -1031,7 +1041,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 								int iSendCounter = 0;
 								while (requestFramePacketPair.second < currentFramePacketPair.second)
 								{
-									if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+									if (iSendCounter) m_Tools.SOSleep(1);
 									if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
 									{
 										CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -1053,7 +1063,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 						int iSendCounter = 0;
 						while (requestFramePacketPair.second < currentFramePacketPair.second)
 						{
-							if (iSendCounter /* && requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
+							if (iSendCounter) m_Tools.SOSleep(1);
 							if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
 							{
 								CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
@@ -1099,6 +1109,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 	bDepacketizationThreadClosed = true;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
+*/
 }
 
 
@@ -1287,6 +1298,7 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 
 void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets)
 {
+/*
 	int iFrameNumber = currentFramePacketPair.first;
 	int iPackeNumber = currentFramePacketPair.second;
 	if (iPackeNumber == iNumberOfPackets - 1)//Last Packet In a Frame
@@ -1303,6 +1315,7 @@ void CVideoCallSession::UpdateExpectedFramePacketPair(pair<int, int> currentFram
 	}
 
 	//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::UpdateExpectedFramePacketPair: ExFrameNumber: "+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first) + " ExPacketNo. : "+  m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)+ " ExNumberOfPacket : "+  m_Tools.IntegertoStringConvert(iNumberOfPacketsInCurrentFrame));
+*/
 }
 
 void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
