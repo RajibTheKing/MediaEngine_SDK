@@ -138,7 +138,10 @@ m_TimeFor100Depacketize(0)
 	m_BitRateController = new BitRateController();
 	m_EncodingBuffer = new CEncodingBuffer();
 	m_RenderingBuffer = new CRenderingBuffer();
+
 	m_pVideoPacketQueue = new CVideoPacketQueue();
+	m_pRetransVideoPacketQueue = new CVideoPacketQueue();
+	m_pMiniPacketQueue = new CVideoPacketQueue();
 
 	g_FriendID = fname;
 
@@ -309,12 +312,12 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1) /* ||  ((in_data[4] >> 6) & 1) */) //If MiniPacket or RetransMitted packet
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT RETRANSMITTED PACKET");
-		m_pRetransVideoPacketQueue.Queue(in_data, in_size);
+		m_pRetransVideoPacketQueue->Queue(in_data, in_size);
 	}
 	else if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1)) // It is a minipacket
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
-		m_pMiniPacketQueue.Queue(in_data, in_size);
+		m_pMiniPacketQueue->Queue(in_data, in_size);
 	}
 	else
 #endif
@@ -870,8 +873,8 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
 		queSize = m_pVideoPacketQueue->GetQueueSize();
 #ifdef	RETRANSMISSION_ENABLED
-		retQueuSize = m_pRetransVideoPacketQueue.GetQueueSize();
-		miniPacketQueueSize = m_pMiniPacketQueue.GetQueueSize();
+		retQueuSize = m_pRetransVideoPacketQueue->GetQueueSize();
+		miniPacketQueueSize = m_pMiniPacketQueue->GetQueueSize();
 		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
 #endif
 		if (0 == queSize && 0 == retQueuSize && 0 == miniPacketQueueSize)
@@ -882,12 +885,12 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 #ifdef	RETRANSMISSION_ENABLED
 			if (miniPacketQueueSize != 0)
 			{
-				frameSize = m_pMiniPacketQueue.DeQueue(m_PacketToBeMerged);
+				frameSize = m_pMiniPacketQueue->DeQueue(m_PacketToBeMerged);
 			}
 			else if (retQueuSize>0 && consicutiveRetransmittedPkt<2)
 			{
 				//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "RT QueueSize"+ m_Tools.IntegertoStringConvert(retQueuSize));
-				frameSize = m_pRetransVideoPacketQueue.DeQueue(m_PacketToBeMerged);
+				frameSize = m_pRetransVideoPacketQueue->DeQueue(m_PacketToBeMerged);
 				++consicutiveRetransmittedPkt;
 			}
 			else if (queSize>0){
@@ -899,7 +902,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			}
 			else
 			{
-				frameSize = m_pRetransVideoPacketQueue.DeQueue(m_PacketToBeMerged);
+				frameSize = m_pRetransVideoPacketQueue->DeQueue(m_PacketToBeMerged);
 				++consicutiveRetransmittedPkt;
 			}
 			m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
