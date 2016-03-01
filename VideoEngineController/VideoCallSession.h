@@ -23,6 +23,7 @@
 #include "VideoEncodingThread.h"
 #include "RenderingThread.h"
 #include "VideoDecodingThread.h"
+#include "DepacketizationThread.h"
 
 #include <queue>
 #include <utility>
@@ -102,6 +103,7 @@ public:
 
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
+	CVideoDepacketizationThread *m_pVideoDepacketizationThread;
 
 	//	void increaseFPS();
 	//	void decreaseFPS();

@@ -32,8 +32,8 @@ extern CFPSController g_FPSController;
 //int countFrameFor15 = 0;
 //int countFrameSize = 0;
 //long long encodeTimeStampFor15;
-int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
-bool gbStopFPSSending = false;
+//int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
+//bool gbStopFPSSending = false;
 
 #define ORIENTATION_0_MIRRORED 1
 #define ORIENTATION_90_MIRRORED 2
@@ -79,7 +79,6 @@ m_ByteRcvInSlotInverval(0),
 m_ByteSendInSlotInverval(0),
 m_RecvMegaSlotInvervalCounter(0),
 m_SendMegaSlotInervalCounter(0),
-m_miniPacketBandCounter(0),
 m_ByteSendInMegaSlotInverval(0),
 m_ByteRecvInMegaSlotInterval(0),
 m_SlotIntervalCounter(0),
@@ -91,6 +90,8 @@ m_LastSendingSlot(0),
 m_iDePacketizeCounter(0),
 m_TimeFor100Depacketize(0)
 {
+	m_miniPacketBandCounter = 0;
+
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 	g_TraceRetransmittedFrame.clear();
 #endif
@@ -108,9 +109,9 @@ m_TimeFor100Depacketize(0)
 	//	countFrameFor15 = 0;
 	//	countFrameSize = 0;
 	//	encodeTimeStampFor15 = 0;
-	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
+//	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
 	g_ResendBuffer.Reset();
-	gbStopFPSSending = false;
+	//gbStopFPSSending = false;
 
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 	g_TraceRetransmittedFrame.clear();
@@ -275,6 +276,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController);
+	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
 
@@ -881,7 +883,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 			toolsObject.SOSleep(10);
 		else
 		{
-			g_iPacketCounterSinceNotifying++;
+		//	g_iPacketCounterSinceNotifying++;
 #ifdef	RETRANSMISSION_ENABLED
 			if (miniPacketQueueSize != 0)
 			{
@@ -948,7 +950,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 					printf("%s\n", sMsg.c_str());
 					*/
 
-					if (g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
+				/*	if (g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
 					{
 						//						g_FPSController.NotifyFrameDropped(currentFramePacketPair.first);
 						g_iPacketCounterSinceNotifying = 0;
@@ -957,7 +959,7 @@ void CVideoCallSession::DepacketizationThreadProcedure()		//Merging Thread
 					else
 					{
 						gbStopFPSSending = true;
-					}
+					}*/
 
 
 					if (currentFramePacketPair.first != ExpectedFramePacketPair.first) //different frame received
