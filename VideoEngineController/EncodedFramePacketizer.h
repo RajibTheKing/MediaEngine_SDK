@@ -15,6 +15,7 @@
 #include "Size.h"
 #include "Tools.h"
 #include "PacketHeader.h"
+#include "SendingThread.h"
 
 namespace IPV
 {
@@ -37,36 +38,38 @@ public:
 	void StopEncodedFrameParsingThread();
 
 	static void *CreateEncodedFrameParsingThread(void* param);
-    
-    void StartSendingThread();//
-    void StopSendingThread();//
-    void SendingThreadProcedure();//
-    static void *CreateVideoSendingThread(void* param);//
-    
-    int GetSleepTime();
+
+	void StartSendingThread();
+	void StopSendingThread();
+	void SendingThreadProcedure();
+	static void *CreateVideoSendingThread(void* param);
+
+	int GetSleepTime();
 
 private:
 	Tools m_Tools;
 	int m_PacketSize;
 
 	CPacketHeader m_PacketHeader;
-    
-    CSendingBuffer *m_SendingBuffer;//
-    
-    unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];//
+
+	CSendingBuffer *m_SendingBuffer;
+
+	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 	CCommonElementsBucket* m_pCommonElementsBucket;
-    
-    bool bSendingThreadRunning;//
-    bool bSendingThreadClosed;//
+
+	CSendingThread *m_pSendingThread;
+
+	bool bSendingThreadRunning;
+	bool bSendingThreadClosed;
 
 	unsigned char m_Packet[MAX_VIDEO_PACKET_SIZE];
 
 protected:
 
 	std::thread* m_pEncodedFrameParsingThread;
-    
-    SmartPointer<std::thread> pSendingThread;//
+
+	SmartPointer<std::thread> pSendingThread;
 
 	SmartPointer<CLockHandler> m_pEncodedFrameParsingMutex;
 
