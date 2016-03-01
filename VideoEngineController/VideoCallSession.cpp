@@ -178,22 +178,46 @@ CVideoCallSession::~CVideoCallSession()
 		m_pVideoEncodingThread = NULL;
 	}
 
+	if (NULL != m_pVideoDepacketizationThread)
+	{
+		delete m_pVideoDepacketizationThread;
+		m_pVideoDepacketizationThread = NULL;
+	}
+
+	if (NULL != m_pVideoDecodingThread)
+	{
+		delete m_pVideoDecodingThread;
+		m_pVideoDecodingThread = NULL;
+	}
+
 	if (NULL != m_pVideoRenderingThread)
 	{
 		delete m_pVideoRenderingThread;
 		m_pVideoRenderingThread = NULL;
 	}
 
-	if (NULL != m_pVideoEncodingThread)
-	{
-		delete m_pVideoEncodingThread;
-		m_pVideoEncodingThread = NULL;
-	}
-
 	if (NULL != m_BitRateController)
 	{
 		delete m_BitRateController;
 		m_BitRateController = NULL;
+	}
+
+	if (NULL != m_pVideoPacketQueue)
+	{
+		delete m_pVideoPacketQueue;
+		m_pVideoPacketQueue = NULL;
+	}
+
+	if (NULL != m_pRetransVideoPacketQueue)
+	{
+		delete m_pRetransVideoPacketQueue;
+		m_pRetransVideoPacketQueue = NULL;
+	}
+
+	if (NULL != m_pMiniPacketQueue)
+	{
+		delete m_pMiniPacketQueue;
+		m_pMiniPacketQueue = NULL;
 	}
 
 	if (NULL != m_RenderingBuffer)
