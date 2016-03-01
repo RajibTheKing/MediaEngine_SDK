@@ -160,7 +160,7 @@ private:
 
 	CEncodingBuffer *m_EncodingBuffer;
 	CDecodingBuffer m_DecodingBuffer;
-	CVideoPacketQueue m_pVideoPacketQueue;
+	CVideoPacketQueue *m_pVideoPacketQueue;
 	CVideoPacketQueue m_pRetransVideoPacketQueue;
 	CVideoPacketQueue m_pMiniPacketQueue;
 	CRenderingBuffer *m_RenderingBuffer;
