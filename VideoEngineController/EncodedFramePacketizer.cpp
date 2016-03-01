@@ -30,7 +30,6 @@ m_pCommonElementsBucket(sharedObject)
 	m_pEncodedFrameParsingThread = NULL;
 
 	m_SendingBuffer = new CSendingBuffer();
-
 	m_pSendingThread = new CSendingThread(sharedObject, m_SendingBuffer, &g_FPSController);
 
 	StartSendingThread();
@@ -52,6 +51,12 @@ CEncodedFramePacketizer::~CEncodedFramePacketizer()
 	{
 		delete m_pSendingThread;
 		m_pSendingThread = NULL;
+	}
+
+	if (NULL != m_SendingBuffer)
+	{
+		delete m_SendingBuffer;
+		m_SendingBuffer = NULL;
 	}
 
 	SHARED_PTR_DELETE(m_pEncodedFrameParsingMutex);
