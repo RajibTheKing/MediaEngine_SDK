@@ -139,7 +139,7 @@ include $(BUILD_STATIC_LIBRARY)
 #  opennew
 include $(CLEAR_VARS)
 G729    := g729
-LOCAL_MODULE := IPVisionConnectivity
+LOCAL_MODULE := RingIDSDK
 LOCAL_ALLOW_UNDEFINED_SYMBOLS := true
 
 LOCAL_SRC_FILES := \
