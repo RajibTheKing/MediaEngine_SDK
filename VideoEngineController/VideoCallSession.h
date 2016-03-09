@@ -62,8 +62,6 @@ public:
 
 	void StartDecodingThread();
 	void StopDecodingThread();
-	void DecodingThreadProcedure();
-	static void *CreateDecodingThread(void* param);
 
 	void StartRenderingThread();
 	void StopRenderingThread();
@@ -189,7 +187,6 @@ private:
 	pair<int, int> ExpectedFramePacketPair;
 	int iNumberOfPacketsInCurrentFrame;
 	//pair<int, int> GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets);
-	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
 
 	bool bDecodingThreadRunning;
 	bool bDecodingThreadClosed;
