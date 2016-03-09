@@ -167,10 +167,10 @@ m_TimeFor100Depacketize(0)
 CVideoCallSession::~CVideoCallSession()
 {
 
-	StopDepacketizationThread();
-	StopDecodingThread();
-	StopEncodingThread();
-	StopRenderingThread();
+	m_pVideoDepacketizationThread->StopDepacketizationThread();
+	m_pVideoDecodingThread->StopDecodingThread();
+	m_pVideoEncodingThread->StopEncodingThread();
+	m_pVideoRenderingThread->StopRenderingThread();
 
 	if (NULL != m_pVideoEncodingThread)
 	{
@@ -307,10 +307,10 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_ClientFrameCounter = 0;
 	m_EncodingFrameCounter = 0;
 
-	StartRenderingThread();
-	StartEncodingThread();
-	StartDepacketizationThread();
-	StartDecodingThread();
+	m_pVideoRenderingThread->StartRenderingThread();
+	m_pVideoEncodingThread->StartEncodingThread();
+	m_pVideoDepacketizationThread->StartDepacketizationThread();
+	m_pVideoDecodingThread->StartDecodingThread();
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
 }
@@ -476,36 +476,6 @@ sessionMediaList.ResetAllInVideoEncoderList();
 }
 */
 
-void CVideoCallSession::StopEncodingThread()
-{
-	m_pVideoEncodingThread->StopEncodingThread();
-}
-
-void CVideoCallSession::StartEncodingThread()
-{
-	m_pVideoEncodingThread->StartEncodingThread();
-}
-
-void CVideoCallSession::StopDepacketizationThread()
-{
-	m_pVideoDepacketizationThread->StopDepacketizationThread();
-}
-
-void CVideoCallSession::StartDepacketizationThread()
-{
-	m_pVideoDepacketizationThread->StartDepacketizationThread();
-}
-
-void CVideoCallSession::StopDecodingThread()
-{
-	m_pVideoDecodingThread->StopDecodingThread();
-}
-
-void CVideoCallSession::StartDecodingThread()
-{
-	m_pVideoDecodingThread->StartDecodingThread();
-}
-
 CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 {
 	return m_pEncodedFrameDepacketizer;
@@ -547,16 +517,6 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 		m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket, PACKET_HEADER_LENGTH_NO_VERSION + 1);
 
 	//m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
-}
-
-void CVideoCallSession::StopRenderingThread()
-{
-	m_pVideoRenderingThread->StopRenderingThread();
-}
-
-void CVideoCallSession::StartRenderingThread()
-{
-	m_pVideoRenderingThread->StartRenderingThread();
 }
 
 int CVideoCallSession::GetUniquePacketID(int fn, int pn)

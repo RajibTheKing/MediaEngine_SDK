@@ -54,18 +54,6 @@ public:
 	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size);
 	CEncodedFrameDepacketizer * GetEncodedFrameDepacketizer();
 
-	void StartEncodingThread();
-	void StopEncodingThread();
-
-	void StartDepacketizationThread();
-	void StopDepacketizationThread();
-
-	void StartDecodingThread();
-	void StopDecodingThread();
-
-	void StartRenderingThread();
-	void StopRenderingThread();
-
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
 
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
