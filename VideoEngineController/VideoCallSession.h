@@ -65,8 +65,6 @@ public:
 
 	void StartRenderingThread();
 	void StopRenderingThread();
-	void RenderingThreadProcedure();
-	static void *CreateVideoRenderingThread(void* param);
 
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
 
