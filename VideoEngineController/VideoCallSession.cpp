@@ -132,17 +132,19 @@ m_TimeFor100Depacketize(0)
 	friendID = fname;
 	sessionMediaList.ClearAllFromVideoEncoderList();
 
-	m_pEncodedFrameDepacketizer = NULL;
-	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject);
-	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
-	m_BitRateController = new BitRateController();
+	m_SendingBuffer = new CSendingBuffer();
 	m_EncodingBuffer = new CEncodingBuffer();
 	m_RenderingBuffer = new CRenderingBuffer();
 
 	m_pVideoPacketQueue = new CVideoPacketQueue();
 	m_pRetransVideoPacketQueue = new CVideoPacketQueue();
 	m_pMiniPacketQueue = new CVideoPacketQueue();
+
+	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject, m_SendingBuffer);
+	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
+
+	m_BitRateController = new BitRateController();
 
 	g_FriendID = fname;
 
@@ -167,9 +169,11 @@ m_TimeFor100Depacketize(0)
 CVideoCallSession::~CVideoCallSession()
 {
 
-	m_pVideoDepacketizationThread->StopDepacketizationThread();
-	m_pVideoDecodingThread->StopDecodingThread();
 	m_pVideoEncodingThread->StopEncodingThread();
+	m_pSendingThread->StopSendingThread();
+
+	m_pVideoDepacketizationThread->StopDepacketizationThread();
+	m_pVideoDecodingThread->StopDecodingThread();	
 	m_pVideoRenderingThread->StopRenderingThread();
 
 	if (NULL != m_pVideoEncodingThread)
@@ -263,6 +267,19 @@ CVideoCallSession::~CVideoCallSession()
 
 		m_pColorConverter = NULL;
 	}
+
+	if (NULL != m_pSendingThread)
+	{
+		delete m_pSendingThread;
+		m_pSendingThread = NULL;
+	}
+
+	if (NULL != m_SendingBuffer)
+	{
+		delete m_SendingBuffer;
+		m_SendingBuffer = NULL;
+	}
+
 	friendID = -1;
 
 	SHARED_PTR_DELETE(m_pSessionMutex);
@@ -297,6 +314,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
+	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController);
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController);
@@ -307,8 +325,10 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_ClientFrameCounter = 0;
 	m_EncodingFrameCounter = 0;
 
-	m_pVideoRenderingThread->StartRenderingThread();
+	m_pSendingThread->StartSendingThread();
 	m_pVideoEncodingThread->StartEncodingThread();
+	
+	m_pVideoRenderingThread->StartRenderingThread();	
 	m_pVideoDepacketizationThread->StartDepacketizationThread();
 	m_pVideoDecodingThread->StartDecodingThread();
 

@@ -78,6 +78,8 @@ public:
 	int m_iDePacketizeCounter;
 	long long m_TimeFor100Depacketize;
 
+
+	CSendingThread *m_pSendingThread;
 	CVideoEncodingThread *m_pVideoEncodingThread;
 
 	CVideoRenderingThread *m_pVideoRenderingThread;
@@ -87,7 +89,6 @@ public:
 	//	void increaseFPS();
 	//	void decreaseFPS();
 	//	bool isProcessable();
-
 private:
 	int m_iCountRecResPack;
 	int m_iCountReQResPack;
@@ -145,6 +146,7 @@ private:
 	CVideoPacketQueue *m_pRetransVideoPacketQueue;
 	CVideoPacketQueue *m_pMiniPacketQueue;
 	CRenderingBuffer *m_RenderingBuffer;
+	CSendingBuffer *m_SendingBuffer;
 
 	unsigned char m_EncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_ConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];

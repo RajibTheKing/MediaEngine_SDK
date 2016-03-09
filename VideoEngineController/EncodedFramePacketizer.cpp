@@ -20,7 +20,7 @@ extern deque<pair<int, int>> ExpectedFramePacketDeQueue;
 extern CResendingBuffer g_ResendBuffer;
 extern CFPSController g_FPSController;
 
-CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedObject) :
+CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedObject, CSendingBuffer* pSendingBuffer) :
 m_PacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
 m_pCommonElementsBucket(sharedObject)
 {
@@ -29,10 +29,11 @@ m_pCommonElementsBucket(sharedObject)
 	m_pEncodedFrameParsingMutex.reset(new CLockHandler);
 	m_pEncodedFrameParsingThread = NULL;
 
-	m_SendingBuffer = new CSendingBuffer();
-	m_pSendingThread = new CSendingThread(sharedObject, m_SendingBuffer, &g_FPSController);
+	m_SendingBuffer = pSendingBuffer;
+//	m_SendingBuffer = new CSendingBuffer();
+//	m_pSendingThread = new CSendingThread(sharedObject, m_SendingBuffer, &g_FPSController);
 
-	StartSendingThread();
+//	StartSendingThread();
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::CEncodedFramePacketizer Created");
 }
@@ -44,20 +45,20 @@ CEncodedFramePacketizer::~CEncodedFramePacketizer()
 	delete m_pEncodedFrameParsingThread;
 	m_pEncodedFrameParsingThread = NULL;
 	}*/
+//
+//	StopSendingThread();
 
-	StopSendingThread();
+//	if (NULL != m_pSendingThread)
+//	{
+//		delete m_pSendingThread;
+//		m_pSendingThread = NULL;
+//	}
 
-	if (NULL != m_pSendingThread)
-	{
-		delete m_pSendingThread;
-		m_pSendingThread = NULL;
-	}
-
-	if (NULL != m_SendingBuffer)
-	{
-		delete m_SendingBuffer;
-		m_SendingBuffer = NULL;
-	}
+//	if (NULL != m_SendingBuffer)
+//	{
+//		delete m_SendingBuffer;
+//		m_SendingBuffer = NULL;
+//	}
 
 	SHARED_PTR_DELETE(m_pEncodedFrameParsingMutex);
 }
@@ -155,12 +156,12 @@ void CEncodedFramePacketizer::StopEncodedFrameParsingThread()
 
 
 
-
+/*
 void CEncodedFramePacketizer::StopSendingThread()
 {
 	m_pSendingThread->StopSendingThread();
 
-	/*
+
 	//if (pInternalThread.get())
 	{
 	bSendingThreadRunning = false;
@@ -170,14 +171,16 @@ void CEncodedFramePacketizer::StopSendingThread()
 	}
 
 	//pInternalThread.reset();
-	*/
-}
 
+}
+*/
+
+/*
 void CEncodedFramePacketizer::StartSendingThread()
 {
 	m_pSendingThread->StartSendingThread();
 
-	/*
+
 	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 1");
 
 	if (pSendingThread.get())
@@ -209,8 +212,9 @@ void CEncodedFramePacketizer::StartSendingThread()
 	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread Encoding Thread started");
 
 	return;
-	*/
+
 }
+*/
 
 void *CEncodedFramePacketizer::CreateVideoSendingThread(void* param)
 {

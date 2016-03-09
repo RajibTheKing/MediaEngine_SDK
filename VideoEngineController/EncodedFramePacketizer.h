@@ -29,7 +29,7 @@ class CEncodedFramePacketizer
 
 public:
 
-	CEncodedFramePacketizer(CCommonElementsBucket* sharedObject);
+	CEncodedFramePacketizer(CCommonElementsBucket* sharedObject, CSendingBuffer* pSendingBuffer);
 	~CEncodedFramePacketizer();
 
 	int Packetize(LongLong lFriendID, unsigned char *in_data, unsigned int in_size, int frameNumber, unsigned int iTimeStampDiff);
@@ -39,8 +39,8 @@ public:
 
 	static void *CreateEncodedFrameParsingThread(void* param);
 
-	void StartSendingThread();
-	void StopSendingThread();
+//	void StartSendingThread();
+//	void StopSendingThread();
 	void SendingThreadProcedure();
 	static void *CreateVideoSendingThread(void* param);
 
@@ -58,7 +58,7 @@ private:
 
 	CCommonElementsBucket* m_pCommonElementsBucket;
 
-	CSendingThread *m_pSendingThread;
+//	CSendingThread *m_pSendingThread;
 
 	bool bSendingThreadRunning;
 	bool bSendingThreadClosed;
