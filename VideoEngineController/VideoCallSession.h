@@ -57,8 +57,6 @@ public:
 
 	void StartEncodingThread();
 	void StopEncodingThread();
-	void EncodingThreadProcedure();
-	static void *CreateVideoEncodingThread(void* param);
 
 	void StartDepacketizationThread();
 	void StopDepacketizationThread();

@@ -132,6 +132,12 @@
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h">
@@ -282,6 +288,12 @@
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\SendingThread.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>
