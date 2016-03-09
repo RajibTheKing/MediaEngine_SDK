@@ -48,7 +48,6 @@ public:
 	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size);
-	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff);
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 
@@ -60,8 +59,6 @@ public:
 
 	void StartDepacketizationThread();
 	void StopDepacketizationThread();
-	void DepacketizationThreadProcedure();
-	static void *CreateVideoDepacketizationThread(void* param);
 
 	void StartDecodingThread();
 	void StopDecodingThread();
