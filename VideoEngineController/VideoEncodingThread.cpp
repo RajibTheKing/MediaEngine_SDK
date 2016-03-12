@@ -114,6 +114,34 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	unsigned  int m_iTimeStampDiff = 0;		// added
 	int m_FrameCounterbeforeEncoding = 0;	// added
 
+	for(int i = 0; i < 200; i++)
+	{
+		if(m_BitRateController->m_iNetTypeMiniPktRcv)
+		{
+			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "m_BitRateController->m_iNetworkType after waiting = " + toolsObject.IntegertoStringConvert(m_BitRateController->m_iOpponentNetworkType));
+			break;
+		}
+		toolsObject.SOSleep(10);
+	}
+
+
+	CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "m_BitRateController->m_iNetworkType after waiting = own "+ toolsObject.IntegertoStringConvert(m_BitRateController->m_iOwnNetworkType) +
+												  " opponent  " + toolsObject.IntegertoStringConvert(m_BitRateController->m_iOpponentNetworkType));
+
+	if(m_BitRateController->m_iOpponentNetworkType == NETWORK_TYPE_2G || m_BitRateController->m_iOwnNetworkType == NETWORK_TYPE_2G)
+	{
+
+		m_pVideoEncoder->SetBitrate(BITRATE_MIN);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_MIN);
+
+	}
+	else
+	{
+		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN);
+
+	}
+
 	while (bEncodingThreadRunning)
 	{
 		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure");
@@ -148,6 +176,15 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 			m_FrameCounterbeforeEncoding++;
+			/*if(m_BitRateController.m_iWaititngForFirstMiniPkt == 0 && (m_Tools.CurrentTimestamp() - m_BitRateController.m_TimeDiffMapHelper[2] <  MAX_1ST_MINIPACKET_WAIT_TIME))
+			{
+				long long currentTime = m_Tools.CurrentTimestamp();
+				m_BitRateController.m_OppNotifiedByterate = 200000 / 8;
+				m_BitRateController.m_iWaititngForFirstMiniPkt = 0;
+				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, " fahad--->> packet late too much 0th " + m_Tools.IntegertoStringConvert(currentTime - m_BitRateController.m_TimeDiffMapHelper[0])
+																+ "  1st " +  m_Tools.IntegertoStringConvert(currentTime - m_BitRateController.m_TimeDiffMapHelper[1])
+																+ "  2nd " +  m_Tools.IntegertoStringConvert(currentTime - m_BitRateController.m_TimeDiffMapHelper[2]));
+			}*/
 			m_BitRateController->UpdateBitrate();
 
 			//			if(m_FrameCounterbeforeEncoding%FRAME_RATE == 0 && g_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)

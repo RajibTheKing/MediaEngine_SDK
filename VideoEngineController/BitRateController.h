@@ -24,10 +24,21 @@ public:
     void SetSharedObject(CCommonElementsBucket* sharedObject);
     void SetEncoder(CVideoEncoder* VideEnocder);
     bool HandleBitrateMiniPacket(CPacketHeader &tempHeader);
+    bool HandleNetworkTypeMiniPacket(CPacketHeader &tempHeader);
     bool UpdateBitrate();
     void NotifyEncodedFrame(int &nFrameSize);
     int NeedToChangeBitRate(double dataReceivedRatio);
     int NeedToNotifyClient(int iCurrentByte);
+
+    long long m_lTimeStampForFirstMiniPkt;
+    //int m_iWaititngForFirstMiniPkt;
+    map<int, long long>  m_TimeDiffMapHelper;
+    int m_OppNotifiedByterate;
+
+    int m_iOpponentNetworkType;
+    int m_iOwnNetworkType;
+
+    int m_iNetTypeMiniPktRcv;
 
 private:
     Tools m_Tools;
@@ -39,7 +50,6 @@ private:
     int m_FrameCounterbeforeEncoding;
     int m_LastSendingSlot;
 
-    int m_OppNotifiedByterate;
     int m_iPreviousByterate;
 
     int m_bGotOppBandwidth;
@@ -60,8 +70,12 @@ private:
     bool m_bMegSlotCounterShouldStop;
     bool m_bsetBitrateCalled;
     int m_iStopNotificationController;
-    
+
+    bool m_bIsFirstTime;
     CSynchronizedMap m_BandWidthRatioHelper;
+    long long m_lTimeStampForMiniPkt;
+    long long timeDiffForMiniPkt;
+    bool m_bIsFirstMiniPktRcv;
     CVideoEncoder *m_pVideoEncoder;
     
     

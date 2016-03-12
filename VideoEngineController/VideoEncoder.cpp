@@ -6,8 +6,6 @@
 #include "codec_def.h"
 #include "size.h"
 
-extern int g_OppNotifiedByterate;
-
 CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject),
 m_iMaxBitrate(BITRATE_MAX),
@@ -81,8 +79,8 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	encParam.iPicWidth = pDLayer->iVideoWidth = m_iWidth;
 	encParam.iPicHeight = pDLayer->iVideoHeight = m_iHeight;
 	encParam.fMaxFrameRate = pDLayer->fFrameRate = (float)FRAME_RATE;
-	encParam.iTargetBitrate = pDLayer->iSpatialBitrate = BITRATE_MAX - 25000;
-    encParam.iTargetBitrate = pDLayer->iMaxSpatialBitrate = BITRATE_MAX;
+	encParam.iTargetBitrate = pDLayer->iSpatialBitrate = BITRATE_BEGIN;
+	encParam.iTargetBitrate = pDLayer->iMaxSpatialBitrate = BITRATE_BEGIN;
     
 	pDLayer->iDLayerQp = 24;
 	pDLayer->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;

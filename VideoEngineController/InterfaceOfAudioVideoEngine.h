@@ -21,7 +21,7 @@ public:
      bool InitializeLibrary(const IPVLongType& lUserID);
      bool SetUserName(const IPVLongType lUserName);
      bool StartAudioCall(const IPVLongType lFriendID);
-     bool StartVideoCall(const IPVLongType lFriendID, int iVideoHeight, int iVideoWidth);
+     bool StartVideoCall(const IPVLongType lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
      int EncodeAndTransfer(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size);
      int PushPacketForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size);
      int PushAudioForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size);

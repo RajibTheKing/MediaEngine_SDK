@@ -49,8 +49,6 @@ extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
 extern CResendingBuffer g_ResendBuffer;
 
-int g_OppNotifiedByterate = 0;
-
 //extern int g_MY_FPS;
 
 CVideoCallSession *g_VideoCallSession;
@@ -82,7 +80,6 @@ m_SendMegaSlotInervalCounter(0),
 m_ByteSendInMegaSlotInverval(0),
 m_ByteRecvInMegaSlotInterval(0),
 m_SlotIntervalCounter(0),
-m_bMegSlotCounterShouldStop(true),
 m_bsetBitrateCalled(false),
 m_iConsecutiveGoodMegaSlot(0),
 m_iPreviousByterate(BITRATE_MAX / 8),
@@ -290,7 +287,7 @@ LongLong CVideoCallSession::GetFriendID()
 	return friendID;
 }
 
-void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth)
+void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
 
@@ -331,6 +328,9 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoRenderingThread->StartRenderingThread();	
 	m_pVideoDepacketizationThread->StartDepacketizationThread();
 	m_pVideoDecodingThread->StartDecodingThread();
+
+	m_BitRateController->m_iOwnNetworkType = iNetworkType;
+	CreateAndSendMiniPacket(iNetworkType, INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
 }
@@ -417,11 +417,13 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 				m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;//if we miss all frames of the previous slot it will be wrong
 				m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
 				CreateAndSendMiniPacket((m_ByteRcvInBandSlot), INVALID_PACKET_NUMBER);
+
+				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "VampireEnggUpt--> m_SlotLeft, m_SlotRight = (" + m_Tools.IntegertoStringConvert(m_SlotResetLeftRange/MAX_PACKET_NUMBER)
+																+", "+m_Tools.IntegertoStringConvert(m_SlotResetRightRange/MAX_PACKET_NUMBER)+")........ m_ByteReceived = "+m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot)
+																+" Curr(FN,PN) = ("+m_Tools.IntegertoStringConvert(NowRecvHeader.getFrameNumber())+","+m_Tools.IntegertoStringConvert(NowRecvHeader.getPacketNumber())+")");
 			}
 
 			m_ByteRcvInBandSlot = NowRecvHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
-
-			//printf("VampireEnggUpt--> m_SlotLeft, m_SlotRight = (%d, %d)........ m_ByteReceived = %d\nCurr(FN,PN) = (%d,%d)\n", m_SlotResetLeftRange/MAX_PACKET_NUMBER, m_SlotResetRightRange/MAX_PACKET_NUMBER, m_ByteRcvInBandSlot, NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber());
 
 
 		}
@@ -505,8 +507,8 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 {
 	unsigned char uchVersion = g_uchSendPacketVersion;
 
-	//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
-	if (INVALID_PACKET_NUMBER != resendPacketNumber) //
+//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
+	if(INVALID_PACKET_NUMBER !=resendPacketNumber  && INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE !=resendPacketNumber) //
 	{
 		return;
 	}
@@ -516,92 +518,42 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 	CPacketHeader PacketHeader;
 	if (resendPacketNumber == INVALID_PACKET_NUMBER) {
 		//m_miniPacketBandCounter++;
-		if (0 == uchVersion) return;
+		if(0 == uchVersion) return;
 
+		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
+	}
+	else if (resendPacketNumber == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE) {
+		//m_miniPacketBandCounter++;
+		//if(0 == uchVersion) return;
+
+		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, " send INVALID-->> PACKET_NUMBER_FOR_NETWORK_TYPE ");
 		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
 	}
 	else {
 		PacketHeader.setPacketHeader(uchVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
-		g_timeInt.setTime(resendFrameNumber, resendPacketNumber);
+		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
-	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1 << BIT_INDEX_MINI_PACKET; //MiniPacket Flag
+	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; //MiniPacket Flag
 
-	if (uchVersion)
-		m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket, PACKET_HEADER_LENGTH + 1);
+	if(uchVersion)
+		m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
 	else
-		m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket, PACKET_HEADER_LENGTH_NO_VERSION + 1);
+		m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
 
 	//m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
 }
+
 
 int CVideoCallSession::GetUniquePacketID(int fn, int pn)
 {
 	return fn*MAX_PACKET_NUMBER + pn;
 }
 
-int CVideoCallSession::NeedToChangeBitRate(double dataReceivedRatio)
-{
-	m_SlotCounter++;
-
-	if (dataReceivedRatio < NORMAL_BITRATE_RATIO_IN_MEGA_SLOT)
-	{
-		m_iGoodSlotCounter = 0;
-		m_iNormalSlotCounter = 0;
-		m_SlotCounter = 0;
-
-		//m_iConsecutiveGoodMegaSlot = 0;
-		m_PrevMegaSlotStatus = dataReceivedRatio;
-		return BITRATE_CHANGE_DOWN;
-
-	}
-	else if (dataReceivedRatio >= NORMAL_BITRATE_RATIO_IN_MEGA_SLOT && dataReceivedRatio <= GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
-	{
-		m_iNormalSlotCounter++;
-	}
-	else if (dataReceivedRatio > GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
-	{
-		m_iGoodSlotCounter++;
-		/*m_iConsecutiveGoodMegaSlot++;
-		if(m_iConsecutiveGoodMegaSlot == GOOD_MEGASLOT_TO_UP)
-		{
-		m_iConsecutiveGoodMegaSlot = 0;
-		return BITRATE_CHANGE_UP;
-		}*/
-
-
-	}
-	else
-	{
-		//      m_iConsecutiveGoodMegaSlot = 0;
-	}
-
-
-	if (m_SlotCounter >= GOOD_MEGASLOT_TO_UP)
-	{
-		int temp = GOOD_MEGASLOT_TO_UP * 0.9;
-
-		if (m_iGoodSlotCounter >= temp && m_PrevMegaSlotStatus>GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
-		{
-			m_iGoodSlotCounter = 0;
-			m_iNormalSlotCounter = 0;
-			m_SlotCounter = 0;
-
-			m_PrevMegaSlotStatus = dataReceivedRatio;
-
-			return BITRATE_CHANGE_UP;
-		}
-
-	}
-
-
-	m_PrevMegaSlotStatus = dataReceivedRatio;
-	return BITRATE_CHANGE_NO;
-}
 
 
 

@@ -45,7 +45,7 @@ public:
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
-	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth);
+	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size);
 	CVideoDecoder* GetVideoDecoder();
@@ -59,7 +59,6 @@ public:
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
 	int GetUniquePacketID(int fn, int pn);
 
-	int NeedToChangeBitRate(double LossPercentage);
 	int m_iConsecutiveGoodMegaSlot;
 	int m_iPreviousByterate;
 
@@ -100,13 +99,12 @@ private:
 	int m_ByteSendInMegaSlotInverval;
 	int m_ByteRecvInMegaSlotInterval;
 	int m_SlotIntervalCounter;
-	bool m_bMegSlotCounterShouldStop;
 	bool m_bsetBitrateCalled;
 
 
 	int m_RecvMegaSlotInvervalCounter;
 	int m_SendMegaSlotInervalCounter;
-	int m_miniPacketBandCounter;
+	unsigned int m_miniPacketBandCounter;
 	//int m_SlotResetFrameNumber;
 	//int m_PrevSlotResetFrameNumber;
 

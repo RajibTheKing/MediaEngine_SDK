@@ -55,8 +55,6 @@ private:
     int m_nOwnFPS;
     int m_nOpponentFPS;
 
-    int m_nOwnBitRate;
-
     long long m_LastIntervalStartingTime;
     SmartPointer<CLockHandler> m_pMutex;
     Tools m_Tools;

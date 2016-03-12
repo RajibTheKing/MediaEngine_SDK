@@ -7,7 +7,7 @@ int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;			// bring
 bool gbStopFPSSending = false;												// bring
 extern unsigned char g_uchSendPacketVersion;								// bring check
 
-CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, int *miniPacketBandCounter) :
+CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter) :
 
 m_FriendID(friendID),
 m_pVideoPacketQueue(VideoPacketQueue),
@@ -102,6 +102,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 	bool bIsMiniPacket;
 	//m_iCountRecResPack = 0;			// unnecessary removed
 	int iPacketType = NORMAL_PACKET;
+	long long timeDiffForMiniPkt = m_Tools.CurrentTimestamp();
 
 	while (bDepacketizationThreadRunning)
 	{
@@ -153,7 +154,14 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			if (bMiniPacket && m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER)
 			{
 				m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
+				bIsMiniPacket = true;
 				toolsObject.SOSleep(1);
+				continue;
+			}
+			else if(bMiniPacket && m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE)
+			{
+				m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
+				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, " rcv minipkt PACKET FOR NETWORK_TYPE");
 				continue;
 			}
 
@@ -316,7 +324,6 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
 					+ " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
-				bIsMiniPacket = true;
 			}
 #endif
 			int CurrentPacketType = NORMAL_PACKET_TYPE;
@@ -339,8 +346,8 @@ void CVideoDepacketizationThread::CreateAndSendMiniPacket(int resendFrameNumber,
 {
 	unsigned char uchVersion = g_uchSendPacketVersion;
 
-	//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
-	if (INVALID_PACKET_NUMBER != resendPacketNumber) //
+//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
+	if(INVALID_PACKET_NUMBER !=resendPacketNumber  && INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE !=resendPacketNumber) //
 	{
 		return;
 	}
@@ -350,25 +357,32 @@ void CVideoDepacketizationThread::CreateAndSendMiniPacket(int resendFrameNumber,
 	CPacketHeader PacketHeader;
 	if (resendPacketNumber == INVALID_PACKET_NUMBER) {
 		//m_miniPacketBandCounter++;
-		if (0 == uchVersion) return;
+		if(0 == uchVersion) return;
 
+		PacketHeader.setPacketHeader(uchVersion, *m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
+	}
+	else if (resendPacketNumber == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE) {
+		//m_miniPacketBandCounter++;
+		//if(0 == uchVersion) return;
+
+		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, " send INVALID-->> PACKET_NUMBER_FOR_NETWORK_TYPE ");
 		PacketHeader.setPacketHeader(uchVersion, *m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
 	}
 	else {
 		PacketHeader.setPacketHeader(uchVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
-		g_timeInt.setTime(resendFrameNumber, resendPacketNumber);
+		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
-	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1 << BIT_INDEX_MINI_PACKET; //MiniPacket Flag
+	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; //MiniPacket Flag
 
-	if (uchVersion)
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket, PACKET_HEADER_LENGTH + 1);
+	if(uchVersion)
+		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
 	else
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket, PACKET_HEADER_LENGTH_NO_VERSION + 1);
+		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
 
 	//m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
 }

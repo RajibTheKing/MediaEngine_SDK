@@ -61,14 +61,14 @@ bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType lFriendID)
 	return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType lFriendID, int iVideoHeight, int iVideoWidth)
+bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
 	if (m_pController == NULL)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pController->StartVideoCall(lFriendID, iVideoHeight, iVideoWidth);
+	bool bReturnedValue = m_pController->StartVideoCall(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
 	return bReturnedValue;
 }

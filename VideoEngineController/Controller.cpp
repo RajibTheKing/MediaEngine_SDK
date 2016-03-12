@@ -110,7 +110,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 	}
 }
 
-bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth)
+bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -127,7 +127,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 
 		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket);
 
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth);
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 

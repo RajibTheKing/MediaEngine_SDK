@@ -20,7 +20,7 @@ class CVideoDepacketizationThread
 
 public:
 
-	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, int *miniPacketBandCounter);
+	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter);
 	~CVideoDepacketizationThread();
 
 	void StartDepacketizationThread();
@@ -45,9 +45,9 @@ private:
 	CCommonElementsBucket* m_pCommonElementsBucket;				// bring
 
 	pair<int, int> ExpectedFramePacketPair;						
-	int iNumberOfPacketsInCurrentFrame;							
+	int iNumberOfPacketsInCurrentFrame;
 
-	int *m_miniPacketBandCounter;								// bring
+	unsigned int *m_miniPacketBandCounter;								// bring
 	LongLong m_FriendID;										// bring
 
 	unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
