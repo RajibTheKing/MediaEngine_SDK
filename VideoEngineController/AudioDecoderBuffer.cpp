@@ -2,6 +2,8 @@
 #include "AudioDecoderBuffer.h"
 
 #include <string.h>
+#include "Tools.h"
+#include "LogPrinter.h"
 
 CAudioDecoderBuffer::CAudioDecoderBuffer() :
 m_iPushIndex(0),
@@ -33,7 +35,7 @@ int CAudioDecoderBuffer::Queue(unsigned char *frame, int length)
 
 	if (m_iQueueSize == m_iQueueCapacity)
 	{
-        /*
+
         if(m_lPrevOverFlowTime == -1)
         {
             m_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
@@ -44,10 +46,12 @@ int CAudioDecoderBuffer::Queue(unsigned char *frame, int length)
             m_lSumOverFlowTime += lOverFlowTime;
             m_iOverFlowCount ++;
             m_dAvgOverFlowTime = m_lSumOverFlowTime * 1.0 / m_iOverFlowCount;
-            printf("TheVampire--> OverFlow Difftime Decode= %lld, m_dAvgOverFlowTimeDif = %lf\n", lOverFlowTime, m_dAvgOverFlowTime);
+
+
+			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "TheVampire--> OverFlow DifftimeDecode  = "+m_Tools.LongLongToString(lOverFlowTime)+", m_dAvgOverFlowTimeDif = "+ m_Tools.DoubleToString(m_dAvgOverFlowTime) );
             m_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
         }
-        */
+
         
 		IncreamentIndex(m_iPopIndex);
 	}

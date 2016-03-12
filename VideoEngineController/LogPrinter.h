@@ -7,6 +7,7 @@
 //#define __EXACT_LOG__
 //#define __SPECIFIC_LOG__
 //#define __SPECIFIC_LOG4__
+#define __SPECIFIC_LOG5__
 //#define __SPECIFIC_LOG3__
 //#define __INSTENT_TEST_LOG__
 //#define __OPERATION_TIME_LOG__
@@ -125,6 +126,12 @@ private:
 #define CLogPrinter_WriteSpecific4(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteSpecific4(...)
+#endif
+
+#ifdef __SPECIFIC_LOG5__
+#define CLogPrinter_WriteSpecific5(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific5(...)
 #endif
 
 #ifdef __OPERATION_TIME_LOG__
