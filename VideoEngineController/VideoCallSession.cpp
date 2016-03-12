@@ -323,6 +323,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_EncodingFrameCounter = 0;
 
 	m_pSendingThread->StartSendingThread();
+	
 	m_pVideoEncodingThread->StartEncodingThread();
 	
 	m_pVideoRenderingThread->StartRenderingThread();	
