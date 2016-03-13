@@ -362,3 +362,130 @@ int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char
 	}
 	return width * height * 3;
 }
+
+
+static unsigned char clip[896];
+
+static void InitClip() {
+	memset(clip, 0, 320);
+	for (int i = 0; i<256; ++i) clip[i + 320] = i;
+	memset(clip + 320 + 256, 255, 320);
+}
+
+static inline unsigned char Clip(int x){
+	return clip[320 + ((x + 0x8000) >> 16)];
+}
+
+
+int CColorConverter::ConvertRGB24ToI420(unsigned char* lpIndata, unsigned char* lpOutdata)
+{
+	static bool bInit = false;
+
+	if (!bInit)
+	{
+		bInit = true;
+		InitClip();
+	}
+
+	const int cyb = int(0.114 * 219 / 255 * 65536 + 0.5);
+	const int cyg = int(0.587 * 219 / 255 * 65536 + 0.5);
+	const int cyr = int(0.299 * 219 / 255 * 65536 + 0.5);
+
+	unsigned char* py = lpOutdata;
+	unsigned char* pu = lpOutdata + m_iVideoWidth * m_iVideoHeight;
+	unsigned char* pv = pu + m_iVideoWidth*m_iVideoHeight / 4;
+
+	for (int row = 0; row < m_iVideoHeight; ++row)
+	{
+		unsigned char* rgb = lpIndata + m_iVideoWidth * 3 * (m_iVideoHeight - 1 - row);
+		for (int col = 0; col < m_iVideoWidth; col += 2)
+		{
+			// y1 and y2 can't overflow
+			int y1 = (cyb*rgb[0] + cyg*rgb[1] + cyr*rgb[2] + 0x108000) >> 16;
+			*py++ = y1;
+			int y2 = (cyb*rgb[3] + cyg*rgb[4] + cyr*rgb[5] + 0x108000) >> 16;
+			*py++ = y2;
+
+			if ((row & 1) == 0)
+			{
+				int scaled_y = (y1 + y2 - 32) * int(255.0 / 219.0 * 32768 + 0.5);
+				int b_y = ((rgb[0] + rgb[3]) << 15) - scaled_y;
+				unsigned char u = *pu++ = Clip((b_y >> 10) * int(1 / 2.018 * 1024 + 0.5) + 0x800000);  // u
+				int r_y = ((rgb[2] + rgb[5]) << 15) - scaled_y;
+				unsigned char v = *pv++ = Clip((r_y >> 10) * int(1 / 1.596 * 1024 + 0.5) + 0x800000);  // v
+			}
+			rgb += 6;
+		}
+	}
+
+	return m_iVideoHeight * m_iVideoWidth * 3 / 2;
+}
+
+
+/*
+int CColorConverter::ConvertRGB24ToI420(unsigned char *input, unsigned char *output)
+{
+	if (m_bClipInitialization == false)
+	{
+		m_bClipInitialization = true;
+		memset(m_pClip, 0, 320);
+		for (int i = 0; i < 256; ++i) m_pClip[i + 320] = i;
+		memset(m_pClip + 320 + 256, 255, 320);
+
+		cyb = int(0.114 * 219 / 255 * 65536 + 0.5);
+		cyg = int(0.587 * 219 / 255 * 65536 + 0.5);
+		cyr = int(0.299 * 219 / 255 * 65536 + 0.5);
+
+	}
+
+	
+
+	int py = 0;
+	int pu = m_iVideoWidth*m_iVideoHeight;
+	int pv = pu + m_iVideoWidth*m_iVideoHeight / 4;
+
+	for (int row = 0; row < m_iVideoHeight; ++row)
+	{
+		unsigned char *rgb = input + m_iVideoWidth * 3 * (m_iVideoHeight - 1 - row);
+		
+		
+
+		for (int col = 0; col < m_iVideoWidth; col += 2)
+		{
+			// y1 and y2 can't overflow
+			int y1 = (cyb*rgb[0] + cyg*rgb[1] + cyr*rgb[2] + 0x108000) >> 16;
+			output[py++] = (unsigned char)y1;
+			int y2 = (cyb*rgb[3] + cyg*rgb[4] + cyr*rgb[5] + 0x108000) >> 16;
+			output[py++] = (unsigned char)y2;
+
+			if ((row & 1) == 0)
+			{
+				int scaled_y = (y1 + y2 - 32) * int(255.0 / 219.0 * 32768 + 0.5);
+					
+				int b_y = ((rgb[0] + rgb[3]) << 15) - scaled_y;
+				int x1 = (b_y >> 10) * int(1 / 2.018 * 1024 + 0.5) + 0x800000;
+				unsigned char u = output[pu++] = m_pClip[320 + ((x1 + 0x8000) >> 16)];  // u
+
+
+				int r_y = ((rgb[2] + rgb[5]) << 15) - scaled_y;
+				int x2 = (r_y >> 10) * int(1 / 1.596 * 1024 + 0.5) + 0x800000;
+				unsigned char v = output[pv++] = m_pClip[320 + ((x2 + 0x8000) >> 16)];  // v
+			}
+			rgb += 6;
+		}
+		
+	}
+
+	return m_iVideoHeight * m_iVideoWidth * 3 / 2;
+}
+*/
+
+
+int CColorConverter::GetWidth()
+{
+	return m_iVideoWidth;
+}
+int CColorConverter::GetHeight()
+{
+	return m_iVideoHeight;
+}
