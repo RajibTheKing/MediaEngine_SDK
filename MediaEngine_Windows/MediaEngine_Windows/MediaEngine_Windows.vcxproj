@@ -69,6 +69,7 @@
     <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
+    <OutDir>..\..\..\IPV-RingIDSDK\RingIDSDK_Windows\Libs_Windows</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
@@ -84,6 +85,7 @@
     <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
+    <OutDir>..\..\..\IPV-RingIDSDK\RingIDSDK_Windows\Libs_Windows</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
