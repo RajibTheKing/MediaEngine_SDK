@@ -556,8 +556,26 @@ void CVideoCallSession::EncodingThreadProcedure()
 
 
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
-			frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			int iCurWidth = this->m_pColorConverter->GetWidth();
+			int iCurHeight = this->m_pColorConverter->GetHeight();
+
+			long long icc = m_Tools.CurrentTimestamp();
+			if(frameSize == iCurWidth * iCurHeight * 2) //That Means.... Desktop is Sending YUY2 Data
+			{
+				frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			}
+			else if (frameSize == iCurWidth * iCurHeight * 3) //That Means.... Desktop is Sending RGB24 Data
+			{
+				frameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			}
+			
+			//printf("WinD--> Convertion Time --> %d\n", m_Tools.CurrentTimestamp() - icc);
+			
+			//m_Tools.WriteToFile(m_ConvertedEncodingFrame, frameSize);
+
             //printf("WinD--> CVideoCallSession::EncodingThreadProcedure frameSIze: %d\n", frameSize);
+
+
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
             //printf("WinD--> CVideoCallSession::EncodingThreadProcedure encodedFrameSize: %d\n", encodedFrameSize);
             CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
@@ -742,7 +760,6 @@ void *CVideoCallSession::CreateVideoDepacketizationThread(void* param)
 }
 
 int iValuableFrameUsedCounter = 0;
-
 int CVideoCallSession::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize,int nFramNumber, unsigned int nTimeStampDiff)
 {
     //printf("Wind--> DecodeAndSendToClient 0\n");
@@ -1174,10 +1191,15 @@ void CVideoCallSession::DecodingThreadProcedure()
 				{
 					dbAverageDecodingTime = dbTotalDecodingTime / m_iDecodedFrameCounter;
 					dbAverageDecodingTime *=1.5;
-					fps = 1000 / dbAverageDecodingTime;
 
-					if(fps<FPS_MAXIMUM)
-						g_FPSController.SetMaxOwnProcessableFPS(fps);
+					//printf("WinD--> Tracking Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
+					if (dbAverageDecodingTime > 30)
+					{
+						fps = 1000 / dbAverageDecodingTime;
+						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
+						if (fps < FPS_MAXIMUM)
+							g_FPSController.SetMaxOwnProcessableFPS(fps);
+					}
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:"+m_Tools.DoubleToString(dbAverageDecodingTime)+"  Max Decoding-time: "+m_Tools.IntegertoStringConvert(nMaxDecodingTime)+"  MaxOwnProcessable: "+m_Tools.IntegertoStringConvert(fps));
 			}

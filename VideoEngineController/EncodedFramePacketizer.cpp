@@ -244,11 +244,15 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
     {
         //CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
         
-        if (m_SendingBuffer.GetQueueSize() == 0)
+		if (m_SendingBuffer.GetQueueSize() == 0)
+		{
+			//printf("m_SendingBuffer.GetQueueSize() == 0\n");
 			toolsObject.SOSleep(10);
+		}			
         else
         {
             int timeDiffForQueue;
+			//printf("m_SendingBuffer.GetQueueSize() != 0\n");
             packetSize = m_SendingBuffer.DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
             CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
@@ -333,14 +337,24 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
             if(g_BandWidthController.IsSendeablePacket(packetSize)) {
 #endif
 
-            //printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
+           
+#if defined(SEND_VIDEO_TO_SELF)
+			CVideoCallSession* pVideoSession;
+			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+			unsigned char *pEncodedFrame = m_EncodedFrame;
+			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+#else
+			//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 			m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
 
-            CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));
-            
-            //toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
-            
+			//string s =  " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber);
+			//printf("sending, %s\n", s.c_str());
+
+			//toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
+#endif
+
             toolsObject.SOSleep(GetSleepTime());
+			//printf("sleeping done \n");
                 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
             }

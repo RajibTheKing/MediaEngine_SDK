@@ -230,14 +230,15 @@ long long CLogPrinter::WriteForOperationTime(Priority priority, const std::strin
 	{
 		timeDiff = GetTimeDifference(prevTime);
 		if(prevTime==0) return timeDiff;
-#ifdef TARGET_OS_IPHONE
+#if defined(TARGET_OS_IPHONE)
 
 		cout<< "OperatTime: " << timeDiff <<" :" << "--> "<<message<<endl;
 
-#elif __ANDROID__
+#elif defined(__ANDROID__)
 
 		LOGE("OperatTime: %lld ---> %s ", timeDiff, message.c_str());
-
+#elif defined(_DESKTOP_C_SHARP_)
+		printf("OperatTimeLog: %lld %s\n", timeDiff, message.c_str());
 #endif
 
 	}
@@ -254,14 +255,16 @@ void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message
 #ifdef __QUEUE_TIME_LOG__
 
 
-#ifdef TARGET_OS_IPHONE
+#if defined(TARGET_OS_IPHONE)
 
 		cout<< "QueueTime: " << PRIORITY_NAMES[priority] << "--> "<<message<<endl;
 
-#elif __ANDROID__
+#elif defined(__ANDROID__)
 
 		LOGE("QueueTime: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
-
+		
+#elif defined(_DESKTOP_C_SHARP_)
+		printf("QueueTime:  %s\n", message.c_str());
 #endif
 
 #endif
@@ -276,13 +279,15 @@ void CLogPrinter::WriteForPacketLossInfo(Priority priority, const std::string me
 #ifdef __PACKET_LOSS_INFO_LOG__
 
 
-#ifdef TARGET_OS_IPHONE
+#if defined(TARGET_OS_IPHONE)
 
 		cout<<"PacketLoss: " << PRIORITY_NAMES[priority] << "--> "<<message<<endl;
 
-#elif __ANDROID__
+#elif defined(__ANDROID__)
 
 		LOGE("PacketLoss: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
+#elif defined(_DESKTOP_C_SHARP_)
+		printf("PacketLoss: %s\n", message.c_str());
 
 #endif
 
@@ -297,11 +302,18 @@ long long  CLogPrinter::GetTimeDifference(long long prevTime)
 {
 
 #ifndef USE_CPP_11_TIME
-	struct timeval te;
-	gettimeofday(&te, NULL); // get current time
-	long long milliseconds =  te.tv_sec* + te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
-	// printf("milliseconds: %lld\n", milliseconds);
-	return milliseconds - prevTime;
+
+	#if defined(_DESKTOP_C_SHARP_)
+		//Do Nothing
+		return -1;
+	#else
+		struct timeval te;
+		gettimeofday(&te, NULL); // get current time
+		long long milliseconds =  te.tv_sec* + te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+		// printf("milliseconds: %lld\n", milliseconds);
+		return milliseconds - prevTime;
+	#endif
+
 #else
 
 
