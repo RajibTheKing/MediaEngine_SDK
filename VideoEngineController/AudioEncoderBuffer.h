@@ -24,12 +24,14 @@ public:
 
 private:
 
+	Tools m_Tools;
+
 	int m_iPushIndex;
 	int m_iPopIndex;
 	int m_iDecodingIndex;
 	int m_iQueueCapacity;
 	int m_iQueueSize;
-    Tools m_Tools;
+
     long long m_lPrevOverFlowTime;
     long long m_lSumOverFlowTime;
     double m_dAvgOverFlowTime;

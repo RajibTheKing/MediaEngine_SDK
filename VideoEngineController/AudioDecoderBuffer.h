@@ -24,6 +24,7 @@ public:
 
 private:
 
+
 	int m_iPushIndex;
 	int m_iPopIndex;
 	int m_iDecodingIndex;
