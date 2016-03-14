@@ -1,6 +1,6 @@
 LOCAL_PATH := $(call my-dir)
 
-ARCHITECTURE := armeabi-v7a
+ARCHITECTURE := $(TARGET_ARCH_ABI)
 PRECOMPILED_LIBRARIES := ../../../RingIDSDK/jni/precompiled
 
 $(warning $(ARCHITECTURE))
