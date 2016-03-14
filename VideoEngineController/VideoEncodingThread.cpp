@@ -2,6 +2,10 @@
 #include "VideoEncodingThread.h"
 #include "Globals.cpp"
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
+
 #define ORIENTATION_0_MIRRORED 1
 #define ORIENTATION_90_MIRRORED 2
 #define ORIENTATION_180_MIRRORED 3

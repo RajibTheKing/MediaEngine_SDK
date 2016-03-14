@@ -5,6 +5,10 @@
 //#include "Globals.cpp"
 #include "CommonElementsBucket.h"
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
+
 CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController) :
 
 m_pCommonElementsBucket(commonElementsBucket),
