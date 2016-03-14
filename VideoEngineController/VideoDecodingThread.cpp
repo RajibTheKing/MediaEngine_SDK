@@ -1,6 +1,10 @@
 
 #include "VideoDecodingThread.h"
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
+
 int iValuableFrameUsedCounter = 0;
 
 CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController) :
@@ -161,10 +165,14 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				{
 					dbAverageDecodingTime = dbTotalDecodingTime / m_iDecodedFrameCounter;
 					dbAverageDecodingTime *= 1.5;
-					fps = 1000 / dbAverageDecodingTime;
 
-					if (fps<FPS_MAXIMUM)
-						g_FPSController->SetMaxOwnProcessableFPS(fps);
+					if (dbAverageDecodingTime > 30)
+					{
+						fps = 1000 / dbAverageDecodingTime;
+						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
+						if (fps < FPS_MAXIMUM)
+							g_FPSController->SetMaxOwnProcessableFPS(fps);
+					}
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
 			}

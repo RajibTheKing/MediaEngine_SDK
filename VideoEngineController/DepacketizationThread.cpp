@@ -3,6 +3,10 @@
 #include "Size.h"
 #include "CommonElementsBucket.h"
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
+
 int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;			// bring
 bool gbStopFPSSending = false;												// bring
 extern unsigned char g_uchSendPacketVersion;								// bring check

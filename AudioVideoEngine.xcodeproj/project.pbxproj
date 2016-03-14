@@ -38,6 +38,11 @@
 		9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */; };
 		9D25D6DE1C316D2C00BBDB63 /* SendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D25D6DC1C316D2C00BBDB63 /* SendingBuffer.cpp */; };
 		9D9910381C296914007BA91C /* VideoPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9910361C296914007BA91C /* VideoPacketQueue.cpp */; };
+		D18E5FC71C96D57F00E5EDAA /* DepacketizationThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FBD1C96D57F00E5EDAA /* DepacketizationThread.cpp */; };
+		D18E5FC81C96D57F00E5EDAA /* RenderingThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FBF1C96D57F00E5EDAA /* RenderingThread.cpp */; };
+		D18E5FC91C96D57F00E5EDAA /* SendingThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FC11C96D57F00E5EDAA /* SendingThread.cpp */; };
+		D18E5FCA1C96D57F00E5EDAA /* VideoDecodingThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FC31C96D57F00E5EDAA /* VideoDecodingThread.cpp */; };
+		D18E5FCB1C96D57F00E5EDAA /* VideoEncodingThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FC51C96D57F00E5EDAA /* VideoEncodingThread.cpp */; };
 		DA2A7B081C38ED4500E6AFF8 /* PairMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B061C38ED4500E6AFF8 /* PairMap.cpp */; };
 		DA2A7B0B1C38ED5400E6AFF8 /* Globals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B091C38ED5400E6AFF8 /* Globals.cpp */; };
 		DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */; };
@@ -133,6 +138,16 @@
 		9D25D6DD1C316D2C00BBDB63 /* SendingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SendingBuffer.h; path = VideoEngineController/SendingBuffer.h; sourceTree = "<group>"; };
 		9D9910361C296914007BA91C /* VideoPacketQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoPacketQueue.cpp; path = VideoEngineController/VideoPacketQueue.cpp; sourceTree = "<group>"; };
 		9D9910371C296914007BA91C /* VideoPacketQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoPacketQueue.h; path = VideoEngineController/VideoPacketQueue.h; sourceTree = "<group>"; };
+		D18E5FBD1C96D57F00E5EDAA /* DepacketizationThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DepacketizationThread.cpp; path = VideoEngineController/DepacketizationThread.cpp; sourceTree = "<group>"; };
+		D18E5FBE1C96D57F00E5EDAA /* DepacketizationThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DepacketizationThread.h; path = VideoEngineController/DepacketizationThread.h; sourceTree = "<group>"; };
+		D18E5FBF1C96D57F00E5EDAA /* RenderingThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderingThread.cpp; path = VideoEngineController/RenderingThread.cpp; sourceTree = "<group>"; };
+		D18E5FC01C96D57F00E5EDAA /* RenderingThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderingThread.h; path = VideoEngineController/RenderingThread.h; sourceTree = "<group>"; };
+		D18E5FC11C96D57F00E5EDAA /* SendingThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SendingThread.cpp; path = VideoEngineController/SendingThread.cpp; sourceTree = "<group>"; };
+		D18E5FC21C96D57F00E5EDAA /* SendingThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SendingThread.h; path = VideoEngineController/SendingThread.h; sourceTree = "<group>"; };
+		D18E5FC31C96D57F00E5EDAA /* VideoDecodingThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoDecodingThread.cpp; path = VideoEngineController/VideoDecodingThread.cpp; sourceTree = "<group>"; };
+		D18E5FC41C96D57F00E5EDAA /* VideoDecodingThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoDecodingThread.h; path = VideoEngineController/VideoDecodingThread.h; sourceTree = "<group>"; };
+		D18E5FC51C96D57F00E5EDAA /* VideoEncodingThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoEncodingThread.cpp; path = VideoEngineController/VideoEncodingThread.cpp; sourceTree = "<group>"; };
+		D18E5FC61C96D57F00E5EDAA /* VideoEncodingThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoEncodingThread.h; path = VideoEngineController/VideoEncodingThread.h; sourceTree = "<group>"; };
 		DA2A7B061C38ED4500E6AFF8 /* PairMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PairMap.cpp; path = VideoEngineController/PairMap.cpp; sourceTree = "<group>"; };
 		DA2A7B071C38ED4500E6AFF8 /* PairMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PairMap.h; path = VideoEngineController/PairMap.h; sourceTree = "<group>"; };
 		DA2A7B091C38ED5400E6AFF8 /* Globals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Globals.cpp; path = VideoEngineController/Globals.cpp; sourceTree = "<group>"; };
@@ -235,6 +250,8 @@
 				188587C71C0AEEAC00B1F435 /* Controller.h */,
 				188587C81C0AEEAC00B1F435 /* DecodingBuffer.cpp */,
 				188587C91C0AEEAC00B1F435 /* DecodingBuffer.h */,
+				D18E5FBD1C96D57F00E5EDAA /* DepacketizationThread.cpp */,
+				D18E5FBE1C96D57F00E5EDAA /* DepacketizationThread.h */,
 				188587E71C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp */,
 				188587E81C0AEEAC00B1F435 /* EncodedFrameDepacketizer.h */,
 				188587CA1C0AEEAC00B1F435 /* EncodedFramePacketizer.cpp */,
@@ -259,10 +276,14 @@
 				DA2A7B071C38ED4500E6AFF8 /* PairMap.h */,
 				DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */,
 				DAAB12211C464B23001A4B91 /* RenderingBuffer.h */,
+				D18E5FBF1C96D57F00E5EDAA /* RenderingThread.cpp */,
+				D18E5FC01C96D57F00E5EDAA /* RenderingThread.h */,
 				DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */,
 				DA2A7B0D1C38ED5E00E6AFF8 /* ResendingBuffer.h */,
 				9D25D6DC1C316D2C00BBDB63 /* SendingBuffer.cpp */,
 				9D25D6DD1C316D2C00BBDB63 /* SendingBuffer.h */,
+				D18E5FC11C96D57F00E5EDAA /* SendingThread.cpp */,
+				D18E5FC21C96D57F00E5EDAA /* SendingThread.h */,
 				DA3E13181C3BA48B009B9319 /* Size.h */,
 				DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */,
 				DAA0F0E21C675A5F009E0F39 /* SynchronizedMap.h */,
@@ -277,10 +298,14 @@
 				188587DE1C0AEEAC00B1F435 /* VideoCallSessionListHandler.h */,
 				188587DF1C0AEEAC00B1F435 /* VideoDecoder.cpp */,
 				188587E01C0AEEAC00B1F435 /* VideoDecoder.h */,
+				D18E5FC31C96D57F00E5EDAA /* VideoDecodingThread.cpp */,
+				D18E5FC41C96D57F00E5EDAA /* VideoDecodingThread.h */,
 				188587E11C0AEEAC00B1F435 /* VideoEncoder.cpp */,
 				188587E21C0AEEAC00B1F435 /* VideoEncoder.h */,
 				188587E31C0AEEAC00B1F435 /* VideoEncoderListHandler.cpp */,
 				188587E41C0AEEAC00B1F435 /* VideoEncoderListHandler.h */,
+				D18E5FC51C96D57F00E5EDAA /* VideoEncodingThread.cpp */,
+				D18E5FC61C96D57F00E5EDAA /* VideoEncodingThread.h */,
 				188587E51C0AEEAC00B1F435 /* VideoPacketBuffer.cpp */,
 				188587E61C0AEEAC00B1F435 /* VideoPacketBuffer.h */,
 				9D9910361C296914007BA91C /* VideoPacketQueue.cpp */,
@@ -369,6 +394,7 @@
 				9D25D6DE1C316D2C00BBDB63 /* SendingBuffer.cpp in Sources */,
 				DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */,
 				188588031C0AEEBC00B1F435 /* ColorConverter.cpp in Sources */,
+				D18E5FCA1C96D57F00E5EDAA /* VideoDecodingThread.cpp in Sources */,
 				188587FA1C0AEEAC00B1F435 /* VideoEncoderListHandler.cpp in Sources */,
 				DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */,
 				188587EB1C0AEEAC00B1F435 /* AudioDecoder.cpp in Sources */,
@@ -377,12 +403,14 @@
 				9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */,
 				188587EA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp in Sources */,
 				188587FC1C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp in Sources */,
+				D18E5FC81C96D57F00E5EDAA /* RenderingThread.cpp in Sources */,
 				188587F81C0AEEAC00B1F435 /* VideoDecoder.cpp in Sources */,
 				DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */,
 				188587F31C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.cpp in Sources */,
 				9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */,
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
 				188587EC1C0AEEAC00B1F435 /* AudioEncoder.cpp in Sources */,
+				D18E5FC71C96D57F00E5EDAA /* DepacketizationThread.cpp in Sources */,
 				188587F11C0AEEAC00B1F435 /* EncodingBuffer.cpp in Sources */,
 				DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */,
 				188587F71C0AEEAC00B1F435 /* VideoCallSessionListHandler.cpp in Sources */,
@@ -391,8 +419,10 @@
 				9D9910381C296914007BA91C /* VideoPacketQueue.cpp in Sources */,
 				188587F91C0AEEAC00B1F435 /* VideoEncoder.cpp in Sources */,
 				DAF780BE1C63095B000A8565 /* BandwidthController.cpp in Sources */,
+				D18E5FCB1C96D57F00E5EDAA /* VideoEncodingThread.cpp in Sources */,
 				DAA0F0E31C675A5F009E0F39 /* SynchronizedMap.cpp in Sources */,
 				188587F21C0AEEAC00B1F435 /* EventNotifier.cpp in Sources */,
+				D18E5FC91C96D57F00E5EDAA /* SendingThread.cpp in Sources */,
 				188587ED1C0AEEAC00B1F435 /* CommonElementsBucket.cpp in Sources */,
 				DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */,
 				DA2A7B081C38ED4500E6AFF8 /* PairMap.cpp in Sources */,

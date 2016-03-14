@@ -2,6 +2,10 @@
 #include "RenderingThread.h"
 #include "CommonElementsBucket.h"
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
+
 CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket) :
 
 m_RenderingBuffer(renderingBuffer),
