@@ -295,7 +295,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 
 		if (pVideoSession)
 		{
-			if (in_size > 202752)
+			if (in_size > MAX_VIDEO_ENCODER_FRAME_SIZE)
 				return -1;
 
 			pVideoSession->m_pVideoEncodingThread->orientation_type = orientation_type;

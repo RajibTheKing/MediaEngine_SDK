@@ -242,11 +242,29 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
-			frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
-			//printf("WinD--> CVideoEncodingThread::EncodingThreadProcedure frameSIze: %d\n", frameSize);
+			int iCurWidth = this->m_pColorConverter->GetWidth();
+			int iCurHeight = this->m_pColorConverter->GetHeight();
+
+			long long icc = m_Tools.CurrentTimestamp();
+			if(frameSize == iCurWidth * iCurHeight * 2) //That Means.... Desktop is Sending YUY2 Data
+			{
+				frameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			}
+			else if (frameSize == iCurWidth * iCurHeight * 3) //That Means.... Desktop is Sending RGB24 Data
+			{
+				frameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
+			}
+
+			//printf("WinD--> Convertion Time --> %d\n", m_Tools.CurrentTimestamp() - icc);
+
+			//m_Tools.WriteToFile(m_ConvertedEncodingFrame, frameSize);
+
+            //printf("WinD--> CVideoCallSession::EncodingThreadProcedure frameSIze: %d\n", frameSize);
+
+
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
-			//printf("WinD--> CVideoEncodingThread::EncodingThreadProcedure encodedFrameSize: %d\n", encodedFrameSize);
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
+            //printf("WinD--> CVideoCallSession::EncodingThreadProcedure encodedFrameSize: %d\n", encodedFrameSize);
+            CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 

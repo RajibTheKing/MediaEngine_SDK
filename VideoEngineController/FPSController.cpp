@@ -43,16 +43,33 @@ int CFPSController::GetOpponentFPS() const {
 
 void CFPSController::SetOpponentFPS(int OpponentFPS) {
     Locker lock(*m_pMutex);
-    m_nOpponentFPS = OpponentFPS;
+	if (OpponentFPS > 0)
+	{
+		m_nOpponentFPS = OpponentFPS;
+	}
+	else
+	{
+		printf("Tried to set opp fps to 0\n");
+	}
+    
 }
 
 int CFPSController::GetOwnFPS() const {
+	//printf("GetOwnFPS returned %d\n", m_nOwnFPS);
     return m_nOwnFPS;
 }
 
 void CFPSController::SetOwnFPS(int nOwnFPS){
     Locker lock(*m_pMutex);
-    m_nOwnFPS = nOwnFPS;
+	if (nOwnFPS > 0)
+	{
+		m_nOwnFPS = nOwnFPS;
+	}
+	else
+	{
+		printf("Tried to set own fps to 0\n");
+	}
+    
 }
 
 void CFPSController::SetMaxOwnProcessableFPS(int fps){
@@ -123,7 +140,8 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
             m_nMaxOpponentProcessableFPS = opponentFPS;
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: -----------------GOT-------------------------------------->   "+ m_Tools.IntegertoStringConvert(m_nMaxOpponentProcessableFPS));
         if(m_nOwnFPS > m_nMaxOpponentProcessableFPS) {
-            m_nOwnFPS = m_nMaxOpponentProcessableFPS;
+			printf("setting m_nOwnFPS to %d because m_nOwnFPS > m_nMaxOpponentProcessableFPS\n", m_nMaxOpponentProcessableFPS);
+			SetOwnFPS(m_nMaxOpponentProcessableFPS);
 //            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
 //            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
         }
@@ -158,8 +176,11 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
         }
     }
 
-    if (m_nOwnFPS > m_ClientFPS)
-        m_nOwnFPS = m_ClientFPS;
+	if (m_nOwnFPS > m_ClientFPS)
+	{
+		printf("setting m_nOwnFPS to %d because m_nOwnFPS > m_ClientFPS\n", m_ClientFPS);
+		SetOwnFPS(m_ClientFPS);
+	}
 
 }
 

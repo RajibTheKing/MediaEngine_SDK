@@ -212,14 +212,19 @@ void CSendingThread::SendingThreadProcedure()
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			if (g_BandWidthController.IsSendeablePacket(packetSize)) {
 #endif
-
+#if defined(SEND_VIDEO_TO_SELF)
+			CVideoCallSession* pVideoSession;
+			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+			unsigned char *pEncodedFrame = m_EncodedFrame;
+			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+#else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 				m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
 
-				CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+				//CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
 
 				//toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController->GetOwnFPS()  * 1.0));
-
+#endif
 				toolsObject.SOSleep(GetSleepTime());
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST

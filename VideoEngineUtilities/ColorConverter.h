@@ -27,6 +27,7 @@ public:
 	int ConvertNV12ToI420(unsigned char *convertingData);
 	int ConvertNV21ToI420(unsigned char *convertingData);
 	int ConvertYUY2ToI420(unsigned char * input, unsigned char * output);
+	int ConvertRGB24ToI420(unsigned char *input, unsigned char *output);
 
 	void mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
@@ -35,7 +36,8 @@ public:
 
 	int ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width);
 
-
+	int GetWidth();
+	int GetHeight();
 private:
 
 	int m_iVideoHeight;
@@ -48,7 +50,11 @@ private:
 	unsigned char m_pVPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
-
+	
+	unsigned char m_pClip[900];
+	bool m_bClipInitialization;
+	int cyb, cyg, cyr;
+	
 	int m_Multiplication[481][641];
 };
 
