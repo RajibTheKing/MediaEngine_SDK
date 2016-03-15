@@ -132,10 +132,16 @@
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\RenderingThread.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp">
+    <ClCompile Include="..\..\VideoEngineController\VideoDecodingThread.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
@@ -290,10 +296,16 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\RenderingThread.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\SendingThread.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h">
+    <ClInclude Include="..\..\VideoEngineController\VideoDecodingThread.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>

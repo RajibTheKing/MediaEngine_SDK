@@ -157,6 +157,7 @@
     <ClCompile Include="..\..\VideoEngineController\CommonElementsBucket.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Controller.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DecodingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFrameDepacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodingBuffer.cpp" />
@@ -168,14 +169,17 @@
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\RenderingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\RenderingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\ResendingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoDecoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoDecodingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoderListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp" />
@@ -201,6 +205,7 @@
     <ClInclude Include="..\..\VideoEngineController\CommonElementsBucket.h" />
     <ClInclude Include="..\..\VideoEngineController\Controller.h" />
     <ClInclude Include="..\..\VideoEngineController\DecodingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFrameDepacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFramePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodingBuffer.h" />
@@ -214,9 +219,11 @@
     <ClInclude Include="..\..\VideoEngineController\PacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\PairMap.h" />
     <ClInclude Include="..\..\VideoEngineController\RenderingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\RenderingThread.h" />
     <ClInclude Include="..\..\VideoEngineController\ResendingBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\SendingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\SendingThread.h" />
     <ClInclude Include="..\..\VideoEngineController\Size.h" />
     <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h" />
     <ClInclude Include="..\..\VideoEngineController\ThreadTools.h" />
@@ -226,6 +233,7 @@
     <ClInclude Include="..\..\VideoEngineController\VideoCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoCallSessionListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoDecoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoDecodingThread.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoder.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoderListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h" />
