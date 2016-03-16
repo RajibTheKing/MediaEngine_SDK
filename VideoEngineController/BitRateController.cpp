@@ -26,7 +26,10 @@ BitRateController::BitRateController():
     m_fAverageData(0.0),
     m_iStopNotificationController(0),
     m_iOpponentNetworkType(NETWORK_TYPE_NOT_2G),
-    m_iNetTypeMiniPktRcv(0)
+    m_iNetTypeMiniPktRcv(0),
+    m_lastState(BITRATE_CHANGE_DOWN),
+    m_iSpiralCounter(0),
+    m_iUpCheckLimit(GOOD_MEGASLOT_TO_UP)
 {
     dFirstTimeDecrease = BITRATE_DECREMENT_FACTOR;
     m_OppNotifiedByterate = 0;
@@ -287,6 +290,9 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 {
     m_SlotCounter++;
 
+    if(m_SlotCounter >= GOOD_MEGASLOT_TO_UP_SAFE)
+        m_iUpCheckLimit = GOOD_MEGASLOT_TO_UP;
+
     if(dataReceivedRatio < NORMAL_BITRATE_RATIO_IN_MEGA_SLOT)
     {
         m_iGoodSlotCounter = 0;
@@ -295,6 +301,15 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 
         //m_iConsecutiveGoodMegaSlot = 0;
         m_PrevMegaSlotStatus = dataReceivedRatio;
+
+        if( m_lastState == BITRATE_CHANGE_UP && m_SlotCounter <= NUMBER_OF_WAIT_SLOT_TO_DETECT_UP_FAIL )
+            m_iSpiralCounter++;
+
+        if(m_iSpiralCounter >= NUMBER_OF_SPIRAL_LIMIT)
+            m_iUpCheckLimit = GOOD_MEGASLOT_TO_UP_SAFE;
+
+        m_lastState = BITRATE_CHANGE_DOWN;
+
         return BITRATE_CHANGE_DOWN;
 
     }
@@ -320,7 +335,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
     }
 
 
-    if(m_SlotCounter >= GOOD_MEGASLOT_TO_UP)
+    if(m_SlotCounter >= m_iUpCheckLimit)
     {
         int temp = GOOD_MEGASLOT_TO_UP * 0.9;
 
@@ -331,6 +346,11 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
             m_SlotCounter = 0;
 
             m_PrevMegaSlotStatus = dataReceivedRatio;
+
+            if(m_lastState == BITRATE_CHANGE_UP)
+                m_iSpiralCounter = 0;
+
+            m_lastState = BITRATE_CHANGE_UP;
 
             return BITRATE_CHANGE_UP;
         }
