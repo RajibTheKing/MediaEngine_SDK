@@ -13,6 +13,7 @@
 //#define __OPERATION_TIME_LOG__
 //#define __QUEUE_TIME_LOG__
 //#define __PACKET_LOSS_INFO_LOG__
+//#define __THREAD_LOG__
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 
@@ -132,6 +133,12 @@ private:
 #define CLogPrinter_WriteSpecific5(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteSpecific5(...)
+#endif
+
+#ifdef __THREAD_LOG__
+#define CLogPrinter_WriteThreadLog(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteThreadLog(...)
 #endif
 
 #ifdef __OPERATION_TIME_LOG__
