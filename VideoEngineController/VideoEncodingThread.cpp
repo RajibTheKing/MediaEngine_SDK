@@ -63,15 +63,13 @@ void CVideoEncodingThread::StartEncodingThread()
 {
 	if (pEncodingThread.get())
 	{
-		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::StartedInternalThread 2");
 		pEncodingThread.reset();
-		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::StartDepacketizationThread 3");
+		
 		return;
 	}
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::StartedInternalThread 4");
+	
 	bEncodingThreadRunning = true;
 	bEncodingThreadClosed = false;
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::StartedInternalThread 5");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -87,8 +85,6 @@ void CVideoEncodingThread::StartEncodingThread()
 
 #endif
 
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::StartedInternalThread Encoding Thread started");
-
 	return;
 }
 
@@ -102,7 +98,6 @@ void *CVideoEncodingThread::CreateVideoEncodingThread(void* param)
 
 void CVideoEncodingThread::EncodingThreadProcedure()
 {
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 	Tools toolsObject;
 	int frameSize, encodedFrameSize;
 	long long encodingTime, encodingTimeStamp, nMaxEncodingTime = 0, currentTimeStamp;
@@ -113,10 +108,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	long long iterationtime = toolsObject.CurrentTimestamp();
 
-	bool m_bFirstFrame = true;				// added
-	long long m_ll1stFrameTimeStamp = 0;	// added
-	unsigned  int m_iTimeStampDiff = 0;		// added
-	int m_FrameCounterbeforeEncoding = 0;	// added
+	bool m_bFirstFrame = true;				
+	long long m_ll1stFrameTimeStamp = 0;	
+	unsigned  int m_iTimeStampDiff = 0;		
+	int m_FrameCounterbeforeEncoding = 0;	
 
 	for(int i = 0; i < 200; i++)
 	{
@@ -229,7 +224,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			//            }
 
 
-			//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$ENCODEING$");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
@@ -241,7 +235,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
 
-			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure video data encoded");
 #elif defined(_DESKTOP_C_SHARP_)
 
 
@@ -362,7 +355,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 			//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
-			//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$ENCODEING$ To Parser");
+
 			//m_pVideoEncoder->GetEncodedFramePacketizer()->Packetize(m_FriendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
 			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 			//- (void)WriteToFile:(const char *)path withData:(unsigned char *)data dataLength:(int)datalen
@@ -381,7 +374,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Packetize ", currentTimeStamp);
 			++m_iFrameNumber;
 			//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure2 m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(CVideoEncodingThread::m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
-			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure before sleep");
+
 			toolsObject.SOSleep(1);
 
 		}
