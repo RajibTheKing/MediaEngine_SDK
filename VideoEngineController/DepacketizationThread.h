@@ -36,19 +36,19 @@ private:
 	bool bDepacketizationThreadRunning;
 	bool bDepacketizationThreadClosed;
 
-	CVideoPacketQueue *m_pVideoPacketQueue;						// bring
-	CVideoPacketQueue *m_pRetransVideoPacketQueue;				// bring
-	CVideoPacketQueue *m_pMiniPacketQueue;						// bring
+	CVideoPacketQueue *m_pVideoPacketQueue;						
+	CVideoPacketQueue *m_pRetransVideoPacketQueue;				
+	CVideoPacketQueue *m_pMiniPacketQueue;						
 	CPacketHeader m_RcvdPacketHeader;							
-	BitRateController *m_BitRateController;						// bring
-	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		// bring
-	CCommonElementsBucket* m_pCommonElementsBucket;				// bring
+	BitRateController *m_BitRateController;						
+	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
+	CCommonElementsBucket* m_pCommonElementsBucket;				
 
 	pair<int, int> ExpectedFramePacketPair;						
 	int iNumberOfPacketsInCurrentFrame;
 
-	unsigned int *m_miniPacketBandCounter;								// bring
-	LongLong m_FriendID;										// bring
+	unsigned int *m_miniPacketBandCounter;								
+	LongLong m_FriendID;										
 
 	unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];

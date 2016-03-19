@@ -7,9 +7,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;			// bring
-bool gbStopFPSSending = false;												// bring
-extern unsigned char g_uchSendPacketVersion;								// bring check
+int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;			
+bool gbStopFPSSending = false;												
+extern unsigned char g_uchSendPacketVersion;								
 
 CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter) :
 
@@ -56,18 +56,16 @@ void CVideoDepacketizationThread::StopDepacketizationThread()
 
 void CVideoDepacketizationThread::StartDepacketizationThread()
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoDepacketizationThread::StartDepacketizationThread 1");
 	if (pDepacketizationThread.get())
 	{
-		//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 2");
 		pDepacketizationThread.reset();
-		//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
+
 		return;
 	}
-	//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 4");
+
 	bDepacketizationThreadRunning = true;
 	bDepacketizationThreadClosed = false;
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 5");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -83,7 +81,7 @@ void CVideoDepacketizationThread::StartDepacketizationThread()
 
 #endif
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoDepacketizationThread::StartDepacketizationThread Decoding Thread started");
 
 	return;
 }
@@ -98,20 +96,19 @@ void *CVideoDepacketizationThread::CreateVideoDepacketizationThread(void* param)
 
 void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Thread
 {
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
+
 	Tools toolsObject;
 	unsigned char temp;
 	int frameSize, queSize = 0, retQueuSize = 0, miniPacketQueueSize = 0, consicutiveRetransmittedPkt = 0;
 	int frameNumber, packetNumber;
 	bool bIsMiniPacket;
-	//m_iCountRecResPack = 0;			// unnecessary removed
 	int iPacketType = NORMAL_PACKET;
 	long long timeDiffForMiniPkt = m_Tools.CurrentTimestamp();
 
 	while (bDepacketizationThreadRunning)
 	{
 		bIsMiniPacket = false;
-		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::DepacketizationThreadProcedure");
 		queSize = m_pVideoPacketQueue->GetQueueSize();
 #ifdef	RETRANSMISSION_ENABLED
 		retQueuSize = m_pRetransVideoPacketQueue->GetQueueSize();
@@ -184,7 +181,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue->PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
 				{
 					/*
-					string sMsg = "CVideoCallSession::Current(FN,PN) = ("
+					string sMsg = "CVideoDepacketizationThread::Current(FN,PN) = ("
 					+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
 					+ ","
 					+ m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
@@ -320,13 +317,13 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 				g_TraceRetransmittedFrame[m_RcvdPacketHeader.getFrameNumber()] = 1;
 #endif
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::ReTransmitted: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::ReTransmitted: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
 					+ " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 			}
 			else if (bMiniPacket)
 			{
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoCallSession::Minipacket: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::Minipacket: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
 					+ " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 			}
 #endif
@@ -343,7 +340,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 	bDepacketizationThreadClosed = true;
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
 }
 
 void CVideoDepacketizationThread::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
