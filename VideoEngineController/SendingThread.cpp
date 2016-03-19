@@ -39,19 +39,17 @@ void CSendingThread::StopSendingThread()
 
 void CSendingThread::StartSendingThread()
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 1");
+	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CSendingThread::StartSendingThread() called");
 
 	if (pSendingThread.get())
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 2");
 		pSendingThread.reset();
-		CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartDecodingThread 3");
+
 		return;
 	}
-	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 4");
+
 	bSendingThreadRunning = true;
 	bSendingThreadClosed = false;
-	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 5");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -67,7 +65,7 @@ void CSendingThread::StartSendingThread()
 
 #endif
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread Encoding Thread started");
+	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CSendingThread::StartSendingThread() Sending Thread started");
 
 	return;
 }
@@ -94,7 +92,7 @@ std::vector<int>g_BandWidthList;
 
 void CSendingThread::SendingThreadProcedure()
 {
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() started Sending method");
 
 	Tools toolsObject;
 	int packetSize;
@@ -126,15 +124,19 @@ void CSendingThread::SendingThreadProcedure()
 
 	while (bSendingThreadRunning)
 	{
-		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InternalThreadImpl");
+		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() RUNNING Sending method");
 
 		if (m_SendingBuffer->GetQueueSize() == 0)
+		{
+			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
+
 			toolsObject.SOSleep(10);
+		}
 		else
 		{
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
-			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
+			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, "CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
 			pair<int, int> FramePacketToSend = { -1, -1 };
@@ -181,7 +183,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				if (iNumberOfPacketsActuallySentFromLastFrame != iNumberOfPacketsInLastFrame)
 				{
-					CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$-->******* iNumberOfPacketsActuallySentFromLastFrame = "
+					CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CSendingThread::StartSendingThread() $$-->******* iNumberOfPacketsActuallySentFromLastFrame = "
 						+ m_Tools.IntegertoStringConvert(iNumberOfPacketsActuallySentFromLastFrame)
 						+ " iNumberOfPacketsInLastFrame = "
 						+ m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrame)
@@ -204,7 +206,7 @@ void CSendingThread::SendingThreadProcedure()
 #endif
 
 
-			//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(packetHeader.getFrameNumber())
+			//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CSendingThread::StartSendingThread() Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(packetHeader.getFrameNumber())
 			//														  + "  pNo : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketNumber())
 			//														  + "  Npkt : "+ m_Tools.IntegertoStringConvert(packetHeader.getNumberOfPacket())
 			//														  + "  FPS : "+ m_Tools.IntegertoStringConvert(packetHeader.getFPS())
@@ -240,7 +242,7 @@ void CSendingThread::SendingThreadProcedure()
 
 	bSendingThreadClosed = true;
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
 }
 
 int CSendingThread::GetSleepTime()
