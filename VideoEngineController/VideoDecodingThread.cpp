@@ -117,7 +117,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		decodingTime = toolsObject.CurrentTimestamp() - currentTime;
 
 		if (nFrameLength>-1)
-			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " GetReceivedFrame # Get Time: " + m_Tools.IntegertoStringConvert(decodingTime) + "  Len: " + m_Tools.IntegertoStringConvert(nFrameLength) + "  FrameNo: " + m_Tools.IntegertoStringConvert(nFrameNumber));
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() GetReceivedFrame # Get Time: " + m_Tools.IntegertoStringConvert(decodingTime) + "  Len: " + m_Tools.IntegertoStringConvert(nFrameLength) + "  FrameNo: " + m_Tools.IntegertoStringConvert(nFrameNumber));
 
 
 		if (-1 == nFrameLength) 
@@ -136,7 +136,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
 
 			if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
 				continue;
 			}
@@ -173,7 +173,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 							g_FPSController->SetMaxOwnProcessableFPS(fps);
 					}
 				}
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
 			}
 
 			if (-1 == nFirstFrameDecodingTime)
@@ -189,7 +189,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	bDecodingThreadClosed = true;
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
+	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
@@ -198,10 +198,10 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 	if (g_TraceRetransmittedFrame[nFramNumber] == 1)
 	{
-		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Very valuable frame used " + m_Tools.IntegertoStringConvert(nFramNumber) + ", counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
+		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoDecodingThread::DecodingThreadProcedure() Very valuable frame used " + m_Tools.IntegertoStringConvert(nFramNumber) + ", counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
 		iValuableFrameUsedCounter++;
 	}
-	CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$Very Valuable Retransmission packet used counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
+	CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoDecodingThread::DecodingThreadProcedure() $$$Very Valuable Retransmission packet used counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
 
 #endif
 
