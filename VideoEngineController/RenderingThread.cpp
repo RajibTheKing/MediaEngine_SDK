@@ -39,6 +39,7 @@ void CVideoRenderingThread::StopRenderingThread()
 
 void CVideoRenderingThread::StartRenderingThread()
 {
+	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoRenderingThread::StartRenderingThread() called");
 
 	if (pRenderingThread.get())
 	{
@@ -63,7 +64,7 @@ void CVideoRenderingThread::StartRenderingThread()
 
 #endif
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartRenderingThread Rendering Thread started");
+	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoRenderingThread::StartRenderingThread() Decoding Thread started");
 
 	return;
 }
@@ -78,7 +79,8 @@ void *CVideoRenderingThread::CreateVideoRenderingThread(void* param)
 
 void CVideoRenderingThread::RenderingThreadProcedure()
 {
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Started EncodingThreadProcedure.");
+	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() started RenderingThreadProcedure method");
+
 	Tools toolsObject;
 	int frameSize, nFrameNumber, intervalTime;
 	unsigned int nTimeStampDiff;
@@ -92,17 +94,21 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 	while (bRenderingThreadRunning)
 	{
-		//CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::RenderingThreadProcedure");
+		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
 
 		if (m_RenderingBuffer->GetQueueSize() == 0)
+		{
+			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() NOTHING for Rendering method");
+
 			toolsObject.SOSleep(10);
+		}
 		else
 		{
 
 			int timeDiffForQueue;
 
 			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
-			CLogPrinter_WriteForQueueTime(CLogPrinter::DEBUGS, " m_RenderingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
+			CLogPrinter_WriteForQueueTime(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() m_RenderingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			currentFrameTime = toolsObject.CurrentTimestamp();
 
@@ -130,5 +136,5 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 	bRenderingThreadClosed = true;
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::RenderingThreadProcedure() Stopped EncodingThreadProcedure");
+	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() stopped RenderingThreadProcedure method.");
 }
