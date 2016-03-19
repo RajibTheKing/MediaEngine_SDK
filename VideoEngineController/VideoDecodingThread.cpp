@@ -40,7 +40,7 @@ void CVideoDecodingThread::StopDecodingThread()
 
 void CVideoDecodingThread::StartDecodingThread()
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
+	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoDecodingThread::StartDecodingThread called");
 
 	if (pDecodingThread.get())
 	{
@@ -66,7 +66,7 @@ void CVideoDecodingThread::StartDecodingThread()
 
 #endif
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
+	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoDecodingThread::StartDecodingThread Decoding Thread started");
 
 	return;
 }
@@ -81,7 +81,8 @@ void *CVideoDecodingThread::CreateDecodingThread(void* param)
 
 void CVideoDecodingThread::DecodingThreadProcedure()
 {
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
+	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() started DecodingThreadProcedure method");
+
 	Tools toolsObject;
 
 	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
@@ -103,7 +104,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-
+		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
 
 		currentTime = toolsObject.CurrentTimestamp();
 		if (-1 != nFirstFrameDecodingTime)
@@ -119,7 +120,10 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " GetReceivedFrame # Get Time: " + m_Tools.IntegertoStringConvert(decodingTime) + "  Len: " + m_Tools.IntegertoStringConvert(nFrameLength) + "  FrameNo: " + m_Tools.IntegertoStringConvert(nFrameNumber));
 
 
-		if (-1 == nFrameLength) {
+		if (-1 == nFrameLength) 
+		{
+			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
+
 			toolsObject.SOSleep(10);
 		}
 		else
@@ -185,7 +189,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	bDecodingThreadClosed = true;
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
