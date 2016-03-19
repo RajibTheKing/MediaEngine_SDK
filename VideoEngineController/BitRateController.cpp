@@ -302,8 +302,13 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
         //m_iConsecutiveGoodMegaSlot = 0;
         m_PrevMegaSlotStatus = dataReceivedRatio;
 
-        if( m_lastState == BITRATE_CHANGE_UP && m_SlotCounter <= NUMBER_OF_WAIT_SLOT_TO_DETECT_UP_FAIL )
-            m_iSpiralCounter++;
+		if (m_lastState == BITRATE_CHANGE_UP && m_SlotCounter <= NUMBER_OF_WAIT_SLOT_TO_DETECT_UP_FAIL)
+			m_iSpiralCounter++;
+		else if (m_lastState == BITRATE_CHANGE_DOWN && m_SlotCounter > NUMBER_OF_WAIT_SLOT_TO_DETECT_UP_FAIL)
+		{
+			m_iSpiralCounter = 0;
+			m_iUpCheckLimit = GOOD_MEGASLOT_TO_UP;
+		}
 
         if(m_iSpiralCounter >= NUMBER_OF_SPIRAL_LIMIT)
             m_iUpCheckLimit = GOOD_MEGASLOT_TO_UP_SAFE;
