@@ -44,18 +44,13 @@ void CVideoDecodingThread::StartDecodingThread()
 
 	if (pDecodingThread.get())
 	{
-		//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 2");
 		pDecodingThread.reset();
-		//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
+
 		return;
 	}
 
-	//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 4");
-
 	bDecodingThreadRunning = true;
 	bDecodingThreadClosed = false;
-
-	//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 5");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -169,7 +164,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					if (dbAverageDecodingTime > 30)
 					{
 						fps = 1000 / dbAverageDecodingTime;
-						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
+					//	printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
 						if (fps < FPS_MAXIMUM)
 							g_FPSController->SetMaxOwnProcessableFPS(fps);
 					}
