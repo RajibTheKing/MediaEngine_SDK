@@ -5,8 +5,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-int iValuableFrameUsedCounter = 0;
-
 CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController) :
 
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
@@ -194,17 +192,6 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
 {
-	//printf("Wind--> DecodeAndSendToClient 0\n");
-#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
-	if (g_TraceRetransmittedFrame[nFramNumber] == 1)
-	{
-		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoDecodingThread::DecodingThreadProcedure() Very valuable frame used " + m_Tools.IntegertoStringConvert(nFramNumber) + ", counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
-		iValuableFrameUsedCounter++;
-	}
-	CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoDecodingThread::DecodingThreadProcedure() $$$Very Valuable Retransmission packet used counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
-
-#endif
-
 	long long currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 

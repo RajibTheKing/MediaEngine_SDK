@@ -320,10 +320,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			{
 				iPacketType = RETRANSMITTED_PACKET;
 				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
 
-				g_TraceRetransmittedFrame[m_RcvdPacketHeader.getFrameNumber()] = 1;
-#endif
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ReTransmitted: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
 					+ " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 			}

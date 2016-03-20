@@ -6,12 +6,6 @@
 #include "ResendingBuffer.h"
 //#include "Helper_IOS.h"
 
-#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
-map<int, int> g_TraceRetransmittedFrame;
-#endif
-
-
-
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
@@ -89,10 +83,6 @@ m_TimeFor100Depacketize(0)
 {
 	m_miniPacketBandCounter = 0;
 
-#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
-	g_TraceRetransmittedFrame.clear();
-#endif
-
 #ifdef FIRST_BUILD_COMPATIBLE
 	g_bIsVersionDetectableOpponent = false;
 	g_uchSendPacketVersion = 0;
@@ -109,12 +99,6 @@ m_TimeFor100Depacketize(0)
 //	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
 	g_ResendBuffer.Reset();
 	//gbStopFPSSending = false;
-
-#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
-	g_TraceRetransmittedFrame.clear();
-#endif
-
-
 
 	fpsCnt = 0;
 	g_FPSController.Reset();
