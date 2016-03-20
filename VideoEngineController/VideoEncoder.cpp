@@ -104,11 +104,7 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 
 int CVideoEncoder::SetBitrate(int iFps)
 {
-#ifdef USE_FIXED_BITRATE_PER_SLOT
-    int iBitRate = iFps;// - (iFps%25000);
-#else
 	int iBitRate = iFps - (iFps%25000);
-#endif
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
     
@@ -148,11 +144,7 @@ int CVideoEncoder::SetMaxBitrate(int iFps)
 {
 	iFps = iFps * MAX_BITRATE_MULTIPLICATION_FACTOR;
 
-#ifdef USE_FIXED_BITRATE_PER_SLOT
-	int iBitRate = iFps;
-#else
 	int iBitRate = iFps - (iFps%25000);
-#endif
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
 
