@@ -214,12 +214,15 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
 	CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertI420ToNV21 ", currentTimeStamp);
+
+	long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
+
 #if defined(_DESKTOP_C_SHARP_)
-	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, currentTimeStampForBrust, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #else
 
-	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, currentTimeStampForBrust, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #endif
 }

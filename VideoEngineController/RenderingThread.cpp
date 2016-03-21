@@ -83,7 +83,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 	Tools toolsObject;
 	int frameSize, nFrameNumber, intervalTime;
-	unsigned int nTimeStampDiff;
+	long long nTimeStampDiff;
 	long long currentFrameTime, decodingTime, firstFrameEncodingTime;
 	int videoHeight, videoWidth;
 	long long currentTimeStamp;
@@ -125,7 +125,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			prevTimeStamp = nTimeStampDiff;
 
-			if (frameSize<1 && minTimeGap < 50)
+			if (frameSize<1 || minTimeGap < 50)
 				continue;
 
 			toolsObject.SOSleep(5);
