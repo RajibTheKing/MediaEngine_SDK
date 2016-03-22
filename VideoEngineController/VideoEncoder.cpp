@@ -10,6 +10,7 @@ CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject),
 m_iMaxBitrate(BITRATE_MAX),
 m_iBitrate(BITRATE_MAX - 25000),
+m_iNetworkType(NETWORK_TYPE_NOT_2G),
 m_pSVCVideoEncoder(NULL)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
@@ -106,7 +107,9 @@ int CVideoEncoder::SetBitrate(int iFps)
 {
 	int iBitRate = iFps - (iFps%25000);
     
-    if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
+    if(m_iNetworkType == NETWORK_TYPE_NOT_2G && iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
+    
+    if(m_iNetworkType == NETWORK_TYPE_2G && iBitRate<BITRATE_MIN_FOR_2G) iBitRate = BITRATE_MIN_FOR_2G;
     
     if(iBitRate>BITRATE_MAX) iBitRate = BITRATE_MAX;
     
@@ -138,6 +141,11 @@ int CVideoEncoder::SetBitrate(int iFps)
     
     return iRet;
 
+}
+
+void CVideoEncoder::SetNetworkType(int iNetworkType)
+{
+    m_iNetworkType = iNetworkType;
 }
 
 int CVideoEncoder::SetMaxBitrate(int iFps)
