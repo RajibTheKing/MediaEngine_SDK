@@ -231,7 +231,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				//toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController->GetOwnFPS()  * 1.0));
 #endif
-				toolsObject.SOSleep(GetSleepTime());
+				toolsObject.SOSleep(/*GetSleepTime()*/1);
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
