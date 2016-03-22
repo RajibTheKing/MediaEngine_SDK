@@ -433,12 +433,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	{
 		m_ClientFPSDiffSum += currentTimeStamp - m_LastTimeStampClientFPS;
 
-
 		{//Block for LOCK
-			Locker lock(*m_pSessionMutex);
-			g_FPSController.SetClientFPS(1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter));
-			//		m_ClientFPS = 1000 / (m_ClientFPSDiffSum / m_ClientFrameCounter);
-			//		m_ClientFPS = 1000/(currentTimeStamp - m_LastTimeStampClientFPS);
+			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
+			if(nApproximateAverageFrameInterval > 10) {
+				Locker lock(*m_pSessionMutex);
+				g_FPSController.SetClientFPS(1000 / nApproximateAverageFrameInterval);
+			}
 		}
 
 		m_DropSum = 0;
