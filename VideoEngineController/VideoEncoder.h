@@ -34,6 +34,7 @@ public:
 	int EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer);
 
     int SetBitrate(int iFps);
+    void SetNetworkType(int iNetworkType);
 	void SetFramerate(int iFps);
 	int SetMaxBitrate(int iFps);
     int GetBitrate();
@@ -43,6 +44,8 @@ private:
 
 	int m_iHeight;
 	int m_iWidth;
+    
+    int m_iNetworkType;
 	Tools m_Tools;
     
     int m_iMaxBitrate;
