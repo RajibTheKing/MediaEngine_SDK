@@ -110,7 +110,7 @@ int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_dat
 		//		m_PacketHeader.setPacketHeader(m_Packet+1);
 		//		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$--> Lenght "+m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketLength())+"  # TS: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
 
-		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize Queue lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(nPacketHeaderLenghtWithMedia + m_PacketSize));
+//		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize Queue lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(nPacketHeaderLenghtWithMedia + m_PacketSize));
 		m_SendingBuffer->Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);
 		g_ResendBuffer.Queue(m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
 		//    m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,nPacketHeaderLenghtWithMedia + m_PacketSize);
@@ -181,19 +181,19 @@ void CEncodedFramePacketizer::StartSendingThread()
 	m_pSendingThread->StartSendingThread();
 
 
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 1");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 1");
 
 	if (pSendingThread.get())
 	{
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 2");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 2");
 	pSendingThread.reset();
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartDecodingThread 3");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartDecodingThread 3");
 	return;
 	}
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 4");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 4");
 	bSendingThreadRunning = true;
 	bSendingThreadClosed = false;
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 5");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 5");
 
 	#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -209,7 +209,7 @@ void CEncodedFramePacketizer::StartSendingThread()
 
 	#endif
 
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread Encoding Thread started");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread Encoding Thread started");
 
 	return;
 
@@ -228,7 +228,7 @@ void *CEncodedFramePacketizer::CreateVideoSendingThread(void* param)
 void CEncodedFramePacketizer::SendingThreadProcedure()
 {
 	/*
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 
 	Tools toolsObject;
 	int packetSize;
@@ -260,7 +260,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 	while (bSendingThreadRunning)
 	{
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure");
 
 	if (m_SendingBuffer->GetQueueSize() == 0)
 	toolsObject.SOSleep(10);
@@ -270,7 +270,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 	packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
 
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure Deque lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure Deque lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
 
 	CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
@@ -357,9 +357,9 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 	#endif
 
 	//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
 	m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure sent");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure sent");
 	CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));
 
 	//toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
@@ -375,7 +375,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 	bSendingThreadClosed = true;
 
-	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 	*/
 }
 
