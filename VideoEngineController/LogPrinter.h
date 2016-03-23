@@ -14,6 +14,8 @@
 //#define __QUEUE_TIME_LOG__
 //#define __PACKET_LOSS_INFO_LOG__
 //#define __THREAD_LOG__
+//#define __BITRATE_CHNANGE_LOG__
+
 #define FILE_NAME "VideoEngineTrack.log"
 #define PRIORITY CLogPrinter::DEBUGS
 
@@ -159,5 +161,12 @@ private:
 #define CLogPrinter_WriteForPacketLossInfo(...)
 #endif
 
+
+
+#ifdef __BITRATE_CHNANGE_LOG__
+#define CLogPrinter_WriteBitrateChangeInfo(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteBitrateChangeInfo(...)
+#endif
 
 #endif

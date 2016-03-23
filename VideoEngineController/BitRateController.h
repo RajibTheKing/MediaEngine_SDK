@@ -81,7 +81,7 @@ private:
     int m_lastState;
     int m_iSpiralCounter;
     int m_iUpCheckLimit;
-    
+    int m_iMostRecentRespondedSlotNumber;
     
 };
 

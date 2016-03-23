@@ -33,7 +33,7 @@ BitRateController::BitRateController():
 {
     dFirstTimeDecrease = BITRATE_DECREMENT_FACTOR;
     m_OppNotifiedByterate = 0;
-
+    m_iMostRecentRespondedSlotNumber = -1;
     m_iGoodSlotCounter = 0;
     m_iNormalSlotCounter = 0;
     m_SlotCounter = 0;
@@ -93,6 +93,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader)
         return false;
     }
     int iSlotNumber = tempHeader.getFrameNumber();
+    m_iMostRecentRespondedSlotNumber = iSlotNumber;
     m_ByteSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(iSlotNumber);
     m_ByteRecvInMegaSlotInterval+=tempHeader.getTimeStamp();
 
@@ -280,7 +281,7 @@ void BitRateController::NotifyEncodedFrame(int &nFrameSize){
 int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 {
     m_SlotCounter++;
-
+    CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS,"#BR~  SLOT: "+Tools::IntegertoStringConvert(m_iMostRecentRespondedSlotNumber)+"  BitRate :"+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())+ "  Ratio: "+Tools::DoubleToString(dataReceivedRatio));
     if(m_SlotCounter >= GOOD_MEGASLOT_TO_UP_SAFE)
         m_iUpCheckLimit = GOOD_MEGASLOT_TO_UP;
 
