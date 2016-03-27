@@ -148,16 +148,15 @@ void CVideoEncoder::SetNetworkType(int iNetworkType)
     m_iNetworkType = iNetworkType;
 }
 
-int CVideoEncoder::SetMaxBitrate(int iFps)
+int CVideoEncoder::SetMaxBitrate(int bitrate)
 {
-	iFps = iFps * MAX_BITRATE_MULTIPLICATION_FACTOR;
+	bitrate = bitrate * MAX_BITRATE_MULTIPLICATION_FACTOR;
 
-	int iBitRate = iFps - (iFps%25000);
+	int iBitRate = bitrate - (bitrate % 25000);
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
 
     if(iBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE) iBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
-
 
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
