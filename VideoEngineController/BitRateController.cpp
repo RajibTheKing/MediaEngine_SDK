@@ -31,7 +31,8 @@ BitRateController::BitRateController():
     m_iSpiralCounter(0),
     m_iUpCheckLimit(GOOD_MEGASLOT_TO_UP),
 	m_iContinuousUpCounter(0),
-	m_iContinuousUpCounterLimitToJump(1)
+	m_iContinuousUpCounterLimitToJump(1),
+	m_bInMaxBitrate(false)
 {
     dFirstTimeDecrease = BITRATE_DECREMENT_FACTOR;
     m_OppNotifiedByterate = 0;
@@ -315,6 +316,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
             m_iUpCheckLimit = GOOD_MEGASLOT_TO_UP_SAFE;
 
         m_lastState = BITRATE_CHANGE_DOWN;
+		m_bInMaxBitrate = false;
 
         return BITRATE_CHANGE_DOWN;
 
@@ -367,17 +369,20 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 
 			m_lastState = BITRATE_CHANGE_UP;
 
-			if ( m_iContinuousUpCounterLimitToJump >= m_iContinuousUpCounter)
+			if ( m_iContinuousUpCounterLimitToJump == m_iContinuousUpCounter)
 			{
 				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "Time to jump bitrate");
 
 				m_iContinuousUpCounterLimitToJump = GOOD_MEGASLOT_TO_UP_LIMIT_TO_BITRATE_JUMP;
 				m_iContinuousUpCounter = 0;
+				m_bInMaxBitrate = true;
 
 				return BITRATE_CHANGE_UP_JUMP;
 			}
-			else
+			else if (m_bInMaxBitrate == false)
 				return BITRATE_CHANGE_UP;
+			else
+				return BITRATE_CHANGE_NO;
         }
 
     }

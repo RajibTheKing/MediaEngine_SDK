@@ -83,6 +83,7 @@ private:
 	int m_iContinuousUpCounter;
 	int m_iContinuousUpCounterLimitToJump;
     int m_iUpCheckLimit;
+	bool m_bInMaxBitrate;
     int m_iMostRecentRespondedSlotNumber;
     
 };
