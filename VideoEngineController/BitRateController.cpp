@@ -369,7 +369,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 
 			m_lastState = BITRATE_CHANGE_UP;
 
-			if ( m_iContinuousUpCounterLimitToJump == m_iContinuousUpCounter)
+			if (m_iContinuousUpCounterLimitToJump == m_iContinuousUpCounter && m_bInMaxBitrate == false)
 			{
 				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "Time to jump bitrate");
 
