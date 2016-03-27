@@ -339,40 +339,14 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 #endif
 
-//#ifdef	RETRANSMISSION_ENABLED
-	//if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1) /* ||  ((in_data[4] >> 6) & 1) */) //If MiniPacket or RetransMitted packet
-	//{
-	//	CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT RETRANSMITTED PACKET");
-	//	m_pRetransVideoPacketQueue->Queue(in_data, in_size);
-	//}
-	//else 
 	if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1)) // It is a minipacket
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
 		m_pMiniPacketQueue->Queue(in_data, in_size);
 	}
 	else
-//#endif
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
-
-		/*
-		int frameNumber = ((int)in_data[1]<<16) + ((int)in_data[2]<<8) + in_data[3];
-		int length ;
-
-		if(g_bIsVersionDetectableOpponent && in_data[VERSION_BYTE_INDEX])
-		{
-		length = ((int)in_data[12]<<8) + in_data[13];
-
-		}
-		else
-		{
-		length = ((int)in_data[14]<<8) + in_data[15];
-		}
-		*/
-
-
-
 
 #ifdef BITRATE_CONTROL_BASED_ON_BANDWIDTH
 		CPacketHeader NowRecvHeader;
