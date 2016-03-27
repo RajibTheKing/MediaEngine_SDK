@@ -347,7 +347,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
     {
         int temp = GOOD_MEGASLOT_TO_UP * 0.9;
 
-		CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "BITRATE_CHANGE_UP called");
+		CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS, "BITRATE_CHANGE_UP called");
 
         if(m_iGoodSlotCounter>=temp && m_PrevMegaSlotStatus>GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
         {
@@ -362,7 +362,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 				m_iSpiralCounter = 0;
 				m_iContinuousUpCounter++;
 
-				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "previous was BITRATE_CHANGE_UP");
+				CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS, "previous was BITRATE_CHANGE_UP");
 			}
 			else
 				m_iContinuousUpCounter = 0;
@@ -371,7 +371,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 
 			if (m_iContinuousUpCounterLimitToJump <= m_iContinuousUpCounter && m_bInMaxBitrate == false)
 			{
-				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "Time to jump bitrate");
+				CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS, "Time to jump bitrate");
 
 				m_iContinuousUpCounterLimitToJump = GOOD_MEGASLOT_TO_UP_LIMIT_TO_BITRATE_JUMP;
 				m_iContinuousUpCounter = 0;
