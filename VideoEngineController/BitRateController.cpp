@@ -29,7 +29,8 @@ BitRateController::BitRateController():
     m_iNetTypeMiniPktRcv(0),
     m_lastState(BITRATE_CHANGE_DOWN),
     m_iSpiralCounter(0),
-    m_iUpCheckLimit(GOOD_MEGASLOT_TO_UP)
+    m_iUpCheckLimit(GOOD_MEGASLOT_TO_UP),
+	m_iContinuousUpCounter(0)
 {
     dFirstTimeDecrease = BITRATE_DECREMENT_FACTOR;
     m_OppNotifiedByterate = 0;
@@ -149,6 +150,13 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &tempHeader)
             m_bsetBitrateCalled = false;
             m_bMegSlotCounterShouldStop = true;
         }
+		else if (iNeedToChange == BITRATE_CHANGE_UP_JUMP)
+		{
+			m_OppNotifiedByterate = BITRATE_MAX / 8;
+
+			m_bsetBitrateCalled = false;
+			m_bMegSlotCounterShouldStop = true;
+		}
         else
         {
             //printf("@@@@@@@@@, BITRATE_CHANGE_NO --> %d\n", m_OppNotifiedByterate);
@@ -336,6 +344,8 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
     {
         int temp = GOOD_MEGASLOT_TO_UP * 0.9;
 
+		CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "BITRATE_CHANGE_UP called");
+
         if(m_iGoodSlotCounter>=temp && m_PrevMegaSlotStatus>GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
         {
             m_iGoodSlotCounter = 0;
@@ -344,12 +354,26 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 
             m_PrevMegaSlotStatus = dataReceivedRatio;
 
-            if(m_lastState == BITRATE_CHANGE_UP)
-                m_iSpiralCounter = 0;
+			if (m_lastState == BITRATE_CHANGE_UP)
+			{
+				m_iSpiralCounter = 0;
+				m_iContinuousUpCounter++;
 
-            m_lastState = BITRATE_CHANGE_UP;
+				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "previous was BITRATE_CHANGE_UP");
+			}
+			else
+				m_iContinuousUpCounter = 0;
 
-            return BITRATE_CHANGE_UP;
+			m_lastState = BITRATE_CHANGE_UP;
+
+			if (GOOD_MEGASLOT_TO_UP_LIMIT_TO_BITRATE_JUMP == m_iContinuousUpCounter)
+			{
+				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "Time to jump bitrate");
+
+				return BITRATE_CHANGE_UP_JUMP;
+			}
+			else
+				return BITRATE_CHANGE_UP;
         }
 
     }
