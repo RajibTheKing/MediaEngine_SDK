@@ -291,8 +291,10 @@ void BitRateController::NotifyEncodedFrame(int &nFrameSize){
 int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 {
     m_SlotCounter++;
-    CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS,"#BR~  SLOT: "+Tools::IntegertoStringConvert(m_iMostRecentRespondedSlotNumber)+"  BitRate :"+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())+ "  Ratio: "+Tools::DoubleToString(dataReceivedRatio));
-    if(m_SlotCounter >= GOOD_MEGASLOT_TO_UP_SAFE)
+
+    CLogPrinter_WriteLog(CLogPrinter::INFO, BITRATE_CHNANGE_LOG ,"#BR~  SLOT: "+Tools::IntegertoStringConvert(m_iMostRecentRespondedSlotNumber)+"  BitRate :"+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())+ "  Ratio: "+Tools::DoubleToString(dataReceivedRatio));
+    
+	if(m_SlotCounter >= GOOD_MEGASLOT_TO_UP_SAFE)
         m_iUpCheckLimit = GOOD_MEGASLOT_TO_UP;
 
     if(dataReceivedRatio < NORMAL_BITRATE_RATIO_IN_MEGA_SLOT)
@@ -347,7 +349,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
     {
         int temp = GOOD_MEGASLOT_TO_UP * 0.9;
 
-		CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS, "BITRATE_CHANGE_UP called");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, BITRATE_CHNANGE_LOG ,"BITRATE_CHANGE_UP called");
 
         if(m_iGoodSlotCounter>=temp && m_PrevMegaSlotStatus>GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
         {
@@ -362,7 +364,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 				m_iSpiralCounter = 0;
 				m_iContinuousUpCounter++;
 
-				CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS, "previous was BITRATE_CHANGE_UP");
+				CLogPrinter_WriteLog(CLogPrinter::INFO, BITRATE_CHNANGE_LOG ,"previous was BITRATE_CHANGE_UP");
 			}
 			else
 				m_iContinuousUpCounter = 0;
@@ -371,7 +373,7 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
 
 			if (m_iContinuousUpCounterLimitToJump <= m_iContinuousUpCounter && m_bInMaxBitrate == false)
 			{
-				CLogPrinter_WriteBitrateChangeInfo(CLogPrinter::DEBUGS, "Time to jump bitrate");
+				CLogPrinter_WriteLog(CLogPrinter::INFO, BITRATE_CHNANGE_LOG ,"Time to jump bitrate");
 
 				m_iContinuousUpCounterLimitToJump = GOOD_MEGASLOT_TO_UP_LIMIT_TO_BITRATE_JUMP;
 				m_iContinuousUpCounter = 0;
