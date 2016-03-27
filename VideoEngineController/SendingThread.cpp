@@ -141,31 +141,10 @@ void CSendingThread::SendingThreadProcedure()
 			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
 			pair<int, int> FramePacketToSend = { -1, -1 };
 
-
 			packetHeader.setPacketHeader(m_EncodedFrame + 1);
-
-			/*if(ExpectedFramePacketDeQueue.size() > 0)
-			{
-			FramePacketToSend = ExpectedFramePacketDeQueue.front();
-			ExpectedFramePacketDeQueue.pop_front();
-			}*/
-//#ifdef	RETRANSMISSION_ENABLED
-//			/*for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
-//			{
-//			m_EncodedFrame[startPoint ++] = (FramePacketToSend.first >> f) & 0xFF;
-//			}
-//			for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendPacketNumber
-//			{
-//			m_EncodedFrame[startPoint ++] = (FramePacketToSend.second >> f) & 0xFF;
-//			}*/
-//#endif
-			//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
 
 			unsigned char signal = g_FPSController->GetFPSSignalByte();
 			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
-
-			//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
-
 
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
@@ -229,9 +208,10 @@ void CSendingThread::SendingThreadProcedure()
 
 				//CLogPrinter_WriteForPacketLossInfo(CLogPrinter::DEBUGS, " &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
 
-				//toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController->GetOwnFPS()  * 1.0));
+
 #endif
-				toolsObject.SOSleep(/*GetSleepTime()*/1);
+				toolsObject.SOSleep(1);
+//				toolsObject.SOSleep(GetSleepTime());
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
