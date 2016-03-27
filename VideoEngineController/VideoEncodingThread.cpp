@@ -63,7 +63,7 @@ void CVideoEncodingThread::StopEncodingThread()
 
 void CVideoEncodingThread::StartEncodingThread()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoEncodingThread::StartEncodingThread called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::StartEncodingThread called");
 
 	if (pEncodingThread.get())
 	{
@@ -89,7 +89,7 @@ void CVideoEncodingThread::StartEncodingThread()
 
 #endif
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoEncodingThread::StartEncodingThread Encoding Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::StartEncodingThread Encoding Thread started");
 
 	return;
 }
@@ -104,7 +104,7 @@ void *CVideoEncodingThread::CreateVideoEncodingThread(void* param)
 
 void CVideoEncodingThread::EncodingThreadProcedure()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() started EncodingThreadProcedure method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() started EncodingThreadProcedure method");
 
 	Tools toolsObject;
 	int frameSize, encodedFrameSize;
@@ -151,7 +151,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	while (bEncodingThreadRunning)
 	{
-		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
 		if (m_EncodingBuffer->GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
@@ -169,7 +169,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			if (!g_FPSController.IsProcessableFrame())
 			{
-				CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
 
 				toolsObject.SOSleep(10);
 				continue;
@@ -392,5 +392,5 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	bEncodingThreadClosed = true;
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() stopped EncodingThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() stopped EncodingThreadProcedure method.");
 }

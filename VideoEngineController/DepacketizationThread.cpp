@@ -56,7 +56,7 @@ void CVideoDepacketizationThread::StopDepacketizationThread()
 
 void CVideoDepacketizationThread::StartDepacketizationThread()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoDepacketizationThread::StartDepacketizationThread() called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::StartDepacketizationThread() called");
 
 	if (pDepacketizationThread.get())
 	{
@@ -82,7 +82,7 @@ void CVideoDepacketizationThread::StartDepacketizationThread()
 
 #endif
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoDepacketizationThread::StartDepacketizationThread() Depacketization Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::StartDepacketizationThread() Depacketization Thread started");
 
 	return;
 }
@@ -97,7 +97,7 @@ void *CVideoDepacketizationThread::CreateVideoDepacketizationThread(void* param)
 
 void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Thread
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method");
 
 	Tools toolsObject;
 	unsigned char temp;
@@ -109,7 +109,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 	while (bDepacketizationThreadRunning)
 	{
-		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
 
 		bIsMiniPacket = false;
 		queSize = m_pVideoPacketQueue->GetQueueSize();
@@ -120,7 +120,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 #endif
 		if (0 == queSize && 0 == retQueuSize && 0 == miniPacketQueueSize)
 		{
-			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
 
 			toolsObject.SOSleep(10);
 		}
@@ -344,7 +344,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 	bDepacketizationThreadClosed = true;
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method");
 }
 
 void CVideoDepacketizationThread::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)

@@ -39,7 +39,7 @@ void CVideoRenderingThread::StopRenderingThread()
 
 void CVideoRenderingThread::StartRenderingThread()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoRenderingThread::StartRenderingThread() called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::StartRenderingThread() called");
 
 	if (pRenderingThread.get())
 	{
@@ -64,7 +64,7 @@ void CVideoRenderingThread::StartRenderingThread()
 
 #endif
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoRenderingThread::StartRenderingThread() Decoding Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::StartRenderingThread() Rendering Thread started");
 
 	return;
 }
@@ -79,7 +79,7 @@ void *CVideoRenderingThread::CreateVideoRenderingThread(void* param)
 
 void CVideoRenderingThread::RenderingThreadProcedure()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() started RenderingThreadProcedure method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() started RenderingThreadProcedure method");
 
 	Tools toolsObject;
 	int frameSize, nFrameNumber, intervalTime;
@@ -94,11 +94,11 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 	while (bRenderingThreadRunning)
 	{
-		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
 
 		if (m_RenderingBuffer->GetQueueSize() == 0)
 		{
-			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() NOTHING for Rendering method");
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() NOTHING for Rendering method");
 
 			toolsObject.SOSleep(10);
 		}
@@ -136,5 +136,5 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 	bRenderingThreadClosed = true;
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoRenderingThread::RenderingThreadProcedure() stopped RenderingThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() stopped RenderingThreadProcedure method.");
 }

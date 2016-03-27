@@ -39,7 +39,7 @@ void CSendingThread::StopSendingThread()
 
 void CSendingThread::StartSendingThread()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CSendingThread::StartSendingThread() called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::StartSendingThread() called");
 
 	if (pSendingThread.get())
 	{
@@ -65,7 +65,7 @@ void CSendingThread::StartSendingThread()
 
 #endif
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CSendingThread::StartSendingThread() Sending Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::StartSendingThread() Sending Thread started");
 
 	return;
 }
@@ -92,7 +92,7 @@ std::vector<int>g_BandWidthList;
 
 void CSendingThread::SendingThreadProcedure()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() started Sending method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() started Sending method");
 
 	Tools toolsObject;
 	int packetSize;
@@ -124,11 +124,11 @@ void CSendingThread::SendingThreadProcedure()
 
 	while (bSendingThreadRunning)
 	{
-		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() RUNNING Sending method");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
 
 		if (m_SendingBuffer->GetQueueSize() == 0)
 		{
-			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
 
 			toolsObject.SOSleep(10);
 		}
@@ -242,7 +242,7 @@ void CSendingThread::SendingThreadProcedure()
 
 	bSendingThreadClosed = true;
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
 }
 
 int CSendingThread::GetSleepTime()

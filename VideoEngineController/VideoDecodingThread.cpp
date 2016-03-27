@@ -38,7 +38,7 @@ void CVideoDecodingThread::StopDecodingThread()
 
 void CVideoDecodingThread::StartDecodingThread()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoDecodingThread::StartDecodingThread called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::StartDecodingThread called");
 
 	if (pDecodingThread.get())
 	{
@@ -64,7 +64,7 @@ void CVideoDecodingThread::StartDecodingThread()
 
 #endif
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::INFO, "CVideoDecodingThread::StartDecodingThread Decoding Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::StartDecodingThread Decoding Thread started");
 
 	return;
 }
@@ -79,7 +79,7 @@ void *CVideoDecodingThread::CreateDecodingThread(void* param)
 
 void CVideoDecodingThread::DecodingThreadProcedure()
 {
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() started DecodingThreadProcedure method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() started DecodingThreadProcedure method");
 
 	Tools toolsObject;
 
@@ -102,7 +102,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
 
 		currentTime = toolsObject.CurrentTimestamp();
 		if (-1 != nFirstFrameDecodingTime)
@@ -120,7 +120,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 		if (-1 == nFrameLength) 
 		{
-			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
 
 			toolsObject.SOSleep(10);
 		}
@@ -187,7 +187,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	bDecodingThreadClosed = true;
 
-	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
