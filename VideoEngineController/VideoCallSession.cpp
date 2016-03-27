@@ -339,19 +339,20 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 #endif
 
-#ifdef	RETRANSMISSION_ENABLED
-	if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1) /* ||  ((in_data[4] >> 6) & 1) */) //If MiniPacket or RetransMitted packet
-	{
-		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT RETRANSMITTED PACKET");
-		m_pRetransVideoPacketQueue->Queue(in_data, in_size);
-	}
-	else if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1)) // It is a minipacket
+//#ifdef	RETRANSMISSION_ENABLED
+	//if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1) /* ||  ((in_data[4] >> 6) & 1) */) //If MiniPacket or RetransMitted packet
+	//{
+	//	CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT RETRANSMITTED PACKET");
+	//	m_pRetransVideoPacketQueue->Queue(in_data, in_size);
+	//}
+	//else 
+	if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1)) // It is a minipacket
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
 		m_pMiniPacketQueue->Queue(in_data, in_size);
 	}
 	else
-#endif
+//#endif
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
 

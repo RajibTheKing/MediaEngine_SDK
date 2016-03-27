@@ -285,16 +285,16 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 	//			FramePacketToSend = ExpectedFramePacketDeQueue.front();
 	//			ExpectedFramePacketDeQueue.pop_front();
 	//		}
-	#ifdef	RETRANSMISSION_ENABLED
-	//		for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
-	//		{
-	//			m_EncodedFrame[startPoint ++] = (FramePacketToSend.first >> f) & 0xFF;
-	//		}
-	//		for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendPacketNumber
-	//		{
-	//			m_EncodedFrame[startPoint ++] = (FramePacketToSend.second >> f) & 0xFF;
-	//		}
-	#endif
+	//#ifdef	RETRANSMISSION_ENABLED
+	////		for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
+	////		{
+	////			m_EncodedFrame[startPoint ++] = (FramePacketToSend.first >> f) & 0xFF;
+	////		}
+	////		for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendPacketNumber
+	////		{
+	////			m_EncodedFrame[startPoint ++] = (FramePacketToSend.second >> f) & 0xFF;
+	////		}
+	//#endif
 	//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
 
 	unsigned char signal = g_FPSController.GetFPSSignalByte();

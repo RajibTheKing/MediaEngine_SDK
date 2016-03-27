@@ -29,9 +29,9 @@ public:
 	void IncreamentIndex(int &index);
 	int GetQueueSize();
 
-#ifdef	RETRANSMISSION_ENABLED
-	bool PacketExists(int iFrameNUmber, int iPacketNumber);
-#endif
+//#ifdef	RETRANSMISSION_ENABLED
+//	bool PacketExists(int iFrameNUmber, int iPacketNumber);
+//#endif
 
 private:
 
@@ -44,9 +44,9 @@ private:
 	unsigned char m_Buffer[MAX_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
 	int m_BufferDataLength[MAX_VIDEO_PACKET_QUEUE_SIZE];
 	int m_BufferIndexState[MAX_VIDEO_PACKET_QUEUE_SIZE];
-#ifdef	RETRANSMISSION_ENABLED
-	std::set<int>m_FrameInQueue;
-#endif
+//#ifdef	RETRANSMISSION_ENABLED
+//	std::set<int>m_FrameInQueue;
+//#endif
 	SmartPointer<CLockHandler> m_pChannelMutex;
 
 
