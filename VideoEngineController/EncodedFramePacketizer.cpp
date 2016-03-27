@@ -272,7 +272,7 @@ void CEncodedFramePacketizer::SendingThreadProcedure()
 
 //	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure Deque lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
 
-	CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
+	CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 	int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
 	pair<int,int> FramePacketToSend = {-1, -1};

@@ -161,7 +161,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 		int resendPacketLength = g_ResendBuffer.DeQueue(m_pPacketToResend ,frameNumber, packetNumber, timeDiffForQueue );
 
-		CLogPrinter_WriteForQueueTime(CLogPrinter::DEBUGS, " g_ResendBuffer "+ m_Tools.IntegertoStringConvert(timeDiffForQueue));
+		CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," g_ResendBuffer "+ m_Tools.IntegertoStringConvert(timeDiffForQueue));
 
 		if(resendPacketLength != -1)
 		{

@@ -136,7 +136,7 @@ void CSendingThread::SendingThreadProcedure()
 		{
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
-			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, "CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
+			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
 			pair<int, int> FramePacketToSend = { -1, -1 };

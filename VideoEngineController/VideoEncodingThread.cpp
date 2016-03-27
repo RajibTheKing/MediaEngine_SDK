@@ -164,7 +164,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure Deque packetSize " + Tools::IntegertoStringConvert(frameSize));
 
-			CLogPrinter_WriteForQueueTime(CLogPrinter::INFO, " &*&*&* m_EncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
+			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_EncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 			//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "Before Processable");
 
 			if (!g_FPSController.IsProcessableFrame())
