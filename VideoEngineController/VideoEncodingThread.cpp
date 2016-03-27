@@ -236,19 +236,19 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			this->m_pColorConverter->ConvertNV12ToI420(m_EncodingFrame);
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertNV12ToI420 ", currentTimeStamp);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertNV12ToI420 ", currentTimeStamp);
 
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
 
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 
 #elif defined(_DESKTOP_C_SHARP_)
 
 
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			int iCurWidth = this->m_pColorConverter->GetWidth();
 			int iCurHeight = this->m_pColorConverter->GetHeight();
 
@@ -271,11 +271,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
             //printf("WinD--> CVideoCallSession::EncodingThreadProcedure encodedFrameSize: %d\n", encodedFrameSize);
-            CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
+            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			if (orientation_type == ORIENTATION_90_MIRRORED)
 			{
 				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_EncodingFrame, m_ConvertedEncodingFrame);
@@ -285,13 +285,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 //				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() orientation_type : " + m_Tools.IntegertoStringConvert(orientation_type) + " ORIENTATION_0_MIRRORED ");
 				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420ForBackCam(m_EncodingFrame, m_ConvertedEncodingFrame);
 			}
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertNV12ToI420 ", currentTimeStamp);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertNV12ToI420 ", currentTimeStamp);
 
 			long long enctime = m_Tools.CurrentTimestamp();
 
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 
 			//printf("enctime = %lld\n", m_Tools.CurrentTimestamp() - enctime);
 
@@ -300,7 +300,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() orientation_type : " + m_Tools.IntegertoStringConvert(orientation_type));
 
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			if (orientation_type == ORIENTATION_90_MIRRORED)
 			{
 //				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() orientation_type : " + m_Tools.IntegertoStringConvert(orientation_type) + "  ORIENTATION_90_MIRRORED");
@@ -311,13 +311,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 //				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() orientation_type : " + m_Tools.IntegertoStringConvert(orientation_type) + " ORIENTATION_0_MIRRORED ");
 				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam(m_EncodingFrame, m_ConvertedEncodingFrame);
 			}
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertNV12ToI420 ", currentTimeStamp);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertNV12ToI420 ", currentTimeStamp);
 
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() Converted to 420");
 			encodingTimeStamp = toolsObject.CurrentTimestamp();
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Encode ", currentTimeStamp);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 			encodingTime = toolsObject.CurrentTimestamp() - encodingTimeStamp;
 
 			encodeTimeStampFor15 += encodingTime;
@@ -367,7 +367,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure() m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
 
 			//m_pVideoEncoder->GetEncodedFramePacketizer()->Packetize(m_FriendID,m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
-			currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
+			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			//- (void)WriteToFile:(const char *)path withData:(unsigned char *)data dataLength:(int)datalen
 
 			/*
@@ -381,7 +381,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure() packetized lFriendID " + Tools::IntegertoStringConvert(m_FriendID) + " packetSize " + Tools::IntegertoStringConvert(encodedFrameSize));
 			m_pEncodedFramePacketizer->Packetize(m_FriendID, m_EncodedFrame, encodedFrameSize, m_iFrameNumber, m_iTimeStampDiff);
-			CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Packetize ", currentTimeStamp);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ", currentTimeStamp);
 			++m_iFrameNumber;
 			//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure2 m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(CVideoEncodingThread::m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
 
