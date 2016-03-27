@@ -137,7 +137,7 @@ int CVideoEncoder::SetBitrate(int iFps)
 		}
     
     //printf("FVampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
-		CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "FVampireEngg--> SetBitrate(%d) = %d\n", Tools::IntegertoStringConvert(iBitRate), Tools::IntegertoStringConvert(iRet));
+		CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "FVampireEngg--> SetBitrate " + Tools::IntegertoStringConvert(iBitRate) + " = " + Tools::IntegertoStringConvert(iRet));
     
     
     return iRet;
