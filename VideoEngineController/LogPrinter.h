@@ -93,7 +93,7 @@ public:
 	static void WriteForQueueTime(Priority priority, const std::string message);
 	static void WriteForPacketLossInfo(Priority priority, const std::string message);
 
-	static long long WriteLog(Priority priority, int isLogEnabled, const std::string message, bool calculatedTime = false, long long prevTime = 0);
+	static long long WriteLog(Priority priority, int isLogEnabled, const std::string message = "", bool calculatedTime = false, long long prevTime = 0);
 
 	static long long GetTimeDifference(long long prevTime);
 
