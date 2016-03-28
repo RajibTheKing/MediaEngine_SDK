@@ -30,10 +30,10 @@ private:
 	bool bRenderingThreadRunning;
 	bool bRenderingThreadClosed;
 
-	CRenderingBuffer *m_RenderingBuffer;					// bring
-	CCommonElementsBucket* m_pCommonElementsBucket;		// bring
+	CRenderingBuffer *m_RenderingBuffer;					
+	CCommonElementsBucket* m_pCommonElementsBucket;		
 
-	LongLong m_FriendID;								// bring
+	LongLong m_FriendID;								
 
 	unsigned char m_RenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 

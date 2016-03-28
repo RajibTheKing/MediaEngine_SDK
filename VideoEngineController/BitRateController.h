@@ -77,7 +77,14 @@ private:
     long long timeDiffForMiniPkt;
     bool m_bIsFirstMiniPktRcv;
     CVideoEncoder *m_pVideoEncoder;
-    
+
+    int m_lastState;
+    int m_iSpiralCounter;
+	int m_iContinuousUpCounter;
+	int m_iContinuousUpCounterLimitToJump;
+    int m_iUpCheckLimit;
+	bool m_bInMaxBitrate;
+    int m_iMostRecentRespondedSlotNumber;
     
 };
 

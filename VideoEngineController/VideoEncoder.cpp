@@ -10,6 +10,7 @@ CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject),
 m_iMaxBitrate(BITRATE_MAX),
 m_iBitrate(BITRATE_MAX - 25000),
+m_iNetworkType(NETWORK_TYPE_NOT_2G),
 m_pSVCVideoEncoder(NULL)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
@@ -104,13 +105,11 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 
 int CVideoEncoder::SetBitrate(int iFps)
 {
-#ifdef USE_FIXED_BITRATE_PER_SLOT
-    int iBitRate = iFps;// - (iFps%25000);
-#else
 	int iBitRate = iFps - (iFps%25000);
-#endif
     
-    if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
+    if(m_iNetworkType == NETWORK_TYPE_NOT_2G && iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
+    
+    if(m_iNetworkType == NETWORK_TYPE_2G && iBitRate<BITRATE_MIN_FOR_2G) iBitRate = BITRATE_MIN_FOR_2G;
     
     if(iBitRate>BITRATE_MAX) iBitRate = BITRATE_MAX;
     
@@ -137,27 +136,28 @@ int CVideoEncoder::SetBitrate(int iFps)
 			}
 		}
     
-    printf("FVampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
+    //printf("FVampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
+		CLogPrinter_WriteLog(CLogPrinter::INFO, BITRATE_CHNANGE_LOG ,"FVampireEngg--> SetBitrate " + Tools::IntegertoStringConvert(iBitRate) + " = " + Tools::IntegertoStringConvert(iRet));
     
     
     return iRet;
 
 }
 
-int CVideoEncoder::SetMaxBitrate(int iFps)
+void CVideoEncoder::SetNetworkType(int iNetworkType)
 {
-	iFps = iFps * MAX_BITRATE_MULTIPLICATION_FACTOR;
+    m_iNetworkType = iNetworkType;
+}
 
-#ifdef USE_FIXED_BITRATE_PER_SLOT
-	int iBitRate = iFps;
-#else
-	int iBitRate = iFps - (iFps%25000);
-#endif
+int CVideoEncoder::SetMaxBitrate(int bitrate)
+{
+	bitrate = bitrate * MAX_BITRATE_MULTIPLICATION_FACTOR;
+
+	int iBitRate = bitrate - (bitrate % 25000);
     
     if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
 
     if(iBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE) iBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
-
 
 	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;

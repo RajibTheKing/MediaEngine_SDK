@@ -29,19 +29,19 @@ public:
 
 private:
 
-	CEncodingBuffer *m_EncodingBuffer;						// bring
-	BitRateController *m_BitRateController;					// bring
+	CEncodingBuffer *m_EncodingBuffer;						
+	BitRateController *m_BitRateController;					
 
 	unsigned char m_EncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_ConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
-	CColorConverter *m_pColorConverter;						// bring
-	CVideoEncoder *m_pVideoEncoder;							// bring
-	CEncodedFramePacketizer *m_pEncodedFramePacketizer;		// bring
+	CColorConverter *m_pColorConverter;						
+	CVideoEncoder *m_pVideoEncoder;							
+	CEncodedFramePacketizer *m_pEncodedFramePacketizer;		
 
 	int m_iFrameNumber;
-	LongLong m_FriendID;									// bring
+	LongLong m_FriendID;									
 
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;

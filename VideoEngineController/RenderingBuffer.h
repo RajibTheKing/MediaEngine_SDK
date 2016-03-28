@@ -17,8 +17,8 @@ public:
 	CRenderingBuffer();
 	~CRenderingBuffer();
 
-	int Queue(int frameNumber, unsigned char *frame, int length, unsigned int timeStampDiff, int videoHeight, int videoWidth);
-	int DeQueue(int &frameNumber,unsigned int &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth, int &timeDiff);
+	int Queue(int frameNumber, unsigned char *frame, int length, long long timeStampDiff, int videoHeight, int videoWidth);
+	int DeQueue(int &frameNumber,long long &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth, int &timeDiff);
 	void IncreamentIndex(int &index);
 	int GetQueueSize();
 
@@ -40,7 +40,7 @@ private:
 	int m_BufferIndexState[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_BufferInsertionTime[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
-	unsigned int m_BufferTimeStamp[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	long long m_BufferTimeStamp[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pChannelMutex;
 };

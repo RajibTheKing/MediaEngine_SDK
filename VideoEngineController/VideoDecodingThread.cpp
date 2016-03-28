@@ -5,8 +5,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-int iValuableFrameUsedCounter = 0;
-
 CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController) :
 
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
@@ -40,22 +38,17 @@ void CVideoDecodingThread::StopDecodingThread()
 
 void CVideoDecodingThread::StartDecodingThread()
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 1");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::StartDecodingThread called");
 
 	if (pDecodingThread.get())
 	{
-		//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 2");
 		pDecodingThread.reset();
-		//		CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 3");
+
 		return;
 	}
 
-	//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 4");
-
 	bDecodingThreadRunning = true;
 	bDecodingThreadClosed = false;
-
-	//	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread 5");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -71,7 +64,7 @@ void CVideoDecodingThread::StartDecodingThread()
 
 #endif
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::StartDepacketizationThread Decoding Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::StartDecodingThread Decoding Thread started");
 
 	return;
 }
@@ -86,7 +79,8 @@ void *CVideoDecodingThread::CreateDecodingThread(void* param)
 
 void CVideoDecodingThread::DecodingThreadProcedure()
 {
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() started DecodingThreadProcedure method");
+
 	Tools toolsObject;
 
 	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
@@ -108,7 +102,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
 
 		currentTime = toolsObject.CurrentTimestamp();
 		if (-1 != nFirstFrameDecodingTime)
@@ -121,10 +115,13 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		decodingTime = toolsObject.CurrentTimestamp() - currentTime;
 
 		if (nFrameLength>-1)
-			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " GetReceivedFrame # Get Time: " + m_Tools.IntegertoStringConvert(decodingTime) + "  Len: " + m_Tools.IntegertoStringConvert(nFrameLength) + "  FrameNo: " + m_Tools.IntegertoStringConvert(nFrameNumber));
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() GetReceivedFrame # Get Time: " + m_Tools.IntegertoStringConvert(decodingTime) + "  Len: " + m_Tools.IntegertoStringConvert(nFrameLength) + "  FrameNo: " + m_Tools.IntegertoStringConvert(nFrameNumber));
 
 
-		if (-1 == nFrameLength) {
+		if (-1 == nFrameLength) 
+		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
+
 			toolsObject.SOSleep(10);
 		}
 		else
@@ -137,7 +134,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
 
 			if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
 				continue;
 			}
@@ -169,12 +166,12 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					if (dbAverageDecodingTime > 30)
 					{
 						fps = 1000 / dbAverageDecodingTime;
-						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
+					//	printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
 						if (fps < FPS_MAXIMUM)
 							g_FPSController->SetMaxOwnProcessableFPS(fps);
 					}
 				}
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
 			}
 
 			if (-1 == nFirstFrameDecodingTime)
@@ -190,31 +187,21 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	bDecodingThreadClosed = true;
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
 {
-	//printf("Wind--> DecodeAndSendToClient 0\n");
-#ifdef RETRANSMITTED_FRAME_USAGE_STATISTICS_ENABLED
-	if (g_TraceRetransmittedFrame[nFramNumber] == 1)
-	{
-		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Very valuable frame used " + m_Tools.IntegertoStringConvert(nFramNumber) + ", counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
-		iValuableFrameUsedCounter++;
-	}
-	CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$$Very Valuable Retransmission packet used counter =  " + m_Tools.IntegertoStringConvert(iValuableFrameUsedCounter));
+	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
-#endif
-
-	long long currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, "");
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 
-	CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " Decode ", currentTimeStamp);
+	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Decode ", currentTimeStamp);
 
 	if (1 > m_decodedFrameSize)
 		return -1;
 
-	currentTimeStamp = CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertI420ToNV21 ");
+	currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
@@ -227,13 +214,16 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
-	CLogPrinter_WriteForOperationTime(CLogPrinter::DEBUGS, " ConvertI420ToNV21 ", currentTimeStamp);
+	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
+
+	long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
+
 #if defined(_DESKTOP_C_SHARP_)
-	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, currentTimeStampForBrust, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #else
 
-	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, currentTimeStampForBrust, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #endif
 }

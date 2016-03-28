@@ -33,8 +33,8 @@ private:
 	bool bSendingThreadRunning;
 	bool bSendingThreadClosed;
 
-	CCommonElementsBucket* m_pCommonElementsBucket;		// bring
-	CSendingBuffer *m_SendingBuffer;						// bring
+	CCommonElementsBucket* m_pCommonElementsBucket;		
+	CSendingBuffer *m_SendingBuffer;						
 
 	CFPSController *g_FPSController;
 

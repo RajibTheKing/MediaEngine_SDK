@@ -38,12 +38,12 @@ private:
 	int m_decodingWidth;
 	int m_decodedFrameSize;
 
-	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		// bring
-	CRenderingBuffer *m_RenderingBuffer;							// bring
-	CVideoDecoder *m_pVideoDecoder;								// bring
-	CColorConverter *m_pColorConverter;							// bring
+	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
+	CRenderingBuffer *m_RenderingBuffer;						
+	CVideoDecoder *m_pVideoDecoder;								
+	CColorConverter *m_pColorConverter;							
 
-	CFPSController *g_FPSController;									// bring
+	CFPSController *g_FPSController;									
 
 	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];

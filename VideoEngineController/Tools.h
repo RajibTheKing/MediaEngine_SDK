@@ -26,7 +26,7 @@ public:
 
 	void SOSleep(int Timeout);
 	LongLong CurrentTimestamp();
-	std::string DoubleToString(double value);
+	static std::string DoubleToString(double value);
 	static int StringToIntegerConvert(std::string number);
 	static std::string IntegertoStringConvert(int number);
 	static std::string LongLongtoStringConvert(LongLong number);

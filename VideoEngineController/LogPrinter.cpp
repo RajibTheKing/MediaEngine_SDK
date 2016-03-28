@@ -247,6 +247,51 @@ long long CLogPrinter::WriteForOperationTime(Priority priority, const std::strin
 #endif
     return -1;
 }
+
+long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::string message, bool calculatedTime, long long prevTime)
+{
+	if (isLogEnable)
+	{
+		if (calculatedTime)
+		{
+			long long timeDiff = 0;
+
+			timeDiff = GetTimeDifference(prevTime);
+
+			if (prevTime == 0)
+				return timeDiff;
+
+#if defined(__ANDROID__)
+
+			LOGE("%s :: %s --> %lld", PRIORITY_NAMES[priority].c_str(), message.c_str(), timeDiff);
+
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_IPHONE)
+
+			printf("%s :: %s --> %lld\n", PRIORITY_NAMES[priority].c_str(), message.c_str(), timeDiff);
+
+#endif
+
+			return timeDiff;
+		}
+		else
+		{
+
+#if defined(__ANDROID__)
+
+			LOGE("%s :: %s", PRIORITY_NAMES[priority].c_str(), message.c_str());
+
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_IPHONE)
+
+			printf("%s :: %s\n", PRIORITY_NAMES[priority].c_str(), message.c_str());
+
+#endif
+		}
+
+	}
+
+	return -1;
+}
+
 void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)
 {
 	if(isLogEnable)
@@ -296,16 +341,13 @@ void CLogPrinter::WriteForPacketLossInfo(Priority priority, const std::string me
 	}
 }
 
-#ifdef __OPERATION_TIME_LOG__
-
 long long  CLogPrinter::GetTimeDifference(long long prevTime)
 {
 
 #ifndef USE_CPP_11_TIME
 
-	#if defined(_DESKTOP_C_SHARP_)
-		//Do Nothing
-		return -1;
+	#if defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_)
+		return GetTickCount64();
 	#else
 		struct timeval te;
 		gettimeofday(&te, NULL); // get current time
@@ -333,7 +375,6 @@ long long  CLogPrinter::GetTimeDifference(long long prevTime)
 	return now - prevTime;
 #endif
 }
-#endif
 
 
 

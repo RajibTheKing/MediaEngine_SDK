@@ -20,7 +20,7 @@ CRenderingBuffer::~CRenderingBuffer()
 		m_pChannelMutex.reset();*/
 }
 
-int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, unsigned int timeStampDiff, int videoHeight, int videoWidth)
+int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, long long timeStampDiff, int videoHeight, int videoWidth)
 {
     
     Locker lock(*m_pChannelMutex);
@@ -49,7 +49,7 @@ int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, u
     return 1;
 }
 
-int CRenderingBuffer::DeQueue(int &frameNumber, unsigned int &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth, int &timeDiff)
+int CRenderingBuffer::DeQueue(int &frameNumber, long long &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth, int &timeDiff)
 {
 	Locker lock(*m_pChannelMutex);
 
