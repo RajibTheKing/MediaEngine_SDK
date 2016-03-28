@@ -32,6 +32,7 @@ public:
 	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
 
 private:
+	void ExpectedPacket();
 
 	bool bDepacketizationThreadRunning;
 	bool bDepacketizationThreadClosed;
