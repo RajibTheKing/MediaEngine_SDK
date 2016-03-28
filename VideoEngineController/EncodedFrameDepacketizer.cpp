@@ -23,7 +23,6 @@ extern CFPSController g_FPSController;
 int rtCnt;
 double rtSum,rtAvg;
 
-long long g_FriendID = -1;
 
 #define DEFAULT_FIRST_FRAME_RCVD  65000
 
@@ -166,20 +165,22 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		if(resendPacketLength != -1)
 		{
 			m_pPacketToResend[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (1<<BIT_INDEX_RETRANS_PACKET); //Retransmitted packet flag added
+            
+            long long friendID = m_VideoCallSession->GetFriendID();
 
-			if(g_FriendID != -1)
+			if(friendID != -1)
 			{
 				m_iCountResendPktSent++;
 				/*CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding Resend Packet Found resendframe: "+
 																m_Tools.IntegertoStringConvert(resendframe) + " resendpacket: "+ m_Tools.IntegertoStringConvert(resendpacket)+
 																" resendpacketLenght: "+ m_Tools.IntegertoStringConvert(resendPacketLength));*/
 
-				m_pCommonElementsBucket->SendFunctionPointer(g_FriendID, 2, m_pPacketToResend, PACKET_HEADER_LENGTH + resendPacketLength);
+				m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_pPacketToResend, PACKET_HEADER_LENGTH + resendPacketLength);
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: $#() RetransPKT USED = " + m_Tools.IntegertoStringConvert(m_iRetransPktUsed) + " DROPED = " + m_Tools.IntegertoStringConvert(m_iRetransPktDrpd) );
 			}
 			else
 			{
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding g_FriendID == -1" );
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CEncodedFrameDepacketizer::PushPacketForDecoding friendID == -1" );
 			}
 		}
         return -1;

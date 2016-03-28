@@ -126,7 +126,7 @@ private:
 
 	Tools m_Tools;
 	Tools m_ToolsDepacketizationThreadProcedure;
-	LongLong friendID;
+	LongLong m_lfriendID;
 	int m_iFrameNumber;
 	CVideoEncoderListHandler sessionMediaList;
 
