@@ -109,7 +109,7 @@ m_TimeFor100Depacketize(0)
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
 	m_pSessionMutex.reset(new CLockHandler);
-	friendID = fname;
+	m_lfriendID = fname;
 	sessionMediaList.ClearAllFromVideoEncoderList();
 
 
@@ -125,7 +125,7 @@ m_TimeFor100Depacketize(0)
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
 	m_BitRateController = new BitRateController();
-
+    
 	ExpectedFramePacketPair.first = 0;
 	ExpectedFramePacketPair.second = 0;
 	iNumberOfPacketsInCurrentFrame = 0;
@@ -258,14 +258,14 @@ CVideoCallSession::~CVideoCallSession()
 		m_SendingBuffer = NULL;
 	}
 
-	friendID = -1;
+	m_lfriendID = -1;
 
 	SHARED_PTR_DELETE(m_pSessionMutex);
 }
 
 LongLong CVideoCallSession::GetFriendID()
 {
-	return friendID;
+	return m_lfriendID;
 }
 
 void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
@@ -498,9 +498,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; //MiniPacket Flag
 
 	if(uchVersion)
-		m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
+		m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
 	else
-		m_pCommonElementsBucket->SendFunctionPointer(friendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
+		m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
 
 	//m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
 }

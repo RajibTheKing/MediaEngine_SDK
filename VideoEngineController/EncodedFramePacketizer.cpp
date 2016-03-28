@@ -14,9 +14,7 @@
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
-BandwidthController g_BandWidthController;
-
-
+extern deque<pair<int, int>> ExpectedFramePacketDeQueue;
 extern CResendingBuffer g_ResendBuffer;
 extern CFPSController g_FPSController;
 

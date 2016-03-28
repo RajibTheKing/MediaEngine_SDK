@@ -85,11 +85,6 @@ int iNumberOfPacketsInLastFrame = 0;
 int iNumberOfPacketsActuallySentFromLastFrame = 0;
 #endif
 
-#ifdef  BANDWIDTH_CONTROLLING_TEST
-std::vector<int>g_TimePeriodInterval;
-std::vector<int>g_BandWidthList;
-#endif
-
 void CSendingThread::SendingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() started Sending method");
@@ -103,11 +98,11 @@ void CSendingThread::SendingThreadProcedure()
 	CPacketHeader packetHeader;
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-	g_BandWidthList.push_back(500 * 1024);    g_TimePeriodInterval.push_back(20 * 1000);
-	g_BandWidthList.push_back(8 * 1024);    g_TimePeriodInterval.push_back(20 * 1000);
-	g_BandWidthList.push_back(3 * 1024);    g_TimePeriodInterval.push_back(100 * 1000);
-	/*g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
+	m_BandWidthList.push_back(8 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
+	m_BandWidthList.push_back(3 * 1024);    m_TimePeriodInterval.push_back(100 * 1000);
+	/*g_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	g_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
 	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
 	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
 	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
@@ -119,7 +114,7 @@ void CSendingThread::SendingThreadProcedure()
 	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
 	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
 	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);*/
-	g_BandWidthController.SetTimeInterval(g_BandWidthList, g_TimePeriodInterval);
+	m_BandWidthController.SetTimeInterval(m_BandWidthList, m_TimePeriodInterval);
 #endif
 
 	while (bSendingThreadRunning)
@@ -195,7 +190,7 @@ void CSendingThread::SendingThreadProcedure()
 
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-			if (g_BandWidthController.IsSendeablePacket(packetSize)) {
+			if (m_BandWidthController.IsSendeablePacket(packetSize)) {
 #endif
 #if defined(SEND_VIDEO_TO_SELF)
 			CVideoCallSession* pVideoSession;
