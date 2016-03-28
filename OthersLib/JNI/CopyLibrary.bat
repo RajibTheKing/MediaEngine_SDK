@@ -1,1 +1,1 @@
-copy "E:\working\FromRajib\GitIPV\AndroidTestClientVE_FTest\app\src\main\jni\videoengine\OthersLib\libs\armeabi-v7a\libIPVisionConnectivity.so" "E:\working\FromRajib\GitIPV\AndroidTestClientVE_FTest\app\src\main\jniLibs\armeabi-v7a\libIPVisionConnectivity.so"
+copy "..\libs\armeabi-v7a\libRingIDSDK.so" "..\..\..\..\jniLibs\armeabi-v7a\libRingIDSDK.so"
