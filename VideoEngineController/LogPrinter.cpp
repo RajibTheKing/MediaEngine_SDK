@@ -346,9 +346,8 @@ long long  CLogPrinter::GetTimeDifference(long long prevTime)
 
 #ifndef USE_CPP_11_TIME
 
-	#if defined(_DESKTOP_C_SHARP_)
-		//Do Nothing
-		return -1;
+	#if defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_)
+		return GetTickCount64();
 	#else
 		struct timeval te;
 		gettimeofday(&te, NULL); // get current time
