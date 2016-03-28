@@ -95,132 +95,77 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method");
 
 	Tools toolsObject;
-	unsigned char temp;
 	int frameSize, queSize = 0, miniPacketQueueSize = 0;
-	int frameNumber, packetNumber;
-	bool bIsMiniPacket;
-	int iPacketType = NORMAL_PACKET;
-	long long timeDiffForMiniPkt = m_Tools.CurrentTimestamp();
 
 	while (bDepacketizationThreadRunning)
 	{
 		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
 
-		bIsMiniPacket = false;
 		queSize = m_pVideoPacketQueue->GetQueueSize();
 
-
 		miniPacketQueueSize = m_pMiniPacketQueue->GetQueueSize();
+
 		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
+
 		if (0 == queSize && 0 == miniPacketQueueSize)
 		{
 			CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
 
 			toolsObject.SOSleep(10);
+
+			continue;
 		}
-		else
-		{
-			if (miniPacketQueueSize != 0)
-			{
-				frameSize = m_pMiniPacketQueue->DeQueue(m_PacketToBeMerged);
-			}
-			else if (queSize>0){
-				frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
-        	}
 
-			m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
-			CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() !@# Versions: " + m_Tools.IntegertoStringConvert(g_uchSendPacketVersion));
-			//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
-			//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
+		if (miniPacketQueueSize != 0) {
+			frameSize = m_pMiniPacketQueue->DeQueue(m_PacketToBeMerged);
+		}
+		else if (queSize > 0) {
+			frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
+		}
 
-			bool bRetransmitted = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1;
-			bool bMiniPacket = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1;
-			m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] = 0;
+		m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
+		CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
+								   "CVideoDepacketizationThread::StartDepacketizationThread() !@# Versions: " +
+								   m_Tools.IntegertoStringConvert(g_uchSendPacketVersion));
+		//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
+		//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 
-			if (bMiniPacket && m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER)
-			{
+		bool bRetransmitted = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1;
+		bool bMiniPacket = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1;
+		m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] = 0;
+
+		if (bMiniPacket) {
+			if (m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER) {                    /* Opponent response of data receive. */
 				m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
-				bIsMiniPacket = true;
-				toolsObject.SOSleep(1);
-				continue;
 			}
-			else if(bMiniPacket && m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE)
-			{
+			else if (m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE) {        /* Opponent Network type */
 				m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
-				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");
-				continue;
+				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,
+										   "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");
 			}
 
-			if (!bRetransmitted && !bMiniPacket)
-			{
-				ExpectedPacket();	//Calculate Expected Video Packet For Debugging.
-			}
-			else if (bMiniPacket)
-			{
-				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ::Minipacket: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
-					+ " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
-			}
-				int CurrentPacketType = NORMAL_PACKET_TYPE;
-				if (bIsMiniPacket)
-					CurrentPacketType = MINI_PACKET_TYPE;
-				else if (bRetransmitted)
-					CurrentPacketType = RETRANSMITTED_PACKET_TYPE;
+			toolsObject.SOSleep(1);
 
-				m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, CurrentPacketType, m_RcvdPacketHeader);
-				toolsObject.SOSleep(1);
-			}
+			continue;
+		}
+
+#if 0
+		ExpectedPacket();	//Calculate Expected Video Packet For Debugging.
+		int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ::Minipacket: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+													   + " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
+#endif
+
+		m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize,
+												 NORMAL_PACKET_TYPE, m_RcvdPacketHeader);
+		toolsObject.SOSleep(1);
 	}
 
-		bDepacketizationThreadClosed = true;
+	bDepacketizationThreadClosed = true;
 
-		CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method");
+	CLogPrinter_WriteThreadLog(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method");
 }
 
-void CVideoDepacketizationThread::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
-{
-	unsigned char uchVersion = g_uchSendPacketVersion;
-
-//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
-	if(INVALID_PACKET_NUMBER !=resendPacketNumber  && INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE !=resendPacketNumber) //
-	{
-		return;
-	}
-
-	int numberOfPackets = 1000; //dummy numberOfPackets
-
-	CPacketHeader PacketHeader;
-	if (resendPacketNumber == INVALID_PACKET_NUMBER) {
-		//m_miniPacketBandCounter++;
-		if(0 == uchVersion) return;
-
-		PacketHeader.setPacketHeader(uchVersion, *m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
-	}
-	else if (resendPacketNumber == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE) {
-		//m_miniPacketBandCounter++;
-		//if(0 == uchVersion) return;
-
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() send INVALID-->> PACKET_NUMBER_FOR_NETWORK_TYPE ");
-		PacketHeader.setPacketHeader(uchVersion, *m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
-	}
-	else {
-		PacketHeader.setPacketHeader(uchVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
-		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
-	}
-
-	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
-
-	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
-
-	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; //MiniPacket Flag
-
-	if(uchVersion)
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
-	else
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
-
-	//m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
-}
 
 void CVideoDepacketizationThread::UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets)
 {

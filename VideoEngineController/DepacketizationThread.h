@@ -28,10 +28,9 @@ public:
 	void DepacketizationThreadProcedure();
 	static void *CreateVideoDepacketizationThread(void* param);
 
-	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
-	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
-
 private:
+
+	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
 	void ExpectedPacket();
 
 	bool bDepacketizationThreadRunning;
