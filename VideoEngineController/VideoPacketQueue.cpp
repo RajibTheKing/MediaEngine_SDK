@@ -19,22 +19,11 @@ CVideoPacketQueue::~CVideoPacketQueue()
 	/*if (m_pChannelMutex.get())
 		m_pChannelMutex.reset();*/
 	SHARED_PTR_DELETE(m_pChannelMutex);
-
-#ifdef RETRANSMISSION_ENABLED
-	m_FrameInQueue.clear();
-#endif
 }
 
 int CVideoPacketQueue::Queue(unsigned char *frame, int length)
 {
 	Locker lock(*m_pChannelMutex);
-#ifdef	RETRANSMISSION_ENABLED
-	Tools tools;
-	int frameNumber = tools.GetIntFromChar(frame,1,3);
-	int pktNumber = frame[5];
-
-	m_FrameInQueue.insert(frameNumber*MAX_NUMBER_OF_PACKETS + pktNumber);
-#endif
 
 	if (m_iQueueSize >= m_iQueueCapacity)
 	{
@@ -54,28 +43,9 @@ int CVideoPacketQueue::Queue(unsigned char *frame, int length)
 	}
 }
 
-#ifdef	RETRANSMISSION_ENABLED
-bool CVideoPacketQueue::PacketExists(int iFrameNUmber, int iPacketNumber)
-{
-	Locker lock(*m_pChannelMutex);	
-	bool flag = (m_FrameInQueue.find(iFrameNUmber*MAX_NUMBER_OF_PACKETS+iPacketNumber)!=m_FrameInQueue.end());
-	
-	return flag;
-}
-#endif
-
 int CVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
 {
 	Locker lock(*m_pChannelMutex);
-#ifdef	RETRANSMISSION_ENABLED
-	int frameNumber = Tools::GetIntFromChar(decodeBuffer,1,3);
-	int pktNumber = decodeBuffer[5];
-
-#ifdef CRASH_CHECK
-	if(m_FrameInQueue.find(frameNumber*MAX_NUMBER_OF_PACKETS + pktNumber) != m_FrameInQueue.end())
-#endif
-		m_FrameInQueue.erase(frameNumber*MAX_NUMBER_OF_PACKETS + pktNumber);
-#endif
 
 	if (m_iQueueSize <= 0)
 	{
