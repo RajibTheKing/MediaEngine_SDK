@@ -7,9 +7,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
-bool gbStopFPSSending = false;
-extern unsigned char g_uchSendPacketVersion;						// bring check						
+extern unsigned char g_uchSendPacketVersion;						// bring check
 
 CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter) :
 
@@ -23,9 +21,6 @@ m_pCommonElementsBucket(CommonElementsBucket),
 m_miniPacketBandCounter(miniPacketBandCounter)
 
 {
-	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
-	gbStopFPSSending = false;
-
 	ExpectedFramePacketPair.first = 0;
 	ExpectedFramePacketPair.second = 0;
 
@@ -125,8 +120,6 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		}
 		else
 		{
-			g_iPacketCounterSinceNotifying++;
-
 			if (miniPacketQueueSize != 0)
 			{
 				frameSize = m_pMiniPacketQueue->DeQueue(m_PacketToBeMerged);
@@ -271,18 +264,6 @@ void CVideoDepacketizationThread::ExpectedPacket()
         + ")" ;
         printf("%s\n", sMsg.c_str());
         */
-
-		if (g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
-		{
-			//						g_FPSController.NotifyFrameDropped(currentFramePacketPair.first);
-			g_iPacketCounterSinceNotifying = 0;
-			gbStopFPSSending = false;
-		}
-		else
-		{
-			gbStopFPSSending = true;
-		}
-
 
 		if (currentFramePacketPair.first != ExpectedFramePacketPair.first) //different frame received
 		{
