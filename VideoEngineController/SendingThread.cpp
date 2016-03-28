@@ -101,19 +101,19 @@ void CSendingThread::SendingThreadProcedure()
 	m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
 	m_BandWidthList.push_back(8 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
 	m_BandWidthList.push_back(3 * 1024);    m_TimePeriodInterval.push_back(100 * 1000);
-	/*g_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);*/
+	/*m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);*/
 	m_BandWidthController.SetTimeInterval(m_BandWidthList, m_TimePeriodInterval);
 #endif
 
