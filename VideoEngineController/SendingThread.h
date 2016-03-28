@@ -7,7 +7,7 @@
 #include "LogPrinter.h"
 #include "SendingBuffer.h"
 #include "EncodingBuffer.h"
-
+#include "BandwidthController.h"
 #include <thread>
 
 class CCommonElementsBucket;
@@ -29,7 +29,13 @@ public:
 	int GetSleepTime();
 
 private:
-
+    
+#ifdef  BANDWIDTH_CONTROLLING_TEST
+    std::vector<int>m_TimePeriodInterval;
+    std::vector<int>m_BandWidthList;
+    BandwidthController m_BandWidthController;
+#endif
+    
 	bool bSendingThreadRunning;
 	bool bSendingThreadClosed;
 
