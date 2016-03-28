@@ -18,7 +18,6 @@
 //int fpsCnt=0;
 
 deque<pair<int, int>> ExpectedFramePacketDeQueue;
-extern long long g_FriendID;
 extern CFPSController g_FPSController;
 
 
@@ -126,8 +125,6 @@ m_TimeFor100Depacketize(0)
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
 	m_BitRateController = new BitRateController();
-
-	g_FriendID = fname;
 
 	ExpectedFramePacketPair.first = 0;
 	ExpectedFramePacketPair.second = 0;
