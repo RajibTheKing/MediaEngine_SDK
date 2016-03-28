@@ -52,7 +52,6 @@ private:
 	bool m_bIsDpkgBufferFilledUp;
 	int m_iFirstFrameReceived;
 
-	queue<int>m_IframeQueue;
 	int SafeFinder(int Data);
 
 	int m_iRetransPktDrpd;
