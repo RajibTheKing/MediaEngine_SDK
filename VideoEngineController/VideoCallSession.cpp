@@ -25,7 +25,6 @@ extern CFPSController g_FPSController;
 //int countFrameFor15 = 0;
 //int countFrameSize = 0;
 //long long encodeTimeStampFor15;
-//int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
 //bool gbStopFPSSending = false;
 
 #define ORIENTATION_0_MIRRORED 1
@@ -95,7 +94,6 @@ m_TimeFor100Depacketize(0)
 	//	countFrameFor15 = 0;
 	//	countFrameSize = 0;
 	//	encodeTimeStampFor15 = 0;
-//	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
 	g_ResendBuffer.Reset();
 	//gbStopFPSSending = false;
 
