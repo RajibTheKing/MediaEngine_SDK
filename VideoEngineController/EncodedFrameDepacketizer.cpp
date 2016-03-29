@@ -310,8 +310,8 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 			return -1;
 		}
 
-//		if(-1 != nExpectedTime && nEcodingTime > nExpectedTime)
-		if(-1 != nExpectedTime && !isCompleteFrame)
+		if(-1 != nExpectedTime && nEcodingTime > nExpectedTime)
+//		if(-1 != nExpectedTime && !isCompleteFrame)
 		{
 			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Test 1");
 			return -1;
