@@ -77,7 +77,6 @@ public:
 	int m_iDePacketizeCounter;
 	long long m_TimeFor100Depacketize;
 
-
 	CSendingThread *m_pSendingThread;
 	CVideoEncodingThread *m_pVideoEncodingThread;
 
@@ -86,14 +85,16 @@ public:
 	CVideoDepacketizationThread *m_pVideoDepacketizationThread;
 	long long GetFirstVideoPacketTime();
 	void SetFirstVideoPacketTime(long long llTimeStamp);
-	//	void increaseFPS();
-	//	void decreaseFPS();
-	//	bool isProcessable();
+
+	void SetFirstFrameEncodingTime(int time);
+	int GetFirstFrameEncodingTime();
+
 private:
 	int m_iCountRecResPack;
 	int m_iCountReQResPack;
 	int m_iDecodedFrameCounter;
 	long long m_llTimeStampOfFirstPacketRcvd;
+	int m_nFirstFrameEncodingTimeDiff;
 	int m_ByteRcvInBandSlot;
 	int m_ByteRcvInSlotInverval;
 	int m_ByteSendInSlotInverval;

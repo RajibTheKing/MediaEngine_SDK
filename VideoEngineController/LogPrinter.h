@@ -9,7 +9,7 @@
 //#define __SPECIFIC_LOG4__
 //#define __SPECIFIC_LOG5__
 //#define __SPECIFIC_LOG3__
-//#define __INSTENT_TEST_LOG__
+#define __INSTENT_TEST_LOG__
 //#define __OPERATION_TIME_LOG__
 //#define __QUEUE_TIME_LOG__
 //#define __PACKET_LOSS_INFO_LOG__
@@ -26,7 +26,7 @@
 #define QUEUE_TIME_LOG			OFF
 #define PACKET_LOSS_INFO_LOG	OFF
 #define THREAD_LOG				OFF
-#define BITRATE_CHNANGE_LOG		OFF
+#define BITRATE_CHNANGE_LOG		ON
 
 
 #define FILE_NAME "VideoEngineTrack.log"

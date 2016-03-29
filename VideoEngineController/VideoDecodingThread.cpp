@@ -1,18 +1,18 @@
 
 #include "VideoDecodingThread.h"
+#include "VideoCallSession.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController) :
-
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController, CVideoCallSession* pVideoCallSession) :
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
 m_pVideoDecoder(videoDecoder),
 m_pColorConverter(colorConverter),
-g_FPSController(FPSController)
-
+g_FPSController(FPSController),
+m_pVideoCallSession(pVideoCallSession)
 {
 
 }
@@ -85,7 +85,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
 	unsigned int nTimeStampDiff = 0;
-	long long nTimeStampBeforeDecoding, nFirstFrameDecodingTime, nFirstFrameEncodingTime, currentTime, nShiftedTime;
+	long long nTimeStampBeforeDecoding, nFirstFrameDecodingTime, nFirstFrameEncodingTime, currentTime, nShiftedTime = -1;
 	long long nMaxDecodingTime = 0;
 	int RenderFaildCounter = 0;
 	int nExpectedTime;
@@ -104,10 +104,25 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
 
-		currentTime = toolsObject.CurrentTimestamp();
-		if (-1 != nFirstFrameDecodingTime)
-			nExpectedTime = currentTime - nShiftedTime;
+		if( -1 == m_pVideoCallSession->GetFirstVideoPacketTime())
+		{
+			toolsObject.SOSleep(10);
+			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "$$$$$$$$$$$$$$$$$$$$$$$$  Continue ------>");
+			continue;
+		}
+		if( -1 == nShiftedTime)
+		{
+			int MOD = 1000000;
+			nShiftedTime = m_pVideoCallSession->GetFirstVideoPacketTime() - m_pVideoCallSession->GetFirstFrameEncodingTime() + 1000 * TIME_DELAY_FOR_RETRANSMISSION;
+			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "$$$$$$$$$$$$$$$$$$$$$$$$  Shift: "+ Tools::LongLongToString(nShiftedTime)
+			+"  FP EncTime: "+ Tools::LongLongToString(m_pVideoCallSession->GetFirstFrameEncodingTime())
+			+"  FP RcvTime: "+ Tools::LongLongToString(m_pVideoCallSession->GetFirstVideoPacketTime())
+			+"  CurTime: "+ Tools::LongLongToString(Tools::CurrentTimestamp())
+			+"  Difference: "+ Tools::LongLongToString(Tools::CurrentTimestamp() - m_pVideoCallSession->GetFirstVideoPacketTime()));
 
+		}
+		currentTime = toolsObject.CurrentTimestamp();
+		nExpectedTime = currentTime - nShiftedTime;
 
 		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0);
 		//printf("FrameLength:  %d\n", nFrameLength);
@@ -115,9 +130,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		decodingTime = toolsObject.CurrentTimestamp() - currentTime;
 
 		if (nFrameLength>-1)
-			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() GetReceivedFrame # Get Time: " + m_Tools.IntegertoStringConvert(decodingTime) + "  Len: " + m_Tools.IntegertoStringConvert(nFrameLength) + "  FrameNo: " + m_Tools.IntegertoStringConvert(nFrameNumber));
-
-
+			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "#$ FN: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  Len: " + m_Tools.IntegertoStringConvert(nFrameLength) + "  E.Time: " + m_Tools.IntegertoStringConvert(nEncodingTime)
+																																																+ "  Exp E.Time: " + m_Tools.IntegertoStringConvert(nExpectedTime) + " -> " + m_Tools.IntegertoStringConvert(nExpectedTime - nEncodingTime));
 		if (-1 == nFrameLength) 
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
@@ -127,8 +141,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		else
 		{
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
-			if (-1 == nFirstFrameDecodingTime)
-				nTimeStampBeforeDecoding = nBeforeDecodingTime;
+//			if (-1 == nFirstFrameDecodingTime)
+//				nTimeStampBeforeDecoding = nBeforeDecodingTime;
 
 			nOponnentFPS = g_FPSController->GetOpponentFPS();
 			nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
@@ -174,12 +188,12 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
 			}
 
-			if (-1 == nFirstFrameDecodingTime)
-			{
-				nFirstFrameDecodingTime = nTimeStampBeforeDecoding;
-				nFirstFrameEncodingTime = nEncodingTime;
-				nShiftedTime = nFirstFrameDecodingTime - nEncodingTime;
-			}
+//			if (-1 == nFirstFrameDecodingTime)
+//			{
+//				nFirstFrameDecodingTime = nTimeStampBeforeDecoding;
+//				nFirstFrameEncodingTime = nEncodingTime;
+//				nShiftedTime = nFirstFrameDecodingTime - nEncodingTime;
+//			}
 
 			toolsObject.SOSleep(1);
 		}

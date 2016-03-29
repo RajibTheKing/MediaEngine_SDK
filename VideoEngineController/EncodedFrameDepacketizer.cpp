@@ -91,19 +91,19 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     }
 #endif
 
-	if( -1 == m_VideoCallSession->GetFirstVideoPacketTime())
-	{
-		m_VideoCallSession->SetFirstVideoPacketTime(Tools::CurrentTimestamp());
-	}
-
 	int frameNumber = packetHeader.getFrameNumber();
 	int numberOfPackets = packetHeader.getNumberOfPacket();
 	int packetNumber = packetHeader.getPacketNumber();
 	int packetLength = packetHeader.getPacketLength();
     unsigned int timeStampDiff = packetHeader.getTimeStamp();
 
-	CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "FN: " + m_Tools.IntegertoStringConvert(frameNumber)
-													+ " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
+	if( -1 == m_VideoCallSession->GetFirstVideoPacketTime())
+	{
+		m_VideoCallSession->SetFirstFrameEncodingTime(timeStampDiff);
+		m_VideoCallSession->SetFirstVideoPacketTime(Tools::CurrentTimestamp());
+	}
+
+	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "FN: " + m_Tools.IntegertoStringConvert(frameNumber) + " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Receiving frameNumber: "+ m_Tools.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ m_Tools.IntegertoStringConvert(packetNumber));
 
@@ -111,57 +111,12 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	if(in_size > PACKET_HEADER_LENGTH && frameNumber > m_iMaxFrameNumRecvd)
 	{
-		if(m_iMaxFrameNumRecvd < frameNumber )
-			m_iMaxFrameNumRecvd = frameNumber;
+		m_iMaxFrameNumRecvd = frameNumber;
 
 		if(m_iFirstFrameReceived > frameNumber) {
 			m_iFirstFrameReceived = frameNumber;
 			m_FirstFrameEncodingTime = timeStampDiff;
 		}
-	}
-
-	//if(frameNumber%50==0)
-	{
-		int nAvailableIndex = m_AvailableIndexes.size();
-		int bIsBufferGood = (DEPACKETIZATION_BUFFER_SIZE == nAvailableIndex + m_BackFrame-m_FrontFrame);
-
-
-
-//CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "Packet:: $$$#( General: " +
-//		m_Tools.IntegertoStringConvert(
-//		g_iGeneralVideoPacket) + " Mini: " +
-//		m_Tools.IntegertoStringConvert(
-//		g_iMiniPacket) + " Ret: " +
-//		m_Tools.IntegertoStringConvert(
-//				g_iRetPacket));
-
-		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
-														m_Tools.IntegertoStringConvert(
-																frameNumber) + " pkt: " +
-														m_Tools.IntegertoStringConvert(
-																packetNumber) + " ~ " +
-														m_Tools.IntegertoStringConvert(
-																numberOfPackets) + " #FPS own:" +
-														m_Tools.IntegertoStringConvert(
-																m_VideoCallSession->ownFPS) +
-														" Oppo: " + m_Tools.IntegertoStringConvert(
-				                                        m_VideoCallSession->opponentFPS)
-																	+ " #Resend Request:" +
-														m_Tools.IntegertoStringConvert(
-																m_iCountReqResendPacket) +
-														" SENT: " + m_Tools.IntegertoStringConvert(
-				m_iCountResendPktSent)+" Avl Idx: "+m_Tools.IntegertoStringConvert(nAvailableIndex) +"  Version : "+m_Tools.IntegertoStringConvert( g_uchSendPacketVersion));
-//		CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "GetReceivedFrame:: $$$#( fram: " +
-//														m_Tools.IntegertoStringConvert(
-//																frameNumber) + " pkt: " +
-//														m_Tools.IntegertoStringConvert(
-//																packetNumber) + " ~ " +
-//														m_Tools.IntegertoStringConvert(
-//																numberOfPackets) +" T: "+m_Tools.IntegertoStringConvert(timeStampDiff)+" Avl: "+m_Tools.IntegertoStringConvert(nAvailableIndex)+ " #FPS own:" +
-//														m_Tools.IntegertoStringConvert(
-//																m_VideoCallSession->ownFPS) +
-//														" Oppo: " + m_Tools.IntegertoStringConvert(
-//				                                        m_VideoCallSession->opponentFPS));
 	}
 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
@@ -197,6 +152,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 		if (m_FrontFrame + m_BufferSize < m_BackFrame)
 		{
+			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "####--------------------------------->BufferOverflow# FN: " + m_Tools.IntegertoStringConvert(m_FrontFrame));
 			int previousFrontFrame = m_FrontFrame;
 
 			m_FrontFrame = max(m_FrontFrame,  m_BackFrame - m_BufferSize);
@@ -269,7 +225,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
 
 
-	if(m_FrontFrame>m_iMaxFrameNumRecvd)	//BUFFER IS EMPTY
+	if(m_FrontFrame > m_iMaxFrameNumRecvd)	//BUFFER IS EMPTY
 		return -1;
 
 	nEcodingTime = GetEncodingTime(m_FrontFrame);
@@ -304,7 +260,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 	{
 //		if(nEcodingTime == -1 && nRight && m_FrontFrame < m_iMaxFrameNumRecvd)	{
 		if(nEcodingTime == -1 && m_FrontFrame < m_iMaxFrameNumRecvd)	{
-			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # No Pkt Found Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame));
+			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS,"No Pkt Found Dropped-----> "+m_Tools.IntegertoStringConvert(m_FrontFrame)+"  ExpTime: "+m_Tools.IntegertoStringConvert(nExpectedTime));
 //			g_FPSController.NotifyFrameDropped(m_FrontFrame);
 			MoveForward(m_FrontFrame);
 			return -1;
@@ -340,7 +296,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 	}
 	else if(m_FrontFrame < m_iMaxFrameNumRecvd)
 	{
-        CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS," GetReceivedFrame # IncompleteFrame Dropped ----------------------> "+m_Tools.IntegertoStringConvert(m_FrontFrame));
+		CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS,"ncompleteFrame Dropped-----> "+m_Tools.IntegertoStringConvert(m_FrontFrame)+"  ExpTime: "+m_Tools.IntegertoStringConvert(nExpectedTime));
 //		g_FPSController.NotifyFrameDropped(m_FrontFrame);
 		MoveForward(m_FrontFrame);
 		return -1;
