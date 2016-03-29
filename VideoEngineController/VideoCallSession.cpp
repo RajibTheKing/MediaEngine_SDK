@@ -77,7 +77,8 @@ m_iConsecutiveGoodMegaSlot(0),
 m_iPreviousByterate(BITRATE_MAX / 8),
 m_LastSendingSlot(0),
 m_iDePacketizeCounter(0),
-m_TimeFor100Depacketize(0)
+m_TimeFor100Depacketize(0),
+m_llTimeStampOfFirstPacketRcvd(-1)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -300,7 +301,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	m_ClientFrameCounter = 0;
 	m_EncodingFrameCounter = 0;
-
+	m_llFirstFrameCapturingTimeStamp = -1;
 	m_pSendingThread->StartSendingThread();
 	
 	m_pVideoEncodingThread->StartEncodingThread();
@@ -320,6 +321,14 @@ CVideoEncoder* CVideoCallSession::GetVideoEncoder()
 	//	return sessionMediaList.GetFromVideoEncoderList(mediaName);
 
 	return m_pVideoEncoder;
+}
+
+long long CVideoCallSession::GetFirstVideoPacketTime(){
+	return m_llTimeStampOfFirstPacketRcvd;
+}
+
+void CVideoCallSession::SetFirstVideoPacketTime(long long llTimeStamp){
+	m_llTimeStampOfFirstPacketRcvd = llTimeStamp;
 }
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
@@ -385,8 +394,6 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 #endif
 
-
-
 		m_pVideoPacketQueue->Queue(in_data, in_size);
 	}
 
@@ -425,7 +432,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 #endif
 
-	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size);
+	if(-1 == m_llFirstFrameCapturingTimeStamp)
+		m_llFirstFrameCapturingTimeStamp = currentTimeStamp;
+
+	int nCaptureTimeDiff = currentTimeStamp - m_llFirstFrameCapturingTimeStamp;
+
+	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff);
 
 //	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding Queue packetSize " + Tools::IntegertoStringConvert(in_size));
 

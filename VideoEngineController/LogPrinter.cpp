@@ -250,7 +250,7 @@ long long CLogPrinter::WriteForOperationTime(Priority priority, const std::strin
 
 long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::string message, bool calculatedTime, long long prevTime)
 {
-	if (isLogEnable)
+	if (isLogEnabled)
 	{
 		if (calculatedTime)
 		{

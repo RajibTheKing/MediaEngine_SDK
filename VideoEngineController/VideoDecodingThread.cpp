@@ -122,7 +122,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
 
-			toolsObject.SOSleep(10);
+			toolsObject.SOSleep(1);
 		}
 		else
 		{
@@ -181,7 +181,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				nShiftedTime = nFirstFrameDecodingTime - nEncodingTime;
 			}
 
-			toolsObject.SOSleep(5);
+			toolsObject.SOSleep(1);
 		}
 	}
 

@@ -116,9 +116,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	long long iterationtime = toolsObject.CurrentTimestamp();
 
-	bool m_bFirstFrame = true;				
-	long long m_ll1stFrameTimeStamp = 0;	
-	unsigned  int m_iTimeStampDiff = 0;		
+	int m_iTimeStampDiff = 0;
 	int m_FrameCounterbeforeEncoding = 0;	
 
 	for(int i = 0; i < 200; i++)
@@ -157,10 +155,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else
 		{
-			long long sleepTimeStamp1 = toolsObject.CurrentTimestamp();//total time
-
 			int timeDiff;
-			frameSize = m_EncodingBuffer->DeQueue(m_EncodingFrame, timeDiff);
+			frameSize = m_EncodingBuffer->DeQueue(m_EncodingFrame, timeDiff, m_iTimeStampDiff);
 
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure Deque packetSize " + Tools::IntegertoStringConvert(frameSize));
 
@@ -174,15 +170,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				toolsObject.SOSleep(10);
 				continue;
 			}
-
-			if (m_bFirstFrame)
-			{
-				m_ll1stFrameTimeStamp = toolsObject.CurrentTimestamp();
-				m_bFirstFrame = false;
-			}
-
-			m_iTimeStampDiff = toolsObject.CurrentTimestamp() - m_ll1stFrameTimeStamp;
-
 
 			m_FrameCounterbeforeEncoding++;
 			/*if(m_BitRateController.m_iWaititngForFirstMiniPkt == 0 && (m_Tools.CurrentTimestamp() - m_BitRateController.m_TimeDiffMapHelper[2] <  MAX_1ST_MINIPACKET_WAIT_TIME))
