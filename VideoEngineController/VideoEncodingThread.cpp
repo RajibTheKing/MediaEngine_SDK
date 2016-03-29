@@ -172,54 +172,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 
 			m_FrameCounterbeforeEncoding++;
-			/*if(m_BitRateController.m_iWaititngForFirstMiniPkt == 0 && (m_Tools.CurrentTimestamp() - m_BitRateController.m_TimeDiffMapHelper[2] <  MAX_1ST_MINIPACKET_WAIT_TIME))
-			{
-				long long currentTime = m_Tools.CurrentTimestamp();
-				m_BitRateController.m_OppNotifiedByterate = 200000 / 8;
-				m_BitRateController.m_iWaititngForFirstMiniPkt = 0;
-				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() fahad--->> packet late too much 0th " + m_Tools.IntegertoStringConvert(currentTime - m_BitRateController.m_TimeDiffMapHelper[0])
-																+ "  1st " +  m_Tools.IntegertoStringConvert(currentTime - m_BitRateController.m_TimeDiffMapHelper[1])
-																+ "  2nd " +  m_Tools.IntegertoStringConvert(currentTime - m_BitRateController.m_TimeDiffMapHelper[2]));
-			}*/
+
 			m_BitRateController->UpdateBitrate();
-
-			//			if(m_FrameCounterbeforeEncoding%FRAME_RATE == 0 && g_OppNotifiedByterate>0 && m_bsetBitrateCalled == false)
-			//			{
-			//
-			//                int iRet = -1, iRet2 = -1;
-			//                int iCurrentBitRate = g_OppNotifiedByterate* 8 - nFirstTimeDecrease;
-			//				nFirstTimeDecrease = 0;
-			//
-			//				CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() $$$*( SET BITRATE :"+ m_Tools.IntegertoStringConvert(iCurrentBitRate)+"  Pre: "+ m_Tools.IntegertoStringConvert(m_iPreviousByterate));
-			//                //printf("VampireEngg--> iCurrentBitRate = %d, g_OppNotifiedByteRate = %d\n", iCurrentBitRate, g_OppNotifiedByterate);
-			//
-			//                if(iCurrentBitRate < m_pVideoEncoder->GetBitrate())
-			//                {
-			//                    iRet = m_pVideoEncoder->SetBitrate(iCurrentBitRate);
-			//
-			//                    if(iRet == 0) //First Initialization Successful
-			//                        iRet2 = m_pVideoEncoder->SetMaxBitrate(iCurrentBitRate);
-			//
-			//                }
-			//                else
-			//                {
-			//                    iRet = m_pVideoEncoder->SetMaxBitrate(iCurrentBitRate);
-			//
-			//                    if(iRet == 0) //First Initialization Successful
-			//                        iRet2 = m_pVideoEncoder->SetBitrate(iCurrentBitRate);
-			//                }
-			//
-			//                if(iRet == 0 && iRet2 ==0) //We are intentionally skipping status of setbitrate operation success
-			//                {
-			//                    m_iPreviousByterate = iCurrentBitRate/8;
-			//
-			//                    m_bMegSlotCounterShouldStop = false;
-			//                }
-			//
-			//                m_bsetBitrateCalled = true;
-			//
-			//            }
-
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -233,7 +187,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 
 #elif defined(_DESKTOP_C_SHARP_)
-
 
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			int iCurWidth = this->m_pColorConverter->GetWidth();
@@ -333,23 +286,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
 			m_BitRateController->NotifyEncodedFrame(encodedFrameSize);
-
-			//            m_ByteSendInSlotInverval+=encodedFrameSize;
-			//            if(m_FrameCounterbeforeEncoding % FRAME_RATE == 0)
-			//            {
-			//
-			//
-			//                int ratioHelperIndex = (m_FrameCounterbeforeEncoding - FRAME_RATE) / FRAME_RATE;
-			//                if(m_bMegSlotCounterShouldStop == false)
-			//                {
-			//                    //printf("VampireEngg--> ***************m_ByteSendInSlotInverval = (%d, %d)\n", ratioHelperIndex, m_ByteSendInSlotInverval);
-			//					m_LastSendingSlot = ratioHelperIndex;
-			//                    m_BandWidthRatioHelper.insert(ratioHelperIndex, m_ByteSendInSlotInverval);
-			//                }
-			//
-			//                m_ByteSendInSlotInverval = 0;
-			//            }
-
 
 			//			CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure() m_iFrameNumber : "+ m_Tools.IntegertoStringConvert(m_iFrameNumber) + " :: encodedFrameSize: " + m_Tools.IntegertoStringConvert(encodedFrameSize));
 
