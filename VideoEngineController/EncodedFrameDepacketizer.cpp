@@ -91,6 +91,11 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     }
 #endif
 
+	if( -1 == m_VideoCallSession->GetFirstVideoPacketTime())
+	{
+		m_VideoCallSession->SetFirstVideoPacketTime(Tools::CurrentTimestamp());
+	}
+
 	int frameNumber = packetHeader.getFrameNumber();
 	int numberOfPackets = packetHeader.getNumberOfPacket();
 	int packetNumber = packetHeader.getPacketNumber();
@@ -259,7 +264,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 }
 
 
-int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight)
+int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight)
 {
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
 
@@ -305,7 +310,8 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 			return -1;
 		}
 
-		if(-1 != nExpectedTime && nEcodingTime > nExpectedTime)
+//		if(-1 != nExpectedTime && nEcodingTime > nExpectedTime)
+		if(-1 != nExpectedTime && !isCompleteFrame)
 		{
 			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "Test 1");
 			return -1;
@@ -314,7 +320,8 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data,int &nFramNu
 
 
 	if(!m_bIsDpkgBufferFilledUp) {
-		if (m_iFirstFrameReceived != DEFAULT_FIRST_FRAME_RCVD && TIME_DELAY_FOR_RETRANSMISSION * 1000 <= GetEncodingTime(m_iMaxFrameNumRecvd) - m_FirstFrameEncodingTime) {
+		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+		if (m_iFirstFrameReceived != DEFAULT_FIRST_FRAME_RCVD && TIME_DELAY_FOR_RETRANSMISSION * 1000 <= llCurrentTimeStamp - m_VideoCallSession->GetFirstVideoPacketTime()) {
 			for(int frame = m_FrontFrame; frame < m_iFirstFrameReceived; ++frame)
 				MoveForward(frame);
 			m_bIsDpkgBufferFilledUp = true;
