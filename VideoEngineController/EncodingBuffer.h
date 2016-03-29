@@ -21,8 +21,8 @@ public:
 	CEncodingBuffer();
 	~CEncodingBuffer();
 
-	int Queue(unsigned char *frame, int length);
-	int DeQueue(unsigned char *decodeBuffer, int &timeDiff);
+	int Queue(unsigned char *frame, int length,int nCaptureTimeDiff);
+	int DeQueue(unsigned char *decodeBuffer, int &timeDiff,int &nCaptureTimeDiff);
 	void IncreamentIndex(int &index);
 	int GetQueueSize();
 
@@ -38,7 +38,7 @@ private:
 
 	unsigned char m_Buffer[MAX_VIDEO_ENCODER_BUFFER_SIZE][MAX_VIDEO_ENCODER_FRAME_SIZE];
 	int m_BufferDataLength[MAX_VIDEO_ENCODER_BUFFER_SIZE];
-	int m_BufferIndexState[MAX_VIDEO_ENCODER_BUFFER_SIZE];
+	int m_nCaptureTimeDiff[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 	long long m_BufferInsertionTime[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pChannelMutex;
