@@ -32,7 +32,6 @@ public:
 	static std::string LongLongtoStringConvert(LongLong number);
 	static std::string LongLongToString(LongLong value);
 
-
 //	static pair<int, int> GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets);
 	static int GetIntFromChar(unsigned char *packetData, int index);
 	static int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
