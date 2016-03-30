@@ -77,7 +77,7 @@ void *CVideoRenderingThread::CreateVideoRenderingThread(void* param)
 	return NULL;
 }
 
-long long lPrevCallTime = -1;
+
 void CVideoRenderingThread::RenderingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() started RenderingThreadProcedure method");
@@ -129,8 +129,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 
 
-			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap " + toolsObject.IntegertoStringConvert(minTimeGap) + " currentTimeGap " + toolsObject.IntegertoStringConvert(currentTimeGap) + " , CallDiffTime = " + toolsObject.LongLongToString(m_Tools.CurrentTimestamp()-lPrevCallTime));
-			lPrevCallTime = m_Tools.CurrentTimestamp();
+			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap " + toolsObject.IntegertoStringConvert(minTimeGap) + " currentTimeGap " + toolsObject.IntegertoStringConvert(currentTimeGap));
+
 
 			if( (currentTimeGap < 50 && (currentTimeGap + 10) < minTimeGap))
 			{
