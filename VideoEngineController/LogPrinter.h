@@ -26,7 +26,8 @@
 #define QUEUE_TIME_LOG			OFF
 #define PACKET_LOSS_INFO_LOG	OFF
 #define THREAD_LOG				OFF
-#define BITRATE_CHNANGE_LOG		ON
+#define BITRATE_CHNANGE_LOG		OFF
+#define DEPACKETIZATION_LOG		OFF
 
 
 #define FILE_NAME "VideoEngineTrack.log"
