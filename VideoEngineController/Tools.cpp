@@ -27,22 +27,9 @@ std::string Tools::DoubleToString(double value){
 
 std::string Tools::LongLongToString(long long value)
 {
-	std::string str = "";
-
-	while (value > 0)
-	{
-		str += (value % 10 + '0');
-		value /= 10;
-	}
-
-	std::string result = "";
-	for (int index = (int)str.size() - 1; index >= 0; index--)
-	{
-		char b = str[index];
-		result += b;
-	}
-
-	return result;
+	stringstream ss;
+	ss << value;
+	return ss.str();
 }
 
 int Tools::StringToIntegerConvert(std::string number)
