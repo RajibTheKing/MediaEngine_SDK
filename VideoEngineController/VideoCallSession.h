@@ -88,11 +88,15 @@ public:
 
 	void SetFirstFrameEncodingTime(int time);
 	int GetFirstFrameEncodingTime();
+	void SetShiftedTime(long long llTime);
+	long long GetShiftedTime();	
 
 private:
 	int m_iCountRecResPack;
 	int m_iCountReQResPack;
 	int m_iDecodedFrameCounter;
+
+	long long m_llShiftedTime;
 	long long m_llTimeStampOfFirstPacketRcvd;
 	int m_nFirstFrameEncodingTimeDiff;
 	int m_ByteRcvInBandSlot;

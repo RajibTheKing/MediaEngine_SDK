@@ -79,7 +79,8 @@ m_LastSendingSlot(0),
 m_iDePacketizeCounter(0),
 m_TimeFor100Depacketize(0),
 m_llTimeStampOfFirstPacketRcvd(-1),
-m_nFirstFrameEncodingTimeDiff(-1)
+m_nFirstFrameEncodingTimeDiff(-1),
+m_llShiftedTime(-1)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -530,6 +531,13 @@ int CVideoCallSession::GetUniquePacketID(int fn, int pn)
 	return fn*MAX_PACKET_NUMBER + pn;
 }
 
+long long CVideoCallSession::GetShiftedTime(){
+	return m_llShiftedTime;
+}
+void CVideoCallSession::SetShiftedTime(long long llTime)
+{
+	m_llShiftedTime = llTime;
+}
 
 
 
