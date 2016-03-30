@@ -7,7 +7,7 @@
 //#define __EXACT_LOG__
 //#define __SPECIFIC_LOG__
 //#define __SPECIFIC_LOG4__
-//#define __SPECIFIC_LOG5__
+#define __SPECIFIC_LOG5__
 //#define __SPECIFIC_LOG3__
 //#define __INSTENT_TEST_LOG__
 //#define __OPERATION_TIME_LOG__
@@ -21,7 +21,7 @@
 
 #define LOG_ENABLED
 
-#define INSTENT_TEST_LOG		OFF
+#define INSTENT_TEST_LOG		ON
 #define OPERATION_TIME_LOG		OFF
 #define QUEUE_TIME_LOG			OFF
 #define PACKET_LOSS_INFO_LOG	OFF

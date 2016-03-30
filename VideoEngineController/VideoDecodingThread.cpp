@@ -149,7 +149,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			*/
 
 
-			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nTimeStampDiff);
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime);
 			//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 			//			toolsObject.SOSleep(100);
 
@@ -193,9 +193,11 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
-
+	long long dectime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 
+	long long  timediff = (m_Tools.CurrentTimestamp() - dectime);
+	CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " OOOO decode  " + m_Tools.LongLongToString( timediff));
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Decode ", currentTimeStamp);
 
 	if (1 > m_decodedFrameSize)
@@ -219,11 +221,11 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
 
 #if defined(_DESKTOP_C_SHARP_)
-	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, currentTimeStampForBrust, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #else
 
-	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, currentTimeStampForBrust, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
 	return m_decodedFrameSize;
 #endif
 }

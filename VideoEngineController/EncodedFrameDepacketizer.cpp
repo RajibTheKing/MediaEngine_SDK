@@ -280,12 +280,12 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 //							   +m_Tools.IntegertoStringConvert(m_iMaxFrameNumRecvd)+"] Time# Ex: "+m_Tools.IntegertoStringConvert(nExpectedTime)
 //							   + " En: "+m_Tools.IntegertoStringConvert(nEcodingTime));
 
-	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
+	/*CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,
 							   " GetReceivedFrame: Fron: " +
 							   m_Tools.IntegertoStringConvert(m_FrontFrame)+" Back: "+m_Tools.IntegertoStringConvert(m_BackFrame) +" Time#  "+m_Tools.IntegertoStringConvert(nExpectedTime)
 							   + " > "+m_Tools.IntegertoStringConvert(nEcodingTime));
 
-
+*/
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
 //							   " GetReceivedFrame : Encoding time: "+m_Tools.IntegertoStringConvert(nEcodingTime));
 	int nFrameLength = -1;

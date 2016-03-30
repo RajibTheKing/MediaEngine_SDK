@@ -227,10 +227,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertNV12ToI420 ", currentTimeStamp);
 
-			long long enctime = m_Tools.CurrentTimestamp();
+
 
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+
+
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 
 			//printf("enctime = %lld\n", m_Tools.CurrentTimestamp() - enctime);
@@ -241,6 +243,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() orientation_type : " + m_Tools.IntegertoStringConvert(orientation_type));
 
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
+			
 			if (orientation_type == ORIENTATION_90_MIRRORED)
 			{
 //				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() orientation_type : " + m_Tools.IntegertoStringConvert(orientation_type) + "  ORIENTATION_90_MIRRORED");
@@ -256,7 +259,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CVideoEncodingThread::EncodingThreadProcedure() Converted to 420");
 			encodingTimeStamp = toolsObject.CurrentTimestamp();
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
+			long long enctime = m_Tools.CurrentTimestamp();
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ConvertedEncodingFrame, frameSize, m_EncodedFrame);
+			long long timediff = (m_Tools.CurrentTimestamp() - enctime);
+			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " OOOO encode  " + m_Tools.LongLongToString(timediff));
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 			encodingTime = toolsObject.CurrentTimestamp() - encodingTimeStamp;
 

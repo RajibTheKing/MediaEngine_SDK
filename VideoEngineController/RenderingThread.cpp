@@ -77,6 +77,7 @@ void *CVideoRenderingThread::CreateVideoRenderingThread(void* param)
 	return NULL;
 }
 
+long long lPrevCallTime = -1;
 void CVideoRenderingThread::RenderingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() started RenderingThreadProcedure method");
@@ -87,10 +88,11 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	long long currentFrameTime, decodingTime, firstFrameEncodingTime;
 	int videoHeight, videoWidth;
 	long long currentTimeStamp;
+	long long prevFrameTimeStamp;
+	int currentTimeGap = 52;
 	int prevTimeStamp = 0;
 	int minTimeGap = 51;
 	bool m_b1stDecodedFrame = true;
-	long long m_ll1stDecodedFrameTimeStamp = 0;
 
 	while (bRenderingThreadRunning)
 	{
@@ -114,19 +116,32 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			if (m_b1stDecodedFrame)
 			{
-				m_ll1stDecodedFrameTimeStamp = currentFrameTime;
 				firstFrameEncodingTime = nTimeStampDiff;
 				m_b1stDecodedFrame = false;
 			}
 			else
 			{
 				minTimeGap = nTimeStampDiff - prevTimeStamp;
+				currentTimeGap = currentFrameTime - prevFrameTimeStamp;
 			}
 
-			prevTimeStamp = nTimeStampDiff;
 
-			if (frameSize<1 || minTimeGap < 50)
+
+
+
+			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap " + toolsObject.IntegertoStringConvert(minTimeGap) + " currentTimeGap " + toolsObject.IntegertoStringConvert(currentTimeGap) + " , CallDiffTime = " + toolsObject.LongLongToString(m_Tools.CurrentTimestamp()-lPrevCallTime));
+			lPrevCallTime = m_Tools.CurrentTimestamp();
+
+			if( (currentTimeGap < 50 && (currentTimeGap + 10) < minTimeGap))
+			{
+				CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap break " + toolsObject.IntegertoStringConvert( minTimeGap) + " currentTimeGap "
+																  + toolsObject.IntegertoStringConvert( currentTimeGap));
 				continue;
+
+			}
+
+			prevFrameTimeStamp = currentFrameTime;
+			prevTimeStamp = nTimeStampDiff;
 
 			toolsObject.SOSleep(5);
 

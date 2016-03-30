@@ -46,7 +46,7 @@ int CAudioEncoderBuffer::Queue(short *frame, int length)
             m_iOverFlowCount ++;
             m_dAvgOverFlowTime = m_lSumOverFlowTime * 1.0 / m_iOverFlowCount;
 
-			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "TheVampire--> OverFlow Difftime = "+m_Tools.LongLongToString(lOverFlowTime)+", m_dAvgOverFlowTimeDif = "+ m_Tools.DoubleToString(m_dAvgOverFlowTime) );
+			//CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "TheVampire--> OverFlow Difftime = "+m_Tools.LongLongToString(lOverFlowTime)+", m_dAvgOverFlowTimeDif = "+ m_Tools.DoubleToString(m_dAvgOverFlowTime) );
 
 			m_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
         }
