@@ -110,28 +110,6 @@ void Tools::SOSleep(int Timeout)
 
 }
 
-
-/*pair<int, int> Tools::GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets)
-{
-pair<int, int> FramePacketPair = {-1, -1};
-
-if(!packet)
-{
-return FramePacketPair;
-}
-int iFrameNumber = GetIntFromChar(packet, 0);
-iFrameNumber &= ~(0xFF << ((sizeof(int)-1) * 8 ));
-iNumberOfPackets = GetIntFromChar(packet, 4);
-int iPackeNumber = GetIntFromChar(packet, 8);
-
-//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::currentFramePacketPair: FrameNumber: "+ Tools::IntegertoStringConvert(iFrameNumber) + " PacketNo. : "+  Tools::IntegertoStringConvert(iPackeNumber)+ " NumberOfPacket : "+  Tools::IntegertoStringConvert(iNumberOfPackets));
-
-FramePacketPair.first = iFrameNumber;
-FramePacketPair.second = iPackeNumber;
-
-return FramePacketPair;
-}*/
-
 int Tools::GetIntFromChar(unsigned char *packetData, int index)
 {
 	int result = 0;
