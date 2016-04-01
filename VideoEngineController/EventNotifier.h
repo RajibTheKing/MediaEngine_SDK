@@ -22,10 +22,7 @@ public:
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
     void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
     void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
-
-	static const int ENCODED_PACKET = 200;
-	static const int MERGED_VIDEO_FRAME = 201;
-    
+	
     static const int VIDEO_QUALITY_LOW = 202;
 	static const int VIDEO_QUALITY_HIGH = 204;
     static const int VIDEO_SHOULD_STOP = 203;

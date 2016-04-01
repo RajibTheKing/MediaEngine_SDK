@@ -13,8 +13,6 @@ void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberO
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent 1");
 
-	//notifyClientMethodWithPacketE(200, data, dataLenth);
-    
     notifyClientWithPacketCallback(200, data, dataLenth);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent 2");
@@ -22,8 +20,6 @@ void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberO
 
 void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth)
 {
-	//notifyClientMethodWithVideoDataE(200, data, dataLenth, iVideoHeight, iVideoWidth);
-    
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber));
     
     notifyClientWithVideoDataCallback(eventType, data, dataLenth, iVideoHeight, iVideoWidth);
@@ -52,9 +48,7 @@ void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
 void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[])
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 1");
-    
-//	notifyClientMethodWithAudioPacketDataE(200, data, dataLenth);
-    
+
     notifyClientWithAudioPacketDataCallback(200, data, dataLenth);
     
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 2");
@@ -63,9 +57,7 @@ void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned
 void CEventNotifier::fireAudioEvent(int eventType, int dataLenth, short data[])
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent " + Tools::IntegertoStringConvert(eventType));
-    
-//	notifyClientMethodWithAudioDataE(200, data, dataLenth);
-    
+
     notifyClientWithAudioDataCallback(eventType, data, dataLenth);
     
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent 2");
