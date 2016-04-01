@@ -26,8 +26,6 @@ public:
 	void SendingThreadProcedure();
 	static void *CreateVideoSendingThread(void* param);
 
-	int GetSleepTime();
-
 private:
     
 #ifdef  BANDWIDTH_CONTROLLING_TEST

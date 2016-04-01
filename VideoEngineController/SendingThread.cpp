@@ -79,7 +79,6 @@ void *CSendingThread::CreateVideoSendingThread(void* param)
 }
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
-int iPacketCounter = 0;
 int iPrevFrameNumer = 0;
 int iNumberOfPacketsInLastFrame = 0;
 int iNumberOfPacketsActuallySentFromLastFrame = 0;
@@ -206,7 +205,6 @@ void CSendingThread::SendingThreadProcedure()
 
 #endif
 				toolsObject.SOSleep(1);
-//				toolsObject.SOSleep(GetSleepTime());
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
@@ -218,19 +216,4 @@ void CSendingThread::SendingThreadProcedure()
 	bSendingThreadClosed = true;
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
-}
-
-int CSendingThread::GetSleepTime()
-{
-	int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * FPS_MAXIMUM * 1.0) / (g_FPSController->GetOwnFPS()  * 1.0);
-	int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer->GetQueueSize() + 1.0);
-
-	if (SleepTimeDependingOnFPS < SleepTimeDependingOnQueueSize)
-	{
-		return SleepTimeDependingOnFPS;
-	}
-	else
-	{
-		return SleepTimeDependingOnQueueSize;
-	}
 }
