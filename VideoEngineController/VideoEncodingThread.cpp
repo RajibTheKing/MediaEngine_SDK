@@ -18,7 +18,6 @@ extern CFPSController g_FPSController;
 #define ORIENTATION_270_NOT_MIRRORED 8
 
 int countFrame = 0;
-int countFrameFor15 = 0;
 int countFrameSize = 0;
 long long encodeTimeStampFor15 = 0;
 
@@ -34,7 +33,6 @@ m_pEncodedFramePacketizer(encodedFramePacketizer)
 
 {
 	countFrame = 0;
-	countFrameFor15 = 0;
 	countFrameSize = 0;
 	encodeTimeStampFor15 = 0;
 }
