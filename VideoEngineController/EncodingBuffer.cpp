@@ -15,8 +15,7 @@ m_iQueueCapacity(45)
 
 CEncodingBuffer::~CEncodingBuffer()
 {
-	/*if (m_pChannelMutex.get())
-		m_pChannelMutex.reset();*/
+
 }
 
 int CEncodingBuffer::Queue(unsigned char *frame, int length,int nCaptureTimeDiff)

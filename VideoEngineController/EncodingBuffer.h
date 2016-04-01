@@ -30,7 +30,6 @@ private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iDecodingIndex;
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
