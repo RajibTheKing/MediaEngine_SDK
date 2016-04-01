@@ -35,8 +35,6 @@ private:
 
 protected:
 
-	std::thread* m_pAudioEncoderThread;
-
 	SmartPointer<CLockHandler> m_pMediaSocketMutex;
 
 };

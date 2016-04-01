@@ -10,25 +10,12 @@ CAudioEncoder::CAudioEncoder(CCommonElementsBucket* sharedObject) :
 m_pCommonElementsBucket(sharedObject)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
-	m_pAudioEncoderThread = NULL;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::CAudioEncoder");
 }
 
 CAudioEncoder::~CAudioEncoder()
 {
-	/*	if (m_pAudioEncoderThread)
-	{
-	delete m_pAudioEncoderThread;
-	m_pAudioEncoderThread = NULL;
-	}*/
-
-	/*if (NULL != m_pCEncodedFramePacketizer)
-	{
-	delete m_pCEncodedFramePacketizer;
-	m_pCEncodedFramePacketizer = NULL;
-	}*/
-
 	SHARED_PTR_DELETE(m_pMediaSocketMutex);
 }
 
