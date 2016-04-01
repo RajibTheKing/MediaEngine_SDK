@@ -34,7 +34,6 @@ public:
 	CAudioCallSession(LongLong fname, CCommonElementsBucket* sharedObject);
 	~CAudioCallSession();
 
-	LongLong GetFriendID();
 	void InitializeAudioCallSession(LongLong lFriendID);
 	int EncodeAudioData(short *in_data, unsigned int in_size);
 	int DecodeAudioData(unsigned char *in_data, unsigned int in_size);

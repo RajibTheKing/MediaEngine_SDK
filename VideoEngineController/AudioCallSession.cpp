@@ -6,10 +6,6 @@
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
 #endif
-//#include <android/log.h>
-
-//#define LOG_TAG "NewTest"
-//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 CAudioCallSession::CAudioCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
 
@@ -53,11 +49,6 @@ CAudioCallSession::~CAudioCallSession()
 	SHARED_PTR_DELETE(m_pSessionMutex);
 }
 
-LongLong CAudioCallSession::GetFriendID()
-{
-	return friendID;
-}
-
 void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
@@ -82,21 +73,7 @@ int iAudioDataCounter = 0;
 
 int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
 {
-    /*
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1");
-	int size = m_pG729CodecNative->Encode(in_data, in_size, &m_EncodedFrame[1]);
-    m_EncodingFrame[0] = 0;
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
-
-    //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodingFrame);
-
-    m_pCommonElementsBucket->SendFunctionPointer(friendID,1,m_EncodedFrame,size);
-    
-    return 1;
-    */
-    
     CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-    
     
     /*iAudioDataCounter++;
     if(iMS == -1) iMS = m_Tools.CurrentTimestamp();
@@ -121,18 +98,6 @@ int CAudioCallSession::DecodeAudioData(unsigned char *in_data, unsigned int in_s
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
         return 0;
     }
-    
-    /*CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData in_size " + m_Tools.IntegertoStringConvert(in_size));
-    
-	int size = m_pG729CodecNative->Decode(&in_data[1], in_size-1, m_DecodedFrame);
-    
-    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData size " + m_Tools.IntegertoStringConvert(size));
-    
-	m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(friendID, size, m_DecodedFrame);
-    
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData 3");
-     
-    return 1;*/
     
     int returnedValue = m_DecodingBuffer.Queue(&in_data[1], in_size-1);
 
@@ -173,21 +138,13 @@ void CAudioCallSession::StartEncodingThread()
     
     if (pEncodingThread.get())
     {
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 2");
-        
         pEncodingThread.reset();
-        
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 3");
         
         return;
     }
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 4");
-    
     bEncodingThreadRunning = true;
     bEncodingThreadClosed = false;
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -275,21 +232,13 @@ void CAudioCallSession::StartDecodingThread()
     
     if (pDecodingThread.get())
     {
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 2");
-        
         pDecodingThread.reset();
-        
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 3");
         
         return;
     }
     
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 4");
-    
     bDecodingThreadRunning = true;
     bDecodingThreadClosed = false;
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 5");
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
