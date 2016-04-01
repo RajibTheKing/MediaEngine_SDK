@@ -16,7 +16,7 @@ public:
 	~CDecodingBuffer();
 
 	int Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrameData, int nLength, unsigned int unCaptureTimeDifference);
-	int DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDifference, unsigned char *ucaEncodedVideoFrameData, int &unrTimeDifferenceInQueue);
+	int DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDifference, unsigned char *ucaEncodedVideoFrameData, int &nrTimeDifferenceInQueue);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 
