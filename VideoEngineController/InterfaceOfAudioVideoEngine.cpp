@@ -107,10 +107,7 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType lFrien
     }
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding 2called");
-    
-/*    for(int i=0;i<10;i++)
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding in_data[" + Tools::IntegertoStringConvert(i) + "] " + Tools::IntegertoStringConvert(in_data[i]));*/
-    
+
 	if (m_pController == NULL)
 	{
 		return false;
@@ -172,7 +169,6 @@ int CInterfaceOfAudioVideoEngine::SendAudioData(const IPVLongType lFriendID, sho
 	return iReturnedValue;
 }
 
-//int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size)
 int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type)
 {
 	if (m_pController == NULL)
@@ -180,7 +176,6 @@ int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType lFriendID, uns
 		return false;
 	}
 
-//	int iReturnedValue = m_pController->SendVideoData(lFriendID, in_data, in_size);
 	int iReturnedValue = m_pController->SendVideoData(lFriendID, in_data, in_size, orientation_type);
 
 	return iReturnedValue;
@@ -264,12 +259,8 @@ void CInterfaceOfAudioVideoEngine::SetLoggerPath(std::string sLoggerPath)
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
-    //std::cout << "Test set callback 3 A" << std::endl;
-    
 	if (NULL != m_pController)
 	{
-        //std::cout << "Test set callback 4 A" << std::endl;
-        
 		m_pController->SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 	}
 }
