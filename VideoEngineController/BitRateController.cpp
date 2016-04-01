@@ -43,9 +43,6 @@ BitRateController::BitRateController():
     m_PrevMegaSlotStatus = 1;
 
     m_bIsFirstTime = true;
-    timeDiffForMiniPkt = 0;
-    m_bIsFirstMiniPktRcv = false;
-    m_lTimeStampForFirstMiniPkt = 0;
     m_iOwnNetworkType = NETWORK_TYPE_NOT_2G;
     //m_iWaititngForFirstMiniPkt = -1;
 }
@@ -330,20 +327,11 @@ int BitRateController::NeedToChangeBitRate(double dataReceivedRatio)
     else if(dataReceivedRatio > GOOD_BITRATE_RATIO_IN_MEGA_SLOT)
     {
         m_iGoodSlotCounter++;
-        /*m_iConsecutiveGoodMegaSlot++;
-        if(m_iConsecutiveGoodMegaSlot == GOOD_MEGASLOT_TO_UP)
-        {
-            m_iConsecutiveGoodMegaSlot = 0;
-            return BITRATE_CHANGE_UP;
-        }*/
-
-
     }
     else
     {
-        //      m_iConsecutiveGoodMegaSlot = 0;
-    }
 
+    }
 
     if(m_SlotCounter >= m_iUpCheckLimit)
     {

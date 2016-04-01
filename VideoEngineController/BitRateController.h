@@ -12,8 +12,6 @@
 #include "VideoEncoder.h"
 #include "SynchronizedMap.h"
 
-//#include "CommonElementsBucket.h"
-
 class CCommonElementsBucket;
 
 class BitRateController {
@@ -30,7 +28,6 @@ public:
     int NeedToChangeBitRate(double dataReceivedRatio);
     int NeedToNotifyClient(int iCurrentByte);
 
-    long long m_lTimeStampForFirstMiniPkt;
     //int m_iWaititngForFirstMiniPkt;
     map<int, long long>  m_TimeDiffMapHelper;
     int m_OppNotifiedByterate;
@@ -74,8 +71,6 @@ private:
     bool m_bIsFirstTime;
     CSynchronizedMap m_BandWidthRatioHelper;
     long long m_lTimeStampForMiniPkt;
-    long long timeDiffForMiniPkt;
-    bool m_bIsFirstMiniPktRcv;
     CVideoEncoder *m_pVideoEncoder;
 
     int m_lastState;
@@ -89,4 +84,4 @@ private:
 };
 
 
-#endif //ANDROIDTESTCLIENTVE_FTEST_BITRATECONTROLLER_H
+#endif
