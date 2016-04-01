@@ -74,10 +74,3 @@ void CResendingBuffer::IncreamentIndex(int &index)
 	if (index >= m_iQueueCapacity)
 		index = 0;
 }
-
-//int CResendingBuffer::GetQueueSize()
-//{
-//	Locker lock(*m_pChannelMutex);
-//
-//	return 0;
-//}

@@ -19,10 +19,6 @@ public:
 	void IncreamentIndex(int &index);
 	void Reset();
 
-
-
-	//	int GetQueueSize();
-
 private:
 
 	int m_iPushIndex;
