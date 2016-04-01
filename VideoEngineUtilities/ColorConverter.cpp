@@ -7,15 +7,6 @@
 typedef unsigned char byte;
 #endif
 
-double dconversionmatrix[3][3] = { 0.299, 0.587, 0.114,
-								   -0.14317, -0.28886, 0.436,
-								   0.615, -0.51499, -0.10001 };
-
-double dDecodematrix[3][3] = { 1, 0, 1.13983,
-							   1, -0.39465, -0.58060,
-							   1, 2.03211, 0 };
-
-
 CColorConverter::CColorConverter(int iVideoHeight, int iVideoWidth) :
 
 m_iVideoHeight(iVideoHeight),
