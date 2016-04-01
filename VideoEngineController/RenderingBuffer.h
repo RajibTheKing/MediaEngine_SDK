@@ -5,9 +5,7 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
-
-#define MAX_VIDEO_RENDERER_BUFFER_SIZE 30
-#define MAX_VIDEO_RENDERER_FRAME_SIZE 352 * 288 * 3
+#include "Size.h"
 
 class CRenderingBuffer
 {
@@ -17,30 +15,31 @@ public:
 	CRenderingBuffer();
 	~CRenderingBuffer();
 
-	int Queue(int frameNumber, unsigned char *frame, int length, long long timeStampDiff, int videoHeight, int videoWidth);
-	int DeQueue(int &frameNumber,long long &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth, int &timeDiff);
-	void IncreamentIndex(int &index);
+	int Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth);
+	int DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth, int &nrTimeDifferenceInQueue);
+	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 
 private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iQueueCapacity;
-	int m_iQueueSize;
+	int m_nQueueCapacity;
+	int m_nQueueSize;
 
 	Tools m_Tools;
 
-	unsigned char m_Buffer[MAX_VIDEO_RENDERER_BUFFER_SIZE][MAX_VIDEO_RENDERER_FRAME_SIZE];
-	int m_BufferDataLength[MAX_VIDEO_RENDERER_BUFFER_SIZE];
-	int m_VideoHeights[MAX_VIDEO_RENDERER_BUFFER_SIZE];
-	int m_VideoWidths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
-	int m_BufferFrameNumber[MAX_VIDEO_RENDERER_BUFFER_SIZE];
-	long long m_BufferInsertionTime[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	unsigned char m_uc2aDecodedVideoDataBuffer[MAX_VIDEO_RENDERER_BUFFER_SIZE][MAX_VIDEO_RENDERER_FRAME_SIZE];
 
-	long long m_BufferTimeStamp[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	int m_naBufferDataLengths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	int m_naBufferFrameNumbers[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	int m_naBufferVideoHeights[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	int m_naBufferVideoWidths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	
+	long long m_llBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	long long m_llaBufferCaptureTimeDifferences[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
-	SmartPointer<CLockHandler> m_pChannelMutex;
+	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
 };
 
 #endif 

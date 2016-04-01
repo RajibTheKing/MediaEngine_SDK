@@ -7,11 +7,11 @@ CRenderingBuffer::CRenderingBuffer() :
 
 m_iPushIndex(0),
 m_iPopIndex(0),
-m_iQueueSize(0),
-m_iQueueCapacity(30)
+m_nQueueSize(0),
+m_nQueueCapacity(MAX_VIDEO_RENDERER_BUFFER_SIZE)
 
 {
-	m_pChannelMutex.reset(new CLockHandler);
+	m_pRenderingBufferMutex.reset(new CLockHandler);
 }
 
 CRenderingBuffer::~CRenderingBuffer()
@@ -19,28 +19,28 @@ CRenderingBuffer::~CRenderingBuffer()
 
 }
 
-int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, long long timeStampDiff, int videoHeight, int videoWidth)
+int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth)
 {
     
-    Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pRenderingBufferMutex);
     
-    memcpy(m_Buffer[m_iPushIndex], frame, length);
-    m_BufferDataLength[m_iPushIndex] = length;
-    m_BufferFrameNumber[m_iPushIndex] = frameNumber;
-	m_VideoHeights[m_iPushIndex] = videoHeight;
-	m_VideoWidths[m_iPushIndex] = videoWidth;
-	m_BufferInsertionTime[m_iPushIndex] = m_Tools.CurrentTimestamp();
-	m_BufferTimeStamp[m_iPushIndex] = timeStampDiff;
+	memcpy(m_uc2aDecodedVideoDataBuffer[m_iPushIndex], ucaDecodedVideoFrameData, nLength);
+
+	m_naBufferDataLengths[m_iPushIndex] = nLength;
+	m_naBufferFrameNumbers[m_iPushIndex] = iFrameNumber;
+	m_naBufferVideoHeights[m_iPushIndex] = nVideoHeight;
+	m_naBufferVideoWidths[m_iPushIndex] = nVideoWidth;
+
+	m_llaBufferCaptureTimeDifferences[m_iPushIndex] = llCaptureTimeDifference;
+	m_llBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
     
-    if (m_iQueueSize == m_iQueueCapacity)
+	if (m_nQueueSize == m_nQueueCapacity)
     {
         IncreamentIndex(m_iPopIndex);
     }
     else
-    {
-        
-        m_iQueueSize++;
-        
+    { 
+		m_nQueueSize++;      
     }
     
     IncreamentIndex(m_iPushIndex);
@@ -48,49 +48,46 @@ int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, l
     return 1;
 }
 
-int CRenderingBuffer::DeQueue(int &frameNumber, long long &timeStampDiff, unsigned char *decodeBuffer, int &videoHeight, int &videoWidth, int &timeDiff)
+int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth, int &nrTimeDifferenceInQueue)
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pRenderingBufferMutex);
 
-	if (m_iQueueSize <= 0)
+	if (m_nQueueSize <= 0)
 	{
 		return -1;
 	}
 	else
 	{
-		int length = m_BufferDataLength[m_iPopIndex];
+		int nLength;
+		
+		nLength = m_naBufferDataLengths[m_iPopIndex];
+		irFrameNumber = m_naBufferFrameNumbers[m_iPopIndex];
+		nrVideoHeight = m_naBufferVideoHeights[m_iPopIndex];
+		nrVideoWidth = m_naBufferVideoWidths[m_iPopIndex];
 
-		frameNumber = m_BufferFrameNumber[m_iPopIndex];
+		memcpy(ucaDecodedVideoFrameData, m_uc2aDecodedVideoDataBuffer[m_iPopIndex], nLength);
 
-		videoHeight = m_VideoHeights[m_iPopIndex];
-
-		videoWidth = m_VideoWidths[m_iPopIndex];
-
-		timeStampDiff = m_BufferTimeStamp[m_iPopIndex];
-
-		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
-
-		timeDiff = m_Tools.CurrentTimestamp() - m_BufferInsertionTime[m_iPopIndex];
+		llrCaptureTimeDifference = m_llaBufferCaptureTimeDifferences[m_iPopIndex];
+		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llBufferInsertionTimes[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
+		m_nQueueSize--;
 
-		m_iQueueSize--;
-
-		return length;
+		return nLength;
 	}
 }
 
-void CRenderingBuffer::IncreamentIndex(int &index)
+void CRenderingBuffer::IncreamentIndex(int &irIndex)
 {
-	index++;
+	irIndex++;
 
-	if (index >= m_iQueueCapacity)
-		index = 0;
+	if (irIndex >= m_nQueueCapacity)
+		irIndex = 0;
 }
 
 int CRenderingBuffer::GetQueueSize()
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pRenderingBufferMutex);
 
-	return m_iQueueSize;
+	return m_nQueueSize;
 }
