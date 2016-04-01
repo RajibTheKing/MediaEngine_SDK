@@ -17,13 +17,11 @@ m_iQueueCapacity(MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE)
 
 CSendingBuffer::~CSendingBuffer()
 {
-/*	if (m_pChannelMutex.get())
-		m_pChannelMutex.reset();*/
+
 }
 
 int CSendingBuffer::Queue(LongLong lFriendID, unsigned char *frame, int length, int frameNumber, int packetNumber)
 {
-//	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::Queue b4 lock");
 	Locker lock(*m_pChannelMutex);
     
     memcpy(m_Buffer[m_iPushIndex], frame, length);
@@ -51,9 +49,7 @@ int CSendingBuffer::Queue(LongLong lFriendID, unsigned char *frame, int length, 
 
 int CSendingBuffer::DeQueue(LongLong &lFriendID, unsigned char *decodeBuffer, int &frameNumber, int &packetNumber, int &timeDiff)
 {
-//	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::deQueue b4 lock");
 	Locker lock(*m_pChannelMutex);
-//	CLogPrinter_WriteSpecific(CLogPrinter::INFO, "CSendingBuffer::deQueue 84 lock");
 
 	if (m_iQueueSize <= 0)
 	{

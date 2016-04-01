@@ -25,7 +25,6 @@ private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iDecodingIndex;
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
@@ -36,7 +35,6 @@ private:
 	LongLong m_BufferFriendIDs[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 	int m_BufferFrameNumber[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 	int m_BufferPacketNumber[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
-	int m_BufferIndexState[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 	long long m_BufferInsertionTime[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pChannelMutex;
