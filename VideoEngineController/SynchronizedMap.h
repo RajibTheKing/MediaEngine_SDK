@@ -1,11 +1,11 @@
 
-#ifndef _BANDWIDTH_RATIO_HELPER_H_
-#define _BANDWIDTH_RATIO_HELPER_H_
+#ifndef _SYNCHRONIZED_MAP_H_
+#define _SYNCHRONIZED_MAP_H_
 
-#include "LockHandler.h"
-#include "Size.h"
-#include "Tools.h"
 #include "SmartPointer.h"
+#include "LockHandler.h"
+#include "Tools.h"
+#include "Size.h"
 
 #include <map>
 
@@ -18,15 +18,15 @@ public:
 	~CSynchronizedMap();
 
 	void clear();
-	int find(int index);
-	int getElementAt(int index);
+	int find(int iIndex);
+	int getElementAt(int iIndex);
 	int end();
-	void insert(int index, int element);
-	void erase(int index);
+	void insert(int iIndex, int nElement);
+	void erase(int iIndex);
 
 private:
 
-	map<int, int> m_STLMap;
+	map<int, int> m_STLMapSynchronizedMap;
 
 	SmartPointer<CLockHandler> m_pSynchronizedMapMutex;
 };

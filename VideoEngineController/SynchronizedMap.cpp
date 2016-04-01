@@ -1,10 +1,9 @@
 
 #include "SynchronizedMap.h"
-#include "SmartPointer.h"
 #include "EventNotifier.h"
 #include "ThreadTools.h"
+
 #include <string.h>
-#include "LogPrinter.h"
 
 CSynchronizedMap::CSynchronizedMap()
 {
@@ -20,26 +19,26 @@ void CSynchronizedMap::clear()
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	m_STLMap.clear();
+	m_STLMapSynchronizedMap.clear();
 }
 
-int CSynchronizedMap::find(int index)
+int CSynchronizedMap::find(int iIndex)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	if(m_STLMap.find(index) == m_STLMap.end())
+	if (m_STLMapSynchronizedMap.find(iIndex) == m_STLMapSynchronizedMap.end())
 	{
 		return -1;
 	}
 	else
-		return m_STLMap[index];
+		return m_STLMapSynchronizedMap[iIndex];
 }
 
-int CSynchronizedMap::getElementAt(int index)
+int CSynchronizedMap::getElementAt(int iIndex)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	return m_STLMap[index];
+	return m_STLMapSynchronizedMap[iIndex];
 }
 
 int CSynchronizedMap::end()
@@ -47,19 +46,19 @@ int CSynchronizedMap::end()
 	return -1;
 }
 
-void CSynchronizedMap::insert(int index, int element)
+void CSynchronizedMap::insert(int iIndex, int nElement)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	m_STLMap[index] = element;
+	m_STLMapSynchronizedMap[iIndex] = nElement;
 }
 
-void CSynchronizedMap::erase(int index)
+void CSynchronizedMap::erase(int iIndex)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	if(m_STLMap.find(index) != m_STLMap.end())
+	if (m_STLMapSynchronizedMap.find(iIndex) != m_STLMapSynchronizedMap.end())
 	{
-		m_STLMap.erase(index);
+		m_STLMapSynchronizedMap.erase(iIndex);
 	}
 }
