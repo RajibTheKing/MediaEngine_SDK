@@ -40,7 +40,6 @@ public:
 	int CreateNewIndex(int frame);
 	void ClearFrame(int index, int frame);
 	int GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight);
-	//int GetPacketLength(unsigned char *packetData, int start_index);
 
 	map<int, int> m_mFrameTimeStamp;
 
@@ -54,21 +53,8 @@ private:
 
 	int SafeFinder(int Data);
 
-	int m_iRetransPktDrpd;
-	int m_iRetransPktUsed;
-	int m_iIntervalDroppedFPS;
-	int m_nIntervalLastFrameNumber;
-	int m_iCountResendPktSent;
-	int m_iCountReqResendPacket;
 	int m_iMaxFrameNumRecvd;
-	int m_iMaxFrameNumRecvdOld;
 	long long m_FirstFrameEncodingTime;
-	unsigned int timeStamp;
-
-	LongLong lastTimeStamp;
-
-	int fpsCompleteFrame;
-
 
 	std::map<int, int> m_FrameTracker;
 	int m_FrontFrame;
@@ -87,8 +73,6 @@ private:
 	unsigned char * m_pPacketToResend;
 
 protected:
-
-	std::thread* m_pEncodedFrameDepacketizerThread;
 
 	SmartPointer<CLockHandler> m_pEncodedFrameDepacketizerMutex;
 

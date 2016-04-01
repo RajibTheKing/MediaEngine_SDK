@@ -5,12 +5,6 @@
 #include "ResendingBuffer.h"
 #include "Globals.h"
 
-//#include <android/log.h>
-
-//#define LOG_TAG "jniEngine"
-//#define LOG_TAG "dbg1"
-//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
@@ -41,9 +35,6 @@ CEncodedFrameDepacketizer::CEncodedFrameDepacketizer(CCommonElementsBucket* shar
 	m_iFirstFrameReceived = DEFAULT_FIRST_FRAME_RCVD;
 	m_bIsDpkgBufferFilledUp = false;
 
-	lastTimeStamp = m_Tools.CurrentTimestamp();
-
-	fpsCompleteFrame=0;
 	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFrameDepacketizer::CEncodedFrameDepacketizer");
 	
 	m_pPacketToResend = new unsigned char[MAX_VIDEO_PACKET_SIZE];
@@ -69,12 +60,6 @@ CEncodedFrameDepacketizer::CEncodedFrameDepacketizer(CCommonElementsBucket* shar
 
 CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 {
-/*	if (NULL != m_pEncodedFrameDepacketizerThread)
-	{
-		delete m_pEncodedFrameDepacketizerThread;
-		m_pEncodedFrameDepacketizerThread = NULL;
-	}*/
-
 	if(NULL != m_pPacketToResend)
 	{
 		delete m_pPacketToResend;
@@ -84,7 +69,6 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 
 int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader)
 {
-    bool bIsRetransmitted = (PacketType == RETRANSMITTED_PACKET_TYPE);
     bool bIsMiniPacket = (PacketType == MINI_PACKET_TYPE);
     int firstByte = 0;
 
@@ -159,9 +143,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 
 	if (frameNumber < m_FrontFrame)		//Very old frame
 	{
-		if(bIsRetransmitted)
-			++m_iRetransPktDrpd;
-
 		return -1;
 	}
 	else if(m_FrontFrame>m_BackFrame)	//IF BUFFER IS EMPTY
