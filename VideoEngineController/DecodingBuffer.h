@@ -30,8 +30,10 @@ private:
 	Tools m_Tools;
 
 	unsigned char m_uc2aEncodedVideoDataBuffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
+
 	int m_naBufferDataLengths[MAX_VIDEO_DECODER_BUFFER_SIZE];
 	int m_naBufferFrameNumbers[MAX_VIDEO_DECODER_BUFFER_SIZE];
+
 	unsigned int m_unaBufferCaptureTimeDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
 	long long m_llBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
