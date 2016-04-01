@@ -16,8 +16,7 @@ m_iQueueCapacity(30)
 
 CDecodingBuffer::~CDecodingBuffer()
 {
-/*	if (m_pChannelMutex.get())
-		m_pChannelMutex.reset();*/
+
 }
 
 int CDecodingBuffer::Queue(int frameNumber, unsigned char *frame, int length, unsigned int timeStampDiff)

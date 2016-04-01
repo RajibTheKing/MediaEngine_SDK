@@ -26,7 +26,6 @@ private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iDecodingIndex;
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
@@ -35,7 +34,6 @@ private:
 	unsigned char m_Buffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
 	int m_BufferDataLength[MAX_VIDEO_DECODER_BUFFER_SIZE];
 	int m_BufferFrameNumber[MAX_VIDEO_DECODER_BUFFER_SIZE];
-	int m_BufferIndexState[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
 	unsigned int m_BufferTimeStamp[MAX_VIDEO_DECODER_BUFFER_SIZE];
 	long long m_BufferInsertionTime[MAX_VIDEO_DECODER_BUFFER_SIZE];
