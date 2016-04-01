@@ -8,7 +8,7 @@ CDecodingBuffer::CDecodingBuffer() :
 m_iPushIndex(0),
 m_iPopIndex(0),
 m_nQueueSize(0),
-m_nQueueCapacity(VIDEO_DECODING_BUFFER_QUEUE_CAPACITY)
+m_nQueueCapacity(MAX_VIDEO_DECODER_BUFFER_SIZE)
 
 {
 	m_pDecodingBufferMutex.reset(new CLockHandler);
