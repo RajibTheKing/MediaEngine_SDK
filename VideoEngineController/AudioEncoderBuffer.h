@@ -28,7 +28,6 @@ private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iDecodingIndex;
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
@@ -39,7 +38,6 @@ private:
 
 	short m_Buffer[MAX_AUDIO_ENCODER_BUFFER_SIZE][MAX_AUDIO_ENCODER_FRAME_SIZE];
 	int m_BufferDataLength[MAX_AUDIO_ENCODER_BUFFER_SIZE];
-	int m_BufferIndexState[MAX_AUDIO_ENCODER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pChannelMutex;
 };
