@@ -9,23 +9,8 @@
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
-//#include <android/log.h>
 
-//#define LOG_TAG "NewTest"
-//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
-//int FPS=0;
-//int fpsCnt=0;
-
-deque<pair<int, int>> ExpectedFramePacketDeQueue;
 extern CFPSController g_FPSController;
-
-
-//int countFrame = 0;
-//int countFrameFor15 = 0;
-//int countFrameSize = 0;
-//long long encodeTimeStampFor15;
-//bool gbStopFPSSending = false;
 
 #define ORIENTATION_0_MIRRORED 1
 #define ORIENTATION_90_MIRRORED 2
@@ -39,43 +24,24 @@ extern CFPSController g_FPSController;
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
-extern CResendingBuffer g_ResendBuffer;
-
-//extern int g_MY_FPS;
 
 CVideoCallSession *g_VideoCallSession;
 
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
 
 m_pCommonElementsBucket(sharedObject),
-m_iFrameNumber(0),
 m_ClientFPS(FPS_BEGINNING),
 m_ClientFPSDiffSum(0),
 m_ClientFrameCounter(0),
 m_EncodingFrameCounter(0),
-m_ll1stFrameTimeStamp(0),
-m_bFirstFrame(true),
-m_iTimeStampDiff(0),
-m_b1stDecodedFrame(true),
-m_ll1stDecodedFrameTimeStamp(0),
 m_pEncodedFramePacketizer(NULL),
 m_ByteRcvInBandSlot(0),
 m_SlotResetLeftRange(GetUniquePacketID(0, 0)),
 m_SlotResetRightRange(GetUniquePacketID(FRAME_RATE, 0)),
 m_pVideoEncoder(NULL),
 m_bSkipFirstByteCalculation(true),
-m_bGotOppBandwidth(0),
-m_ByteRcvInSlotInverval(0),
-m_ByteSendInSlotInverval(0),
-m_RecvMegaSlotInvervalCounter(0),
-m_SendMegaSlotInervalCounter(0),
-m_ByteSendInMegaSlotInverval(0),
-m_ByteRecvInMegaSlotInterval(0),
-m_SlotIntervalCounter(0),
-m_bsetBitrateCalled(false),
 m_iConsecutiveGoodMegaSlot(0),
 m_iPreviousByterate(BITRATE_MAX / 8),
-m_LastSendingSlot(0),
 m_iDePacketizeCounter(0),
 m_TimeFor100Depacketize(0),
 m_llTimeStampOfFirstPacketRcvd(-1),
@@ -93,20 +59,10 @@ m_llShiftedTime(-1)
 #endif
 
 	//Resetting Global Variables.
-	//	countFrame = 0;
-	//	countFrameFor15 = 0;
-	//	countFrameSize = 0;
-	//	encodeTimeStampFor15 = 0;
-	g_ResendBuffer.Reset();
-	//gbStopFPSSending = false;
 
-	fpsCnt = 0;
 	g_FPSController.Reset();
-	//	g_MY_FPS =
-	opponentFPS = ownFPS = FPS_BEGINNING;
-	m_iCountReQResPack = 0;
 
-	//	FPS=10;
+	opponentFPS = ownFPS = FPS_BEGINNING;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
 	m_pSessionMutex.reset(new CLockHandler);
@@ -126,22 +82,11 @@ m_llShiftedTime(-1)
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
 	m_BitRateController = new BitRateController();
-    
-	ExpectedFramePacketPair.first = 0;
-	ExpectedFramePacketPair.second = 0;
-	iNumberOfPacketsInCurrentFrame = 0;
 
 	g_VideoCallSession = this;
 
-	m_FrameCounterbeforeEncoding = 0;
-
-	m_iGoodSlotCounter = 0;
-	m_iNormalSlotCounter = 0;
-	m_SlotCounter = 0;
-
 	m_BitRateController->SetSharedObject(sharedObject);
 
-	m_BandWidthRatioHelper.clear();
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
 }
 

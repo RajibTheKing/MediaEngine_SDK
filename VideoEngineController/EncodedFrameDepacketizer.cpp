@@ -9,7 +9,6 @@ extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
 
-extern CResendingBuffer g_ResendBuffer;
 extern PairMap g_timeInt;
 extern CFPSController g_FPSController;
 
