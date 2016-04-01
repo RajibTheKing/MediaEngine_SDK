@@ -51,7 +51,6 @@ private:
 	LongLong m_FriendID;										
 
 	unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
-	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
 
 	Tools m_Tools;
 

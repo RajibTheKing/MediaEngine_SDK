@@ -215,101 +215,22 @@ void CVideoDepacketizationThread::ExpectedPacket()
 			if (currentFramePacketPair.first - ExpectedFramePacketPair.first == 2) //one complete frame missed, maybe it was a mini frame containing only 1 packet
 			{
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 1");
-//				CreateAndSendMiniPacket(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
-				pair<int, int> requestFramePacketPair;
-				requestFramePacketPair.first = currentFramePacketPair.first;
-				requestFramePacketPair.second = 0;
-
-				int iSendCounter = 0;
-				while (requestFramePacketPair.second < currentFramePacketPair.second) //
-				{
-//					if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-//					if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-//					{
-//						CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-//					}
-					iSendCounter++;
-					requestFramePacketPair.second++;
-				}
 			}
 			else if (currentFramePacketPair.first - ExpectedFramePacketPair.first == 1) //last packets from last frame and some packets from current misssed
 			{
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 2");
-				pair<int, int> requestFramePacketPair;
-				requestFramePacketPair.first = ExpectedFramePacketPair.first;
-				requestFramePacketPair.second = ExpectedFramePacketPair.second;
-
-				int iSendCounter = 0;
-				while (requestFramePacketPair.second < iNumberOfPacketsInCurrentFrame)
-				{
-//					if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-//					if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-//					{
-//						CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-//					}
-					iSendCounter++;
-					requestFramePacketPair.second++;
-				}
-
-				requestFramePacketPair.first = currentFramePacketPair.first;
-				requestFramePacketPair.second = 0;
-
-				iSendCounter = 0;
-				while (requestFramePacketPair.second < currentFramePacketPair.second)
-				{
-//					if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-//					if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-//					{
-//						CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-//					}
-					iSendCounter++;
-					requestFramePacketPair.second++;
-				}
-
 			}
 			else//we dont handle burst frame miss, but 1st packets of the current frame should come, only if it is an iFrame
 			{
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 3-- killed previous frames");
-				if (currentFramePacketPair.first % I_INTRA_PERIOD == 0)
-				{
-					pair<int, int> requestFramePacketPair;
-					requestFramePacketPair.first = currentFramePacketPair.first;
-					requestFramePacketPair.second = 0;
-
-					int iSendCounter = 0;
-					while (requestFramePacketPair.second < currentFramePacketPair.second)
-					{
-//						if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-//						if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-//						{
-//							CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-//						}
-						iSendCounter++;
-						requestFramePacketPair.second++;
-					}
-				}
 			}
 
 		}
 		else //packet missed from same frame
 		{
 			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 4");
-			pair<int, int> requestFramePacketPair;
-			requestFramePacketPair.first = ExpectedFramePacketPair.first;
-			requestFramePacketPair.second = ExpectedFramePacketPair.second;
-
-			int iSendCounter = 0;
-			while (requestFramePacketPair.second < currentFramePacketPair.second)
-			{
-//				if (iSendCounter /* && requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-//				if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-//				{
-//					CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-//				}
-				iSendCounter++;
-				requestFramePacketPair.second++;
-			}
 		}
 	}
+
 	UpdateExpectedFramePacketPair(currentFramePacketPair, iNumberOfPackets);
 }
