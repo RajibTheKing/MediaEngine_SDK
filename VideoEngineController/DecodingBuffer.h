@@ -15,8 +15,8 @@ public:
 	CDecodingBuffer();
 	~CDecodingBuffer();
 
-	int Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrameData, int nLength, unsigned int unTimeStampDifference);
-	int DeQueue(int &irFrameNumber, unsigned int &unrTimeStampDifference, unsigned char *ucaEncodedVideoFrameData, int &unrTimeDifferenceInQueue);
+	int Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrameData, int nLength, unsigned int unCaptureTimeDifference);
+	int DeQueue(int &irFrameNumber, unsigned int &unCaptureTimeDifference, unsigned char *ucaEncodedVideoFrameData, int &unrTimeDifferenceInQueue);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 
@@ -32,7 +32,7 @@ private:
 	unsigned char m_uc2aEncodedVideoDataBuffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
 	int m_naBufferDataLengths[MAX_VIDEO_DECODER_BUFFER_SIZE];
 	int m_naBufferFrameNumbers[MAX_VIDEO_DECODER_BUFFER_SIZE];
-	unsigned int m_unaBufferTimeStampDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
+	unsigned int m_unaBufferCaptureTimeDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
 	long long m_llBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pDecodingBufferMutex;
