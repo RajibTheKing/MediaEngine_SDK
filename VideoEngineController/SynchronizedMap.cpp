@@ -14,8 +14,6 @@ CSynchronizedMap::CSynchronizedMap()
 CSynchronizedMap::~CSynchronizedMap()
 {
 	SHARED_PTR_DELETE(m_pSynchronizedMapMutex);
-/*	if (m_pSynchronizedMapMutex.get())
-		m_pSynchronizedMapMutex.reset();*/
 }
 
 void CSynchronizedMap::clear()
