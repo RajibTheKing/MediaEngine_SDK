@@ -26,7 +26,6 @@ private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iDecodingIndex;
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
@@ -37,7 +36,6 @@ private:
 	int m_VideoHeights[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	int m_VideoWidths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	int m_BufferFrameNumber[MAX_VIDEO_RENDERER_BUFFER_SIZE];
-	int m_BufferIndexState[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_BufferInsertionTime[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
 	long long m_BufferTimeStamp[MAX_VIDEO_RENDERER_BUFFER_SIZE];

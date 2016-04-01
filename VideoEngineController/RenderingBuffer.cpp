@@ -16,8 +16,7 @@ m_iQueueCapacity(30)
 
 CRenderingBuffer::~CRenderingBuffer()
 {
-/*	if (m_pChannelMutex.get())
-		m_pChannelMutex.reset();*/
+
 }
 
 int CRenderingBuffer::Queue(int frameNumber, unsigned char *frame, int length, long long timeStampDiff, int videoHeight, int videoWidth)
