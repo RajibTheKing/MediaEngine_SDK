@@ -4,9 +4,8 @@
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
-#include "Size.h"
 #include "Tools.h"
-
+#include "Size.h"
 
 class CSendingBuffer
 {
@@ -16,28 +15,30 @@ public:
 	CSendingBuffer();
 	~CSendingBuffer();
 
-	int Queue(LongLong lFriendID, unsigned char *frame, int length, int frameNumber, int packetNumber);
-	int DeQueue(LongLong &lFriendID, unsigned char *decodeBuffer, int &frameNumber, int &packetNumber, int &timeDiff);
-	void IncreamentIndex(int &index);
+	int Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPacketData, int nLength, int iFrameNumber, int iPacketNumber);
+	int DeQueue(LongLong &llrFriendID, unsigned char *ucaSendingVideoPacketData, int &nrFrameNumber, int &nrPacketNumber, int &nrTimeDifferenceInQueue);
+	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 
 private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iQueueCapacity;
-	int m_iQueueSize;
+	int m_nQueueCapacity;
+	int m_nQueueSize;
 
 	Tools m_Tools;
 
-	unsigned char m_Buffer[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
-	int m_BufferDataLength[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
-	LongLong m_BufferFriendIDs[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
-	int m_BufferFrameNumber[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
-	int m_BufferPacketNumber[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
-	long long m_BufferInsertionTime[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
+	unsigned char m_uc2aSendingVideoPacketBuffer[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
 
-	SmartPointer<CLockHandler> m_pChannelMutex;
+	int m_naBufferDataLengths[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
+	LongLong m_llaBufferFriendIDs[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
+	int m_naBufferFrameNumbers[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
+	int m_naBufferPacketNumbers[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
+
+	long long m_llBufferInsertionTimes[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
+
+	SmartPointer<CLockHandler> m_pSendingBufferMutex;
 };
 
 #endif 
