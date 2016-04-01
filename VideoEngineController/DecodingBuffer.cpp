@@ -55,12 +55,12 @@ int CDecodingBuffer::DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDif
 	}
 	else
 	{
-		int nlength;
+		int nLength;
 
-		nlength = m_naBufferDataLengths[m_iPopIndex];
+		nLength = m_naBufferDataLengths[m_iPopIndex];
 		irFrameNumber = m_naBufferFrameNumbers[m_iPopIndex];
 
-		memcpy(ucaEncodedVideoFrameData, m_uc2aEncodedVideoDataBuffer[m_iPopIndex], nlength);
+		memcpy(ucaEncodedVideoFrameData, m_uc2aEncodedVideoDataBuffer[m_iPopIndex], nLength);
 
 		unrCaptureTimeDifference = m_unaBufferCaptureTimeDifferences[m_iPopIndex];
 		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llBufferInsertionTimes[m_iPopIndex];
@@ -68,7 +68,7 @@ int CDecodingBuffer::DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDif
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;
 
-		return nlength;
+		return nLength;
 	}
 }
 
