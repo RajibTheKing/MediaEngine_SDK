@@ -5,9 +5,7 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
-
-#define MAX_VIDEO_DECODER_BUFFER_SIZE 30
-#define MAX_VIDEO_DECODER_FRAME_SIZE 352 * 288 * 3
+#include "Size.h"
 
 class CDecodingBuffer
 {
@@ -17,28 +15,27 @@ public:
 	CDecodingBuffer();
 	~CDecodingBuffer();
 
-	int Queue(int frameNumber, unsigned char *frame, int length, unsigned int timeStampDiff);
-	int DeQueue(int &frameNumber,unsigned int &timeStampDiff, unsigned char *decodeBuffer, int &timeDiffForQueue);
-	void IncreamentIndex(int &index);
+	int Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrameData, int nLength, unsigned int unTimeStampDifference);
+	int DeQueue(int &irFrameNumber, unsigned int &unrTimeStampDifference, unsigned char *ucaEncodedVideoFrameData, int &unrTimeDifferenceInQueue);
+	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 
 private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iQueueCapacity;
-	int m_iQueueSize;
+	int m_nQueueCapacity;
+	int m_nQueueSize;
 
 	Tools m_Tools;
 
-	unsigned char m_Buffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
-	int m_BufferDataLength[MAX_VIDEO_DECODER_BUFFER_SIZE];
-	int m_BufferFrameNumber[MAX_VIDEO_DECODER_BUFFER_SIZE];
+	unsigned char m_uc2aEncodedVideoDataBuffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
+	int m_naBufferDataLengths[MAX_VIDEO_DECODER_BUFFER_SIZE];
+	int m_naBufferFrameNumbers[MAX_VIDEO_DECODER_BUFFER_SIZE];
+	unsigned int m_unaBufferTimeStampDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
+	long long m_llBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
-	unsigned int m_BufferTimeStamp[MAX_VIDEO_DECODER_BUFFER_SIZE];
-	long long m_BufferInsertionTime[MAX_VIDEO_DECODER_BUFFER_SIZE];
-
-	SmartPointer<CLockHandler> m_pChannelMutex;
+	SmartPointer<CLockHandler> m_pDecodingBufferMutex;
 };
 
 #endif 
