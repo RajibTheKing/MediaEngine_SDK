@@ -70,12 +70,12 @@ int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTi
 	}
 }
 
-void CEncodingBuffer::IncreamentIndex(int &index)
+void CEncodingBuffer::IncreamentIndex(int &irIndex)
 {
-	index++;
+	irIndex++;
 
-	if (index >= m_nQueueCapacity)
-		index = 0;
+	if (irIndex >= m_nQueueCapacity)
+		irIndex = 0;
 }
 
 int CEncodingBuffer::GetQueueSize()
