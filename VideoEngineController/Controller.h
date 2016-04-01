@@ -31,13 +31,11 @@ public:
 	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
-//	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type);
 	int SetHeightWidth(const LongLong& lFriendID, int width, int height); 
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
 	bool StopAudioCall(const LongLong& lFriendID);
 	bool StopVideoCall(const LongLong& lFriendID);
-	void TempChange();
 	void initializeEventHandler();
 	void SetLoggerPath(std::string);
     bool SetLoggingState(bool loggingState, int logLevel);

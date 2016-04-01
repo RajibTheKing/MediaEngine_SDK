@@ -274,7 +274,6 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	}
 }
 
-//int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
 int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type)
 {
 	CVideoCallSession* pVideoSession;
@@ -398,19 +397,8 @@ void CController::UninitializeLibrary()
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();
 }
 
-void CController::TempChange()
-{
-	//Locker lock(*m_pInternalThreadMutex);
-	//{
-		//m_pCommonElementsBucket->m_pVideoCallSessionList->ResetAllInSessionList();
-       
-	//}
-}
-
 void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
-   // std::cout << "Test set callback 5 A" << std::endl;
-    
     m_EventNotifier.SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 }
 
@@ -436,7 +424,6 @@ void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunct
 
 void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
 {
-    
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
 
