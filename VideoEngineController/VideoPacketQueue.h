@@ -33,7 +33,6 @@ private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iDecodingIndex;
 	int m_iQueueCapacity;
 	int m_iQueueSize;
 
@@ -43,4 +42,4 @@ private:
 	SmartPointer<CLockHandler> m_pChannelMutex;
 };
 
-#endif //_VIDEO_PACKET_QUEUE_H_
+#endif

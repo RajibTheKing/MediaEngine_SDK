@@ -16,8 +16,6 @@ m_iQueueCapacity(MAX_VIDEO_PACKET_QUEUE_SIZE)
 
 CVideoPacketQueue::~CVideoPacketQueue()
 {
-	/*if (m_pChannelMutex.get())
-		m_pChannelMutex.reset();*/
 	SHARED_PTR_DELETE(m_pChannelMutex);
 }
 
