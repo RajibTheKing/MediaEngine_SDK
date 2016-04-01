@@ -35,7 +35,6 @@ public:
 
     int SetBitrate(int iFps);
     void SetNetworkType(int iNetworkType);
-	void SetFramerate(int iFps);
 	int SetMaxBitrate(int iFps);
     int GetBitrate();
     int GetMaxBitrate();

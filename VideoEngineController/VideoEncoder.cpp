@@ -185,32 +185,6 @@ int CVideoEncoder::SetMaxBitrate(int bitrate)
     return iRet;
 }
 
-void CVideoEncoder::SetFramerate(int iFps)
-{
-	/*SRateThresholds FrameRateTh;
-	FrameRateTh.iMinThresholdFrameRate = iFps;
-	FrameRateTh.iHeight = m_iHeight;
-	FrameRateTh.iWidth = m_iWidth;
-	FrameRateTh.iSkipFrameRate = 1;
-	FrameRateTh.iSkipFrameStep = 2;
-	FrameRateTh.iThresholdOfMaxRate = 15;
-	FrameRateTh.iThresholdOfMinRate = 8;
-
-	int iRet;
-	if(m_pSVCVideoEncoder)
-	{
-		iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_FRAME_RATE, &FrameRateTh);
-		if (iRet != 0){
-			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set framerate---<< "+ Tools::IntegertoStringConvert(iFps));
-
-		}
-		else
-		{
-			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder framerate set to---<< " + Tools::IntegertoStringConvert(iFps));
-		}
-	}*/
-}
-
 int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
