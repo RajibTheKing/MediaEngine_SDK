@@ -54,11 +54,11 @@ int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTi
 	}
 	else
 	{
-		int nlength;
+		int nLength;
 		
-		nlength = m_naBufferDataLengths[m_iPopIndex];
+		nLength = m_naBufferDataLengths[m_iPopIndex];
 
-		memcpy(ucaCapturedVideoFrameData, m_uc2aCapturedVideoDataBuffer[m_iPopIndex], nlength);
+		memcpy(ucaCapturedVideoFrameData, m_uc2aCapturedVideoDataBuffer[m_iPopIndex], nLength);
 
 		nrCaptureTimeDifference = m_naBufferCaptureTimeDifferences[m_iPopIndex];
 		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llBufferInsertionTimes[m_iPopIndex];
@@ -66,7 +66,7 @@ int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTi
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;
 
-		return nlength;
+		return nLength;
 	}
 }
 
