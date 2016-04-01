@@ -28,10 +28,6 @@ public:
 	int CreateAudioEncoder();
 	int Encode(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 	int Decode(unsigned char *in_data, unsigned int in_size, short *out_buffer);
-	void StartAudioEncoderThread();
-	void StopAudioEncoderThread();
-
-	static void *CreateAudioEncoderThread(void* param);
 
 private:
 

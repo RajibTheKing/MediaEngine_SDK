@@ -57,40 +57,6 @@ int CAudioEncoder::Decode(unsigned char *in_data, unsigned int in_size, short *o
 	return size;
 }
 
-void *CAudioEncoder::CreateAudioEncoderThread(void* param)
-{
-	CAudioEncoder *pThis = (CAudioEncoder*)param;
-	//	pThis->CreateAudioEncoderSDP();
-
-	return NULL;
-}
-
-void CAudioEncoder::StartAudioEncoderThread()
-{
-	//	if (m_pAudioEncoderThread != NULL)
-	//	{
-	//        CLogPrinter_Write(CLogPrinter::ERRORS, "already StartAudioEncoderThread is running");
-	//		return;
-	//	}
-	std::thread t(CreateAudioEncoderThread, this);
-	t.detach();
-
-	return;
-}
-
-void CAudioEncoder::StopAudioEncoderThread()
-{
-	if (m_pAudioEncoderThread != NULL)
-	{
-		Locker lock(*m_pMediaSocketMutex);
-
-		/*delete m_pAudioEncoderThread;
-		m_pAudioEncoderThread = NULL;*/
-	}
-
-}
-
-
 
 
 
