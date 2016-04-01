@@ -26,7 +26,6 @@ public:
 	bool PushVideoPacket(unsigned char *in_data, unsigned int in_size, int packetNumber);
 	int IsComplete();
 	void SetNumberOfPackets(int number);
-	bool IsIFrame();
 
 	bool m_pPacketTracker[MAX_NUMBER_OF_PACKETS];
 	unsigned char m_pFrameData[MAX_NUMBER_OF_PACKETS*MAX_PACKET_SIZE_WITHOUT_HEADER];

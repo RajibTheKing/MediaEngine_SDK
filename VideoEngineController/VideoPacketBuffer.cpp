@@ -17,13 +17,7 @@ m_isClear(true)
 
 CVideoPacketBuffer::~CVideoPacketBuffer()
 {
-/*	if (m_pEncodedFrameDepacketizerThread)
-	{
-		delete m_pEncodedFrameDepacketizerThread;
-		m_pEncodedFrameDepacketizerThread = NULL;
-	}
 
-	SHARED_PTR_DELETE(m_pEncodedFrameDepacketizerMutex);*/
 }
 
 void CVideoPacketBuffer::Reset()
@@ -82,10 +76,6 @@ void CVideoPacketBuffer::SetNumberOfPackets(int number)
 {
 	m_isClear = false;
 	m_NumberOfPackets = number;
-}
-
-bool CVideoPacketBuffer::IsIFrame(){
-	return (m_pFrameData[4] & 0x1F)==7;
 }
 
 
