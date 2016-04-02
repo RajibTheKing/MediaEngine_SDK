@@ -1,140 +1,108 @@
+
 #include "Controller.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "LogPrinter.h"
-#include "Tools.h"
-#include "Size.h"
-void abc(){}
 
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 {
-	m_pController = new CController();
+	m_pcController = new CController();
 }
 
-CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* sLoggerPath, int iLoggerPrintLevel)
+CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 {
-	m_pController = new CController(sLoggerPath, iLoggerPrintLevel);
+	m_pcController = new CController(szLoggerPath, nLoggerPrintLevel);
 }
 
-bool CInterfaceOfAudioVideoEngine::Init(const IPVLongType& lUserID, const char* sLoggerPath, int iLoggerPrintLevel)
+bool CInterfaceOfAudioVideoEngine::Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel)
 {
     return true;
 }
 
-bool CInterfaceOfAudioVideoEngine::InitializeLibrary(const IPVLongType& lUserID)
+bool CInterfaceOfAudioVideoEngine::InitializeLibrary(const IPVLongType& llUserID)
 {
     return true;
 }
 
 CInterfaceOfAudioVideoEngine::~CInterfaceOfAudioVideoEngine()
 {
-	if (NULL != m_pController)
+	if (NULL != m_pcController)
 	{
-		delete m_pController;
+		delete m_pcController;
 
-		m_pController = NULL;
+		m_pcController = NULL;
 	}
 }
 
-bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType lUserName)
+bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	m_pController->initializeEventHandler();
+	m_pcController->initializeEventHandler();
 
-	bool Ret = m_pController->SetUserName(lUserName);
+	bool Ret = m_pcController->SetUserName(llUserName);
 
 	return Ret;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType lFriendID)
+bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pController->StartAudioCall(lFriendID);
+	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID);
 
 	return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pController->StartVideoCall(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth,nNetworkType);
 
 	return bReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::EncodeAndTransfer(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size)
+int CInterfaceOfAudioVideoEngine::EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pController->EncodeAndTransfer(lFriendID, in_data, in_size);
+	int iReturnedValue = m_pcController->EncodeAndTransfer(llFriendID, in_data, unLength);
 
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size)
-{
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding called");
-    
-    if((int)in_data[0]==AUDIO_PACKET_MEDIA_TYPE)
-    {
-        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding AUDIO data in Video");
-        
-        return -1;
-    }
-    else if((int)in_data[0]==VIDEO_PACKET_MEDIA_TYPE)
-    {
-        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding CORRECT video data");
-    }
-    else
-    {
-        CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding unknown data");
-        
-        return -1;
-    }
-    
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushPacketForDecoding 2called");
-
-	if (m_pController == NULL)
-	{
-		return false;
-	}
-
-	int iReturnedValue = m_pController->PushPacketForDecoding(lFriendID, in_data, in_size);
-
-	return iReturnedValue;
+int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength)
+{   
+	return -1;
 }
 
-int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size)
-{
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding called");
-    
+int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength)
+{ 
     int iReturnedValue = 0;
     
-    if (m_pController == NULL)
+	if (NULL == m_pcController)
     {
         return 0;
     }
-    else if(in_data == nullptr)
+	else if (nullptr == in_data)
     {
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
         
         return 0;
     }
-    else if(in_data == NULL)
+	else if (NULL == in_data)
     {
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
         
@@ -142,13 +110,13 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType lFriend
     }
     else
     {
-        if((int)in_data[0]==VIDEO_PACKET_MEDIA_TYPE)
+		if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
         {
-            iReturnedValue = m_pController->PushPacketForDecoding(lFriendID, in_data, in_size);
+            iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
         }
-        else if((int)in_data[0]==AUDIO_PACKET_MEDIA_TYPE)
+		else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
         {
-            iReturnedValue = m_pController->PushAudioForDecoding(lFriendID, in_data, in_size);
+            iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data, unLength);
         }
         else
             return 0;
@@ -157,151 +125,151 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType lFriend
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SendAudioData(const IPVLongType lFriendID, short *in_data, unsigned int in_size)
+int CInterfaceOfAudioVideoEngine::SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pController->SendAudioData(lFriendID, in_data, in_size);
+	int iReturnedValue = m_pcController->SendAudioData(llFriendID, in_data, unLength);
 
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type)
+int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pController->SendVideoData(lFriendID, in_data, in_size, orientation_type);
+	int iReturnedValue = m_pcController->SendVideoData(llFriendID, in_data, unLength, nOrientationType);
 
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SetHeightWidth(const IPVLongType lFriendID, int width, int height)
+int CInterfaceOfAudioVideoEngine::SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pController->SetHeightWidth(lFriendID, width, height);
+	int iReturnedValue = m_pcController->SetHeightWidth(llFriendID, nVideoWidth, nVideoHeight);
 
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SetBitRate(const IPVLongType lFriendID, int bitRate)
+int CInterfaceOfAudioVideoEngine::SetBitRate(const IPVLongType llFriendID, int nBitRate)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pController->SetBitRate(lFriendID, bitRate);
+	int iReturnedValue = m_pcController->SetBitRate(llFriendID, nBitRate);
 
 	return iReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StopAudioCall(const IPVLongType lFriendID)
+bool CInterfaceOfAudioVideoEngine::StopAudioCall(const IPVLongType llFriendID)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pController->StopAudioCall(lFriendID);
+	bool bReturnedValue = m_pcController->StopAudioCall(llFriendID);
 
 	return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StopVideoCall(const IPVLongType lFriendID)
+bool CInterfaceOfAudioVideoEngine::StopVideoCall(const IPVLongType llFriendID)
 {
-	if (m_pController == NULL)
+	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pController->StopVideoCall(lFriendID);
+	bool bReturnedValue = m_pcController->StopVideoCall(llFriendID);
 
 	return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::SetLoggingState(bool loggingState, int logLevel)
+bool CInterfaceOfAudioVideoEngine::SetLoggingState(bool bLoggingState, int nLogLevel)
 {
-    if (m_pController == NULL)
+	if (NULL == m_pcController)
     {
         return false;
     }
     
-    bool bReturnedValue = m_pController->SetLoggingState(loggingState, logLevel);
+    bool bReturnedValue = m_pcController->SetLoggingState(bLoggingState, nLogLevel);
     
     return bReturnedValue;
 }
 
 void CInterfaceOfAudioVideoEngine::UninitializeLibrary()
 {
-	if (NULL != m_pController)
+	if (NULL != m_pcController)
 	{
-		m_pController->UninitializeLibrary();
+		m_pcController->UninitializeLibrary();
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetLoggerPath(std::string sLoggerPath)
+void CInterfaceOfAudioVideoEngine::SetLoggerPath(std::string strLoggerPath)
 {
-	if (NULL != m_pController)
+	if (NULL != m_pcController)
 	{
-		m_pController->SetLoggerPath(sLoggerPath);
+		m_pcController->SetLoggerPath(strLoggerPath);
 	}
 }
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
-	if (NULL != m_pController)
+	if (NULL != m_pcController)
 	{
-		m_pController->SetNotifyClientWithPacketCallback(callBackFunctionPointer);
+		m_pcController->SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 	}
 }
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int))
 {
-	if (NULL != m_pController)
+	if (NULL != m_pcController)
 	{
-		m_pController->SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
+		m_pcController->SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 	}
 }
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
 {
-	if (NULL != m_pController)
+	if (NULL != m_pcController)
 	{
-		m_pController->SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
+		m_pcController->SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
 	}
 }
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
-	if (NULL != m_pController)
+	if (NULL != m_pcController)
 	{
-		m_pController->SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);
+		m_pcController->SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);
 	}
 }
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
 {
-    if (NULL != m_pController)
+    if (NULL != m_pcController)
     {
-        m_pController->SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
+        m_pcController->SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
     }
 }
 
 void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
 {
-    if (NULL != m_pController)
+    if (NULL != m_pcController)
     {
-        m_pController->SetSendFunctionPointer(callBackFunctionPointer);
+        m_pcController->SetSendFunctionPointer(callBackFunctionPointer);
     }
 }
 

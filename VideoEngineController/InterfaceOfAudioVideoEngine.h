@@ -1,10 +1,8 @@
+
 #ifndef _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 #define _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 
-#include <stdio.h>
 #include <string>
-
-void abc();
 
 class CController;
 
@@ -14,25 +12,25 @@ class CInterfaceOfAudioVideoEngine
 public:
     
     CInterfaceOfAudioVideoEngine();
-    CInterfaceOfAudioVideoEngine(const char* sLoggerPath, int iLoggerPrintLevel);
+    CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel);
      ~CInterfaceOfAudioVideoEngine();
     
-     bool Init(const IPVLongType& lUserID, const char* sLoggerPath, int iLoggerPrintLevel);
-     bool InitializeLibrary(const IPVLongType& lUserID);
-     bool SetUserName(const IPVLongType lUserName);
-     bool StartAudioCall(const IPVLongType lFriendID);
-     bool StartVideoCall(const IPVLongType lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType = 0);
-     int EncodeAndTransfer(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size);
-     int PushPacketForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size);
-     int PushAudioForDecoding(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size);
-     int SendAudioData(const IPVLongType lFriendID, short *in_data, unsigned int in_size);
-     int SendVideoData(const IPVLongType lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type);
-     int SetHeightWidth(const IPVLongType lFriendID, int width, int height);
-     int SetBitRate(const IPVLongType lFriendID, int bitRate);
-     bool StopAudioCall(const IPVLongType lFriendID);
-     bool StopVideoCall(const IPVLongType lFriendID);
-     void SetLoggerPath(std::string sLoggerPath);
-     bool SetLoggingState(bool loggingState, int logLevel);
+     bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
+     bool InitializeLibrary(const IPVLongType& llUserID);
+     bool SetUserName(const IPVLongType llUserName);
+     bool StartAudioCall(const IPVLongType llFriendID);
+     bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType = 0);
+     int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
+     int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
+     int PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
+     int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
+     int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType);
+     int SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight);
+     int SetBitRate(const IPVLongType llFriendID, int nBitRate);
+     bool StopAudioCall(const IPVLongType llFriendID);
+     bool StopVideoCall(const IPVLongType llFriendID);
+     void SetLoggerPath(std::string strLoggerPath);
+     bool SetLoggingState(bool bLoggingState, int nLogLevel);
      void UninitializeLibrary();
     
      void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
@@ -45,7 +43,7 @@ public:
     
 private:
     
-    CController* m_pController;
+    CController* m_pcController;
 };
 
 #endif
