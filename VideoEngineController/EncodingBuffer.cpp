@@ -1,8 +1,6 @@
 
 #include "EncodingBuffer.h"
 
-#include <string.h>
-
 CEncodingBuffer::CEncodingBuffer() :
 
 m_iPushIndex(0),

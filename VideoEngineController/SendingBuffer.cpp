@@ -1,8 +1,6 @@
 
 #include "SendingBuffer.h"
 
-#include <string.h>
-
 CSendingBuffer::CSendingBuffer() :
 
 m_iPushIndex(0),

@@ -1,8 +1,4 @@
 #include "VideoPacketBuffer.h"
-#include "CommonElementsBucket.h"
-#include "LogPrinter.h"
-#include "Tools.h"
-
 
 CVideoPacketBuffer::CVideoPacketBuffer():
 m_NumberOfGotPackets(0),
@@ -11,8 +7,6 @@ m_FrameSize(0),
 m_isClear(true)
 {
 	memset(m_pPacketTracker, 0, MAX_NUMBER_OF_PACKETS);
-
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoPacketBuffer::CVideoPacketBuffer");
 }
 
 CVideoPacketBuffer::~CVideoPacketBuffer()

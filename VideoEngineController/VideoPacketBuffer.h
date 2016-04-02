@@ -3,16 +3,9 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <stdio.h>
-#include <string>
-
 #include "SmartPointer.h"
 #include "LockHandler.h"
-#include "ThreadTools.h"
-
 #include "Size.h"
-
-#include <vector>
 
 class CVideoPacketBuffer
 {

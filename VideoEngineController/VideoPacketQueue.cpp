@@ -2,8 +2,6 @@
 #include "VideoPacketQueue.h"
 #include "ThreadTools.h"
 
-#include <string.h>
-
 CVideoPacketQueue::CVideoPacketQueue() :
 
 m_iPushIndex(0),

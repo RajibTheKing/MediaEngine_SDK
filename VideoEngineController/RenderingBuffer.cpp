@@ -1,8 +1,6 @@
 
 #include "RenderingBuffer.h"
 
-#include <string.h>
-
 CRenderingBuffer::CRenderingBuffer() :
 
 m_iPushIndex(0),

@@ -1,8 +1,6 @@
 
 #include "DecodingBuffer.h"
 
-#include <string.h>
-
 CDecodingBuffer::CDecodingBuffer() :
 
 m_iPushIndex(0),
