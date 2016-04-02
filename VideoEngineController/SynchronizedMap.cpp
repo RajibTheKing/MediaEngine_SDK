@@ -1,9 +1,6 @@
 
 #include "SynchronizedMap.h"
-#include "EventNotifier.h"
 #include "ThreadTools.h"
-
-#include <string.h>
 
 CSynchronizedMap::CSynchronizedMap()
 {

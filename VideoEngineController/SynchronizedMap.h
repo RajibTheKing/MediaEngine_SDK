@@ -4,8 +4,6 @@
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
-#include "Tools.h"
-#include "Size.h"
 
 #include <map>
 
@@ -26,7 +24,7 @@ public:
 
 private:
 
-	map<int, int> m_STLMapSynchronizedMap;
+	std::map<int, int> m_STLMapSynchronizedMap;
 
 	SmartPointer<CLockHandler> m_pSynchronizedMapMutex;
 };

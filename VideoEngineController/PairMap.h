@@ -6,13 +6,9 @@
 #define ANDROIDTESTCLIENTVE_FTEST_PAIRMAP_H
 
 #include "SmartPointer.h"
-#include "EventNotifier.h"
-#include "ThreadTools.h"
 #include "LockHandler.h"
-#include "Size.h"
 #include "Tools.h"
 #include <map>
-#include <algorithm>
 
 
 class PairMap {
