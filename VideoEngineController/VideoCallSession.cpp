@@ -23,7 +23,7 @@ extern CFPSController g_FPSController;
 
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
-extern int g_uchOpponentVersion;
+//extern int g_uchOpponentVersion;
 
 CVideoCallSession *g_VideoCallSession;
 

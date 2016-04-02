@@ -13,7 +13,7 @@
 
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
-extern int g_uchOpponentVersion;
+//extern int g_uchOpponentVersion;
 extern CFPSController g_FPSController;
 
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedObject, CSendingBuffer* pSendingBuffer) :

@@ -10,4 +10,4 @@ CFPSController g_FPSController;
 
 bool g_bIsVersionDetectableOpponent = false;
 unsigned char g_uchSendPacketVersion = 0;
-int g_uchOpponentVersion = -1;
+//int g_uchOpponentVersion = -1;
