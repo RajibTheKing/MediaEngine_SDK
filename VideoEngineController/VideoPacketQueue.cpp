@@ -1,79 +1,80 @@
 
 #include "VideoPacketQueue.h"
-#include "LogPrinter.h"
+#include "ThreadTools.h"
 
 #include <string.h>
-#include <set>
 
 CVideoPacketQueue::CVideoPacketQueue() :
+
 m_iPushIndex(0),
 m_iPopIndex(0),
-m_iQueueSize(0),
-m_iQueueCapacity(MAX_VIDEO_PACKET_QUEUE_SIZE)
+m_nQueueSize(0),
+m_nQueueCapacity(MAX_VIDEO_PACKET_QUEUE_SIZE)
+
 {
-	m_pChannelMutex.reset(new CLockHandler);
+	m_pVideoPacketQueueMutex.reset(new CLockHandler);
 }
 
 CVideoPacketQueue::~CVideoPacketQueue()
 {
-	SHARED_PTR_DELETE(m_pChannelMutex);
+	SHARED_PTR_DELETE(m_pVideoPacketQueueMutex);
 }
 
-int CVideoPacketQueue::Queue(unsigned char *frame, int length)
+int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pVideoPacketQueueMutex);
 
-	if (m_iQueueSize >= m_iQueueCapacity)
+	if (m_nQueueSize >= m_nQueueCapacity)
 	{
 		return -1;
 	}
 	else
 	{
-		memcpy(m_Buffer[m_iPushIndex], frame, length);
+		memcpy(m_uc2aVideoPacketBuffer[m_iPushIndex], ucaVideoPacketData, nLength);
 
-		m_BufferDataLength[m_iPushIndex] = length;
+		m_naBufferDataLengths[m_iPushIndex] = nLength;
 
 		IncreamentIndex(m_iPushIndex);
-
-		m_iQueueSize++;
+		m_nQueueSize++;
 
 		return 1;
 	}
 }
 
-int CVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
+int CVideoPacketQueue::DeQueue(unsigned char *ucaVideoPacketData)
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pVideoPacketQueueMutex);
 
-	if (m_iQueueSize <= 0)
+	if (m_nQueueSize <= 0)
 	{
 		return -1;
 	}
 	else
 	{
-		int length = m_BufferDataLength[m_iPopIndex];
+		int nLength;
+			
+		nLength = m_naBufferDataLengths[m_iPopIndex];
 
-		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
+		memcpy(ucaVideoPacketData, m_uc2aVideoPacketBuffer[m_iPopIndex], nLength);
 
 		IncreamentIndex(m_iPopIndex);
+		m_nQueueSize--;
 
-		m_iQueueSize--;
-
-		return length;
+		return nLength;
 	}
 }
 
-void CVideoPacketQueue::IncreamentIndex(int &index)
+void CVideoPacketQueue::IncreamentIndex(int &irIndex)
 {
-	index++;
+	irIndex++;
 
-	if (index >= m_iQueueCapacity)
-		index = 0;
+	if (irIndex >= m_nQueueCapacity)
+		irIndex = 0;
 }
 
 int CVideoPacketQueue::GetQueueSize()
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pVideoPacketQueueMutex);
 
-	return m_iQueueSize;
+	return m_nQueueSize;
 }
