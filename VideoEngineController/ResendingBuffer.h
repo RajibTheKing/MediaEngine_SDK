@@ -10,7 +10,9 @@
 
 class CResendingBuffer
 {
+
 public:
+
 	CResendingBuffer();
 	~CResendingBuffer();
 
