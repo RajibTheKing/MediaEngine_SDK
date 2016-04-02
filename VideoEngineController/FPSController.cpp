@@ -57,7 +57,7 @@ int CFPSController::GetOwnFPS() const {
 }
 
 void CFPSController::SetOwnFPS(int nOwnFPS){
-    Locker lock(*m_pMutex);
+
 	if (nOwnFPS > 0)
 	{
 		m_nOwnFPS = nOwnFPS;
@@ -179,6 +179,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 
 	if (m_nOwnFPS > m_ClientFPS)
 	{
+		Locker lock(*m_pMutex);
 		printf("setting m_nOwnFPS to %d because m_nOwnFPS > m_ClientFPS\n", m_ClientFPS);
 		SetOwnFPS(m_ClientFPS);
 	}
