@@ -2,21 +2,19 @@
 #include "SendingThread.h"
 #include "Size.h"
 #include "PacketHeader.h"
-//#include "Globals.cpp"
 #include "CommonElementsBucket.h"
+#include "VideoCallSession.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController) :
-
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 g_FPSController(FPSController)
-
 {
-
+	m_pVideoCallSession = pVideoCallSession;
 }
 
 CSendingThread::~CSendingThread()
@@ -204,7 +202,7 @@ void CSendingThread::SendingThreadProcedure()
 
 
 #endif
-				toolsObject.SOSleep(1);
+				toolsObject.SOSleep(GetSleepTime());
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
@@ -216,4 +214,14 @@ void CSendingThread::SendingThreadProcedure()
 	bSendingThreadClosed = true;
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
+}
+
+int CSendingThread::GetSleepTime()
+{
+	int SleepTime = MAX_VIDEO_PACKET_SENDING_SLEEP_MS - (m_pVideoCallSession->GetVideoEncoder()->GetBitrate() / REQUIRED_BITRATE_FOR_UNIT_SLEEP);
+
+	if(SleepTime < MIN_VIDEO_PACKET_SENDING_SLEEP_MS)
+		SleepTime = MIN_VIDEO_PACKET_SENDING_SLEEP_MS;
+
+	return SleepTime;
 }

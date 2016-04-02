@@ -10,15 +10,15 @@
 #include "BandwidthController.h"
 #include <thread>
 
+class CVideoCallSession;
 class CCommonElementsBucket;
 class CFPSController;
 
 class CSendingThread
 {
-
 public:
 
-	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController);
+	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession);
 	~CSendingThread();
 
 	void StartSendingThread();
@@ -27,7 +27,10 @@ public:
 	static void *CreateVideoSendingThread(void* param);
 
 private:
-    
+	int GetSleepTime();
+
+
+	CVideoCallSession* m_pVideoCallSession;
 #ifdef  BANDWIDTH_CONTROLLING_TEST
     std::vector<int>m_TimePeriodInterval;
     std::vector<int>m_BandWidthList;
