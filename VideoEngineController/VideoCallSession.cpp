@@ -257,7 +257,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoDepacketizationThread->StartDepacketizationThread();
 	m_pVideoDecodingThread->StartDecodingThread();
 
-	m_BitRateController->m_iOwnNetworkType = iNetworkType;
+	m_BitRateController->SetOwnNetworkType(iNetworkType);
 	CreateAndSendMiniPacket(iNetworkType, INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");

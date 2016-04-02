@@ -119,19 +119,19 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	for(int i = 0; i < 200; i++)
 	{
-		if(m_BitRateController->m_iNetTypeMiniPktRcv)
+		if (m_BitRateController->IsNetworkTypeMiniPacketReceived())
 		{
-			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure() m_BitRateController->m_iNetworkType after waiting = " + toolsObject.IntegertoStringConvert(m_BitRateController->m_iOpponentNetworkType));
+			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure() m_BitRateController->m_iNetworkType after waiting = " + toolsObject.IntegertoStringConvert(m_BitRateController->GetOpponentNetworkType()));
 			break;
 		}
 		toolsObject.SOSleep(10);
 	}
 
 
-	CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure() m_BitRateController->m_iNetworkType after waiting = own "+ toolsObject.IntegertoStringConvert(m_BitRateController->m_iOwnNetworkType) +
-												  " opponent  " + toolsObject.IntegertoStringConvert(m_BitRateController->m_iOpponentNetworkType));
+	CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure() m_BitRateController->m_iNetworkType after waiting = own "+ toolsObject.IntegertoStringConvert(m_BitRateController->GetOwnNetworkType()) +
+												  " opponent  " + toolsObject.IntegertoStringConvert(m_BitRateController->GetOpponentNetworkType()));
 
-	if(m_BitRateController->m_iOpponentNetworkType == NETWORK_TYPE_2G || m_BitRateController->m_iOwnNetworkType == NETWORK_TYPE_2G)
+	if(m_BitRateController->GetOpponentNetworkType() == NETWORK_TYPE_2G || m_BitRateController->GetOwnNetworkType() == NETWORK_TYPE_2G)
 	{
 
 		m_pVideoEncoder->SetBitrate(BITRATE_MIN);
