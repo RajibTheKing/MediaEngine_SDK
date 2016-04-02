@@ -9,7 +9,7 @@ extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 extern int g_uchOpponentVersion;
 
-extern PairMap g_timeInt;
+//extern PairMap g_timeInt;
 extern CFPSController g_FPSController;
 
 #define DEFAULT_FIRST_FRAME_RCVD  65000

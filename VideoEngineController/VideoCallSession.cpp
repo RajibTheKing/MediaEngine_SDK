@@ -453,7 +453,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resen
 	}
 	else {
 		PacketHeader.setPacketHeader(uchVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
-		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
+//		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;

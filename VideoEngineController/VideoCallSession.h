@@ -30,7 +30,7 @@
 
 using namespace std;
 
-extern PairMap g_timeInt;
+//extern PairMap g_timeInt;
 
 
 class CCommonElementsBucket;
