@@ -24,6 +24,7 @@
 #include "RenderingThread.h"
 #include "VideoDecodingThread.h"
 #include "DepacketizationThread.h"
+#include "SendingThread.h"
 
 #include <queue>
 #include <utility>

@@ -1,26 +1,14 @@
+
 #ifndef __ENCODED_FRAME_PACKETIZER_H_
 #define __ENCODED_FRAME_PACKETIZER_H_
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <stdio.h>
-#include <string>
-
-#include "SmartPointer.h"
-#include "LockHandler.h"
-#include "ThreadTools.h"
 #include "AudioVideoEngineDefinitions.h"
-#include "EncodingBuffer.h"
 #include "SendingBuffer.h"
 #include "Size.h"
 #include "Tools.h"
 #include "PacketHeader.h"
-#include "SendingThread.h"
-
-namespace IPV
-{
-	class thread;
-}
 
 class CCommonElementsBucket;
 
@@ -29,29 +17,22 @@ class CEncodedFramePacketizer
 
 public:
 
-	CEncodedFramePacketizer(CCommonElementsBucket* sharedObject, CSendingBuffer* pSendingBuffer);
+	CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer);
 	~CEncodedFramePacketizer();
 
-	int Packetize(LongLong lFriendID, unsigned char *in_data, unsigned int in_size, int frameNumber, unsigned int iTimeStampDiff);
+	int Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference);
 
 private:
+
 	Tools m_Tools;
-	int m_PacketSize;
 
-	CPacketHeader m_PacketHeader;
+	int m_nPacketSize;
 
-	CSendingBuffer *m_SendingBuffer;
+	CPacketHeader m_cPacketHeader;
+	CSendingBuffer *m_pcSendingBuffer;
+	CCommonElementsBucket* m_pcCommonElementsBucket;
 
-	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-
-	CCommonElementsBucket* m_pCommonElementsBucket;
-
-	unsigned char m_Packet[MAX_VIDEO_PACKET_SIZE];
-
-protected:
-
-	SmartPointer<CLockHandler> m_pEncodedFrameParsingMutex;
-
+	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SIZE];
 };
 
 #endif
