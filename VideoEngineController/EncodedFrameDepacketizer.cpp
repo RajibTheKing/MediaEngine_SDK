@@ -318,8 +318,8 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 }
 
 int CEncodedFrameDepacketizer::ProcessFrame(unsigned char *data,int index,int frameNumber,int &nFramNumber){
-	memcpy(data,m_CVideoPacketBuffer[index].m_pFrameData,m_CVideoPacketBuffer[index].m_FrameSize);		//Send I-Frame
-	int nFrameLength = m_CVideoPacketBuffer[index].m_FrameSize;
+	memcpy(data, m_CVideoPacketBuffer[index].m_ucaFrameData, m_CVideoPacketBuffer[index].m_nFrameSize);		//Send I-Frame
+	int nFrameLength = m_CVideoPacketBuffer[index].m_nFrameSize;
 	nFramNumber = frameNumber;
 //	g_FPSController.NotifyFrameComplete(frameNumber);
 	MoveForward(frameNumber);
