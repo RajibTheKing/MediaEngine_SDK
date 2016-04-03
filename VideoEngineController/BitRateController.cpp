@@ -243,6 +243,23 @@ void BitRateController::NotifyEncodedFrame(int &nrFrameSize)
     }
 }
 
+void BitRateController::SetInitialBitrate()
+{
+	if (GetOpponentNetworkType() == NETWORK_TYPE_2G || GetOwnNetworkType() == NETWORK_TYPE_2G)
+	{
+
+		m_pVideoEncoder->SetBitrate(BITRATE_MIN);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_MIN);
+
+	}
+	else
+	{
+		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN);
+
+	}
+}
+
 int BitRateController::NeedToChangeBitRate(double dDataReceivedRatio)
 {
     m_nSlotCounterToUp++;

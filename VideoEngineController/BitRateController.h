@@ -28,7 +28,7 @@ public:
 	bool HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader);
     bool UpdateBitrate();
     void NotifyEncodedFrame(int &nrFrameSize);
-
+	void SetInitialBitrate();
 	int GetOpponentNetworkType();
 	int GetOwnNetworkType();
 	void SetOwnNetworkType(int nNetworkType);
