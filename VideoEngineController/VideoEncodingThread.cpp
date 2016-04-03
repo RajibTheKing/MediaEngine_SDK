@@ -138,11 +138,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
-//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame);
 
-//#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(_DESKTOP_C_SHARP_)
 
 			int iCurWidth = this->m_pColorConverter->GetWidth();
 			int iCurHeight = this->m_pColorConverter->GetHeight();
@@ -156,7 +156,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				nEncodingFrameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
 			}
 
-//#elif defined(TARGET_OS_WINDOWS_PHONE)
+#elif defined(TARGET_OS_WINDOWS_PHONE)
 
 			if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 			{
@@ -167,7 +167,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
 			}
 
-//#else
+#else
 
 			if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 			{
@@ -178,21 +178,21 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
 			}
 
-//#endif
+#endif
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
 
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
-//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 			nENCODEDFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
-//#else
+#else
 
 			nENCODEDFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
-//#endif
+#endif
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", llCalculatingTime);
 
