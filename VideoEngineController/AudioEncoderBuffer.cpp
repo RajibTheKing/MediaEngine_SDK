@@ -7,16 +7,18 @@
 
 
 CAudioEncoderBuffer::CAudioEncoderBuffer() :
+
 m_iPushIndex(0),
 m_iPopIndex(0),
-m_iQueueSize(0),
-m_iQueueCapacity(5)
+m_nQueueSize(0),
+m_nQueueCapacity(5),
+mt_llPrevOverFlowTime(-1),
+m_dAvgOverFlowTime(0),
+mt_nOverFlowCounter(0),
+mt_llSumOverFlowTime(0)
+
 {
-	m_pChannelMutex.reset(new CLockHandler);
-    m_lPrevOverFlowTime = -1;
-    m_dAvgOverFlowTime = 0;
-    m_iOverFlowCount = 0;
-    m_lSumOverFlowTime = 0;
+	m_pAudioEnocdingBufferMutex.reset(new CLockHandler);
 }
 
 CAudioEncoderBuffer::~CAudioEncoderBuffer()
@@ -24,31 +26,31 @@ CAudioEncoderBuffer::~CAudioEncoderBuffer()
 
 }
 
-int CAudioEncoderBuffer::Queue(short *frame, int length)
+int CAudioEncoderBuffer::Queue(short *saCapturedAudioFrameData, int nlength)
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pAudioEnocdingBufferMutex);
 
-	memcpy(m_Buffer[m_iPushIndex], frame, length*2);
+	memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);
 
-	m_BufferDataLength[m_iPushIndex] = length;
+	m_naBufferDataLength[m_iPushIndex] = nlength;
 
-	if (m_iQueueSize == m_iQueueCapacity)
+	if (m_nQueueSize == m_nQueueCapacity)
 	{
 
-        if(m_lPrevOverFlowTime == -1)
+        if(mt_llPrevOverFlowTime == -1)
         {
-            m_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
+            mt_llPrevOverFlowTime = m_Tools.CurrentTimestamp();
         }
         else
         {
-            long long lOverFlowTime = m_Tools.CurrentTimestamp() - m_lPrevOverFlowTime;
-            m_lSumOverFlowTime += lOverFlowTime;
-            m_iOverFlowCount ++;
-            m_dAvgOverFlowTime = m_lSumOverFlowTime * 1.0 / m_iOverFlowCount;
+            long long llOverFlowTime = m_Tools.CurrentTimestamp() - mt_llPrevOverFlowTime;
+            mt_llSumOverFlowTime += llOverFlowTime;
+            mt_nOverFlowCounter++;
+            m_dAvgOverFlowTime = mt_llSumOverFlowTime * 1.0 / mt_nOverFlowCounter;
 
-			//CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "TheVampire--> OverFlow Difftime = "+m_Tools.LongLongToString(lOverFlowTime)+", m_dAvgOverFlowTimeDif = "+ m_Tools.DoubleToString(m_dAvgOverFlowTime) );
+			//CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "TheVampire--> OverFlow Difftime = "+m_Tools.LongLongToString(llOverFlowTime)+", m_dAvgOverFlowTimeDif = "+ m_Tools.DoubleToString(m_dAvgOverFlowTime) );
 
-			m_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
+			mt_llPrevOverFlowTime = m_Tools.CurrentTimestamp();
         }
 
         
@@ -56,7 +58,7 @@ int CAudioEncoderBuffer::Queue(short *frame, int length)
 	}
 	else
 	{
-		m_iQueueSize++;
+		m_nQueueSize++;
 	}
 
 	IncreamentIndex(m_iPushIndex);
@@ -64,41 +66,41 @@ int CAudioEncoderBuffer::Queue(short *frame, int length)
 	return 1;
 }
 
-int CAudioEncoderBuffer::DeQueue(short *decodeBuffer)
+int CAudioEncoderBuffer::DeQueue(short *saCapturedAudioFrameData)
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pAudioEnocdingBufferMutex);
 
-	if (m_iQueueSize == 0)
+	if (m_nQueueSize == 0)
 	{
 		return -1;
 	}
 	else
 	{
-		int length = m_BufferDataLength[m_iPopIndex];
+		int nlength = m_naBufferDataLength[m_iPopIndex];
 
-		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length*2);
+		memcpy(saCapturedAudioFrameData, m_s2aAudioEncodingBuffer[m_iPopIndex], nlength * 2);
 
 		IncreamentIndex(m_iPopIndex);
 
-		m_iQueueSize--;
+		m_nQueueSize--;
 
-		return length;
+		return nlength;
 	}
 	
 	return 1;
 }
 
-void CAudioEncoderBuffer::IncreamentIndex(int &index)
+void CAudioEncoderBuffer::IncreamentIndex(int &irIndex)
 {
-	index++;
+	irIndex++;
 
-	if (index >= m_iQueueCapacity)
-		index = 0;
+	if (irIndex >= m_nQueueCapacity)
+		irIndex = 0;
 }
 
 int CAudioEncoderBuffer::GetQueueSize()
 {
-	Locker lock(*m_pChannelMutex);
+	Locker lock(*m_pAudioEnocdingBufferMutex);
 
-	return m_iQueueSize;
+	return m_nQueueSize;
 }

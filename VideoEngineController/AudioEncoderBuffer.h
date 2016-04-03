@@ -1,4 +1,3 @@
-
 #ifndef _AUDIO_BUFFER_H_
 #define _AUDIO_BUFFER_H_
 
@@ -6,8 +5,8 @@
 #include "LockHandler.h"
 #include "Tools.h"
 
-#define MAX_AUDIO_ENCODER_BUFFER_SIZE 30
-#define MAX_AUDIO_ENCODER_FRAME_SIZE 4096
+#define MAX_AUDIO_ENCODING_BUFFER_SIZE 30
+#define MAX_AUDIO_ENCODING_FRAME_SIZE 4096
 
 class CAudioEncoderBuffer
 {
@@ -17,9 +16,9 @@ public:
 	CAudioEncoderBuffer();
 	~CAudioEncoderBuffer();
 
-	int Queue(short *frame, int length);
-	int DeQueue(short *decodeBuffer);
-	void IncreamentIndex(int &index);
+	int Queue(short *saCapturedAudioFrameData, int nlength);
+	int DeQueue(short *saCapturedAudioFrameData);
+	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 
 private:
@@ -28,18 +27,18 @@ private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iQueueCapacity;
-	int m_iQueueSize;
+	int m_nQueueCapacity;
+	int m_nQueueSize;
 
-    long long m_lPrevOverFlowTime;
-    long long m_lSumOverFlowTime;
-    double m_dAvgOverFlowTime;
-    int m_iOverFlowCount;
+    long long mt_llPrevOverFlowTime;
+    long long mt_llSumOverFlowTime;
+    int mt_nOverFlowCounter;
+	double m_dAvgOverFlowTime;
 
-	short m_Buffer[MAX_AUDIO_ENCODER_BUFFER_SIZE][MAX_AUDIO_ENCODER_FRAME_SIZE];
-	int m_BufferDataLength[MAX_AUDIO_ENCODER_BUFFER_SIZE];
+	short m_s2aAudioEncodingBuffer[MAX_AUDIO_ENCODING_BUFFER_SIZE][MAX_AUDIO_ENCODING_FRAME_SIZE];
+	int m_naBufferDataLength[MAX_AUDIO_ENCODING_BUFFER_SIZE];
 
-	SmartPointer<CLockHandler> m_pChannelMutex;
+	SmartPointer<CLockHandler> m_pAudioEnocdingBufferMutex;
 };
 
 #endif 
