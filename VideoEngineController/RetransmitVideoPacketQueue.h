@@ -1,12 +1,9 @@
 
-#ifndef _VIDEO_PACKET_QUEUE_H_
-#define _VIDEO_PACKET_QUEUE_H_
+#ifndef _RETRANSMISSION_VIDEO_PACKET_QUEUE_H_
+#define _RETRANSMISSION_VIDEO_PACKET_QUEUE_H_
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
-#include <queue>
-#include <utility>
-#include "Tools.h"
 #include "Size.h"
 
 using namespace std;

@@ -1,8 +1,6 @@
 
 #include "RetransmitVideoPacketQueue.h"
 
-#include <string.h>
-
 CRetransmitVideoPacketQueue::CRetransmitVideoPacketQueue() :
 m_iPushIndex(0),
 m_iPopIndex(0),
