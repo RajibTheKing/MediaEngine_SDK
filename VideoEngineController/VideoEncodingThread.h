@@ -4,7 +4,6 @@
 
 #include "Tools.h"
 #include "SmartPointer.h"
-#include "LogPrinter.h"
 #include "EncodingBuffer.h"
 #include "BitRateController.h"
 #include "ColorConverter.h"
@@ -17,7 +16,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong friendID, CEncodingBuffer *encodingBuffer, BitRateController *bitRateController, CColorConverter *colorConverter, CVideoEncoder *videoEncoder, CEncodedFramePacketizer *encodedFramePacketizer);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -25,24 +24,23 @@ public:
 	void EncodingThreadProcedure();
 	static void *CreateVideoEncodingThread(void* param);
 
-	int orientation_type;
+	void SetOrientationType(int nOrientationType);
 
 private:
 
-	CEncodingBuffer *m_EncodingBuffer;						
-	BitRateController *m_BitRateController;					
+	CEncodingBuffer *m_pEncodingBuffer;						
+	BitRateController *m_pBitRateController;	
+	CColorConverter *m_pColorConverter;
+	CVideoEncoder *m_pVideoEncoder;
+	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
 
-	unsigned char m_EncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-	unsigned char m_ConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-
-	CColorConverter *m_pColorConverter;						
-	CVideoEncoder *m_pVideoEncoder;							
-	CEncodedFramePacketizer *m_pEncodedFramePacketizer;		
+	unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+	unsigned char m_ucaConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+	unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 	int m_iFrameNumber;
-	LongLong m_FriendID;									
-
+	LongLong m_llFriendID;		
+	int m_nOrientationType;
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;
 
