@@ -35,7 +35,7 @@ private:
 	int m_naBufferFrameNumbers[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
 	unsigned int m_unaBufferCaptureTimeDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
-	long long m_llBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
+	long long m_llaBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pDecodingBufferMutex;
 };

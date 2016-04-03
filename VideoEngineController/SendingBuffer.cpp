@@ -28,7 +28,7 @@ int CSendingBuffer::Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPac
 	m_naBufferFrameNumbers[m_iPushIndex] = iFrameNumber;
 	m_naBufferPacketNumbers[m_iPushIndex] = iPacketNumber;
 
-	m_llBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
+	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
 
 	if (m_nQueueSize == m_nQueueCapacity)
 	{
@@ -63,7 +63,7 @@ int CSendingBuffer::DeQueue(LongLong &llrFriendID, unsigned char *ucaSendingVide
 
 		memcpy(ucaSendingVideoPacketData, m_uc2aSendingVideoPacketBuffer[m_iPopIndex], nLength);
 
-		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llBufferInsertionTimes[m_iPopIndex];
+		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;

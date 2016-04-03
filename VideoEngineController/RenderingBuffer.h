@@ -36,7 +36,7 @@ private:
 	int m_naBufferVideoHeights[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	int m_naBufferVideoWidths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	
-	long long m_llBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	long long m_llaBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_llaBufferCaptureTimeDifferences[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pRenderingBufferMutex;

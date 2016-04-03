@@ -26,7 +26,7 @@ int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength
 	m_naBufferDataLengths[m_iPushIndex] = nLength;
 
 	m_naBufferCaptureTimeDifferences[m_iPushIndex] = nCaptureTimeDifference;
-	m_llBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
+	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
     
 	if (m_nQueueSize == m_nQueueCapacity)
     {
@@ -59,7 +59,7 @@ int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTi
 		memcpy(ucaCapturedVideoFrameData, m_uc2aCapturedVideoDataBuffer[m_iPopIndex], nLength);
 
 		nrCaptureTimeDifference = m_naBufferCaptureTimeDifferences[m_iPopIndex];
-		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llBufferInsertionTimes[m_iPopIndex];
+		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;

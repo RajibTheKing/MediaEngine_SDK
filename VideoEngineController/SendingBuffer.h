@@ -36,7 +36,7 @@ private:
 	int m_naBufferFrameNumbers[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 	int m_naBufferPacketNumbers[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 
-	long long m_llBufferInsertionTimes[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
+	long long m_llaBufferInsertionTimes[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pSendingBufferMutex;
 };

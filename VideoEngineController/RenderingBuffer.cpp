@@ -30,7 +30,7 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
 	m_naBufferVideoWidths[m_iPushIndex] = nVideoWidth;
 
 	m_llaBufferCaptureTimeDifferences[m_iPushIndex] = llCaptureTimeDifference;
-	m_llBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
+	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
     
 	if (m_nQueueSize == m_nQueueCapacity)
     {
@@ -66,7 +66,7 @@ int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDiffe
 		memcpy(ucaDecodedVideoFrameData, m_uc2aDecodedVideoDataBuffer[m_iPopIndex], nLength);
 
 		llrCaptureTimeDifference = m_llaBufferCaptureTimeDifferences[m_iPopIndex];
-		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llBufferInsertionTimes[m_iPopIndex];
+		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;
