@@ -91,7 +91,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	int minTimeGap = 51;
 	bool m_b1stDecodedFrame = true;
 	long long m_ll1stDecodedFrameTimeStamp = 0;
-
+    long long lRenderingTimeDiff = 0;
 	while (bRenderingThreadRunning)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
@@ -124,10 +124,14 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			}
 
 			prevTimeStamp = nTimeStampDiff;
-
+            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> Rendering TimeDiff = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - lRenderingTimeDiff));
+            
 			if (frameSize<1 || minTimeGap < 50)
 				continue;
-
+            
+            lRenderingTimeDiff = m_Tools.CurrentTimestamp();
+            
 			toolsObject.SOSleep(5);
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);

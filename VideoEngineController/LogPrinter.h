@@ -21,7 +21,7 @@
 
 #define LOG_ENABLED
 
-#define INSTENT_TEST_LOG		OFF
+#define INSTENT_TEST_LOG		ON
 #define OPERATION_TIME_LOG		OFF
 #define QUEUE_TIME_LOG			OFF
 #define PACKET_LOSS_INFO_LOG	OFF
@@ -58,7 +58,7 @@ typedef long long IPVLongType;
 #define printf(...)
 #endif
 
-#define printf(...)
+//#define printf(...)
 
 using namespace std;
 

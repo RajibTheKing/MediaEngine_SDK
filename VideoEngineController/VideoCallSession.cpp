@@ -423,6 +423,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	return true;
 }
 
+long long g_EncodingTimeDiff = 0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
@@ -454,9 +455,10 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding Converted to 420");
 
 #endif
-
+    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> Encoding TimeDiff = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - g_EncodingTimeDiff));
 	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size);
-
+    g_EncodingTimeDiff = m_Tools.CurrentTimestamp();
 //	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding Queue packetSize " + Tools::IntegertoStringConvert(in_size));
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding pushed to encoder queue");

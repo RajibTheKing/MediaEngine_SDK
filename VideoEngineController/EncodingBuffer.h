@@ -10,7 +10,8 @@
 #ifdef _DESKTOP_C_SHARP_
 #define MAX_VIDEO_ENCODER_FRAME_SIZE (352 * 288 * 3) +1
 #else
-#define MAX_VIDEO_ENCODER_FRAME_SIZE (352 * 288 * 3)/2+1
+//#define MAX_VIDEO_ENCODER_FRAME_SIZE (352 * 288 * 3)/2+1
+#define MAX_VIDEO_ENCODER_FRAME_SIZE (640 * 480 * 3)/2+1
 #endif
 
 class CEncodingBuffer

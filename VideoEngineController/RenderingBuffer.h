@@ -7,7 +7,7 @@
 #include "Tools.h"
 
 #define MAX_VIDEO_RENDERER_BUFFER_SIZE 30
-#define MAX_VIDEO_RENDERER_FRAME_SIZE 352 * 288 * 3
+#define MAX_VIDEO_RENDERER_FRAME_SIZE 640 * 480 * 3/2
 
 class CRenderingBuffer
 {

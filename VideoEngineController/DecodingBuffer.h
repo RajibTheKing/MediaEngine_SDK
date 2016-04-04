@@ -7,7 +7,7 @@
 #include "Tools.h"
 
 #define MAX_VIDEO_DECODER_BUFFER_SIZE 30
-#define MAX_VIDEO_DECODER_FRAME_SIZE 352 * 288 * 3
+#define MAX_VIDEO_DECODER_FRAME_SIZE 640 * 480 * 3
 
 class CDecodingBuffer
 {

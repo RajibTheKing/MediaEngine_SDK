@@ -237,12 +237,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
+            long long ConversionTime = m_Tools.CurrentTimestamp();
 			this->m_pColorConverter->ConvertNV12ToI420(m_EncodingFrame);
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> ConvertNV12ToI420 = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - ConversionTime));
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertNV12ToI420 ", currentTimeStamp);
 
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
+            long long enctime = m_Tools.CurrentTimestamp();
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
-
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> EncodingTime = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - enctime));
+                                 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 
 #elif defined(_DESKTOP_C_SHARP_)
