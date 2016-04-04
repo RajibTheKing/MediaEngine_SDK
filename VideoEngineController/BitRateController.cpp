@@ -102,7 +102,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
     {
         double dMegaRatio =  (m_nBytesReceivedInMegaSlotInterval *1.0) / (1.0 * m_nBytesSendInMegaSlotInverval) * 100.0;
 
-        //printf("Theking--> &&&&&&&& MegaSlot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,MegaRatio);
+        printf("Theking--> &&&&&&&& MegaSlot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
 
         long long llTimeStampForMiniPkt = m_TimeDiffMapHelper[iSlotNumber];
 
@@ -361,7 +361,7 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
     
 	nCurrentByte *= 8;
 
-    printf("TheKing--> iCurrentBits = %d\n", iCurrentByte);
+    printf("TheKing--> iCurrentBits = %d\n", nCurrentByte);
 
 	if (nCurrentByte<BITRATE_LOW && nCurrentByte >= BITRATE_MIN)
     {
