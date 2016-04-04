@@ -4,9 +4,8 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
+#include "Size.h"
 
-#define MAX_AUDIO_ENCODING_BUFFER_SIZE 30
-#define MAX_AUDIO_ENCODING_FRAME_SIZE 4096
 
 class CAudioEncoderBuffer
 {
