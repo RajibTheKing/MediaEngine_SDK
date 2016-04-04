@@ -307,9 +307,6 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 	else
 	{
-
-#ifdef BITRATE_CONTROL_BASED_ON_BANDWIDTH
-
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
@@ -334,8 +331,6 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 			m_ByteRcvInBandSlot = in_size - PACKET_HEADER_LENGTH;
 		}
-
-#endif
 
 		m_pVideoPacketQueue->Queue(in_data, in_size);
 	}
