@@ -135,10 +135,10 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] = 0;
 
 		if (bMiniPacket) {
-			if (m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER) {                    /* Opponent response of data receive. */
+			if (m_RcvdPacketHeader.getPacketNumber() == BITRATE_TYPE_MINIPACKET) {                    /* Opponent response of data receive. */
 				m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
 			}
-			else if (m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE) {        /* Opponent Network type */
+			else if (m_RcvdPacketHeader.getPacketNumber() == NETWORK_TYPE_MINIPACKET) {        /* Opponent Network type */
 				m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
 				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,
 										   "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");

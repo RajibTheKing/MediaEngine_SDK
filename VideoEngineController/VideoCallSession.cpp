@@ -258,7 +258,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoDecodingThread->StartDecodingThread();
 
 	m_BitRateController->SetOwnNetworkType(iNetworkType);
-	CreateAndSendMiniPacket(iNetworkType, INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE);
+	CreateAndSendMiniPacket(iNetworkType, NETWORK_TYPE_MINIPACKET);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
 }
@@ -335,7 +335,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			{
 				m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;//if we miss all frames of the previous slot it will be wrong
 				m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
-				CreateAndSendMiniPacket((m_ByteRcvInBandSlot), INVALID_PACKET_NUMBER);
+				CreateAndSendMiniPacket((m_ByteRcvInBandSlot), BITRATE_TYPE_MINIPACKET);
 
 				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "VampireEnggUpt--> m_SlotLeft, m_SlotRight = (" + m_Tools.IntegertoStringConvert(m_SlotResetLeftRange/MAX_PACKET_NUMBER)
 																+", "+m_Tools.IntegertoStringConvert(m_SlotResetRightRange/MAX_PACKET_NUMBER)+")........ m_ByteReceived = "+m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot)
@@ -425,49 +425,34 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 	return m_pEncodedFrameDepacketizer;
 }
 
-void CVideoCallSession::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
+void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, int nMiniPacketType)
 {
 	unsigned char uchVersion = g_uchSendPacketVersion;
-
-//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
-	if(INVALID_PACKET_NUMBER !=resendPacketNumber  && INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE !=resendPacketNumber) //
-	{
-		return;
-	}
-
-	int numberOfPackets = 1000; //dummy numberOfPackets
-
 	CPacketHeader PacketHeader;
-	if (resendPacketNumber == INVALID_PACKET_NUMBER) {
-		//m_miniPacketBandCounter++;
+
+	if (nMiniPacketType == BITRATE_TYPE_MINIPACKET)
+	{
 		if(0 == uchVersion) return;
 
-		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
+		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0);
 	}
-	else if (resendPacketNumber == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE) {
-		//m_miniPacketBandCounter++;
+	else if (nMiniPacketType == NETWORK_TYPE_MINIPACKET)
+	{
 		//if(0 == uchVersion) return;
 
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, " send INVALID-->> PACKET_NUMBER_FOR_NETWORK_TYPE ");
-		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
-	}
-	else {
-		PacketHeader.setPacketHeader(uchVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
-//		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
+		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0);
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
-	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; //MiniPacket Flag
+	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; 
 
 	if(uchVersion)
 		m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
 	else
 		m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
-
-	//m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
 }
 
 
