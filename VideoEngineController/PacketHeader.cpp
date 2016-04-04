@@ -235,6 +235,10 @@ void CPacketHeader::setPacketLength(unsigned char *PacketLength)
     CPacketHeader::m_iPacketLength = GetIntFromChar(PacketLength, 0, 2);
 }
 
+unsigned int CPacketHeader::GetFrameNumberDirectly(unsigned char *packetData)
+{
+	GetIntFromChar(packetData + 1, 0, 3);
+}
 
 int CPacketHeader::GetIntFromChar(unsigned char *packetData, int index, int nLenght)
 {

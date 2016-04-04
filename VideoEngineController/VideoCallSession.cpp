@@ -36,8 +36,10 @@ m_ClientFrameCounter(0),
 m_EncodingFrameCounter(0),
 m_pEncodedFramePacketizer(NULL),
 m_ByteRcvInBandSlot(0),
-m_SlotResetLeftRange(GetUniquePacketID(0, 0)),
-m_SlotResetRightRange(GetUniquePacketID(FRAME_RATE, 0)),
+//m_SlotResetLeftRange(GetUniquePacketID(0, 0)),
+//m_SlotResetRightRange(GetUniquePacketID(FRAME_RATE, 0)),
+m_SlotResetLeftRange(0),
+m_SlotResetRightRange(FRAME_RATE),
 m_pVideoEncoder(NULL),
 m_bSkipFirstByteCalculation(true),
 m_iConsecutiveGoodMegaSlot(0),
@@ -308,8 +310,11 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
 
 #ifdef BITRATE_CONTROL_BASED_ON_BANDWIDTH
+
 		CPacketHeader NowRecvHeader;
 		NowRecvHeader.setPacketHeader(in_data);
+		
+/*		NowRecvHeader.setPacketHeader(in_data);
 
 		if (GetUniquePacketID(NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber()) >= m_SlotResetLeftRange
 			&& GetUniquePacketID(NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber()) < m_SlotResetRightRange)
@@ -333,7 +338,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			}
 			else
 			{
-				m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;//if we miss all frames of the previous slot it will be wrong
+				m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;
 				m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
 				CreateAndSendMiniPacket((m_ByteRcvInBandSlot), BITRATE_TYPE_MINIPACKET);
 
@@ -343,8 +348,32 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			}
 
 			m_ByteRcvInBandSlot = NowRecvHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
+		}
+*/
 
+		unsigned int unFrameNumber = NowRecvHeader.GetFrameNumberDirectly(in_data);
 
+		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
+		{
+			m_ByteRcvInBandSlot += (in_size - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
+		}
+		else
+		{
+			if (m_bSkipFirstByteCalculation == true)
+			{
+				m_bSkipFirstByteCalculation = false;
+			}
+			else
+			{
+				m_miniPacketBandCounter = m_SlotResetLeftRange;
+				m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
+				CreateAndSendMiniPacket((m_ByteRcvInBandSlot), BITRATE_TYPE_MINIPACKET);
+			}
+
+			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % FRAME_RATE);
+			m_SlotResetRightRange = m_SlotResetLeftRange + FRAME_RATE;
+
+			m_ByteRcvInBandSlot = in_size - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
 		}
 
 #endif

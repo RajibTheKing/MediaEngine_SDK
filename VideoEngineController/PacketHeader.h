@@ -66,6 +66,8 @@ public:
 
     int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
 
+	unsigned int GetFrameNumberDirectly(unsigned char *packetData);
+
     //hello
 
 private:
