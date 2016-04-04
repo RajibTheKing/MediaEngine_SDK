@@ -108,6 +108,8 @@ private:
 	LongLong m_lfriendID;
 	CVideoEncoderListHandler sessionMediaList;
 
+	CPacketHeader m_PacketHeader;
+
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;
 	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
 	CCommonElementsBucket* m_pCommonElementsBucket;

@@ -307,55 +307,14 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 	else
 	{
-		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT Original PACKET");
 
 #ifdef BITRATE_CONTROL_BASED_ON_BANDWIDTH
 
-		CPacketHeader NowRecvHeader;
-		NowRecvHeader.setPacketHeader(in_data);
-		
-/*		NowRecvHeader.setPacketHeader(in_data);
-
-		if (GetUniquePacketID(NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber()) >= m_SlotResetLeftRange
-			&& GetUniquePacketID(NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber()) < m_SlotResetRightRange)
-		{
-			m_ByteRcvInBandSlot += (NowRecvHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
-		}
-		else if (GetUniquePacketID(NowRecvHeader.getFrameNumber(), NowRecvHeader.getPacketNumber()) >= m_SlotResetRightRange)
-		{
-
-			int SlotResetLeftRangeInFrame = (NowRecvHeader.getFrameNumber() - (NowRecvHeader.getFrameNumber() % FRAME_RATE));
-			m_SlotResetLeftRange = GetUniquePacketID(SlotResetLeftRangeInFrame, 0);
-
-
-			int SlotResetRightRangeInFrame = SlotResetLeftRangeInFrame + FRAME_RATE;
-			m_SlotResetRightRange = GetUniquePacketID(SlotResetRightRangeInFrame, 0);
-
-
-			if (m_bSkipFirstByteCalculation == true)
-			{
-				m_bSkipFirstByteCalculation = false;
-			}
-			else
-			{
-				m_miniPacketBandCounter = SlotResetLeftRangeInFrame - FRAME_RATE;
-				m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
-				CreateAndSendMiniPacket((m_ByteRcvInBandSlot), BITRATE_TYPE_MINIPACKET);
-
-				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "VampireEnggUpt--> m_SlotLeft, m_SlotRight = (" + m_Tools.IntegertoStringConvert(m_SlotResetLeftRange/MAX_PACKET_NUMBER)
-																+", "+m_Tools.IntegertoStringConvert(m_SlotResetRightRange/MAX_PACKET_NUMBER)+")........ m_ByteReceived = "+m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot)
-																+" Curr(FN,PN) = ("+m_Tools.IntegertoStringConvert(NowRecvHeader.getFrameNumber())+","+m_Tools.IntegertoStringConvert(NowRecvHeader.getPacketNumber())+")");
-			}
-
-			m_ByteRcvInBandSlot = NowRecvHeader.getPacketLength() - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
-		}
-*/
-
-		unsigned int unFrameNumber = NowRecvHeader.GetFrameNumberDirectly(in_data);
+		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
 		{
-			m_ByteRcvInBandSlot += (in_size - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
+			m_ByteRcvInBandSlot += (in_size - PACKET_HEADER_LENGTH);
 		}
 		else
 		{
@@ -365,15 +324,15 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			}
 			else
 			{
-				m_miniPacketBandCounter = m_SlotResetLeftRange;
-				m_miniPacketBandCounter = m_miniPacketBandCounter / FRAME_RATE;
-				CreateAndSendMiniPacket((m_ByteRcvInBandSlot), BITRATE_TYPE_MINIPACKET);
+				m_miniPacketBandCounter = m_SlotResetLeftRange / FRAME_RATE;
+
+				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_TYPE_MINIPACKET);
 			}
 
 			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % FRAME_RATE);
 			m_SlotResetRightRange = m_SlotResetLeftRange + FRAME_RATE;
 
-			m_ByteRcvInBandSlot = in_size - PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
+			m_ByteRcvInBandSlot = in_size - PACKET_HEADER_LENGTH;
 		}
 
 #endif
