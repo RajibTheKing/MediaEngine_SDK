@@ -103,7 +103,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			g_iChangeCounter++;
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#@ SH# *******************FirstShift " + m_Tools.LongLongToString(m_VideoCallSession->GetShiftedTime()));
 		}
-		else if(m_VideoCallSession->GetShiftedTime() > curDiff) {
+		/*else if(m_VideoCallSession->GetShiftedTime() > curDiff) {
 			long long llCurChange = m_VideoCallSession->GetShiftedTime() - curDiff;
 			g_llChangeSum += llCurChange;
 			g_iChangeCounter++;
@@ -111,7 +111,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#@ SH# CurShift " + m_Tools.LongLongToString(llCurChange) + " ChangeSum: "+ m_Tools.LongLongToString(g_llChangeSum)
 																 + " CNT: "+ m_Tools.IntegertoStringConvert(g_iChangeCounter)
 																 + " Shift: "+ m_Tools.LongLongToString(m_VideoCallSession->GetShiftedTime()));
-		}
+		}*/
 	}
 
 	if( -1 == m_VideoCallSession->GetFirstVideoPacketTime())
