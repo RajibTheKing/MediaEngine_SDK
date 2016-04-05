@@ -98,7 +98,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int nEncodingFrameSize, nENCODEDFrameSize, nCaptureTimeDifference;
 	long long llCalculatingTime;
 
-	for(int i = 0; i < 200; i++)
+	/*for(int i = 0; i < 200; i++)
 	{
 		if (m_pBitRateController->IsNetworkTypeMiniPacketReceived())
 		{
@@ -107,7 +107,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		}
 
 		toolsObject.SOSleep(10);
-	}
+	}*/
 
 	m_pBitRateController->SetInitialBitrate();
 
