@@ -20,7 +20,7 @@ public:
 
 	int CreateVideoDecoder();
 	int SetDecoderOption(int nKey, int nValue);
-	int Decode(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth);
+	int DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth);
 
 private:
 

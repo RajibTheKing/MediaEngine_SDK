@@ -199,7 +199,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 	long long dectime = m_Tools.CurrentTimestamp();
-	m_decodedFrameSize = m_pVideoDecoder->Decode(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
+	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 
 	long long  timediff = (m_Tools.CurrentTimestamp() - dectime);
 	CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " OOOO decode  " + m_Tools.LongLongToString( timediff));

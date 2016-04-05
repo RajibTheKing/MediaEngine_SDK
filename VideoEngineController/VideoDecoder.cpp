@@ -74,7 +74,7 @@ int CVideoDecoder::SetDecoderOption(int nKey, int nValue)
 	return m_pSVCVideoDecoder->SetOption(DECODER_OPTION_END_OF_STREAM, &nValue);
 }
 
-int CVideoDecoder::Decode(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth)
+int CVideoDecoder::DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth)
 {
 	if (!m_pSVCVideoDecoder)
 	{
