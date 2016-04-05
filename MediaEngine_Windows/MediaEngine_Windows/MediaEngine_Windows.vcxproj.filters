@@ -310,15 +310,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\VideoEngineController\libopenh264.a">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </None>
-    <None Include="..\..\VideoEngineController\Makefile">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </None>
-    <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </None>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters">
       <Filter>Source Files\VideoEngineController</Filter>
     </None>

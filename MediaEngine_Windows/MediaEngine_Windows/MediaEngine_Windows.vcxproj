@@ -245,9 +245,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\VideoEngineController\libopenh264.a" />
-    <None Include="..\..\VideoEngineController\Makefile" />
-    <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj" />
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
