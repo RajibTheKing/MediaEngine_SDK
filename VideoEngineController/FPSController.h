@@ -13,6 +13,8 @@
 #include "Tools.h"
 #include "VideoEncoder.h"
 
+#include <queue>
+
 #define FPS_SHOULD_SAME 0
 #define FPS_SHOULD_INCREASE 1
 #define FPS_SHOULD_DECREASE 2

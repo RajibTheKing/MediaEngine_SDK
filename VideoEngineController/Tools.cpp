@@ -1,61 +1,75 @@
+
 #include "Tools.h"
+
+#include <sstream>
+#include <cstdlib>
+
 #ifdef _WIN32
 #include <windows.h>
+#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR) 
+#include <ctime>
+#include <chrono>
 #else
 #include <sys/time.h>
 #endif
 
-
 Tools::Tools()
 {
-	m_fpByte = NULL;
-	m_fpShort = NULL;
+	m_filePointerToWriteByteData = NULL;
+	m_filePointerToWriteShortData = NULL;
 }
 
 Tools::~Tools()
 {
-	if (m_fpByte != NULL)
-		fclose(m_fpByte);
-	if (m_fpShort != NULL)
-		fclose(m_fpShort);
+	if (NULL != m_filePointerToWriteByteData)
+		fclose(m_filePointerToWriteByteData);
+
+	if (NULL != m_filePointerToWriteShortData)
+		fclose(m_filePointerToWriteShortData);
 }
-std::string Tools::DoubleToString(double value){
-	stringstream ss;
-	ss << value;
-	return ss.str();
+std::string Tools::DoubleToString(double dConvertingValue)
+{
+	stringstream convertedStringStream;
+
+	convertedStringStream << dConvertingValue;
+
+	return convertedStringStream.str();
 }
 
-std::string Tools::LongLongToString(long long value)
+std::string Tools::LongLongToString(long long llConvertingValue)
 {
-	stringstream ss;
-	ss << value;
-	return ss.str();
+	stringstream convertedStringStream;
+
+	convertedStringStream << llConvertingValue;
+
+	return convertedStringStream.str();
 }
 
-int Tools::StringToIntegerConvert(std::string number)
+int Tools::StringToIntegerConvert(std::string strConvertingString)
 {
-	int num;
-	num = atoi(number.c_str());
-	return num;
+	int nConvertedNumber;
+
+	nConvertedNumber = atoi(strConvertingString.c_str());
+
+	return nConvertedNumber;
 }
 
-std::string Tools::IntegertoStringConvert(int number)
+std::string Tools::IntegertoStringConvert(int nConvertingNumber)
 {
-	char buf[12];
+	char cConvertedCharArray[12];
 
 #ifdef _WIN32
 
-	_itoa_s(number, buf, 10);
+	_itoa_s(nConvertingNumber, cConvertedCharArray, 10);
 
 #else
 
-	sprintf(buf, "%d", number);
+	sprintf(cConvertedCharArray, "%d", nConvertingNumber);
 
 #endif
 
-	return (std::string)buf;
+	return (std::string)cConvertedCharArray;
 }
-
 
 std::string Tools::LongLongtoStringConvert(long long number)
 {
@@ -92,103 +106,84 @@ std::string Tools::LongLongtoStringConvert(long long number)
 	return (std::string)buf;
 }
 
-void Tools::SOSleep(int Timeout)
+void Tools::SOSleep(int nSleepTimeout)
 {
 
 #ifdef _WIN32 
 
-	Sleep(Timeout);
+	Sleep(nSleepTimeout);
+
 #else
 
 	timespec t;
-	u_int32_t seconds = Timeout / 1000;
+
+	u_int32_t seconds = nSleepTimeout / 1000;
 	t.tv_sec = seconds;
-	t.tv_nsec = (Timeout - (seconds * 1000)) * (1000 * 1000);
+	t.tv_nsec = (nSleepTimeout - (seconds * 1000)) * (1000 * 1000);
+
 	nanosleep(&t, NULL);
 
 #endif
 
 }
 
-int Tools::GetIntFromChar(unsigned char *packetData, int index)
-{
-	int result = 0;
-	result += (packetData[index++] & 0xFF) << 24;
-	result += (packetData[index++] & 0xFF) << 16;
-	result += (packetData[index++] & 0xFF) << 8;
-	result += (packetData[index] & 0xFF);
-	return result;
-}
-
-int Tools::GetIntFromChar(unsigned char *packetData, int index, int nLenght)
-{
-	int result = 0;
-	int interval = 8;
-	int startPoint = interval * (nLenght - 1);
-	if (nLenght <= 0) return -1;
-	for (int i = startPoint; i >= 0; i -= interval)
-	{
-		result += (packetData[index++] & 0xFF) << i;
-	}
-
-	return result;
-}
-
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
-#define USE_CPP_11_TIME
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_)
-#define USE_WINDOWS_TIME
-#else
-#define USE_LINUX_TIME
-#endif
-
-#ifdef  USE_CPP_11_TIME
-#include <ctime>
-#include <chrono>
-#endif
-
 LongLong  Tools::CurrentTimestamp()
 {
+	LongLong currentTime;
 
-#if defined(USE_LINUX_TIME)
-	struct timeval te;
-	gettimeofday(&te, NULL); // get current time
-	LongLong milliseconds = te.tv_sec* +te.tv_sec * 1000LL + te.tv_usec / 1000; // caculate milliseconds
-	return milliseconds;
-#elif defined(USE_WINDOWS_TIME)
-	// Get current time from the clock, using microseconds resolution
-	return GetTickCount64();
-#elif defined(USE_CPP_11_TIME)
+#if defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+
+	currentTime = GetTickCount64();
+
+#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+
 	namespace sc = std::chrono;
+
 	auto time = sc::system_clock::now(); // get the current time
 	auto since_epoch = time.time_since_epoch(); // get the duration since epoch
+
 	// I don't know what system_clock returns
 	// I think it's uint64_t nanoseconds since epoch
 	// Either way this duration_cast will do the right thing
+
 	auto millis = sc::duration_cast<sc::milliseconds>(since_epoch);
-	long long now = millis.count(); // just like java (new Date()).getTime();
-	return now;
+
+	currentTime = millis.count(); // just like java (new Date()).getTime();
+
+#elif defined(__linux__) || defined (__APPLE__)
+
+	struct timeval te;
+
+	gettimeofday(&te, NULL); 
+
+	currentTime = te.tv_sec* +te.tv_sec * 1000LL + te.tv_usec / 1000; 
+
 #else
-	return 0;
+
+	currentTime = 0;
+
 #endif
+
+	return currentTime;
+
 }
 
-
-void Tools::WriteToFile(short* in_Data, int count)
+void Tools::WriteToFile(short* saDataToWriteToFile, int nLength)
 {
-	if (m_fpShort == NULL)
+	if (NULL == m_filePointerToWriteShortData)
 	{
-		m_fpShort = fopen("shortFile.pcm", "wb");
+		m_filePointerToWriteShortData = fopen("shortFile.pcm", "wb");
 	}
-	fwrite(in_Data, 2, count, m_fpShort);
+
+	fwrite(saDataToWriteToFile, 2, nLength, m_filePointerToWriteShortData);
 }
 
-void Tools::WriteToFile(unsigned char* in_Data, int count)
+void Tools::WriteToFile(unsigned char* ucaDataToWriteToFile, int nLength)
 {
-	if (m_fpByte == NULL)
+	if (NULL == m_filePointerToWriteByteData)
 	{
-		m_fpByte = fopen("byteFile.test", "wb");
+		m_filePointerToWriteByteData = fopen("byteFile.test", "wb");
 	}
-	fwrite(in_Data, 1, count, m_fpByte);
 
+	fwrite(ucaDataToWriteToFile, 1, nLength, m_filePointerToWriteByteData);
 }
