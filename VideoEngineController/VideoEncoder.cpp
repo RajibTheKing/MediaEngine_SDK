@@ -54,13 +54,12 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 	encParam.iLoopFilterAlphaC0Offset = 0;
 	encParam.iLoopFilterBetaOffset = 0;
 	encParam.iMultipleThreadIdc = 0;
-#ifdef BITRATE_ENABLED
+
 	encParam.iRCMode = RC_BITRATE_MODE;//RC_OFF_MODE;
 	encParam.iMinQp = 0;
 	encParam.iMaxQp = 52;
-#else
- 	encParam.iRCMode = RC_OFF_MODE;
-#endif
+// 	encParam.iRCMode = RC_OFF_MODE;
+
 
 
 	encParam.bEnableDenoise = false;
@@ -92,11 +91,6 @@ int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to initialize OpenH264 encoder ");
 		return 0;
 	}
-
-#ifdef BITRATE_ENABLED
-//	SetBitrate(12);
-//	SetMaxBitrate(12);
-#endif
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
 
