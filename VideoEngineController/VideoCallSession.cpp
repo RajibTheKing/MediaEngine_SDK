@@ -234,7 +234,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	g_FPSController.SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
 
-	this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket, &m_DecodingBuffer);
+	this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket);
 
 	m_pVideoDecoder->CreateVideoDecoder();
 
