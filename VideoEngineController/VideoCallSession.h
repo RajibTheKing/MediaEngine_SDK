@@ -1,10 +1,8 @@
+
 #ifndef _VIDEO_CALL_SESSION_H_
 #define _VIDEO_CALL_SESSION_H_
 
-#include <stdio.h>
-#include <string>
 #include "Size.h"
-
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 #include "VideoEncoderListHandler.h"
@@ -14,25 +12,15 @@
 #include "EncodingBuffer.h"
 #include "RenderingBuffer.h"
 #include "EncodedFrameDepacketizer.h"
-#include "VideoPacketQueue.h"
 #include "Tools.h"
-#include "PairMap.h"
-#include "RetransmitVideoPacketQueue.h"
 #include "BitRateController.h"
-#include "SynchronizedMap.h"
 #include "VideoEncodingThread.h"
 #include "RenderingThread.h"
 #include "VideoDecodingThread.h"
 #include "DepacketizationThread.h"
 #include "SendingThread.h"
 
-#include <queue>
-#include <utility>
-
 using namespace std;
-
-//extern PairMap g_timeInt;
-
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -58,24 +46,6 @@ public:
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
 
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
-	int GetUniquePacketID(int fn, int pn);
-
-	int m_iConsecutiveGoodMegaSlot;
-	int m_iPreviousByterate;
-
-	int orientation_type;
-	int ownFPS;
-	LongLong m_LastTimeStampClientFPS;
-	double m_ClientFPSDiffSum;
-	int m_ClientFrameCounter;
-	double m_ClientFPS;
-	double m_DropSum;
-	int opponentFPS;
-	int m_EncodingFrameCounter;
-	bool m_bSkipFirstByteCalculation;
-
-	int m_iDePacketizeCounter;
-	long long m_TimeFor100Depacketize;
 
 	CSendingThread *m_pSendingThread;
 	CVideoEncodingThread *m_pVideoEncodingThread;
@@ -91,7 +61,20 @@ public:
 	void SetShiftedTime(long long llTime);
 	long long GetShiftedTime();	
 
+	void SetOwnFPS(int nOwnFPS);
+	void SetOpponentFPS(int nOpponentFPS);
+
 private:
+
+	int m_nOwnFPS;
+	int m_nOpponentFPS;
+	LongLong m_LastTimeStampClientFPS;
+	double m_ClientFPSDiffSum;
+	int m_ClientFrameCounter;
+	double m_ClientFPS;
+	double m_DropSum;
+	int m_EncodingFrameCounter;
+	bool m_bSkipFirstByteCalculation;
 
 	long long m_llShiftedTime;
 	long long m_llTimeStampOfFirstPacketRcvd;
@@ -132,7 +115,7 @@ private:
 
 protected:
 
-	SmartPointer<CLockHandler> m_pSessionMutex;
+	SmartPointer<CLockHandler> m_pVideoCallSessionMutex;
 };
 
 

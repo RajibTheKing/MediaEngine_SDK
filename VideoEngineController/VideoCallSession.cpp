@@ -1,10 +1,8 @@
+
 #include "VideoCallSession.h"
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
-#include "Tools.h"
 #include "Globals.h"
-#include "ResendingBuffer.h"
-//#include "Helper_IOS.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -12,20 +10,8 @@
 
 extern CFPSController g_FPSController;
 
-#define ORIENTATION_0_MIRRORED 1
-#define ORIENTATION_90_MIRRORED 2
-#define ORIENTATION_180_MIRRORED 3
-#define ORIENTATION_270_MIRRORED 4
-#define ORIENTATION_0_NOT_MIRRORED 5
-#define ORIENTATION_90_NOT_MIRRORED 6
-#define ORIENTATION_180_NOT_MIRRORED 7
-#define ORIENTATION_270_NOT_MIRRORED 8
-
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
-//extern int g_uchOpponentVersion;
-
-CVideoCallSession *g_VideoCallSession;
 
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
 
@@ -36,16 +22,10 @@ m_ClientFrameCounter(0),
 m_EncodingFrameCounter(0),
 m_pEncodedFramePacketizer(NULL),
 m_ByteRcvInBandSlot(0),
-//m_SlotResetLeftRange(GetUniquePacketID(0, 0)),
-//m_SlotResetRightRange(GetUniquePacketID(FRAME_RATE, 0)),
 m_SlotResetLeftRange(0),
 m_SlotResetRightRange(FRAME_RATE),
 m_pVideoEncoder(NULL),
 m_bSkipFirstByteCalculation(true),
-m_iConsecutiveGoodMegaSlot(0),
-m_iPreviousByterate(BITRATE_MAX / 8),
-m_iDePacketizeCounter(0),
-m_TimeFor100Depacketize(0),
 m_llTimeStampOfFirstPacketRcvd(-1),
 m_nFirstFrameEncodingTimeDiff(-1),
 m_llShiftedTime(-1)
@@ -64,10 +44,10 @@ m_llShiftedTime(-1)
 
 	g_FPSController.Reset();
 
-	opponentFPS = ownFPS = FPS_BEGINNING;
+	m_nOpponentFPS = m_nOwnFPS = FPS_BEGINNING;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
-	m_pSessionMutex.reset(new CLockHandler);
+	m_pVideoCallSessionMutex.reset(new CLockHandler);
 	m_lfriendID = fname;
 	sessionMediaList.ClearAllFromVideoEncoderList();
 
@@ -84,8 +64,6 @@ m_llShiftedTime(-1)
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
 	m_BitRateController = new BitRateController();
-
-	g_VideoCallSession = this;
 
 	m_BitRateController->SetSharedObject(sharedObject);
 
@@ -208,12 +186,22 @@ CVideoCallSession::~CVideoCallSession()
 
 	m_lfriendID = -1;
 
-	SHARED_PTR_DELETE(m_pSessionMutex);
+	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
 }
 
 LongLong CVideoCallSession::GetFriendID()
 {
 	return m_lfriendID;
+}
+
+void CVideoCallSession::SetOwnFPS(int nOwnFPS)
+{
+	m_nOwnFPS = nOwnFPS;
+}
+
+void CVideoCallSession::SetOpponentFPS(int nOpponentFPS)
+{
+	m_nOpponentFPS = nOpponentFPS;
 }
 
 void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
@@ -351,7 +339,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 		{//Block for LOCK
 			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
 			if(nApproximateAverageFrameInterval > 10) {
-				Locker lock(*m_pSessionMutex);
+				Locker lock(*m_pVideoCallSessionMutex);
 				g_FPSController.SetClientFPS(1000 / nApproximateAverageFrameInterval);
 			}
 		}
@@ -438,13 +426,8 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 		m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
 }
 
-
-int CVideoCallSession::GetUniquePacketID(int fn, int pn)
+long long CVideoCallSession::GetShiftedTime()
 {
-	return fn*MAX_PACKET_NUMBER + pn;
-}
-
-long long CVideoCallSession::GetShiftedTime(){
 	return m_llShiftedTime;
 }
 void CVideoCallSession::SetShiftedTime(long long llTime)
