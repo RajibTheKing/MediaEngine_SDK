@@ -195,7 +195,7 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
     return nReturnedValueFromEncoder;
 }
 
-int CVideoEncoder::EncodeAndTransfer(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData)
+int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
 

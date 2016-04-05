@@ -27,7 +27,7 @@ public:
 	bool SetUserName(const LongLong& lUserName);
 	bool StartAudioCall(const LongLong& lFriendID);
 	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
-	int EncodeAndTransfer(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
+	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);

@@ -186,11 +186,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-			nENCODEDFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+			nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
 #else
 
-			nENCODEDFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+			nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
 #endif
 

@@ -141,7 +141,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	}	
 }
 
-int CController::EncodeAndTransfer(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
+int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
 {
 	CVideoCallSession* pVideoSession;
 

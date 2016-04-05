@@ -78,7 +78,7 @@ int CInterfaceOfAudioVideoEngine::EncodeAndTransfer(const IPVLongType llFriendID
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->EncodeAndTransfer(llFriendID, in_data, unLength);
+	int iReturnedValue = m_pcController->EncodeVideoFrame(llFriendID, in_data, unLength);
 
 	return iReturnedValue;
 }

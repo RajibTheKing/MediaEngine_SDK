@@ -19,7 +19,7 @@ public:
 	~CVideoEncoder();
 
 	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth);
-	int EncodeAndTransfer(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData);
+	int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData);
 
     int SetBitrate(int nBitRate);
     void SetNetworkType(int nNetworkType);
