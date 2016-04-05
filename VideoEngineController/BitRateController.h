@@ -10,6 +10,7 @@
 #include "Tools.h"
 #include "VideoEncoder.h"
 #include "SynchronizedMap.h"
+#include "PacketHeader.h"
 
 class CCommonElementsBucket;
 

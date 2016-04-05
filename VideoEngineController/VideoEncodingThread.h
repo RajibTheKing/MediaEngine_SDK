@@ -8,6 +8,7 @@
 #include "BitRateController.h"
 #include "ColorConverter.h"
 #include "EncodedFrameDepacketizer.h"
+#include "EncodedFramePacketizer.h"
 
 #include <thread>
 
