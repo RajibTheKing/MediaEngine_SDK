@@ -9,6 +9,7 @@
 #include "BitRateController.h"
 #include "ColorConverter.h"
 #include "EncodedFrameDepacketizer.h"
+#include "AverageCalculator.h"
 
 #include <thread>
 
@@ -45,9 +46,14 @@ private:
 
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;
-
+    
+    int mt_nTotalEncodingTimePerFrameRate;
+    int mt_nCheckSlot;
+    
 	Tools m_Tools;
-
+    
+    CAverageCalculator mt_TotalEncodingTimeAveragePerFrameRate;
+    
 	SmartPointer<std::thread> pEncodingThread;
 };
 

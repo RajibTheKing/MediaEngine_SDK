@@ -30,7 +30,9 @@ m_EncodingBuffer(encodingBuffer),
 m_BitRateController(bitRateController),
 m_pColorConverter(colorConverter),
 m_pVideoEncoder(videoEncoder),
-m_pEncodedFramePacketizer(encodedFramePacketizer)
+m_pEncodedFramePacketizer(encodedFramePacketizer),
+mt_nTotalEncodingTimePerFrameRate(0),
+mt_nCheckSlot(0)
 
 {
 	countFrame = 0;
@@ -101,7 +103,7 @@ void *CVideoEncodingThread::CreateVideoEncodingThread(void* param)
 
 	return NULL;
 }
-
+int iiteration = 0;
 void CVideoEncodingThread::EncodingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() started EncodingThreadProcedure method");
@@ -161,7 +163,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			int timeDiff;
 			frameSize = m_EncodingBuffer->DeQueue(m_EncodingFrame, timeDiff);
-
+            
 //			CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoEncodingThread::EncodingThreadProcedure Deque packetSize " + Tools::IntegertoStringConvert(frameSize));
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_EncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
@@ -239,14 +241,49 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
             long long ConversionTime = m_Tools.CurrentTimestamp();
 			this->m_pColorConverter->ConvertNV12ToI420(m_EncodingFrame);
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> ConvertNV12ToI420 = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - ConversionTime));
+            long long sssssss = m_Tools.CurrentTimestamp() - ConversionTime;
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> ConvertNV12ToI420 = " + m_Tools.LongLongToString(m_Tools.CurrentTimestamp() - ConversionTime));
+            
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertNV12ToI420 ", currentTimeStamp);
 
 			currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
             long long enctime = m_Tools.CurrentTimestamp();
+            
+            memset(m_EncodingFrame, 0, sizeof(m_EncodingFrame));
+            
+            for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
+            {
+                int color = rand()%255;
+                for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
+                {
+                    m_EncodingFrame[i * this->m_pColorConverter->GetHeight() + j ] = color;
+                }
+                
+            }
+            
+         
+            
 			encodedFrameSize = m_pVideoEncoder->EncodeAndTransfer(m_EncodingFrame, frameSize, m_EncodedFrame);
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> EncodingTime = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - enctime));
-                                 
+            long long lCalculatedEncodingTime = m_Tools.CurrentTimestamp() - enctime;
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> EncodingTime = " + m_Tools.LongLongtoStringConvert(lCalculatedEncodingTime) + ", encodedFrameSize = "+m_Tools.IntegertoStringConvert(encodedFrameSize));
+            
+            int lFrameSlot = m_iFrameNumber/FRAME_RATE;
+            
+            if(lFrameSlot == mt_nCheckSlot)
+            {
+                
+                mt_nTotalEncodingTimePerFrameRate+=lCalculatedEncodingTime;
+            }
+            else
+            {
+                mt_TotalEncodingTimeAveragePerFrameRate.UpdateData(mt_nTotalEncodingTimePerFrameRate);
+                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
+                                     "\nTheKing---------------> TotalEncodingTimePerFrameRate = " + m_Tools.LongLongtoStringConvert(mt_nTotalEncodingTimePerFrameRate)
+                                     + ",  TotalEncodingTimeAveragePerFrameRate = " + m_Tools.DoubleToString(mt_TotalEncodingTimeAveragePerFrameRate.GetAverage()));
+                mt_nTotalEncodingTimePerFrameRate = 0;
+                mt_nCheckSlot=m_iFrameNumber/FRAME_RATE;
+            }
+                
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", currentTimeStamp);
 
 #elif defined(_DESKTOP_C_SHARP_)

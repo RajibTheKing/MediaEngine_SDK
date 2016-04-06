@@ -244,6 +244,8 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 	}
 }
 
+long long g_lPrevAudioFrame = 0;
+
 int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
 {
 	CAudioCallSession* pAudioSession;
@@ -264,7 +266,17 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 
 		//if (pAudioEncoder)
 		{
-			return pAudioSession->EncodeAudioData(in_data,in_size);
+            for(int i=0;i<in_size;i++)
+            {
+                in_data[i] = rand()%255;
+            }
+            long long lEncodeStartTime = m_Tools.CurrentTimestamp();
+            
+            int ret = pAudioSession->EncodeAudioData(in_data,in_size);
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> AudioEncodingTime = " + m_Tools.LongLongtoStringConvert((m_Tools.CurrentTimestamp() - lEncodeStartTime)) + "asdfasdf");
+            //printf("TheKing--> zAudioEncodingTime = %lld, zAudioEncodingTimeDiff = %lld, in_size = %d\n", m_Tools.CurrentTimestamp() - lEncodeStartTime, m_Tools.CurrentTimestamp() - g_lPrevAudioFrame, in_size);
+            g_lPrevAudioFrame = m_Tools.CurrentTimestamp();
+            return ret;
 		}
 		
 	}
@@ -299,6 +311,8 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 				return -1;
 
 			pVideoSession->m_pVideoEncodingThread->orientation_type = orientation_type;
+            
+            
 			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
 		}
 		else
