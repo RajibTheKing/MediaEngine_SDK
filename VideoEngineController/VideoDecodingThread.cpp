@@ -198,11 +198,10 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
-	long long dectime = m_Tools.CurrentTimestamp();
+    
+    long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-
-	long long  timediff = (m_Tools.CurrentTimestamp() - dectime);
-	CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " OOOO decode  " + m_Tools.LongLongToString( timediff));
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime));
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Decode ", currentTimeStamp);
 
 	if (1 > m_decodedFrameSize)

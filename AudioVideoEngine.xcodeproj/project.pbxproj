@@ -48,6 +48,7 @@
 		DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */; };
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
 		DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */; };
+		DA541CD41CB3CD4A00151A0F /* AverageCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA541CD21CB3CD4A00151A0F /* AverageCalculator.cpp */; };
 		DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */; };
 		DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */; };
 		DAA0F0E31C675A5F009E0F39 /* SynchronizedMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */; };
@@ -159,6 +160,8 @@
 		DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PacketHeader.cpp; path = VideoEngineController/PacketHeader.cpp; sourceTree = "<group>"; };
 		DA3AF4BA1C55F67400E566BB /* PacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PacketHeader.h; path = VideoEngineController/PacketHeader.h; sourceTree = "<group>"; };
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
+		DA541CD21CB3CD4A00151A0F /* AverageCalculator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AverageCalculator.cpp; path = VideoEngineController/AverageCalculator.cpp; sourceTree = "<group>"; };
+		DA541CD31CB3CD4A00151A0F /* AverageCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AverageCalculator.h; path = VideoEngineController/AverageCalculator.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
 		DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BitRateController.cpp; path = VideoEngineController/BitRateController.cpp; sourceTree = "<group>"; };
@@ -223,6 +226,8 @@
 		18AAB7741C0059320069154C /* VideoEngineController */ = {
 			isa = PBXGroup;
 			children = (
+				DA541CD21CB3CD4A00151A0F /* AverageCalculator.cpp */,
+				DA541CD31CB3CD4A00151A0F /* AverageCalculator.h */,
 				188587B71C0AEEAC00B1F435 /* AudioCallSession.cpp */,
 				188587B81C0AEEAC00B1F435 /* AudioCallSession.h */,
 				188587B91C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp */,
@@ -401,6 +406,7 @@
 				DA2A7B0B1C38ED5400E6AFF8 /* Globals.cpp in Sources */,
 				188587E91C0AEEAC00B1F435 /* AudioCallSession.cpp in Sources */,
 				9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */,
+				DA541CD41CB3CD4A00151A0F /* AverageCalculator.cpp in Sources */,
 				188587EA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp in Sources */,
 				188587FC1C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp in Sources */,
 				D18E5FC81C96D57F00E5EDAA /* RenderingThread.cpp in Sources */,

@@ -9,6 +9,7 @@
 #include "ColorConverter.h"
 #include "EncodedFrameDepacketizer.h"
 #include "EncodedFramePacketizer.h"
+#include "AverageCalculator.h"
 
 #include <thread>
 
@@ -44,9 +45,14 @@ private:
 	int m_nOrientationType;
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;
-
+    
+    int mt_nTotalEncodingTimePerFrameRate;
+    int mt_nCheckSlot;
+    
 	Tools m_Tools;
-
+    
+    CAverageCalculator mt_TotalEncodingTimeAveragePerFrameRate;
+    
 	SmartPointer<std::thread> pEncodingThread;
 };
 

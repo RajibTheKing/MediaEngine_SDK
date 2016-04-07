@@ -24,6 +24,7 @@ public:
 	void StopRenderingThread();
 	void RenderingThreadProcedure();
 	static void *CreateVideoRenderingThread(void* param);
+    void CalculateFPS();
 
 private:
 
@@ -38,6 +39,8 @@ private:
 	unsigned char m_RenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	Tools m_Tools;
+    int m_nRenderFrameCount;
+    long long m_lRenderCallTime;
 
 	SmartPointer<std::thread> pRenderingThread;
 };

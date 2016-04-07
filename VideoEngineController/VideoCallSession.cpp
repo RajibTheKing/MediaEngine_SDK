@@ -326,6 +326,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	return true;
 }
 
+long long g_EncodingTimeDiff = 0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
