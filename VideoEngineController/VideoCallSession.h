@@ -86,6 +86,8 @@ private:
 
 	int m_SlotResetLeftRange;
 	int m_SlotResetRightRange;
+    
+    long long mt_llCapturePrevTime;
 
 	Tools m_Tools;
 	LongLong m_lfriendID;

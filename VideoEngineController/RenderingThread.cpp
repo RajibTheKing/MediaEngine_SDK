@@ -6,6 +6,8 @@
 #include <dispatch/dispatch.h>
 #endif
 
+long long g_llFirstFrameReceiveTime;
+
 CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket) :
 
 m_RenderingBuffer(renderingBuffer),
@@ -146,6 +148,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			prevTimeStamp = nTimeStampDiff;
             
             CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> Rendering TimeDiff = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - lRenderingTimeDiff));
+            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DiffWithFirstFrame From Camera = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - g_llFirstFrameReceiveTime));
             
 			//if (frameSize<1 || minTimeGap < 50)
 			//	continue;

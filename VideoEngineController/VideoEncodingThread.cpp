@@ -199,7 +199,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
+            llCalculatingTime = m_Tools.CurrentTimestamp();
 			nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
 #else
@@ -207,16 +207,17 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
 #endif
+            
 
-			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Encode ", llCalculatingTime);
+			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " EncodeTime = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp()- llCalculatingTime));
 
 			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
 
-			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
+			//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
 
 			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference);
 
-			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ", llCalculatingTime);
+			//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
 
 			++m_iFrameNumber;
 		

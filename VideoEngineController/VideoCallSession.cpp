@@ -12,7 +12,7 @@ extern CFPSController g_FPSController;
 
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
-
+extern long long g_llFirstFrameReceiveTime;
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
 
 m_pCommonElementsBucket(sharedObject),
@@ -28,7 +28,8 @@ m_pVideoEncoder(NULL),
 m_bSkipFirstByteCalculation(true),
 m_llTimeStampOfFirstPacketRcvd(-1),
 m_nFirstFrameEncodingTimeDiff(-1),
-m_llShiftedTime(-1)
+m_llShiftedTime(-1),
+mt_llCapturePrevTime(0)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -206,6 +207,7 @@ void CVideoCallSession::SetOpponentFPS(int nOpponentFPS)
 
 void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
+    g_llFirstFrameReceiveTime = 0;
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
 
 	if (sessionMediaList.IsVideoEncoderExist(iVideoHeight, iVideoWidth))
@@ -329,6 +331,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 long long g_EncodingTimeDiff = 0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
 {
+    if(g_llFirstFrameReceiveTime == 0) g_llFirstFrameReceiveTime = m_Tools.CurrentTimestamp();
+    
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
 
 	LongLong currentTimeStamp = m_Tools.CurrentTimestamp();
@@ -363,9 +367,15 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 		m_llFirstFrameCapturingTimeStamp = currentTimeStamp;
 
 	int nCaptureTimeDiff = currentTimeStamp - m_llFirstFrameCapturingTimeStamp;
-
+    
+    
 	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff);
-
+    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " nCaptureTimeDiff = " +  m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - mt_llCapturePrevTime));
+    mt_llCapturePrevTime = m_Tools.CurrentTimestamp();
+    
+    
+    
 //	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding Queue packetSize " + Tools::IntegertoStringConvert(in_size));
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding pushed to encoder queue");
