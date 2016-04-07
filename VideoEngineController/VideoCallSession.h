@@ -63,6 +63,10 @@ public:
 
 	void SetOwnFPS(int nOwnFPS);
 	void SetOpponentFPS(int nOpponentFPS);
+    bool GetResolationCheck();
+    void SetCalculationStartMechanism(bool s7);
+    long long GetCalculationStartTime();
+    bool GetCalculationStatus();
 
 private:
 
@@ -88,7 +92,11 @@ private:
 	int m_SlotResetRightRange;
     
     long long mt_llCapturePrevTime;
-
+    bool m_bResolationCheck;
+    bool m_bShouldStartCalculation;
+    long long m_bCaclculationStartTime;
+    
+    
 	Tools m_Tools;
 	LongLong m_lfriendID;
 	CVideoEncoderListHandler sessionMediaList;
@@ -114,6 +122,7 @@ private:
 	CColorConverter *m_pColorConverter;
 
 	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
+    
 
 protected:
 

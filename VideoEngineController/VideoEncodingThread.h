@@ -13,12 +13,14 @@
 
 #include <thread>
 
+class CVideoCallSession;
+
 class CVideoEncodingThread
 {
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -51,7 +53,9 @@ private:
     
 	Tools m_Tools;
     
-    CAverageCalculator mt_TotalEncodingTimeAveragePerFrameRate;
+    CAverageCalculator m_CalculatorEncodeTime;
+    
+    CVideoCallSession *m_pVideoCallSession;
     
 	SmartPointer<std::thread> pEncodingThread;
 };

@@ -189,6 +189,8 @@ void CSendingThread::SendingThreadProcedure()
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			if (m_BandWidthController.IsSendeablePacket(packetSize)) {
 #endif
+ 
+/*
 #if defined(SEND_VIDEO_TO_SELF)
 			CVideoCallSession* pVideoSession;
 			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
@@ -202,6 +204,22 @@ void CSendingThread::SendingThreadProcedure()
 
 
 #endif
+*/
+                
+                if(m_pVideoCallSession->GetResolationCheck() == false)
+                {
+                    unsigned char *pEncodedFrame = m_EncodedFrame;
+                    m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+                }
+                else
+                {
+                    m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+                    
+                    //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+                }
+                
+                
+                
 				toolsObject.SOSleep(GetSleepTime());
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST

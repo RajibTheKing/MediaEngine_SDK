@@ -8,16 +8,18 @@
 #include "DecodingBuffer.h"
 #include "RenderingBuffer.h"
 
+
 #include <thread>
 
 class CCommonElementsBucket;
+class CVideoCallSession;
 
 class CVideoRenderingThread
 {
 
 public:
 
-	CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket* commonElementsBucket);
+	CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket* commonElementsBucket, CVideoCallSession *pVideoCallSession);
 	~CVideoRenderingThread();
 
 	void StartRenderingThread();
@@ -41,6 +43,9 @@ private:
 	Tools m_Tools;
     int m_nRenderFrameCount;
     long long m_lRenderCallTime;
+    
+    CVideoCallSession *m_pVideoCallSession;
+    
 
 	SmartPointer<std::thread> pRenderingThread;
 };

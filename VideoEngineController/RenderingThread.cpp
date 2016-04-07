@@ -1,6 +1,7 @@
 
 #include "RenderingThread.h"
 #include "CommonElementsBucket.h"
+#include "VideoCallSession.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -8,7 +9,7 @@
 
 long long g_llFirstFrameReceiveTime;
 
-CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket) :
+CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket, CVideoCallSession *pVideoCallSession) :
 
 m_RenderingBuffer(renderingBuffer),
 m_pCommonElementsBucket(commonElementsBucket),
@@ -16,7 +17,7 @@ m_FriendID(friendID),
 m_lRenderCallTime(0)
 
 {
-
+    m_pVideoCallSession = pVideoCallSession;
 }
 
 CVideoRenderingThread::~CVideoRenderingThread()
@@ -110,10 +111,14 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 		}
 		else
 		{
-
+            
 			int timeDiffForQueue;
 
 			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
+            
+            
+            m_pVideoCallSession->SetCalculationStartMechanism(true);
+            
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() m_RenderingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			currentFrameTime = toolsObject.CurrentTimestamp();

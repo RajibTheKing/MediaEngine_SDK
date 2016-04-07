@@ -2,6 +2,7 @@
 #include "VideoEncodingThread.h"
 #include "Globals.h"
 #include "LogPrinter.h"
+#include "VideoCallSession.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -9,7 +10,7 @@
 
 extern CFPSController g_FPSController;
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer) :
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession) :
 
 m_iFrameNumber(0),
 m_llFriendID(llFriendID),
@@ -21,7 +22,7 @@ m_pEncodedFramePacketizer(pEncodedFramePacketizer),
 mt_nTotalEncodingTimePerFrameRate(0)
 
 {
-
+    m_pVideoCallSession = pVideoCallSession;
 }
 
 CVideoEncodingThread::~CVideoEncodingThread()
@@ -208,7 +209,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
+            if(m_pVideoCallSession->GetCalculationStatus() == true)
+            {
+                m_CalculatorEncodeTime.UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
+            }
 
+            
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " EncodeTime = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp()- llCalculatingTime));
 
 			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);

@@ -23,3 +23,8 @@ double CAverageCalculator::GetAverage()
     return m_dAvg;
 }
 
+long long CAverageCalculator::GetTotal()
+{
+    return m_nTotalValue;
+}
+

@@ -11,6 +11,7 @@ public:
     void Reset();
     void UpdateData(long long nValue);
     double GetAverage();
+    long long GetTotal();
 private:
     double m_dAvg;
     int m_nCounter;

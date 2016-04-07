@@ -29,7 +29,10 @@ m_bSkipFirstByteCalculation(true),
 m_llTimeStampOfFirstPacketRcvd(-1),
 m_nFirstFrameEncodingTimeDiff(-1),
 m_llShiftedTime(-1),
-mt_llCapturePrevTime(0)
+mt_llCapturePrevTime(0),
+m_bResolationCheck(false),
+m_bShouldStartCalculation(false),
+m_bCaclculationStartTime(0)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -231,8 +234,8 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
 	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
-	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer);
-	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket);
+	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
+	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
 
@@ -446,8 +449,29 @@ void CVideoCallSession::SetShiftedTime(long long llTime)
 	m_llShiftedTime = llTime;
 }
 
+bool  CVideoCallSession::GetResolationCheck()
+{
+    return m_bResolationCheck;
+}
 
+void CVideoCallSession::SetCalculationStartMechanism(bool s7)
+{
+    m_bShouldStartCalculation = s7;
+    if(m_bCaclculationStartTime == 0)
+    {
+        m_bCaclculationStartTime = m_Tools.CurrentTimestamp();
+    }
+}
 
+bool CVideoCallSession::GetCalculationStatus()
+{
+    return m_bShouldStartCalculation;
+}
+
+long long CVideoCallSession::GetCalculationStartTime()
+{
+    return m_bCaclculationStartTime;
+}
 
 
 
