@@ -10,6 +10,8 @@
 #include "Tools.h"
 #include "PacketHeader.h"
 
+class CVideoCallSession;
+
 class CCommonElementsBucket;
 
 class CEncodedFramePacketizer
@@ -17,7 +19,7 @@ class CEncodedFramePacketizer
 
 public:
 
-	CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer);
+	CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession);
 	~CEncodedFramePacketizer();
 
 	int Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference);
@@ -27,7 +29,8 @@ private:
 	Tools m_Tools;
 
 	int m_nPacketSize;
-
+    CVideoCallSession *m_pVideoCallSession;
+    
 	CPacketHeader m_cPacketHeader;
 	CSendingBuffer *m_pcSendingBuffer;
 	CCommonElementsBucket* m_pcCommonElementsBucket;

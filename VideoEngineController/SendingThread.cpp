@@ -130,10 +130,8 @@ void CSendingThread::SendingThreadProcedure()
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
-			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
-			pair<int, int> FramePacketToSend = { -1, -1 };
 
-			packetHeader.setPacketHeader(m_EncodedFrame + 1);
+			//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 			unsigned char signal = g_FPSController->GetFPSSignalByte();
 			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
@@ -210,6 +208,8 @@ void CSendingThread::SendingThreadProcedure()
                 {
                     unsigned char *pEncodedFrame = m_EncodedFrame;
                     m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+                    
+                    m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
                 }
                 else
                 {

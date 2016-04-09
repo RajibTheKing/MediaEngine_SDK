@@ -3,10 +3,11 @@
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
 #include "Globals.h"
+#include "VideoCallSession.h"
 
 extern unsigned char g_uchSendPacketVersion;
 
-CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer) :
+CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
 m_nPacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
 m_pcCommonElementsBucket(pcSharedObject)
@@ -17,6 +18,8 @@ m_pcCommonElementsBucket(pcSharedObject)
 	m_pcSendingBuffer = pcSendingBuffer;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::CEncodedFramePacketizer Created");
+    
+    m_pVideoCallSession = pVideoCallSession;
 }
 
 CEncodedFramePacketizer::~CEncodedFramePacketizer()
@@ -68,7 +71,36 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
 //		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize Queue lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(nPacketHeaderLenghtWithMedia + m_PacketSize));
 		
-		m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+        
+        /*CPacketHeader packetHeader;
+        
+        int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
+        
+        packetHeader.setPacketHeader(m_ucaPacket + 1);
+        
+        unsigned char signal = g_FPSController->GetFPSSignalByte();
+        m_ucaPacket[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;*/
+        
+        
+        
+        if(m_pVideoCallSession->GetResolationCheck() == false)
+        {
+            unsigned char *pEncodedFrame = m_ucaPacket;
+            int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
+            m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize);
+
+            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iFrameNumber, nPacketNumber);
+        }
+        else
+        {
+            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+            
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+        }
+        
+        
+        
+		
 	}
 
 	return 1;
