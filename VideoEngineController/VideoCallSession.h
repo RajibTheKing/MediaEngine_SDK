@@ -67,6 +67,7 @@ public:
     void SetCalculationStartMechanism(bool s7);
     long long GetCalculationStartTime();
     bool GetCalculationStatus();
+    void DecideHighResolatedVideo(bool bValue);
 
 private:
 

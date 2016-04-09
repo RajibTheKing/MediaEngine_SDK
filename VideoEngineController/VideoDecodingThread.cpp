@@ -14,7 +14,8 @@ m_RenderingBuffer(renderingBuffer),
 m_pVideoDecoder(videoDecoder),
 m_pColorConverter(colorConverter),
 g_FPSController(FPSController),
-m_pVideoCallSession(pVideoCallSession)
+m_pVideoCallSession(pVideoCallSession),
+m_Counter(0)
 {
 
 }
@@ -201,7 +202,9 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime));
+    m_CalculatorDecodeTime.OperationTheatre(decTime, m_pVideoCallSession, "Decode");
+    
+    //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime));
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Decode ", currentTimeStamp);
 
 	if (1 > m_decodedFrameSize)
@@ -221,8 +224,27 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
-
-	long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
+    
+    if(m_pVideoCallSession->GetCalculationStatus()==true)
+    {
+        m_Counter++;
+    
+        long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
+        long long diff = m_pVideoCallSession->GetCalculationStartTime() - currentTimeStampForBrust;
+    
+        if(m_Counter >= FRAME_RATE && diff <= 1000)
+        {
+            //   m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+            m_pVideoCallSession->DecideHighResolatedVideo(true);
+            
+        }
+        else if(diff > 1000)
+        {
+            m_pVideoCallSession->DecideHighResolatedVideo(false);
+        }
+    }
+    
+        
 
 #if defined(_DESKTOP_C_SHARP_)
 	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);

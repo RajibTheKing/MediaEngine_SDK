@@ -11,6 +11,7 @@
 #include "ColorConverter.h"
 #include "DecodingBuffer.h"
 #include "FPSController.h"
+#include "AverageCalculator.h"
 
 #include <thread>
 
@@ -39,6 +40,8 @@ private:
 	int m_decodingHeight;
 	int m_decodingWidth;
 	int m_decodedFrameSize;
+    
+    int m_Counter;
 
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
 	CRenderingBuffer *m_RenderingBuffer;						
@@ -52,7 +55,7 @@ private:
 	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	Tools m_Tools;
-
+    CAverageCalculator m_CalculatorDecodeTime;
 	SmartPointer<std::thread> pDecodingThread;
 };
 

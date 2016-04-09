@@ -64,7 +64,7 @@ m_bCaclculationStartTime(0)
 	m_pRetransVideoPacketQueue = new CVideoPacketQueue();
 	m_pMiniPacketQueue = new CVideoPacketQueue();
 
-	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject, m_SendingBuffer);
+	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject, m_SendingBuffer, this);
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
 	m_BitRateController = new BitRateController();
@@ -374,7 +374,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
 	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff);
     
-    CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " nCaptureTimeDiff = " +  m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - mt_llCapturePrevTime));
+    //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " nCaptureTimeDiff = " +  m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - mt_llCapturePrevTime));
     mt_llCapturePrevTime = m_Tools.CurrentTimestamp();
     
     
@@ -473,7 +473,17 @@ long long CVideoCallSession::GetCalculationStartTime()
     return m_bCaclculationStartTime;
 }
 
-
+void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
+{
+    if(bValue)
+    {
+        //Eikhan thekee amra HighResolated video support diyee dibo
+    }
+    else
+    {
+        //Not Supported
+    }
+}
 
 
 
