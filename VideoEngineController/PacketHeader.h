@@ -67,6 +67,12 @@ public:
     int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
 
 	unsigned int GetFrameNumberDirectly(unsigned char *packetData);
+    
+    void SetResolutionBit(unsigned char *PacketHeader , int value);
+    int GetOpponentResolution(unsigned char *PacketHeader);
+    
+    void SetNetworkTypeBit(unsigned char *PacketHeader , int value);
+    int GetOpponentNetworkType(unsigned char *PacketHeader);
 
     //hello
 
