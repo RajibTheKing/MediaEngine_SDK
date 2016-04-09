@@ -2,7 +2,12 @@
 #ifndef _AVERAGE_CALCULATOR_
 #define _AVERAGE_CALCULATOR_
 #include<iostream>
+#include "Tools.h"
+
+
 using namespace std;
+
+class CVideoCallSession;
 
 class CAverageCalculator
 {
@@ -12,11 +17,15 @@ public:
     void UpdateData(long long nValue);
     double GetAverage();
     long long GetTotal();
+    
+    void OperationTheatre(long long llOperationStartTime, CVideoCallSession *pVideoCallSession, string sOperationType);
+
+    
 private:
     double m_dAvg;
     int m_nCounter;
     long long m_nTotalValue;
-    
+    Tools m_Tools;
 };
 
 

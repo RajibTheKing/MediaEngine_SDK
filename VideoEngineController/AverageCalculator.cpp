@@ -1,5 +1,6 @@
 
 #include "AverageCalculator.h"
+#include "VideoCallSession.h"
 
 
 CAverageCalculator::CAverageCalculator()
@@ -26,5 +27,25 @@ double CAverageCalculator::GetAverage()
 long long CAverageCalculator::GetTotal()
 {
     return m_nTotalValue;
+}
+
+void CAverageCalculator::OperationTheatre(long long llOperationStartTime, CVideoCallSession *pVideoCallSession, string sOperationType)
+{
+    if(pVideoCallSession->GetCalculationStatus() == true)
+    {
+        long long currentTime = m_Tools.CurrentTimestamp();
+        
+        if(currentTime - pVideoCallSession->GetCalculationStartTime() <= 1000)
+        {
+            UpdateData(currentTime - llOperationStartTime);
+        }
+        else
+        {
+            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, sOperationType + "--> TimeAVg = " + m_Tools.DoubleToString(GetAverage()));
+            
+            pVideoCallSession->SetCalculationStartMechanism(false);
+        }
+    }
 }
 
