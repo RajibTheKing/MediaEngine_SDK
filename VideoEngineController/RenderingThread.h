@@ -8,6 +8,8 @@
 #include "DecodingBuffer.h"
 #include "RenderingBuffer.h"
 
+#include "AverageCalculator.h"
+
 
 #include <thread>
 
@@ -46,7 +48,8 @@ private:
     
     CVideoCallSession *m_pVideoCallSession;
     
-
+    CAverageCalculator m_RenderTimeCalculator;
+    
 	SmartPointer<std::thread> pRenderingThread;
 };
 

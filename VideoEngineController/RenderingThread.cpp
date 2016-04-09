@@ -92,7 +92,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	long long currentFrameTime, decodingTime, firstFrameEncodingTime;
 	int videoHeight, videoWidth;
 	long long currentTimeStamp;
-	long long prevFrameTimeStamp;
+	long long prevFrameTimeStamp = 0;
 	int currentTimeGap = 52;
 	int prevTimeStamp = 0;
 	int minTimeGap = 51;
@@ -117,11 +117,18 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
             
             
-            m_pVideoCallSession->SetCalculationStartMechanism(true);
+            
+            
             
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() m_RenderingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			currentFrameTime = toolsObject.CurrentTimestamp();
+            
+            if(m_pVideoCallSession->GetCalculationStartTime() == 0)
+            {
+                m_pVideoCallSession->SetCalculationStartMechanism(true);
+            }
+            
 
 			if (m_b1stDecodedFrame)
 			{
@@ -132,6 +139,9 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			{
 				minTimeGap = nTimeStampDiff - prevTimeStamp;
 				currentTimeGap = currentFrameTime - prevFrameTimeStamp;
+                m_RenderTimeCalculator.UpdateData(currentTimeGap);
+                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Library Rendering TimeDiff = " + m_Tools.DoubleToString(m_RenderTimeCalculator.GetAverage()));
+                
 			}
 
 
@@ -152,9 +162,9 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			prevFrameTimeStamp = currentFrameTime;
 			prevTimeStamp = nTimeStampDiff;
             
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> Rendering TimeDiff = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - lRenderingTimeDiff));
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> Rendering TimeDiff = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - lRenderingTimeDiff));
             
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DiffWithFirstFrame From Camera = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - g_llFirstFrameReceiveTime));
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DiffWithFirstFrame From Camera = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - g_llFirstFrameReceiveTime));
             
 			//if (frameSize<1 || minTimeGap < 50)
 			//	continue;
