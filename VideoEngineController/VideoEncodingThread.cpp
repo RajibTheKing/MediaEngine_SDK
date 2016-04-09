@@ -181,7 +181,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 
 #endif
-
+            
+            /*
 			memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
             
             for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
@@ -192,7 +193,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					m_ucaEncodingFrame[i * this->m_pColorConverter->GetHeight() + j ] = color;
                 }
                 
-            }
+            }*/
 
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
@@ -209,13 +210,29 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
+            m_CalculatorEncodeTime.OperationTheatre(llCalculatingTime, m_pVideoCallSession, "Encode");
+            
+            /*
             if(m_pVideoCallSession->GetCalculationStatus() == true)
             {
-                m_CalculatorEncodeTime.UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
+                long long currentTime = m_Tools.CurrentTimestamp();
+                
+                if(currentTime - m_pVideoCallSession->GetCalculationStartTime() <= 1000)
+                {
+                    m_CalculatorEncodeTime.UpdateData(currentTime - llCalculatingTime);
+                }
+                else
+                {
+                    
+                    CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "New EncodeTimeAVg = " + m_Tools.DoubleToString(m_CalculatorEncodeTime.GetAverage()));
+                    
+                    m_pVideoCallSession->SetCalculationStartMechanism(false);
+                }
             }
+            */
 
             
-			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " EncodeTime = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp()- llCalculatingTime));
+			//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " EncodeTime = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp()- llCalculatingTime));
 
 			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
 
