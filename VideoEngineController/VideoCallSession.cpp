@@ -44,8 +44,6 @@ m_llShiftedTime(-1)
 
 	g_FPSController.Reset();
 
-	m_nOpponentFPS = m_nOwnFPS = FPS_BEGINNING;
-
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
 	m_pVideoCallSessionMutex.reset(new CLockHandler);
 	m_lfriendID = fname;
@@ -194,16 +192,6 @@ LongLong CVideoCallSession::GetFriendID()
 	return m_lfriendID;
 }
 
-void CVideoCallSession::SetOwnFPS(int nOwnFPS)
-{
-	m_nOwnFPS = nOwnFPS;
-}
-
-void CVideoCallSession::SetOpponentFPS(int nOpponentFPS)
-{
-	m_nOpponentFPS = nOpponentFPS;
-}
-
 void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
@@ -343,8 +331,6 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 				g_FPSController.SetClientFPS(1000 / nApproximateAverageFrameInterval);
 			}
 		}
-
-		m_DropSum = 0;
 	}
 
 	m_LastTimeStampClientFPS = currentTimeStamp;

@@ -7,7 +7,7 @@
 //#define __EXACT_LOG__
 //#define __SPECIFIC_LOG__
 //#define __SPECIFIC_LOG4__
-#define __SPECIFIC_LOG5__
+//#define __SPECIFIC_LOG5__
 //#define __SPECIFIC_LOG3__
 //#define __INSTENT_TEST_LOG__
 //#define __OPERATION_TIME_LOG__
