@@ -28,6 +28,7 @@
 #define THREAD_LOG				OFF
 #define BITRATE_CHNANGE_LOG		OFF
 #define DEPACKETIZATION_LOG		OFF
+#define VIDEO_NOTIFICATION_LOG  ON
 
 
 #define FILE_NAME "VideoEngineTrack.log"

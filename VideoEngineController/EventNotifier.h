@@ -26,6 +26,9 @@ public:
     static const int VIDEO_QUALITY_LOW = 202;
 	static const int VIDEO_QUALITY_HIGH = 204;
     static const int VIDEO_SHOULD_STOP = 203;
+
+	static const int SET_CAMERA_RESOLUTION_640x480 = 205;
+	static const int SET_CAMERA_RESOLUTION_352x288_OR_320x240 = 206;
 };
 
 #endif

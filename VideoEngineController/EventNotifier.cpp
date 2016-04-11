@@ -33,16 +33,24 @@ void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
     
     if(eventType == VIDEO_QUALITY_LOW)
     {
-		CLogPrinter_Write(CLogPrinter::INFO, "Video quality low\n");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video quality low");
     }
 	else if (eventType == VIDEO_QUALITY_HIGH)
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "Video quality high\n");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video quality high");
 	}
     else if(eventType == VIDEO_SHOULD_STOP)
     {
-		CLogPrinter_Write(CLogPrinter::INFO, "Video must stop\n");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video must stop");
     }
+	else if (eventType == SET_CAMERA_RESOLUTION_640x480)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_640x480 called");
+	}
+	else if (eventType == SET_CAMERA_RESOLUTION_352x288_OR_320x240)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_640x480 called");
+	}
 }
 
 void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[])
