@@ -1,3 +1,4 @@
+
 #include "AudioCallSession.h"
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
@@ -7,13 +8,13 @@
     #include <dispatch/dispatch.h>
 #endif
 
-CAudioCallSession::CAudioCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject) :
 
-m_pCommonElementsBucket(sharedObject)
+m_pCommonElementsBucket(pSharedObject)
 
 {
-	m_pSessionMutex.reset(new CLockHandler);
-	friendID = fname;
+	m_pAudioCallSessionMutex.reset(new CLockHandler);
+	m_FriendID = llFriendID;
     
     StartEncodingThread();
     StartDecodingThread();
@@ -26,9 +27,7 @@ CAudioCallSession::~CAudioCallSession()
     StopDecodingThread();
     StopEncodingThread();
 
-
     delete m_pG729CodecNative;
-
     
 	/*if (NULL != m_pAudioDecoder)
 	{
@@ -44,12 +43,12 @@ CAudioCallSession::~CAudioCallSession()
 		m_pAudioEncoder = NULL;
 	}*/
 
-	friendID = -1;
+	m_FriendID = -1;
 
-	SHARED_PTR_DELETE(m_pSessionMutex);
+	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 }
 
-void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
+void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
@@ -62,44 +61,33 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
 	//m_pAudioDecoder->CreateAudioDecoder();
 
 	m_pG729CodecNative = new G729CodecNative();
+
 	int iRet = m_pG729CodecNative->Open();
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
 }
 
-long long iMS = -1;
-int iAudioDataCounter = 0;
-
-int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
+int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-    
-    /*iAudioDataCounter++;
-    if(iMS == -1) iMS = m_Tools.CurrentTimestamp();
-    if(m_Tools.CurrentTimestamp() - iMS >= 1000)
-    {
-        printf("TheVampire--> Number of AudioData in 1Sec = %d\n", iAudioDataCounter);
-        iAudioDataCounter = 0;
-        iMS = m_Tools.CurrentTimestamp();
-    }*/
-    
-    int returnedValue = m_EncodingBuffer.Queue(in_data, in_size);
+
+	int returnedValue = m_AudioEncodingBuffer.Queue(psaEncodingAudioData, unLength);
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
 
     return returnedValue;
 }
 
-int CAudioCallSession::DecodeAudioData(unsigned char *in_data, unsigned int in_size)
+int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
 {
-    if(in_size > 200)
+	if (unLength > 200)
     {
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
         return 0;
     }
     
-    int returnedValue = m_DecodingBuffer.Queue(&in_data[1], in_size-1);
+	int returnedValue = m_AudioDecodingBuffer.Queue(&pucaDecodingAudioData[1], unLength - 1);
 
 	return returnedValue;
 }
@@ -123,9 +111,9 @@ void CAudioCallSession::StopEncodingThread()
 {
     //if (pInternalThread.get())
     {
-        bEncodingThreadRunning = false;
+        m_bAudioEncodingThreadRunning = false;
         
-        while (!bEncodingThreadClosed)
+        while (!m_bAudioEncodingThreadClosed)
             m_Tools.SOSleep(5);
     }
     
@@ -136,15 +124,15 @@ void CAudioCallSession::StartEncodingThread()
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 1");
     
-    if (pEncodingThread.get())
+    if (m_pAudioEncodingThread.get())
     {
-        pEncodingThread.reset();
+        m_pAudioEncodingThread.reset();
         
         return;
     }
     
-    bEncodingThreadRunning = true;
-    bEncodingThreadClosed = false;
+    m_bAudioEncodingThreadRunning = true;
+    m_bAudioEncodingThreadClosed = false;
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -177,68 +165,60 @@ void CAudioCallSession::EncodingThreadProcedure()
 {
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
     Tools toolsObject;
-    int frameSize, encodedFrameSize;
+    int nEncodingFrameSize, nEncodedFrameSize;
     
-    while (bEncodingThreadRunning)
+    while (m_bAudioEncodingThreadRunning)
     {
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodingThreadProcedure");
-        
-        if (m_EncodingBuffer.GetQueueSize() == 0)
+        if (m_AudioEncodingBuffer.GetQueueSize() == 0)
             toolsObject.SOSleep(10);
         else
         {
-            frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame);
+			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame);
 
-            CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1, frameSize = " + m_Tools.IntegertoStringConvert(frameSize));
-            int size;
+			nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1]);
 
-
-            size = m_pG729CodecNative->Encode(m_EncodingFrame, frameSize, &m_EncodedFrame[1]);
-
-            m_EncodedFrame[0] = 0;
+            m_ucaEncodedFrame[0] = 0;         
             
-            CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
+            //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_ucaEncodedFrame);
             
-            //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
-            
-            m_pCommonElementsBucket->SendFunctionPointer(friendID,1,m_EncodedFrame,size);
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
 
             toolsObject.SOSleep(0);
             
         }
     }
     
-    bEncodingThreadClosed = true;
+    m_bAudioEncodingThreadClosed = true;
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
 void CAudioCallSession::StopDecodingThread()
 {
-    //if (pDecodingThread.get())
+    //if (m_pAudioDecodingThread.get())
     {
-        bDecodingThreadRunning = false;
+        m_bAudioDecodingThreadRunning = false;
         
-        while (!bDecodingThreadClosed)
+        while (!m_bAudioDecodingThreadClosed)
             m_Tools.SOSleep(5);
     }
     
-    //pDecodingThread.reset();
+    //m_pAudioDecodingThread.reset();
 }
 
 void CAudioCallSession::StartDecodingThread()
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 1");
     
-    if (pDecodingThread.get())
+    if (m_pAudioDecodingThread.get())
     {
-        pDecodingThread.reset();
+        m_pAudioDecodingThread.reset();
         
         return;
     }
     
-    bDecodingThreadRunning = true;
-    bDecodingThreadClosed = false;
+    m_bAudioDecodingThreadRunning = true;
+    m_bAudioDecodingThreadClosed = false;
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     
@@ -270,38 +250,33 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 void CAudioCallSession::DecodingThreadProcedure()
 {
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
+
     Tools toolsObject;
-    int frameSize;
+    int nDecodingFrameSize, nDecodedFrameSize;
     
-    while (bDecodingThreadRunning)
+    while (m_bAudioDecodingThreadRunning)
     {
-        //CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::DecodingThreadProcedure");
-        
-        if (m_DecodingBuffer.GetQueueSize() == 0)
+        if (m_AudioDecodingBuffer.GetQueueSize() == 0)
             toolsObject.SOSleep(10);
         else
         {
-            frameSize = m_DecodingBuffer.DeQueue(m_DecodingFrame);
-            
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure frameSize " + m_Tools.IntegertoStringConvert(frameSize));
+			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
 
-            int size;
+			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize, m_saDecodedFrame);
 
-            size = m_pG729CodecNative->Decode(m_DecodingFrame, frameSize, m_DecodedFrame);
-
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure size " + m_Tools.IntegertoStringConvert(size));
 #if defined(DUMP_DECODED_AUDIO)
-			m_Tools.WriteToFile(m_DecodedFrame, size);
+
+			m_Tools.WriteToFile(m_saDecodedFrame, size);
+
 #endif
-            m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(friendID, size, m_DecodedFrame);
-            
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure 3");
+
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
 
             toolsObject.SOSleep(1);
         }
     }
     
-    bDecodingThreadClosed = true;
+    m_bAudioDecodingThreadClosed = true;
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
