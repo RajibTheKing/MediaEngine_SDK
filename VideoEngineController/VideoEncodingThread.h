@@ -17,7 +17,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -28,7 +28,7 @@ public:
 	void SetOrientationType(int nOrientationType);
 
 private:
-
+	CVideoCallSession *m_pVideoCallSession;
 	CEncodingBuffer *m_pEncodingBuffer;						
 	BitRateController *m_pBitRateController;	
 	CColorConverter *m_pColorConverter;

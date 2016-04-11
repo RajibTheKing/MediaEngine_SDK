@@ -8,8 +8,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern CFPSController g_FPSController;
-
 extern bool g_bIsVersionDetectableOpponent;
 extern unsigned char g_uchSendPacketVersion;
 
@@ -42,7 +40,7 @@ m_llShiftedTime(-1)
 
 	//Resetting Global Variables.
 
-	g_FPSController.Reset();
+	m_pFPSController = new CFPSController();
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
 	m_pVideoCallSessionMutex.reset(new CLockHandler);
@@ -182,6 +180,12 @@ CVideoCallSession::~CVideoCallSession()
 		m_SendingBuffer = NULL;
 	}
 
+	if(NULL != m_pFPSController)
+	{
+		delete m_pFPSController;
+		m_pFPSController = NULL;
+	}
+
 	m_lfriendID = -1;
 
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
@@ -207,7 +211,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth);
 
-	g_FPSController.SetEncoder(m_pVideoEncoder);
+	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
 
 	this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket);
@@ -216,10 +220,10 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
-	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
-	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer);
+	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this);
+	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket);
-	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
+	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, this);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
@@ -328,7 +332,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
 			if(nApproximateAverageFrameInterval > 10) {
 				Locker lock(*m_pVideoCallSessionMutex);
-				g_FPSController.SetClientFPS(1000 / nApproximateAverageFrameInterval);
+				m_pFPSController->SetClientFPS(1000 / nApproximateAverageFrameInterval);
 			}
 		}
 	}
@@ -421,7 +425,9 @@ void CVideoCallSession::SetShiftedTime(long long llTime)
 	m_llShiftedTime = llTime;
 }
 
-
+CFPSController* CVideoCallSession::GetFPSController(){
+	return m_pFPSController;
+}
 
 
 

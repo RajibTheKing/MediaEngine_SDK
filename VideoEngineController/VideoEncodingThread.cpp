@@ -1,4 +1,4 @@
-
+#include "VideoCallSession.h"
 #include "VideoEncodingThread.h"
 #include "Globals.h"
 #include "LogPrinter.h"
@@ -7,10 +7,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern CFPSController g_FPSController;
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer) :
-
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession) :
+m_pVideoCallSession(pVideoCallSession),
 m_iFrameNumber(0),
 m_llFriendID(llFriendID),
 m_pEncodingBuffer(pEncodingBuffer),
@@ -125,7 +124,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 
-			if (!g_FPSController.IsProcessableFrame())
+			if (! m_pVideoCallSession->GetFPSController()->IsProcessableFrame())
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
 

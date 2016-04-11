@@ -10,7 +10,6 @@ extern unsigned char g_uchSendPacketVersion;
 //extern int g_uchOpponentVersion;
 
 //extern PairMap g_timeInt;
-extern CFPSController g_FPSController;
 
 #define DEFAULT_FIRST_FRAME_RCVD  65000
 
@@ -26,8 +25,6 @@ CEncodedFrameDepacketizer::CEncodedFrameDepacketizer(CCommonElementsBucket* shar
 		m_iMaxFrameNumRecvd(-1)
 {
 	m_pEncodedFrameDepacketizerMutex.reset(new CLockHandler);
-	g_FPSController.Reset();
-
 
 	g_ArribalTime.clear();
 	g_llChangeSum = g_iChangeCounter = 0;
@@ -75,7 +72,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     if(NORMAL_PACKET_TYPE == PacketType)
     {
         firstByte = in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
-		g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
+		m_VideoCallSession->GetFPSController()->SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
     }
 #endif
 

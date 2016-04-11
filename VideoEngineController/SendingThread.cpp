@@ -9,10 +9,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession) :
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession):
 m_pCommonElementsBucket(commonElementsBucket),
-m_SendingBuffer(sendingBuffer),
-g_FPSController(FPSController)
+m_SendingBuffer(sendingBuffer)
 {
 	m_pVideoCallSession = pVideoCallSession;
 }
@@ -135,7 +134,7 @@ void CSendingThread::SendingThreadProcedure()
 
 			packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
-			unsigned char signal = g_FPSController->GetFPSSignalByte();
+			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
 			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
 
 

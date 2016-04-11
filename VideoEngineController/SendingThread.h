@@ -18,7 +18,7 @@ class CSendingThread
 {
 public:
 
-	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession);
+	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession);
 	~CSendingThread();
 
 	void StartSendingThread();
@@ -41,9 +41,7 @@ private:
 	bool bSendingThreadClosed;
 
 	CCommonElementsBucket* m_pCommonElementsBucket;		
-	CSendingBuffer *m_SendingBuffer;						
-
-	CFPSController *g_FPSController;
+	CSendingBuffer *m_SendingBuffer;
 
 	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 

@@ -8,12 +8,11 @@
 
 extern map<int,long long>g_ArribalTime;
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController, CVideoCallSession* pVideoCallSession) :
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CVideoCallSession* pVideoCallSession) :
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
 m_pVideoDecoder(videoDecoder),
 m_pColorConverter(colorConverter),
-g_FPSController(FPSController),
 m_pVideoCallSession(pVideoCallSession)
 {
 
@@ -142,8 +141,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		{
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
 
-			nOponnentFPS = g_FPSController->GetOpponentFPS();
-			nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
+			nOponnentFPS = m_pVideoCallSession->GetFPSController()->GetOpponentFPS();
+			nMaxProcessableByMine = m_pVideoCallSession->GetFPSController()->GetMaxOwnProcessableFPS();
 
 			if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
@@ -180,7 +179,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 						fps = 1000 / dbAverageDecodingTime;
 					//	printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
 						if (fps < FPS_MAXIMUM)
-							g_FPSController->SetMaxOwnProcessableFPS(fps);
+							m_pVideoCallSession->GetFPSController()->SetMaxOwnProcessableFPS(fps);
 					}
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
