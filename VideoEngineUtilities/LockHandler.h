@@ -9,7 +9,6 @@
 #include <pthread.h>
 #endif
 
-#include "DefinedDataTypes.h"
 #include "AudioVideoEngineDefinitions.h"
 
 class Locker;
