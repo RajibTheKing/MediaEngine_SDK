@@ -8,7 +8,6 @@
 #include "VideoEncoderListHandler.h"
 #include "LockHandler.h"
 #include "ColorConverter.h"
-#include "DecodingBuffer.h"
 #include "EncodingBuffer.h"
 #include "RenderingBuffer.h"
 #include "EncodedFrameDepacketizer.h"
@@ -59,20 +58,14 @@ public:
 	void SetFirstFrameEncodingTime(int time);
 	int GetFirstFrameEncodingTime();
 	void SetShiftedTime(long long llTime);
-	long long GetShiftedTime();	
-
-	void SetOwnFPS(int nOwnFPS);
-	void SetOpponentFPS(int nOpponentFPS);
+	long long GetShiftedTime();
 
 private:
 
-	int m_nOwnFPS;
-	int m_nOpponentFPS;
 	LongLong m_LastTimeStampClientFPS;
 	double m_ClientFPSDiffSum;
 	int m_ClientFrameCounter;
 	double m_ClientFPS;
-	double m_DropSum;
 	int m_EncodingFrameCounter;
 	bool m_bSkipFirstByteCalculation;
 
@@ -102,7 +95,6 @@ private:
 	BitRateController *m_BitRateController;
 
 	CEncodingBuffer *m_EncodingBuffer;
-	CDecodingBuffer m_DecodingBuffer;
 	CVideoPacketQueue *m_pVideoPacketQueue;
 	CVideoPacketQueue *m_pRetransVideoPacketQueue;
 	CVideoPacketQueue *m_pMiniPacketQueue;
