@@ -1,6 +1,5 @@
 #include "AudioEncoder.h"
 #include "CommonElementsBucket.h"
-#include "DefinedDataTypes.h"
 #include "LogPrinter.h"
 #include "G729CodecNative.h"
 

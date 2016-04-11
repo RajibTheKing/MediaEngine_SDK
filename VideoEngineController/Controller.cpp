@@ -4,7 +4,6 @@
 #include "VideoCallSession.h"
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
-#include "DefinedDataTypes.h"
 
 CController::CController()
 {
