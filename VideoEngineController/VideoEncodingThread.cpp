@@ -182,8 +182,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
-            /*
-			memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
+            
+			/*memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
             
             for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
             {
@@ -210,8 +210,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
-            m_CalculatorEncodeTime.OperationTheatre(llCalculatingTime, m_pVideoCallSession, "Encode");
-            
+            //m_CalculatorEncodeTime.OperationTheatre(llCalculatingTime, m_pVideoCallSession, "Encode");
+            m_TestingEncodeTime.UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_TestingEncodeTime.GetAverage()));
             /*
             if(m_pVideoCallSession->GetCalculationStatus() == true)
             {

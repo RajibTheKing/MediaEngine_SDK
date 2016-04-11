@@ -54,6 +54,7 @@ private:
 	Tools m_Tools;
     
     CAverageCalculator m_CalculatorEncodeTime;
+    CAverageCalculator m_TestingEncodeTime;
     
     CVideoCallSession *m_pVideoCallSession;
     

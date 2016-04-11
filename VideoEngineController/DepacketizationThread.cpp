@@ -122,8 +122,20 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		else if (queSize > 0) {
 			frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
 		}
+        
 
 		m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
+        
+        if(m_RcvdPacketHeader.GetOpponentResolution(m_PacketToBeMerged) == 2)
+        {
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported");
+        }
+        else
+        {
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent NotSupported");
+        }
+        
+        
 		CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
 								   "CVideoDepacketizationThread::StartDepacketizationThread() !@# Versions: " +
 								   m_Tools.IntegertoStringConvert(g_uchSendPacketVersion));

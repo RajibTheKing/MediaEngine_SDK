@@ -202,7 +202,9 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    m_CalculatorDecodeTime.OperationTheatre(decTime, m_pVideoCallSession, "Decode");
+    
+    
+    //m_CalculatorDecodeTime.OperationTheatre(decTime, m_pVideoCallSession, "Decode");
     
     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime));
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Decode ", currentTimeStamp);
@@ -225,21 +227,25 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
     
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "BeforeCalc");
+    
     if(m_pVideoCallSession->GetCalculationStatus()==true)
     {
         m_Counter++;
-    
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Inside m_Counter = " + m_Tools.IntegertoStringConvert(m_Counter));
         long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
         long long diff = m_pVideoCallSession->GetCalculationStartTime() - currentTimeStampForBrust;
     
-        if(m_Counter >= FRAME_RATE && diff <= 1000)
+        if(m_Counter >= (FRAME_RATE - FPS_TOLERANCE_FOR_HIGH_RESOLUTION) && diff <= 1000)
         {
             //   m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+            m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(true);
             
         }
         else if(diff > 1000)
         {
+            m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(false);
         }
     }
