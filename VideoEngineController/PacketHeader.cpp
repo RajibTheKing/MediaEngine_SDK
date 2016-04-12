@@ -256,35 +256,11 @@ int CPacketHeader::GetIntFromChar(unsigned char *packetData, int index, int nLen
 
 void CPacketHeader::SetResolutionBit(unsigned char *PacketHeader, int value)
 {
-    printf("Setting res bit = %d\n", value);
     PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA+1] |= (unsigned char)value;
-    unsigned char c = PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA+1];
-    
-    for(int i=7;i>=0;i--)
-    {
-        int kk = c&(i<<i);
-        if(kk)printf("1 ");
-        else printf("0 ", kk);
-        
-    }
-    printf("\n");
 }
 int CPacketHeader::GetOpponentResolution(unsigned char *PacketHeader)
 {
-    unsigned char c = PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
-    
-    for(int i=7;i>=0;i--)
-    {
-        int kk = c&(i<<i);
-        if(kk)printf("1 ");
-        else printf("0 ", kk);
-        
-    }
-    printf("\n");
-    
-    return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
-    
-    
+    return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x03;
 }
 
 void CPacketHeader::SetNetworkTypeBit(unsigned char *PacketHeader , int value)
