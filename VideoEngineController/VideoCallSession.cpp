@@ -33,7 +33,8 @@ mt_llCapturePrevTime(0),
 m_bResolationCheck(false),
 m_bShouldStartCalculation(false),
 m_bCaclculationStartTime(0),
-m_bHighResolutionSupported(false)
+m_bHighResolutionSupportedForOwn(false),
+m_bHighResolutionSupportedForOpponent(false)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -284,6 +285,36 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
+    //Opponent resolution support checking
+    CPacketHeader RcvPakcetHeader;
+    int gotResSt = RcvPakcetHeader.GetOpponentResolution(in_data);
+    
+    if(gotResSt == 2)
+    {
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
+        
+        SetOpponentHighResolutionSupportStatus(true);
+        
+    }
+    else if(gotResSt == 1)
+    {
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
+        SetOpponentHighResolutionSupportStatus(false);
+    }
+    else
+    {
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent not set = " + m_Tools.IntegertoStringConvert(gotResSt));
+    }
+    
+    if(m_bResolationCheck == true)
+    {
+        if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
+        {
+             m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+        }
+    }
+    //End of  Opponent resolution support checking
+    
 
 #ifdef FIRST_BUILD_COMPATIBLE
 	if (!g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) == 0xC0)
@@ -484,7 +515,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
     
     if(bValue)
     {
-        m_bHighResolutionSupported = true;
+        m_bHighResolutionSupportedForOwn = true;
         //Eikhan thekee amra HighResolated video support diyee dibo
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
         
@@ -492,14 +523,27 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
     else
     {
         //Not Supported
-        m_bHighResolutionSupported = false;
+        m_bHighResolutionSupportedForOwn = false;
+        
+        
+        m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
     }
 }
 
 bool CVideoCallSession::GetHighResolutionSupportStatus()
 {
-    return m_bHighResolutionSupported;
+    return m_bHighResolutionSupportedForOwn;
+}
+
+void CVideoCallSession::SetOpponentHighResolutionSupportStatus(bool bValue)
+{
+    m_bHighResolutionSupportedForOpponent = bValue;
+}
+
+bool CVideoCallSession::GetOpponentHighResolutionSupportStatus()
+{
+    return m_bHighResolutionSupportedForOpponent;
 }
 
 

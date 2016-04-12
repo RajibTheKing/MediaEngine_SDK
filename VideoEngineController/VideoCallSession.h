@@ -69,6 +69,10 @@ public:
     bool GetCalculationStatus();
     void DecideHighResolatedVideo(bool bValue);
     bool GetHighResolutionSupportStatus();
+    
+    void SetOpponentHighResolutionSupportStatus(bool bValue);
+    bool GetOpponentHighResolutionSupportStatus();
+    
 
 private:
 
@@ -97,7 +101,8 @@ private:
     bool m_bResolationCheck;
     bool m_bShouldStartCalculation;
     long long m_bCaclculationStartTime;
-    bool m_bHighResolutionSupported;
+    bool m_bHighResolutionSupportedForOwn;
+    bool m_bHighResolutionSupportedForOpponent;
     
     
 	Tools m_Tools;

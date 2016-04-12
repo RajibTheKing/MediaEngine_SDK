@@ -25,7 +25,7 @@ void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLent
     notifyClientWithVideoDataCallback(eventType, data, dataLenth, iVideoHeight, iVideoWidth);
 }
 
-void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
+void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType));
 

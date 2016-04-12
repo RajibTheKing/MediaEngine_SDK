@@ -15,7 +15,7 @@ public:
 	void fireVideoEvent(int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth);
 	void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);
 	void fireAudioEvent(int eventType, int dataLenth, short data[]);
-    void fireVideoNotificationEvent(int callID, int eventType);
+    void fireVideoNotificationEvent(long long callID, int eventType);
     
     void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
     void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int));
