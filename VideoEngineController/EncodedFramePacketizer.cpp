@@ -91,18 +91,30 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
             m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize);
 
-            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iFrameNumber, nPacketNumber);
+            //m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iFrameNumber, nPacketNumber);
         }
         else
         {
             if(m_pVideoCallSession->GetHighResolutionSupportStatus() == true)
             {
-                m_cPacketHeader.SetResolutionBit(m_ucaPacket, 2);
+                
+                m_cPacketHeader.SetResolutionBit(m_ucaPacket, 3);
+                
+               
+                
+                //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "GetHighResolutionSupportStatus 2, GetInfo="+m_Tools.IntegertoStringConvert(m_cPacketHeader.GetOpponentResolution(m_ucaPacket)));
+                
             }
             else
             {
-                m_cPacketHeader.SetResolutionBit(m_ucaPacket, 1);
+                
+                m_cPacketHeader.SetResolutionBit(m_ucaPacket, 3);
+               //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "GetHighResolutionSupportStatus");
             }
+            unsigned char  *testPacket = m_ucaPacket+1;
+            int resBit = m_cPacketHeader.GetOpponentResolution(testPacket);
+            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending Ende Resolution bit = "+m_Tools.IntegertoStringConvert(resBit));
             
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
             

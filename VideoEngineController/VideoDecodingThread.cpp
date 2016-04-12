@@ -230,15 +230,19 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     if(m_pVideoCallSession->GetCalculationStatus()==true)
     {
         m_Counter++;
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Inside m_Counter = " + m_Tools.IntegertoStringConvert(m_Counter));
+        
         long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
-        long long diff = m_pVideoCallSession->GetCalculationStartTime() - currentTimeStampForBrust;
+        long long diff = currentTimeStampForBrust - m_pVideoCallSession->GetCalculationStartTime();
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Inside m_Counter = " + m_Tools.IntegertoStringConvert(m_Counter)
+                        +", CalculationStartTime = " + m_Tools.LongLongtoStringConvert(m_pVideoCallSession->GetCalculationStartTime())
+                        +", CurrentTime = "+m_Tools.LongLongtoStringConvert(currentTimeStampForBrust));
     
         if(m_Counter >= (FRAME_RATE - FPS_TOLERANCE_FOR_HIGH_RESOLUTION) && diff <= 1000)
         {
             //   m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
             m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(true);
+            
             
         }
         else if(diff > 1000)
