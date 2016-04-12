@@ -227,8 +227,6 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
     
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "BeforeCalc");
-    
     if(m_pVideoCallSession->GetCalculationStatus()==true)
     {
         m_Counter++;

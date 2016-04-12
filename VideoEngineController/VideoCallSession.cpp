@@ -316,6 +316,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			else
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / FRAME_RATE;
+                
+                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_TYPE_MINIPACKET);
 			}
