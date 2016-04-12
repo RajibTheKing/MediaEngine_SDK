@@ -82,6 +82,8 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         m_ucaPacket[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;*/
         
         
+        //m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+        
         
         if(m_pVideoCallSession->GetResolationCheck() == false)
         {
@@ -93,6 +95,15 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         }
         else
         {
+            if(m_pVideoCallSession->GetHighResolutionSupportStatus() == true)
+            {
+                m_cPacketHeader.SetResolutionBit(m_ucaPacket, 2);
+            }
+            else
+            {
+                m_cPacketHeader.SetResolutionBit(m_ucaPacket, 1);
+            }
+            
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
             
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));

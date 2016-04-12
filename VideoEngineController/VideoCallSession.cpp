@@ -32,7 +32,8 @@ m_llShiftedTime(-1),
 mt_llCapturePrevTime(0),
 m_bResolationCheck(false),
 m_bShouldStartCalculation(false),
-m_bCaclculationStartTime(0)
+m_bCaclculationStartTime(0),
+m_bHighResolutionSupported(false)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -315,11 +316,15 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			else
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / FRAME_RATE;
+                
+                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_TYPE_MINIPACKET);
 			}
 
 			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % FRAME_RATE);
+            
+            
 			m_SlotResetRightRange = m_SlotResetLeftRange + FRAME_RATE;
 
 			m_ByteRcvInBandSlot = in_size - PACKET_HEADER_LENGTH;
@@ -475,15 +480,26 @@ long long CVideoCallSession::GetCalculationStartTime()
 
 void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
 {
+    m_bResolationCheck = true;
+    
     if(bValue)
     {
+        m_bHighResolutionSupported = true;
         //Eikhan thekee amra HighResolated video support diyee dibo
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
+        
     }
     else
     {
         //Not Supported
+        m_bHighResolutionSupported = false;
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
     }
 }
 
+bool CVideoCallSession::GetHighResolutionSupportStatus()
+{
+    return m_bHighResolutionSupported;
+}
 
 

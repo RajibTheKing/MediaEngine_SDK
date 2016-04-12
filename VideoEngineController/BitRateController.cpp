@@ -102,7 +102,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
     {
         double dMegaRatio =  (m_nBytesReceivedInMegaSlotInterval *1.0) / (1.0 * m_nBytesSendInMegaSlotInverval) * 100.0;
 
-        printf("Theking--> &&&&&&&& MegaSlot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
+        printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
 
         long long llTimeStampForMiniPkt = m_TimeDiffMapHelper[iSlotNumber];
 
@@ -236,6 +236,11 @@ void BitRateController::NotifyEncodedFrame(int &nrFrameSize)
                                                             ",   "+m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval)+")" );
             m_nLastSendingSlot = iRatioHelperIndex;
             m_BandWidthRatioHelper.insert(iRatioHelperIndex,  m_nBytesSendInSlotInverval);
+            
+            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval));
+
+            
             m_TimeDiffMapHelper[iRatioHelperIndex] =  m_Tools.CurrentTimestamp();
         }
 

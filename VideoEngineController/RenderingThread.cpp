@@ -140,7 +140,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 				minTimeGap = nTimeStampDiff - prevTimeStamp;
 				currentTimeGap = currentFrameTime - prevFrameTimeStamp;
                 m_RenderTimeCalculator.UpdateData(currentTimeGap);
-                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Library Rendering TimeDiff = " + m_Tools.DoubleToString(m_RenderTimeCalculator.GetAverage()));
+                //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Library Rendering TimeDiff = " + m_Tools.DoubleToString(m_RenderTimeCalculator.GetAverage()));
                 
 			}
 
@@ -173,7 +173,9 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             
 			toolsObject.SOSleep(5);
             //CalculateFPS();
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+            
+            if(m_pVideoCallSession->GetHighResolutionSupportStatus() == true)
+                m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
 		}
 	}
 
