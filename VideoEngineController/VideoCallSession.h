@@ -75,6 +75,7 @@ public:
     
     void ReInitializeVideoLibrary(int iHeight, int iWidth);
     bool GetReinitializationStatus();
+    void OperationForResolutionControl(unsigned char* in_data, int in_size);
     
 
 private:
@@ -107,6 +108,7 @@ private:
     bool m_bHighResolutionSupportedForOwn;
     bool m_bHighResolutionSupportedForOpponent;
     bool m_bReinitialized;
+    
     
 	Tools m_Tools;
 	LongLong m_lfriendID;

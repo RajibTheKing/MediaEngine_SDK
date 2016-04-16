@@ -290,41 +290,6 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
-    //Opponent resolution support checking
-    CPacketHeader RcvPakcetHeader;
-    int gotResSt = RcvPakcetHeader.GetOpponentResolution(in_data);
-    
-    if(gotResSt == 2)
-    {
-        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
-        
-        SetOpponentHighResolutionSupportStatus(true);
-        
-    }
-    else if(gotResSt == 1)
-    {
-        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
-        SetOpponentHighResolutionSupportStatus(false);
-        
-        if(m_bResolationCheck == true)
-        {
-            if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
-            {
-                if(m_bReinitialized == false)
-                m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
-                
-                //ReInitializeVideoLibrary(352, 288);
-            }
-        }
-        
-    }
-    else
-    {
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent not set = " + m_Tools.IntegertoStringConvert(gotResSt));
-    }
-    
-    
-    //End of  Opponent resolution support checking
     
 
 #ifdef FIRST_BUILD_COMPATIBLE
@@ -343,6 +308,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 	else
 	{
+        OperationForResolutionControl(in_data,in_size);
+        
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
@@ -498,6 +465,7 @@ void CVideoCallSession::SetShiftedTime(long long llTime)
 
 bool  CVideoCallSession::GetResolationCheck()
 {
+    
     return m_bResolationCheck;
 }
 
@@ -561,9 +529,54 @@ bool CVideoCallSession::GetReinitializationStatus()
 {
     return m_bReinitialized;
 }
+
+
+void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, int in_size)
+{
+    //Opponent resolution support checking
+    CPacketHeader RcvPakcetHeader;
+    int gotResSt = RcvPakcetHeader.GetOpponentResolution(in_data);
+    
+    if(gotResSt == 2)
+    {
+        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
+        
+        SetOpponentHighResolutionSupportStatus(true);
+        
+    }
+    else if(gotResSt == 1)
+    {
+        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
+        SetOpponentHighResolutionSupportStatus(false);
+        
+        if(m_bResolationCheck == true)
+        {
+            if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
+            {
+                if(m_bReinitialized == false)
+                {
+                    printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
+                    m_bReinitialized = true;
+                    m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+                }
+                
+                //ReInitializeVideoLibrary(352, 288);
+            }
+        }
+        
+    }
+    else
+    {
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent not set = " + m_Tools.IntegertoStringConvert(gotResSt));
+    }
+    
+    
+    //End of  Opponent resolution support checking
+}
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
     m_bReinitialized = true;
+    
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
     m_pVideoEncodingThread->StopEncodingThread();
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
