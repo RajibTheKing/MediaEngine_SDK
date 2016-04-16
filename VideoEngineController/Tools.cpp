@@ -13,6 +13,8 @@
 #include <sys/time.h>
 #endif
 
+#include "LogPrinter.h"
+
 #ifdef __ANDROID__
 
 #include <android/log.h>
@@ -208,13 +210,18 @@ unsigned long long Tools::GetTotalSystemMemory()
 
 	return pages * page_size;
 
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+#elif defined (_DESKTOP_C_SHARP_)
 
 	MEMORYSTATUSEX status;
+	printf(" GetTotalSystemMemory1\n");
 	status.dwLength = sizeof(status);
+	printf(" GetTotalSystemMemory2\n");
 	GlobalMemoryStatusEx(&status);
+	printf(" GetTotalSystemMemory3\n");
 	return status.ullTotalPhys;
 
+#else 
+	return 0;
 #endif
 }
 
@@ -226,12 +233,14 @@ unsigned long long Tools::GetAvailableSystemMemory()
 	long page_size = sysconf(_SC_PAGE_SIZE);
 	return pages * page_size;
 
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+#elif defined (_DESKTOP_C_SHARP_)
 
 	MEMORYSTATUSEX status;
 	status.dwLength = sizeof(status);
 	GlobalMemoryStatusEx(&status);
 	return status.ullAvailPhys;
 
+#else 
+	return 0;
 #endif
 }
