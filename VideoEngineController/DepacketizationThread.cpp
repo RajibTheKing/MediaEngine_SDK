@@ -158,7 +158,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 		m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize,
 												 NORMAL_PACKET_TYPE, m_RcvdPacketHeader);
-		toolsObject.SOSleep(1);
+		toolsObject.SOSleep(0);
 	}
 
 	bDepacketizationThreadClosed = true;

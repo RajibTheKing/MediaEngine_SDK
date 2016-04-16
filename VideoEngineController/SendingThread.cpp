@@ -202,7 +202,7 @@ void CSendingThread::SendingThreadProcedure()
 
 
 #endif
-				toolsObject.SOSleep(GetSleepTime());
+				toolsObject.SOSleep(0);
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}

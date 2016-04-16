@@ -143,7 +143,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			prevFrameTimeStamp = currentFrameTime;
 			prevTimeStamp = nTimeStampDiff;
 
-			toolsObject.SOSleep(5);
+			toolsObject.SOSleep(1);
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
 		}
