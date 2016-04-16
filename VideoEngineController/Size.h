@@ -129,7 +129,7 @@
 //#define MAX_BLOCK_RETRANSMISSION 4
 
 #define FPS_MAXIMUM     15
-#define FPS_MINIMUM     8
+#define FPS_MINIMUM     13
 #define FPS_BEGINNING   15
 
 #define BITRATE_BEGINNING   12

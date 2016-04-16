@@ -150,14 +150,14 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap " + toolsObject.IntegertoStringConvert(minTimeGap) + " currentTimeGap " + toolsObject.IntegertoStringConvert(currentTimeGap));
 
-
+            /*
 			if( (currentTimeGap < 50 && (currentTimeGap + 10) < minTimeGap))
 			{
 				CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap break " + toolsObject.IntegertoStringConvert( minTimeGap) + " currentTimeGap "
 																  + toolsObject.IntegertoStringConvert( currentTimeGap));
 				continue;
 
-			}
+			}*/
 
 			prevFrameTimeStamp = currentFrameTime;
 			prevTimeStamp = nTimeStampDiff;

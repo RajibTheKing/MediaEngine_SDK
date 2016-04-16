@@ -227,7 +227,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
-        if(m_pVideoCallSession->GetCalculationStatus()==true)
+    
+    if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {
         m_Counter++;
         long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
@@ -241,11 +242,12 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             //   m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
             m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(true);
-            
+            printf("First DecodingThread SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_pVideoCallSession->GetResolationCheck());
             
         }
         else if(diff > 1000)
         {
+            printf("DecodingThread SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_pVideoCallSession->GetResolationCheck());
             m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(false);
         }
