@@ -73,6 +73,9 @@ public:
     void SetOpponentHighResolutionSupportStatus(bool bValue);
     bool GetOpponentHighResolutionSupportStatus();
     
+    void ReInitializeVideoLibrary(int iHeight, int iWidth);
+    bool GetReinitializationStatus();
+    
 
 private:
 
@@ -103,7 +106,7 @@ private:
     long long m_bCaclculationStartTime;
     bool m_bHighResolutionSupportedForOwn;
     bool m_bHighResolutionSupportedForOpponent;
-    
+    bool m_bReinitialized;
     
 	Tools m_Tools;
 	LongLong m_lfriendID;

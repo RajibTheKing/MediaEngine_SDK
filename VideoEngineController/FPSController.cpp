@@ -69,7 +69,8 @@ void CFPSController::SetOwnFPS(int nOwnFPS){
     
 }
 
-void CFPSController::SetMaxOwnProcessableFPS(int fps){
+void CFPSController::SetMaxOwnProcessableFPS(int fps)
+{
     Locker lock(*m_pMutex);
     m_nFPSForceSignalCounter = 2;
     m_nMaxOwnProcessableFPS = fps;
