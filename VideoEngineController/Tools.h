@@ -6,6 +6,12 @@
 
 #include "AudioVideoEngineDefinitions.h"
 
+#if defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+#include <windows.h>
+#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+#include <unistd.h>
+#endif
+
 class Tools;
 
 using namespace std;
@@ -28,6 +34,9 @@ public:
 
 	void WriteToFile(short* saDataToWriteToFile, int nLength);
 	void WriteToFile(unsigned char* ucaDataToWriteToFile, int nLength);
+	unsigned long long GetTotalSystemMemory();
+	unsigned long long GetAvailableSystemMemory();
+
 
 private:
 

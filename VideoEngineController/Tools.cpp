@@ -13,6 +13,15 @@
 #include <sys/time.h>
 #endif
 
+#ifdef __ANDROID__
+
+#include <android/log.h>
+
+#define LOG_TAG "LibraryLog"
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
+#endif
+
 Tools::Tools()
 {
 	m_filePointerToWriteByteData = NULL;
@@ -186,4 +195,43 @@ void Tools::WriteToFile(unsigned char* ucaDataToWriteToFile, int nLength)
 	}
 
 	fwrite(ucaDataToWriteToFile, 1, nLength, m_filePointerToWriteByteData);
+}
+
+unsigned long long Tools::GetTotalSystemMemory()
+{
+#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+
+	unsigned long long pages = sysconf(_SC_PHYS_PAGES);
+	unsigned long long page_size = sysconf(_SC_PAGE_SIZE);
+
+	LOGE(" command for something <><> pages :: %llu  --  page_size  : %llu ", pages, page_size);
+
+	return pages * page_size;
+
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+
+	MEMORYSTATUSEX status;
+	status.dwLength = sizeof(status);
+	GlobalMemoryStatusEx(&status);
+	return status.ullTotalPhys;
+
+#endif
+}
+
+unsigned long long Tools::GetAvailableSystemMemory()
+{
+#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+
+	long pages = sysconf(_SC_AVPHYS_PAGES);
+	long page_size = sysconf(_SC_PAGE_SIZE);
+	return pages * page_size;
+
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+
+	MEMORYSTATUSEX status;
+	status.dwLength = sizeof(status);
+	GlobalMemoryStatusEx(&status);
+	return status.ullAvailPhys;
+
+#endif
 }
