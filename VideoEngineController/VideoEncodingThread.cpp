@@ -132,7 +132,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				continue;
 			}
-
+//			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG ," Client FPS: " + Tools::DoubleToString(m_pVideoCallSession->GetFPSController()->GetClientFPS()));
 			m_pBitRateController->UpdateBitrate();
 
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);

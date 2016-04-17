@@ -32,6 +32,7 @@ public:
     int GetOwnFPS() const;
     void SetOwnFPS(int nOwnFPS);
     void SetClientFPS(double fps);
+    double GetClientFPS();
 
     unsigned char GetFPSSignalByte();
     void SetFPSSignalByte(unsigned char signal);
