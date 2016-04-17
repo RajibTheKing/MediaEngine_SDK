@@ -26,6 +26,19 @@ CAudioEncoderBuffer::~CAudioEncoderBuffer()
 
 }
 
+void CAudioEncoderBuffer::ResetBuffer()
+{
+	Locker lock(*m_pAudioEnocdingBufferMutex);
+
+	m_iPushIndex = 0;
+	m_iPopIndex = 0;
+	m_nQueueSize = 0;
+	mt_llPrevOverFlowTime = -1;
+	m_dAvgOverFlowTime = 0;
+	mt_nOverFlowCounter = 0;
+	mt_llSumOverFlowTime = 0;
+}
+
 int CAudioEncoderBuffer::Queue(short *saCapturedAudioFrameData, int nlength)
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
