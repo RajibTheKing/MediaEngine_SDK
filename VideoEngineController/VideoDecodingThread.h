@@ -9,7 +9,6 @@
 #include "RenderingBuffer.h"
 #include "VideoDecoder.h"
 #include "ColorConverter.h"
-#include "DecodingBuffer.h"
 #include "FPSController.h"
 #include "AverageCalculator.h"
 //#include "Helper_IOS.hpp"

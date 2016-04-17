@@ -5,7 +5,6 @@
 #include "Tools.h"
 #include "SmartPointer.h"
 #include "LogPrinter.h"
-#include "DecodingBuffer.h"
 #include "RenderingBuffer.h"
 
 #include "AverageCalculator.h"

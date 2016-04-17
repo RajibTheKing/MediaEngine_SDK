@@ -99,6 +99,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	Tools toolsObject;
 	int nEncodingFrameSize, nENCODEDFrameSize, nCaptureTimeDifference;
 	long long llCalculatingTime;
+	int sumOfEncodingTimediff = 0;
+	int sumOfZeroLengthEncodingTimediff = 0;
+	int countZeroLengthFrame = 0;
 
 	/*for(int i = 0; i < 200; i++)
 	{
@@ -118,10 +121,15 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
 		if (m_pEncodingBuffer->GetQueueSize() == 0)
+		{
+			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time buffer size 0");
 			toolsObject.SOSleep(10);
+		}
 		else
 		{
 			int timeDiff;
+
+			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
 			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference);
 
@@ -207,8 +215,24 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
 #else
-
+			long timeStampForEncoding = m_Tools.CurrentTimestamp();
 			nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
+			sumOfEncodingTimediff += timeDiff;
+			if(nENCODEDFrameSize == 0)
+			{
+				sumOfZeroLengthEncodingTimediff += timeDiff;
+				countZeroLengthFrame++;
+			}
+			if(m_iFrameNumber % FPS_MAXIMUM == 0)
+			{
+				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " m_iFrameNumber " + m_Tools.IntegertoStringConvert(m_iFrameNumber%FPS_MAXIMUM) + " Encode time " + m_Tools.IntegertoStringConvert(timeDiff) +
+																		  " sumOfEncodingTimediff " + m_Tools.IntegertoStringConvert(sumOfEncodingTimediff ) + " ---  nENCODEDFrameSize  "
+																		  + m_Tools.IntegertoStringConvert(nENCODEDFrameSize) + " ---  countZeroLengthFrame  " + m_Tools.IntegertoStringConvert(countZeroLengthFrame)+
+																		  " --- ***** afterFrameDropFps  " + m_Tools.IntegertoStringConvert( FPS_MAXIMUM - countZeroLengthFrame));
+				sumOfEncodingTimediff = 0;
+				countZeroLengthFrame = 0;
+			}
 
 #endif
             

@@ -9,7 +9,7 @@ CAudioDecoderBuffer::CAudioDecoderBuffer() :
 m_iPushIndex(0),
 m_iPopIndex(0),
 m_nQueueSize(0),
-m_nQueueCapacity(5)
+m_nQueueCapacity(MAX_AUDIO_DECODER_BUFFER_SIZE)
 {
 	m_pAudioDecodingBufferMutex.reset(new CLockHandler);
     

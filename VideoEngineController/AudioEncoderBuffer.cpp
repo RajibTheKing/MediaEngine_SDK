@@ -11,7 +11,7 @@ CAudioEncoderBuffer::CAudioEncoderBuffer() :
 m_iPushIndex(0),
 m_iPopIndex(0),
 m_nQueueSize(0),
-m_nQueueCapacity(5),
+m_nQueueCapacity(MAX_AUDIO_ENCODING_BUFFER_SIZE),
 mt_llPrevOverFlowTime(-1),
 m_dAvgOverFlowTime(0),
 mt_nOverFlowCounter(0),

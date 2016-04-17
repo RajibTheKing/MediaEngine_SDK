@@ -76,8 +76,6 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     {
         firstByte = in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
 		g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
-		m_VideoCallSession->SetOwnFPS(g_FPSController.GetOwnFPS());
-		m_VideoCallSession->SetOpponentFPS(g_FPSController.GetOpponentFPS());
     }
 #endif
 
