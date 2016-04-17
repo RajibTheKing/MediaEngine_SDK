@@ -48,6 +48,38 @@ BitRateController::~BitRateController()
 
 }
 
+void BitRateController::ResetVideoController()
+{
+	/*m_nBytesReceivedInMegaSlotInterval
+	m_nSlotIntervalCounter(0),
+	m_bMegSlotCounterShouldStop(false),
+	m_bSetBitRateCalled(false),
+	m_nPreviousByteRate(BITRATE_MAX / 8),
+	m_nBytesSendInSlotInverval(0),
+	m_nFrameCounterBeforeEncoding(0),
+	m_nLastSendingSlot(0),
+	m_dTotalDataByteInSlots(0.0),
+	m_dAverageDataByteInSlots(0.0),
+	m_nStopNotificationCounter(0),
+	m_nOpponentNetworkType(NETWORK_TYPE_NOT_2G),
+	m_bNetworkTypeMiniPacketReceived(false),
+	m_nLastState(BITRATE_CHANGE_DOWN),
+	m_nSpiralCounter(0),
+	m_nUpCheckLimit(GOOD_MEGASLOT_TO_UP),
+	m_nContinuousUpCounter(0),
+	m_nContinuousUpCounterLimitToJump(1),
+	m_bInMaxBitrate(false),
+	m_dFirstTimeBitRateChangeFactor(BITRATE_DECREMENT_FACTOR),
+	m_nOppNotifiedByterate(0),
+	m_nMostRecentRespondedSlotNumber(-1),
+	m_nGoodSlotCounter(0),
+	m_nNormalSlotCounter(0),
+	m_nSlotCounterToUp(0),
+	m_dPreviousMegaSlotStatus(1),
+	m_nOwnNetworkType(NETWORK_TYPE_NOT_2G),
+	m_nGoodSlotCounterToUp(GOOD_MEGASLOT_TO_UP * GOOD_MEGASLOT_TO_UP_TOLERANCE)*/
+}
+
 void BitRateController::SetSharedObject(CCommonElementsBucket* pcSharedObject)
 {
 	m_pCommonElementsBucket = pcSharedObject;

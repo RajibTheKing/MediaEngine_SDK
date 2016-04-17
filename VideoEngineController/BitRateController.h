@@ -34,6 +34,7 @@ public:
 	int GetOwnNetworkType();
 	void SetOwnNetworkType(int nNetworkType);
 	bool IsNetworkTypeMiniPacketReceived();
+	void ResetVideoController();
 
 private:
 

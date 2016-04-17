@@ -306,11 +306,11 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 		}
 		else
 		{
-			if (m_bSkipFirstByteCalculation == true)
+			/*if (m_bSkipFirstByteCalculation == true)
 			{
 				m_bSkipFirstByteCalculation = false;
 			}
-			else
+			else*/
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / FRAME_RATE;
                 
@@ -565,7 +565,6 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     
     m_bReinitialized = true;
     
-    
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
     m_pVideoEncodingThread->StopEncodingThread();
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
@@ -576,35 +575,28 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     m_pVideoRenderingThread->StopRenderingThread();
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
-    
-   
-    this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
-    
+
     m_pVideoEncoder->CreateVideoEncoder(iHeight , iWidth);
+	m_pColorConverter->SetHeightWidth(iHeight, iWidth);
+
+	m_SendingBuffer->ResetBuffer();
+	g_FPSController.Reset();
+	m_EncodingBuffer->ResetBuffer();
+	//m_BitRateController
+	m_RenderingBuffer->ResetBuffer();
+	m_pVideoPacketQueue->ResetBuffer();
+	m_pMiniPacketQueue->ResetBuffer();
+
+	m_BitRateController = new BitRateController();
+
     
-    g_FPSController.SetEncoder(m_pVideoEncoder);
-    m_BitRateController->SetEncoder(m_pVideoEncoder);
+//    m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
+//	m_pVideoEncodingThread = new CVideoEncodingThread(m_lfriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
+//	m_pVideoRenderingThread = new CVideoRenderingThread(m_lfriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
+//   m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
+	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(m_lfriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
     
-    //this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket);
-    
-    //m_pVideoDecoder->CreateVideoDecoder();
-    
-    
-    long long lFriendID = m_lfriendID;
-    
-    this->m_pColorConverter = new CColorConverter(iHeight, iWidth);
-    
-    
-    
-    m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
-    m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
-    m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
-    m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
-    m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
-    
-    m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
-    
-    
+
     
     m_pVideoEncodingThread->StartEncodingThread();
     m_pVideoRenderingThread->StartRenderingThread();
