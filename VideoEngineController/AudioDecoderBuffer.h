@@ -19,6 +19,7 @@ public:
 	int DeQueue(unsigned char *saReceivedAudioFrameData);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
+	void ResetBuffer();
 
 private:
 

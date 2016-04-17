@@ -26,6 +26,15 @@ CAudioDecoderBuffer::~CAudioDecoderBuffer()
 
 }
 
+void CAudioDecoderBuffer::ResetBuffer()
+{
+	Locker lock(*m_pAudioDecodingBufferMutex);
+
+	m_iPushIndex = 0;
+	m_iPopIndex = 0;
+	m_nQueueSize = 0;
+}
+
 int CAudioDecoderBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLength)
 {
 	Locker lock(*m_pAudioDecodingBufferMutex);
