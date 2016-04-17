@@ -17,6 +17,15 @@ CRenderingBuffer::~CRenderingBuffer()
 
 }
 
+void CRenderingBuffer::ResetBuffer()
+{
+	Locker lock(*m_pRenderingBufferMutex);
+
+	m_iPushIndex = 0;
+	m_iPopIndex = 0;
+	m_nQueueSize = 0;
+}
+
 int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth)
 {
     
