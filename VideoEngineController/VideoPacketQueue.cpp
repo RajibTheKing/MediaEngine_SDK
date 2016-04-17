@@ -24,6 +24,7 @@ int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 
 	if (m_nQueueSize >= m_nQueueCapacity)
 	{
+		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG ,"Video Buffer OverFlow ( VideoPacketQueue ) --> OverFlow " );
 		return -1;
 	}
 	else

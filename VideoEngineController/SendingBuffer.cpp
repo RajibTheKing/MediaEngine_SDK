@@ -33,6 +33,8 @@ int CSendingBuffer::Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPac
 	if (m_nQueueSize == m_nQueueCapacity)
 	{
 		IncreamentIndex(m_iPopIndex);
+
+		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG ,"Video Buffer OverFlow ( SendingBuffer ) --> OverFlow " );
 	}
 	else
 	{

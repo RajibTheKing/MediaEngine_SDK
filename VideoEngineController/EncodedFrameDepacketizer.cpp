@@ -162,6 +162,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		if (m_FrontFrame + m_BufferSize < m_BackFrame)
 		{
 			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "####--------------------------------->BufferOverflow# FN: " + m_Tools.IntegertoStringConvert(m_FrontFrame));
+			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG ,"Video Buffer OverFlow ( VideoPacketBuffer in EncodedFrameDepacketizer ) --> OverFlow FrontFrame " + m_Tools.IntegertoStringConvert(m_FrontFrame) + " BackFrame " + m_Tools.IntegertoStringConvert(m_BackFrame)  );
 			int previousFrontFrame = m_FrontFrame;
 
 			m_FrontFrame = max(m_FrontFrame,  m_BackFrame - m_BufferSize);

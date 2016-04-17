@@ -35,6 +35,8 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
 	if (m_nQueueSize == m_nQueueCapacity)
     {
         IncreamentIndex(m_iPopIndex);
+
+		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG ,"Video Buffer OverFlow ( RenderingBuffer ) --> OverFlow" );
     }
     else
     { 

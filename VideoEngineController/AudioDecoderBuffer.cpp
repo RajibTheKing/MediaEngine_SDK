@@ -50,7 +50,7 @@ int CAudioDecoderBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLen
             mt_dAvgOverFlowTime = mt_lSumOverFlowTime * 1.0 / mt_nOverFlowCount;
 
 
-			//CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "TheVampire--> OverFlow DifftimeDecode  = "+m_Tools.LongLongToString(lOverFlowTime)+", m_dAvgOverFlowTimeDif = "+ m_Tools.DoubleToString(m_dAvgOverFlowTime) );
+			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG ,"Audio Buffer OverFlow ( AudioDecodingBuffer )--> OverFlow DifftimeDecode  = "+m_Tools.LongLongToString(lOverFlowTime)+", mt_dAvgOverFlowTime = "+ m_Tools.DoubleToString(mt_dAvgOverFlowTime) );
             mt_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
         }
 

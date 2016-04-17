@@ -31,6 +31,8 @@ int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength
 	if (m_nQueueSize == m_nQueueCapacity)
     {
         IncreamentIndex(m_iPopIndex);
+
+		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG ,"Video Buffer OverFlow ( VideoEncodingBuffer ) --> OverFlow Difftime = ");
     }
     else
     {  
