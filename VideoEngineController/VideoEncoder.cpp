@@ -34,8 +34,39 @@ CVideoEncoder::~CVideoEncoder()
 	SHARED_PTR_DELETE(m_pVideoEncoderMutex);
 }
 
+int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth)
+{
+	Locker lock(*m_pVideoEncoderMutex);
+
+	SEncParamExt encoderParemeters;
+
+	memset(&encoderParemeters, 0, sizeof(SEncParamExt));
+
+	m_pSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
+
+	SSpatialLayerConfig *spartialLayerConfiguration = &encoderParemeters.sSpatialLayers[0];
+
+	encoderParemeters.iPicWidth = spartialLayerConfiguration->iVideoWidth = m_nVideoWidth;
+	encoderParemeters.iPicHeight = spartialLayerConfiguration->iVideoHeight = m_nVideoHeight;
+
+	int nReturnedValueFromEncoder = m_pSVCVideoEncoder->InitializeExt(&encoderParemeters);
+
+	if (nReturnedValueFromEncoder != 0)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to Set Height Width ");
+
+		return 0;
+	}
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder height width setted");
+
+	return 1;
+}
+
 int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth)
 {
+	Locker lock(*m_pVideoEncoderMutex);
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
 	long nReturnedValueFromEncoder = WelsCreateSVCEncoder(&m_pSVCVideoEncoder);
@@ -197,6 +228,8 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
 
 int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData)
 {
+	Locker lock(*m_pVideoEncoderMutex);
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
 
 	if (NULL == m_pSVCVideoEncoder)

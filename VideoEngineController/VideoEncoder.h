@@ -26,6 +26,7 @@ public:
 	int SetMaxBitrate(int nBitRate);
     int GetBitrate();
     int GetMaxBitrate();
+	int SetHeightWidth(int nVideoHeight, int nVideoWidth);
 
 private:
 
