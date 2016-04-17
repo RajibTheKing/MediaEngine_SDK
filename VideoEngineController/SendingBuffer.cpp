@@ -17,6 +17,15 @@ CSendingBuffer::~CSendingBuffer()
 
 }
 
+void CSendingBuffer::ResetBuffer()
+{
+	Locker lock(*m_pSendingBufferMutex);
+
+	m_iPushIndex = 0;
+	m_iPopIndex = 0;
+	m_nQueueSize = 0;
+}
+
 int CSendingBuffer::Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPacketData, int nLength, int iFrameNumber, int iPacketNumber)
 {
 	Locker lock(*m_pSendingBufferMutex);
