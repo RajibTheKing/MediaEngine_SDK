@@ -17,6 +17,16 @@ CEncodingBuffer::~CEncodingBuffer()
 
 }
 
+void CEncodingBuffer::ResetBuffer()
+{
+	Locker lock(*m_pEncodingBufferMutex);
+
+	m_iPushIndex = 0;
+	m_iPopIndex = 0;
+	m_nQueueSize = 0;
+}
+
+
 int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int nCaptureTimeDifference)
 {
 	Locker lock(*m_pEncodingBufferMutex);

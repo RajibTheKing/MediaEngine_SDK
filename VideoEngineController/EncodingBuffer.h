@@ -19,6 +19,7 @@ public:
 	int DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
+	void ResetBuffer();
 
 private:
 
