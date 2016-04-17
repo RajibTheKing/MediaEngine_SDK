@@ -238,7 +238,6 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 {
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
 
-
 	if(m_FrontFrame > m_iMaxFrameNumRecvd)	//BUFFER IS EMPTY
 		return -1;
 

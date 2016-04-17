@@ -150,14 +150,14 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap " + toolsObject.IntegertoStringConvert(minTimeGap) + " currentTimeGap " + toolsObject.IntegertoStringConvert(currentTimeGap));
 
-
+            /*
 			if( (currentTimeGap < 50 && (currentTimeGap + 10) < minTimeGap))
 			{
 				CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap break " + toolsObject.IntegertoStringConvert( minTimeGap) + " currentTimeGap "
 																  + toolsObject.IntegertoStringConvert( currentTimeGap));
 				continue;
 
-			}
+			}*/
 
 			prevFrameTimeStamp = currentFrameTime;
 			prevTimeStamp = nTimeStampDiff;
@@ -174,7 +174,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			toolsObject.SOSleep(5);
             //CalculateFPS();
             
-            if(m_pVideoCallSession->GetHighResolutionSupportStatus() == true)
+            if(m_pVideoCallSession->GetResolationCheck() == true)
                 m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
 		}
 	}
@@ -189,7 +189,7 @@ void CVideoRenderingThread::CalculateFPS()
     
     if(m_Tools.CurrentTimestamp() - m_lRenderCallTime >= 1000)
     {
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, ">>>>>>>> FPS = (" + m_Tools.IntegertoStringConvert(m_nRenderFrameCount));
+    //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, ">>>>>>>> FPS = (" + m_Tools.IntegertoStringConvert(m_nRenderFrameCount));
         m_nRenderFrameCount = 0;
         m_lRenderCallTime = m_Tools.CurrentTimestamp();
         

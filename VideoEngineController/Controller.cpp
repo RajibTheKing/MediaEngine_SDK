@@ -136,6 +136,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	}
 	else
 	{
+        pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
 		return false;
 	}	
 }
@@ -379,10 +380,13 @@ bool CController::StopAudioCall(const LongLong& lFriendID)
 bool CController::StopVideoCall(const LongLong& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
-
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
+    
     Locker lock1(*m_pVideoSendMutex);
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
     Locker lock2(*m_pVideoReceiveMutex);
-
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
+    
     CVideoCallSession *m_pSession;
     
     m_pSession = m_pCommonElementsBucket->m_pVideoCallSessionList->GetFromVideoSessionList(lFriendID);

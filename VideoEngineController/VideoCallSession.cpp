@@ -33,7 +33,9 @@ mt_llCapturePrevTime(0),
 m_bResolationCheck(false),
 m_bShouldStartCalculation(false),
 m_bCaclculationStartTime(0),
-m_bHighResolutionSupported(false)
+m_bHighResolutionSupportedForOwn(false),
+m_bHighResolutionSupportedForOpponent(false),
+m_bReinitialized(false)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -77,13 +79,17 @@ m_bHighResolutionSupported(false)
 
 CVideoCallSession::~CVideoCallSession()
 {
-
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
 	m_pVideoEncodingThread->StopEncodingThread();
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
 	m_pSendingThread->StopSendingThread();
-
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 3");
 	m_pVideoDepacketizationThread->StopDepacketizationThread();
-	m_pVideoDecodingThread->StopDecodingThread();	
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
+	m_pVideoDecodingThread->StopDecodingThread();
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
 	m_pVideoRenderingThread->StopRenderingThread();
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
 
 	if (NULL != m_pVideoEncodingThread)
 	{
@@ -284,6 +290,7 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
 {
+    
 
 #ifdef FIRST_BUILD_COMPATIBLE
 	if (!g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) == 0xC0)
@@ -301,6 +308,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 	else
 	{
+        OperationForResolutionControl(in_data,in_size);
+        
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
@@ -456,6 +465,7 @@ void CVideoCallSession::SetShiftedTime(long long llTime)
 
 bool  CVideoCallSession::GetResolationCheck()
 {
+    
     return m_bResolationCheck;
 }
 
@@ -484,7 +494,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
     
     if(bValue)
     {
-        m_bHighResolutionSupported = true;
+        m_bHighResolutionSupportedForOwn = true;
         //Eikhan thekee amra HighResolated video support diyee dibo
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
         
@@ -492,14 +502,133 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
     else
     {
         //Not Supported
-        m_bHighResolutionSupported = false;
+        m_bHighResolutionSupportedForOwn = false;
+        
+        m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+        //ReInitializeVideoLibrary(352, 288);
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
     }
 }
 
 bool CVideoCallSession::GetHighResolutionSupportStatus()
 {
-    return m_bHighResolutionSupported;
+    return m_bHighResolutionSupportedForOwn;
 }
 
+void CVideoCallSession::SetOpponentHighResolutionSupportStatus(bool bValue)
+{
+    m_bHighResolutionSupportedForOpponent = bValue;
+}
+
+bool CVideoCallSession::GetOpponentHighResolutionSupportStatus()
+{
+    return m_bHighResolutionSupportedForOpponent;
+}
+
+bool CVideoCallSession::GetReinitializationStatus()
+{
+    return m_bReinitialized;
+}
+
+
+void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, int in_size)
+{
+    //Opponent resolution support checking
+    CPacketHeader RcvPakcetHeader;
+    int gotResSt = RcvPakcetHeader.GetOpponentResolution(in_data);
+    
+    if(gotResSt == 2)
+    {
+        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
+        
+        SetOpponentHighResolutionSupportStatus(true);
+        
+    }
+    else if(gotResSt == 1)
+    {
+        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
+        SetOpponentHighResolutionSupportStatus(false);
+        
+        if(m_bResolationCheck == true)
+        {
+            if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
+            {
+                if(m_bReinitialized == false)
+                {
+                    printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
+                    m_bReinitialized = true;
+                    m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+                }
+                
+                //ReInitializeVideoLibrary(352, 288);
+            }
+        }
+        
+    }
+    else
+    {
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent not set = " + m_Tools.IntegertoStringConvert(gotResSt));
+    }
+    
+    
+    //End of  Opponent resolution support checking
+}
+void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
+{
+    long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
+    
+    m_bReinitialized = true;
+    
+    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
+    m_pVideoEncodingThread->StopEncodingThread();
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
+    m_pVideoDepacketizationThread->StopDepacketizationThread();
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
+    m_pVideoDecodingThread->StopDecodingThread();
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
+    m_pVideoRenderingThread->StopRenderingThread();
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
+    
+    
+   
+    this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
+    
+    m_pVideoEncoder->CreateVideoEncoder(iHeight , iWidth);
+    
+    g_FPSController.SetEncoder(m_pVideoEncoder);
+    m_BitRateController->SetEncoder(m_pVideoEncoder);
+    
+    //this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket);
+    
+    //m_pVideoDecoder->CreateVideoDecoder();
+    
+    
+    long long lFriendID = m_lfriendID;
+    
+    this->m_pColorConverter = new CColorConverter(iHeight, iWidth);
+    
+    
+    
+    m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
+    m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
+    m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
+    m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
+    m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
+    
+    m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
+    
+    
+    
+    m_pVideoEncodingThread->StartEncodingThread();
+    m_pVideoRenderingThread->StartRenderingThread();
+    m_pVideoDepacketizationThread->StartDepacketizationThread();
+    m_pVideoDecodingThread->StartDecodingThread();
+    
+    
+    
+    printf("TheKing--> Reinitialization time = %lld\n",m_Tools.CurrentTimestamp() - llReinitializationStartTime);
+    
+    
+}
 

@@ -42,7 +42,7 @@ void CAverageCalculator::OperationTheatre(long long llOperationStartTime, CVideo
         else
         {
             
-            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, sOperationType + "--> TimeAVg = " + m_Tools.DoubleToString(GetAverage()));
+        //    CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, sOperationType + "--> TimeAVg = " + m_Tools.DoubleToString(GetAverage()));
             
             pVideoCallSession->SetCalculationStartMechanism(false);
         }

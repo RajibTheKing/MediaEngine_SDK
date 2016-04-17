@@ -182,18 +182,20 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
-            
-			/*memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
-            
-            for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
+            if(m_pVideoCallSession->GetResolationCheck() == false)
             {
-                int color = rand()%255;
-                for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
-                {
-					m_ucaEncodingFrame[i * this->m_pColorConverter->GetHeight() + j ] = color;
-                }
+                memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
                 
-            }*/
+                for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
+                {
+                    int color = rand()%255;
+                    for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
+                    {
+                        m_ucaEncodingFrame[i * this->m_pColorConverter->GetHeight() + j ] = color;
+                    }
+                    
+                }
+            }
 
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);

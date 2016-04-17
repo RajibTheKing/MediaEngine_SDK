@@ -90,18 +90,25 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             unsigned char *pEncodedFrame = m_ucaPacket;
             int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
             m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize);
-
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iFrameNumber, nPacketNumber);
         }
         else
         {
             if(m_pVideoCallSession->GetHighResolutionSupportStatus() == true)
             {
+                
                 m_cPacketHeader.SetResolutionBit(m_ucaPacket, 2);
+                
+                //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Set HighResolutionSupportStatus 2, get = " + m_Tools.IntegertoStringConvert(m_cPacketHeader.GetOpponentResolution(m_ucaPacket+1)));
+                
             }
             else
             {
+                
                 m_cPacketHeader.SetResolutionBit(m_ucaPacket, 1);
+                
+               //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "set HighResolutionSupportStatus 1, get = " + m_Tools.IntegertoStringConvert(m_cPacketHeader.GetOpponentResolution(m_ucaPacket+1)));
             }
             
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
