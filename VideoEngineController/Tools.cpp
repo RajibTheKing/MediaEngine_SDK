@@ -206,7 +206,7 @@ unsigned long long Tools::GetTotalSystemMemory()
 	unsigned long long pages = sysconf(_SC_PHYS_PAGES);
 	unsigned long long page_size = sysconf(_SC_PAGE_SIZE);
 
-	LOGE(" command for something <><> pages :: %llu  --  page_size  : %llu ", pages, page_size);
+	//LOGE(" command for something <><> pages :: %llu  --  page_size  : %llu ", pages, page_size);
 
 	return pages * page_size;
 
@@ -227,12 +227,32 @@ unsigned long long Tools::GetTotalSystemMemory()
 
 unsigned long long Tools::GetAvailableSystemMemory()
 {
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	long pages = sysconf(_SC_AVPHYS_PAGES);
-	long page_size = sysconf(_SC_PAGE_SIZE);
-	return pages * page_size;
+    
 
+    long rss = 0L;
+    FILE* fp = NULL;
+    if ( (fp = fopen( "/proc/self/statm", "r" )) == NULL )
+        return (size_t)0L;      /* Can't open? */
+    if ( fscanf( fp, "%*s%ld", &rss ) != 1 )
+    {
+        fclose( fp );
+        return (size_t)0L;      /* Can't read? */
+    }
+    fclose( fp );
+    return (unsigned long long)(size_t)rss * (size_t)sysconf( _SC_PAGESIZE);
+    
+    //Reference: http://stackoverflow.com/questions/669438/how-to-get-memory-usage-at-run-time-in-c#
+    //Still Not tested
+    //Not working
+    
+#elif defined(__ANDROID__)
+    
+     unsigned long long pages = sysconf(_SC_AVPHYS_PAGES);
+     long page_size = sysconf(_SC_PAGE_SIZE);
+     return pages * page_size;
+    
 #elif defined (_DESKTOP_C_SHARP_)
 
 	MEMORYSTATUSEX status;
