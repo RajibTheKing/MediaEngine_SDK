@@ -106,6 +106,7 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 
 bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 {
+    printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
 	m_nOppNotifiedByterate = crTempHeader.getTimeStamp();
@@ -113,6 +114,8 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 	if (m_BandWidthRatioHelper.find(crTempHeader.getFrameNumber()) == m_BandWidthRatioHelper.end())
     {
 		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert(crTempHeader.getFrameNumber()));
+        
+        printf("TheKing--> Bitrate MiniPacket slot not found\n");
 
 		if (m_nLastSendingSlot <= crTempHeader.getFrameNumber())
         {

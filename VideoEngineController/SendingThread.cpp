@@ -209,7 +209,7 @@ void CSendingThread::SendingThreadProcedure()
                     unsigned char *pEncodedFrame = m_EncodedFrame;
                     m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
                     
-                    m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
+                    //m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
                 }
                 else
                 {

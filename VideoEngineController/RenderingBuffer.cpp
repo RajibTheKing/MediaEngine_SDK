@@ -58,7 +58,7 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
 int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth, int &nrTimeDifferenceInQueue)
 {
 	Locker lock(*m_pRenderingBufferMutex);
-
+    printf("TheKing--> RenderingBuffer m_nQueueSize = %d\n", m_nQueueSize);
 	if (m_nQueueSize <= 0)
 	{
 		return -1;

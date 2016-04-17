@@ -29,6 +29,7 @@ public:
 	static void *CreateVideoEncodingThread(void* param);
 
 	void SetOrientationType(int nOrientationType);
+    void ResetVideoEncodingThread(BitRateController *pBitRateController);
 
 private:
 

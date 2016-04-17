@@ -56,7 +56,7 @@ int CSendingBuffer::Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPac
 int CSendingBuffer::DeQueue(LongLong &llrFriendID, unsigned char *ucaSendingVideoPacketData, int &nrFrameNumber, int &nrPacketNumber, int &nrTimeDifferenceInQueue)
 {
 	Locker lock(*m_pSendingBufferMutex);
-
+    printf("TheKing--> SendingBuffer m_nQueueSize = %d\n", m_nQueueSize);
 	if (m_nQueueSize <= 0)
 	{
 		return -1;

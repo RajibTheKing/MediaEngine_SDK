@@ -306,11 +306,11 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 		}
 		else
 		{
-			/*if (m_bSkipFirstByteCalculation == true)
+			if (m_bSkipFirstByteCalculation == true)
 			{
 				m_bSkipFirstByteCalculation = false;
 			}
-			else*/
+			else
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / FRAME_RATE;
                 
@@ -491,7 +491,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
         m_bHighResolutionSupportedForOwn = false;
         
         m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
-        //ReInitializeVideoLibrary(352, 288);
+        ReInitializeVideoLibrary(352, 288);
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
     }
 }
@@ -543,10 +543,16 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
                 {
                     printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
                     m_bReinitialized = true;
+                    
+                    
+                    
                     m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+                    ReInitializeVideoLibrary(352, 288);
+                    
+                    
                 }
                 
-                //ReInitializeVideoLibrary(352, 288);
+                
             }
         }
         
@@ -561,6 +567,7 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
 }
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
+    printf("Reinitializing........\n");
     long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
     
     m_bReinitialized = true;
@@ -570,7 +577,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
     m_pVideoDepacketizationThread->StopDepacketizationThread();
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
-    m_pVideoDecodingThread->StopDecodingThread();
+    //m_pVideoDecodingThread->StopDecodingThread();
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
     m_pVideoRenderingThread->StopRenderingThread();
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
@@ -588,12 +595,16 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 	m_pMiniPacketQueue->ResetBuffer();
 
 	m_BitRateController = new BitRateController();
-
+    m_BitRateController->SetEncoder(m_pVideoEncoder);
+    m_BitRateController->SetSharedObject(m_pCommonElementsBucket);
     
-//    m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
+    m_pVideoEncodingThread->ResetVideoEncodingThread(m_BitRateController);
+    
+//  m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
 //	m_pVideoEncodingThread = new CVideoEncodingThread(m_lfriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
 //	m_pVideoRenderingThread = new CVideoRenderingThread(m_lfriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
 //   m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
+    
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(m_lfriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
     
 
@@ -601,7 +612,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     m_pVideoEncodingThread->StartEncodingThread();
     m_pVideoRenderingThread->StartRenderingThread();
     m_pVideoDepacketizationThread->StartDepacketizationThread();
-    m_pVideoDecodingThread->StartDecodingThread();
+    //m_pVideoDecodingThread->StartDecodingThread();
     
     
     

@@ -30,6 +30,13 @@ CVideoEncodingThread::~CVideoEncodingThread()
 
 }
 
+void CVideoEncodingThread::ResetVideoEncodingThread(BitRateController *pBitRateController)
+{
+    m_iFrameNumber = 0;
+    m_pBitRateController = pBitRateController;
+    
+    
+}
 void CVideoEncodingThread::StopEncodingThread()
 {
 	//if (pInternalThread.get())
@@ -135,14 +142,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 
-			if (!g_FPSController.IsProcessableFrame())
+			/*if (!g_FPSController.IsProcessableFrame())
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
 
 				toolsObject.SOSleep(10);
 
 				continue;
-			}
+			}*/
 
 			m_pBitRateController->UpdateBitrate();
 

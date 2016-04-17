@@ -55,7 +55,7 @@ int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength
 int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference)
 {
 	Locker lock(*m_pEncodingBufferMutex);
-
+    printf("TheKing--> EncodingBuffer m_nQueueSize = %d\n", m_nQueueSize);
 	if (m_nQueueSize <= 0)
 	{
 		return -1;
