@@ -3,6 +3,8 @@
 #define _COLOR_CONVERTER_H_
 
 #include "AudioVideoEngineDefinitions.h"
+#include "SmartPointer.h"
+#include "LockHandler.h"
 
 #if _MSC_VER > 1000
 #pragma once
@@ -38,6 +40,9 @@ public:
 
 	int GetWidth();
 	int GetHeight();
+
+	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
+
 private:
 
 	int m_iVideoHeight;
@@ -56,6 +61,8 @@ private:
 	int cyb, cyg, cyr;
 	
 	int m_Multiplication[481][641];
+
+	SmartPointer<CLockHandler> m_pColorConverterMutex;
 };
 
 #endif 
