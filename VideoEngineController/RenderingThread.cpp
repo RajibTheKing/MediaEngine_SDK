@@ -171,7 +171,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             
             lRenderingTimeDiff = m_Tools.CurrentTimestamp();
             
-			toolsObject.SOSleep(5);
+			toolsObject.SOSleep(1);
             //CalculateFPS();
             
             if(m_pVideoCallSession->GetResolationCheck() == true)

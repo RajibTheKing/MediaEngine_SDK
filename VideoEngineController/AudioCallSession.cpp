@@ -183,7 +183,7 @@ void CAudioCallSession::EncodingThreadProcedure()
             
 			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
 
-            toolsObject.SOSleep(0);
+            toolsObject.SOSleep(1);
             
         }
     }

@@ -105,7 +105,6 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth)
 	encoderParemeters.iSpatialLayerNum = 1;
 
 
-
 	SSpatialLayerConfig *spartialLayerConfiguration = &encoderParemeters.sSpatialLayers[0];
 
 	spartialLayerConfiguration->uiProfileIdc = PRO_BASELINE;//;
