@@ -575,7 +575,10 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
 }
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
+    long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
+    
     m_bReinitialized = true;
+    
     
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
     m_pVideoEncodingThread->StopEncodingThread();
@@ -596,14 +599,16 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     g_FPSController.SetEncoder(m_pVideoEncoder);
     m_BitRateController->SetEncoder(m_pVideoEncoder);
     
-    this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket);
+    //this->m_pVideoDecoder = new CVideoDecoder(m_pCommonElementsBucket);
     
-    m_pVideoDecoder->CreateVideoDecoder();
+    //m_pVideoDecoder->CreateVideoDecoder();
     
     
     long long lFriendID = m_lfriendID;
     
     this->m_pColorConverter = new CColorConverter(iHeight, iWidth);
+    
+    
     
     m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
     m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
@@ -619,6 +624,11 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     m_pVideoRenderingThread->StartRenderingThread();
     m_pVideoDepacketizationThread->StartDepacketizationThread();
     m_pVideoDecodingThread->StartDecodingThread();
+    
+    
+    
+    printf("TheKing--> Reinitialization time = %lld\n",m_Tools.CurrentTimestamp() - llReinitializationStartTime);
+    
     
 }
 

@@ -128,9 +128,9 @@
 //#define ENCODER_KEY_FRAME_RATE  8
 //#define MAX_BLOCK_RETRANSMISSION 4
 
-#define FPS_MAXIMUM     15
-#define FPS_MINIMUM     13
-#define FPS_BEGINNING   15
+#define FPS_MAXIMUM     25
+#define FPS_MINIMUM     15
+#define FPS_BEGINNING   25
 
 #define BITRATE_BEGINNING   12
 #define BITRATE_MAXIMUM     25
