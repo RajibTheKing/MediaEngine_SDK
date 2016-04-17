@@ -18,6 +18,15 @@ CVideoPacketQueue::~CVideoPacketQueue()
 	SHARED_PTR_DELETE(m_pVideoPacketQueueMutex);
 }
 
+void CVideoPacketQueue::ResetBuffer()
+{
+	Locker lock(*m_pVideoPacketQueueMutex);
+
+	m_iPushIndex = 0;
+	m_iPopIndex = 0;
+	m_nQueueSize = 0;
+}
+
 int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 {
 	Locker lock(*m_pVideoPacketQueueMutex);

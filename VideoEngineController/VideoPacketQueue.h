@@ -20,6 +20,7 @@ public:
 	int DeQueue(unsigned char *ucaVideoPacketData);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
+	void ResetBuffer();
 
 private:
 
