@@ -31,6 +31,8 @@ public:
 	void SetOrientationType(int nOrientationType);
     void ResetVideoEncodingThread(BitRateController *pBitRateController);
 
+	bool IsThreadStarted();
+
 private:
 
 	CEncodingBuffer *m_pEncodingBuffer;						
@@ -48,6 +50,8 @@ private:
 	int m_nOrientationType;
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;
+
+	bool m_bIsThisThreadStarted;
     
     int mt_nTotalEncodingTimePerFrameRate;
     int mt_nCheckSlot;

@@ -336,6 +336,9 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 long long g_EncodingTimeDiff = 0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
 {
+	if (m_pVideoEncodingThread->IsThreadStarted() == false)
+		return 1;
+
     if(g_llFirstFrameReceiveTime == 0) g_llFirstFrameReceiveTime = m_Tools.CurrentTimestamp();
     
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");

@@ -19,7 +19,8 @@ m_pBitRateController(pBitRateController),
 m_pColorConverter(pColorConverter),
 m_pVideoEncoder(pVideoEncoder),
 m_pEncodedFramePacketizer(pEncodedFramePacketizer),
-mt_nTotalEncodingTimePerFrameRate(0)
+mt_nTotalEncodingTimePerFrameRate(0),
+m_bIsThisThreadStarted(false)
 
 {
     m_pVideoCallSession = pVideoCallSession;
@@ -99,6 +100,11 @@ void CVideoEncodingThread::SetOrientationType(int nOrientationType)
 	m_nOrientationType = nOrientationType;
 }
 
+bool CVideoEncodingThread::IsThreadStarted()
+{
+	return m_bIsThisThreadStarted;
+}
+
 void CVideoEncodingThread::EncodingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() started EncodingThreadProcedure method");
@@ -126,6 +132,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	while (bEncodingThreadRunning)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
+
+		m_bIsThisThreadStarted = true;
 
 		if (m_pEncodingBuffer->GetQueueSize() == 0)
 		{
