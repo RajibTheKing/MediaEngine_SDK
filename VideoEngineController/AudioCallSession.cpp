@@ -81,7 +81,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
 {
-	if (unLength > 200)
+	if (unLength > 300)
     {
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
         return 0;
@@ -180,8 +180,15 @@ void CAudioCallSession::EncodingThreadProcedure()
             m_ucaEncodedFrame[0] = 0;         
             
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_ucaEncodedFrame);
-            
+#ifdef SEND_VIDEO_TO_SELF
+            //counterOFPkt++;
+
+            //total_size += frameSize;
+            DecodeAudioData(m_ucaEncodedFrame, (unsigned int) nEncodedFrameSize);
+
+#else
 			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
+#endif
 
             toolsObject.SOSleep(0);
             
@@ -272,7 +279,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
 
-            toolsObject.SOSleep(1);
+            toolsObject.SOSleep(0);
         }
     }
     
