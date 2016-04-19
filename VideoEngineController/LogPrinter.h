@@ -60,7 +60,7 @@ typedef long long IPVLongType;
 #define printf(...)
 #endif
 
-//#define printf(...)
+#define printf(...)
 
 using namespace std;
 

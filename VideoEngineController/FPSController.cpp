@@ -10,7 +10,7 @@
 CFPSController::CFPSController(){
     m_pMutex.reset(new CLockHandler);
     m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
-    m_ClientFPS = FPS_BEGINNING << 1;
+    m_ClientFPS = FPS_MAXIMUM;
     m_nOwnFPS = m_nOpponentFPS = FPS_BEGINNING;
     m_iFrameDropIntervalCounter=0;
     m_EncodingFrameCounter = 0;
@@ -27,11 +27,21 @@ CFPSController::~CFPSController(){
 }
 
 void CFPSController::Reset(){
-    m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
+    /*m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
     m_ClientFPS = m_nOwnFPS = m_nOpponentFPS = FPS_BEGINNING;
     m_iFrameDropIntervalCounter=0;
     m_EncodingFrameCounter = 0;
+    m_DropSum = 0;*/
+    
+    m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
+    m_ClientFPS = FPS_MAXIMUM;
+    m_nOwnFPS = m_nOpponentFPS = FPS_BEGINNING;
+    m_iFrameDropIntervalCounter=0;
+    m_EncodingFrameCounter = 0;
     m_DropSum = 0;
+    m_nForceFPSFlag = 0;
+    m_nMaxOwnProcessableFPS = m_nMaxOpponentProcessableFPS = FPS_MAXIMUM;
+    m_nFPSForceSignalCounter = 0;
 }
 
 int CFPSController::GetOpponentFPS() const {
@@ -82,6 +92,7 @@ int CFPSController::GetMaxOwnProcessableFPS(){
 
 
 void CFPSController::SetClientFPS(double fps){
+    printf("MaksudVai--> SetClientFPS = %lf\n", fps);
     if(1 > fps)
     {
         return;
@@ -128,11 +139,11 @@ unsigned char CFPSController::GetFPSSignalByte()
 
 void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 {
-    signalByte &= 0xEF;
+//    signalByte &= 0xFF;
     if(0==signalByte)   return;
     int bIsForceFPS =  (signalByte & (1 << 5) ) >> 5;
     int FPSChangeSignal = (signalByte >> 6);
-    int opponentFPS = 15 & signalByte;
+    int opponentFPS = 0x1F & signalByte;
 
     if(bIsForceFPS)
     {
@@ -257,7 +268,9 @@ bool CFPSController::IsProcessableFrame()
     Tools tools;
 
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: ClientFPS "+tools.DoubleToString(m_ClientFPS));
-
+    
+    printf("FPSCheck--> m_nOwnFPS = %d, m_ClientFPS = %lf\n", m_nOwnFPS, m_ClientFPS);
+    
     if(m_nOwnFPS + FPS_COMPARISON_EPS > m_ClientFPS) return true;
 
     double diff = m_ClientFPS - m_nOwnFPS;

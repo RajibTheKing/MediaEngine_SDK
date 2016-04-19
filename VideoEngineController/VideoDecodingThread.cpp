@@ -177,11 +177,11 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				{
 					dbAverageDecodingTime = dbTotalDecodingTime / m_iDecodedFrameCounter;
 					dbAverageDecodingTime *= 1.5;
-
+                    printf("Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
 					if (dbAverageDecodingTime > 30)
 					{
 						fps = 1000 / dbAverageDecodingTime;
-					//	printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
+						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
 						if (fps < FPS_MAXIMUM)
 							g_FPSController->SetMaxOwnProcessableFPS(fps);
 					}
@@ -207,7 +207,9 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     //m_CalculatorDecodeTime.OperationTheatre(decTime, m_pVideoCallSession, "Decode");
     
-    //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime));
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime));
+    
+    
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Decode ", currentTimeStamp);
 
 	if (1 > m_decodedFrameSize)
@@ -227,6 +229,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
+    
+    
     
     if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {
@@ -252,6 +256,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             m_pVideoCallSession->DecideHighResolatedVideo(false);
         }
     }
+    
 
 #if defined(_DESKTOP_C_SHARP_)
 	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);

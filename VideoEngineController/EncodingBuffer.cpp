@@ -1,5 +1,6 @@
 
 #include "EncodingBuffer.h"
+#include "LogPrinter.h"
 
 CEncodingBuffer::CEncodingBuffer() :
 

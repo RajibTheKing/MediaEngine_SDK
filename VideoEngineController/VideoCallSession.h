@@ -39,7 +39,7 @@ public:
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 
-	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size);
+	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData = false);
 	CEncodedFrameDepacketizer * GetEncodedFrameDepacketizer();
 
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
@@ -75,6 +75,7 @@ public:
     void ReInitializeVideoLibrary(int iHeight, int iWidth);
     bool GetReinitializationStatus();
     void OperationForResolutionControl(unsigned char* in_data, int in_size);
+    bool GetResolutionNegotiationStatus();
     
 
 private:
@@ -104,7 +105,7 @@ private:
     bool m_bHighResolutionSupportedForOwn;
     bool m_bHighResolutionSupportedForOpponent;
     bool m_bReinitialized;
-    
+    bool m_bResolutionNegotiationDone;
     
 	Tools m_Tools;
 	LongLong m_lfriendID;

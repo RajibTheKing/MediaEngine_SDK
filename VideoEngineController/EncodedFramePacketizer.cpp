@@ -89,7 +89,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         {
             unsigned char *pEncodedFrame = m_ucaPacket;
             int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
-            m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize);
+            m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize, true);
             CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iFrameNumber, nPacketNumber);
         }

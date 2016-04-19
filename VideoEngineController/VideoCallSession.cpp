@@ -35,7 +35,8 @@ m_bShouldStartCalculation(false),
 m_bCaclculationStartTime(0),
 m_bHighResolutionSupportedForOwn(false),
 m_bHighResolutionSupportedForOpponent(false),
-m_bReinitialized(false)
+m_bReinitialized(false),
+m_bResolutionNegotiationDone(false)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -276,7 +277,7 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 	return m_nFirstFrameEncodingTimeDiff;
 }
 
-bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size)
+bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
 {
     
 
@@ -296,7 +297,10 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 	else
 	{
-        OperationForResolutionControl(in_data,in_size);
+        if(bSelfData == false && m_bResolutionNegotiationDone == false)
+        {
+            OperationForResolutionControl(in_data,in_size);
+        }
         
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
 
@@ -353,6 +357,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
 			if(nApproximateAverageFrameInterval > 10) {
 				Locker lock(*m_pVideoCallSessionMutex);
+                printf("MaksudVai--> nApproximateAverageFrameInterval = %d\n", nApproximateAverageFrameInterval);
 				g_FPSController.SetClientFPS(1000 / nApproximateAverageFrameInterval);
 			}
 		}
@@ -486,7 +491,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
         m_bHighResolutionSupportedForOwn = true;
         //Eikhan thekee amra HighResolated video support diyee dibo
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
-        
+
     }
     else
     {
@@ -528,36 +533,27 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
     
     if(gotResSt == 2)
     {
-        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
         
         SetOpponentHighResolutionSupportStatus(true);
+        m_bResolutionNegotiationDone = true;
         
     }
     else if(gotResSt == 1)
     {
-        //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
+        
+        
         SetOpponentHighResolutionSupportStatus(false);
         
-        if(m_bResolationCheck == true)
+        if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
         {
-            if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
-            {
-                if(m_bReinitialized == false)
-                {
-                    printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
-                    m_bReinitialized = true;
-                    
-                    
-                    
-                    m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
-                    ReInitializeVideoLibrary(352, 288);
-                    
-                    
-                }
-                
-                
-            }
+            printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
+            m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+                ReInitializeVideoLibrary(352, 288);
         }
+        
+        m_bResolutionNegotiationDone = true;
         
     }
     else
@@ -568,12 +564,19 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
     
     //End of  Opponent resolution support checking
 }
+bool CVideoCallSession::GetResolutionNegotiationStatus()
+{
+    return m_bResolutionNegotiationDone;
+}
+
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
+    //return;
+    
     printf("Reinitializing........\n");
     long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
     
-    m_bReinitialized = true;
+
     
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
     m_pVideoEncodingThread->StopEncodingThread();
@@ -617,7 +620,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     m_pVideoDepacketizationThread->StartDepacketizationThread();
     //m_pVideoDecodingThread->StartDecodingThread();
     
-    
+    m_bReinitialized = true;
     
     printf("TheKing--> Reinitialization time = %lld\n",m_Tools.CurrentTimestamp() - llReinitializationStartTime);
     

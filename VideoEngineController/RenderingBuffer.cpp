@@ -1,6 +1,6 @@
 
 #include "RenderingBuffer.h"
-
+#include "LogPrinter.h"
 CRenderingBuffer::CRenderingBuffer() :
 
 m_iPushIndex(0),

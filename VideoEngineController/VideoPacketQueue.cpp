@@ -1,7 +1,7 @@
 
 #include "VideoPacketQueue.h"
 #include "ThreadTools.h"
-
+#include "LogPrinter.h"
 CVideoPacketQueue::CVideoPacketQueue() :
 
 m_iPushIndex(0),

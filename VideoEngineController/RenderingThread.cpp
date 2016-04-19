@@ -174,8 +174,10 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			toolsObject.SOSleep(1);
             //CalculateFPS();
             
-            if(m_pVideoCallSession->GetResolationCheck() == true)
-                m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+            if(m_pVideoCallSession->GetResolutionNegotiationStatus() == true)
+            {
+                 m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+            }
 		}
 	}
 

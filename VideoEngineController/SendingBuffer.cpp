@@ -1,5 +1,6 @@
 
 #include "SendingBuffer.h"
+#include "LogPrinter.h"
 
 CSendingBuffer::CSendingBuffer() :
 

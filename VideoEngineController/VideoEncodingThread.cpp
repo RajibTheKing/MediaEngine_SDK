@@ -150,14 +150,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 
-			/*if (!g_FPSController.IsProcessableFrame())
+			if (!g_FPSController.IsProcessableFrame())
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
 
 				toolsObject.SOSleep(10);
 
 				continue;
-			}*/
+			}
 
 			m_pBitRateController->UpdateBitrate();
 
@@ -205,7 +205,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
-            if(m_pVideoCallSession->GetResolationCheck() == false)
+            /*if(m_pVideoCallSession->GetResolationCheck() == false)
             {
                 memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
                 
@@ -218,7 +218,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
                     
                 }
-            }
+            }*/
 
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
@@ -252,8 +252,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
             
             //m_CalculatorEncodeTime.OperationTheatre(llCalculatingTime, m_pVideoCallSession, "Encode");
-            m_TestingEncodeTime.UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
+            //m_TestingEncodeTime.UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
             //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_TestingEncodeTime.GetAverage()));
+            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
             /*
             if(m_pVideoCallSession->GetCalculationStatus() == true)
             {
@@ -286,7 +287,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			++m_iFrameNumber;
 		
-			toolsObject.SOSleep(1);
+			toolsObject.SOSleep(0);
 		}
 	}
 

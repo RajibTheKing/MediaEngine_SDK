@@ -1,6 +1,6 @@
 
 #include "DecodingBuffer.h"
-
+#include "LogPrinter.h"
 CDecodingBuffer::CDecodingBuffer() :
 
 m_iPushIndex(0),

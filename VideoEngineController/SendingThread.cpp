@@ -203,11 +203,14 @@ void CSendingThread::SendingThreadProcedure()
 
 #endif
 */
+                m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
                 
+                /*
                 if(m_pVideoCallSession->GetResolationCheck() == false)
                 {
                     unsigned char *pEncodedFrame = m_EncodedFrame;
-                    m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+                    //m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+                    
                     
                     //m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
                 }
@@ -217,7 +220,7 @@ void CSendingThread::SendingThreadProcedure()
                     
                     //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
                 }
-                
+                */
                 
                 
 				toolsObject.SOSleep(0);
