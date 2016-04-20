@@ -20,8 +20,9 @@ m_pColorConverter(pColorConverter),
 m_pVideoEncoder(pVideoEncoder),
 m_pEncodedFramePacketizer(pEncodedFramePacketizer),
 mt_nTotalEncodingTimePerFrameRate(0),
-m_bIsThisThreadStarted(false)
-
+m_bIsThisThreadStarted(false),
+m_FPS_TimeDiff(0),
+m_FpsCounter(0)
 {
     m_pVideoCallSession = pVideoCallSession;
 }
@@ -105,6 +106,8 @@ bool CVideoEncodingThread::IsThreadStarted()
 	return m_bIsThisThreadStarted;
 }
 
+long long g_PrevEncodeTime = 0;
+
 void CVideoEncodingThread::EncodingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() started EncodingThreadProcedure method");
@@ -147,9 +150,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
 			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference);
-
+            
+            if(g_PrevEncodeTime!=0)
+                m_CalculateEncodingTimeDiff.UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
+            printf("TheVampireEngg --> EncodingTime Diff = %lld\n, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
+            g_PrevEncodeTime = m_Tools.CurrentTimestamp();
+            
+            
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 
+            
 			if (!g_FPSController.IsProcessableFrame())
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
@@ -158,6 +168,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				continue;
 			}
+            
+            
 
 			m_pBitRateController->UpdateBitrate();
 
@@ -280,7 +292,27 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
 
 			//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
-
+            
+            
+            if(m_FPS_TimeDiff==0) m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+            
+            if(m_Tools.CurrentTimestamp() -  m_FPS_TimeDiff < 1000 )
+            {
+                m_FpsCounter++;
+            }
+            else
+            {
+                m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+                
+                printf("Current Encoding FPS = %d\n", m_FpsCounter);
+                if(m_FpsCounter > (FRAME_RATE - FPS_TOLERANCE_FOR_FPS))
+                {
+                    //kaj korte hobe
+                }
+                m_FpsCounter = 0;
+            }
+            
+            
 			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference);
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);

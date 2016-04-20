@@ -15,6 +15,8 @@ m_pVideoDecoder(videoDecoder),
 m_pColorConverter(colorConverter),
 g_FPSController(FPSController),
 m_pVideoCallSession(pVideoCallSession),
+m_FpsCounter(0),
+m_FPS_TimeDiff(0),
 m_Counter(0)
 {
 
@@ -38,7 +40,15 @@ void CVideoDecodingThread::StopDecodingThread()
 	}
 	//pDepacketizationThread.reset();
 }
-
+void CVideoDecodingThread::Reset()
+{
+    m_dbAverageDecodingTime = 0;
+    m_dbTotalDecodingTime = 0;
+    //int m_nOponnentFPS, m_nMaxProcessableByMine;
+    m_iDecodedFrameCounter = 0;
+    m_nMaxDecodingTime = 0;
+    m_FpsCounter = 0;
+}
 void CVideoDecodingThread::StartDecodingThread()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::StartDecodingThread called");
@@ -89,13 +99,11 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
 	unsigned int nTimeStampDiff = 0;
 	long long nTimeStampBeforeDecoding, currentTime;
-	long long nMaxDecodingTime = 0;
+
 	int nExpectedTime;
 
 	int nDecodingStatus, fps = -1;
-	double dbAverageDecodingTime = 0, dbTotalDecodingTime = 0;
-	int nOponnentFPS, nMaxProcessableByMine;
-	int m_iDecodedFrameCounter = 0;
+
 
 	nExpectedTime = -1;
 	long long maxDecodingTime = 0, framCounter = 0, decodingTime, nBeforeDecodingTime;
@@ -145,10 +153,10 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		{
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
             
-			nOponnentFPS = g_FPSController->GetOpponentFPS();
-			nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
+			m_nOponnentFPS = g_FPSController->GetOpponentFPS();
+			m_nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
             
-			if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3)
+			if (m_nOponnentFPS > 1 + m_nMaxProcessableByMine && (nFrameNumber & 7) > 3)
             {
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
@@ -168,26 +176,33 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 			//			toolsObject.SOSleep(100);
             
-			if (nDecodingStatus > 0) {
+            
+			if (nDecodingStatus > 0)
+            {
 				decodingTime = toolsObject.CurrentTimestamp() - nBeforeDecodingTime;
-				dbTotalDecodingTime += decodingTime;
+				m_dbTotalDecodingTime += decodingTime;
 				++m_iDecodedFrameCounter;
-				nMaxDecodingTime = max(nMaxDecodingTime, decodingTime);
-				if (0 == (m_iDecodedFrameCounter & 3))
+                
+                if(m_nMaxDecodingTime<decodingTime)
+                    printf("Increasing   nMaxDecodingTime to %lld\n", m_nMaxDecodingTime);
+				m_nMaxDecodingTime = max(m_nMaxDecodingTime, decodingTime);
+                
+				//if (0 == (m_iDecodedFrameCounter & 3))
 				{
-					dbAverageDecodingTime = dbTotalDecodingTime / m_iDecodedFrameCounter;
-					dbAverageDecodingTime *= 1.5;
-                    printf("Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
-					if (dbAverageDecodingTime > 30)
+					m_dbAverageDecodingTime = m_dbTotalDecodingTime / m_iDecodedFrameCounter;
+					m_dbAverageDecodingTime *= 1.5;
+                    printf("Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
+					if (m_dbAverageDecodingTime > 30)
 					{
-						fps = 1000 / dbAverageDecodingTime;
-						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", dbAverageDecodingTime, fps);
+						fps = 1000 / m_dbAverageDecodingTime;
+						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
 						if (fps < FPS_MAXIMUM)
 							g_FPSController->SetMaxOwnProcessableFPS(fps);
 					}
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
-			}
+            }
+            
             
 			toolsObject.SOSleep(1);
 		}
@@ -256,6 +271,31 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             m_pVideoCallSession->DecideHighResolatedVideo(false);
         }
     }
+    
+    
+    if(m_FPS_TimeDiff==0) m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+    
+    if(m_Tools.CurrentTimestamp() -  m_FPS_TimeDiff < 1000 )
+    {
+        m_FpsCounter++;
+    }
+    else
+    {
+        m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+        
+        printf("Current Decoding FPS = %d\n", m_FpsCounter);
+        if(m_FpsCounter > (FRAME_RATE - FPS_TOLERANCE_FOR_FPS))
+        {
+            //kaj korte hobe
+        }
+        
+        //if(m_FpsCounter<FPS_MAXIMUM)
+            //g_FPSController->SetMaxOwnProcessableFPS(m_FpsCounter);
+        m_FpsCounter = 0;
+    }
+    
+    
+    
     
 
 #if defined(_DESKTOP_C_SHARP_)

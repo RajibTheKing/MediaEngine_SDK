@@ -158,6 +158,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 //            m_pVideoEncoder->SetBitrate(m_nOwnFPS);
 //            m_pVideoEncoder->SetMaxBitrate(m_nOwnFPS);
         }
+        
     }
     else if (opponentFPS != m_nOpponentFPS) {
             Locker lock(*m_pMutex);

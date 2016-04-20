@@ -9,6 +9,8 @@
 #include <dispatch/dispatch.h>
 #endif
 
+extern map<int, long long> g_TimeTraceFromCaptureToSend;
+
 CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
@@ -188,12 +190,12 @@ void CSendingThread::SendingThreadProcedure()
 			if (m_BandWidthController.IsSendeablePacket(packetSize)) {
 #endif
  
-/*
+
 #if defined(SEND_VIDEO_TO_SELF)
 			CVideoCallSession* pVideoSession;
 			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 			unsigned char *pEncodedFrame = m_EncodedFrame;
-			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, true);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 				m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
@@ -202,8 +204,19 @@ void CSendingThread::SendingThreadProcedure()
 
 
 #endif
-*/
+
+#if 0
+                packetHeader.setPacketHeader(m_EncodedFrame + 1);
+                //printf("CapturingToSending TimeDiff for Frame, %d = %lld\n", packetHeader.getFrameNumber(), m_Tools.CurrentTimestamp() - g_TimeTraceFromCaptureToSend[packetHeader.getFrameNumber()]);
+                
+                if(packetHeader.getFrameNumber() == 0)
+                    printf("Frame %d --> Send Dequeue Time = %lld\n", packetHeader.getFrameNumber(), m_Tools.CurrentTimestamp());
+                
+                
                 m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+                
+                //unsigned char *pEncodedFrame = m_EncodedFrame;
+                //m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize, true);
                 
                 /*
                 if(m_pVideoCallSession->GetResolationCheck() == false)
@@ -222,7 +235,7 @@ void CSendingThread::SendingThreadProcedure()
                 }
                 */
                 
-                
+#endif
 				toolsObject.SOSleep(0);
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST

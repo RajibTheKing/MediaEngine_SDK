@@ -46,7 +46,7 @@ int CDecodingBuffer::Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrame
 int CDecodingBuffer::DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDifference, unsigned char *ucaEncodedVideoFrameData, int &nrTimeDifferenceInQueue)
 {
 	Locker lock(*m_pDecodingBufferMutex);
-    printf("TheKing--> DecodingBuffer m_nQueueSize = %d\n", m_nQueueSize);
+    //printf("TheKing--> DecodingBuffer m_nQueueSize = %d\n", m_nQueueSize);
 	if (m_nQueueSize <= 0)
 	{
 		return -1;

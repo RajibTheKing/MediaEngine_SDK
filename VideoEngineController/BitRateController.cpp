@@ -211,8 +211,13 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 
 bool BitRateController::UpdateBitrate()
 {
+    if(m_nFrameCounterBeforeEncoding<30)
+        printf("Frame %d --> Encode Dequeue Time = %lld\n", m_nFrameCounterBeforeEncoding, m_Tools.CurrentTimestamp());
+    
     ++m_nFrameCounterBeforeEncoding;
-
+    
+    
+    
     if(m_nFrameCounterBeforeEncoding%FRAME_RATE == 0 && m_nOppNotifiedByterate>0 && m_bSetBitRateCalled == false)
     {
         int nRet = -1, nRet2 = -1;

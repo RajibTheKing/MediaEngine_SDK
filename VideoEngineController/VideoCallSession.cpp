@@ -303,6 +303,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         }
         
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
+        
+        
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
 		{
@@ -338,6 +340,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 }
 
 long long g_EncodingTimeDiff = 0;
+map<int, long long> g_TimeTraceFromCaptureToSend;
+int g_CapturingFrameCounter=0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
 {
 	if (m_pVideoEncodingThread->IsThreadStarted() == false)
@@ -379,6 +383,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	int nCaptureTimeDiff = currentTimeStamp - m_llFirstFrameCapturingTimeStamp;
     
+    
+    g_TimeTraceFromCaptureToSend[g_CapturingFrameCounter] = m_Tools.CurrentTimestamp();
+    if(g_CapturingFrameCounter<30)
+        printf("Frame %d --> Capture Time = %lld\n", g_CapturingFrameCounter, m_Tools.CurrentTimestamp());
+    
+    g_CapturingFrameCounter++;
     
 	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff);
     
@@ -538,6 +548,7 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
         SetOpponentHighResolutionSupportStatus(true);
         m_bResolutionNegotiationDone = true;
         
+        
     }
     else if(gotResSt == 1)
     {
@@ -553,6 +564,7 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
                 ReInitializeVideoLibrary(352, 288);
         }
         
+        m_pVideoDecodingThread->Reset();
         m_bResolutionNegotiationDone = true;
         
     }
@@ -571,7 +583,7 @@ bool CVideoCallSession::GetResolutionNegotiationStatus()
 
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
-    //return;
+    return;
     
     printf("Reinitializing........\n");
     long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
@@ -615,10 +627,13 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     
 
     
+    g_CapturingFrameCounter = 0;
+    
     m_pVideoEncodingThread->StartEncodingThread();
     m_pVideoRenderingThread->StartRenderingThread();
     m_pVideoDepacketizationThread->StartDepacketizationThread();
     //m_pVideoDecodingThread->StartDecodingThread();
+    m_pVideoDecodingThread->Reset();
     
     m_bReinitialized = true;
     

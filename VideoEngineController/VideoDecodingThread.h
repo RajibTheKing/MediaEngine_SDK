@@ -23,7 +23,7 @@ public:
 
 	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *g_FPSController, CVideoCallSession* pVideoCallSession);
 	~CVideoDecodingThread();
-
+    void Reset();
 	void StartDecodingThread();
 	void StopDecodingThread();
 	void DecodingThreadProcedure();
@@ -56,6 +56,18 @@ private:
 	Tools m_Tools;
     CAverageCalculator m_CalculatorDecodeTime;
 	SmartPointer<std::thread> pDecodingThread;
+    
+    
+    
+    double m_dbAverageDecodingTime = 0, m_dbTotalDecodingTime = 0;
+    int m_nOponnentFPS, m_nMaxProcessableByMine;
+    int m_iDecodedFrameCounter = 0;
+  	long long m_nMaxDecodingTime = 0;
+    
+    
+    int m_FpsCounter;
+    long long m_FPS_TimeDiff;
+    
 };
 
 #endif 

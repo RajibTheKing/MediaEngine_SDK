@@ -60,8 +60,11 @@ private:
     
     CAverageCalculator m_CalculatorEncodeTime;
     CAverageCalculator m_TestingEncodeTime;
+    CAverageCalculator m_CalculateEncodingTimeDiff;
     
     CVideoCallSession *m_pVideoCallSession;
+    long long m_FPS_TimeDiff;
+    int m_FpsCounter;
     
 	SmartPointer<std::thread> pEncodingThread;
 };
