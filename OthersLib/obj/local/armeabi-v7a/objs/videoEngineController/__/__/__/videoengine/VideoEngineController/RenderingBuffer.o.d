@@ -1,6 +1,6 @@
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/local/armeabi-v7a/objs/videoEngineController/__/__/__/videoengine/VideoEngineController/RenderingBuffer.o: \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.cpp \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h \
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/obj/local/armeabi-v7a/objs/videoEngineController/__/__/__/videoengine/VideoEngineController/RenderingBuffer.o: \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.cpp \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h \
  ../../../videoengine/VideoEngineUtilities/SmartPointer.h \
  ../../../videoengine/OthersLib/boost/boost/utility.hpp \
  ../../../videoengine/OthersLib/boost/boost/utility/addressof.hpp \
@@ -10,50 +10,50 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/config/select_compiler_config.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/compiler/gcc.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/select_stdlib_config.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef \
  ../../../videoengine/OthersLib/boost/boost/config/stdlib/libstdcpp3.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs_elf.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/android/api-level.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/stdint.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/_types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/_types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/posix_types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/stddef.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/compiler.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/posix_types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/kernel.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysmacros.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/time.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/time.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/signal.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/limits.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/limits.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/limits.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/internal_types.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/limits.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/syslimits.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/page.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/string.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/malloc.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/signal.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/signal.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/siginfo.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/siginfo.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/ucontext.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/user.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sigcontext.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs_elf.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/android/api-level.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/stdint.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/_types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/_types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/posix_types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/stddef.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/compiler.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/posix_types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/kernel.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysmacros.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/time.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/time.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/signal.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/limits.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/limits.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/limits.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/internal_types.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/limits.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/syslimits.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/page.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/string.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/malloc.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/signal.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/signal.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/siginfo.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/siginfo.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/ucontext.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/user.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sigcontext.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h \
  ../../../videoengine/OthersLib/boost/boost/config/select_platform_config.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/platform/linux.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib \
  ../../../videoengine/OthersLib/boost/boost/config/posix_features.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/suffix.hpp \
  ../../../videoengine/OthersLib/boost/boost/detail/workaround.hpp \
@@ -170,7 +170,7 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/checked_delete.hpp \
  ../../../videoengine/OthersLib/boost/boost/core/checked_delete.hpp \
  ../../../videoengine/OthersLib/boost/boost/next_prior.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator \
  ../../../videoengine/OthersLib/boost/boost/type_traits/is_unsigned.hpp \
  ../../../videoengine/OthersLib/boost/boost/type_traits/is_integral.hpp \
  ../../../videoengine/OthersLib/boost/boost/type_traits/is_enum.hpp \
@@ -233,9 +233,9 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/scoped_ptr.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/scoped_ptr.hpp \
  ../../../videoengine/OthersLib/boost/boost/assert.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/sp_nullptr_t.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/operator_bool.hpp \
  ../../../videoengine/OthersLib/boost/boost/scoped_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/scoped_array.hpp \
@@ -363,16 +363,16 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/predef/os/windows.h \
  ../../../videoengine/OthersLib/boost/boost/predef/other.h \
  ../../../videoengine/OthersLib/boost/boost/predef/other/endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/mingw.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_desktop.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_store.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_phone.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_runtime.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm \
  ../../../videoengine/OthersLib/boost/boost/shared_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/shared_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/weak_ptr.hpp \
@@ -416,29 +416,16 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/sp_if_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/allocate_shared_array.hpp \
  ../../../videoengine/VideoEngineUtilities/LockHandler.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex \
- ../../../videoengine/VideoEngineUtilities/DefinedDataTypes.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/socket.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/socket.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/socket.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sockios.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/sockios.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/uio.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/byteorder.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/little_endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/swab.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/generic.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in6.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/ipv6.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in6.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex \
  ../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/LogPrinter.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h:
 
 ../../../videoengine/VideoEngineUtilities/SmartPointer.h:
 
@@ -458,93 +445,93 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/
 
 ../../../videoengine/OthersLib/boost/boost/config/select_stdlib_config.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef:
 
 ../../../videoengine/OthersLib/boost/boost/config/stdlib/libstdcpp3.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs_elf.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/cdefs_elf.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/android/api-level.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/android/api-level.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/stdint.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/stdint.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/_types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/_types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/_types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/_types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/posix_types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/posix_types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/stddef.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/stddef.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/compiler.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/compiler.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/posix_types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/posix_types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/kernel.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/kernel.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysmacros.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysmacros.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/time.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/time.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/time.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/time.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/signal.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/signal.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/limits.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/limits.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/limits.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/limits.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/limits.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/limits.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/internal_types.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/internal_types.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/limits.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/limits.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/syslimits.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/syslimits.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/page.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/page.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/string.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/string.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/malloc.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/malloc.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/signal.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/signal.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/signal.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/signal.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/siginfo.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/siginfo.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/siginfo.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm-generic/siginfo.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/ucontext.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/ucontext.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/user.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/user.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sigcontext.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sigcontext.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h:
 
 ../../../videoengine/OthersLib/boost/boost/config/select_platform_config.hpp:
 
 ../../../videoengine/OthersLib/boost/boost/config/platform/linux.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib:
 
 ../../../videoengine/OthersLib/boost/boost/config/posix_features.hpp:
 
@@ -778,7 +765,7 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/OthersLib/boost/boost/next_prior.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator:
 
 ../../../videoengine/OthersLib/boost/boost/type_traits/is_unsigned.hpp:
 
@@ -904,11 +891,11 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/OthersLib/boost/boost/assert.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h:
 
 ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/sp_nullptr_t.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory:
 
 ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/operator_bool.hpp:
 
@@ -1164,11 +1151,11 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/OthersLib/boost/boost/predef/other/endian.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h:
 
 ../../../videoengine/OthersLib/boost/boost/predef/platform.h:
 
@@ -1182,7 +1169,7 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/u
 
 ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_runtime.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm:
 
 ../../../videoengine/OthersLib/boost/boost/shared_array.hpp:
 
@@ -1270,44 +1257,18 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/VideoEngineUtilities/LockHandler.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex:
-
-../../../videoengine/VideoEngineUtilities/DefinedDataTypes.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/socket.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/socket.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/socket.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sockios.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/sockios.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/uio.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/byteorder.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/little_endian.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/swab.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/generic.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in6.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/ipv6.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in6.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex:
 
 ../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h:
+
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/LogPrinter.h:
+
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream:
+
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream:

@@ -1,9 +1,14 @@
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/local/armeabi-v7a/objs/videoEngineController/__/__/__/videoengine/VideoEngineController/SendingThread.o: \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingThread.cpp \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingThread.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/string \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h \
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/obj/local/armeabi-v7a/objs/videoEngineController/__/__/__/videoengine/VideoEngineController/SendingThread.o: \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingThread.cpp \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingThread.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/string \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h \
  ../../../videoengine/VideoEngineUtilities/SmartPointer.h \
  ../../../videoengine/OthersLib/boost/boost/utility.hpp \
  ../../../videoengine/OthersLib/boost/boost/utility/addressof.hpp \
@@ -13,16 +18,11 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/config/select_compiler_config.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/compiler/gcc.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/select_stdlib_config.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef \
  ../../../videoengine/OthersLib/boost/boost/config/stdlib/libstdcpp3.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h \
  ../../../videoengine/OthersLib/boost/boost/config/select_platform_config.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/platform/linux.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib \
  ../../../videoengine/OthersLib/boost/boost/config/posix_features.hpp \
  ../../../videoengine/OthersLib/boost/boost/config/suffix.hpp \
  ../../../videoengine/OthersLib/boost/boost/detail/workaround.hpp \
@@ -139,7 +139,7 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/checked_delete.hpp \
  ../../../videoengine/OthersLib/boost/boost/core/checked_delete.hpp \
  ../../../videoengine/OthersLib/boost/boost/next_prior.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator \
  ../../../videoengine/OthersLib/boost/boost/type_traits/is_unsigned.hpp \
  ../../../videoengine/OthersLib/boost/boost/type_traits/is_integral.hpp \
  ../../../videoengine/OthersLib/boost/boost/type_traits/is_enum.hpp \
@@ -202,9 +202,9 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/scoped_ptr.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/scoped_ptr.hpp \
  ../../../videoengine/OthersLib/boost/boost/assert.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/sp_nullptr_t.hpp \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/operator_bool.hpp \
  ../../../videoengine/OthersLib/boost/boost/scoped_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/scoped_array.hpp \
@@ -332,16 +332,16 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/predef/os/windows.h \
  ../../../videoengine/OthersLib/boost/boost/predef/other.h \
  ../../../videoengine/OthersLib/boost/boost/predef/other/endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/mingw.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_desktop.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_store.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_phone.h \
  ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_runtime.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm \
  ../../../videoengine/OthersLib/boost/boost/shared_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/shared_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/weak_ptr.hpp \
@@ -384,80 +384,75 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/obj/
  ../../../videoengine/OthersLib/boost/boost/type_traits/has_trivial_destructor.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/sp_if_array.hpp \
  ../../../videoengine/OthersLib/boost/boost/smart_ptr/allocate_shared_array.hpp \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/LogPrinter.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingBuffer.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/LogPrinter.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingBuffer.h \
  ../../../videoengine/VideoEngineUtilities/LockHandler.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex \
- ../../../videoengine/VideoEngineUtilities/DefinedDataTypes.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/socket.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/socket.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/socket.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sockios.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/sockios.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/uio.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/byteorder.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/little_endian.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/swab.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/generic.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in6.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/ipv6.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in6.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex \
  ../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodingBuffer.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BandwidthController.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/thread \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/PacketHeader.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/CommonElementsBucket.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EventNotifier.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoderListHandler.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/map \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoder.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_api.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_app_def.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_def.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSessionListHandler.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSession.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecoder.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodingBuffer.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BandwidthController.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/thread \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/PacketHeader.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/CommonElementsBucket.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EventNotifier.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoderListHandler.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/map \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoder.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_api.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_app_def.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_def.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSessionListHandler.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSession.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecoder.h \
  ../../../videoengine/VideoEngineUtilities/ColorConverter.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/DecodingBuffer.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFrameDepacketizer.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/set \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/ThreadTools.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketBuffer.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BitRateController.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SynchronizedMap.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncodingThread.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFramePacketizer.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AverageCalculator.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingThread.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecodingThread.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/FPSController.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/queue \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/DepacketizationThread.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketQueue.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSessionListHandler.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSession.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoder.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoder.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoderBuffer.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoderBuffer.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/G729CodecNative.h \
- F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/typedef.h \
- G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/inttypes.h
+ ../../../videoengine/VideoEngineUtilities/SmartPointer.h \
+ ../../../videoengine/VideoEngineUtilities/LockHandler.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFrameDepacketizer.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/set \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/ThreadTools.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketBuffer.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BitRateController.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SynchronizedMap.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncodingThread.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFramePacketizer.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AverageCalculator.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingThread.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecodingThread.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/FPSController.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/queue \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/DepacketizationThread.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketQueue.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSessionListHandler.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSession.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoderBuffer.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoderBuffer.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/G729CodecNative.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/typedef.h \
+ D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/inttypes.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoder.h \
+ E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoder.h
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingThread.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingThread.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Tools.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/string:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/string:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h:
+
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h:
+
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h:
+
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h:
+
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h:
+
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h:
 
 ../../../videoengine/VideoEngineUtilities/SmartPointer.h:
 
@@ -477,25 +472,15 @@ F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/
 
 ../../../videoengine/OthersLib/boost/boost/config/select_stdlib_config.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstddef:
 
 ../../../videoengine/OthersLib/boost/boost/config/stdlib/libstdcpp3.hpp:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/unistd.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/select.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/sysconf.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/capability.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/pathconf.h:
 
 ../../../videoengine/OthersLib/boost/boost/config/select_platform_config.hpp:
 
 ../../../videoengine/OthersLib/boost/boost/config/platform/linux.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/cstdlib:
 
 ../../../videoengine/OthersLib/boost/boost/config/posix_features.hpp:
 
@@ -729,7 +714,7 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/OthersLib/boost/boost/next_prior.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iterator:
 
 ../../../videoengine/OthersLib/boost/boost/type_traits/is_unsigned.hpp:
 
@@ -855,11 +840,11 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/OthersLib/boost/boost/assert.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/assert.h:
 
 ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/sp_nullptr_t.hpp:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/memory:
 
 ../../../videoengine/OthersLib/boost/boost/smart_ptr/detail/operator_bool.hpp:
 
@@ -1115,11 +1100,11 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/OthersLib/boost/boost/predef/other/endian.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/endian.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/endian.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/machine/endian.h:
 
 ../../../videoengine/OthersLib/boost/boost/predef/platform.h:
 
@@ -1133,7 +1118,7 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/u
 
 ../../../videoengine/OthersLib/boost/boost/predef/platform/windows_runtime.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/algorithm:
 
 ../../../videoengine/OthersLib/boost/boost/shared_array.hpp:
 
@@ -1219,134 +1204,104 @@ G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/
 
 ../../../videoengine/OthersLib/boost/boost/smart_ptr/allocate_shared_array.hpp:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/LogPrinter.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/LogPrinter.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/fstream:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/iostream:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingBuffer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SendingBuffer.h:
 
 ../../../videoengine/VideoEngineUtilities/LockHandler.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex:
-
-../../../videoengine/VideoEngineUtilities/DefinedDataTypes.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/sys/socket.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/socket.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/socket.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/sockios.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/sockios.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/uio.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/asm/byteorder.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/little_endian.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/swab.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/byteorder/generic.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/in6.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/linux/ipv6.h:
-
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/netinet/in6.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/mutex:
 
 ../../../videoengine/VideoEngineController/AudioVideoEngineDefinitions.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/Size.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodingBuffer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodingBuffer.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BandwidthController.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BandwidthController.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/thread:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/thread:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/PacketHeader.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/PacketHeader.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/CommonElementsBucket.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/CommonElementsBucket.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EventNotifier.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EventNotifier.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoderListHandler.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoderListHandler.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/map:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/map:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoder.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncoder.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_api.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_api.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_app_def.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_app_def.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_def.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/codec_def.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSessionListHandler.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSessionListHandler.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSession.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoCallSession.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecoder.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecoder.h:
 
 ../../../videoengine/VideoEngineUtilities/ColorConverter.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/DecodingBuffer.h:
+../../../videoengine/VideoEngineUtilities/SmartPointer.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h:
+../../../videoengine/VideoEngineUtilities/LockHandler.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFrameDepacketizer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingBuffer.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/set:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFrameDepacketizer.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/ThreadTools.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/set:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketBuffer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/ThreadTools.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BitRateController.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketBuffer.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SynchronizedMap.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/BitRateController.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncodingThread.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/SynchronizedMap.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFramePacketizer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoEncodingThread.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AverageCalculator.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/EncodedFramePacketizer.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingThread.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AverageCalculator.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecodingThread.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/RenderingThread.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/FPSController.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoDecodingThread.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/queue:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/FPSController.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/DepacketizationThread.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.8/include/queue:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketQueue.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/DepacketizationThread.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSessionListHandler.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/VideoPacketQueue.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSession.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSessionListHandler.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoder.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioCallSession.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoder.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoderBuffer.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoderBuffer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoderBuffer.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoderBuffer.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/G729CodecNative.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/G729CodecNative.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/typedef.h:
 
-F:/OfficialGitCode/AndroidTestClient/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/typedef.h:
+D:/AndroidStudioFull/SDK/ndk-bundle/platforms/android-3/arch-arm/usr/include/inttypes.h:
 
-G:/Users/Ami/AppData/Local/Android/sdk/ndk-bundle/platforms/android-3/arch-arm/usr/include/inttypes.h:
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioEncoder.h:
+
+E:/working/FromRajib/GitIPV/AndroidTestClientVE_FTest/app/src/main/jni/videoengine/OthersLib/jni/../../../videoengine/VideoEngineController/AudioDecoder.h:
