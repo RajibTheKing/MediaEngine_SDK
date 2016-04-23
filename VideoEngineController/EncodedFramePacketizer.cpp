@@ -91,7 +91,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
             m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize, true);
             CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
-            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iFrameNumber, nPacketNumber);
+            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
         }
         else
         {

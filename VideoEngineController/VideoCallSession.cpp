@@ -36,7 +36,8 @@ m_bCaclculationStartTime(0),
 m_bHighResolutionSupportedForOwn(false),
 m_bHighResolutionSupportedForOpponent(false),
 m_bReinitialized(false),
-m_bResolutionNegotiationDone(false)
+m_bResolutionNegotiationDone(false),
+m_pVersionController(NULL)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -195,7 +196,15 @@ CVideoCallSession::~CVideoCallSession()
 	}
 
 	m_lfriendID = -1;
-
+    
+    if(NULL  != m_pVersionController)
+    {
+        delete m_pVersionController;
+        m_pVersionController = NULL;
+        
+        
+    }
+    
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
 }
 
@@ -206,6 +215,8 @@ LongLong CVideoCallSession::GetFriendID()
 
 void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
+    m_pVersionController = new CVersionController();
+    
     g_llFirstFrameReceiveTime = 0;
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
 
@@ -282,6 +293,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
     
 
 #ifdef FIRST_BUILD_COMPATIBLE
+    
 	if (!g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) == 0xC0)
 	{
 		g_bIsVersionDetectableOpponent = true;
@@ -361,7 +373,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
 			if(nApproximateAverageFrameInterval > 10) {
 				Locker lock(*m_pVideoCallSessionMutex);
-                printf("MaksudVai--> nApproximateAverageFrameInterval = %d\n", nApproximateAverageFrameInterval);
+                //printf("MaksudVai--> nApproximateAverageFrameInterval = %d\n", nApproximateAverageFrameInterval);
 				g_FPSController.SetClientFPS(1000 / nApproximateAverageFrameInterval);
 			}
 		}
@@ -386,7 +398,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
     g_TimeTraceFromCaptureToSend[g_CapturingFrameCounter] = m_Tools.CurrentTimestamp();
     if(g_CapturingFrameCounter<30)
-        printf("Frame %d --> Capture Time = %lld\n", g_CapturingFrameCounter, m_Tools.CurrentTimestamp());
+        printf("Frame %d --> Trying to Set --> %d..... Capture Time = %lld\n", g_CapturingFrameCounter, nCaptureTimeDiff, m_Tools.CurrentTimestamp());
     
     g_CapturingFrameCounter++;
     

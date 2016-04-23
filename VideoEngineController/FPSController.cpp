@@ -270,7 +270,7 @@ bool CFPSController::IsProcessableFrame()
 
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "PushPacketForDecoding:: ClientFPS "+tools.DoubleToString(m_ClientFPS));
     
-    printf("FPSCheck--> m_nOwnFPS = %d, m_ClientFPS = %lf\n", m_nOwnFPS, m_ClientFPS);
+    //printf("FPSCheck--> m_nOwnFPS = %d, m_ClientFPS = %lf\n", m_nOwnFPS, m_ClientFPS);
     
     if(m_nOwnFPS + FPS_COMPARISON_EPS > m_ClientFPS) return true;
 

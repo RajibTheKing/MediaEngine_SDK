@@ -206,14 +206,11 @@ void CSendingThread::SendingThreadProcedure()
 #endif
 
 #if 0
-                packetHeader.setPacketHeader(m_EncodedFrame + 1);
-                //printf("CapturingToSending TimeDiff for Frame, %d = %lld\n", packetHeader.getFrameNumber(), m_Tools.CurrentTimestamp() - g_TimeTraceFromCaptureToSend[packetHeader.getFrameNumber()]);
-                
-                if(packetHeader.getFrameNumber() == 0)
-                    printf("Frame %d --> Send Dequeue Time = %lld\n", packetHeader.getFrameNumber(), m_Tools.CurrentTimestamp());
+
                 
                 
-                m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+                
+                //m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
                 
                 //unsigned char *pEncodedFrame = m_EncodedFrame;
                 //m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize, true);

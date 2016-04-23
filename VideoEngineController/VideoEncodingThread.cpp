@@ -153,7 +153,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             
             if(g_PrevEncodeTime!=0)
                 m_CalculateEncodingTimeDiff.UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
-            printf("TheVampireEngg --> EncodingTime Diff = %lld\n, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
+            //printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
             g_PrevEncodeTime = m_Tools.CurrentTimestamp();
             
             

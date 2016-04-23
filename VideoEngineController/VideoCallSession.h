@@ -18,6 +18,7 @@
 #include "VideoDecodingThread.h"
 #include "DepacketizationThread.h"
 #include "SendingThread.h"
+#include "VersionController.h"
 
 using namespace std;
 
@@ -132,6 +133,7 @@ private:
 
 	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
     
+    CVersionController *m_pVersionController;
 
 protected:
 

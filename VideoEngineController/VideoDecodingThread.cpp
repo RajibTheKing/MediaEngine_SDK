@@ -187,7 +187,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
                     printf("Increasing   nMaxDecodingTime to %lld\n", m_nMaxDecodingTime);
 				m_nMaxDecodingTime = max(m_nMaxDecodingTime, decodingTime);
                 
-				//if (0 == (m_iDecodedFrameCounter & 3))
+				if (0 == (m_iDecodedFrameCounter & 3))
 				{
 					m_dbAverageDecodingTime = m_dbTotalDecodingTime / m_iDecodedFrameCounter;
 					m_dbAverageDecodingTime *= 1.5;
