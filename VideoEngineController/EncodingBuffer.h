@@ -16,8 +16,8 @@ public:
 	CEncodingBuffer();
 	~CEncodingBuffer();
 
-	int Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int nCaptureTimeDifference);
-	int DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference);
+	int Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int nCaptureTimeDifference, int device_orientation);
+	int DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference, int &device_orientation);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 
@@ -36,6 +36,7 @@ private:
 
 	int m_naBufferCaptureTimeDifferences[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 	long long m_llaBufferInsertionTimes[MAX_VIDEO_ENCODER_BUFFER_SIZE];
+	int m_naDevice_orientation[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 
 	SmartPointer<CLockHandler> m_pEncodingBufferMutex;
 };

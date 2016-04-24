@@ -81,6 +81,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	int packetNumber = packetHeader.getPacketNumber();
 	int packetLength = packetHeader.getPacketLength();
     unsigned int timeStampDiff = packetHeader.getTimeStamp();
+	int orientation = packetHeader.GetDeviceOrientation();
 
 //	if(g_ArribalTime.find(frameNumber) == g_ArribalTime.end()) {
 
@@ -134,6 +135,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
 
 	m_mFrameTimeStamp[frameNumber] = timeStampDiff;
+	m_mFrameOrientation[frameNumber] = orientation;
 
 	if (frameNumber < m_FrontFrame)		//Very old frame
 	{
@@ -230,7 +232,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 }
 
 
-int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight)
+int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight, int &nOrientation)
 {
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
 
@@ -239,6 +241,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 		return -1;
 
 	nEcodingTime = GetEncodingTime(m_FrontFrame);
+	nOrientation = GetOrientation(m_FrontFrame);
 
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
 //							   " GetReceivedFrame : Fron: " +
@@ -399,6 +402,9 @@ void CEncodedFrameDepacketizer::ClearFrame(int index, int frame)
 		if( m_mFrameTimeStamp.find(frame) != m_mFrameTimeStamp.end() )
 			m_mFrameTimeStamp.erase (frame);
 
+		if( m_mFrameOrientation.find(frame) != m_mFrameOrientation.end() )
+			m_mFrameOrientation.erase (frame);
+
 		m_CVideoPacketBuffer[index].Reset();
 		m_AvailableIndexes.insert(index);
 		m_FrameTracker.erase(frame);
@@ -412,5 +418,12 @@ int CEncodedFrameDepacketizer::GetEncodingTime(int nFrameNumber)
 {
 	if(m_mFrameTimeStamp.find(nFrameNumber) != m_mFrameTimeStamp.end())
 		return m_mFrameTimeStamp[nFrameNumber];
+	return -1;
+}
+
+int CEncodedFrameDepacketizer::GetOrientation(int nFrameNumber)
+{
+	if(m_mFrameOrientation.find(nFrameNumber) != m_mFrameOrientation.end())
+		return m_mFrameOrientation[nFrameNumber];
 	return -1;
 }

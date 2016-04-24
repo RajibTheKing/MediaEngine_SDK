@@ -36,7 +36,7 @@ public:
 	LongLong GetFriendID();
 	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	CVideoEncoder* GetVideoEncoder();
-	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size);
+	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 

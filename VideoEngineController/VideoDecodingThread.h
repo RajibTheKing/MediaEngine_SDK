@@ -28,7 +28,7 @@ public:
 	void DecodingThreadProcedure();
 	static void *CreateDecodingThread(void* param);
 
-	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff);
+	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation);
 
 private:
 	CVideoCallSession* m_pVideoCallSession;

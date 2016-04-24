@@ -17,7 +17,8 @@ CRenderingBuffer::~CRenderingBuffer()
 
 }
 
-int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth)
+int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth,
+							int nOrientation)
 {
     
 	Locker lock(*m_pRenderingBufferMutex);
@@ -28,6 +29,7 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
 	m_naBufferFrameNumbers[m_iPushIndex] = iFrameNumber;
 	m_naBufferVideoHeights[m_iPushIndex] = nVideoHeight;
 	m_naBufferVideoWidths[m_iPushIndex] = nVideoWidth;
+	m_naBufferVideoOrientations[m_iPushIndex] = nOrientation;
 
 	m_llaBufferCaptureTimeDifferences[m_iPushIndex] = llCaptureTimeDifference;
 	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
@@ -48,7 +50,8 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
     return 1;
 }
 
-int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth, int &nrTimeDifferenceInQueue)
+int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth,
+							  int &nrTimeDifferenceInQueue, int &nOrientation)
 {
 	Locker lock(*m_pRenderingBufferMutex);
 
@@ -64,6 +67,7 @@ int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDiffe
 		irFrameNumber = m_naBufferFrameNumbers[m_iPopIndex];
 		nrVideoHeight = m_naBufferVideoHeights[m_iPopIndex];
 		nrVideoWidth = m_naBufferVideoWidths[m_iPopIndex];
+		nOrientation = m_naBufferVideoOrientations[m_iPopIndex];
 
 		memcpy(ucaDecodedVideoFrameData, m_uc2aDecodedVideoDataBuffer[m_iPopIndex], nLength);
 

@@ -32,6 +32,8 @@ void CPacketHeader::setPacketHeader(unsigned char *headerData)
         setPacketNumber(headerData + 7);
         setTimeStamp(headerData + 8);
         setPacketLength(headerData + 12);
+
+        SetDeviceOrientation(headerData + 4);
     }
     else
     {
@@ -47,8 +49,9 @@ void CPacketHeader::setPacketHeader(unsigned char *headerData)
 }
 
 void CPacketHeader::setPacketHeader(unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
-                             unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength)
+                             unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength, int deviceOrientation)
 {
+    CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, " device orientation from packet headr -- >> "+ Tools::IntegertoStringConvert(deviceOrientation));
     m_cVersionCode = uchVersion;
     setFrameNumber(FrameNumber);
     setNumberOfPacket(NumberOfPacket);
@@ -57,6 +60,8 @@ void CPacketHeader::setPacketHeader(unsigned char uchVersion, unsigned int Frame
     setFPS(FPS);
     setRetransSignal(RetransSignal);
     setPacketLength(PacketLength);
+    SetDeviceOrientation(deviceOrientation);
+
 }
 
 int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
@@ -70,7 +75,10 @@ int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
         data[index++] = (m_iFrameNumber >> 8);
         data[index++] = m_iFrameNumber;
 
-        data[index++] = m_iRetransSignal;
+        data[index] = m_iRetransSignal;
+        data[index] |= (m_iDeviceOrientation & 3) << 1;
+
+        index++;
 
         data[index++] = m_cVersionCode;
 
@@ -252,4 +260,19 @@ int CPacketHeader::GetIntFromChar(unsigned char *packetData, int index, int nLen
     }
 
     return result;
+}
+
+int CPacketHeader::SetDeviceOrientation(unsigned char *packetData)
+{
+    m_iDeviceOrientation = (GetIntFromChar(packetData, 0, 1) >> 1 ) & 3;
+}
+
+int CPacketHeader::SetDeviceOrientation(int deviceOrientation)
+{
+    m_iDeviceOrientation = deviceOrientation;
+}
+
+int CPacketHeader::GetDeviceOrientation()
+{
+    return m_iDeviceOrientation;
 }

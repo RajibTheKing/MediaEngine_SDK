@@ -159,7 +159,7 @@ int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_d
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::EncodeAndTransfer got encoder");
 
 		if (pVideoEncoder)
-			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
+			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size, 0);
 		else 
 			return -1;
 	}
@@ -273,7 +273,7 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	}
 }
 
-int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type)
+int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -297,7 +297,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 				return -1;
 
 			pVideoSession->m_pVideoEncodingThread->SetOrientationType(orientation_type);
-			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
+			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size, device_orientation);
 		}
 		else
 			return -1;

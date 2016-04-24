@@ -17,7 +17,7 @@ CEncodingBuffer::~CEncodingBuffer()
 
 }
 
-int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int nCaptureTimeDifference)
+int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int nCaptureTimeDifference, int device_orientation)
 {
 	Locker lock(*m_pEncodingBufferMutex);
     
@@ -27,7 +27,8 @@ int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength
 
 	m_naBufferCaptureTimeDifferences[m_iPushIndex] = nCaptureTimeDifference;
 	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
-    
+	m_naDevice_orientation[m_iPushIndex] = device_orientation;
+
 	if (m_nQueueSize == m_nQueueCapacity)
     {
         IncreamentIndex(m_iPopIndex);
@@ -44,7 +45,7 @@ int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength
     return 1;   
 }
 
-int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference)
+int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference, int &device_orientation)
 {
 	Locker lock(*m_pEncodingBufferMutex);
 
@@ -62,6 +63,8 @@ int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTi
 
 		nrCaptureTimeDifference = m_naBufferCaptureTimeDifferences[m_iPopIndex];
 		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];
+
+		device_orientation = m_naDevice_orientation[m_iPopIndex];
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;

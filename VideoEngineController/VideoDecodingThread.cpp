@@ -84,7 +84,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	Tools toolsObject;
 
-	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
+	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime, nOrientation;
 	unsigned int nTimeStampDiff = 0;
 	long long nTimeStampBeforeDecoding, currentTime;
 	long long nMaxDecodingTime = 0;
@@ -112,7 +112,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		currentTime = toolsObject.CurrentTimestamp();
 		nExpectedTime = currentTime - m_pVideoCallSession->GetShiftedTime();
 
-		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0);
+		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0, nOrientation);
 
 		if (nFrameLength>-1) {
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#$Dec# FN: " +
@@ -128,7 +128,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 																		 nExpectedTime) + " -> " +
 																 m_Tools.IntegertoStringConvert(
 																		 nExpectedTime -
-																		 nEncodingTime));
+																		 nEncodingTime) + "Orientation = " +
+																 m_Tools.IntegertoStringConvert(nOrientation));
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#$ Cur: " +m_Tools.LongLongToString(currentTime) +" diff: "+m_Tools.LongLongToString(currentTime - g_ArribalTime[nFrameNumber]));
 		}
 		if (-1 == nFrameLength) 
@@ -160,7 +161,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			*/
 
 
-			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime);
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime, nOrientation);
 			//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 			//			toolsObject.SOSleep(100);
 
@@ -194,7 +195,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
-int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
+int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 	long long dectime = m_Tools.CurrentTimestamp();
@@ -225,11 +226,11 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
 
 #if defined(_DESKTOP_C_SHARP_)
-	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #else
 
-	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #endif
 }

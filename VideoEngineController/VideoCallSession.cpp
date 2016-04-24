@@ -318,7 +318,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	return true;
 }
 
-int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
+int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
 
@@ -353,7 +353,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	int nCaptureTimeDiff = currentTimeStamp - m_llFirstFrameCapturingTimeStamp;
 
-	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff);
+	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff, device_orientation);
 
 //	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding Queue packetSize " + Tools::IntegertoStringConvert(in_size));
 

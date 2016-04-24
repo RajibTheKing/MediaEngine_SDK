@@ -137,14 +137,14 @@ int CInterfaceOfAudioVideoEngine::SendAudioData(const IPVLongType llFriendID, sh
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType)
+int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->SendVideoData(llFriendID, in_data, unLength, nOrientationType);
+	int iReturnedValue = m_pcController->SendVideoData(llFriendID, in_data, unLength, nOrientationType, device_orientation);
 
 	return iReturnedValue;
 }
