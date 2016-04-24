@@ -9,6 +9,8 @@
 #include "PacketHeader.h"
 #include "BitRateController.h"
 #include "EncodedFrameDepacketizer.h"
+#include "VersionController.h"
+
 
 #include <thread>
 
@@ -19,7 +21,7 @@ class CVideoDepacketizationThread
 
 public:
 
-	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter);
+	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController);
 	~CVideoDepacketizationThread();
 
 	void StartDepacketizationThread();
@@ -52,8 +54,9 @@ private:
 	unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	Tools m_Tools;
-
-	SmartPointer<std::thread> pDepacketizationThread;
+    CVersionController *m_pVersionController;
+    
+    SmartPointer<std::thread> pDepacketizationThread;
 };
 
 #endif 

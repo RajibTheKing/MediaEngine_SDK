@@ -12,7 +12,7 @@ extern CFPSController g_FPSController;
 
 CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession) :
 
-m_iFrameNumber(0),
+m_iFrameNumber(FPS_MAXIMUM),
 m_llFriendID(llFriendID),
 m_pEncodingBuffer(pEncodingBuffer),
 m_pBitRateController(pBitRateController),
@@ -137,7 +137,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
 		m_bIsThisThreadStarted = true;
-
+        
+        printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
+        if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1)
+        {
+            
+           m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, PACKET_HEADER_LENGTH_NO_VERSION + 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, true);
+            toolsObject.SOSleep(20);
+            continue;
+        }
+        
 		if (m_pEncodingBuffer->GetQueueSize() == 0)
 		{
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time buffer size 0");
@@ -145,6 +154,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		}
 		else
 		{
+            
 			int timeDiff;
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");

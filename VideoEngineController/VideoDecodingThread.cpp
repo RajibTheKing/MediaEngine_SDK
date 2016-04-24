@@ -124,8 +124,9 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0);
 
-		if (nFrameLength>-1) {
-			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#$Dec# FN: " +
+		if (nFrameLength>-1)
+        {
+			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG || INSTENT_TEST_LOG ,"#$Dec# FN: " +
 																 m_Tools.IntegertoStringConvert(
 																		 nFrameNumber) + "  Len: " +
 																 m_Tools.IntegertoStringConvert(
@@ -140,6 +141,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 																		 nExpectedTime -
 																		 nEncodingTime));
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#$ Cur: " +m_Tools.LongLongToString(currentTime) +" diff: "+m_Tools.LongLongToString(currentTime - g_ArribalTime[nFrameNumber]));
+            
+            
 		}
         
         
@@ -247,6 +250,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     
     
+    
+     
     if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {
         m_Counter++;
@@ -271,6 +276,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             m_pVideoCallSession->DecideHighResolatedVideo(false);
         }
     }
+     
+    
     
     
     if(m_FPS_TimeDiff==0) m_FPS_TimeDiff = m_Tools.CurrentTimestamp();

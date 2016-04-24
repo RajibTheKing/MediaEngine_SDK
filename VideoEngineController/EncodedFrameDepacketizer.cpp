@@ -5,8 +5,8 @@
 #include "ResendingBuffer.h"
 #include "Globals.h"
 
-extern bool g_bIsVersionDetectableOpponent;
-extern unsigned char g_uchSendPacketVersion;
+//extern bool g_bIsVersionDetectableOpponent;
+//extern unsigned char g_uchSendPacketVersion;
 //extern int g_uchOpponentVersion;
 
 //extern PairMap g_timeInt;

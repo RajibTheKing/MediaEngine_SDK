@@ -10,8 +10,8 @@
 
 extern CFPSController g_FPSController;
 
-extern bool g_bIsVersionDetectableOpponent;
-extern unsigned char g_uchSendPacketVersion;
+//extern bool g_bIsVersionDetectableOpponent;
+//extern unsigned char g_uchSendPacketVersion;
 extern long long g_llFirstFrameReceiveTime;
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
 
@@ -41,13 +41,15 @@ m_pVersionController(NULL)
 {
 	m_miniPacketBandCounter = 0;
 
-#ifdef FIRST_BUILD_COMPATIBLE
-	g_bIsVersionDetectableOpponent = false;
-	g_uchSendPacketVersion = 0;
-#else
-	g_bIsVersionDetectableOpponent = true;
-	g_uchSendPacketVersion = 1;
-#endif
+//#ifdef FIRST_BUILD_COMPATIBLE
+//	//g_bIsVersionDetectableOpponent = false;
+//	//g_uchSendPacketVersion = 0;
+//    
+//    
+//#else
+//	g_bIsVersionDetectableOpponent = true;
+//	g_uchSendPacketVersion = 1;
+//#endif
 
 	//Resetting Global Variables.
 
@@ -244,7 +246,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
-	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
+	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
 
@@ -291,14 +293,26 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
 {
     
-
+    CPacketHeader pH;
+    pH.setPacketHeader(in_data);
+    if(pH.getNumberOfPacket() == 0)
+    {
+        printf("TheVersion--> Dummy Packet Found\n");
+    }
+    else
+    {
+        printf("TheVersion--> Real Packet Found, (FN,PN) = (%d, %d)\n", pH.getFrameNumber(), pH.getPacketNumber());
+    }
 #ifdef FIRST_BUILD_COMPATIBLE
     
-	if (!g_bIsVersionDetectableOpponent && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) == 0xC0)
+	if (!m_pVersionController->GetOpponentVersionCompatibleFlag() && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) == 0xC0)
 	{
-		g_bIsVersionDetectableOpponent = true;
-		g_uchSendPacketVersion = VIDEO_VERSION_CODE;
-		//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$$$# ######################################## Version #################################################");		
+		//g_bIsVersionDetectableOpponent = true;
+		//g_uchSendPacketVersion = VIDEO_VERSION_CODE;
+		//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$$$# ######################################## Version #################################################");
+        
+        
+        m_pVersionController->SetOpponentVersionCompatibleFlag(true);
 	}
 #endif
 
@@ -356,6 +370,12 @@ map<int, long long> g_TimeTraceFromCaptureToSend;
 int g_CapturingFrameCounter=0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size)
 {
+    if(GetVersionController()->GetCurrentCallVersion() == -1)
+    {
+        return 1;
+    }
+    
+    
 	if (m_pVideoEncodingThread->IsThreadStarted() == false)
 		return 1;
 
@@ -442,7 +462,8 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 
 void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, int nMiniPacketType)
 {
-	unsigned char uchVersion = g_uchSendPacketVersion;
+	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
+    
 	CPacketHeader PacketHeader;
 
 	if (nMiniPacketType == BITRATE_TYPE_MINIPACKET)
@@ -588,6 +609,11 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
     
     //End of  Opponent resolution support checking
 }
+CVersionController* CVideoCallSession::GetVersionController()
+{
+    return m_pVersionController;
+    
+}
 bool CVideoCallSession::GetResolutionNegotiationStatus()
 {
     return m_bResolutionNegotiationDone;
@@ -635,7 +661,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 //	m_pVideoRenderingThread = new CVideoRenderingThread(m_lfriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
 //   m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
     
-	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(m_lfriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter);
+	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(m_lfriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController);
     
 
     

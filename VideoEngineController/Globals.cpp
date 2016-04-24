@@ -8,6 +8,6 @@
 CFPSController g_FPSController;
 //PairMap g_timeInt;
 
-bool g_bIsVersionDetectableOpponent = false;
-unsigned char g_uchSendPacketVersion = 0;
+//bool g_bIsVersionDetectableOpponent = false;
+//unsigned char g_uchSendPacketVersion = 0;
 //int g_uchOpponentVersion = -1;

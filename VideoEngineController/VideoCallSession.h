@@ -77,6 +77,7 @@ public:
     bool GetReinitializationStatus();
     void OperationForResolutionControl(unsigned char* in_data, int in_size);
     bool GetResolutionNegotiationStatus();
+    CVersionController* GetVersionController();
     
 
 private:

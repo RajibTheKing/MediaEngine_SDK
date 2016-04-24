@@ -7,9 +7,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern unsigned char g_uchSendPacketVersion;						// bring check
+//extern unsigned char g_uchSendPacketVersion;						// bring check
 
-CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter) :
+CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController) :
 
 m_FriendID(friendID),
 m_pVideoPacketQueue(VideoPacketQueue),
@@ -25,6 +25,9 @@ m_miniPacketBandCounter(miniPacketBandCounter)
 	ExpectedFramePacketPair.second = 0;
 
 	iNumberOfPacketsInCurrentFrame = 0;
+    m_pVersionController = pVersionController;
+    
+    
 }
 
 CVideoDepacketizationThread::~CVideoDepacketizationThread()
@@ -104,8 +107,10 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		queSize = m_pVideoPacketQueue->GetQueueSize();
 
 		miniPacketQueueSize = m_pMiniPacketQueue->GetQueueSize();
+        printf("TheVersion--> Depcackatization Thread retQueueSize = %d, minQueueSize  =  %d\n", queSize, miniPacketQueueSize);
 
 		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
+        
 
 		if (0 == queSize && 0 == miniPacketQueueSize)
 		{
@@ -125,7 +130,6 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         
 
 		m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
-        
         
         
 		CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
@@ -152,6 +156,42 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 			continue;
 		}
+        
+        
+        if(m_RcvdPacketHeader.getNumberOfPacket() == 0)
+        {
+            if(m_pVersionController->GetOpponentVersion() == -1)
+            {
+                m_pVersionController->SetOpponentVersion((int)m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION]);
+                m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+                
+                
+                printf("TheVersion --> Setting current Call Version to %d\n", m_pVersionController->GetCurrentCallVersion());
+            }
+            
+            continue;
+        }
+        
+        
+        if(m_pVersionController->GetOpponentVersionCompatibleFlag() == true)
+        {
+            if (m_pVersionController->GetOpponentVersion() == -1 && m_RcvdPacketHeader.getVersionCode()>0)
+            {
+                m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());
+                
+                m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+            }
+            
+        }
+        else if(m_pVersionController->GetOpponentVersion() == -1)
+        {
+            m_pVersionController->SetOpponentVersion(0);
+            
+            m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+        }
+        
+        
+        
 
 #if 0
 		ExpectedPacket();	//Calculate Expected Video Packet For Debugging.
