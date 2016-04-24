@@ -233,7 +233,7 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callB
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int))
+void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int))
 {
 	if (NULL != m_pcController)
 	{

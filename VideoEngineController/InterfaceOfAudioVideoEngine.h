@@ -24,7 +24,7 @@ public:
      int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
-     int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation);
+     int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
      int SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight);
      int SetBitRate(const IPVLongType llFriendID, int nBitRate);
      bool StopAudioCall(const IPVLongType llFriendID);
@@ -34,7 +34,7 @@ public:
      void UninitializeLibrary();
     
      void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
-     void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int, int, int));
+     void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int, int, int, int));
 	 void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
      void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
      void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));

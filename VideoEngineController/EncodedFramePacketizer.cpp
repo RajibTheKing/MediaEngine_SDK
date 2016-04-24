@@ -53,10 +53,10 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 		if (nPacketizedDataLength + m_nPacketSize > unLength)
 			m_nPacketSize = unLength - nPacketizedDataLength;
 
-		if (uchOpponentVersion)
+		if (uchOpponentVersion == 1)
 		{
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, "dv 1");
-			m_cPacketHeader.setPacketHeader(uchOpponentVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
+			m_cPacketHeader.setPacketHeader(uchOpponentVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType);
 		}
 		else if (uchOpponentVersion >= 2 )
 		{
@@ -65,7 +65,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 		else
 		{
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, "dv 3");
-			m_cPacketHeader.setPacketHeader(uchOpponentVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize, device_orientation);
+			m_cPacketHeader.setPacketHeader(uchOpponentVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize);
 		}
 
 		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);

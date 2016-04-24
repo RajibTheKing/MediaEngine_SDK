@@ -4,7 +4,7 @@
 #include "Tools.h"
 
 void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
-void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int) = NULL;
+void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int, int) = NULL;
 void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
 void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
 void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
@@ -18,11 +18,11 @@ void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberO
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent 2");
 }
 
-void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iOrientation)
+void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iDeviceOrientation)
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber));
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber) + " iOrientation --> " + Tools::IntegertoStringConvert(iDeviceOrientation));
     
-    notifyClientWithVideoDataCallback(eventType, data, dataLenth, iVideoHeight, iVideoWidth);
+    notifyClientWithVideoDataCallback(eventType, data, dataLenth, iVideoHeight, iVideoWidth, iDeviceOrientation);
 }
 
 void CEventNotifier::fireVideoNotificationEvent(int callID, int eventType)
@@ -68,7 +68,7 @@ void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPoi
     notifyClientWithPacketCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int))
+void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int))
 {
     notifyClientWithVideoDataCallback = callBackFunctionPointer;
 }
