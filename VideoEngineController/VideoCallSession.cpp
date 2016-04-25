@@ -13,7 +13,7 @@ extern CFPSController g_FPSController;
 //extern bool g_bIsVersionDetectableOpponent;
 //extern unsigned char g_uchSendPacketVersion;
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
+CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, bool bIsCheckCall) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(FPS_BEGINNING),
@@ -37,7 +37,9 @@ m_bHighResolutionSupportedForOwn(false),
 m_bHighResolutionSupportedForOpponent(false),
 m_bReinitialized(false),
 m_bResolutionNegotiationDone(false),
-m_pVersionController(NULL)
+m_pVersionController(NULL),
+m_bIsCheckCall(bIsCheckCall)
+
 {
 	m_miniPacketBandCounter = 0;
 
@@ -52,6 +54,11 @@ m_pVersionController(NULL)
 //#endif
 
 	//Resetting Global Variables.
+
+	if (m_bIsCheckCall == false)
+	{
+		m_bResolationCheck = true;
+	}
 
 	g_FPSController.Reset();
 
@@ -242,9 +249,9 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
-	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this);
+	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this, m_bIsCheckCall);
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
-	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
+	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController);
 

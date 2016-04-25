@@ -173,6 +173,18 @@ int CInterfaceOfAudioVideoEngine::SetBitRate(const IPVLongType llFriendID, int n
 	return iReturnedValue;
 }
 
+int CInterfaceOfAudioVideoEngine::CheckDeviceCapability(const IPVLongType llFriendID)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	int iReturnedValue = m_pcController->CheckDeviceCapability(llFriendID);
+
+	return iReturnedValue;
+}
+
 bool CInterfaceOfAudioVideoEngine::StopAudioCall(const IPVLongType llFriendID)
 {
 	if (NULL == m_pcController)

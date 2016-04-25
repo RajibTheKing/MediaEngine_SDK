@@ -34,7 +34,7 @@ public:
 
 	void WriteToFile(short* saDataToWriteToFile, int nLength);
 	void WriteToFile(unsigned char* ucaDataToWriteToFile, int nLength);
-	unsigned long long GetTotalSystemMemory();
+	static unsigned long long GetTotalSystemMemory();
 	unsigned long long GetAvailableSystemMemory();
 
 

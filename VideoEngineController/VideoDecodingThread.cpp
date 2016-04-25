@@ -8,7 +8,7 @@
 
 extern map<int,long long>g_ArribalTime;
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController, CVideoCallSession* pVideoCallSession) :
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall) :
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
 m_pVideoDecoder(videoDecoder),
@@ -17,7 +17,9 @@ g_FPSController(FPSController),
 m_pVideoCallSession(pVideoCallSession),
 m_FpsCounter(0),
 m_FPS_TimeDiff(0),
-m_Counter(0)
+m_Counter(0),
+m_bIsCheckCall(bIsCheckCall)
+
 {
 
 }

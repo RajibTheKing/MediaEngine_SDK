@@ -21,7 +21,7 @@ class CVideoDecodingThread
 
 public:
 
-	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *g_FPSController, CVideoCallSession* pVideoCallSession);
+	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *g_FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall);
 	~CVideoDecodingThread();
     void Reset();
 	void StartDecodingThread();
@@ -47,7 +47,9 @@ private:
 	CVideoDecoder *m_pVideoDecoder;								
 	CColorConverter *m_pColorConverter;							
 
-	CFPSController *g_FPSController;									
+	CFPSController *g_FPSController;	
+
+	bool m_bIsCheckCall;
 
 	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];

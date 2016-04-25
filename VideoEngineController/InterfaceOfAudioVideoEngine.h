@@ -27,6 +27,9 @@ public:
      int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType);
      int SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight);
      int SetBitRate(const IPVLongType llFriendID, int nBitRate);
+
+	 int CheckDeviceCapability(const IPVLongType llFriendID);
+
      bool StopAudioCall(const IPVLongType llFriendID);
      bool StopVideoCall(const IPVLongType llFriendID);
      void SetLoggerPath(std::string strLoggerPath);

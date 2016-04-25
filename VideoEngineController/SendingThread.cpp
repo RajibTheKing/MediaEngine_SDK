@@ -11,10 +11,13 @@
 
 extern map<int, long long> g_TimeTraceFromCaptureToSend;
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession) :
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall) :
+
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
-g_FPSController(FPSController)
+g_FPSController(FPSController),
+m_bIsCheckCall(bIsCheckCall)
+
 {
 	m_pVideoCallSession = pVideoCallSession;
 }
@@ -198,7 +201,9 @@ void CSendingThread::SendingThreadProcedure()
 			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, true);
 #else
 				printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
-				m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+
+				if(m_bIsCheckCall == false)
+					m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
 
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
 

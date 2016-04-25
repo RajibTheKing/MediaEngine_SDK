@@ -30,7 +30,7 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject);
+	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, bool bIsCheckCall=false);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -99,6 +99,8 @@ private:
 
 	int m_SlotResetLeftRange;
 	int m_SlotResetRightRange;
+
+	bool m_bIsCheckCall;
     
     long long mt_llCapturePrevTime;
     bool m_bResolationCheck;

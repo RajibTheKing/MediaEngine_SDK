@@ -9,12 +9,13 @@
 
 long long g_llFirstFrameReceiveTime;
 
-CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket, CVideoCallSession *pVideoCallSession) :
+CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket, CVideoCallSession *pVideoCallSession, bool bIsCheckCall) :
 
 m_RenderingBuffer(renderingBuffer),
 m_pCommonElementsBucket(commonElementsBucket),
 m_FriendID(friendID),
-m_lRenderCallTime(0)
+m_lRenderCallTime(0),
+m_bIsCheckCall(bIsCheckCall)
 
 {
     m_pVideoCallSession = pVideoCallSession;
@@ -175,6 +176,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             //CalculateFPS();
             
             //if(m_pVideoCallSession->GetResolutionNegotiationStatus() == true)
+
+			if(m_bIsCheckCall == false)
             {
                  m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
             }

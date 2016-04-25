@@ -27,6 +27,8 @@ public:
 	bool SetUserName(const LongLong& lUserName);
 	bool StartAudioCall(const LongLong& lFriendID);
 	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
+	bool StartTestAudioCall(const LongLong& lFriendID);
+	bool StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
@@ -34,8 +36,13 @@ public:
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type);
 	int SetHeightWidth(const LongLong& lFriendID, int width, int height); 
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
+
+	int CheckDeviceCapability(const LongLong& lFriendID);
+
 	bool StopAudioCall(const LongLong& lFriendID);
 	bool StopVideoCall(const LongLong& lFriendID);
+	bool StopTestAudioCall(const LongLong& lFriendID);
+	bool StopTestVideoCall(const LongLong& lFriendID);
 	void initializeEventHandler();
 	void SetLoggerPath(std::string);
     bool SetLoggingState(bool loggingState, int logLevel);
@@ -58,6 +65,14 @@ private:
 	Tools m_Tools;
 
 	CCommonElementsBucket *m_pCommonElementsBucket;
+
+	int m_nDeviceStrongness;
+	int m_nMemoryEnoughness;
+	int m_nEDVideoSupportablity;
+	int m_nHighFPSVideoSupportablity;
+
+	unsigned long long m_ullTotalDeviceMemory;
+
     
     SmartPointer<CLockHandler> m_pVideoSendMutex;
     SmartPointer<CLockHandler> m_pVideoReceiveMutex;

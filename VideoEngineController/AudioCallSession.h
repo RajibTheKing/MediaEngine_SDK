@@ -22,7 +22,7 @@ class CAudioCallSession
 
 public:
 
-	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject);
+	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall=false);
 	~CAudioCallSession();
 
 	CAudioEncoder* GetAudioEncoder();
@@ -53,6 +53,8 @@ private:
     CAudioDecoderBuffer m_AudioDecodingBuffer;
 	CAudioEncoder *m_pAudioEncoder;
 	CAudioDecoder *m_pAudioDecoder;
+
+	bool m_bIsCheckCall;
 
 	short m_saAudioEncodingFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];

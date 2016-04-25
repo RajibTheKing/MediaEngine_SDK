@@ -8,9 +8,10 @@
     #include <dispatch/dispatch.h>
 #endif
 
-CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject) :
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
 
-m_pCommonElementsBucket(pSharedObject)
+m_pCommonElementsBucket(pSharedObject),
+m_bIsCheckCall(bIsCheckCall)
 
 {
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
@@ -181,7 +182,10 @@ void CAudioCallSession::EncodingThreadProcedure()
             
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_ucaEncodedFrame);
             
-			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
+			if (m_bIsCheckCall == false)
+				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
+			else
+				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize);
 
             toolsObject.SOSleep(1);
             
@@ -270,7 +274,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #endif
 
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
+			if (m_bIsCheckCall==false)
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
 
             toolsObject.SOSleep(1);
         }

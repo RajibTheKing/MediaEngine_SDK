@@ -20,7 +20,7 @@ class CVideoRenderingThread
 
 public:
 
-	CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket* commonElementsBucket, CVideoCallSession *pVideoCallSession);
+	CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket* commonElementsBucket, CVideoCallSession *pVideoCallSession, bool bIsCheckCall);
 	~CVideoRenderingThread();
 
 	void StartRenderingThread();
@@ -44,6 +44,8 @@ private:
 	Tools m_Tools;
     int m_nRenderFrameCount;
     long long m_lRenderCallTime;
+
+	bool m_bIsCheckCall;
     
     CVideoCallSession *m_pVideoCallSession;
     
