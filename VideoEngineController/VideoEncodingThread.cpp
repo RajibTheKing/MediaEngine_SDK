@@ -12,7 +12,7 @@ extern CFPSController g_FPSController;
 
 CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession) :
 
-m_iFrameNumber(FPS_MAXIMUM),
+m_iFrameNumber(0),
 m_llFriendID(llFriendID),
 m_pEncodingBuffer(pEncodingBuffer),
 m_pBitRateController(pBitRateController),
