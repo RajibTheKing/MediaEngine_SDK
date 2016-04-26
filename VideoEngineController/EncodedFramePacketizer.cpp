@@ -110,7 +110,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         m_ucaPacket[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;*/
         
         
-        m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+        //m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
         
         
         if(m_pVideoCallSession->GetResolationCheck() == false)

@@ -50,7 +50,7 @@ private:
     CVideoCallSession *m_pVideoCallSession;
     
     CAverageCalculator m_RenderTimeCalculator;
-    
+    long long m_llRenderFrameCounter;
 	SmartPointer<std::thread> pRenderingThread;
 };
 

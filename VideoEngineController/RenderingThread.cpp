@@ -18,6 +18,7 @@ m_lRenderCallTime(0),
 m_bIsCheckCall(bIsCheckCall)
 
 {
+    m_llRenderFrameCounter = 0;
     m_pVideoCallSession = pVideoCallSession;
 }
 
@@ -112,6 +113,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 		}
 		else
 		{
+
             
 			int timeDiffForQueue;
 
@@ -119,6 +121,12 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             
             
             
+            m_llRenderFrameCounter++;
+            if(m_bIsCheckCall == true && m_llRenderFrameCounter<FPS_MAXIMUM*2)
+            {
+                printf("Skipping for frame = %lld\n", m_llRenderFrameCounter);
+                continue;
+            }
             
             
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() m_RenderingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
