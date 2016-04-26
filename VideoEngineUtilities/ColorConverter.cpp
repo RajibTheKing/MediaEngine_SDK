@@ -262,9 +262,39 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, 
 	for (int x = halfWidth - 1; x>-1; --x)
 		for (int y = halfHeight - 1; y > -1; --y)
 		{
-			int ind = (m_Multiplication[y][halfWidth] + x) * 2;
+			int ind = (m_Multiplication[y][halfWidth] + x) << 1 ;
 			pData[vIndex++] = m_pFrame[dimention + ind + 1];
 			pData[i++] = m_pFrame[dimention + ind];
+		}
+}
+
+void CColorConverter::mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData)
+{
+	int iWidth = m_iVideoWidth;
+	int iHeight =  m_iVideoHeight;
+
+	int i = 0;
+	for (int y = 0; y < iHeight; ++y)
+	{
+		for (int x = iWidth - 1; x > -1; --x)
+		{
+			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
+			i++;
+		}
+	}
+
+	int halfWidth = iWidth >> 1;
+	int halfHeight = iHeight >> 1;
+	int dimention = m_Multiplication[iHeight][iWidth];
+	int vIndex = dimention + iWidth;
+	int nYUV12Height = iHeight + halfHeight;
+
+	for (int y = iHeight; y < nYUV12Height; ++y)
+		for (int x = halfWidth - 1; x > -1; --x)
+		{
+			int ind = m_Multiplication[y][iWidth] + (x << 1);
+			pData[vIndex++] = m_pFrame[ind + 1];
+			pData[i++] = m_pFrame[ind];
 		}
 }
 
