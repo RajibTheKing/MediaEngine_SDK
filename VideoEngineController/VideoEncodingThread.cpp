@@ -26,6 +26,27 @@ m_FpsCounter(0)
 {
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
+    
+    if(m_bIsCheckCall == true)
+     {
+         for(int k=0;k<3;k++)
+         {
+             memset(m_ucaDummmyFrame[k], 0, sizeof(m_ucaDummmyFrame[k]));
+             
+             for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
+             {
+                 int color = rand()%255;
+                 for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
+                 {
+                     m_ucaDummmyFrame[k][i * this->m_pColorConverter->GetHeight() + j ] = color;
+                 }
+                 
+             }
+         }
+         
+     }
+    
+    
 }
 
 CVideoEncodingThread::~CVideoEncodingThread()
@@ -228,7 +249,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
-            if(m_bIsCheckCall == true)
+            /*if(m_bIsCheckCall == true)
             {
                 memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
                 
@@ -241,7 +262,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
                     
                 }
-            }
+            }*/
 
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
@@ -250,7 +271,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
             llCalculatingTime = m_Tools.CurrentTimestamp();
-			nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+            
+            if(m_bIsCheckCall)
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%3], nEncodingFrameSize, m_ucaEncodedFrame);
+            else
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+            
+            printf("The encoder returned , nENCODEDFrameSize = %d\n", nENCODEDFrameSize);
+            
 
 #else
 			long timeStampForEncoding = m_Tools.CurrentTimestamp();
@@ -305,7 +333,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
             
             
-            if(m_FPS_TimeDiff==0) m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+            if(m_FPS_TimeDiff==0)
+                m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
             
             if(m_Tools.CurrentTimestamp() -  m_FPS_TimeDiff < 1000 )
             {
