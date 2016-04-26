@@ -20,7 +20,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession , bool bIsCheckCall = false);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -65,6 +65,7 @@ private:
     CVideoCallSession *m_pVideoCallSession;
     long long m_FPS_TimeDiff;
     int m_FpsCounter;
+    bool m_bIsCheckCall;
     
 	SmartPointer<std::thread> pEncodingThread;
 };

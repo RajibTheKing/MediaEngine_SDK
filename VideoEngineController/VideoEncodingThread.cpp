@@ -10,7 +10,7 @@
 
 extern CFPSController g_FPSController;
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession) :
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, bool bIsCheckCall ) :
 
 m_iFrameNumber(0),
 m_llFriendID(llFriendID),
@@ -25,6 +25,7 @@ m_FPS_TimeDiff(0),
 m_FpsCounter(0)
 {
     m_pVideoCallSession = pVideoCallSession;
+    m_bIsCheckCall = bIsCheckCall;
 }
 
 CVideoEncodingThread::~CVideoEncodingThread()
@@ -138,7 +139,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 		m_bIsThisThreadStarted = true;
         
-        printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
+        //printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
         if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1)
         {
             
@@ -178,7 +179,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				continue;
 			}
-            
+        
             
 
 			m_pBitRateController->UpdateBitrate();
@@ -227,7 +228,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
-            /*if(m_pVideoCallSession->GetResolationCheck() == false)
+            if(m_bIsCheckCall == true)
             {
                 memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
                 
@@ -240,7 +241,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
                     
                 }
-            }*/
+            }
 
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);

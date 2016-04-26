@@ -250,9 +250,9 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
 	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this, m_bIsCheckCall);
-	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this);
+	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_bIsCheckCall);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
-	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
+	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this, m_bIsCheckCall);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
@@ -300,16 +300,6 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
 {
     
-    CPacketHeader pH;
-    pH.setPacketHeader(in_data);
-    if(pH.getNumberOfPacket() == 0)
-    {
-        printf("TheVersion--> Dummy Packet Found\n");
-    }
-    else
-    {
-        printf("TheVersion--> Real Packet Found, (FN,PN) = (%d, %d)\n", pH.getFrameNumber(), pH.getPacketNumber());
-    }
 #ifdef FIRST_BUILD_COMPATIBLE
     
 	if (!m_pVersionController->GetOpponentVersionCompatibleFlag() && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) == 0xC0)
@@ -541,6 +531,8 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
         m_bHighResolutionSupportedForOwn = true;
         //Eikhan thekee amra HighResolated video support diyee dibo
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
+        
+        m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480);
 
     }
     else
@@ -549,7 +541,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
         m_bHighResolutionSupportedForOwn = false;
         
         m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
-        ReInitializeVideoLibrary(352, 288);
+        //ReInitializeVideoLibrary(352, 288);
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
     }
 }

@@ -107,7 +107,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		queSize = m_pVideoPacketQueue->GetQueueSize();
 
 		miniPacketQueueSize = m_pMiniPacketQueue->GetQueueSize();
-        printf("TheVersion--> Depcackatization Thread retQueueSize = %d, minQueueSize  =  %d\n", queSize, miniPacketQueueSize);
+        //printf("TheVersion--> Depcackatization Thread retQueueSize = %d, minQueueSize  =  %d\n", queSize, miniPacketQueueSize);
 
 		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
         

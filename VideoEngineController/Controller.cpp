@@ -367,6 +367,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
     
+    
     Locker lock(*m_pVideoSendMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
@@ -453,6 +454,8 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID)
 
 	StartTestAudioCall(lFriendID);
 	StartTestVideoCall(lFriendID,480,640,0);
+    
+    return 1;
 }
 
 void CController::initializeEventHandler()

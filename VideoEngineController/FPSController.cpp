@@ -92,7 +92,7 @@ int CFPSController::GetMaxOwnProcessableFPS(){
 
 
 void CFPSController::SetClientFPS(double fps){
-    printf("MaksudVai--> SetClientFPS = %lf\n", fps);
+    //printf("MaksudVai--> SetClientFPS = %lf\n", fps);
     if(1 > fps)
     {
         return;

@@ -200,7 +200,7 @@ void CSendingThread::SendingThreadProcedure()
 			unsigned char *pEncodedFrame = m_EncodedFrame;
 			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, true);
 #else
-				printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
+				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 
 				if(m_bIsCheckCall == false)
 					m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);

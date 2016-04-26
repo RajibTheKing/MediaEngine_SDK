@@ -128,7 +128,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 		if (nFrameLength>-1)
         {
-			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG || INSTENT_TEST_LOG ,"#$Dec# FN: " +
+			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#$Dec# FN: " +
 																 m_Tools.IntegertoStringConvert(
 																		 nFrameNumber) + "  Len: " +
 																 m_Tools.IntegertoStringConvert(

@@ -112,7 +112,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         
         m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
         
-        /*
+        
         if(m_pVideoCallSession->GetResolationCheck() == false)
         {
             unsigned char *pEncodedFrame = m_ucaPacket;
@@ -141,7 +141,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "set HighResolutionSupportStatus 1, get = " + m_Tools.IntegertoStringConvert(m_cPacketHeader.GetOpponentResolution(m_ucaPacket+1)));
                 }
                 
-                printf("TheVersion--> Sending RealData\n");
+                //printf("TheVersion--> Sending RealData\n");
             }
             
             
@@ -149,7 +149,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
         }
-        */
+        
         
         
 		
