@@ -225,6 +225,39 @@ void CInterfaceOfAudioVideoEngine::SetLoggerPath(std::string strLoggerPath)
 	}
 }
 
+int CInterfaceOfAudioVideoEngine::StartAudioEncodeDecodeSession()
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->StartAudioEncodeDecodeSession();
+	}
+}
+
+int CInterfaceOfAudioVideoEngine::EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->EncodeAudioFrame(psaEncodingDataBuffer, nAudioFrameSize, ucaEncodedDataBuffer);
+	}
+}
+
+int CInterfaceOfAudioVideoEngine::DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->DecodeAudioFrame(ucaDecodedDataBuffer, nAudioFrameSize, psaDecodingDataBuffer);
+	}
+}
+
+int CInterfaceOfAudioVideoEngine::StopAudioEncodeDecodeSession()
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->StopAudioEncodeDecodeSession();
+	}
+}
+
+
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
 	if (NULL != m_pcController)

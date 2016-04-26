@@ -32,6 +32,11 @@ public:
      void SetLoggerPath(std::string strLoggerPath);
      bool SetLoggingState(bool bLoggingState, int nLogLevel);
      void UninitializeLibrary();
+
+    int StartAudioEncodeDecodeSession();
+    int EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer);
+    int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
+    int StopAudioEncodeDecodeSession();
     
      void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
      void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int, int, int, int));

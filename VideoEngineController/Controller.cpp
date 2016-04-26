@@ -5,7 +5,10 @@
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 
-CController::CController()
+CController::CController() :
+
+m_pAudioEncodeDecodeSession(NULL)
+
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
@@ -22,7 +25,8 @@ CController::CController()
 
 CController::CController(const char* sLoggerPath, int iLoggerPrintLevel) :
 logFilePath(sLoggerPath),
-iLoggerPrintLevel(iLoggerPrintLevel)
+iLoggerPrintLevel(iLoggerPrintLevel),
+m_pAudioEncodeDecodeSession(NULL)
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
@@ -59,6 +63,13 @@ CController::~CController()
 	{
 		delete m_pCommonElementsBucket;
 		m_pCommonElementsBucket = NULL;
+	}
+
+	if (NULL != m_pAudioEncodeDecodeSession)
+	{
+		delete m_pAudioEncodeDecodeSession;
+
+		m_pAudioEncodeDecodeSession = NULL;
 	}
     
     SHARED_PTR_DELETE(m_pVideoSendMutex);
@@ -387,6 +398,51 @@ bool CController::StopVideoCall(const LongLong& lFriendID)
     
     return bReturnedValue;
 }
+
+int CController::StartAudioEncodeDecodeSession()
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+		m_pAudioEncodeDecodeSession = new CAudioFileEncodeDecodeSession();
+
+	m_pAudioEncodeDecodeSession->StartAudioEncodeDecodeSession();
+}
+
+int CController::EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer)
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pAudioEncodeDecodeSession->EncodeAudioFile(psaEncodingDataBuffer, nAudioFrameSize, ucaEncodedDataBuffer);
+}
+
+int CController::DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer)
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pAudioEncodeDecodeSession->DecodeAudioFile(ucaDecodedDataBuffer, nAudioFrameSize, psaDecodingDataBuffer);
+}
+
+int CController::StopAudioEncodeDecodeSession()
+{
+	if (NULL != m_pAudioEncodeDecodeSession)
+	{
+		m_pAudioEncodeDecodeSession->StopAudioEncodeDecodeSession();
+
+		delete m_pAudioEncodeDecodeSession;
+
+		m_pAudioEncodeDecodeSession = NULL;
+
+		return 1;
+	}
+	else
+		return 0;
+}
+
 
 void CController::UninitializeLibrary()
 {

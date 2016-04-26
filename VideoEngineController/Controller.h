@@ -11,6 +11,7 @@
 #include "EventNotifier.h"
 #include "ThreadTools.h"
 #include "LockHandler.h"
+#include "AudioFileEncodeDecodeSession.h"
 
 using namespace std;
 
@@ -41,6 +42,11 @@ public:
     bool SetLoggingState(bool loggingState, int logLevel);
 	void UninitializeLibrary();
 
+	int StartAudioEncodeDecodeSession();
+	int EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer);
+	int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
+	int StopAudioEncodeDecodeSession();
+
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
@@ -48,7 +54,7 @@ public:
     void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 
     void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int));
-	
+
 private:
 
 	CEventNotifier m_EventNotifier;
@@ -56,6 +62,8 @@ private:
 	int iLoggerPrintLevel;
 	std::string logFilePath;
 	Tools m_Tools;
+
+	CAudioFileEncodeDecodeSession *m_pAudioEncodeDecodeSession;
 
 	CCommonElementsBucket *m_pCommonElementsBucket;
     
