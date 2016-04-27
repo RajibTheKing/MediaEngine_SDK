@@ -8,7 +8,7 @@
 #include "LogPrinter.h"
 #include "CommonElementsBucket.h"
 
-BitRateController::BitRateController():
+BitRateController::BitRateController(int nFPS):
 
     m_nBytesReceivedInMegaSlotInterval(0),
     m_nSlotIntervalCounter(0),
@@ -37,7 +37,8 @@ BitRateController::BitRateController():
 	m_nSlotCounterToUp(0),
 	m_dPreviousMegaSlotStatus(1),
 	m_nOwnNetworkType(NETWORK_TYPE_NOT_2G),
-	m_nGoodSlotCounterToUp(GOOD_MEGASLOT_TO_UP * GOOD_MEGASLOT_TO_UP_TOLERANCE)
+	m_nGoodSlotCounterToUp(GOOD_MEGASLOT_TO_UP * GOOD_MEGASLOT_TO_UP_TOLERANCE),
+	m_nCallFPS(nFPS)
 
 {
 
@@ -218,7 +219,7 @@ bool BitRateController::UpdateBitrate()
     
     
     
-    if(m_nFrameCounterBeforeEncoding%FRAME_RATE == 0 && m_nOppNotifiedByterate>0 && m_bSetBitRateCalled == false)
+	if (m_nFrameCounterBeforeEncoding % m_nCallFPS == 0 && m_nOppNotifiedByterate>0 && m_bSetBitRateCalled == false)
     {
         int nRet = -1, nRet2 = -1;
         int nCurrentBitRate = m_nOppNotifiedByterate * 8  * m_dFirstTimeBitRateChangeFactor;
@@ -266,9 +267,9 @@ void BitRateController::NotifyEncodedFrame(int &nrFrameSize)
 
 	m_nBytesSendInSlotInverval += nrFrameSize;
 
-    if(m_nFrameCounterBeforeEncoding % FRAME_RATE == 0)
+	if (m_nFrameCounterBeforeEncoding % m_nCallFPS == 0)
     {        
-        int iRatioHelperIndex = (m_nFrameCounterBeforeEncoding - FRAME_RATE) / FRAME_RATE;
+		int iRatioHelperIndex = (m_nFrameCounterBeforeEncoding - m_nCallFPS) / m_nCallFPS;
 
         if(m_bMegSlotCounterShouldStop == false)
         {

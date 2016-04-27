@@ -20,7 +20,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession , bool bIsCheckCall = false);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession , int nFPS, bool bIsCheckCall = false);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -54,6 +54,8 @@ private:
 	bool bEncodingThreadClosed;
 
 	bool m_bIsThisThreadStarted;
+
+	int m_nCallFPS;
     
     int mt_nTotalEncodingTimePerFrameRate;
     int mt_nCheckSlot;

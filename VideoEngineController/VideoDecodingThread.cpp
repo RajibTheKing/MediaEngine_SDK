@@ -8,7 +8,7 @@
 
 extern map<int,long long>g_ArribalTime;
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall) :
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
 m_pVideoDecoder(videoDecoder),
@@ -18,7 +18,8 @@ m_pVideoCallSession(pVideoCallSession),
 m_FpsCounter(0),
 m_FPS_TimeDiff(0),
 m_Counter(0),
-m_bIsCheckCall(bIsCheckCall)
+m_bIsCheckCall(bIsCheckCall),
+m_nCallFPS(nFPS)
 
 {
 
@@ -27,6 +28,11 @@ m_bIsCheckCall(bIsCheckCall)
 CVideoDecodingThread::~CVideoDecodingThread()
 {
 
+}
+
+void CVideoDecodingThread::InstructionToStop()
+{
+	bDecodingThreadRunning = false;
 }
 
 void CVideoDecodingThread::StopDecodingThread()
@@ -263,7 +269,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
                         +", CalculationStartTime = " + m_Tools.LongLongtoStringConvert(m_pVideoCallSession->GetCalculationStartTime())
                         +", CurrentTime = "+m_Tools.LongLongtoStringConvert(currentTimeStampForBrust));
     
-        if(m_Counter >= (FRAME_RATE - FPS_TOLERANCE_FOR_HIGH_RESOLUTION) && diff <= 1000)
+		if (m_Counter >= (m_nCallFPS - FPS_TOLERANCE_FOR_HIGH_RESOLUTION) && diff <= 1000)
         {
             //   m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
             m_pVideoCallSession->SetCalculationStartMechanism(false);
@@ -293,7 +299,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
         m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
         
         printf("Current Decoding FPS = %d\n", m_FpsCounter);
-        if(m_FpsCounter > (FRAME_RATE - FPS_TOLERANCE_FOR_FPS))
+		if (m_FpsCounter >(m_nCallFPS - FPS_TOLERANCE_FOR_FPS))
         {
             //kaj korte hobe
         }

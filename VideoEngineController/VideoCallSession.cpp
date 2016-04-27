@@ -13,7 +13,7 @@ extern CFPSController g_FPSController;
 //extern bool g_bIsVersionDetectableOpponent;
 //extern unsigned char g_uchSendPacketVersion;
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, bool bIsCheckCall) :
+CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, bool bIsCheckCall) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(FPS_BEGINNING),
@@ -23,7 +23,7 @@ m_EncodingFrameCounter(0),
 m_pEncodedFramePacketizer(NULL),
 m_ByteRcvInBandSlot(0),
 m_SlotResetLeftRange(0),
-m_SlotResetRightRange(FRAME_RATE),
+m_SlotResetRightRange(nFPS),
 m_pVideoEncoder(NULL),
 m_bSkipFirstByteCalculation(true),
 m_llTimeStampOfFirstPacketRcvd(-1),
@@ -38,7 +38,8 @@ m_bHighResolutionSupportedForOpponent(false),
 m_bReinitialized(false),
 m_bResolutionNegotiationDone(false),
 m_pVersionController(NULL),
-m_bIsCheckCall(bIsCheckCall)
+m_bIsCheckCall(bIsCheckCall),
+m_nCallFPS(nFPS)
 
 {
 	m_miniPacketBandCounter = 0;
@@ -79,7 +80,7 @@ m_bIsCheckCall(bIsCheckCall)
 	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject, m_SendingBuffer, this);
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
-	m_BitRateController = new BitRateController();
+	m_BitRateController = new BitRateController(m_nCallFPS);
 
 	m_BitRateController->SetSharedObject(sharedObject);
 
@@ -238,7 +239,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
 
-	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth);
+	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS /2 + 1);
 
 	g_FPSController.SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
@@ -250,9 +251,9 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
 	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, &g_FPSController, this, m_bIsCheckCall);
-	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_bIsCheckCall);
+	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
-	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this, m_bIsCheckCall);
+	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this, m_bIsCheckCall, m_nCallFPS);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
@@ -341,17 +342,17 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			}
 			else
 			{
-				m_miniPacketBandCounter = m_SlotResetLeftRange / FRAME_RATE;
+				m_miniPacketBandCounter = m_SlotResetLeftRange / m_nCallFPS;
                 
                 CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_TYPE_MINIPACKET);
 			}
 
-			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % FRAME_RATE);
+			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % m_nCallFPS);
             
             
-			m_SlotResetRightRange = m_SlotResetLeftRange + FRAME_RATE;
+			m_SlotResetRightRange = m_SlotResetLeftRange + m_nCallFPS;
 
 			m_ByteRcvInBandSlot = in_size - PACKET_HEADER_LENGTH;
 		}
@@ -531,9 +532,8 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
         m_bHighResolutionSupportedForOwn = true;
         //Eikhan thekee amra HighResolated video support diyee dibo
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
-        
+		ReInitializeVideoLibrary(352, 288);
         m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480);
-
     }
     else
     {
@@ -541,7 +541,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
         m_bHighResolutionSupportedForOwn = false;
         
         m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
-        //ReInitializeVideoLibrary(352, 288);
+        ReInitializeVideoLibrary(352, 288);
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
     }
 }
@@ -618,6 +618,21 @@ bool CVideoCallSession::GetResolutionNegotiationStatus()
     return m_bResolutionNegotiationDone;
 }
 
+void CVideoCallSession::StopDeviceAbilityChecking()
+{
+	long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
+	m_pVideoEncodingThread->StopEncodingThread();
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
+	m_pVideoDepacketizationThread->StopDepacketizationThread();
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
+	m_pVideoDecodingThread->InstructionToStop();
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
+	m_pVideoRenderingThread->StopRenderingThread();
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
+}
+
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
     return;
@@ -638,7 +653,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
 
-    m_pVideoEncoder->CreateVideoEncoder(iHeight , iWidth);
+	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1);
 	m_pColorConverter->SetHeightWidth(iHeight, iWidth);
 
 	m_SendingBuffer->ResetBuffer();
@@ -649,7 +664,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 	m_pVideoPacketQueue->ResetBuffer();
 	m_pMiniPacketQueue->ResetBuffer();
 
-	m_BitRateController = new BitRateController();
+	m_BitRateController = new BitRateController(m_nCallFPS);
     m_BitRateController->SetEncoder(m_pVideoEncoder);
     m_BitRateController->SetSharedObject(m_pCommonElementsBucket);
     

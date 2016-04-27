@@ -30,7 +30,7 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, bool bIsCheckCall=false);
+	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, bool bIsCheckCall = false);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -78,6 +78,8 @@ public:
     void OperationForResolutionControl(unsigned char* in_data, int in_size);
     bool GetResolutionNegotiationStatus();
     CVersionController* GetVersionController();
+
+	void StopDeviceAbilityChecking();
     
 
 private:
@@ -96,6 +98,8 @@ private:
 	long long m_llFirstFrameCapturingTimeStamp;
 
 	unsigned int m_miniPacketBandCounter;
+
+	int m_nCallFPS;
 
 	int m_SlotResetLeftRange;
 	int m_SlotResetRightRange;

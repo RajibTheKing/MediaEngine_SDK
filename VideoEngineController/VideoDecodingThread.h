@@ -21,7 +21,7 @@ class CVideoDecodingThread
 
 public:
 
-	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *g_FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall);
+	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *g_FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS);
 	~CVideoDecodingThread();
     void Reset();
 	void StartDecodingThread();
@@ -29,9 +29,12 @@ public:
 	void DecodingThreadProcedure();
 	static void *CreateDecodingThread(void* param);
 
+	void InstructionToStop();
+
 	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff);
 
 private:
+
 	CVideoCallSession* m_pVideoCallSession;
 	bool bDecodingThreadRunning;
 	bool bDecodingThreadClosed;
@@ -41,6 +44,8 @@ private:
 	int m_decodedFrameSize;
     
     int m_Counter;
+
+	int m_nCallFPS;
 
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
 	CRenderingBuffer *m_RenderingBuffer;						

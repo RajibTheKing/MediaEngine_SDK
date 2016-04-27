@@ -18,7 +18,7 @@ public:
 	CVideoEncoder(CCommonElementsBucket* pSharedObject);
 	~CVideoEncoder();
 
-	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth);
+	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval);
 	int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData);
 
     int SetBitrate(int nBitRate);

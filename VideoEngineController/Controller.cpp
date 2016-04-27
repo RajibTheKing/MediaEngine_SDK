@@ -125,9 +125,6 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 {
 	CAudioCallSession* pAudioSession;
 
-	//Locker lock1(*m_pAudioSendMutex);
-	//Locker lock2(*m_pAudioReceiveMutex);
-
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall");
@@ -136,7 +133,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket,true);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, DEVICE_ABILITY_CHECK_MOOD);
 
 		pAudioSession->InitializeAudioCallSession(lFriendID);
 
@@ -158,16 +155,13 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartVideoCall called");
 
-	//Locker lock1(*m_pVideoSendMutex);
-	//Locker lock2(*m_pVideoReceiveMutex);
-
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
 	if (!bExist)
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket,true);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, 25, DEVICE_ABILITY_CHECK_MOOD);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, iNetworkType);
 
@@ -179,7 +173,7 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 	}
 	else
 	{
-		pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
+		//pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
 		return false;
 	}
 }
@@ -199,7 +193,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, 25);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
@@ -440,6 +434,7 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID)
 
 	if (m_ullTotalDeviceMemory >= LEAST_MEMORY_OF_STRONG_DEVICE)
 	{
+		m_nDeviceStrongness = STATUS_ABLE;
 		m_nMemoryEnoughness = STATUS_ABLE;
 	}
 	else

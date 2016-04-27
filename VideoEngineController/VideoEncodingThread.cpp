@@ -10,7 +10,7 @@
 
 extern CFPSController g_FPSController;
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, bool bIsCheckCall ) :
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall) :
 
 m_iFrameNumber(0),
 m_llFriendID(llFriendID),
@@ -22,7 +22,9 @@ m_pEncodedFramePacketizer(pEncodedFramePacketizer),
 mt_nTotalEncodingTimePerFrameRate(0),
 m_bIsThisThreadStarted(false),
 m_FPS_TimeDiff(0),
-m_FpsCounter(0)
+m_FpsCounter(0),
+m_nCallFPS(nFPS)
+
 {
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
@@ -345,7 +347,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
                 
                 printf("Current Encoding FPS = %d\n", m_FpsCounter);
-                if(m_FpsCounter > (FRAME_RATE - FPS_TOLERANCE_FOR_FPS))
+				if (m_FpsCounter >(m_nCallFPS - FPS_TOLERANCE_FOR_FPS))
                 {
                     //kaj korte hobe
                 }

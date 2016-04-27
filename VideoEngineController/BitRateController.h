@@ -19,7 +19,7 @@ class BitRateController
 
 public:
 
-    BitRateController();
+	BitRateController(int nFPS);
     ~BitRateController();
 
     void SetSharedObject(CCommonElementsBucket* pcSharedObject);
@@ -47,6 +47,8 @@ private:
 	int m_nOpponentNetworkType;
 	int m_nOwnNetworkType;
 	bool m_bNetworkTypeMiniPacketReceived;
+
+	int m_nCallFPS;
 
 	map<int, long long>  m_TimeDiffMapHelper;
 

@@ -63,7 +63,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth)
 	return 1;
 }
 
-int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth)
+int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval)
 {
 	Locker lock(*m_pVideoEncoderMutex);
 
@@ -82,7 +82,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth)
 
 	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encoderParemeters.iTemporalLayerNum = 0;
-	encoderParemeters.uiIntraPeriod = I_INTRA_PERIOD;
+	encoderParemeters.uiIntraPeriod = nIFrameInterval;
 	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
 	encoderParemeters.bEnableSSEI = false;
 	encoderParemeters.bEnableFrameCroppingFlag = true;
@@ -111,7 +111,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth)
 
 	encoderParemeters.iPicWidth = spartialLayerConfiguration->iVideoWidth = m_nVideoWidth;
 	encoderParemeters.iPicHeight = spartialLayerConfiguration->iVideoHeight = m_nVideoHeight;
-	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)FRAME_RATE;
+	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)FPS;
 	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
 	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
     
