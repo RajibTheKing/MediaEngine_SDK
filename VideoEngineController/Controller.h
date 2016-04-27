@@ -71,6 +71,8 @@ private:
 	int m_nEDVideoSupportablity;
 	int m_nHighFPSVideoSupportablity;
 
+	int m_nDeviceSupportedCallFPS;
+
 	unsigned long long m_ullTotalDeviceMemory;
 
     

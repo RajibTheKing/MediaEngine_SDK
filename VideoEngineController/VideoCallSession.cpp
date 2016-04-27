@@ -13,7 +13,7 @@ extern CFPSController g_FPSController;
 //extern bool g_bIsVersionDetectableOpponent;
 //extern unsigned char g_uchSendPacketVersion;
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, bool bIsCheckCall) :
+CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(FPS_BEGINNING),
@@ -39,7 +39,8 @@ m_bReinitialized(false),
 m_bResolutionNegotiationDone(false),
 m_pVersionController(NULL),
 m_bIsCheckCall(bIsCheckCall),
-m_nCallFPS(nFPS)
+m_nCallFPS(nFPS),
+pnDeviceSupportedFPS(nrDeviceSupportedCallFPS)
 
 {
 	m_miniPacketBandCounter = 0;
@@ -225,9 +226,13 @@ LongLong CVideoCallSession::GetFriendID()
 
 void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
+	m_nVideoCallHeight = iVideoHeight;
+	m_nVideoCallWidth = iVideoWidth;
+
     m_pVersionController = new CVersionController();
     
     g_llFirstFrameReceiveTime = 0;
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
 
 	if (sessionMediaList.IsVideoEncoderExist(iVideoHeight, iVideoWidth))
@@ -532,16 +537,22 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
         m_bHighResolutionSupportedForOwn = true;
         //Eikhan thekee amra HighResolated video support diyee dibo
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
-		ReInitializeVideoLibrary(352, 288);
+		//ReInitializeVideoLibrary(352, 288);
+		StopDeviceAbilityChecking();
         m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480);
     }
     else
     {
         //Not Supported
         m_bHighResolutionSupportedForOwn = false;
-        
+
+		StopDeviceAbilityChecking();
         m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
-        ReInitializeVideoLibrary(352, 288);
+        //ReInitializeVideoLibrary(352, 288);
+
+		if (m_nVideoCallWidth < 640)
+			*pnDeviceSupportedFPS = 15;
+
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
     }
 }

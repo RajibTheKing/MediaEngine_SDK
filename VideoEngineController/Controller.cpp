@@ -10,7 +10,8 @@ CController::CController():
 m_nDeviceStrongness(STATUS_UNCHECKED),
 m_nMemoryEnoughness(STATUS_UNCHECKED),
 m_nEDVideoSupportablity(STATUS_UNCHECKED),
-m_nHighFPSVideoSupportablity(STATUS_UNCHECKED)
+m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
+m_nDeviceSupportedCallFPS(LOW_FRAME_RATE)
 
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
@@ -161,7 +162,7 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, 25, DEVICE_ABILITY_CHECK_MOOD);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, iNetworkType);
 
@@ -193,7 +194,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, 25);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
