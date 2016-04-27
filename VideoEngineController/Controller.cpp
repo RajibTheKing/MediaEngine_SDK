@@ -194,7 +194,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
@@ -417,7 +417,7 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 	return -1;
 }
 
-int CController::CheckDeviceCapability(const LongLong& lFriendID)
+int CController::CheckDeviceCapability(const LongLong& lFriendID, int width, int height)
 {
 	
 #if defined(TARGET_OS_WINDOWS_PHONE)
@@ -449,7 +449,7 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID)
 	}
 
 	StartTestAudioCall(lFriendID);
-	StartTestVideoCall(lFriendID,480,640,0);
+	StartTestVideoCall(lFriendID, height, width, 0);
     
     return 1;
 }

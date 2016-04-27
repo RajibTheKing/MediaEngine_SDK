@@ -57,7 +57,7 @@ pnDeviceSupportedFPS(nrDeviceSupportedCallFPS)
 
 	//Resetting Global Variables.
 
-	if (m_bIsCheckCall == false)
+	if (m_bIsCheckCall == LIVE_CALL_MOOD)
 	{
 		m_bResolationCheck = true;
 	}

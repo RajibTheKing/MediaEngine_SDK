@@ -37,7 +37,7 @@ public:
 	int SetHeightWidth(const LongLong& lFriendID, int width, int height); 
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
 
-	int CheckDeviceCapability(const LongLong& lFriendID);
+	int CheckDeviceCapability(const LongLong& lFriendID, int width, int height);
 
 	bool StopAudioCall(const LongLong& lFriendID);
 	bool StopVideoCall(const LongLong& lFriendID);

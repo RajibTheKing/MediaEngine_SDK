@@ -122,7 +122,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             
             
             m_llRenderFrameCounter++;
-            if(m_bIsCheckCall == true && m_llRenderFrameCounter<FPS_MAXIMUM*2)
+			if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD && m_llRenderFrameCounter<FPS_MAXIMUM * 2)
             {
                 printf("Skipping for frame = %lld\n", m_llRenderFrameCounter);
                 continue;
@@ -185,7 +185,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             
             //if(m_pVideoCallSession->GetResolutionNegotiationStatus() == true)
 
-			if(m_bIsCheckCall == false)
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
             {
                  m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
             }

@@ -182,7 +182,7 @@ void CAudioCallSession::EncodingThreadProcedure()
             
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_ucaEncodedFrame);
             
-			if (m_bIsCheckCall == false)
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
 				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
 			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize);
@@ -274,7 +274,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #endif
 
-			if (m_bIsCheckCall==false)
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
 
             toolsObject.SOSleep(1);

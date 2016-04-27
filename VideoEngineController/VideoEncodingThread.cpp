@@ -29,7 +29,7 @@ m_nCallFPS(nFPS)
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
     
-    if(m_bIsCheckCall == true)
+	if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD)
      {
          for(int k=0;k<3;k++)
          {

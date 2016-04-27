@@ -52,6 +52,7 @@
 #define STATUS_UNABLE 2
 
 #define DEVICE_ABILITY_CHECK_MOOD true
+#define LIVE_CALL_MOOD false
 
 #define LEAST_MEMORY_OF_STRONG_DEVICE 10
 
