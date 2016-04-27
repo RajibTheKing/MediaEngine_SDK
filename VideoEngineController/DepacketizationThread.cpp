@@ -9,7 +9,7 @@
 
 //extern unsigned char g_uchSendPacketVersion;						// bring check
 
-CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController) :
+CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession) :
 
 m_FriendID(friendID),
 m_pVideoPacketQueue(VideoPacketQueue),
@@ -18,8 +18,8 @@ m_pMiniPacketQueue(MiniPacketQueue),
 m_BitRateController(BitRateController),
 m_pEncodedFrameDepacketizer(EncodedFrameDepacketizer),
 m_pCommonElementsBucket(CommonElementsBucket),
-m_miniPacketBandCounter(miniPacketBandCounter)
-
+m_miniPacketBandCounter(miniPacketBandCounter),
+m_pVideoCallSession(pVideoCallSession)
 {
 	ExpectedFramePacketPair.first = 0;
 	ExpectedFramePacketPair.second = 0;
@@ -168,7 +168,19 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
                 
                 printf("TheVersion --> Setting current Call Version to %d\n", m_pVersionController->GetCurrentCallVersion());
             }
-            
+
+			bool bIs2GOpponentNetwork = (m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION + 1] & 0x01);
+			int nOpponentVideoCallQualityLevel = (m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION + 1] & 0x06) >> 1;
+
+			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel())
+			{
+				m_pVideoCallSession->SetOpponentVideoCallQualityLevel(nOpponentVideoCallQualityLevel);
+				m_pVideoCallSession->SetCurrentVideoCallQualityLevel( min( m_pVideoCallSession->GetOwnVideoCallQualityLevel(), m_pVideoCallSession->GetOpponentVideoCallQualityLevel() ) );
+			}
+
+			if (bIs2GOpponentNetwork)
+				m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_2G);
+
             continue;
         }
         

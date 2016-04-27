@@ -464,6 +464,10 @@ int BitRateController::GetOpponentNetworkType()
 	return m_nOpponentNetworkType;
 }
 
+void BitRateController::SetOpponentNetworkType(int nNetworkType){
+	m_nOpponentNetworkType = nNetworkType;
+}
+
 int BitRateController::GetOwnNetworkType()
 {
 	return m_nOwnNetworkType;

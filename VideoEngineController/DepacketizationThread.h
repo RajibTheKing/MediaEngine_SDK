@@ -21,7 +21,7 @@ class CVideoDepacketizationThread
 
 public:
 
-	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController);
+	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession);
 	~CVideoDepacketizationThread();
 
 	void StartDepacketizationThread();
@@ -37,6 +37,7 @@ private:
 	bool bDepacketizationThreadRunning;
 	bool bDepacketizationThreadClosed;
 
+	CVideoCallSession *m_pVideoCallSession;
 	CVideoPacketQueue *m_pVideoPacketQueue;						
 	CVideoPacketQueue *m_pRetransVideoPacketQueue;				
 	CVideoPacketQueue *m_pMiniPacketQueue;						

@@ -40,8 +40,10 @@ m_bResolutionNegotiationDone(false),
 m_pVersionController(NULL),
 m_bIsCheckCall(bIsCheckCall),
 m_nCallFPS(nFPS),
-pnDeviceSupportedFPS(nrDeviceSupportedCallFPS)
-
+pnDeviceSupportedFPS(nrDeviceSupportedCallFPS),
+m_nOwnVideoCallQualityLevel(0),
+m_nOpponentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
+m_nCurrentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -259,7 +261,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this, m_bIsCheckCall, m_nCallFPS);
-	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController);
+	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController, this);
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
 
@@ -644,6 +646,34 @@ void CVideoCallSession::StopDeviceAbilityChecking()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
 }
 
+int CVideoCallSession::GetOwnVideoCallQualityLevel(){
+	return m_nOwnVideoCallQualityLevel;	
+}
+
+int CVideoCallSession::GetOpponentVideoCallQualityLevel(){
+	return m_nOpponentVideoCallQualityLevel;
+}
+
+void CVideoCallSession::SetOwnVideoCallQualityLevel(int nVideoCallQualityLevel){
+	m_nOwnVideoCallQualityLevel = nVideoCallQualityLevel;
+}
+
+void CVideoCallSession::SetOpponentVideoCallQualityLevel(int nVideoCallQualityLevel){
+	m_nOpponentVideoCallQualityLevel = nVideoCallQualityLevel;
+}
+
+int CVideoCallSession::GetCurrentVideoCallQualityLevel(){
+	return m_nCurrentVideoCallQualityLevel;
+}
+
+void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel){
+	m_nCurrentVideoCallQualityLevel = nVideoCallQualityLevel;
+}
+
+BitRateController* CVideoCallSession::GetBitRateController(){
+	return m_BitRateController;
+}
+
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
     return;
@@ -686,7 +716,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 //	m_pVideoRenderingThread = new CVideoRenderingThread(m_lfriendID, m_RenderingBuffer, m_pCommonElementsBucket, this);
 //   m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, &g_FPSController, this);
     
-	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(m_lfriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController);
+	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(m_lfriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController, this);
     
 
     

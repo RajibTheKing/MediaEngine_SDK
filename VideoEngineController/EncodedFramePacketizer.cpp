@@ -92,7 +92,9 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         {
             printf("TheVersion--> Sending dummy with own version = %d\n", m_pVideoCallSession->GetVersionController()->GetOwnVersion());
             m_ucaPacket[ nPacketHeaderLenghtWithMediaType ] = m_pVideoCallSession->GetVersionController()->GetOwnVersion();
-            m_ucaPacket[ nPacketHeaderLenghtWithMediaType + 1] = 0; //2G, Resolution, FPS
+			m_ucaPacket[nPacketHeaderLenghtWithMediaType + 1] = 0;
+            m_ucaPacket[ nPacketHeaderLenghtWithMediaType + 1] |= (m_pVideoCallSession->GetOwnVideoCallQualityLevel() << 1); //Resolution, FPS
+			m_ucaPacket[nPacketHeaderLenghtWithMediaType + 1] |= m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType(); //2G
         }
 
 //		m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, m_PacketSize, nPacketHeaderLenghtWithMedia + m_PacketSize, m_Packet);

@@ -30,12 +30,16 @@ public:
     bool UpdateBitrate();
     void NotifyEncodedFrame(int &nrFrameSize);
 	void SetInitialBitrate();
+	
 	int GetOpponentNetworkType();
+	void SetOpponentNetworkType(int nNetworkType);
+
 	int GetOwnNetworkType();
 	void SetOwnNetworkType(int nNetworkType);
+
 	bool IsNetworkTypeMiniPacketReceived();
 	void ResetVideoController();
-
+	
 private:
 
 	int NeedToChangeBitRate(double dDataReceivedRatio);

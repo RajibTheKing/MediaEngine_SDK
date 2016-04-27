@@ -81,7 +81,17 @@ public:
 
 	void StopDeviceAbilityChecking();
     
+	int GetOwnVideoCallQualityLevel();
+	void SetOwnVideoCallQualityLevel(int nVideoCallQualityLevel);
 
+	int GetOpponentVideoCallQualityLevel();
+	void SetOpponentVideoCallQualityLevel(int nVideoCallQualityLevel);
+	
+	int GetCurrentVideoCallQualityLevel();
+	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel); 
+
+
+	BitRateController* GetBitRateController();
 private:
 
 	LongLong m_LastTimeStampClientFPS;
@@ -90,6 +100,10 @@ private:
 	double m_ClientFPS;
 	int m_EncodingFrameCounter;
 	bool m_bSkipFirstByteCalculation;
+
+	int m_nOwnVideoCallQualityLevel;
+	int m_nOpponentVideoCallQualityLevel;
+	int m_nCurrentVideoCallQualityLevel;
 
 	long long m_llShiftedTime;
 	long long m_llTimeStampOfFirstPacketRcvd;
