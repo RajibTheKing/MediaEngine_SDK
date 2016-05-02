@@ -11,6 +11,8 @@
 #include "EventNotifier.h"
 #include "ThreadTools.h"
 #include "LockHandler.h"
+#include "DeviceCapabilityCheckThread.h"
+#include "DeviceCapabilityCheckBuffer.h"
 
 using namespace std;
 
@@ -55,6 +57,13 @@ public:
     void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 
     void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int));
+
+	int m_nDeviceStrongness;
+	int m_nMemoryEnoughness;
+	int m_nEDVideoSupportablity;
+	int m_nHighFPSVideoSupportablity;
+
+	unsigned long long m_ullTotalDeviceMemory;
 	
 private:
 
@@ -65,17 +74,11 @@ private:
 	Tools m_Tools;
 
 	CCommonElementsBucket *m_pCommonElementsBucket;
-
-	int m_nDeviceStrongness;
-	int m_nMemoryEnoughness;
-	int m_nEDVideoSupportablity;
-	int m_nHighFPSVideoSupportablity;
+	CDeviceCapabilityCheckThread *m_pDeviceCapabilityCheckThread;
+	CDeviceCapabilityCheckBuffer *m_pDeviceCapabilityCheckBuffer;
 
 	int m_nDeviceSupportedCallFPS;
 
-	unsigned long long m_ullTotalDeviceMemory;
-
-    
     SmartPointer<CLockHandler> m_pVideoSendMutex;
     SmartPointer<CLockHandler> m_pVideoReceiveMutex;
     SmartPointer<CLockHandler> m_pAudioSendMutex;

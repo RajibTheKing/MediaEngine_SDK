@@ -57,6 +57,9 @@
 #define STATUS_ABLE 1
 #define STATUS_UNABLE 2
 
+#define START_DEVICE_CHECK 1
+#define STOP_DEVICE_CHECK 2
+
 #define DEVICE_ABILITY_CHECK_MOOD true
 #define LIVE_CALL_MOOD false
 

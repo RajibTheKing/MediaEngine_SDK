@@ -24,6 +24,9 @@ m_nDeviceSupportedCallFPS(LOW_FRAME_RATE)
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
 
+	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
+	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer);
+
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
 
@@ -46,6 +49,9 @@ m_nHighFPSVideoSupportablity(STATUS_UNCHECKED)
     m_pVideoReceiveMutex.reset(new CLockHandler);
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
+
+	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
+	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
@@ -419,37 +425,10 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 
 int CController::CheckDeviceCapability(const LongLong& lFriendID, int width, int height)
 {
-	
-#if defined(TARGET_OS_WINDOWS_PHONE)
+	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
+		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread();
 
-	m_nDeviceStrongness = STATUS_UNABLE;
-	m_nMemoryEnoughness = STATUS_UNABLE;
-	m_nEDVideoSupportablity = STATUS_UNABLE;
-	m_nHighFPSVideoSupportablity = STATUS_UNABLE;
-
-	return 4;
-
-#endif
-
-	m_ullTotalDeviceMemory = Tools::GetTotalSystemMemory();
-
-	if (m_ullTotalDeviceMemory >= LEAST_MEMORY_OF_STRONG_DEVICE)
-	{
-		m_nDeviceStrongness = STATUS_ABLE;
-		m_nMemoryEnoughness = STATUS_ABLE;
-	}
-	else
-	{
-		m_nDeviceStrongness = STATUS_UNABLE;
-		m_nMemoryEnoughness = STATUS_UNABLE;
-		m_nEDVideoSupportablity = STATUS_UNABLE;
-		m_nHighFPSVideoSupportablity = STATUS_UNABLE;
-
-		return 4;
-	}
-
-	StartTestAudioCall(lFriendID);
-	StartTestVideoCall(lFriendID, height, width, 0);
+	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, height, width);
     
     return 1;
 }
