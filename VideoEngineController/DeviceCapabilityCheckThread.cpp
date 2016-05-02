@@ -1,18 +1,20 @@
 
 #include "DeviceCapabilityCheckThread.h"
 #include "Controller.h"
+#include "CommonElementsBucket.h"
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-CDeviceCapabilityCheckThread::CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer) :
+CDeviceCapabilityCheckThread::CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer, CCommonElementsBucket *pCommonElementBucket) :
 
 m_pCController(pCController),
 m_pDeviceCapabilityCheckBuffer(pDeviceCapabilityCheckBuffer)
 
 {
-
+    m_pCommonElementBucket = pCommonElementBucket;
 }
 
 CDeviceCapabilityCheckThread::~CDeviceCapabilityCheckThread()
@@ -81,7 +83,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() started DeviceCapabilityCheck method");
 
-	int nOperation, nVideoHeigth, nVideoWidth;
+	int nOperation, nVideoHeigth, nVideoWidth, nNotification;
 	long long llFriendID;
 
 	while (bDeviceCapabilityCheckThreadRunning)
@@ -92,16 +94,11 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() NOTHING for Sending method");
 
-			m_nIdolCounter++;
-
-			if (m_nIdolCounter == 5)
-				bDeviceCapabilityCheckThreadRunning = false;
-
 			m_Tools.SOSleep(10);
 		}
 		else
 		{
-			nOperation = m_pDeviceCapabilityCheckBuffer->DeQueue(llFriendID, nVideoHeigth, nVideoWidth);
+			nOperation = m_pDeviceCapabilityCheckBuffer->DeQueue(llFriendID, nNotification, nVideoHeigth, nVideoWidth);
 
 			if (nOperation == START_DEVICE_CHECK)
 			{
@@ -135,8 +132,38 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 			}
 			else if (nOperation == STOP_DEVICE_CHECK)
 			{
+                printf("Samaun--> STOP_DEVICE_CHECK, iVideoWidth,iVideoHeight = %d,%d ....... Notification = %d\n", nVideoWidth, nVideoHeigth, nNotification);
 				m_pCController->StopTestAudioCall(llFriendID);
 				m_pCController->StopTestVideoCall(llFriendID);
+                
+                if(nNotification == DEVICE_CHECK_SUCCESS && nVideoWidth == 640)
+                {
+                    m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS);
+                }
+                else if(nNotification == DEVICE_CHECK_FAILED && nVideoWidth == 640)
+                {
+                    m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS_NOT_SUPPORTED);
+                }
+                else if(nNotification == DEVICE_CHECK_SUCCESS && nVideoWidth<640)
+                {
+                    m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS);
+                }
+                else if(nNotification == DEVICE_CHECK_FAILED && nVideoWidth<640)
+                {
+                    m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED);
+                }
+                
+                
+                
+                if((nVideoWidth < 640) || (nVideoWidth == 640 && nNotification == DEVICE_CHECK_SUCCESS))
+                {
+                    bDeviceCapabilityCheckThreadRunning = false;
+                    
+                }
+                
+                
+                
+                
 			}
 
 			m_Tools.SOSleep(1);

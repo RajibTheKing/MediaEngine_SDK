@@ -25,7 +25,7 @@ m_nDeviceSupportedCallFPS(LOW_FRAME_RATE)
     m_pAudioReceiveMutex.reset(new CLockHandler);
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
-	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer);
+	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
@@ -51,7 +51,7 @@ m_nHighFPSVideoSupportablity(STATUS_UNCHECKED)
     m_pAudioReceiveMutex.reset(new CLockHandler);
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
-	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer);
+	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
@@ -168,7 +168,7 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, iNetworkType);
 
@@ -428,7 +428,7 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int width, int
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
 		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread();
 
-	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, height, width);
+	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, height, width);
     
     return 1;
 }

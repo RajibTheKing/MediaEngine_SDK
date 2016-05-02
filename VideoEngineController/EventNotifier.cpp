@@ -43,14 +43,18 @@ void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
     {
 		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video must stop");
     }
-	else if (eventType == SET_CAMERA_RESOLUTION_640x480)
+	else if (eventType == SET_CAMERA_RESOLUTION_640x480_25FPS)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_640x480 called");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_640x480_25FPS called");
 	}
-	else if (eventType == SET_CAMERA_RESOLUTION_352x288_OR_320x240)
+	else if (eventType == SET_CAMERA_RESOLUTION_352x288_25FPS)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_640x480 called");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_352x288_25FPS called");
 	}
+    else if (eventType == SET_CAMERA_RESOLUTION_352x288_15FPS)
+    {
+        CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_352x288_15FPS called");
+    }
 }
 
 void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[])

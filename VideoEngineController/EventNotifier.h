@@ -27,8 +27,12 @@ public:
 	static const int VIDEO_QUALITY_HIGH = 204;
     static const int VIDEO_SHOULD_STOP = 203;
 
-	static const int SET_CAMERA_RESOLUTION_640x480 = 205;
-	static const int SET_CAMERA_RESOLUTION_352x288_OR_320x240 = 206;
+	static const int SET_CAMERA_RESOLUTION_640x480_25FPS = 205;
+    static const int SET_CAMERA_RESOLUTION_640x480_25FPS_NOT_SUPPORTED = 206;
+    static const int SET_CAMERA_RESOLUTION_352x288_25FPS = 207;
+	static const int SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED = 208;
+    
+    static const int SET_CAMERA_RESOLUTION_352x288_15FPS = 209;
 };
 
 #endif

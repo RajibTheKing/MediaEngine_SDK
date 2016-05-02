@@ -19,6 +19,7 @@
 #include "DepacketizationThread.h"
 #include "SendingThread.h"
 #include "VersionController.h"
+#include "DeviceCapabilityCheckBuffer.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall = false);
+	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall = false, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer = NULL);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -160,6 +161,8 @@ private:
 	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
     
     CVersionController *m_pVersionController;
+    CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;
+    
 
 protected:
 

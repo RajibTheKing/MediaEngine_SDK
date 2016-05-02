@@ -9,12 +9,13 @@
 #include <thread>
 
 class CController;
+class CCommonElementsBucket;
 
 class CDeviceCapabilityCheckThread
 {
 public:
 
-	CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer);
+	CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer, CCommonElementsBucket *pCommonElementBucket);
 	~CDeviceCapabilityCheckThread();
 
 	void StartDeviceCapabilityCheckThread();
@@ -36,6 +37,7 @@ private:
 	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 	Tools m_Tools;
+    CCommonElementsBucket *m_pCommonElementBucket;
 
 	SmartPointer<std::thread> pDeviceCapabilityCheckThread;
 };

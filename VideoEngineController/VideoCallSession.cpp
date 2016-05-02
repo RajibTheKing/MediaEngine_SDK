@@ -13,7 +13,7 @@ extern CFPSController g_FPSController;
 //extern bool g_bIsVersionDetectableOpponent;
 //extern unsigned char g_uchSendPacketVersion;
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall) :
+CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(FPS_BEGINNING),
@@ -43,7 +43,8 @@ m_nCallFPS(nFPS),
 pnDeviceSupportedFPS(nrDeviceSupportedCallFPS),
 m_nOwnVideoCallQualityLevel(0),
 m_nOpponentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
-m_nCurrentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN)
+m_nCurrentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
+m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer)
 {
 	m_miniPacketBandCounter = 0;
 
@@ -537,25 +538,37 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
     if(bValue)
     {
         m_bHighResolutionSupportedForOwn = true;
-        //Eikhan thekee amra HighResolated video support diyee dibo
         CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
-		//ReInitializeVideoLibrary(352, 288);
-		StopDeviceAbilityChecking();
-        m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480);
+        m_pDeviceCheckCapabilityBuffer->Queue(m_lfriendID, STOP_DEVICE_CHECK, DEVICE_CHECK_SUCCESS, m_nVideoCallHeight, m_nVideoCallWidth);
+        
+        
+        
+        
+        //ReInitializeVideoLibrary(352, 288);
+        //StopDeviceAbilityChecking();
+        //m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480);
+        
     }
     else
     {
         //Not Supported
         m_bHighResolutionSupportedForOwn = false;
-
-		StopDeviceAbilityChecking();
-        m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
+        
+        m_pDeviceCheckCapabilityBuffer->Queue(m_lfriendID, STOP_DEVICE_CHECK, DEVICE_CHECK_FAILED, m_nVideoCallHeight, m_nVideoCallWidth);
+        
+        
+        
+        
+		//StopDeviceAbilityChecking();
+        //m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS);
+        
         //ReInitializeVideoLibrary(352, 288);
 
-		if (m_nVideoCallWidth < 640)
-			*pnDeviceSupportedFPS = 15;
+		//if (m_nVideoCallWidth < 640)
+			//*pnDeviceSupportedFPS = 15;
 
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
+
     }
 }
 
@@ -605,8 +618,10 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
         if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
         {
             printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
-            m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
-                ReInitializeVideoLibrary(352, 288);
+            
+            //m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
+            
+            //ReInitializeVideoLibrary(352, 288);
         }
         
         m_pVideoDecodingThread->Reset();
