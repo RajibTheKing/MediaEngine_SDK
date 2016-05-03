@@ -91,6 +91,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/BandwidthController.cpp \
 			../../../videoengine/VideoEngineController/BitRateController.cpp \
 			../../../videoengine/VideoEngineController/AverageCalculator.cpp \
+			../../../videoengine/VideoEngineController/AudioFileEncodeDecodeSession.cpp \
 
 include $(BUILD_STATIC_LIBRARY)
 
