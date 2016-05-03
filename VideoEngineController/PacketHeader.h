@@ -9,8 +9,7 @@ public:
     ~CPacketHeader();
 
     void setPacketHeader(unsigned char *headerData);
-    void setPacketHeader(unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength);
-
+    void setPacketHeader(unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength, int deviceOrientation = 0);
 
     int GetHeaderInByteArray(unsigned char* data);
     //hello
@@ -74,6 +73,11 @@ public:
     void SetNetworkTypeBit(unsigned char *PacketHeader , int value);
     int GetOpponentNetworkType(unsigned char *PacketHeader);
 
+    void SetDeviceOrientation(int deviceOrientation);
+    void SetDeviceOrientation(unsigned char *packetData);
+
+    int GetDeviceOrientation();
+
     //hello
 
 private:
@@ -85,6 +89,7 @@ private:
     unsigned int m_iFPS;             // 1 byte
     unsigned int m_iRetransSignal;   // 1 byte
     int m_iPacketLength;             // 2 byte
+    int m_iDeviceOrientation;             // 2 bit in retransmission signal
     //Total: 14 byte
 
 };

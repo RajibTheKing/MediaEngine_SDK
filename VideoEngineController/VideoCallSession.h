@@ -20,6 +20,7 @@
 #include "SendingThread.h"
 #include "VersionController.h"
 #include "DeviceCapabilityCheckBuffer.h"
+#include "FPSController.h"
 
 using namespace std;
 
@@ -37,7 +38,7 @@ public:
 	LongLong GetFriendID();
 	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	CVideoEncoder* GetVideoEncoder();
-	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size);
+	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 
@@ -47,6 +48,7 @@ public:
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
 
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
+	CFPSController* GetFPSController();
 
 	CSendingThread *m_pSendingThread;
 	CVideoEncodingThread *m_pVideoEncodingThread;
@@ -95,6 +97,7 @@ public:
 	BitRateController* GetBitRateController();
 private:
 
+	CFPSController *m_pFPSController;
 	LongLong m_LastTimeStampClientFPS;
 	double m_ClientFPSDiffSum;
 	int m_ClientFrameCounter;

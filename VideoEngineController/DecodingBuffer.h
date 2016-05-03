@@ -6,6 +6,7 @@
 #include "LockHandler.h"
 #include "Tools.h"
 #include "Size.h"
+#include "LogPrinter.h"
 
 class CDecodingBuffer
 {

@@ -13,6 +13,7 @@
 #include "LockHandler.h"
 #include "DeviceCapabilityCheckThread.h"
 #include "DeviceCapabilityCheckBuffer.h"
+#include "AudioFileEncodeDecodeSession.h"
 
 using namespace std;
 
@@ -35,7 +36,7 @@ public:
 	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
-	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type);
+	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
 	int SetHeightWidth(const LongLong& lFriendID, int width, int height); 
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
 
@@ -50,8 +51,13 @@ public:
     bool SetLoggingState(bool loggingState, int logLevel);
 	void UninitializeLibrary();
 
+	int StartAudioEncodeDecodeSession();
+	int EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer);
+	int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
+	int StopAudioEncodeDecodeSession();
+
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
-	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int));
+	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
 	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
     void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
@@ -72,6 +78,8 @@ private:
 	int iLoggerPrintLevel;
 	std::string logFilePath;
 	Tools m_Tools;
+
+	CAudioFileEncodeDecodeSession *m_pAudioEncodeDecodeSession;
 
 	CCommonElementsBucket *m_pCommonElementsBucket;
 	CDeviceCapabilityCheckThread *m_pDeviceCapabilityCheckThread;

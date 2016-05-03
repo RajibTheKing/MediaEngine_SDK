@@ -101,6 +101,10 @@ void CFPSController::SetClientFPS(double fps){
     m_ClientFPS = fps;
 }
 
+double CFPSController::GetClientFPS(){
+    return m_ClientFPS;
+}
+
 unsigned char CFPSController::GetFPSSignalByte()
 {
     unsigned char ret = m_nOwnFPS;

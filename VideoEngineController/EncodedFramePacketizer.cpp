@@ -27,7 +27,7 @@ CEncodedFramePacketizer::~CEncodedFramePacketizer()
 
 }
 
-int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, bool bIsDummy)
+int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy)
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
 
@@ -77,13 +77,18 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         }
             
 		if (uchSendVersion)
-			m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType);
+			m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
 		else
         {
             m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, bIsDummy? 0 : nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize);
         }
 //Packet lenght issue should be fixed.
 		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+
+		//m_cPacketHeader.SetDeviceOrientation(m_ucaPacket+5);
+		int deviceoritationTemp = m_cPacketHeader.GetDeviceOrientation();
+
+		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, "device orientaion : >>>>>>>>>>>>>>>>>>>>>>>>>  " + m_Tools.IntegertoStringConvert(deviceoritationTemp) + " ......>> " +m_Tools.IntegertoStringConvert(device_orientation));
 
 		m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
 

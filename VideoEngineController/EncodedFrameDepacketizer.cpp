@@ -10,7 +10,6 @@
 //extern int g_uchOpponentVersion;
 
 //extern PairMap g_timeInt;
-extern CFPSController g_FPSController;
 
 #define DEFAULT_FIRST_FRAME_RCVD  65000
 
@@ -26,8 +25,6 @@ CEncodedFrameDepacketizer::CEncodedFrameDepacketizer(CCommonElementsBucket* shar
 		m_iMaxFrameNumRecvd(-1)
 {
 	m_pEncodedFrameDepacketizerMutex.reset(new CLockHandler);
-	g_FPSController.Reset();
-
 
 	g_ArribalTime.clear();
 	g_llChangeSum = g_iChangeCounter = 0;
@@ -75,7 +72,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     if(NORMAL_PACKET_TYPE == PacketType)
     {
         firstByte = in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA];
-		g_FPSController.SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
+		m_VideoCallSession->GetFPSController()->SetFPSSignalByte(in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA]);
     }
 #endif
 
@@ -84,6 +81,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	int packetNumber = packetHeader.getPacketNumber();
 	int packetLength = packetHeader.getPacketLength();
     unsigned int timeStampDiff = packetHeader.getTimeStamp();
+	int orientation = packetHeader.GetDeviceOrientation();
 
 //	if(g_ArribalTime.find(frameNumber) == g_ArribalTime.end()) {
 
@@ -137,6 +135,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
 
 	m_mFrameTimeStamp[frameNumber] = timeStampDiff;
+	m_mFrameOrientation[frameNumber] = orientation;
 
 	if (frameNumber < m_FrontFrame)		//Very old frame
 	{
@@ -165,6 +164,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		if (m_FrontFrame + m_BufferSize < m_BackFrame)
 		{
 			CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "####--------------------------------->BufferOverflow# FN: " + m_Tools.IntegertoStringConvert(m_FrontFrame));
+			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG ,"Video Buffer OverFlow ( VideoPacketBuffer in EncodedFrameDepacketizer ) --> OverFlow FrontFrame " + m_Tools.IntegertoStringConvert(m_FrontFrame) + " BackFrame " + m_Tools.IntegertoStringConvert(m_BackFrame)  );
 			int previousFrontFrame = m_FrontFrame;
 
 			m_FrontFrame = max(m_FrontFrame,  m_BackFrame - m_BufferSize);
@@ -232,7 +232,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 }
 
 
-int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight)
+int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight, int &nOrientation)
 {
 	Locker lock(*m_pEncodedFrameDepacketizerMutex);
 
@@ -240,6 +240,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 		return -1;
 
 	nEcodingTime = GetEncodingTime(m_FrontFrame);
+	nOrientation = GetOrientation(m_FrontFrame);
 
 //	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
 //							   " GetReceivedFrame : Fron: " +
@@ -400,6 +401,9 @@ void CEncodedFrameDepacketizer::ClearFrame(int index, int frame)
 		if( m_mFrameTimeStamp.find(frame) != m_mFrameTimeStamp.end() )
 			m_mFrameTimeStamp.erase (frame);
 
+		if( m_mFrameOrientation.find(frame) != m_mFrameOrientation.end() )
+			m_mFrameOrientation.erase (frame);
+
 		m_CVideoPacketBuffer[index].Reset();
 		m_AvailableIndexes.insert(index);
 		m_FrameTracker.erase(frame);
@@ -413,5 +417,12 @@ int CEncodedFrameDepacketizer::GetEncodingTime(int nFrameNumber)
 {
 	if(m_mFrameTimeStamp.find(nFrameNumber) != m_mFrameTimeStamp.end())
 		return m_mFrameTimeStamp[nFrameNumber];
+	return -1;
+}
+
+int CEncodedFrameDepacketizer::GetOrientation(int nFrameNumber)
+{
+	if(m_mFrameOrientation.find(nFrameNumber) != m_mFrameOrientation.end())
+		return m_mFrameOrientation[nFrameNumber];
 	return -1;
 }

@@ -115,9 +115,9 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 		{
 
             
-			int timeDiffForQueue;
+			int timeDiffForQueue, orientation;
 
-			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
+			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue, orientation);
             
             
             
@@ -187,7 +187,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
             {
-                 m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
             }
 		}
 	}

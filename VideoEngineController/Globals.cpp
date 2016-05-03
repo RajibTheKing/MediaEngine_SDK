@@ -5,7 +5,7 @@
 #include "Globals.h"
 #include "ResendingBuffer.h"
 
-CFPSController g_FPSController;
+
 //PairMap g_timeInt;
 
 //bool g_bIsVersionDetectableOpponent = false;

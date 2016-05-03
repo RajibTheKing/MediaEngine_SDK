@@ -8,12 +8,12 @@
 
 extern map<int,long long>g_ArribalTime;
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
+
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
 m_pVideoDecoder(videoDecoder),
 m_pColorConverter(colorConverter),
-g_FPSController(FPSController),
 m_pVideoCallSession(pVideoCallSession),
 m_FpsCounter(0),
 m_FPS_TimeDiff(0),
@@ -104,7 +104,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	Tools toolsObject;
 
-	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime;
+	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime, nOrientation;
 	unsigned int nTimeStampDiff = 0;
 	long long nTimeStampBeforeDecoding, currentTime;
 
@@ -112,7 +112,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	int nDecodingStatus, fps = -1;
 
-
+	int nOponnentFPS, nMaxProcessableByMine;
 	nExpectedTime = -1;
 	long long maxDecodingTime = 0, framCounter = 0, decodingTime, nBeforeDecodingTime;
 	double decodingTimeAverage = 0;
@@ -130,7 +130,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		currentTime = toolsObject.CurrentTimestamp();
 		nExpectedTime = currentTime - m_pVideoCallSession->GetShiftedTime();
 
-		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0);
+		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0, nOrientation);
 
 		if (nFrameLength>-1)
         {
@@ -147,7 +147,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 																		 nExpectedTime) + " -> " +
 																 m_Tools.IntegertoStringConvert(
 																		 nExpectedTime -
-																		 nEncodingTime));
+																		 nEncodingTime) + "Orientation = " +
+																 m_Tools.IntegertoStringConvert(nOrientation));
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#$ Cur: " +m_Tools.LongLongToString(currentTime) +" diff: "+m_Tools.LongLongToString(currentTime - g_ArribalTime[nFrameNumber]));
             
             
@@ -163,12 +164,11 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		else
 		{
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
-            
-			m_nOponnentFPS = g_FPSController->GetOpponentFPS();
-			m_nMaxProcessableByMine = g_FPSController->GetMaxOwnProcessableFPS();
-            
-			if (m_nOponnentFPS > 1 + m_nMaxProcessableByMine && (nFrameNumber & 7) > 3)
-            {
+
+			nOponnentFPS = m_pVideoCallSession->GetFPSController()->GetOpponentFPS();
+			nMaxProcessableByMine = m_pVideoCallSession->GetFPSController()->GetMaxOwnProcessableFPS();
+
+			if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
 				continue;
@@ -183,7 +183,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			}
 			*/
 
-			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime);
+
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime, nOrientation);
 			//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 			//			toolsObject.SOSleep(100);
             
@@ -208,7 +209,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 						fps = 1000 / m_dbAverageDecodingTime;
 						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
 						if (fps < FPS_MAXIMUM)
-							g_FPSController->SetMaxOwnProcessableFPS(fps);
+							m_pVideoCallSession->GetFPSController()->SetMaxOwnProcessableFPS(fps);
 					}
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
@@ -224,7 +225,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
-int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff)
+int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
     
@@ -314,11 +315,11 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
 
 #if defined(_DESKTOP_C_SHARP_)
-	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #else
-    
-	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth);
+
+	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #endif
 }

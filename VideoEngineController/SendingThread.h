@@ -18,7 +18,7 @@ class CSendingThread
 {
 public:
 
-	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall);
+	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall);
 	~CSendingThread();
 
 	void StartSendingThread();
@@ -41,9 +41,7 @@ private:
 	bool bSendingThreadClosed;
 
 	CCommonElementsBucket* m_pCommonElementsBucket;		
-	CSendingBuffer *m_SendingBuffer;						
-
-	CFPSController *g_FPSController;
+	CSendingBuffer *m_SendingBuffer;
 
 	bool m_bIsCheckCall;
 

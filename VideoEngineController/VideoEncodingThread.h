@@ -20,7 +20,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession , int nFPS, bool bIsCheckCall = false);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall = false);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -34,7 +34,7 @@ public:
 	bool IsThreadStarted();
 
 private:
-
+	CVideoCallSession *m_pVideoCallSession;
 	CEncodingBuffer *m_pEncodingBuffer;						
 	BitRateController *m_pBitRateController;	
 	CColorConverter *m_pColorConverter;
@@ -66,7 +66,6 @@ private:
     CAverageCalculator m_TestingEncodeTime;
     CAverageCalculator m_CalculateEncodingTimeDiff;
     
-    CVideoCallSession *m_pVideoCallSession;
     long long m_FPS_TimeDiff;
     int m_FpsCounter;
     bool m_bIsCheckCall;

@@ -39,15 +39,17 @@ public:
 	void MoveForward(int frame);
 	int CreateNewIndex(int frame);
 	void ClearFrame(int index, int frame);
-	int GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight);
+	int GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight, int &nOrientation);
 
 	map<int, int> m_mFrameTimeStamp;
+	map<int, int> m_mFrameOrientation;
 
 	Tools m_Tools;
 
 private:
 	int ProcessFrame(unsigned char *data,int index,int frameNumber,int &nFramNumber);
 	int GetEncodingTime(int nFrameNumber);
+	int GetOrientation(int nFrameNumber);
 	bool m_bIsDpkgBufferFilledUp;
 	int m_iFirstFrameReceived;
 

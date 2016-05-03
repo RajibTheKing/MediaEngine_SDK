@@ -1,4 +1,4 @@
-
+#include "VideoCallSession.h"
 #include "VideoEncodingThread.h"
 #include "Globals.h"
 #include "LogPrinter.h"
@@ -8,10 +8,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern CFPSController g_FPSController;
-
 CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall) :
 
+m_pVideoCallSession(pVideoCallSession),
 m_iFrameNumber(0),
 m_llFriendID(llFriendID),
 m_pEncodingBuffer(pEncodingBuffer),
@@ -137,7 +136,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() started EncodingThreadProcedure method");
 
 	Tools toolsObject;
-	int nEncodingFrameSize, nENCODEDFrameSize, nCaptureTimeDifference;
+	int nEncodingFrameSize, nENCODEDFrameSize, nCaptureTimeDifference, nDevice_orientation;
 	long long llCalculatingTime;
 	int sumOfEncodingTimediff = 0;
 	int sumOfZeroLengthEncodingTimediff = 0;
@@ -183,7 +182,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
-			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference);
+			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference, nDevice_orientation);
             
             if(g_PrevEncodeTime!=0)
                 m_CalculateEncodingTimeDiff.UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
@@ -193,8 +192,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 
-            
-			if (!g_FPSController.IsProcessableFrame())
+			if (! m_pVideoCallSession->GetFPSController()->IsProcessableFrame())
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
 
@@ -202,9 +200,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				continue;
 			}
-        
-            
-
+//			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG ," Client FPS: " + Tools::DoubleToString(m_pVideoCallSession->GetFPSController()->GetClientFPS()));
 			m_pBitRateController->UpdateBitrate();
 
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
@@ -355,7 +351,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             }
             
             
-			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference);
+			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation);
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
 

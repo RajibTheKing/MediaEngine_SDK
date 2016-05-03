@@ -5,6 +5,7 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Size.h"
+#include "LogPrinter.h"
 
 using namespace std;
 

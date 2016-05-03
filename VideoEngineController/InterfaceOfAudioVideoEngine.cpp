@@ -137,14 +137,14 @@ int CInterfaceOfAudioVideoEngine::SendAudioData(const IPVLongType llFriendID, sh
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType)
+int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->SendVideoData(llFriendID, in_data, unLength, nOrientationType);
+	int iReturnedValue = m_pcController->SendVideoData(llFriendID, in_data, unLength, nOrientationType, device_orientation);
 
 	return iReturnedValue;
 }
@@ -237,6 +237,55 @@ void CInterfaceOfAudioVideoEngine::SetLoggerPath(std::string strLoggerPath)
 	}
 }
 
+int CInterfaceOfAudioVideoEngine::StartAudioEncodeDecodeSession()
+{
+	int nReturnedValue = 0;
+
+	if (NULL != m_pcController)
+	{
+		nReturnedValue = m_pcController->StartAudioEncodeDecodeSession();
+	}
+
+	return nReturnedValue;
+}
+
+int CInterfaceOfAudioVideoEngine::EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer)
+{
+	int nReturnedValue = 0;
+
+	if (NULL != m_pcController)
+	{
+		nReturnedValue = m_pcController->EncodeAudioFrame(psaEncodingDataBuffer, nAudioFrameSize, ucaEncodedDataBuffer);
+	}
+
+	return nReturnedValue;
+}
+
+int CInterfaceOfAudioVideoEngine::DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer)
+{
+	int nReturnedValue = 0;
+
+	if (NULL != m_pcController)
+	{
+		nReturnedValue = m_pcController->DecodeAudioFrame(ucaDecodedDataBuffer, nAudioFrameSize, psaDecodingDataBuffer);
+	}
+
+	return nReturnedValue;
+}
+
+int CInterfaceOfAudioVideoEngine::StopAudioEncodeDecodeSession()
+{
+	int nReturnedValue = 0;
+
+	if (NULL != m_pcController)
+	{
+		nReturnedValue = m_pcController->StopAudioEncodeDecodeSession();
+	}
+
+	return nReturnedValue;
+}
+
+
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
 	if (NULL != m_pcController)
@@ -245,7 +294,7 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callB
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int))
+void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int))
 {
 	if (NULL != m_pcController)
 	{

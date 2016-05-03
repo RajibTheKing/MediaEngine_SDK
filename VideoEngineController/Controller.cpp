@@ -11,7 +11,8 @@ m_nDeviceStrongness(STATUS_UNCHECKED),
 m_nMemoryEnoughness(STATUS_UNCHECKED),
 m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
-m_nDeviceSupportedCallFPS(LOW_FRAME_RATE)
+m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
+m_pAudioEncodeDecodeSession(NULL)
 
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
@@ -37,7 +38,8 @@ iLoggerPrintLevel(iLoggerPrintLevel),
 m_nDeviceStrongness(STATUS_UNCHECKED),
 m_nMemoryEnoughness(STATUS_UNCHECKED),
 m_nEDVideoSupportablity(STATUS_UNCHECKED),
-m_nHighFPSVideoSupportablity(STATUS_UNCHECKED)
+m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
+m_pAudioEncodeDecodeSession(NULL)
 
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
@@ -78,6 +80,13 @@ CController::~CController()
 	{
 		delete m_pCommonElementsBucket;
 		m_pCommonElementsBucket = NULL;
+	}
+
+	if (NULL != m_pAudioEncodeDecodeSession)
+	{
+		delete m_pAudioEncodeDecodeSession;
+
+		m_pAudioEncodeDecodeSession = NULL;
 	}
     
     SHARED_PTR_DELETE(m_pVideoSendMutex);
@@ -236,7 +245,7 @@ int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_d
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::EncodeAndTransfer got encoder");
 
 		if (pVideoEncoder)
-			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
+			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size, 0);
 		else 
 			return -1;
 	}
@@ -362,7 +371,7 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	}
 }
 
-int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type)
+int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -387,7 +396,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 				return -1;
 
 			pVideoSession->m_pVideoEncodingThread->SetOrientationType(orientation_type);
-			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
+			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size, device_orientation);
 		}
 		else
 			return -1;
@@ -542,6 +551,51 @@ bool CController::StopVideoCall(const LongLong& lFriendID)
     return bReturnedValue;
 }
 
+int CController::StartAudioEncodeDecodeSession()
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+		m_pAudioEncodeDecodeSession = new CAudioFileEncodeDecodeSession();
+
+	return m_pAudioEncodeDecodeSession->StartAudioEncodeDecodeSession();
+}
+
+int CController::EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer)
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pAudioEncodeDecodeSession->EncodeAudioFile(psaEncodingDataBuffer, nAudioFrameSize, ucaEncodedDataBuffer);
+}
+
+int CController::DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer)
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pAudioEncodeDecodeSession->DecodeAudioFile(ucaDecodedDataBuffer, nAudioFrameSize, psaDecodingDataBuffer);
+}
+
+int CController::StopAudioEncodeDecodeSession()
+{
+	if (NULL != m_pAudioEncodeDecodeSession)
+	{
+		m_pAudioEncodeDecodeSession->StopAudioEncodeDecodeSession();
+
+		delete m_pAudioEncodeDecodeSession;
+
+		m_pAudioEncodeDecodeSession = NULL;
+
+		return 1;
+	}
+	else
+		return 0;
+}
+
+
 void CController::UninitializeLibrary()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
@@ -555,7 +609,7 @@ void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointe
     m_EventNotifier.SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int))
+void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }

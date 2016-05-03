@@ -9,13 +9,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern map<int, long long> g_TimeTraceFromCaptureToSend;
-
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController, CVideoCallSession* pVideoCallSession, bool bIsCheckCall) :
-
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
-g_FPSController(FPSController),
 m_bIsCheckCall(bIsCheckCall)
 
 {
@@ -138,7 +134,7 @@ void CSendingThread::SendingThreadProcedure()
 
 			//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
-			unsigned char signal = g_FPSController->GetFPSSignalByte();
+			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
 			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
 
 

@@ -82,7 +82,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
 {
-	if (unLength > 200)
+	if (unLength > 300)
     {
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
         return 0;
@@ -187,7 +187,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize);
 
-            toolsObject.SOSleep(1);
+            toolsObject.SOSleep(0);
             
         }
     }
@@ -277,7 +277,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
 
-            toolsObject.SOSleep(1);
+            toolsObject.SOSleep(0);
         }
     }
     
