@@ -5,8 +5,6 @@
 #include "Globals.h"
 #include "VideoCallSession.h"
 
-//extern unsigned char g_uchSendPacketVersion;
-
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
 m_nPacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
@@ -31,16 +29,10 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
 
-	int nOpponentVersion = /*g_uchSendPacketVersion*/ m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
+	int nOpponentVersion = m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
     unsigned char uchSendVersion = 0;
 
 	int nVersionWiseHeaderLength;
-
-	/*if (uchOpponentVersion)
-		nVersionWiseHeaderLength = PACKET_HEADER_LENGTH;
-	else
-		nVersionWiseHeaderLength = PACKET_HEADER_LENGTH_NO_VERSION;
-     */
     
     if(nOpponentVersion == -1 || nOpponentVersion == 0 || bIsDummy == true)
     {
@@ -52,8 +44,6 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         uchSendVersion = (unsigned char)m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
         nVersionWiseHeaderLength = PACKET_HEADER_LENGTH;
     }
-    
-    
 
 	int nPacketHeaderLenghtWithMediaType = nVersionWiseHeaderLength + 1;
 

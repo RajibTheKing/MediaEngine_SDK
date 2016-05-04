@@ -8,11 +8,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern bool g_bIsVersionDetectableOpponent;
-extern unsigned char g_uchSendPacketVersion;
-
-//extern bool g_bIsVersionDetectableOpponent;
-//extern unsigned char g_uchSendPacketVersion;
 extern long long g_llFirstFrameReceiveTime;
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer) :
 
@@ -48,16 +43,6 @@ m_nCurrentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer)
 {
 	m_miniPacketBandCounter = 0;
-
-//#ifdef FIRST_BUILD_COMPATIBLE
-//	//g_bIsVersionDetectableOpponent = false;
-//	//g_uchSendPacketVersion = 0;
-//    
-//    
-//#else
-//	g_bIsVersionDetectableOpponent = true;
-//	g_uchSendPacketVersion = 1;
-//#endif
 
 	//Resetting Global Variables.
 
