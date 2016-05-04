@@ -206,15 +206,11 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 				if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {		//Not necessary
 					m_pVideoCallSession->SetOpponentVideoCallQualityLevel(m_RcvdPacketHeader.GetOpponentResolution(m_PacketToBeMerged) );
 
-					m_pVideoCallSession->SetCurrentVideoCallQualityLevel(
-							min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),
-								m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
-
+					m_pVideoCallSession->SetCurrentVideoCallQualityLevel(min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
 
 					m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType( m_RcvdPacketHeader.GetOpponentNetworkType(m_PacketToBeMerged) );
 				}
-            }
-            
+            }      
         }
         else if(m_pVersionController->GetOpponentVersion() == -1)
         {
@@ -223,9 +219,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {	//Not necessary
 				m_pVideoCallSession->SetOpponentVideoCallQualityLevel(0);
-				m_pVideoCallSession->SetCurrentVideoCallQualityLevel(
-						min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),
-							m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
+				m_pVideoCallSession->SetCurrentVideoCallQualityLevel(min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
 			}
         }
         

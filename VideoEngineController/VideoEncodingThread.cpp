@@ -3,12 +3,13 @@
 #include "Globals.h"
 #include "LogPrinter.h"
 #include "VideoCallSession.h"
+#include "CommonElementsBucket.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall) :
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall) :
 
 m_pVideoCallSession(pVideoCallSession),
 m_iFrameNumber(0),
@@ -22,7 +23,9 @@ mt_nTotalEncodingTimePerFrameRate(0),
 m_bIsThisThreadStarted(false),
 m_FPS_TimeDiff(0),
 m_FpsCounter(0),
-m_nCallFPS(nFPS)
+m_nCallFPS(nFPS),
+m_bNotifyToClientVideoQuality(false),
+m_pCommonElementBucket(commonElementsBucket)
 
 {
     m_pVideoCallSession = pVideoCallSession;
@@ -133,6 +136,11 @@ bool CVideoEncodingThread::IsThreadStarted()
 	return m_bIsThisThreadStarted;
 }
 
+void CVideoEncodingThread::SetNotifierFlag(bool flag)
+{
+	m_bNotifyToClientVideoQuality = flag;
+}
+
 long long g_PrevEncodeTime = 0;
 
 void CVideoEncodingThread::EncodingThreadProcedure()
@@ -164,6 +172,21 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
 		m_bIsThisThreadStarted = true;
+
+		if (m_bNotifyToClientVideoQuality == true)
+		{
+			m_bNotifyToClientVideoQuality = false;
+
+			if (m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == RESOLUTION_FPS_SUPPORT_NOT_TESTED || m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_15)
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_pVideoCallSession->GetFriendID(), m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED);
+			else if (m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_25)
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_pVideoCallSession->GetFriendID(), m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS);
+			else if (m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_640_25)
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_pVideoCallSession->GetFriendID(), m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS);
+
+			m_pVideoCallSession->m_bVideoCallStarted = true;
+		}
+
         
         //printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
         if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1)

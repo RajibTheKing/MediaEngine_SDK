@@ -14,13 +14,14 @@
 #include <thread>
 
 class CVideoCallSession;
+class CCommonElementsBucket;
 
 class CVideoEncodingThread
 {
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -34,6 +35,8 @@ public:
 	void SetCallFPS(int nFPS);
 
 	bool IsThreadStarted();
+
+	void SetNotifierFlag(bool flag);
 
 private:
 
@@ -55,6 +58,10 @@ private:
 	int m_nOrientationType;
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;
+	bool m_bNotifyToClientVideoQuality;
+
+	CCommonElementsBucket *m_pCommonElementBucket;
+
 
 	bool m_bIsThisThreadStarted;
 

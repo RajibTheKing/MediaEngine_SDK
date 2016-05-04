@@ -253,7 +253,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
 	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this, m_bIsCheckCall);
-	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
+	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_pCommonElementsBucket, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController, this);
@@ -679,7 +679,8 @@ int CVideoCallSession::GetCurrentVideoCallQualityLevel(){
 	return m_nCurrentVideoCallQualityLevel;
 }
 
-void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel){
+void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel)
+{
 	m_nCurrentVideoCallQualityLevel = nVideoCallQualityLevel;
 
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
@@ -718,7 +719,7 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
 	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1);
 
-	m_bVideoCallStarted = true;
+	m_pVideoEncodingThread->SetNotifierFlag(true);
 }
 
 BitRateController* CVideoCallSession::GetBitRateController(){
