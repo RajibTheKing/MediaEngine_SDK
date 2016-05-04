@@ -32,7 +32,7 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall = false, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer = NULL);
+	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -42,7 +42,7 @@ public:
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 
-	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData = false);
+	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData);
 	CEncodedFrameDepacketizer * GetEncodedFrameDepacketizer();
 
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);

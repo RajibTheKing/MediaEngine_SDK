@@ -51,7 +51,6 @@ void CPacketHeader::setPacketHeader(unsigned char *headerData)
 void CPacketHeader::setPacketHeader(unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
                              unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength, int deviceOrientation)
 {
-    CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, " device orientation from packet headr -- >> "+ Tools::IntegertoStringConvert(deviceOrientation));
     m_cVersionCode = uchVersion;
     setFrameNumber(FrameNumber);
     setNumberOfPacket(NumberOfPacket);

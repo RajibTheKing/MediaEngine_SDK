@@ -17,6 +17,9 @@
 #define LOW_FRAME_RATE 15
 #define HIGH_FRAME_RATE 25
 
+#define BLANK_DATA_MOOD true
+#define VIDEO_DATA_MOOD false
+
 #define LEAST_MEMORY_OF_STRONG_DEVICE 10
 
 #define FRAME_RATE FPS_MAXIMUM

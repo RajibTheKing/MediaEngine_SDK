@@ -165,7 +165,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
         if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1)
         {
             
-           m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, PACKET_HEADER_LENGTH_NO_VERSION + 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, true);
+			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);
             toolsObject.SOSleep(20);
             continue;
         }
@@ -351,7 +351,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             }
             
             
-			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation);
+			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
 
