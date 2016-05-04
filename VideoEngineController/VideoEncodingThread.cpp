@@ -165,7 +165,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
         if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1)
         {
             
-           m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, PACKET_HEADER_LENGTH_NO_VERSION + 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, true);
+           m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, true);
             toolsObject.SOSleep(20);
             continue;
         }
