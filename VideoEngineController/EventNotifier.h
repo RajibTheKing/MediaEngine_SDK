@@ -33,6 +33,9 @@ public:
 	static const int SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED = 208;
     
     static const int SET_CAMERA_RESOLUTION_352x288_15FPS = 209;
+
+	static const int SET_CAMERA_RESOLUTION_352x288 = 210;
+	static const int SET_CAMERA_RESOLUTION_640x480 = 211;
 };
 
 #endif
