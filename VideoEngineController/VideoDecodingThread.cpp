@@ -30,6 +30,11 @@ CVideoDecodingThread::~CVideoDecodingThread()
 
 }
 
+void CVideoDecodingThread::SetCallFPS(int nFPS)
+{
+	m_nCallFPS = nFPS;
+}
+
 void CVideoDecodingThread::InstructionToStop()
 {
 	bDecodingThreadRunning = false;

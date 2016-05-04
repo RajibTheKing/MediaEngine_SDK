@@ -70,6 +70,8 @@ public:
 	int m_nHighFPSVideoSupportablity;
 
 	unsigned long long m_ullTotalDeviceMemory;
+
+	int m_nSupportedResolutionFPSLevel;
 	
 private:
 

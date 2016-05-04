@@ -31,6 +31,8 @@ public:
 
 	void InstructionToStop();
 
+	void SetCallFPS(int nFPS);
+
 	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation);
 
 private:

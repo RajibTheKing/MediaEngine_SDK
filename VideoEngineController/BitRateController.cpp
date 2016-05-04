@@ -49,6 +49,11 @@ BitRateController::~BitRateController()
 
 }
 
+void BitRateController::SetCallFPS(int nFPS)
+{
+	m_nCallFPS = nFPS;
+}
+
 void BitRateController::ResetVideoController()
 {
 	/*m_nBytesReceivedInMegaSlotInterval
