@@ -55,13 +55,17 @@ CVideoEncodingThread::~CVideoEncodingThread()
 
 }
 
+void CVideoEncodingThread::SetCallFPS(int nFPS)
+{
+	m_nCallFPS = nFPS;
+}
+
 void CVideoEncodingThread::ResetVideoEncodingThread(BitRateController *pBitRateController)
 {
     m_iFrameNumber = 0;
-    m_pBitRateController = pBitRateController;
-    
-    
+    m_pBitRateController = pBitRateController; 
 }
+
 void CVideoEncodingThread::StopEncodingThread()
 {
 	//if (pInternalThread.get())

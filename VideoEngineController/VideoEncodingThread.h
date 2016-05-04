@@ -31,9 +31,12 @@ public:
 	void SetOrientationType(int nOrientationType);
     void ResetVideoEncodingThread(BitRateController *pBitRateController);
 
+	void SetCallFPS(int nFPS);
+
 	bool IsThreadStarted();
 
 private:
+
 	CVideoCallSession *m_pVideoCallSession;
 	CEncodingBuffer *m_pEncodingBuffer;						
 	BitRateController *m_pBitRateController;	

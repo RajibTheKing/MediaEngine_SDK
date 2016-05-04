@@ -34,9 +34,14 @@ CVideoEncoder::~CVideoEncoder()
 	SHARED_PTR_DELETE(m_pVideoEncoderMutex);
 }
 
-int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth)
+int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval)
 {
 	Locker lock(*m_pVideoEncoderMutex);
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
+
+	m_nVideoWidth = nVideoWidth;
+	m_nVideoHeight = nVideoHeight;
 
 	SEncParamExt encoderParemeters;
 
@@ -44,21 +49,56 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth)
 
 	m_pSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
 
+	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
+	encoderParemeters.iTemporalLayerNum = 0;
+	encoderParemeters.uiIntraPeriod = nIFrameInterval;
+	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
+	encoderParemeters.bEnableSSEI = false;
+	encoderParemeters.bEnableFrameCroppingFlag = true;
+	encoderParemeters.iLoopFilterDisableIdc = 0;
+	encoderParemeters.iLoopFilterAlphaC0Offset = 0;
+	encoderParemeters.iLoopFilterBetaOffset = 0;
+	encoderParemeters.iMultipleThreadIdc = 0;
+	encoderParemeters.iRCMode = RC_BITRATE_MODE;//RC_OFF_MODE;
+	encoderParemeters.iMinQp = 0;
+	encoderParemeters.iMaxQp = 52;
+	// 	encoderParemeters.iRCMode = RC_OFF_MODE;
+	encoderParemeters.bEnableDenoise = false;
+	encoderParemeters.bEnableSceneChangeDetect = false;
+	encoderParemeters.bEnableBackgroundDetection = true;
+	encoderParemeters.bEnableAdaptiveQuant = false;
+	encoderParemeters.bEnableFrameSkip = true;
+	encoderParemeters.bEnableLongTermReference = true;
+	encoderParemeters.iLtrMarkPeriod = 20;
+	encoderParemeters.bPrefixNalAddingCtrl = false;
+	encoderParemeters.iSpatialLayerNum = 1;
+
+
 	SSpatialLayerConfig *spartialLayerConfiguration = &encoderParemeters.sSpatialLayers[0];
+
+	spartialLayerConfiguration->uiProfileIdc = PRO_BASELINE;//;
 
 	encoderParemeters.iPicWidth = spartialLayerConfiguration->iVideoWidth = m_nVideoWidth;
 	encoderParemeters.iPicHeight = spartialLayerConfiguration->iVideoHeight = m_nVideoHeight;
+	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
+	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
 
-	int nReturnedValueFromEncoder = m_pSVCVideoEncoder->InitializeExt(&encoderParemeters);
+	spartialLayerConfiguration->iDLayerQp = 24;
+	spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder encoder initializing");
+
+	long nReturnedValueFromEncoder = m_pSVCVideoEncoder->InitializeExt(&encoderParemeters);
 
 	if (nReturnedValueFromEncoder != 0)
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to Set Height Width ");
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to initialize OpenH264 encoder ");
 
 		return 0;
 	}
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder height width setted");
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
 
 	return 1;
 }

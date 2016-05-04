@@ -30,6 +30,8 @@ public:
     bool UpdateBitrate();
     void NotifyEncodedFrame(int &nrFrameSize);
 	void SetInitialBitrate();
+
+	void SetCallFPS(int nFPS);
 	
 	int GetOpponentNetworkType();
 	void SetOpponentNetworkType(int nNetworkType);

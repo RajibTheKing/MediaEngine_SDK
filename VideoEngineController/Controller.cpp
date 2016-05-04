@@ -12,7 +12,8 @@ m_nMemoryEnoughness(STATUS_UNCHECKED),
 m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
-m_pAudioEncodeDecodeSession(NULL)
+m_pAudioEncodeDecodeSession(NULL),
+m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
@@ -40,7 +41,8 @@ m_nMemoryEnoughness(STATUS_UNCHECKED),
 m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
-m_pAudioEncodeDecodeSession(NULL)
+m_pAudioEncodeDecodeSession(NULL),
+m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
@@ -178,7 +180,7 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, iNetworkType);
 
@@ -210,7 +212,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
