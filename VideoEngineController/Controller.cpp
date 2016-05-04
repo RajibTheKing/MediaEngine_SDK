@@ -39,6 +39,7 @@ m_nDeviceStrongness(STATUS_UNCHECKED),
 m_nMemoryEnoughness(STATUS_UNCHECKED),
 m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
+m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL)
 
 {

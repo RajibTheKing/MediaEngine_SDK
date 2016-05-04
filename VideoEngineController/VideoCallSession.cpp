@@ -757,3 +757,8 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     
 }
 
+CFPSController* CVideoCallSession::GetFPSController()
+{
+	return m_pFPSController;
+}
+
