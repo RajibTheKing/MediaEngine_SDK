@@ -93,13 +93,8 @@ public:
 	int GetCurrentVideoCallQualityLevel();
 	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel); 
 
-	void SetCurrentSupportedResolutionFPSLevel(int nSupportedResolutionFPSLevel);
-
 	BitRateController* GetBitRateController();
 
-	int m_nOwnSupportedResolutionFPSLevel;
-	int m_nOpponentSupportedResolutionFPSLevel;
-	int m_nCurrentSupportedResolutionFPSLevel;
 	bool m_bVideoCallStarted;
 
 private:

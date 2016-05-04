@@ -37,11 +37,10 @@ m_pVersionController(NULL),
 m_bIsCheckCall(bIsCheckCall),
 m_nCallFPS(nFPS),
 pnDeviceSupportedFPS(nrDeviceSupportedCallFPS),
-m_nOwnVideoCallQualityLevel(0),
+m_nOwnVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
 m_nOpponentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
 m_nCurrentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
-m_nOwnSupportedResolutionFPSLevel(nOwnSupportedResolutionFPSLevel),
 m_bVideoCallStarted(false)
 
 {
@@ -215,49 +214,6 @@ CVideoCallSession::~CVideoCallSession()
     }
     
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
-}
-
-void CVideoCallSession::SetCurrentSupportedResolutionFPSLevel(int nSupportedResolutionFPSLevel)
-{
-	m_nCurrentSupportedResolutionFPSLevel = nSupportedResolutionFPSLevel;
-
-	if (m_nCurrentSupportedResolutionFPSLevel == SUPPORTED_RESOLUTION_FPS_640_25)
-	{
-		m_nVideoCallHeight = 480;
-		m_nVideoCallWidth = 640;
-		m_nCallFPS = 25;
-		m_SlotResetRightRange = 25;
-	}
-	else if (m_nCurrentSupportedResolutionFPSLevel == SUPPORTED_RESOLUTION_FPS_352_25)
-	{
-		m_nVideoCallHeight = 352;
-		m_nVideoCallWidth = 288;
-		m_nCallFPS = 25;
-		m_SlotResetRightRange = 25;
-	}
-	else if (m_nCurrentSupportedResolutionFPSLevel == SUPPORTED_RESOLUTION_FPS_352_15)
-	{
-		m_nVideoCallHeight = 352;
-		m_nVideoCallWidth = 288;
-		m_nCallFPS = 15;
-		m_SlotResetRightRange = 15;
-	}
-	else if (m_nCurrentSupportedResolutionFPSLevel == RESOLUTION_FPS_SUPPORT_NOT_TESTED)
-	{
-		m_nVideoCallHeight = 352;
-		m_nVideoCallWidth = 288;
-		m_nCallFPS = 15;
-		m_SlotResetRightRange = 15;
-	}
-
-	m_BitRateController->SetCallFPS(m_nCallFPS);
-	m_pVideoEncodingThread->SetCallFPS(m_nCallFPS);
-	m_pVideoDecodingThread->SetCallFPS(m_nCallFPS);
-
-	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
-	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1);
-
-	m_bVideoCallStarted = true;
 }
 
 LongLong CVideoCallSession::GetFriendID()
@@ -725,6 +681,44 @@ int CVideoCallSession::GetCurrentVideoCallQualityLevel(){
 
 void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel){
 	m_nCurrentVideoCallQualityLevel = nVideoCallQualityLevel;
+
+	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
+	{
+		m_nVideoCallHeight = 480;
+		m_nVideoCallWidth = 640;
+		m_nCallFPS = 25;
+		m_SlotResetRightRange = 25;
+	}
+	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_25)
+	{
+		m_nVideoCallHeight = 352;
+		m_nVideoCallWidth = 288;
+		m_nCallFPS = 25;
+		m_SlotResetRightRange = 25;
+	}
+	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_15)
+	{
+		m_nVideoCallHeight = 352;
+		m_nVideoCallWidth = 288;
+		m_nCallFPS = 15;
+		m_SlotResetRightRange = 15;
+	}
+	else if (m_nCurrentVideoCallQualityLevel == RESOLUTION_FPS_SUPPORT_NOT_TESTED)
+	{
+		m_nVideoCallHeight = 352;
+		m_nVideoCallWidth = 288;
+		m_nCallFPS = 15;
+		m_SlotResetRightRange = 15;
+	}
+
+	m_BitRateController->SetCallFPS(m_nCallFPS);
+	m_pVideoEncodingThread->SetCallFPS(m_nCallFPS);
+	m_pVideoDecodingThread->SetCallFPS(m_nCallFPS);
+
+	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
+	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1);
+
+	m_bVideoCallStarted = true;
 }
 
 BitRateController* CVideoCallSession::GetBitRateController(){
