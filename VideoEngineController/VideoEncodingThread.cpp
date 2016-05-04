@@ -173,7 +173,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 		m_bIsThisThreadStarted = true;
 
-		if (m_bNotifyToClientVideoQuality == true)
+		if (m_bNotifyToClientVideoQuality == true && m_bIsCheckCall == false)
 		{
 			m_bNotifyToClientVideoQuality = false;
 
@@ -189,7 +189,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
         
         //printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
-        if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1)
+
+        if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
         {
             
 			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);

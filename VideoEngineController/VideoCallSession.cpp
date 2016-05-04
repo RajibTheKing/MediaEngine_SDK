@@ -370,12 +370,12 @@ int g_CapturingFrameCounter = 0;
 
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
-	if(GetVersionController()->GetCurrentCallVersion() == -1)
+	if(GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
     {
         return 1;
     }
 
-	if (m_bVideoCallStarted == false)
+	if (m_bVideoCallStarted == false && m_bIsCheckCall == false)
 	{
 		return 1;
 	}
@@ -682,6 +682,9 @@ int CVideoCallSession::GetCurrentVideoCallQualityLevel(){
 void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel)
 {
 	m_nCurrentVideoCallQualityLevel = nVideoCallQualityLevel;
+    
+    if(m_bIsCheckCall == true)
+        return;
 
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
 	{
