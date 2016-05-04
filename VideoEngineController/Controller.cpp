@@ -210,7 +210,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD);
+		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
@@ -280,7 +280,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 //		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
 //		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
-			return pVideoSession->PushPacketForMerging(++in_data, in_size-1);
+			return pVideoSession->PushPacketForMerging(++in_data, in_size-1,false);
 		else
 			return -1;
 	}
