@@ -267,7 +267,7 @@ void CPacketHeader::SetResolutionBit(unsigned char *PacketHeader, int value)
 }
 int CPacketHeader::GetOpponentResolution(unsigned char *PacketHeader)
 {
-    return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x03;
+    return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
 }
 
 void CPacketHeader::SetNetworkTypeBit(unsigned char *PacketHeader , int value)

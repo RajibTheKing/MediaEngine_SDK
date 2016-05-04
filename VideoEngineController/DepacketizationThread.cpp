@@ -156,6 +156,10 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 			continue;
 		}
+		else if(bRetransmitted)
+		{
+			continue;
+		}
         
         
         if(m_RcvdPacketHeader.getNumberOfPacket() == 0)
@@ -167,6 +171,12 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
                 
                 
                 printf("TheVersion --> Setting current Call Version to %d\n", m_pVersionController->GetCurrentCallVersion());
+				if(1 == m_pVersionController->GetOpponentVersion()){
+					m_pVideoCallSession->SetOpponentVideoCallQualityLevel(0);
+					m_pVideoCallSession->SetCurrentVideoCallQualityLevel(0);
+					continue;
+				}
+
             }
 
 			bool bIs2GOpponentNetwork = (m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION + 1] & 0x01);
@@ -190,16 +200,33 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
             if (m_pVersionController->GetOpponentVersion() == -1 && m_RcvdPacketHeader.getVersionCode()>0)
             {
                 m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());
-                
+
                 m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+
+				if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {		//Not necessary
+					m_pVideoCallSession->SetOpponentVideoCallQualityLevel(m_RcvdPacketHeader.GetOpponentResolution(m_PacketToBeMerged) );
+
+					m_pVideoCallSession->SetCurrentVideoCallQualityLevel(
+							min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),
+								m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
+
+
+					m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType( m_RcvdPacketHeader.GetOpponentNetworkType(m_PacketToBeMerged) );
+				}
             }
             
         }
         else if(m_pVersionController->GetOpponentVersion() == -1)
         {
             m_pVersionController->SetOpponentVersion(0);
-            
             m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+
+			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {	//Not necessary
+				m_pVideoCallSession->SetOpponentVideoCallQualityLevel(0);
+				m_pVideoCallSession->SetCurrentVideoCallQualityLevel(
+						min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),
+							m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
+			}
         }
         
         

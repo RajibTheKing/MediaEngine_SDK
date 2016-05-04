@@ -66,11 +66,14 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             ++ m_nPacketSize;
         }
             
-		if (uchSendVersion)
-			m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
+		if (uchSendVersion) {
+            m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
+            m_ucaPacket[ RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= (m_pVideoCallSession->GetOwnVideoCallQualityLevel() << 1); //Resolution, FPS
+            m_ucaPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType(); //2G
+        }
 		else
         {
-            m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, bIsDummy? 0 : nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize);
+            m_cPacketHeader.setPacketHeader(uchSendVersion, bIsDummy? 0 : iFrameNumber, bIsDummy? 0 : nNumberOfPackets, bIsDummy? 0 :nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize);
         }
 //Packet lenght issue should be fixed.
 		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
@@ -120,7 +123,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         }
         else
         {
-            if(bIsDummy == false)
+            /*if(bIsDummy == false)
             {
                 if(m_pVideoCallSession->GetHighResolutionSupportStatus() == true)
                 {
@@ -139,7 +142,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                 }
                 
                 //printf("TheVersion--> Sending RealData\n");
-            }
+            }*/
             
             
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
