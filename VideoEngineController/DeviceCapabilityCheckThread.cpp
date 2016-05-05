@@ -135,6 +135,40 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                 printf("Samaun--> STOP_DEVICE_CHECK, iVideoWidth,iVideoHeight = %d,%d ....... Notification = %d\n", nVideoWidth, nVideoHeigth, nNotification);
 				m_pCController->StopTestAudioCall(llFriendID);
 				m_pCController->StopTestVideoCall(llFriendID);
+
+#ifdef __ANDROID__
+				if(nNotification == DEVICE_CHECK_SUCCESS && nVideoWidth == 480)
+				{
+					m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_640_25;
+
+					m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS);
+				}
+				else if(nNotification == DEVICE_CHECK_FAILED && nVideoWidth == 480)
+				{
+					m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS_NOT_SUPPORTED);
+				}
+				else if(nNotification == DEVICE_CHECK_SUCCESS && nVideoWidth<480)
+				{
+					m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_25;
+
+					m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS);
+				}
+				else if(nNotification == DEVICE_CHECK_FAILED && nVideoWidth<480)
+				{
+					m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_15;
+
+					m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED);
+				}
+
+
+
+				if((nVideoWidth < 480) || (nVideoWidth == 480 && nNotification == DEVICE_CHECK_SUCCESS))
+				{
+					bDeviceCapabilityCheckThreadRunning = false;
+
+				}
+
+#else
                 
                 if(nNotification == DEVICE_CHECK_SUCCESS && nVideoWidth == 640)
                 {
@@ -167,7 +201,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                     
                 }
                 
-                
+#endif
                 
                 
 			}
