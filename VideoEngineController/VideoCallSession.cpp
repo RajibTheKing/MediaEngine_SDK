@@ -688,8 +688,8 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
 	{
-		m_nVideoCallHeight = 480;
-		m_nVideoCallWidth = 640;
+		m_nVideoCallHeight = 640;
+		m_nVideoCallWidth = 480;
 		m_nCallFPS = 25;
 		m_SlotResetRightRange = 25;
 	}
