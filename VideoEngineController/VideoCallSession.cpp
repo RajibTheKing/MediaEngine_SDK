@@ -323,10 +323,10 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	}
 	else
 	{
-        if(bSelfData == false && m_bResolutionNegotiationDone == false)
+        /*if(bSelfData == false && m_bResolutionNegotiationDone == false)
         {
             OperationForResolutionControl(in_data,in_size);
-        }
+        }*/
         
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
         
