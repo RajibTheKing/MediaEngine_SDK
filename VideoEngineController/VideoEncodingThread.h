@@ -37,6 +37,8 @@ public:
 	bool IsThreadStarted();
 
 	void SetNotifierFlag(bool flag);
+    
+    void SetFrameNumber(int nFrameNumber);
 
 private:
 

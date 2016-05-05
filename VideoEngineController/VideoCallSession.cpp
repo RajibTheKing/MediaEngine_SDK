@@ -717,6 +717,7 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 	m_BitRateController->SetCallFPS(m_nCallFPS);
 	m_pVideoEncodingThread->SetCallFPS(m_nCallFPS);
+    m_pVideoEncodingThread->SetFrameNumber(m_nCallFPS);
 	m_pVideoDecodingThread->SetCallFPS(m_nCallFPS);
 
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);

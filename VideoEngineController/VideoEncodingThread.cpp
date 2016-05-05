@@ -141,6 +141,11 @@ void CVideoEncodingThread::SetNotifierFlag(bool flag)
 	m_bNotifyToClientVideoQuality = flag;
 }
 
+void CVideoEncodingThread::SetFrameNumber(int nFrameNumber)
+{
+    m_iFrameNumber = nFrameNumber;
+}
+
 long long g_PrevEncodeTime = 0;
 
 void CVideoEncodingThread::EncodingThreadProcedure()
