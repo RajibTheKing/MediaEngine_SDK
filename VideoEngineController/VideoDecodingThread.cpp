@@ -213,7 +213,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					{
 						fps = 1000 / m_dbAverageDecodingTime;
 						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
-						if (fps < FPS_MAXIMUM)
+						if (fps < m_nCallFPS)
 							m_pVideoCallSession->GetFPSController()->SetMaxOwnProcessableFPS(fps);
 					}
 				}

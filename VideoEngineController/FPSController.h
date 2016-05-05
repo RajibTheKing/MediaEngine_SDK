@@ -23,10 +23,10 @@
 class CFPSController {
 
 public:
-    CFPSController();
+    CFPSController(int nFPS);
     ~CFPSController();
 
-    void Reset();
+	void Reset(int nFPS);
     int GetOpponentFPS() const;
     void SetOpponentFPS(int OpponentFPS);
     int GetOwnFPS() const;
@@ -57,6 +57,7 @@ private:
 //    int m_iFrameCompletedIntervalCounter;
     int m_nOwnFPS;
     int m_nOpponentFPS;
+	int m_nCallFPS;
 
     long long m_LastIntervalStartingTime;
     SmartPointer<CLockHandler> m_pMutex;

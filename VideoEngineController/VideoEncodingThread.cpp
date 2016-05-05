@@ -316,12 +316,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				sumOfZeroLengthEncodingTimediff += timeDiff;
 				countZeroLengthFrame++;
 			}
-			if(m_iFrameNumber % FPS_MAXIMUM == 0)
+			if (m_iFrameNumber % m_nCallFPS == 0)
 			{
-				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " m_iFrameNumber " + m_Tools.IntegertoStringConvert(m_iFrameNumber%FPS_MAXIMUM) + " Encode time " + m_Tools.IntegertoStringConvert(timeDiff) +
+				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " m_iFrameNumber " + m_Tools.IntegertoStringConvert(m_iFrameNumber%m_nCallFPS) + " Encode time " + m_Tools.IntegertoStringConvert(timeDiff) +
 																		  " sumOfEncodingTimediff " + m_Tools.IntegertoStringConvert(sumOfEncodingTimediff ) + " ---  nENCODEDFrameSize  "
 																		  + m_Tools.IntegertoStringConvert(nENCODEDFrameSize) + " ---  countZeroLengthFrame  " + m_Tools.IntegertoStringConvert(countZeroLengthFrame)+
-																		  " --- ***** afterFrameDropFps  " + m_Tools.IntegertoStringConvert( FPS_MAXIMUM - countZeroLengthFrame));
+																		  " --- ***** afterFrameDropFps  " + m_Tools.IntegertoStringConvert(m_nCallFPS - countZeroLengthFrame));
 				sumOfEncodingTimediff = 0;
 				countZeroLengthFrame = 0;
 			}

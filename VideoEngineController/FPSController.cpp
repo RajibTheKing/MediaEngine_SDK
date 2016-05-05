@@ -7,16 +7,19 @@
 #include <math.h>
 #include <map>
 
-CFPSController::CFPSController(){
+CFPSController::CFPSController(int nFPS){
     m_pMutex.reset(new CLockHandler);
+
+	m_nCallFPS = nFPS;
+
     m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
-    m_ClientFPS = FPS_MAXIMUM;
-    m_nOwnFPS = m_nOpponentFPS = FPS_BEGINNING;
+    m_ClientFPS = DEVICE_FPS_MAXIMUM;
+	m_nOwnFPS = m_nOpponentFPS = m_nCallFPS;
     m_iFrameDropIntervalCounter=0;
     m_EncodingFrameCounter = 0;
     m_DropSum = 0;
     m_nForceFPSFlag = 0;
-    m_nMaxOwnProcessableFPS = m_nMaxOpponentProcessableFPS = FPS_MAXIMUM;
+	m_nMaxOwnProcessableFPS = m_nMaxOpponentProcessableFPS = m_nCallFPS;
     m_nFPSForceSignalCounter = 0;
 }
 
@@ -26,21 +29,23 @@ CFPSController::~CFPSController(){
     SHARED_PTR_DELETE(m_pMutex);
 }
 
-void CFPSController::Reset(){
+void CFPSController::Reset(int nFPS){
     /*m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
     m_ClientFPS = m_nOwnFPS = m_nOpponentFPS = FPS_BEGINNING;
     m_iFrameDropIntervalCounter=0;
     m_EncodingFrameCounter = 0;
     m_DropSum = 0;*/
+
+	m_nCallFPS = nFPS;
     
     m_LastIntervalStartingTime = m_Tools.CurrentTimestamp();
-    m_ClientFPS = FPS_MAXIMUM;
-    m_nOwnFPS = m_nOpponentFPS = FPS_BEGINNING;
+    m_ClientFPS = DEVICE_FPS_MAXIMUM;
+	m_nOwnFPS = m_nOpponentFPS = m_nCallFPS;
     m_iFrameDropIntervalCounter=0;
     m_EncodingFrameCounter = 0;
     m_DropSum = 0;
     m_nForceFPSFlag = 0;
-    m_nMaxOwnProcessableFPS = m_nMaxOpponentProcessableFPS = FPS_MAXIMUM;
+	m_nMaxOwnProcessableFPS = m_nMaxOpponentProcessableFPS = m_nCallFPS;
     m_nFPSForceSignalCounter = 0;
 }
 
@@ -118,7 +123,7 @@ unsigned char CFPSController::GetFPSSignalByte()
         ret |= (1<<5);
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: ------------------------Sent------------------------------------->   ");
     }
-    else if(m_ClientFPS < FPS_MAXIMUM)
+	else if (m_ClientFPS < m_nCallFPS)
     {
         //Locker lock(*m_pMutex);
         int tmp = m_ClientFPS+0.5;
@@ -153,7 +158,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
     {
         Locker lock(*m_pMutex);
 
-        if(FPS_MAXIMUM >= opponentFPS)
+		if (m_nCallFPS >= opponentFPS)
             m_nMaxOpponentProcessableFPS = opponentFPS;
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "# Force: -----------------GOT-------------------------------------->   "+ m_Tools.IntegertoStringConvert(m_nMaxOpponentProcessableFPS));
         if(m_nOwnFPS > m_nMaxOpponentProcessableFPS) {
@@ -184,7 +189,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
         }
     }
     else if (FPSChangeSignal == 2) {
-        if (m_nOwnFPS < FPS_MAXIMUM  && m_nOwnFPS < m_nMaxOpponentProcessableFPS && m_nOwnFPS < m_ClientFPS + 0.1) {
+		if (m_nOwnFPS < m_nCallFPS  && m_nOwnFPS < m_nMaxOpponentProcessableFPS && m_nOwnFPS < m_ClientFPS + 0.1) {
 //            Locker lock(*m_pMutex);
 //            m_nOwnFPS++;
             int nCurrentBitRate = m_pVideoEncoder->GetBitrate();

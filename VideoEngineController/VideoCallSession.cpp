@@ -53,7 +53,7 @@ m_bVideoCallStarted(false)
 		m_bResolationCheck = true;
 	}
 
-	m_pFPSController = new CFPSController();
+	m_pFPSController = new CFPSController(nFPS);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
 	m_pVideoCallSessionMutex.reset(new CLockHandler);
@@ -753,7 +753,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 	m_pColorConverter->SetHeightWidth(iHeight, iWidth);
 
 	m_SendingBuffer->ResetBuffer();
-	//g_FPSController.Reset();
+	//g_FPSController.Reset(m_nCallFPS;);
 	m_EncodingBuffer->ResetBuffer();
 	//m_BitRateController
 	m_RenderingBuffer->ResetBuffer();
