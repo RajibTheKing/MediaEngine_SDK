@@ -16,7 +16,7 @@ BitRateController::BitRateController(int nFPS):
     m_bSetBitRateCalled(false),
     m_nPreviousByteRate(BITRATE_MAX/8),
     m_nBytesSendInSlotInverval(0),
-    m_nFrameCounterBeforeEncoding(0),
+    m_nFrameCounterBeforeEncoding(nFPS),
     m_nLastSendingSlot(0),
     m_dTotalDataByteInSlots(0.0),
     m_dAverageDataByteInSlots(0.0),
@@ -52,6 +52,7 @@ BitRateController::~BitRateController()
 void BitRateController::SetCallFPS(int nFPS)
 {
 	m_nCallFPS = nFPS;
+    m_nFrameCounterBeforeEncoding = nFPS;
 }
 
 void BitRateController::ResetVideoController()
