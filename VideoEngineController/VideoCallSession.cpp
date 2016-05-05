@@ -12,7 +12,7 @@ extern long long g_llFirstFrameReceiveTime;
 CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel) :
 
 m_pCommonElementsBucket(sharedObject),
-m_ClientFPS(FPS_BEGINNING),
+m_ClientFPS(DEVICE_FPS_MAXIMUM),
 m_ClientFPSDiffSum(0),
 m_ClientFrameCounter(0),
 m_EncodingFrameCounter(0),
