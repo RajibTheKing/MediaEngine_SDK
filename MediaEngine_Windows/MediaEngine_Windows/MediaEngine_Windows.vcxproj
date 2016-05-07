@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\CommonElementsBucket.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VersionController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoDecoder.cpp" />
@@ -200,6 +202,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
+    <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
     <ClInclude Include="..\..\VideoEngineController\BitRateController.h" />
     <ClInclude Include="..\..\VideoEngineController\codec_api.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="..\..\VideoEngineController\Tools.h" />
     <ClInclude Include="..\..\VideoEngineController\typedef.h" />
     <ClInclude Include="..\..\VideoEngineController\typedefs.h" />
+    <ClInclude Include="..\..\VideoEngineController\VersionController.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoCallSessionListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoDecoder.h" />

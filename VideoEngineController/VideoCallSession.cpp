@@ -688,29 +688,49 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
 	{
-		m_nVideoCallHeight = 640;
-		m_nVideoCallWidth = 480;
+#ifdef _DESKTOP_C_SHARP_
+		m_nVideoCallHeight = 480;
+		m_nVideoCallWidth = 640;
+#else
+		m_nVideoCallHeight = 352;
+		m_nVideoCallWidth = 288;
+#endif
 		m_nCallFPS = 25;
 		m_SlotResetRightRange = 25;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_25)
 	{
+#ifdef _DESKTOP_C_SHARP_
+		m_nVideoCallHeight = 288;
+		m_nVideoCallWidth = 352;
+#else
 		m_nVideoCallHeight = 352;
 		m_nVideoCallWidth = 288;
+#endif
 		m_nCallFPS = 25;
 		m_SlotResetRightRange = 25;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_15)
 	{
+#ifdef _DESKTOP_C_SHARP_
+		m_nVideoCallHeight = 288;
+		m_nVideoCallWidth = 352;
+#else
 		m_nVideoCallHeight = 352;
 		m_nVideoCallWidth = 288;
+#endif
 		m_nCallFPS = 15;
 		m_SlotResetRightRange = 15;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 	{
+#ifdef _DESKTOP_C_SHARP_
+		m_nVideoCallHeight = 288;
+		m_nVideoCallWidth = 352;
+#else
 		m_nVideoCallHeight = 352;
 		m_nVideoCallWidth = 288;
+#endif
 		m_nCallFPS = 15;
 		m_SlotResetRightRange = 15;
 	}
