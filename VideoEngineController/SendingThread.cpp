@@ -194,7 +194,7 @@ void CSendingThread::SendingThreadProcedure()
 			CVideoCallSession* pVideoSession;
 			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 			unsigned char *pEncodedFrame = m_EncodedFrame;
-			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, true);
+			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 
