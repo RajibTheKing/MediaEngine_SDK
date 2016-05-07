@@ -692,8 +692,8 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 		m_nVideoCallHeight = 480;
 		m_nVideoCallWidth = 640;
 #else
-		m_nVideoCallHeight = 352;
-		m_nVideoCallWidth = 288;
+		m_nVideoCallHeight = 640;
+		m_nVideoCallWidth = 480;
 #endif
 		m_nCallFPS = 25;
 		m_SlotResetRightRange = 25;
