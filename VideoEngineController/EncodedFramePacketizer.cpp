@@ -67,7 +67,11 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         }
             
 		if (uchSendVersion) {
-            m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
+            if(1 == uchSendVersion)
+                m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
+            else
+                m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize, device_orientation);
+
             m_ucaPacket[ RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= (m_pVideoCallSession->GetOwnVideoCallQualityLevel() << 1); //Resolution, FPS
             m_ucaPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType(); //2G
         }

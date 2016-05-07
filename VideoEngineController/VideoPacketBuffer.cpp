@@ -33,12 +33,16 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsi
 {
 	if (false == m_baPacketTracker[nPacketNumber])
 	{
-		int nPacketDataLength;
+		int nPacketDataLength = unLength;
 
 		m_baPacketTracker[nPacketNumber] = true;
 		m_nNumberOfGotPackets++;
 
-		if (pucVideoPacketData[VERSION_BYTE_INDEX]) 
+		if( 1 < pucVideoPacketData[VERSION_BYTE_INDEX])
+		{
+			memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + PACKET_HEADER_LENGTH, nPacketDataLength);
+		}
+		else if( 1 == pucVideoPacketData[VERSION_BYTE_INDEX])
 		{
 			nPacketDataLength = (unLength - 1) - PACKET_HEADER_LENGTH;
 
@@ -46,8 +50,6 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsi
 		}
 		else 
 		{
-			nPacketDataLength = unLength;
-
 			memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER_NO_VERSION, pucVideoPacketData + PACKET_HEADER_LENGTH_NO_VERSION, nPacketDataLength);
 		}
 
