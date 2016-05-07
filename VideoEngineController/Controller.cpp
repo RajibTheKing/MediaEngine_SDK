@@ -354,10 +354,10 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 
 		//if (pAudioEncoder)
 		{
-            for(int i=0;i<in_size;i++)
+            /*for(int i=0;i<in_size;i++)
             {
                 in_data[i] = rand()%255;
-            }
+            }*/
             long long lEncodeStartTime = m_Tools.CurrentTimestamp();
             
             int ret = pAudioSession->EncodeAudioData(in_data,in_size);
