@@ -81,17 +81,17 @@ m_bVideoCallStarted(false)
 
 CVideoCallSession::~CVideoCallSession()
 {
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
 	m_pVideoEncodingThread->StopEncodingThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
 	m_pSendingThread->StopSendingThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 3");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 3");
 	m_pVideoDepacketizationThread->StopDepacketizationThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
 	m_pVideoDecodingThread->StopDecodingThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
 	m_pVideoRenderingThread->StopRenderingThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
 
 	if (NULL != m_pVideoEncodingThread)
 	{
@@ -536,7 +536,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
     if(bValue)
     {
         m_bHighResolutionSupportedForOwn = true;
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
+//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision Supported = " + m_Tools.IntegertoStringConvert(bValue));
         m_pDeviceCheckCapabilityBuffer->Queue(m_lfriendID, STOP_DEVICE_CHECK, DEVICE_CHECK_SUCCESS, m_nVideoCallHeight, m_nVideoCallWidth);
         
         
@@ -551,7 +551,7 @@ void CVideoCallSession::DecideHighResolatedVideo(bool bValue)
     {
         //Not Supported
         m_bHighResolutionSupportedForOwn = false;
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
+//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Decision NotSupported = " + m_Tools.IntegertoStringConvert(bValue));
         
         m_pDeviceCheckCapabilityBuffer->Queue(m_lfriendID, STOP_DEVICE_CHECK, DEVICE_CHECK_FAILED, m_nVideoCallHeight, m_nVideoCallWidth);
         
@@ -599,7 +599,7 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
     
     if(gotResSt == 2)
     {
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
+//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High supported, flag =  "+ m_Tools.IntegertoStringConvert(gotResSt) );
         
         SetOpponentHighResolutionSupportStatus(true);
         m_bResolutionNegotiationDone = true;
@@ -608,7 +608,7 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
     }
     else if(gotResSt == 1)
     {
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
+//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent High NotSupported = "+ m_Tools.IntegertoStringConvert(gotResSt));
         
         
         SetOpponentHighResolutionSupportStatus(false);
@@ -628,7 +628,7 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
     }
     else
     {
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent not set = " + m_Tools.IntegertoStringConvert(gotResSt));
+//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Opponent not set = " + m_Tools.IntegertoStringConvert(gotResSt));
     }
     
     
@@ -648,15 +648,15 @@ void CVideoCallSession::StopDeviceAbilityChecking()
 {
 	long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
 	m_pVideoEncodingThread->StopEncodingThread();
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
 	m_pVideoDepacketizationThread->StopDepacketizationThread();
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
 	m_pVideoDecodingThread->InstructionToStop();
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
 	m_pVideoRenderingThread->StopRenderingThread();
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
 }
 
 int CVideoCallSession::GetOwnVideoCallQualityLevel(){

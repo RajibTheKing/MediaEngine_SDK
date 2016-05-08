@@ -503,12 +503,12 @@ bool CController::StopTestAudioCall(const LongLong& lFriendID)
 bool CController::StopTestVideoCall(const LongLong& lFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
 
 	Locker lock1(*m_pVideoSendMutex);
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
 	Locker lock2(*m_pVideoReceiveMutex);
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
+//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
 
 	CVideoCallSession *m_pSession;
 
@@ -530,12 +530,12 @@ bool CController::StopTestVideoCall(const LongLong& lFriendID)
 bool CController::StopVideoCall(const LongLong& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
     
     Locker lock1(*m_pVideoSendMutex);
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
     Locker lock2(*m_pVideoReceiveMutex);
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
     
     CVideoCallSession *m_pSession;
     
