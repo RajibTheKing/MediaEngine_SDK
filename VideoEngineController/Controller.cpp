@@ -200,7 +200,7 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 
 bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
-    if(iVideoHeight==640|| iVideoWidth==640)
+    if(iVideoHeight * iVideoWidth > 352 * 288)
     {
         m_Quality[1].iHeight = iVideoHeight;
         m_Quality[1].iWidth = iVideoWidth;
@@ -450,7 +450,7 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 
 int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeight, int iWidth)
 {
-    if(iHeight==640|| iWidth==640)
+    if(iHeight * iWidth > 352 * 288)
     {
         m_Quality[1].iHeight = iHeight;
         m_Quality[1].iWidth = iWidth;

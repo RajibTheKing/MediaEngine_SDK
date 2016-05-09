@@ -79,7 +79,7 @@ public:
 
 	int m_nSupportedResolutionFPSLevel;
     
-    VideoQuality m_Quality[5];
+    VideoQuality m_Quality[2];
 	
 private:
 
