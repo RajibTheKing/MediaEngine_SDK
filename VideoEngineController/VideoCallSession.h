@@ -26,13 +26,14 @@ using namespace std;
 
 class CCommonElementsBucket;
 class CVideoEncoder;
+class CController;
 
 class CVideoCallSession
 {
 
 public:
 
-	CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel);
+    CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -96,6 +97,8 @@ public:
 	BitRateController* GetBitRateController();
 
 	bool m_bVideoCallStarted;
+    CController *m_pController;
+    
 
 private:
 

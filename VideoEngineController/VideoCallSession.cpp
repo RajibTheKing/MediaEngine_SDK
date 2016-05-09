@@ -3,13 +3,15 @@
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
 #include "Globals.h"
+#include "Controller.h"
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel) :
+CVideoCallSession::CVideoCallSession(CController *pController,LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
@@ -44,6 +46,8 @@ m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false)
 
 {
+    m_pController = pController;
+    
 	m_miniPacketBandCounter = 0;
 
 	//Resetting Global Variables.
@@ -688,49 +692,33 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
 	{
-#ifdef _DESKTOP_C_SHARP_
-		m_nVideoCallHeight = 480;
-		m_nVideoCallWidth = 640;
-#else
-		m_nVideoCallHeight = 640;
-		m_nVideoCallWidth = 480;
-#endif
+        
+
+		m_nVideoCallHeight = m_pController->m_Quality[1].iHeight;
+		m_nVideoCallWidth = m_pController->m_Quality[1].iWidth;
+        
 		m_nCallFPS = 25;
 		m_SlotResetRightRange = 25;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_25)
 	{
-#ifdef _DESKTOP_C_SHARP_
-		m_nVideoCallHeight = 288;
-		m_nVideoCallWidth = 352;
-#else
-		m_nVideoCallHeight = 352;
-		m_nVideoCallWidth = 288;
-#endif
+        m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
+        m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
 		m_nCallFPS = 25;
 		m_SlotResetRightRange = 25;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_15)
 	{
-#ifdef _DESKTOP_C_SHARP_
-		m_nVideoCallHeight = 288;
-		m_nVideoCallWidth = 352;
-#else
-		m_nVideoCallHeight = 352;
-		m_nVideoCallWidth = 288;
-#endif
+        m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
+        m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
+        
 		m_nCallFPS = 15;
 		m_SlotResetRightRange = 15;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 	{
-#ifdef _DESKTOP_C_SHARP_
-		m_nVideoCallHeight = 288;
-		m_nVideoCallWidth = 352;
-#else
-		m_nVideoCallHeight = 352;
-		m_nVideoCallWidth = 288;
-#endif
+        m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
+        m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
 		m_nCallFPS = 15;
 		m_SlotResetRightRange = 15;
 	}

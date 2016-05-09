@@ -21,6 +21,7 @@ typedef struct VideoQuality
 {
     int iHeight;
     int iWidth;
+    
 };
 
 class CController
@@ -78,7 +79,7 @@ public:
 
 	int m_nSupportedResolutionFPSLevel;
     
-    VideoQuality Quality[5];
+    VideoQuality m_Quality[5];
 	
 private:
 

@@ -170,6 +170,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 
 bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
+    
 	CVideoCallSession* pVideoSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartVideoCall called");
@@ -180,7 +181,7 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, iNetworkType);
 
@@ -199,6 +200,18 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 
 bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
+    if(iVideoHeight==640|| iVideoWidth==640)
+    {
+        m_Quality[1].iHeight = iVideoHeight;
+        m_Quality[1].iWidth = iVideoWidth;
+    }
+    else
+    {
+        m_Quality[0].iHeight = iVideoHeight;
+        m_Quality[0].iWidth = iVideoWidth;
+        
+    }
+    
 	CVideoCallSession* pVideoSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartVideoCall called");
@@ -212,7 +225,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
 
@@ -437,6 +450,17 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 
 int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeight, int iWidth)
 {
+    if(iHeight==640|| iWidth==640)
+    {
+        m_Quality[1].iHeight = iHeight;
+        m_Quality[1].iWidth = iWidth;
+    }
+    else
+    {
+        m_Quality[0].iHeight = iHeight;
+        m_Quality[0].iWidth = iWidth;
+
+    }
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
 		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread();
 
