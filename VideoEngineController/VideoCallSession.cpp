@@ -10,6 +10,8 @@
 #include <dispatch/dispatch.h>
 #endif
 
+#define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
+
 extern long long g_llFirstFrameReceiveTime;
 CVideoCallSession::CVideoCallSession(CController *pController,LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel) :
 
@@ -400,7 +402,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 		{//Block for LOCK
 			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
-			if(nApproximateAverageFrameInterval > 10) {
+			if(nApproximateAverageFrameInterval > MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS) {
 				Locker lock(*m_pVideoCallSessionMutex);
 				m_pFPSController->SetClientFPS(1000 / nApproximateAverageFrameInterval);
 			}

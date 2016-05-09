@@ -8,6 +8,8 @@
 
 extern map<int,long long>g_ArribalTime;
 
+#define MINIMUM_DECODING_TIME_FOR_FORCE_FPS 35
+
 CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
 
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
@@ -209,7 +211,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					m_dbAverageDecodingTime = m_dbTotalDecodingTime / m_iDecodedFrameCounter;
 					m_dbAverageDecodingTime *= 1.5;
                     printf("Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
-					if (m_dbAverageDecodingTime > 30)
+					if (m_dbAverageDecodingTime > MINIMUM_DECODING_TIME_FOR_FORCE_FPS)
 					{
 						fps = 1000 / m_dbAverageDecodingTime;
 						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
