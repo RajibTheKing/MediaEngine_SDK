@@ -17,6 +17,11 @@
 
 using namespace std;
 
+typedef struct VideoQuality
+{
+    int iHeight;
+    int iWidth;
+};
 
 class CController
 {
@@ -40,7 +45,7 @@ public:
 	int SetHeightWidth(const LongLong& lFriendID, int width, int height); 
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
 
-	int CheckDeviceCapability(const LongLong& lFriendID, int width, int height);
+    int CheckDeviceCapability(const LongLong& lFriendID, int iHeight, int iWidth);
 
 	bool StopAudioCall(const LongLong& lFriendID);
 	bool StopVideoCall(const LongLong& lFriendID);
@@ -72,6 +77,8 @@ public:
 	unsigned long long m_ullTotalDeviceMemory;
 
 	int m_nSupportedResolutionFPSLevel;
+    
+    VideoQuality Quality[5];
 	
 private:
 

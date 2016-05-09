@@ -435,12 +435,12 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 	return -1;
 }
 
-int CController::CheckDeviceCapability(const LongLong& lFriendID, int width, int height)
+int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeight, int iWidth)
 {
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
 		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread();
 
-	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, height, width);
+	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeight, iWidth);
     
     return 1;
 }

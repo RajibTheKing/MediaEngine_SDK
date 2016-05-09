@@ -28,7 +28,7 @@ public:
      int SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight);
      int SetBitRate(const IPVLongType llFriendID, int nBitRate);
 
-	 int CheckDeviceCapability(const IPVLongType llFriendID, int width, int height);
+	 int CheckDeviceCapability(const IPVLongType llFriendID, int iHeight, int iWidth);
 
      bool StopAudioCall(const IPVLongType llFriendID);
      bool StopVideoCall(const IPVLongType llFriendID);
