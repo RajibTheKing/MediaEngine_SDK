@@ -202,9 +202,16 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 	if (m_nOwnFPS > m_ClientFPS)
 	{
 		Locker lock(*m_pMutex);
-		printf("setting m_nOwnFPS to %d because m_nOwnFPS > m_ClientFPS\n", m_ClientFPS);
+		printf("setting m_nOwnFPS to %lf because m_nOwnFPS > m_ClientFPS\n", m_ClientFPS);
 		SetOwnFPS(m_ClientFPS);
 	}
+    else if(m_nOwnFPS < m_ClientFPS && m_nOwnFPS < m_nCallFPS)
+    {
+        Locker lock(*m_pMutex);
+        printf("setting m_nOwnFPS to %lf because m_nOwnFPS > m_ClientFPS\n", m_ClientFPS);
+        SetOwnFPS( min(m_nCallFPS, (int)m_ClientFPS));
+
+    }
 
 }
 
