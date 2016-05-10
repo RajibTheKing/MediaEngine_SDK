@@ -194,6 +194,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\CommonElementsBucket.cpp" />
