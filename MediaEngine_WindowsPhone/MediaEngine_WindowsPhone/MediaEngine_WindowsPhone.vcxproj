@@ -74,6 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <OutDir>..\..\..\TestCamera_WindowsPhone\Windows_Phone_Libs</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IncludePath>$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
