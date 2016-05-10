@@ -10,6 +10,12 @@ LOCAL_MODULE := openh264lib
 LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libopenh264.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Prebuilt FileTransfer
+include $(CLEAR_VARS)
+LOCAL_MODULE := FileTransfer
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libFileTransfer.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 # Prebuilt IPVConnectivityDll
 include $(CLEAR_VARS)
 LOCAL_MODULE := IPVConnectivityDll
@@ -166,6 +172,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)
