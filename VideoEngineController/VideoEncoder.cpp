@@ -34,7 +34,7 @@ CVideoEncoder::~CVideoEncoder()
 	SHARED_PTR_DELETE(m_pVideoEncoderMutex);
 }
 
-int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval)
+int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability)
 {
 	Locker lock(*m_pVideoEncoderMutex);
 
@@ -61,13 +61,21 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.iMultipleThreadIdc = 0;
     
     
-    //encoderParemeters.iRCMode = RC_OFF_MODE;
     
     
     
-     encoderParemeters.iRCMode = RC_BITRATE_MODE;
-     encoderParemeters.iMinQp = 0;
-     encoderParemeters.iMaxQp = 52;
+    if(!bCheckDeviceCapability)
+    {
+        encoderParemeters.iRCMode = RC_BITRATE_MODE;
+        encoderParemeters.iMinQp = 0;
+        encoderParemeters.iMaxQp = 52;
+    }
+    else
+    {
+        encoderParemeters.iRCMode = RC_OFF_MODE;
+    }
+    
+    
     
     
 	encoderParemeters.bEnableDenoise = false;
@@ -88,8 +96,18 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.iPicWidth = spartialLayerConfiguration->iVideoWidth = m_nVideoWidth;
 	encoderParemeters.iPicHeight = spartialLayerConfiguration->iVideoHeight = m_nVideoHeight;
 	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
-	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
-	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+    if(!bCheckDeviceCapability)
+    {
+        
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+    }
+    else
+    {
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+    }
+
 
 	spartialLayerConfiguration->iDLayerQp = 24;
 	spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
@@ -110,7 +128,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	return 1;
 }
 
-int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval)
+int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability)
 {
 	Locker lock(*m_pVideoEncoderMutex);
 
@@ -141,9 +159,16 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 	//encoderParemeters.iRCMode = RC_OFF_MODE;
     
     
-    encoderParemeters.iRCMode = RC_BITRATE_MODE;
-	encoderParemeters.iMinQp = 0;
-	encoderParemeters.iMaxQp = 52;
+    if(!bCheckDeviceCapability)
+    {
+        encoderParemeters.iRCMode = RC_BITRATE_MODE;
+        encoderParemeters.iMinQp = 0;
+        encoderParemeters.iMaxQp = 52;
+    }
+    else
+    {
+        encoderParemeters.iRCMode = RC_OFF_MODE;
+    }
     
     
 	encoderParemeters.bEnableDenoise = false;
@@ -164,8 +189,17 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 	encoderParemeters.iPicWidth = spartialLayerConfiguration->iVideoWidth = m_nVideoWidth;
 	encoderParemeters.iPicHeight = spartialLayerConfiguration->iVideoHeight = m_nVideoHeight;
 	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
-	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
-	encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+    if(!bCheckDeviceCapability)
+    {
+        
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+    }
+    else
+    {
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+    }
     
 	spartialLayerConfiguration->iDLayerQp = 24;
 	spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;

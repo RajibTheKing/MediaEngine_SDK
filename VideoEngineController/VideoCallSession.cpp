@@ -248,7 +248,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
 
-	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS /2 + 1);
+	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS /2 + 1, m_bIsCheckCall);
 
 	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
@@ -739,7 +739,7 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	m_pVideoDecodingThread->SetCallFPS(m_nCallFPS);
 
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
-	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1);
+	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
 
 	m_pVideoEncodingThread->SetNotifierFlag(true);
 }
@@ -768,7 +768,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
 
-	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1);
+	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1, m_bIsCheckCall);
 	m_pColorConverter->SetHeightWidth(iHeight, iWidth);
 
 	m_SendingBuffer->ResetBuffer();

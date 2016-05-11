@@ -18,7 +18,7 @@ public:
 	CVideoEncoder(CCommonElementsBucket* pSharedObject);
 	~CVideoEncoder();
 
-	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval);
+	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability);
 	int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData);
 
     int SetBitrate(int nBitRate);
@@ -26,7 +26,7 @@ public:
 	int SetMaxBitrate(int nBitRate);
     int GetBitrate();
     int GetMaxBitrate();
-	int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval);
+	int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability);
 
 private:
 
