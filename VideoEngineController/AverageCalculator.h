@@ -24,7 +24,7 @@ public:
 private:
     double m_dAvg;
     int m_nCounter;
-    long long m_nTotalValue;
+    long long m_llTotalValue;
     Tools m_Tools;
 };
 
