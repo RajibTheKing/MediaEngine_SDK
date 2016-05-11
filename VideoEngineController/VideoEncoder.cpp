@@ -59,10 +59,17 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.iLoopFilterAlphaC0Offset = 0;
 	encoderParemeters.iLoopFilterBetaOffset = 0;
 	encoderParemeters.iMultipleThreadIdc = 0;
-	encoderParemeters.iRCMode = RC_BITRATE_MODE;//RC_OFF_MODE;
-	encoderParemeters.iMinQp = 0;
-	encoderParemeters.iMaxQp = 52;
-	// 	encoderParemeters.iRCMode = RC_OFF_MODE;
+    
+    
+    //encoderParemeters.iRCMode = RC_OFF_MODE;
+    
+    
+    
+     encoderParemeters.iRCMode = RC_BITRATE_MODE;
+     encoderParemeters.iMinQp = 0;
+     encoderParemeters.iMaxQp = 52;
+    
+    
 	encoderParemeters.bEnableDenoise = false;
 	encoderParemeters.bEnableSceneChangeDetect = false;
 	encoderParemeters.bEnableBackgroundDetection = true;
@@ -130,10 +137,15 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 	encoderParemeters.iLoopFilterAlphaC0Offset = 0;
 	encoderParemeters.iLoopFilterBetaOffset = 0;
 	encoderParemeters.iMultipleThreadIdc = 0;
-	encoderParemeters.iRCMode = RC_BITRATE_MODE;//RC_OFF_MODE;
+    
+	//encoderParemeters.iRCMode = RC_OFF_MODE;
+    
+    
+    encoderParemeters.iRCMode = RC_BITRATE_MODE;
 	encoderParemeters.iMinQp = 0;
 	encoderParemeters.iMaxQp = 52;
-// 	encoderParemeters.iRCMode = RC_OFF_MODE;
+    
+    
 	encoderParemeters.bEnableDenoise = false;
 	encoderParemeters.bEnableSceneChangeDetect = false;
 	encoderParemeters.bEnableBackgroundDetection = true;

@@ -28,6 +28,10 @@ m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket)
 
 {
+    m_pCalculatorEncodeTime = new CAverageCalculator();
+    m_pCalculateEncodingTimeDiff = new CAverageCalculator();
+    
+    
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
     
@@ -55,7 +59,8 @@ m_pCommonElementBucket(commonElementsBucket)
 
 CVideoEncodingThread::~CVideoEncodingThread()
 {
-
+    delete m_pCalculatorEncodeTime;
+    delete m_pCalculateEncodingTimeDiff;
 }
 
 void CVideoEncodingThread::SetCallFPS(int nFPS)
@@ -218,7 +223,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference, nDevice_orientation);
             
             if(g_PrevEncodeTime!=0)
-                m_CalculateEncodingTimeDiff.UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
+                m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
+            
             //printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
             g_PrevEncodeTime = m_Tools.CurrentTimestamp();
             
@@ -304,7 +310,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             llCalculatingTime = m_Tools.CurrentTimestamp();
             
             if(m_bIsCheckCall)
-                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%3], nEncodingFrameSize, m_ucaEncodedFrame);
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame);
             else
                 nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
             
@@ -319,6 +325,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
 			else
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+            
 			
 			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
 			sumOfEncodingTimediff += timeDiff;
@@ -339,31 +346,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
             
-            //m_CalculatorEncodeTime.OperationTheatre(llCalculatingTime, m_pVideoCallSession, "Encode");
-            //m_TestingEncodeTime.UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
-            //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_TestingEncodeTime.GetAverage()));
-            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
-            /*
-            if(m_pVideoCallSession->GetCalculationStatus() == true)
-            {
-                long long currentTime = m_Tools.CurrentTimestamp();
-                
-                if(currentTime - m_pVideoCallSession->GetCalculationStartTime() <= 1000)
-                {
-                    m_CalculatorEncodeTime.UpdateData(currentTime - llCalculatingTime);
-                }
-                else
-                {
-                    
-                    CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "New EncodeTimeAVg = " + m_Tools.DoubleToString(m_CalculatorEncodeTime.GetAverage()));
-                    
-                    m_pVideoCallSession->SetCalculationStartMechanism(false);
-                }
-            }
-            */
-
+            m_pCalculatorEncodeTime->UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
             
-			//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " EncodeTime = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp()- llCalculatingTime));
+            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_pCalculatorEncodeTime->GetAverage()));
+            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
 			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
 

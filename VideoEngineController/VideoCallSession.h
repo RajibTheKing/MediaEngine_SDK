@@ -171,6 +171,9 @@ private:
     CVersionController *m_pVersionController;
     CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;
     
+    int m_nDeviceCheckFrameCounter;
+    
+    
 
 protected:
 

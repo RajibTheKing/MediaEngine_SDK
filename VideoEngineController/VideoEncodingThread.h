@@ -74,9 +74,8 @@ private:
     
 	Tools m_Tools;
     
-    CAverageCalculator m_CalculatorEncodeTime;
-    CAverageCalculator m_TestingEncodeTime;
-    CAverageCalculator m_CalculateEncodingTimeDiff;
+    CAverageCalculator *m_pCalculatorEncodeTime;
+    CAverageCalculator *m_pCalculateEncodingTimeDiff;
     
     long long m_FPS_TimeDiff;
     int m_FpsCounter;

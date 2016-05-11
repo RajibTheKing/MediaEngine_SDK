@@ -61,7 +61,7 @@ private:
 	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	Tools m_Tools;
-    CAverageCalculator m_CalculatorDecodeTime;
+    CAverageCalculator *m_pCalculatorDecodeTime;
 	SmartPointer<std::thread> pDecodingThread;
     
     
