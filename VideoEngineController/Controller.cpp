@@ -168,7 +168,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 	}
 }
 
-bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
     
 	CVideoCallSession* pVideoSession;
@@ -189,12 +189,12 @@ bool CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
 
-		return true;
+		return pVideoSession;
 	}
 	else
 	{
 		//pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
-		return false;
+		return NULL;
 	}
 }
 
@@ -462,7 +462,7 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeight, i
 
     }
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
-		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread();
+		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeight, iWidth);
 
 	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeight, iWidth);
     

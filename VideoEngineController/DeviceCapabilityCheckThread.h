@@ -18,7 +18,7 @@ public:
 	CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer, CCommonElementsBucket *pCommonElementBucket);
 	~CDeviceCapabilityCheckThread();
 
-	void StartDeviceCapabilityCheckThread();
+	void StartDeviceCapabilityCheckThread(int iHeight, int iWidth);
 	void StopDeviceCapabilityCheckThread();
 	void DeviceCapabilityCheckThreadProcedure();
 	static void *CreateVideoDeviceCapabilityCheckThread(void* param);
@@ -27,6 +27,8 @@ private:
 
 	bool bDeviceCapabilityCheckThreadRunning;
 	bool bDeviceCapabilityCheckThreadClosed;
+
+	unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 	int m_nIdolCounter;
 

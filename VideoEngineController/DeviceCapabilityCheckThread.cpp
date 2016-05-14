@@ -35,11 +35,27 @@ void CDeviceCapabilityCheckThread::StopDeviceCapabilityCheckThread()
 	//pInternalThread.reset();
 }
 
-void CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread()
+void CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread(int iHeight, int iWidth)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread() called");
 
 	m_nIdolCounter = 0;
+
+	for (int k = 0; k<3; k++)
+	{
+		memset(m_ucaDummmyFrame[k], 0, sizeof(m_ucaDummmyFrame[k]));
+		
+		for (int i = 0; i< iHeight; i++)
+		{
+			int color = rand() % 255;
+			
+			for (int j = 0; j < iWidth; j++)
+			{
+				m_ucaDummmyFrame[k][i * iHeight + j] = color;
+			}
+			
+		}
+	}
 
 	if (pDeviceCapabilityCheckThread.get())
 	{
@@ -128,7 +144,20 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				}
 
 				m_pCController->StartTestAudioCall(llFriendID);
-				m_pCController->StartTestVideoCall(llFriendID, nVideoHeigth, nVideoWidth, 0);
+
+				CVideoCallSession* pVideoSession = m_pCController->StartTestVideoCall(llFriendID, nVideoHeigth, nVideoWidth, 0);
+
+#if defined(SOUL_SELF_DEVICE_CHECK)
+
+				int numberOfFrames = HIGH_FRAME_RATE * 4;
+
+				for (int i = 0; i < numberOfFrames; i++)
+				{
+					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 2, 0, 0);
+				}
+			
+#endif
+
 			}
 			else if (nOperation == STOP_DEVICE_CHECK)
 			{
@@ -144,7 +173,17 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                 }
                 else if(nNotification == DEVICE_CHECK_FAILED && nVideoHeigth == 640)
                 {
+
+#if defined(SOUL_SELF_DEVICE_CHECK)
+						
+					m_pDeviceCapabilityCheckBuffer->Queue(llFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, 352, 288);
+
+#else
+
                     m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS_NOT_SUPPORTED);
+
+#endif
+
                 }
                 else if(nNotification == DEVICE_CHECK_SUCCESS && nVideoHeigth<640)
                 {

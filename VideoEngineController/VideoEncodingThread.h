@@ -40,10 +40,12 @@ public:
     
     void SetFrameNumber(int nFrameNumber);
 
+	CEncodingBuffer *m_pEncodingBuffer;
+
 private:
 
 	CVideoCallSession *m_pVideoCallSession;
-	CEncodingBuffer *m_pEncodingBuffer;						
+							
 	BitRateController *m_pBitRateController;	
 	CColorConverter *m_pColorConverter;
 	CVideoEncoder *m_pVideoEncoder;

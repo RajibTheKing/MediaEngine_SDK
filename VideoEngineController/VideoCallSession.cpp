@@ -404,6 +404,13 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	if (m_pVideoEncodingThread->IsThreadStarted() == false)
 		return 1;
 
+#if defined(SOUL_SELF_DEVICE_CHECK)
+	
+	if (m_bIsCheckCall == true)
+		return 1;
+	
+#endif
+
     if(g_llFirstFrameReceiveTime == 0) g_llFirstFrameReceiveTime = m_Tools.CurrentTimestamp();
     
 	
