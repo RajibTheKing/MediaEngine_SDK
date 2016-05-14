@@ -388,8 +388,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
 	if ( GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
     {
-		if( m_nCapturedFrameCounter < VIDEO_START_WITHOUT_VERSION_TIMEOUT_COUNTER )
-			return 1;
+		//if( m_nCapturedFrameCounter < VIDEO_START_WITHOUT_VERSION_TIMEOUT_COUNTER )
+        //{
+        //      return 1;
+        //}
+        
+        return 1;
     }
 
 	if (m_bVideoCallStarted == false && m_bIsCheckCall == false)

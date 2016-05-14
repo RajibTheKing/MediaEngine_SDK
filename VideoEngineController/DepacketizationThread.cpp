@@ -99,7 +99,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 	Tools toolsObject;
 	int frameSize, queSize = 0, miniPacketQueueSize = 0;
-
+    long long llDepacitazationThreadStartTime = m_Tools.CurrentTimestamp();
 	while (bDepacketizationThreadRunning)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
@@ -115,7 +115,30 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		if (0 == queSize && 0 == miniPacketQueueSize)
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
-
+            
+            if(m_pVersionController->GetOpponentVersion() == -1)
+            {
+                if(m_Tools.CurrentTimestamp()-llDepacitazationThreadStartTime >= TIMEOUT_START_SENDING_VIDEO_DATA)
+                {
+                    
+                    m_pVersionController->SetOpponentVersion(0); //version code
+                    
+                    m_pVersionController->SetCurrentCallVersion(0); //version code
+                    
+                    if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel())
+                    {		//Not necessary
+                        m_pVideoCallSession->SetOpponentVideoCallQualityLevel(SUPPORTED_RESOLUTION_FPS_352_15);
+                        
+                        m_pVideoCallSession->SetCurrentVideoCallQualityLevel(min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
+                        
+                        m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_NOT_2G);
+                    }
+                    
+                    
+                    
+                }
+            }
+            
 			toolsObject.SOSleep(10);
 
 			continue;
