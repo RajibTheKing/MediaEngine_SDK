@@ -46,7 +46,8 @@ m_nOpponentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
 m_nCurrentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false),
-m_nDeviceCheckFrameCounter(0)
+m_nDeviceCheckFrameCounter(0),
+m_nCapturedFrameCounter(0)
 
 {
     m_pController = pController;
@@ -383,10 +384,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
         if(m_nDeviceCheckFrameCounter>75) return m_nDeviceCheckFrameCounter;
     }*/
     
+	m_nCapturedFrameCounter++;
     
-	if(GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
+	if ( GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
     {
-        return 1;
+		if( m_nCapturedFrameCounter < VIDEO_START_WITHOUT_VERSION_TIMEOUT_COUNTER )
+			return 1;
     }
 
 	if (m_bVideoCallStarted == false && m_bIsCheckCall == false)

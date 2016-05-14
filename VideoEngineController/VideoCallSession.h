@@ -124,6 +124,8 @@ private:
 
 	int m_nCallFPS;
 
+	int m_nCapturedFrameCounter;
+
 	int m_nVideoCallHeight;
 	int m_nVideoCallWidth;
 
