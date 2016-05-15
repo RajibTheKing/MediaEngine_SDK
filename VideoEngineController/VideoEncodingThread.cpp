@@ -231,7 +231,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 
-			if (! m_pVideoCallSession->GetFPSController()->IsProcessableFrame())
+			if (! m_pVideoCallSession->GetFPSController()->IsProcessableFrame() && m_bIsCheckCall == false)
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
 
@@ -314,7 +314,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             else
                 nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
             
-            printf("The encoder returned , nENCODEDFrameSize = %d\n", nENCODEDFrameSize);
+            printf("The encoder returned , nENCODEDFrameSize = %d, frameNumber = %d\n", nENCODEDFrameSize, m_iFrameNumber);
             
 
 #else

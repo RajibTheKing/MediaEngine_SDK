@@ -149,11 +149,13 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 
 #if defined(SOUL_SELF_DEVICE_CHECK)
 
-				int numberOfFrames = HIGH_FRAME_RATE * 4;
-
+				int numberOfFrames = HIGH_FRAME_RATE * 5;
+                long long llCurrentTimestamp = m_Tools.CurrentTimestamp();
+				int factor = 1000/FPS_MAXIMUM - 1;
 				for (int i = 0; i < numberOfFrames; i++)
 				{
-					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 2, 0, 0);
+					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, i*factor, i);
+                    m_Tools.SOSleep(factor);
 				}
 			
 #endif

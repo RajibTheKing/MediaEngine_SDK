@@ -124,7 +124,10 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	nExpectedTime = -1;
 	long long maxDecodingTime = 0, framCounter = 0, decodingTime, nBeforeDecodingTime;
 	double decodingTimeAverage = 0;
-
+    
+    long long llFirstFrameTimeStamp = -1;
+    int nFirstFrameNumber = -1;
+    long long llTargetTimeStampDiff = -1;
 	while (bDecodingThreadRunning)
 	{
         
@@ -139,7 +142,17 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		nExpectedTime = currentTime - m_pVideoCallSession->GetShiftedTime();
 
 		nFrameLength = m_pEncodedFrameDepacketizer->GetReceivedFrame(m_PacketizedFrame, nFrameNumber, nEncodingTime, nExpectedTime, 0, nOrientation);
-
+        
+        if(m_bIsCheckCall == true && m_pVideoCallSession->GetResolationCheck() == false)
+        {
+            if(llFirstFrameTimeStamp!=-1 &&   (m_Tools.CurrentTimestamp() - llFirstFrameTimeStamp) > llTargetTimeStampDiff)
+            {
+                printf("Force Device Fire NOOOTTTT SSSUUUPPPOOORRTTEEDDD\n");
+                m_pVideoCallSession->SetCalculationStartMechanism(false);
+                m_pVideoCallSession->DecideHighResolatedVideo(false);
+            }
+        }
+        
 		if (nFrameLength>-1)
         {
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"#$Dec# FN: " +
@@ -172,7 +185,18 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		else
 		{
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
+            
+            if(llFirstFrameTimeStamp == -1)
+            {
+                llFirstFrameTimeStamp = nBeforeDecodingTime;
+                nFirstFrameNumber = nFrameNumber;
+                
+                llTargetTimeStampDiff = (FPS_MAXIMUM*5 - nFirstFrameNumber) * (1000/FPS_MAXIMUM);
+                printf("llFirstFrameTimeStamp = %lld, nFirstFrameNumber = %d, llTargetTimeStampDiff = %lld\n",llFirstFrameTimeStamp, nFirstFrameNumber, llTargetTimeStampDiff);
+                
+            }
 
+            
 			nOponnentFPS = m_pVideoCallSession->GetFPSController()->GetOpponentFPS();
 			nMaxProcessableByMine = m_pVideoCallSession->GetFPSController()->GetMaxOwnProcessableFPS();
 
