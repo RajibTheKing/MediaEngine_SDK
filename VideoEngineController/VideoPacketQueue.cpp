@@ -29,6 +29,7 @@ void CVideoPacketQueue::ResetBuffer()
 
 int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 {
+    printf("Depacketization, QUEUE SIZE = %d\n", m_nQueueSize);
 	Locker lock(*m_pVideoPacketQueueMutex);
 
 	if (m_nQueueSize >= m_nQueueCapacity)
@@ -52,7 +53,7 @@ int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 int CVideoPacketQueue::DeQueue(unsigned char *ucaVideoPacketData)
 {
 	Locker lock(*m_pVideoPacketQueueMutex);
-    //printf("TheKing--> VideoPacketQueue m_nQueueSize = %d\n", m_nQueueSize);
+    printf("TheKing--> VideoPacketQueue m_nQueueSize = %d\n", m_nQueueSize);
 	if (m_nQueueSize <= 0)
 	{
 		return -1;

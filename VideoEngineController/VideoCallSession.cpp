@@ -337,7 +337,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         }*/
         
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
-        
+        printf("PushPacketForMerging--> nFrameNumber = %d\n", unFrameNumber);
         
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)

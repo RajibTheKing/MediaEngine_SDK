@@ -30,6 +30,7 @@ void CEncodingBuffer::ResetBuffer()
 
 int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int nCaptureTimeDifference, int device_orientation)
 {
+    printf("EncodingBuffer, QUEUE SIZE = %d\n", m_nQueueSize);
 	Locker lock(*m_pEncodingBufferMutex);
     
 	memcpy(m_uc2aCapturedVideoDataBuffer[m_iPushIndex], ucaCapturedVideoFrameData, nLength);
