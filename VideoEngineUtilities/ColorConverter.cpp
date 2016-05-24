@@ -247,7 +247,7 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, 
 
 	for (int x = iWidth - 1; x >-1; --x)
 	{
-		for (int y = iHeight - 1; y > -1; --y)
+		for (int y = 0; y < iHeight; ++y)
 		{
 			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
 			i++;
@@ -260,7 +260,7 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, 
 	int vIndex = dimention + m_Multiplication[halfHeight][halfWidth];
 
 	for (int x = halfWidth - 1; x>-1; --x)
-		for (int y = halfHeight - 1; y > -1; --y)
+		for (int y = 0; y < halfHeight; ++y)
 		{
 			int ind = (m_Multiplication[y][halfWidth] + x) << 1 ;
 			pData[vIndex++] = m_pFrame[dimention + ind + 1];
