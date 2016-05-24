@@ -5,6 +5,7 @@
 #include "Tools.h"
 #include "LogPrinter.h"
 
+
 CAudioDecoderBuffer::CAudioDecoderBuffer() :
 m_iPushIndex(0),
 m_iPopIndex(0),
