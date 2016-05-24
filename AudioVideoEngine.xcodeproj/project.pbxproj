@@ -50,6 +50,10 @@
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
 		DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */; };
 		DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */; };
+		DA77B0EE1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */; };
+		DA77B0EF1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */; };
+		DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */; };
+		DA77B0F51CF45C8800719D7D /* VersionController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F31CF45C8800719D7D /* VersionController.cpp */; };
 		DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */; };
 		DAA0F0E31C675A5F009E0F39 /* SynchronizedMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */; };
 		DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */; };
@@ -164,6 +168,14 @@
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
+		DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceCapabilityCheckBuffer.cpp; path = VideoEngineController/DeviceCapabilityCheckBuffer.cpp; sourceTree = "<group>"; };
+		DA77B0EB1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceCapabilityCheckBuffer.h; path = VideoEngineController/DeviceCapabilityCheckBuffer.h; sourceTree = "<group>"; };
+		DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceCapabilityCheckThread.cpp; path = VideoEngineController/DeviceCapabilityCheckThread.cpp; sourceTree = "<group>"; };
+		DA77B0ED1CF4597D00719D7D /* DeviceCapabilityCheckThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceCapabilityCheckThread.h; path = VideoEngineController/DeviceCapabilityCheckThread.h; sourceTree = "<group>"; };
+		DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AverageCalculator.cpp; path = VideoEngineController/AverageCalculator.cpp; sourceTree = "<group>"; };
+		DA77B0F11CF45C5100719D7D /* AverageCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AverageCalculator.h; path = VideoEngineController/AverageCalculator.h; sourceTree = "<group>"; };
+		DA77B0F31CF45C8800719D7D /* VersionController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionController.cpp; path = VideoEngineController/VersionController.cpp; sourceTree = "<group>"; };
+		DA77B0F41CF45C8800719D7D /* VersionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionController.h; path = VideoEngineController/VersionController.h; sourceTree = "<group>"; };
 		DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BitRateController.cpp; path = VideoEngineController/BitRateController.cpp; sourceTree = "<group>"; };
 		DAA0F0DF1C675A3C009E0F39 /* BitRateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BitRateController.h; path = VideoEngineController/BitRateController.h; sourceTree = "<group>"; };
 		DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SynchronizedMap.cpp; path = VideoEngineController/SynchronizedMap.cpp; sourceTree = "<group>"; };
@@ -232,6 +244,8 @@
 				188587B81C0AEEAC00B1F435 /* AudioCallSession.h */,
 				188587B91C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp */,
 				188587BA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.h */,
+				DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */,
+				DA77B0F11CF45C5100719D7D /* AverageCalculator.h */,
 				188587BB1C0AEEAC00B1F435 /* AudioDecoder.cpp */,
 				188587BC1C0AEEAC00B1F435 /* AudioDecoder.h */,
 				9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */,
@@ -257,6 +271,10 @@
 				188587C91C0AEEAC00B1F435 /* DecodingBuffer.h */,
 				D18E5FBD1C96D57F00E5EDAA /* DepacketizationThread.cpp */,
 				D18E5FBE1C96D57F00E5EDAA /* DepacketizationThread.h */,
+				DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */,
+				DA77B0EB1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.h */,
+				DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */,
+				DA77B0ED1CF4597D00719D7D /* DeviceCapabilityCheckThread.h */,
 				188587E71C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp */,
 				188587E81C0AEEAC00B1F435 /* EncodedFrameDepacketizer.h */,
 				188587CA1C0AEEAC00B1F435 /* EncodedFramePacketizer.cpp */,
@@ -297,6 +315,8 @@
 				188587D81C0AEEAC00B1F435 /* Tools.h */,
 				188587D91C0AEEAC00B1F435 /* typedef.h */,
 				188587DA1C0AEEAC00B1F435 /* typedefs.h */,
+				DA77B0F31CF45C8800719D7D /* VersionController.cpp */,
+				DA77B0F41CF45C8800719D7D /* VersionController.h */,
 				188587DB1C0AEEAC00B1F435 /* VideoCallSession.cpp */,
 				188587DC1C0AEEAC00B1F435 /* VideoCallSession.h */,
 				188587DD1C0AEEAC00B1F435 /* VideoCallSessionListHandler.cpp */,
@@ -395,6 +415,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA77B0EF1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp in Sources */,
 				DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */,
 				9D25D6DE1C316D2C00BBDB63 /* SendingBuffer.cpp in Sources */,
 				DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */,
@@ -411,6 +432,7 @@
 				D18E5FC81C96D57F00E5EDAA /* RenderingThread.cpp in Sources */,
 				188587F81C0AEEAC00B1F435 /* VideoDecoder.cpp in Sources */,
 				DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */,
+				DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */,
 				188587F31C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.cpp in Sources */,
 				9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */,
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
@@ -421,6 +443,7 @@
 				188587F71C0AEEAC00B1F435 /* VideoCallSessionListHandler.cpp in Sources */,
 				188587F01C0AEEAC00B1F435 /* EncodedFramePacketizer.cpp in Sources */,
 				188587FB1C0AEEAC00B1F435 /* VideoPacketBuffer.cpp in Sources */,
+				DA77B0F51CF45C8800719D7D /* VersionController.cpp in Sources */,
 				9D9910381C296914007BA91C /* VideoPacketQueue.cpp in Sources */,
 				188587F91C0AEEAC00B1F435 /* VideoEncoder.cpp in Sources */,
 				DAF780BE1C63095B000A8565 /* BandwidthController.cpp in Sources */,
@@ -437,6 +460,7 @@
 				188587EE1C0AEEAC00B1F435 /* Controller.cpp in Sources */,
 				D11DAA691CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp in Sources */,
 				188587F61C0AEEAC00B1F435 /* VideoCallSession.cpp in Sources */,
+				DA77B0EE1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
