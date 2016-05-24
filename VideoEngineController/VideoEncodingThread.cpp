@@ -12,7 +12,7 @@
 CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall) :
 
 m_pVideoCallSession(pVideoCallSession),
-m_iFrameNumber(0),
+m_iFrameNumber(nFPS),
 m_llFriendID(llFriendID),
 m_pEncodingBuffer(pEncodingBuffer),
 m_pBitRateController(pBitRateController),
