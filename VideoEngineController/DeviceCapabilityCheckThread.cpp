@@ -151,7 +151,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 
 				int numberOfFrames = HIGH_FRAME_RATE * 5;
                 long long llCurrentTimestamp = m_Tools.CurrentTimestamp();
-				int factor = 1000/FPS_MAXIMUM - 1;
+				int factor = 1000/HIGH_FRAME_RATE - 1;
 				for (int i = 0; i < numberOfFrames; i++)
 				{
 					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, i*factor, i);
