@@ -29,7 +29,7 @@ void CSendingBuffer::ResetBuffer()
 
 int CSendingBuffer::Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPacketData, int nLength, int iFrameNumber, int iPacketNumber)
 {
-    printf("SendingBuffer, QUEUE SIZE = %d\n", m_nQueueSize);
+    //printf("SendingBuffer, QUEUE SIZE = %d\n", m_nQueueSize);
 	Locker lock(*m_pSendingBufferMutex);
     
 	memcpy(m_uc2aSendingVideoPacketBuffer[m_iPushIndex], ucaSendingVideoPacketData, nLength);

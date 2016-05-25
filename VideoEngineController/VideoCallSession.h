@@ -174,6 +174,7 @@ private:
     CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;
     
     int m_nDeviceCheckFrameCounter;
+    long long m_llClientFrameFPSTimeStamp;
     
     
 

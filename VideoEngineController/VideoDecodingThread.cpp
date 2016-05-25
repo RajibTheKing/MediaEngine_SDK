@@ -201,13 +201,13 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			nOponnentFPS = m_pVideoCallSession->GetFPSController()->GetOpponentFPS();
 			nMaxProcessableByMine = m_pVideoCallSession->GetFPSController()->GetMaxOwnProcessableFPS();
 
-			if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
+			/*if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
                 printf("TheKing-->nMaxProcessableByMine inside ifffffff, nFrameNumber = %d\n", nFrameNumber);
                 
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
 				continue;
-			}
+			}*/
         
             printf("TheKing-->nMaxProcessableByMine success, nFrameNumber = %d\n", nFrameNumber);
             
@@ -226,6 +226,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime, nOrientation);
 			//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 			//			toolsObject.SOSleep(100);
+          
             
             
 			if (nDecodingStatus > 0)
@@ -254,6 +255,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				}
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: AVG Decoding Time:" + m_Tools.DoubleToString(dbAverageDecodingTime) + "  Max Decoding-time: " + m_Tools.IntegertoStringConvert(nMaxDecodingTime) + "  MaxOwnProcessable: " + m_Tools.IntegertoStringConvert(fps));
             }
+            
+            
             
             
 			toolsObject.SOSleep(1);

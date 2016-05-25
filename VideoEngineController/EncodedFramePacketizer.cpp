@@ -85,7 +85,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 		//m_cPacketHeader.SetDeviceOrientation(m_ucaPacket+5);
 		int deviceoritationTemp = m_cPacketHeader.GetDeviceOrientation();
 
-		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, "device orientaion : >>>>>>>>>>>>>>>>>>>>>>>>>  " + m_Tools.IntegertoStringConvert(deviceoritationTemp) + " ......>> " +m_Tools.IntegertoStringConvert(device_orientation));
+		//CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, "device orientaion : >>>>>>>>>>>>>>>>>>>>>>>>>  " + m_Tools.IntegertoStringConvert(deviceoritationTemp) + " ......>> " +m_Tools.IntegertoStringConvert(device_orientation));
 
 		m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
 
