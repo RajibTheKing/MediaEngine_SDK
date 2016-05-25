@@ -50,6 +50,7 @@ m_nDeviceCheckFrameCounter(0),
 m_nCapturedFrameCounter(0)
 
 {
+    m_llClientFrameFPSTimeStamp = -1;
     m_pController = pController;
     
 	m_miniPacketBandCounter = 0;
@@ -418,18 +419,45 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	LongLong currentTimeStamp = m_Tools.CurrentTimestamp();
 
-	if (m_ClientFrameCounter++)
+    
+    //Capturing fps calculation
+    if(m_llClientFrameFPSTimeStamp==-1) m_llClientFrameFPSTimeStamp = currentTimeStamp;
+    m_ClientFrameCounter++;
+    if(currentTimeStamp - m_llClientFrameFPSTimeStamp >= 1000)
+    {
+        {//Block for Lock
+            Locker lock(*m_pVideoCallSessionMutex);
+            if(m_ClientFrameCounter > MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS)
+            {
+                printf("RajibTheKing, setting m_ClientFrameCounter = %d\n", m_ClientFrameCounter);
+                m_pFPSController->SetClientFPS(m_ClientFrameCounter);
+            }
+        }
+        
+        m_ClientFrameCounter = 0;
+        m_llClientFrameFPSTimeStamp = currentTimeStamp;
+    }
+	
+    
+    
+    /*if (m_ClientFrameCounter%m_nCallFPS)
 	{
 		m_ClientFPSDiffSum += currentTimeStamp - m_LastTimeStampClientFPS;
 
 		{//Block for LOCK
 			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
-			if(nApproximateAverageFrameInterval > MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS) {
+			if(nApproximateAverageFrameInterval > MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS)
+            {
 				Locker lock(*m_pVideoCallSessionMutex);
 				m_pFPSController->SetClientFPS(1000 / nApproximateAverageFrameInterval);
+
 			}
 		}
-	}
+	}*/
+    
+    
+    
+    
 
 	m_LastTimeStampClientFPS = currentTimeStamp;
 
@@ -751,6 +779,8 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	m_pVideoEncodingThread->SetCallFPS(m_nCallFPS);
     m_pVideoEncodingThread->SetFrameNumber(m_nCallFPS);
 	m_pVideoDecodingThread->SetCallFPS(m_nCallFPS);
+    
+    m_pFPSController->Reset(m_nCallFPS);
 
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
 	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
