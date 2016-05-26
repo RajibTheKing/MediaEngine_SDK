@@ -61,12 +61,18 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 		if (nPacketizedDataLength + m_nPacketSize > unLength)
 			m_nPacketSize = unLength - nPacketizedDataLength;
         
-        if(bIsDummy && m_nPacketSize == 1)
+        /*if(bIsDummy && m_nPacketSize == 1)
         {
             ++ m_nPacketSize;
+        }*/
+        
+        if(bIsDummy)
+        {
+            printf("bIsDummy PacketSize = %d\n", m_nPacketSize);
         }
-            
-		if (uchSendVersion) {
+        
+		if (uchSendVersion)
+        {
             if(1 == uchSendVersion)
                 m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
             else

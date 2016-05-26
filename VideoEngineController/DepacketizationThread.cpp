@@ -116,6 +116,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
             
+            printf("Rajib: OwnCallVersion = %d, oppCallVersion = %d\n", m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion());
             if(m_pVersionController->GetOpponentVersion() == -1)
             {
                 if(m_Tools.CurrentTimestamp()-llDepacitazationThreadStartTime >= TIMEOUT_START_SENDING_VIDEO_DATA)
@@ -189,7 +190,10 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         {
             if(m_pVersionController->GetOpponentVersion() == -1)
             {
+                
                 m_pVersionController->SetOpponentVersion((int)m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION]);
+                printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
+                
                 m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
                 
                 
@@ -220,10 +224,17 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         
         if(m_pVersionController->GetOpponentVersionCompatibleFlag() == true)
         {
-            if (m_pVersionController->GetOpponentVersion() == -1 && m_RcvdPacketHeader.getVersionCode()>0)
+            //if (m_pVersionController->GetOpponentVersion() == -1 && m_RcvdPacketHeader.getVersionCode()>0)
+            
+            unsigned char uchOpponentVersion = max(1, (int)m_RcvdPacketHeader.getVersionCode());
+            printf("TheVersion--> RcvPacketHeader.getVersionCode = %d, packetSize = %d, frameNumber = %d\n", m_RcvdPacketHeader.getVersionCode(), m_RcvdPacketHeader.getPacketLength(), m_RcvdPacketHeader.getFrameNumber());
+            
+            if(uchOpponentVersion > m_pVersionController->GetOpponentVersion())
             {
-                m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());
-
+                m_pVersionController->SetOpponentVersion(uchOpponentVersion);
+                printf("TheVersion --> setOpponentVersion %d, because GetOpponentVersionCompatibleFlag() == true\n", m_pVersionController->GetOpponentVersion());
+                
+                
                 m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
 
 				if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {		//Not necessary
@@ -247,11 +258,11 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         }
         
         
-//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
-//                             "TheKing--> Finally, CurrentCallVersion = "+ m_Tools.IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion()) +
-//                             ", CurrentVideoQuality = "+ m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetCurrentVideoCallQualityLevel()) +
-//                             ", OppVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) +
-//                             ", OwnVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOwnVideoCallQualityLevel()) );
+        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
+                             "TheKing--> Finally, CurrentCallVersion = "+ m_Tools.IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion()) +
+                             ", CurrentVideoQuality = "+ m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetCurrentVideoCallQualityLevel()) +
+                             ", OppVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) +
+                             ", OwnVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOwnVideoCallQualityLevel()) );
 
 #if 0
 		ExpectedPacket();	//Calculate Expected Video Packet For Debugging.
