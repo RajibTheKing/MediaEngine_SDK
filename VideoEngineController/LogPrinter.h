@@ -19,9 +19,9 @@
 #define ON 1
 #define OFF 0
 
-#define LOG_ENABLED
+//#define LOG_ENABLED
 
-#define INSTENT_TEST_LOG		ON
+#define INSTENT_TEST_LOG		OFF
 #define QUEUE_OVERFLOW_LOG		OFF
 #define OPERATION_TIME_LOG		OFF
 #define QUEUE_TIME_LOG			OFF
@@ -61,7 +61,7 @@ typedef long long IPVLongType;
 #define printf(...)
 #endif
 
-//#define printf(...)
+#define printf(...)
 
 using namespace std;
 
