@@ -97,7 +97,7 @@
 
 #define MAX_VIDEO_ENCODER_BUFFER_SIZE 30
 
-#elif
+#else
 
 #define MAX_VIDEO_ENCODER_BUFFER_SIZE 30
 
