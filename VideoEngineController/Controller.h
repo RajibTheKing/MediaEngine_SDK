@@ -17,12 +17,12 @@
 
 using namespace std;
 
-typedef struct VideoQuality
+typedef struct 
 {
     int iHeight;
     int iWidth;
     
-};
+} VideoQuality;
 
 class CController
 {
