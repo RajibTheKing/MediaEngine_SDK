@@ -173,14 +173,14 @@ int CInterfaceOfAudioVideoEngine::SetBitRate(const IPVLongType llFriendID, int n
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::CheckDeviceCapability(const IPVLongType llFriendID, int iHeight, int iWidth)
+int CInterfaceOfAudioVideoEngine::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->CheckDeviceCapability(llFriendID, iHeight, iWidth);
+	int iReturnedValue = m_pcController->CheckDeviceCapability(lFriendID, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 
 	return iReturnedValue;
 }

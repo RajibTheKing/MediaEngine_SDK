@@ -209,7 +209,6 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
     {
         m_Quality[0].iHeight = iVideoHeight;
         m_Quality[0].iWidth = iVideoWidth;
-        
     }
     
 	CVideoCallSession* pVideoSession;
@@ -448,23 +447,18 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 	return -1;
 }
 
-int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeight, int iWidth)
+int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 {
-    if(iHeight * iWidth > 352 * 288)
-    {
-        m_Quality[1].iHeight = iHeight;
-        m_Quality[1].iWidth = iWidth;
-    }
-    else
-    {
-        m_Quality[0].iHeight = iHeight;
-        m_Quality[0].iWidth = iWidth;
+        m_Quality[0].iHeight = iHeightLow;
+        m_Quality[0].iWidth = iWidthLow;
+        m_Quality[1].iHeight = iHeightHigh;
+        m_Quality[1].iWidth = iWidthHigh;
 
-    }
+    
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
-		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeight, iWidth);
+		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
 
-	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeight, iWidth);
+	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);
     
     return 1;
 }
