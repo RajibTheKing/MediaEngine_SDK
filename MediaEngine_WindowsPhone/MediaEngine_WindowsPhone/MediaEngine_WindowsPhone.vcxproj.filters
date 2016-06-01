@@ -176,6 +176,18 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VersionController.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -299,6 +311,19 @@
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VersionController.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
