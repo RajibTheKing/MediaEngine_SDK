@@ -28,10 +28,16 @@ Tools::Tools()
 {
 	m_filePointerToWriteByteData = NULL;
 	m_filePointerToWriteShortData = NULL;
+#ifdef _DESKTOP_C_SHARP_
+	timeBeginPeriod(1);
+#endif
 }
 
 Tools::~Tools()
 {
+#ifdef _DESKTOP_C_SHARP_
+	timeEndPeriod(16);
+#endif
 	if (NULL != m_filePointerToWriteByteData)
 		fclose(m_filePointerToWriteByteData);
 
@@ -120,10 +126,8 @@ std::string Tools::LongLongtoStringConvert(long long number)
 void Tools::SOSleep(int nSleepTimeout)
 {
 
-#ifdef _WIN32 
-	timeBeginPeriod(1);
+#ifdef _WIN32
 	Sleep(nSleepTimeout);
-
 #else
 
 	timespec t;
