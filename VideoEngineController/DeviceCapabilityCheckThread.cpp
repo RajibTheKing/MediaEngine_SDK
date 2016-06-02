@@ -183,13 +183,13 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				m_pCController->StopTestAudioCall(llFriendID);
 				m_pCController->StopTestVideoCall(llFriendID);
 
-                if(nNotification == DEVICE_CHECK_SUCCESS && (nVideoHeigth == 640 || nVideoWidth == 640))
+                if(nNotification == DEVICE_CHECK_SUCCESS && (nVideoHeigth * nVideoWidth == 640 * 480))
                 {
                     m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_640_25;
                     
                     m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS);
                 }
-                else if(nNotification == DEVICE_CHECK_FAILED && (nVideoHeigth == 640 || nVideoWidth == 640))
+				else if (nNotification == DEVICE_CHECK_FAILED && (nVideoHeigth * nVideoWidth == 640 * 480))
                 {
 
 #if defined(SOUL_SELF_DEVICE_CHECK)
@@ -203,13 +203,13 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 #endif
 
                 }
-                else if(nNotification == DEVICE_CHECK_SUCCESS && (nVideoHeigth < 640 && nVideoWidth < 640))
+                else if(nNotification == DEVICE_CHECK_SUCCESS && (nVideoHeigth * nVideoWidth < 640 * 480))
                 {
                     m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_25;
                     
                     m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS);
                 }
-                else if(nNotification == DEVICE_CHECK_FAILED && (nVideoHeigth < 640 && nVideoWidth < 640))
+                else if(nNotification == DEVICE_CHECK_FAILED && (nVideoHeigth * nVideoWidth < 640 * 480))
                 {
                     m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_15;
                     
@@ -218,17 +218,11 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                 
                 
                 
-                if((nVideoHeigth < 640) || (nVideoHeigth == 640 && nNotification == DEVICE_CHECK_SUCCESS))
+                if((nVideoHeigth * nVideoWidth < 640 * 480) || (nVideoHeigth * nVideoWidth == 640 * 480 && nNotification == DEVICE_CHECK_SUCCESS))
                 {
                     bDeviceCapabilityCheckThreadRunning = false;
                     
                 }
-
-				if ((nVideoWidth < 640) || (nVideoWidth == 640 && nNotification == DEVICE_CHECK_SUCCESS))
-				{
-					bDeviceCapabilityCheckThreadRunning = false;
-
-				}
                 
 			}
 
