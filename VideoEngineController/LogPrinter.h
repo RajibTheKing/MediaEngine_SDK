@@ -56,11 +56,14 @@ typedef long long IPVLongType;
 #endif 
 
 #if defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_WINDOWS_PHONE)
+static FILE *logfp = NULL;
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
 #define printf(...) printg(__VA_ARGS__,"")
+#define printk(...) printg(__VA_ARGS__,"")
 #define printf(...)
+#define printFile(...) if(!logfp) {logfp = fopen("log.txt", "wb");} fprintf(logfp, __VA_ARGS__);
+#define printfiledone() fclose(logfp);
 #endif
-
 #define printf(...)
 
 using namespace std;

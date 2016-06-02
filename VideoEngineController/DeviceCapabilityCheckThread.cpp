@@ -151,10 +151,26 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 
 				int numberOfFrames = HIGH_FRAME_RATE * 5;
                 long long llCurrentTimestamp = m_Tools.CurrentTimestamp();
-				int factor = 1000/HIGH_FRAME_RATE - 1;
+				int factor = 1000/HIGH_FRAME_RATE - 2;
+				
+				long long lastFramePushTime = m_Tools.CurrentTimestamp();
+				/*
+				CAverageCalculator pdAvg;
+				pdAvg.Reset();
+				*/
 				for (int i = 0; i < numberOfFrames; i++)
 				{
-					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, i*factor, i);
+					long long now = m_Tools.CurrentTimestamp();
+					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, now, i);
+					/*
+					printFile("Push Difference = %lld\n", now - lastFramePushTime);
+					if (i)
+					{
+						pdAvg.UpdateData(now - lastFramePushTime);
+						printFile("pdAvg = %lf\n", pdAvg.GetAverage());
+					}
+					lastFramePushTime = now;
+					*/
                     m_Tools.SOSleep(factor);
 				}
 			

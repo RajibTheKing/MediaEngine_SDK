@@ -121,7 +121,7 @@ void Tools::SOSleep(int nSleepTimeout)
 {
 
 #ifdef _WIN32 
-
+	timeBeginPeriod(1);
 	Sleep(nSleepTimeout);
 
 #else
