@@ -321,6 +321,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(true);
             printf("First DecodingThread SET_CAMERA_RESOLUTION_640x480 = %d\n", m_pVideoCallSession->GetResolationCheck());
+			//printFile("%s", sss.c_str());
+			//printfiledone();
             
         }
         else if(diff > 1000)
@@ -328,6 +330,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             printf("DecodingThread SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_pVideoCallSession->GetResolationCheck());
             m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(false);
+			//printFile("%s", sss.c_str());
+			//printfiledone();
         }
     }
      
