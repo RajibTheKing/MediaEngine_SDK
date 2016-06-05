@@ -13,6 +13,8 @@ m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL),
+m_pDeviceCapabilityCheckBuffer(NULL),
+m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 
 {
@@ -42,6 +44,8 @@ m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL),
+m_pDeviceCapabilityCheckBuffer(NULL),
+m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 
 {
@@ -78,6 +82,20 @@ bool CController::SetLoggingState(bool loggingState, int logLevel)
 CController::~CController()
 {
 	CLogPrinter_Write(CLogPrinter::WARNING, "CController::~CController()");
+
+	if (NULL != m_pDeviceCapabilityCheckThread)
+	{
+		m_pDeviceCapabilityCheckThread->StopDeviceCapabilityCheckThread();
+
+		delete m_pDeviceCapabilityCheckThread;
+		m_pDeviceCapabilityCheckThread = NULL;
+	}
+
+	if (NULL != m_pDeviceCapabilityCheckBuffer)
+	{
+		delete m_pDeviceCapabilityCheckBuffer;
+		m_pDeviceCapabilityCheckBuffer = NULL;
+	}
 
 	if (NULL != m_pCommonElementsBucket)
 	{

@@ -11,7 +11,8 @@
 CDeviceCapabilityCheckThread::CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer, CCommonElementsBucket *pCommonElementBucket) :
 
 m_pCController(pCController),
-m_pDeviceCapabilityCheckBuffer(pDeviceCapabilityCheckBuffer)
+m_pDeviceCapabilityCheckBuffer(pDeviceCapabilityCheckBuffer),
+bDeviceCapabilityCheckThreadClosed(true)
 
 {
     m_pCommonElementBucket = pCommonElementBucket;
