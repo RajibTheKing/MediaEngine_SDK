@@ -90,17 +90,11 @@ m_nCapturedFrameCounter(0)
 
 CVideoCallSession::~CVideoCallSession()
 {
-//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
 	m_pVideoEncodingThread->StopEncodingThread();
-//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
 	m_pSendingThread->StopSendingThread();
-//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 3");
 	m_pVideoDepacketizationThread->StopDepacketizationThread();
-//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
 	m_pVideoDecodingThread->StopDecodingThread();
-//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
 	m_pVideoRenderingThread->StopRenderingThread();
-//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
 
 	if (NULL != m_pVideoEncodingThread)
 	{
@@ -217,9 +211,7 @@ CVideoCallSession::~CVideoCallSession()
     if(NULL  != m_pVersionController)
     {
         delete m_pVersionController;
-        m_pVersionController = NULL;
-        
-        
+        m_pVersionController = NULL;    
     }
     
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);

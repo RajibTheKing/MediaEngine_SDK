@@ -311,7 +311,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
         m_Counter++;
         long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
         long long diff = currentTimeStampForBrust - m_pVideoCallSession->GetCalculationStartTime();
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Inside m_Counter = " + m_Tools.IntegertoStringConvert(m_Counter)
+		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG || CHECK_CAPABILITY_LOG, "Inside m_Counter = " + m_Tools.IntegertoStringConvert(m_Counter)
                         +", CalculationStartTime = " + m_Tools.LongLongtoStringConvert(m_pVideoCallSession->GetCalculationStartTime())
                         +", CurrentTime = "+m_Tools.LongLongtoStringConvert(currentTimeStampForBrust) + ", m_nCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS));
     
@@ -320,14 +320,17 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             //   m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
             m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(true);
-            printf("First DecodingThread SET_CAMERA_RESOLUTION_640x480 = %d\n", m_pVideoCallSession->GetResolationCheck());
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, " CVideoDecodingThread::DecodeAndSendToClient() SUCCESSED for iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth));
+
 			//printFile("%s", sss.c_str());
 			//printfiledone();
             
         }
         else if(diff > 1000)
         {
-            printf("DecodingThread SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_pVideoCallSession->GetResolationCheck());
+			CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, " CVideoDecodingThread::DecodeAndSendToClient() FAILED for iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth));
+
             m_pVideoCallSession->SetCalculationStartMechanism(false);
             m_pVideoCallSession->DecideHighResolatedVideo(false);
 			//printFile("%s", sss.c_str());

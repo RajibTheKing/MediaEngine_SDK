@@ -37,7 +37,7 @@ void CDeviceCapabilityCheckThread::StopDeviceCapabilityCheckThread()
 
 void CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread(int iHeight, int iWidth)
 {
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread() called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread() called");
 
 	m_nIdolCounter = 0;
 
@@ -81,7 +81,7 @@ void CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread(int iHeight,
 
 #endif
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread() DeviceCapabilityCheck Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread() DeviceCapabilityCheck Thread started");
 
 	return;
 }
@@ -97,18 +97,18 @@ void *CDeviceCapabilityCheckThread::CreateVideoDeviceCapabilityCheckThread(void*
 
 void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 {
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() started DeviceCapabilityCheck method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() started DeviceCapabilityCheck method");
 
 	int nOperation, nVideoHeigth, nVideoWidth, nNotification;
 	long long llFriendID;
 
 	while (bDeviceCapabilityCheckThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() RUNNING DeviceCapabilityCheck method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() RUNNING DeviceCapabilityCheck method");
 
 		if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
 		{
-			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() NOTHING for Sending method");
+			//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() NOTHING for Sending method");
 
 			m_Tools.SOSleep(10);
 		}
@@ -118,6 +118,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 
 			if (nOperation == START_DEVICE_CHECK)
 			{
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() got START_DEVICE_CHECK instruction");
 
 #if defined(TARGET_OS_WINDOWS_PHONE)
 
@@ -134,6 +135,9 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				{
 					m_pCController->m_nDeviceStrongness = STATUS_ABLE;
 					m_pCController->m_nMemoryEnoughness = STATUS_ABLE;
+
+					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() memory enough");
+
 				}
 				else
 				{
@@ -141,6 +145,8 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 					m_pCController->m_nMemoryEnoughness = STATUS_UNABLE;
 					m_pCController->m_nEDVideoSupportablity = STATUS_UNABLE;
 					m_pCController->m_nHighFPSVideoSupportablity = STATUS_UNABLE;
+
+					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() memory insufficient");
 				}
 
 				m_pCController->StartTestAudioCall(llFriendID);
@@ -158,6 +164,9 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				CAverageCalculator pdAvg;
 				pdAvg.Reset();
 				*/
+
+				CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() pushing sample data");
+
 				for (int i = 0; i < numberOfFrames; i++)
 				{
 					long long now = m_Tools.CurrentTimestamp();
@@ -174,23 +183,32 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                     m_Tools.SOSleep(factor);
 				}
 			
+				CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() pushed sample data");
 #endif
 
 			}
 			else if (nOperation == STOP_DEVICE_CHECK)
 			{
                 printf("Samaun--> STOP_DEVICE_CHECK, iVideoWidth,iVideoHeight = %d,%d ....... Notification = %d\n", nVideoWidth, nVideoHeigth, nNotification);
+
+				CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() got STOP_DEVICE_CHECK instruction");
+
 				m_pCController->StopTestAudioCall(llFriendID);
 				m_pCController->StopTestVideoCall(llFriendID);
 
+				CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() audio video processing stopped");
+
                 if(nNotification == DEVICE_CHECK_SUCCESS && (nVideoHeigth * nVideoWidth == 640 * 480))
                 {
+					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() DEVICE_CHECK_SUCCESS && 640 * 480");
+
                     m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_640_25;
                     
                     m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480_25FPS);
                 }
 				else if (nNotification == DEVICE_CHECK_FAILED && (nVideoHeigth * nVideoWidth == 640 * 480))
                 {
+					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() DEVICE_CHECK_FAILED && 640 * 480");
 
 #if defined(SOUL_SELF_DEVICE_CHECK)
 						
@@ -205,23 +223,29 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                 }
                 else if(nNotification == DEVICE_CHECK_SUCCESS && (nVideoHeigth * nVideoWidth < 640 * 480))
                 {
+					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() DEVICE_CHECK_SUCCESS && < 640 * 480");
+
                     m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_25;
                     
                     m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS);
                 }
                 else if(nNotification == DEVICE_CHECK_FAILED && (nVideoHeigth * nVideoWidth < 640 * 480))
                 {
+					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() DEVICE_CHECK_FAILED && < 640 * 480");
+
                     m_pCController->m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_15;
                     
                     m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(llFriendID, m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED);
                 }
-                
-                
-                
+                       
                 if((nVideoHeigth * nVideoWidth < 640 * 480) || (nVideoHeigth * nVideoWidth == 640 * 480 && nNotification == DEVICE_CHECK_SUCCESS))
                 {
-                    bDeviceCapabilityCheckThreadRunning = false;
-                    
+					if (nVideoHeigth * nVideoWidth < 640 * 480)
+						CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() stopping device check < 640 * 480");
+					else
+						CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() stopping device check DEVICE_CHECK_SUCCESS && 640 * 480");
+
+                    bDeviceCapabilityCheckThreadRunning = false;    
                 }
                 
 			}
@@ -232,5 +256,5 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 
 	bDeviceCapabilityCheckThreadClosed = true;
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() stopped DeviceCapabilityCheckThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() stopped DeviceCapabilityCheckThreadProcedure method.");
 }

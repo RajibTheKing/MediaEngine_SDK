@@ -142,15 +142,15 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 
 bool CController::StartTestAudioCall(const LongLong& lFriendID)
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() called");
+
 	CAudioCallSession* pAudioSession;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall");
-
 	if (!bExist)
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session creating");
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, DEVICE_ABILITY_CHECK_MOOD);
 
@@ -158,28 +158,30 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
-		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session started");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session created");
 
 		return true;
 	}
 	else
 	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session already exists");
+
 		return false;
 	}
 }
 
 CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() called");
     
 	CVideoCallSession* pVideoSession;
-
-	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartVideoCall called");
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
 	if (!bExist)
 	{
-		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session creating");
 
 		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel);
 
@@ -187,13 +189,16 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
-		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session created");
 
 		return pVideoSession;
 	}
 	else
 	{
 		//pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session already exists");
+
 		return NULL;
 	}
 }
@@ -449,6 +454,8 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 
 int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability started");
+
         m_Quality[0].iHeight = iHeightLow;
         m_Quality[0].iWidth = iWidthLow;
         m_Quality[1].iHeight = iHeightHigh;
@@ -459,6 +466,8 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
 		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
 
 	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability start instruction queued");
     
     return 1;
 }
@@ -496,10 +505,12 @@ bool CController::StopAudioCall(const LongLong& lFriendID)
 
 bool CController::StopTestAudioCall(const LongLong& lFriendID)
 {
-	CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() called.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() called");
 
 	Locker lock1(*m_pAudioSendMutex);
 	Locker lock2(*m_pAudioReceiveMutex);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() checking session");
 
 	CAudioCallSession *m_pSession;
 
@@ -507,26 +518,26 @@ bool CController::StopTestAudioCall(const LongLong& lFriendID)
 
 	if (NULL == m_pSession)
 	{
-		CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() Session Does not Exist.");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() session doesn't exists");
+
 		return false;
 	}
 
 	bool bReturnedValue = m_pCommonElementsBucket->m_pAudioCallSessionList->RemoveFromAudioSessionList(lFriendID);
 
-	CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() ended with bReturnedValue " + m_Tools.IntegertoStringConvert(bReturnedValue));
 
 	return bReturnedValue;
 }
 
 bool CController::StopTestVideoCall(const LongLong& lFriendID)
 {
-	CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
-//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() called");
 
 	Locker lock1(*m_pVideoSendMutex);
-//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
 	Locker lock2(*m_pVideoReceiveMutex);
-//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() checking session");
 
 	CVideoCallSession *m_pSession;
 
@@ -534,13 +545,14 @@ bool CController::StopTestVideoCall(const LongLong& lFriendID)
 
 	if (NULL == m_pSession)
 	{
-		CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() Session Does not Exist.");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() session doesn't exists");
+
 		return false;
 	}
 
 	bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
 
-	CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() ended with bReturnedValue " + m_Tools.IntegertoStringConvert(bReturnedValue));
 
 	return bReturnedValue;
 }

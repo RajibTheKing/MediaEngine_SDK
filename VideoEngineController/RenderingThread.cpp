@@ -136,6 +136,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             if(m_pVideoCallSession->GetCalculationStartTime() == 0)
             {
                 m_pVideoCallSession->SetCalculationStartMechanism(true);
+
+				CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoRenderingThread::RenderingThreadProcedure() device check calculation stated");
             }
             
 
