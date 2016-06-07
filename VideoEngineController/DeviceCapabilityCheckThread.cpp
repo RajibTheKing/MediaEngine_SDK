@@ -121,6 +121,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() got START_DEVICE_CHECK instruction");
 
+/*
 #if defined(TARGET_OS_WINDOWS_PHONE)
 
 				m_pCController->m_nDeviceStrongness = STATUS_UNABLE;
@@ -129,7 +130,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				m_pCController->m_nHighFPSVideoSupportablity = STATUS_UNABLE;
 
 #endif
-
+*/
 				m_pCController->m_ullTotalDeviceMemory = Tools::GetTotalSystemMemory();
 
 				if (m_pCController->m_ullTotalDeviceMemory >= LEAST_MEMORY_OF_STRONG_DEVICE)
