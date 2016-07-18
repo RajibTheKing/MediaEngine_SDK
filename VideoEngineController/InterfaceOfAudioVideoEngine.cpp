@@ -185,6 +185,19 @@ int CInterfaceOfAudioVideoEngine::CheckDeviceCapability(const LongLong& lFriendI
 	return iReturnedValue;
 }
 
+int CInterfaceOfAudioVideoEngine::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
+{
+    if(NULL == m_pcController)
+    {
+        return false;
+    }
+    
+    int iReturnedValue = m_pcController->SetDeviceCapabilityResults(iNotification, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
+    
+    return iReturnedValue;
+    
+}
+
 bool CInterfaceOfAudioVideoEngine::StopAudioCall(const IPVLongType llFriendID)
 {
 	if (NULL == m_pcController)

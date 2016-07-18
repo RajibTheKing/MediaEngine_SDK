@@ -490,6 +490,34 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
     return 1;
 }
 
+int CController::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
+{
+    m_Quality[0].iHeight = iHeightLow;
+    m_Quality[0].iWidth = iWidthLow;
+    m_Quality[1].iHeight = iHeightHigh;
+    m_Quality[1].iWidth = iWidthHigh;
+    
+    if(iNotification == CEventNotifier::SET_CAMERA_RESOLUTION_640x480_25FPS)
+    {
+        m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_640_25;
+    }
+    else if(iNotification == CEventNotifier::SET_CAMERA_RESOLUTION_352x288_25FPS)
+    {
+        m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_25;
+    }
+    else if(iNotification == CEventNotifier::SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED)
+    {
+        m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_15;
+        
+    }
+    else
+    {
+        m_nSupportedResolutionFPSLevel = RESOLUTION_FPS_SUPPORT_NOT_TESTED;
+    }
+    
+    return 1;
+}
+
 void CController::initializeEventHandler()
 {
 	m_pCommonElementsBucket->m_pEventNotifier = &m_EventNotifier;
