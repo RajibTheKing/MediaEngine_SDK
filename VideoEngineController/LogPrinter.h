@@ -3,6 +3,16 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+
+#ifdef __ANDROID__
+
+#include <android/log.h>
+
+#define LOG_TAG "LibraryLog"
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
+#endif
+
 //#define __PRINT_LOG__
 //#define __EXACT_LOG__
 //#define __SPECIFIC_LOG__

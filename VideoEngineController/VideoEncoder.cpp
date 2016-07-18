@@ -110,7 +110,8 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 
 	spartialLayerConfiguration->iDLayerQp = 24;
-	spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+	//spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+	spartialLayerConfiguration->sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder encoder initializing");
 
@@ -202,7 +203,8 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
     }
     
 	spartialLayerConfiguration->iDLayerQp = 24;
-	spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+	//spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+	spartialLayerConfiguration->sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder encoder initializing");
 

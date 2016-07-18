@@ -160,7 +160,8 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
                       + "  M-Cross: "+ Tools::IntegertoStringConvert(m_pVideoEncoder->GetMaxBitrate() - m_nBytesSendInMegaSlotInverval)*/
                       +" SlotNo: " + Tools::IntegertoStringConvert(iSlotNumber) + " MiniPkt time delley: "+ m_Tools.IntegertoStringConvert(nTimeDifferenceBetweenMiniPackets);
 
-//        CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, sMsg);
+        //CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, sMsg);
+        LOGE( "%s", sMsg.c_str());
 
         if(nNeedToChange == BITRATE_CHANGE_DOWN)
         {

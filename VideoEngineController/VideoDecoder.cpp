@@ -40,11 +40,14 @@ int CVideoDecoder::CreateVideoDecoder()
 
 	SDecodingParam decoderParemeters = { 0 };
 
+	SVideoProperty sVideoProparty;
+	sVideoProparty.eVideoBsType = VIDEO_BITSTREAM_AVC;
+
 	decoderParemeters.sVideoProperty.size = sizeof(decoderParemeters.sVideoProperty);
-	decoderParemeters.eOutputColorFormat = videoFormatI420;
+	decoderParemeters.sVideoProperty  = sVideoProparty;
 	decoderParemeters.uiTargetDqLayer = (uint8_t)-1;
 	decoderParemeters.eEcActiveIdc = ERROR_CON_FRAME_COPY;
-	decoderParemeters.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_DEFAULT;
+	decoderParemeters.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_AVC;
 
 	nReturnedValueFromDecoder = m_pSVCVideoDecoder->Initialize(&decoderParemeters);
 
@@ -54,10 +57,10 @@ int CVideoDecoder::CreateVideoDecoder()
 		return -1;
 	}
 
-	if (SetDecoderOption(DECODER_OPTION_DATAFORMAT, videoFormatI420) != 0)
+	/*if (SetDecoderOption(DECODER_OPTION_DATAFORMAT, videoFormatI420) != 0)
 	{
 		cout << "Error in setting option " << DECODER_OPTION_DATAFORMAT << " to OpenH264 decoder\n";
-	}
+	}*/
 
 	if (SetDecoderOption(DECODER_OPTION_END_OF_STREAM, 0) != 0)
 	{
