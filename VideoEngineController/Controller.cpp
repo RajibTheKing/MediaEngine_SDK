@@ -85,7 +85,6 @@ CController::~CController()
 
 	if (NULL != m_pDeviceCapabilityCheckThread)
 	{
-		m_pDeviceCapabilityCheckThread->StopDeviceCapabilityCheckThread();
 
 		delete m_pDeviceCapabilityCheckThread;
 		m_pDeviceCapabilityCheckThread = NULL;
@@ -678,6 +677,11 @@ int CController::StopAudioEncodeDecodeSession()
 void CController::UninitializeLibrary()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
+
+	if (NULL != m_pDeviceCapabilityCheckThread)
+	{
+		m_pDeviceCapabilityCheckThread->StopDeviceCapabilityCheckThread();
+	}
 
 	m_pCommonElementsBucket->m_pVideoCallSessionList->ClearAllFromVideoSessionList();
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();
