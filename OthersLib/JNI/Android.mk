@@ -108,6 +108,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/VersionController.cpp \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckBuffer.cpp \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckThread.cpp \
+			../../../videoengine/VideoEngineController/AudioPacketHeader.cpp \
 
 include $(BUILD_STATIC_LIBRARY)
 

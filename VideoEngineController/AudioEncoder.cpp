@@ -61,31 +61,13 @@ int CAudioEncoder::CreateAudioEncoder()
 
 	return 1;
 }
-int countDump = 0;
-int CAudioEncoder::Encode(short *in_data, unsigned int in_size, unsigned char *out_buffer)
-{
-
-	int size = Encode(in_data, in_size, out_buffer);
-
-	return size;
-}
-
-int CAudioEncoder::Decode(unsigned char *in_data, unsigned int in_size, short *out_buffer)
-{
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::EncodeAudioData");
-
-	int size = Decode(in_data, in_size, out_buffer);
-
-	return size;
-}
-
 
 int CAudioEncoder::encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
 	//m_Tools.WriteToFile(in_data, (int)in_size, 1);
 
 	int nbBytes = opus_encode(encoder, in_data, FRAME_SIZE, out_buffer, MAX_PACKET_SIZE);
-	if (nbBytes<0)
+	if (nbBytes < 0)
 	{
 		fprintf(stderr, "encode failed: %s\n", opus_strerror(nbBytes));
 		return EXIT_FAILURE;
@@ -104,6 +86,23 @@ int CAudioEncoder::decodeAudio(unsigned char *in_data, unsigned int in_size, sho
 	return  frame_size;
 }
 
+bool CAudioEncoder::SetBitrateOpus(int nBitrate){
+	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
+	return ret != 0;
+}
+
+int CAudioEncoder::Encode(short *in_data, unsigned int in_size, unsigned char *out_buffer)
+{
+	int size = Encode(in_data, in_size, out_buffer);
+	return size;
+}
+
+int CAudioEncoder::Decode(unsigned char *in_data, unsigned int in_size, short *out_buffer)
+{
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::EncodeAudioData");
+	int size = Decode(in_data, in_size, out_buffer);
+	return size;
+}
 
 /*
 #define FRAME_SIZE 960
@@ -116,10 +115,9 @@ int CAudioEncoder::decodeAudio(unsigned char *in_data, unsigned int in_size, sho
 #define MAX_PACKET_SIZE (3*1276)
 */
 
-
+#if 0
 int CAudioEncoder::encodeDecodeTest()
 {
-
 	char *inFile;
 	FILE *fin;
 	char *outFile;
@@ -256,4 +254,5 @@ int CAudioEncoder::encodeDecodeTest()
 }
 
 
+#endif
 

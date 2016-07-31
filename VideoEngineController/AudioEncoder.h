@@ -44,7 +44,7 @@ public:
 	int decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
 	int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 	int encodeDecodeTest();
-
+	bool SetBitrateOpus(int nBitrate);
 
 private:
 
