@@ -5,14 +5,14 @@
 CAudioPacketHeader::CAudioPacketHeader()
 {
 	int headerSizeInBit = 0;
-	for (int i = 0; i < sizeof(HeaderBitmap); i++)
+	for (int i = 0; i < sizeof(HeaderBitmap)/sizeof(int); i++)
 	{
 		headerSizeInBit += HeaderBitmap[i];
 	}
 	m_nHeaderSizeInBit = headerSizeInBit;
 	m_nHeaderSizeInByte = headerSizeInBit / 8 + headerSizeInBit % 8 != 0;
 
-	memset(ma_nInformation, 0, sizeof(HeaderBitmap) * sizeof(unsigned int));
+	memset(ma_nInformation, 0, sizeof(HeaderBitmap));
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
 
@@ -32,14 +32,14 @@ CAudioPacketHeader::CAudioPacketHeader(unsigned char *Header)
 
 CAudioPacketHeader::~CAudioPacketHeader()
 {
-	memset(ma_nInformation, 0, sizeof(HeaderBitmap) * sizeof(unsigned int));
+	memset(ma_nInformation, 0, sizeof(HeaderBitmap));
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
 
 int CAudioPacketHeader::CopyInformationToHeader(unsigned int * Information)
 {
-	memcpy(ma_nInformation, Information, sizeof(unsigned int) * sizeof(HeaderBitmap));
-	for (int i = 0; i < sizeof(HeaderBitmap); i++)
+	memcpy(ma_nInformation, Information, sizeof(HeaderBitmap));
+	for (int i = 0; i < sizeof(HeaderBitmap)/sizeof(int); i++)
 	{
 		SetInformation(Information[i], i);
 	}
@@ -105,8 +105,10 @@ void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 void CAudioPacketHeader::CopyHeaderToInformation(unsigned char *Header)
 {
 	memcpy(ma_uchHeader, Header, m_nHeaderSizeInByte);
-	for (int i = 0; i < sizeof(HeaderBitmap); i++)
+	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#memcpy#");
+	for (int i = 0; i < sizeof(HeaderBitmap)/sizeof(int); i++)
 	{
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
 		PutInformationToArray(i);
 	}
 }

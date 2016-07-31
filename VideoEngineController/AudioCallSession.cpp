@@ -21,6 +21,12 @@ m_bIsCheckCall(bIsCheckCall)
     StartEncodingThread();
     StartDecodingThread();
 
+	SendingHeader = new CAudioPacketHeader();
+	ReceivingHeader = new CAudioPacketHeader();
+	m_AudioHeadersize = SendingHeader->GetHeaderSize();
+
+	m_iPacketNumber = 0;
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
@@ -93,11 +99,11 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
 {
-	if (unLength > 300)
+	/*if (unLength > 300)
     {
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
         return 0;
-    }
+    }*/
     
 	int returnedValue = m_AudioDecodingBuffer.Queue(&pucaDecodingAudioData[1], unLength - 1);
 
@@ -193,29 +199,36 @@ void CAudioCallSession::EncodingThreadProcedure()
             int nEncodedFrameSize;
 
             timeStamp = m_Tools.CurrentTimestamp();
+
 #ifdef OPUS_ENABLE
-            nEncodedFrameSize = m_pAudioEncoder->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1]);
+            nEncodedFrameSize = m_pAudioEncoder->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
 #else
-            nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1]);
+            nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
 #endif
             m_saAudioEncodingFrame[0] = 0;
             int time = m_Tools.CurrentTimestamp() - timeStamp;
             avgCountTimeStamp += time;
             countFrame++;
 
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#ENcode");
+
             CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
                                                           + " nEncodedFrameSize =" + m_Tools.IntegertoStringConvert(nEncodedFrameSize) +" ratio: " +m_Tools.DoubleToString((nEncodedFrameSize*100)/nEncodingFrameSize)
                                                           +" encodeTime: " + m_Tools.IntegertoStringConvert(time)
                                                           +" AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame));
 
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
+			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
+			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
+			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
+			
+			m_iPacketNumber = (m_iPacketNumber + 1) % SendingHeader->GetFieldCapacity(PACKETNUMBER);
+            
             
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
-				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
+				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 			else
-				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize);
-//            m_AudioDecodingBuffer.Queue(m_ucaEncodedFrame, nEncodedFrameSize);
+				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+//            m_AudioDecodingBuffer.Queue(m_ucaEncodedFrame, nEncodedFrameSize+ m_AudioHeadersize);
 
             toolsObject.SOSleep(0);
             
@@ -296,13 +309,15 @@ void CAudioCallSession::DecodingThreadProcedure()
         else
         {
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
-            //int size;
-
             timeStamp = m_Tools.CurrentTimestamp();
+			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
+            //continue;
+			nDecodingFrameSize -= m_AudioHeadersize;
+
 #ifdef OPUS_ENABLE
-            nDecodedFrameSize = m_pAudioEncoder->decodeAudio(m_ucaDecodingFrame, nDecodingFrameSize, m_saDecodedFrame);
+            nDecodedFrameSize = m_pAudioEncoder->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #else
-            nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize, m_saDecodedFrame);
+            nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize + m_AudioHeadersize, m_saDecodedFrame);
 #endif
             CLogPrinter_WriteSpecific6(CLogPrinter::DEBUGS, "#DE#--->> size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " timeStamp: "+ m_Tools.IntegertoStringConvert(m_Tools.CurrentTimestamp() - timeStamp));
 #if defined(DUMP_DECODED_AUDIO)
