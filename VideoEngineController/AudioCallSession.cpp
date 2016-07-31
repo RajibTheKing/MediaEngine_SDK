@@ -1,4 +1,3 @@
-
 #include "AudioCallSession.h"
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
@@ -7,6 +6,8 @@
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
 #endif
+
+//#define OPUS_ENABLE
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
 
@@ -28,8 +29,12 @@ CAudioCallSession::~CAudioCallSession()
     StopDecodingThread();
     StopEncodingThread();
 
+#ifdef OPUS_ENABLE
+    delete m_pAudioEncoder;
+#else
     delete m_pG729CodecNative;
-    
+#endif
+
 	/*if (NULL != m_pAudioDecoder)
 	{
 		delete m_pAudioDecoder;
@@ -60,14 +65,20 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 	//this->m_pAudioDecoder = new CAudioDecoder(m_pCommonElementsBucket);
 
 	//m_pAudioDecoder->CreateAudioDecoder();
-
-	m_pG729CodecNative = new G729CodecNative();
-
-	int iRet = m_pG729CodecNative->Open();
+#ifdef OPUS_ENABLE
+    this->m_pAudioEncoder = new CAudioEncoder(m_pCommonElementsBucket);
+    m_pAudioEncoder->CreateAudioEncoder();
+#else
+    m_pG729CodecNative = new G729CodecNative();
+    int iRet = m_pG729CodecNative->Open();
+#endif
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
 }
+
+long long iMS = -1;
+int iAudioDataCounter = 0;
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
@@ -167,7 +178,10 @@ void CAudioCallSession::EncodingThreadProcedure()
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
     Tools toolsObject;
     int nEncodingFrameSize, nEncodedFrameSize;
-    
+    long long timeStamp;
+    long avgCountTimeStamp = 0;
+    int countFrame = 0;
+
     while (m_bAudioEncodingThreadRunning)
     {
         if (m_AudioEncodingBuffer.GetQueueSize() == 0)
@@ -176,16 +190,30 @@ void CAudioCallSession::EncodingThreadProcedure()
         {
 			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame);
 
-			nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1]);
+            int nEncodedFrameSize;
 
-            m_ucaEncodedFrame[0] = 0;         
+            timeStamp = m_Tools.CurrentTimestamp();
+#ifdef OPUS_ENABLE
+            nEncodedFrameSize = m_pAudioEncoder->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1]);
+#else
+            nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1]);
+#endif
+            m_saAudioEncodingFrame[0] = 0;
+            int time = m_Tools.CurrentTimestamp() - timeStamp;
+            avgCountTimeStamp += time;
+            countFrame++;
+            CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "fahad >>>> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
+                                                          + " nEncodedFrameSize =" + m_Tools.IntegertoStringConvert(nEncodedFrameSize) +" ratio: " +m_Tools.DoubleToString((size*100)/frameSize)
+                                                          +" encodeTime: " + m_Tools.IntegertoStringConvert(time)
+                                                          +" AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame));
+
+            //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
             
-            //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_ucaEncodedFrame);
-            
-			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+			/*if (m_bIsCheckCall == LIVE_CALL_MOOD)
 				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize);
 			else
-				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize);
+				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize);*/
+            m_AudioDecodingBuffer.Queue(m_ucaEncodedFrame, nEncodedFrameSize);
 
             toolsObject.SOSleep(0);
             
@@ -257,7 +285,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 
     Tools toolsObject;
     int nDecodingFrameSize, nDecodedFrameSize;
-    
+    long long timeStamp;
+
     while (m_bAudioDecodingThreadRunning)
     {
         if (m_AudioDecodingBuffer.GetQueueSize() == 0)
@@ -266,8 +295,17 @@ void CAudioCallSession::DecodingThreadProcedure()
         {
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
 
-			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize, m_saDecodedFrame);
 
+
+            //int size;
+
+            timeStamp = m_Tools.CurrentTimestamp();
+#ifdef OPUS_ENABLE
+            nDecodedFrameSize = m_pAudioEncoder->decodeAudio(m_ucaDecodingFrame, nDecodingFrameSize, m_saDecodedFrame);
+#else
+            nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize, m_saDecodedFrame);
+#endif
+            CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "fahad >>>>>> size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " timeStamp: "+ m_Tools.IntegertoStringConvert(m_Tools.CurrentTimestamp() - timeStamp));
 #if defined(DUMP_DECODED_AUDIO)
 
 			m_Tools.WriteToFile(m_saDecodedFrame, size);
