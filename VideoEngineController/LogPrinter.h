@@ -26,13 +26,14 @@
 //#define __PACKET_LOSS_INFO_LOG__
 //#define __THREAD_LOG__
 //#define __BITRATE_CHNANGE_LOG__
+#define  __SPECIFIC_LOG6__
 
 #define ON 1
 #define OFF 0
 
-//#define LOG_ENABLED
+#define LOG_ENABLED
 
-#define INSTENT_TEST_LOG		OFF
+#define INSTENT_TEST_LOG		ON
 #define CHECK_CAPABILITY_LOG	OFF
 #define QUEUE_OVERFLOW_LOG		OFF
 #define OPERATION_TIME_LOG		OFF
@@ -160,6 +161,12 @@ private:
 #define CLogPrinter_WriteSpecific3(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteSpecific3(...)
+#endif
+
+#ifdef __SPECIFIC_LOG6__
+#define CLogPrinter_WriteSpecific6(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific6(...)
 #endif
 
 #ifdef __INSTENT_TEST_LOG__

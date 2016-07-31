@@ -286,7 +286,7 @@ void BitRateController::NotifyEncodedFrame(int &nrFrameSize)
             m_BandWidthRatioHelper.insert(iRatioHelperIndex,  m_nBytesSendInSlotInverval);
             
             
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval));
+//            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval));
 
             
             m_TimeDiffMapHelper[iRatioHelperIndex] =  m_Tools.CurrentTimestamp();
