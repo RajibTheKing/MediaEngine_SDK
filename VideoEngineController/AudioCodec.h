@@ -29,13 +29,13 @@ namespace IPV
 
 class CCommonElementsBucket;
 
-class CAudioEncoder
+class CAudioCodec
 {
 
 public:
 
-	CAudioEncoder(CCommonElementsBucket* sharedObject);
-	~CAudioEncoder();
+	CAudioCodec(CCommonElementsBucket* sharedObject);
+	~CAudioCodec();
 
 	int CreateAudioEncoder();
 	int Encode(short *in_data, unsigned int in_size, unsigned char *out_buffer);

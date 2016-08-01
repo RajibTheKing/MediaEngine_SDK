@@ -26,6 +26,11 @@ m_bIsCheckCall(bIsCheckCall)
 	m_AudioHeadersize = SendingHeader->GetHeaderSize();
 
 	m_iPacketNumber = 0;
+	m_iSlotID = 0;
+	m_iPrevRecvdSlotID = -1;
+	m_iCurrentRecvdSlotID = -1;
+	m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
+	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
@@ -64,7 +69,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
-	//this->m_pAudioEncoder = new CAudioEncoder(m_pCommonElementsBucket);
+	//this->m_pAudioEncoder = new CAudioCodec(m_pCommonElementsBucket);
 
 	//m_pAudioEncoder->CreateAudioEncoder();
 
@@ -72,7 +77,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 
 	//m_pAudioDecoder->CreateAudioDecoder();
 #ifdef OPUS_ENABLE
-    this->m_pAudioEncoder = new CAudioEncoder(m_pCommonElementsBucket);
+    this->m_pAudioEncoder = new CAudioCodec(m_pCommonElementsBucket);
     m_pAudioEncoder->CreateAudioEncoder();
 #else
     m_pG729CodecNative = new G729CodecNative();
@@ -110,7 +115,7 @@ int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, uns
 	return returnedValue;
 }
 
-CAudioEncoder* CAudioCallSession::GetAudioEncoder()
+CAudioCodec* CAudioCallSession::GetAudioEncoder()
 {
 	//	return sessionMediaList.GetFromAudioEncoderList(mediaName);
 
@@ -217,16 +222,23 @@ void CAudioCallSession::EncodingThreadProcedure()
                                                           +" AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame));
 
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
+
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber));
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
+			SendingHeader->SetInformation(m_iPacketNumber, SLOTNUMBER);
 			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
+			SendingHeader->SetInformation(m_iPrevRecvdSlotID, RECVDSLOTNUMBER);
+			SendingHeader->SetInformation(m_iReceivedPacketsInPrevSlot, NUMPACKETRECVD);
 			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
 			
 			m_iPacketNumber = (m_iPacketNumber + 1) % SendingHeader->GetFieldCapacity(PACKETNUMBER);
+			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
+			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
+
             
-            
-			if (m_bIsCheckCall == LIVE_CALL_MOOD)
-				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
-			else
+//			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+//				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+//			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 //            m_AudioDecodingBuffer.Queue(m_ucaEncodedFrame, nEncodedFrameSize+ m_AudioHeadersize);
 
@@ -311,6 +323,22 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
             timeStamp = m_Tools.CurrentTimestamp();
 			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# PacketNumber: "+m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER)));
+
+			m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
+			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
+			{
+				m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
+				if (m_iPrevRecvdSlotID != -1)
+				{
+					m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
+				}
+
+				m_iCurrentRecvdSlotID = ReceivingHeader->GetInformation(SLOTNUMBER);
+				m_iReceivedPacketsInCurrentSlot = 0;
+			}
+			
+			m_iReceivedPacketsInCurrentSlot ++;
             //continue;
 			nDecodingFrameSize -= m_AudioHeadersize;
 

@@ -7,13 +7,13 @@
 #include "Size.h"
 
 
-class CAudioEncoderBuffer
+class CAudioCodecBuffer
 {
 
 public:
 
-	CAudioEncoderBuffer();
-	~CAudioEncoderBuffer();
+	CAudioCodecBuffer();
+	~CAudioCodecBuffer();
 
 	int Queue(short *saCapturedAudioFrameData, int nlength);
 	int DeQueue(short *saCapturedAudioFrameData);

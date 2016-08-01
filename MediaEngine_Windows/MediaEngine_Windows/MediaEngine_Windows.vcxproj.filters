@@ -33,9 +33,6 @@
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
@@ -159,6 +156,12 @@
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h">
@@ -171,9 +174,6 @@
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioEncoder.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h">
@@ -336,6 +336,12 @@
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioCodec.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>

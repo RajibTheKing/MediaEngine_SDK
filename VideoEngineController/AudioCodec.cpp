@@ -1,4 +1,4 @@
-#include "AudioEncoder.h"
+#include "AudioCodec.h"
 #include "CommonElementsBucket.h"
 #include "DefinedDataTypes.h"
 #include "LogPrinter.h"
@@ -6,15 +6,15 @@
 
 
 
-CAudioEncoder::CAudioEncoder(CCommonElementsBucket* sharedObject) :
+CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject) :
 m_pCommonElementsBucket(sharedObject)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::CAudioEncoder");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CAudioCodec");
 }
 
-CAudioEncoder::~CAudioEncoder()
+CAudioCodec::~CAudioCodec()
 {
 
 	opus_encoder_destroy(encoder);
@@ -23,9 +23,9 @@ CAudioEncoder::~CAudioEncoder()
 	SHARED_PTR_DELETE(m_pMediaSocketMutex);
 }
 
-int CAudioEncoder::CreateAudioEncoder()
+int CAudioCodec::CreateAudioEncoder()
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::CreateAudioEncoder");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CreateAudioEncoder");
 
 	int error = 0;
 	int sampling_rate = 8000;
@@ -62,7 +62,7 @@ int CAudioEncoder::CreateAudioEncoder()
 	return 1;
 }
 
-int CAudioEncoder::encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
+int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
 	//m_Tools.WriteToFile(in_data, (int)in_size, 1);
 
@@ -75,7 +75,7 @@ int CAudioEncoder::encodeAudio(short *in_data, unsigned int in_size, unsigned ch
 	return nbBytes;
 }
 
-int CAudioEncoder::decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
+int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
 	int frame_size = opus_decode(decoder, in_data, in_size, out_buffer, MAX_FRAME_SIZE, 0);
 	if (frame_size<0)
@@ -86,20 +86,20 @@ int CAudioEncoder::decodeAudio(unsigned char *in_data, unsigned int in_size, sho
 	return  frame_size;
 }
 
-bool CAudioEncoder::SetBitrateOpus(int nBitrate){
+bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	return ret != 0;
 }
 
-int CAudioEncoder::Encode(short *in_data, unsigned int in_size, unsigned char *out_buffer)
+int CAudioCodec::Encode(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
 	int size = Encode(in_data, in_size, out_buffer);
 	return size;
 }
 
-int CAudioEncoder::Decode(unsigned char *in_data, unsigned int in_size, short *out_buffer)
+int CAudioCodec::Decode(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioEncoder::EncodeAudioData");
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::EncodeAudioData");
 	int size = Decode(in_data, in_size, out_buffer);
 	return size;
 }
@@ -116,7 +116,7 @@ int CAudioEncoder::Decode(unsigned char *in_data, unsigned int in_size, short *o
 */
 
 #if 0
-int CAudioEncoder::encodeDecodeTest()
+int CAudioCodec::encodeDecodeTest()
 {
 	char *inFile;
 	FILE *fin;

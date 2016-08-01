@@ -142,8 +142,10 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 			Information <<= 8;
 			Information += ma_uchHeader[infoStartByte + i];
 		}
-		Information >>= 8 - (HeaderBitmap[InfoType] + infoStartBitOfByte ) % 8;
-		Information &= (1 << HeaderBitmap[InfoType]) - 1;		
+		int shift = ((HeaderBitmap[InfoType] + infoStartBitOfByte ) % 8);
+		if(shift)
+			Information >>= 8 - shift;
+		Information &= (1 << HeaderBitmap[InfoType]) - 1;
 	}
 	ma_nInformation[InfoType] = Information;
 }

@@ -5,7 +5,7 @@
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
 #include "G729CodecNative.h"
-#include "AudioEncoder.h"
+#include "AudioCodec.h"
 #include "AudioDecoder.h"
 #include "LockHandler.h"
 #include "Tools.h"
@@ -26,7 +26,7 @@ public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall=false);
     ~CAudioCallSession();
 
-    CAudioEncoder* GetAudioEncoder();
+    CAudioCodec* GetAudioEncoder();
     CAudioDecoder* GetAudioDecoder();
 
 
@@ -56,12 +56,16 @@ private:
     int m_AudioHeadersize;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
-    CAudioEncoderBuffer m_AudioEncodingBuffer;
+    CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
-    CAudioEncoder *m_pAudioEncoder;
+    CAudioCodec *m_pAudioEncoder;
     CAudioDecoder *m_pAudioDecoder;
 
     int m_iPacketNumber;
+	int m_iSlotID;
+	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;
+	int m_iReceivedPacketsInPrevSlot, m_iReceivedPacketsInCurrentSlot;
+	int m_iOpponentReceivedPackets;
 
     bool m_bIsCheckCall;
 
@@ -69,6 +73,7 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
+
 
     bool m_bAudioEncodingThreadRunning;
     bool m_bAudioEncodingThreadClosed;

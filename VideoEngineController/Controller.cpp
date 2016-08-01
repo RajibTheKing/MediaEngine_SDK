@@ -383,7 +383,7 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	if (bExist)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData getting encoder");
-		CAudioEncoder *pAudioEncoder = pAudioSession->GetAudioEncoder();
+		CAudioCodec *pAudioEncoder = pAudioSession->GetAudioEncoder();
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData got encoder");
 
 		//if (pAudioEncoder)

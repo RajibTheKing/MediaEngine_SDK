@@ -138,7 +138,7 @@ void CLogPrinter::Write(Priority priority, const std::string message)
 void CLogPrinter::WriteSpecific(Priority priority, const std::string message)
 {
 
-    if(isLogEnable)
+    //if(isLogEnable)
     {
         
 #ifdef __SPECIFIC_LOG__
@@ -162,7 +162,7 @@ void CLogPrinter::WriteSpecific(Priority priority, const std::string message)
 void CLogPrinter::WriteSpecific2(Priority priority, const std::string message)
 {
 
-    if(isLogEnable)
+    //if(isLogEnable)
     {
 
 
