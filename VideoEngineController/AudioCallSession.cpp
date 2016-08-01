@@ -41,7 +41,7 @@ CAudioCallSession::~CAudioCallSession()
     StopEncodingThread();
 
 #ifdef OPUS_ENABLE
-    delete m_pAudioEncoder;
+    delete m_pAudioCodec;
 #else
     delete m_pG729CodecNative;
 #endif
@@ -53,11 +53,11 @@ CAudioCallSession::~CAudioCallSession()
 		m_pAudioDecoder = NULL;
 	}
 
-	if (NULL != m_pAudioEncoder)
+	if (NULL != m_pAudioCodec)
 	{
-		delete m_pAudioEncoder;
+		delete m_pAudioCodec;
 
-		m_pAudioEncoder = NULL;
+		m_pAudioCodec = NULL;
 	}*/
 
 	m_FriendID = -1;
@@ -69,16 +69,14 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
-	//this->m_pAudioEncoder = new CAudioCodec(m_pCommonElementsBucket);
+	//this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket);
 
-	//m_pAudioEncoder->CreateAudioEncoder();
-
-	//this->m_pAudioDecoder = new CAudioDecoder(m_pCommonElementsBucket);
+	//m_pAudioCodec->CreateAudioEncoder();
 
 	//m_pAudioDecoder->CreateAudioDecoder();
 #ifdef OPUS_ENABLE
-    this->m_pAudioEncoder = new CAudioCodec(m_pCommonElementsBucket);
-    m_pAudioEncoder->CreateAudioEncoder();
+    this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket);
+    m_pAudioCodec->CreateAudioEncoder();
 #else
     m_pG729CodecNative = new G729CodecNative();
     int iRet = m_pG729CodecNative->Open();
@@ -119,16 +117,8 @@ CAudioCodec* CAudioCallSession::GetAudioEncoder()
 {
 	//	return sessionMediaList.GetFromAudioEncoderList(mediaName);
 
-	return m_pAudioEncoder;
+	return m_pAudioCodec;
 }
-
-CAudioDecoder* CAudioCallSession::GetAudioDecoder()
-{
-	//	return sessionMediaList.GetFromAudioEncoderList(mediaName);
-
-	return m_pAudioDecoder;
-}
-
 
 void CAudioCallSession::StopEncodingThread()
 {
@@ -206,7 +196,7 @@ void CAudioCallSession::EncodingThreadProcedure()
             timeStamp = m_Tools.CurrentTimestamp();
 
 #ifdef OPUS_ENABLE
-            nEncodedFrameSize = m_pAudioEncoder->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
+            nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
 #else
             nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
 #endif
@@ -223,19 +213,24 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
 
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber));
+
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
-			SendingHeader->SetInformation(m_iPacketNumber, SLOTNUMBER);
+			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
 			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
 			SendingHeader->SetInformation(m_iPrevRecvdSlotID, RECVDSLOTNUMBER);
 			SendingHeader->SetInformation(m_iReceivedPacketsInPrevSlot, NUMPACKETRECVD);
 			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
+
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber)
+                + " #V# E: SLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iSlotID)
+                + " #V# E: NUMPACKETRECVD: "+m_Tools.IntegertoStringConvert(m_iReceivedPacketsInPrevSlot)
+                + " #V# E: RECVDSLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iPrevRecvdSlotID)
+            );
 			
 			m_iPacketNumber = (m_iPacketNumber + 1) % SendingHeader->GetFieldCapacity(PACKETNUMBER);
 			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
 			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
 
-            
 //			if (m_bIsCheckCall == LIVE_CALL_MOOD)
 //				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 //			else
@@ -313,6 +308,7 @@ void CAudioCallSession::DecodingThreadProcedure()
     int nDecodingFrameSize, nDecodedFrameSize;
     long long timeStamp;
 
+    toolsObject.SOSleep(1000);
     while (m_bAudioDecodingThreadRunning)
     {
         if (m_AudioDecodingBuffer.GetQueueSize() == 0)
@@ -322,7 +318,11 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
             timeStamp = m_Tools.CurrentTimestamp();
 			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# PacketNumber: "+m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER)));
+            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
+                    + " #V# SLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(SLOTNUMBER))
+                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
+                    + " #V# RECVDSLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(RECVDSLOTNUMBER))
+            );
 
 			m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
 			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
@@ -342,7 +342,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodingFrameSize -= m_AudioHeadersize;
 
 #ifdef OPUS_ENABLE
-            nDecodedFrameSize = m_pAudioEncoder->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+            nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #else
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize + m_AudioHeadersize, m_saDecodedFrame);
 #endif

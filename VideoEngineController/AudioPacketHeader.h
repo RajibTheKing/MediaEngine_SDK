@@ -21,7 +21,7 @@ static int HeaderBitmap[] =
 	13 /*PacketNumber*/,
 	16 /*PacketLength*/,
 	3 /*RecvdSlotNumber*/,
-	5 /*NumPacketRecvd*/,
+	8 /*NumPacketRecvd*/,
 };
 
 

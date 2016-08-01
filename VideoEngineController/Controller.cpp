@@ -345,8 +345,6 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 				//LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
         
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
-        
-		CAudioDecoder *pCAudioDecoder = pAudioSession->GetAudioDecoder();
 
 		//if (pCAudioDecoder)
         {

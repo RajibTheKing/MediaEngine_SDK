@@ -66,8 +66,7 @@ LOCAL_SRC_FILES := \
             ../../../videoengine/VideoEngineUtilities/ColorConverter.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSession.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSessionListHandler.cpp \
-            ../../../videoengine/VideoEngineController/AudioDecoder.cpp \
-            ../../../videoengine/VideoEngineController/AudioEncoder.cpp \
+            ../../../videoengine/VideoEngineController/AudioCodec.cpp \
             ../../../videoengine/VideoEngineController/CommonElementsBucket.cpp \
 			../../../videoengine/VideoEngineController/Controller.cpp \
 			../../../videoengine/VideoEngineController/EncodedFramePacketizer.cpp \

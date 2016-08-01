@@ -6,7 +6,6 @@
 #include "AudioDecoderBuffer.h"
 #include "G729CodecNative.h"
 #include "AudioCodec.h"
-#include "AudioDecoder.h"
 #include "LockHandler.h"
 #include "Tools.h"
 #include "AudioPacketHeader.h"
@@ -27,9 +26,6 @@ public:
     ~CAudioCallSession();
 
     CAudioCodec* GetAudioEncoder();
-    CAudioDecoder* GetAudioDecoder();
-
-
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
@@ -58,8 +54,7 @@ private:
     CCommonElementsBucket* m_pCommonElementsBucket;
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
-    CAudioCodec *m_pAudioEncoder;
-    CAudioDecoder *m_pAudioDecoder;
+    CAudioCodec *m_pAudioCodec;
 
     int m_iPacketNumber;
 	int m_iSlotID;
