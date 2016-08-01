@@ -59,7 +59,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.iLoopFilterAlphaC0Offset = 0;
 	encoderParemeters.iLoopFilterBetaOffset = 0;
 	encoderParemeters.iMultipleThreadIdc = 0;
-    
+    encoderParemeters.iEntropyCodingModeFlag = true;
     
     
     
@@ -156,6 +156,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 	encoderParemeters.iLoopFilterAlphaC0Offset = 0;
 	encoderParemeters.iLoopFilterBetaOffset = 0;
 	encoderParemeters.iMultipleThreadIdc = 0;
+    encoderParemeters.iEntropyCodingModeFlag = true;
     
 	//encoderParemeters.iRCMode = RC_OFF_MODE;
     
