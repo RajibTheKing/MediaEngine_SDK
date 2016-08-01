@@ -44,8 +44,9 @@ int CAudioCodec::CreateAudioEncoder()
 	encoder = opus_encoder_create(SAMPLE_RATE, CHANNELS, APPLICATION, &err);
 	if (err<0) return EXIT_FAILURE;
 
-	err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(AUDIO_BITRATE_INIT));
-	if (err<0) return EXIT_FAILURE;
+	/*err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(AUDIO_BITRATE_INIT));
+	if (err<0) return EXIT_FAILURE;*/
+	SetBitrateOpus(AUDIO_BITRATE_INIT);
 
 	//err = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(10));
 	//if (err<0) return EXIT_FAILURE;
@@ -89,6 +90,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 
 void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
 	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
 	{
 		m_inoLOssSlot++;
@@ -112,6 +114,9 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: SetBitrateOpus: "+m_Tools.IntegertoStringConvert(nBitrate));
+
 	return ret != 0;
 }
 
