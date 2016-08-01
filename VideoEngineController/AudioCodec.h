@@ -16,7 +16,7 @@
 #define SAMPLE_RATE 16000
 #define CHANNELS 1
 #define APPLICATION OPUS_APPLICATION_VOIP
-#define BITRATE 24000
+
 
 #define MAX_FRAME_SIZE 6*960
 #define MAX_PACKET_SIZE (3*1276)
@@ -45,10 +45,13 @@ public:
 	int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 	int encodeDecodeTest();
 	bool SetBitrateOpus(int nBitrate);
+	void DecideToChangeBitrate(int iNumPacketRecvd);
 
 private:
 
 	CCommonElementsBucket* m_pCommonElementsBucket;
+	int m_iCurrentBitRate;
+	int m_inoLOssSlot;
 
 	OpusEncoder	*encoder;
 	OpusDecoder	*decoder;

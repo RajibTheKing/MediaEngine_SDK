@@ -10,7 +10,8 @@ CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject) :
 m_pCommonElementsBucket(sharedObject)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
-
+	
+	m_inoLOssSlot = 0;
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CAudioCodec");
 }
 
@@ -43,7 +44,7 @@ int CAudioCodec::CreateAudioEncoder()
 	encoder = opus_encoder_create(SAMPLE_RATE, CHANNELS, APPLICATION, &err);
 	if (err<0) return EXIT_FAILURE;
 
-	err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(BITRATE));
+	err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(AUDIO_BITRATE_INIT));
 	if (err<0) return EXIT_FAILURE;
 
 	//err = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(10));
@@ -86,8 +87,31 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 	return  frame_size;
 }
 
+void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
+{
+	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
+	{
+		m_inoLOssSlot++;
+	}
+	else
+	{
+		m_inoLOssSlot = 0;
+		SetBitrateOpus((iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE);
+	}
+
+	if (m_inoLOssSlot == AUDIO_MAX_NO_LOSS_SLOT)
+	{
+		if (m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP <= AUDIO_MAX_BITRATE)
+		{
+			SetBitrateOpus(m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP);
+		}
+		m_inoLOssSlot = 0;
+	}
+}
+
 bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
+	m_iCurrentBitRate = nBitrate;
 	return ret != 0;
 }
 
@@ -96,6 +120,8 @@ int CAudioCodec::Encode(short *in_data, unsigned int in_size, unsigned char *out
 	int size = Encode(in_data, in_size, out_buffer);
 	return size;
 }
+
+
 
 int CAudioCodec::Decode(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {

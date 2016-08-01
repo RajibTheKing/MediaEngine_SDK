@@ -325,6 +325,7 @@ void CAudioCallSession::DecodingThreadProcedure()
             );
 
 			m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
+			
 			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
 			{
 				m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
@@ -335,6 +336,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 				m_iCurrentRecvdSlotID = ReceivingHeader->GetInformation(SLOTNUMBER);
 				m_iReceivedPacketsInCurrentSlot = 0;
+				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 			}
 			
 			m_iReceivedPacketsInCurrentSlot ++;
