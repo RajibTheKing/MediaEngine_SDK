@@ -33,7 +33,7 @@ class CAudioPacketHeader {
 	unsigned int ma_nInformation[MAXFIELDSINHEADER];
 
 	unsigned char ma_uchHeader[MAXHEADERSIZE];
-
+	int nNumberOfHeaderElements;
 
 public:
 	CAudioPacketHeader();

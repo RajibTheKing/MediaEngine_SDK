@@ -4,13 +4,16 @@
 
 CAudioPacketHeader::CAudioPacketHeader()
 {
+	nNumberOfHeaderElements = sizeof(HeaderBitmap)/sizeof(int);
+
 	int headerSizeInBit = 0;
-	for (int i = 0; i < sizeof(HeaderBitmap)/sizeof(int); i++)
+	for (int i = 0; i < nNumberOfHeaderElements; i++)
 	{
 		headerSizeInBit += HeaderBitmap[i];
 	}
+
 	m_nHeaderSizeInBit = headerSizeInBit;
-	m_nHeaderSizeInByte = headerSizeInBit / 8 + headerSizeInBit % 8 != 0;
+	m_nHeaderSizeInByte = (headerSizeInBit + 7) / 8;
 
 	memset(ma_nInformation, 0, sizeof(HeaderBitmap));
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
@@ -28,8 +31,6 @@ CAudioPacketHeader::CAudioPacketHeader(unsigned char *Header)
 	CopyHeaderToInformation(Header);
 }
 
-
-
 CAudioPacketHeader::~CAudioPacketHeader()
 {
 	memset(ma_nInformation, 0, sizeof(HeaderBitmap));
@@ -38,8 +39,8 @@ CAudioPacketHeader::~CAudioPacketHeader()
 
 int CAudioPacketHeader::CopyInformationToHeader(unsigned int * Information)
 {
-	memcpy(ma_nInformation, Information, sizeof(HeaderBitmap));
-	for (int i = 0; i < sizeof(HeaderBitmap)/sizeof(int); i++)
+	memcpy(ma_nInformation, Information, m_nHeaderSizeInByte);
+	for (int i = 0; i < nNumberOfHeaderElements; i++)
 	{
 		SetInformation(Information[i], i);
 	}
@@ -67,7 +68,6 @@ void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 {
 	ma_nInformation[InfoType] = Information;
 
-
 	int infoStartBit = 0;
 	for (int i = 0; i < InfoType; i++)
 	{
@@ -75,38 +75,44 @@ void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 	}
 	int infoStartByte = infoStartBit / 8;
 	int infoStartBitOfByte = infoStartBit % 8;
+
 	int numberOfBitsIn1stByte;
 	if (8 - infoStartBitOfByte >= HeaderBitmap[InfoType])
 	{
-		numberOfBitsIn1stByte = 8 - infoStartBitOfByte;
+		numberOfBitsIn1stByte = min(HeaderBitmap[InfoType], 8 - infoStartBitOfByte);
 		ma_uchHeader[infoStartByte] &= ~( ((1 << numberOfBitsIn1stByte) - 1) << (8 - infoStartBitOfByte - numberOfBitsIn1stByte) ) ;
 		ma_uchHeader[infoStartByte] |= (Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte)) << (8 - infoStartBitOfByte - numberOfBitsIn1stByte);
 	}
 	else
 	{
-		numberOfBitsIn1stByte = HeaderBitmap[InfoType];
-		ma_uchHeader[infoStartByte] |= (Information >> (sizeof(int) - numberOfBitsIn1stByte)) << infoStartBitOfByte;
+		numberOfBitsIn1stByte = 8 - infoStartBitOfByte;
+		ma_uchHeader[infoStartByte] &=  ~((1<<numberOfBitsIn1stByte) - 1);
+		ma_uchHeader[infoStartByte] |= (Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte));
 
 		int remainingBits = HeaderBitmap[InfoType] - numberOfBitsIn1stByte;
-
+		int remainingBytes = remainingBits/8;
+		int nBitsInLastByte = remainingBits % 8;
 		int byte = 1;
-		while (remainingBits > 8)
+
+		for(int i = 0; i < remainingBytes; i ++)
 		{
-			ma_uchHeader[infoStartByte + byte] = (Information >> (sizeof(int) - (numberOfBitsIn1stByte + byte * 8)));
-			remainingBits -= 8;
+			ma_uchHeader[infoStartByte + byte] = Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte - 8 * byte);
 			byte++;
 		}
 
-		unsigned char last_byte = Information;
-		ma_uchHeader[infoStartByte + byte] |= last_byte << 8 - remainingBits;
-	}	
+		if(nBitsInLastByte)
+		{
+			ma_uchHeader[infoStartByte + byte] &=  ~ ( ( (1<<nBitsInLastByte) - 1) << (8 - nBitsInLastByte));
+			ma_uchHeader[infoStartByte + byte] |= 0xFF & (Information << (8-nBitsInLastByte) );
+		}
+	}
 }
 
 void CAudioPacketHeader::CopyHeaderToInformation(unsigned char *Header)
 {
 	memcpy(ma_uchHeader, Header, m_nHeaderSizeInByte);
-	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#memcpy#");
-	for (int i = 0; i < sizeof(HeaderBitmap)/sizeof(int); i++)
+
+	for (int i = 0; i < nNumberOfHeaderElements; i++)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
 		PutInformationToArray(i);

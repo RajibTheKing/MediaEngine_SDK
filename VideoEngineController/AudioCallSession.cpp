@@ -240,7 +240,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 //				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 //			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
-//            m_AudioDecodingBuffer.Queue(m_ucaEncodedFrame, nEncodedFrameSize+ m_AudioHeadersize);
 
             toolsObject.SOSleep(0);
             
