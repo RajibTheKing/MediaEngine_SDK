@@ -13,6 +13,7 @@
 #include "Tools.h"
 
 //#define FRAME_SIZE 960
+#define AUDIO_CLIENT_SAMPLE_SIZE 960
 #define FRAME_SIZE 480
 #define SAMPLE_RATE 8000
 #define CHANNELS 1

@@ -78,16 +78,17 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 //	ALOG( "#EN  In: "+Tools::IntegertoStringConvert(in_size) +"  EFC: "+Tools::IntegertoStringConvert(nEncodedSize));
 	while(nProcessedDataSize < in_size)
 	{
-		nbBytes = opus_encode(encoder , in_data + iFrameCounter * FRAME_SIZE, FRAME_SIZE, out_buffer + nEncodedSize + iFrameCounter + 1 , MAX_PACKET_SIZE);
-//		CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#EN   #CO# Opus--> "+Tools::IntegertoStringConvert(nbBytes)+" ["+Tools::IntegertoStringConvert( nEncodedSize + iFrameCounter));
+		nbBytes = opus_encode(encoder , in_data + iFrameCounter * FRAME_SIZE, FRAME_SIZE, out_buffer + nEncodedSize + 2 * iFrameCounter + 2 , MAX_PACKET_SIZE);
+//		ALOG( "#EN   #CO# Opus--> "+Tools::IntegertoStringConvert(nbBytes)+" ["+Tools::IntegertoStringConvert( nEncodedSize + 2 * iFrameCounter));
 		nbBytes = max( nbBytes, 0); //If opus return -1. Not sure about that.
 
-		out_buffer[ nEncodedSize + iFrameCounter ] = nbBytes;
+		out_buffer[ nEncodedSize + 2 * iFrameCounter ] = (nbBytes & 0x000000FF);
+		out_buffer[ nEncodedSize + 2 * iFrameCounter + 1 ] = (nbBytes >> 8);
 		nEncodedSize += nbBytes;
 		++iFrameCounter;
 		nProcessedDataSize += FRAME_SIZE;
 	}
-	int nEncodedPacketLenght = nEncodedSize + iFrameCounter;
+	int nEncodedPacketLenght = nEncodedSize + 2 * iFrameCounter;
 //	nbBytes = opus_encode(encoder, in_data, FRAME_SIZE, out_buffer, MAX_PACKET_SIZE);
 
 	if (nEncodedSize < 0)
@@ -101,20 +102,26 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
 	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0;
-	int nExpectedFrames = 960 / FRAME_SIZE, nCurrentFrameSize;
+	int nExpectedFrames = AUDIO_CLIENT_SAMPLE_SIZE / FRAME_SIZE, nCurrentFrameSize;
 //	ALOG("#DE#:  #CO# InSize: "+m_Tools.IntegertoStringConvert(in_size));
 	while(iFrameCounter < nExpectedFrames)
 	{
-		nCurrentFrameSize = in_data[nDecodedDataSize + iFrameCounter];
+		nCurrentFrameSize =  in_data[nDecodedDataSize + 2 * iFrameCounter + 1];
+		nCurrentFrameSize <<= 8;
+		nCurrentFrameSize += in_data[nDecodedDataSize + 2 * iFrameCounter];
+
 
 //		ALOG("#DE#:  #CO# Decode: "+m_Tools.IntegertoStringConvert(nCurrentFrameSize)
-//				+"  ["+ Tools::IntegertoStringConvert( nDecodedDataSize + iFrameCounter) );
-
-		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + iFrameCounter + 1, nCurrentFrameSize, out_buffer + iFrameCounter * FRAME_SIZE, MAX_FRAME_SIZE, 0);
+//				+"  ["+ Tools::IntegertoStringConvert( nDecodedDataSize + 2*iFrameCounter) );
+		if(nCurrentFrameSize < 1)
+		{
+			ALOG("#EXP# ZERO Frame For Decoding");
+			return 0;
+		}
+		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + 2 * iFrameCounter + 2, nCurrentFrameSize, out_buffer + iFrameCounter * FRAME_SIZE, MAX_FRAME_SIZE, 0);
 //		ALOG("#DE#:  #CO# Decode Done : " + Tools::IntegertoStringConvert(frame_size));
 		nDecodedDataSize += nCurrentFrameSize;		//FRAME_SIZE
 		++iFrameCounter;
-
 	}
 
 	if (nDecodedDataSize<0)
@@ -127,7 +134,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 
 void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 {
-	ALOG("#V# E: DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
+	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
 	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
 	{
 		m_inoLOssSlot++;
@@ -135,7 +142,9 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 	else
 	{
 		m_inoLOssSlot = 0;
-		SetBitrateOpus((iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE);
+		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
+		ALOG("#BR# NOW: "+Tools::IntegertoStringConvert(nChangedBitRate));
+		SetBitrateOpus(nChangedBitRate);
 	}
 
 	if (m_inoLOssSlot == AUDIO_MAX_NO_LOSS_SLOT)
@@ -146,14 +155,14 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		}
 		m_inoLOssSlot = 0;
 	}
-	ALOG("#V# E: DecideToChangeBitrate: Done");
+//	ALOG("#V# E: DecideToChangeBitrate: Done");
 }
 
 bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
 
-	ALOG("#V# E: SetBitrateOpus: "+m_Tools.IntegertoStringConvert(nBitrate));
+	ALOG("#BR# E: NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
 
 	return ret != 0;
 }
