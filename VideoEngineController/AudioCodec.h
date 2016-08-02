@@ -12,8 +12,9 @@
 #include "opus.h"
 #include "Tools.h"
 
-#define FRAME_SIZE 960
-#define SAMPLE_RATE 16000
+//#define FRAME_SIZE 960
+#define FRAME_SIZE 480
+#define SAMPLE_RATE 8000
 #define CHANNELS 1
 #define APPLICATION OPUS_APPLICATION_VOIP
 
@@ -58,9 +59,8 @@ private:
 	opus_int32	length;
 	int 		err;
 
-
-	opus_int16 in[FRAME_SIZE*CHANNELS];
-	opus_int16 out[MAX_FRAME_SIZE*CHANNELS];
+	opus_int16 in[FRAME_SIZE * CHANNELS];
+	opus_int16 out[MAX_FRAME_SIZE * CHANNELS];
 	unsigned char cbits[MAX_PACKET_SIZE];
 	int nbBytes;
 
