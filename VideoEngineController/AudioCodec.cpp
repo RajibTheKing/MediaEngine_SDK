@@ -67,15 +67,15 @@ int CAudioCodec::CreateAudioEncoder()
 int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
 	//m_Tools.WriteToFile(in_data, (int)in_size, 1);
-//	CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#EN  #CO# InSize: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
+//	ALOG("#EN  #CO# InSize: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
 	int nbBytes;
 	if(in_size % FRAME_SIZE)
 	{
-//		CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#EN  InSize2: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
+//		ALOG( "#EN  InSize2: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
 		return 0;
 	}
 	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize;
-//	CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#EN  In: "+Tools::IntegertoStringConvert(in_size) +"  EFC: "+Tools::IntegertoStringConvert(nEncodedSize));
+//	ALOG( "#EN  In: "+Tools::IntegertoStringConvert(in_size) +"  EFC: "+Tools::IntegertoStringConvert(nEncodedSize));
 	while(nProcessedDataSize < in_size)
 	{
 		nbBytes = opus_encode(encoder , in_data + iFrameCounter * FRAME_SIZE, FRAME_SIZE, out_buffer + nEncodedSize + iFrameCounter + 1 , MAX_PACKET_SIZE);
@@ -102,16 +102,16 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 {
 	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0;
 	int nExpectedFrames = 960 / FRAME_SIZE, nCurrentFrameSize;
-//	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#DE#:  #CO# InSize: "+m_Tools.IntegertoStringConvert(in_size));
+//	ALOG("#DE#:  #CO# InSize: "+m_Tools.IntegertoStringConvert(in_size));
 	while(iFrameCounter < nExpectedFrames)
 	{
 		nCurrentFrameSize = in_data[nDecodedDataSize + iFrameCounter];
 
-//		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#DE#:  #CO# Decode: "+m_Tools.IntegertoStringConvert(nCurrentFrameSize)
+//		ALOG("#DE#:  #CO# Decode: "+m_Tools.IntegertoStringConvert(nCurrentFrameSize)
 //				+"  ["+ Tools::IntegertoStringConvert( nDecodedDataSize + iFrameCounter) );
 
 		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + iFrameCounter + 1, nCurrentFrameSize, out_buffer + iFrameCounter * FRAME_SIZE, MAX_FRAME_SIZE, 0);
-//		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#DE#:  #CO# Decode Done : " + Tools::IntegertoStringConvert(frame_size));
+//		ALOG("#DE#:  #CO# Decode Done : " + Tools::IntegertoStringConvert(frame_size));
 		nDecodedDataSize += nCurrentFrameSize;		//FRAME_SIZE
 		++iFrameCounter;
 
@@ -127,7 +127,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 
 void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 {
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
+	ALOG("#V# E: DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
 	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
 	{
 		m_inoLOssSlot++;
@@ -146,14 +146,14 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		}
 		m_inoLOssSlot = 0;
 	}
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: DecideToChangeBitrate: Done");
+	ALOG("#V# E: DecideToChangeBitrate: Done");
 }
 
 bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: SetBitrateOpus: "+m_Tools.IntegertoStringConvert(nBitrate));
+	ALOG("#V# E: SetBitrateOpus: "+m_Tools.IntegertoStringConvert(nBitrate));
 
 	return ret != 0;
 }

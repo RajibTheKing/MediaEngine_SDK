@@ -205,7 +205,7 @@ void CAudioCallSession::EncodingThreadProcedure()
             avgCountTimeStamp += time;
             countFrame++;
 
-            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
+            ALOG( "#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
                                                           + " nEncodedFrameSize = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize) +" ratio: " +m_Tools.DoubleToString((nEncodedFrameSize*100)/nEncodingFrameSize)
                                                           +" EncodeTime: " + m_Tools.IntegertoStringConvert(time)
                                                           +" AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame));
@@ -219,7 +219,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			SendingHeader->SetInformation(m_iReceivedPacketsInPrevSlot, NUMPACKETRECVD);
 			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
 
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber)
+            ALOG("#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber)
                 + " #V# E: SLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iSlotID)
                 + " #V# E: NUMPACKETRECVD: "+m_Tools.IntegertoStringConvert(m_iReceivedPacketsInPrevSlot)
                 + " #V# E: RECVDSLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iPrevRecvdSlotID)
@@ -228,10 +228,11 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_iPacketNumber = (m_iPacketNumber + 1) % SendingHeader->GetFieldCapacity(PACKETNUMBER);
 			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
 			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
+            ALOG("#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 //            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
-//			if (m_bIsCheckCall == LIVE_CALL_MOOD)
-//				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
-//			else
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 
             toolsObject.SOSleep(0);
@@ -314,10 +315,10 @@ void CAudioCallSession::DecodingThreadProcedure()
         else
         {
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
-//            CLogPrinter_WriteSpecific6(CLogPrinter::DEBUGS, "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
+//            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
             timeStamp = m_Tools.CurrentTimestamp();
 			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
-//            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
+//            ALOG("#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
 //                    + " #V# SLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(SLOTNUMBER))
 //                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
 //                    + " #V# RECVDSLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(RECVDSLOTNUMBER))
@@ -347,7 +348,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #else
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize + m_AudioHeadersize, m_saDecodedFrame);
 #endif
-            CLogPrinter_WriteSpecific6(CLogPrinter::DEBUGS, "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(m_Tools.CurrentTimestamp() - timeStamp));
+            ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(m_Tools.CurrentTimestamp() - timeStamp));
 #if defined(DUMP_DECODED_AUDIO)
 
 			m_Tools.WriteToFile(m_saDecodedFrame, size);

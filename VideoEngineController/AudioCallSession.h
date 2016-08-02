@@ -9,9 +9,12 @@
 #include "LockHandler.h"
 #include "Tools.h"
 #include "AudioPacketHeader.h"
+#include "LogPrinter.h"
 #include <stdio.h>
 #include <string>
 #include <map>
+
+#define ALOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 class CCommonElementsBucket;
 class CVideoEncoder;
