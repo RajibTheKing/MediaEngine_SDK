@@ -8,20 +8,24 @@
 #define PACKETLENGTH 4
 #define RECVDSLOTNUMBER 5
 #define NUMPACKETRECVD 6
+#define CHANNELS 7
+#define SAMPLERATE 8
 
-#define MAXFIELDSINHEADER 10
+#define MAXFIELDSINHEADER 15
 #define MAXHEADERSIZE 100
 
 
 static int HeaderBitmap[] =
 {
-	6 /*PacketType*/,
-	2 /*NetworkType*/,
-	3 /*SlotNumber*/,
-	13 /*PacketNumber*/,
-	16 /*PacketLength*/,
-	3 /*RecvdSlotNumber*/,
-	8 /*NumPacketRecvd*/,
+	6 /*PACKETTYPE*/,
+	2 /*NETWORKTYPE*/,
+	3 /*SLOTNUMBER*/,
+	13 /*PACKETNUMBER*/,
+	14 /*PACKETLENGTH*/,
+	3 /*RECVDSLOTNUMBER*/,
+	8 /*NUMPACKETRECVD*/,
+	2 /*CHANNELS*/,
+	5 /*SAMPLERATE*/
 };
 
 
