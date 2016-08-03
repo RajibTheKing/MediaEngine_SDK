@@ -197,7 +197,6 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 void CAudioCodec::DecideToChangeComplexity(int iEncodingTime)
 {
-	ALOG("#BR# DecideToChangeComplexity: " + m_Tools.IntegertoStringConvert(iEncodingTime));
 	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && m_iComplexity > 1)
 	{
 		SetComplexityOpus(m_iComplexity - 1);
@@ -206,6 +205,10 @@ void CAudioCodec::DecideToChangeComplexity(int iEncodingTime)
 	{
 		SetComplexityOpus(m_iComplexity + 1);
 	}
+
+	ALOG("#COMPLEXITY# DecideToChangeComplexity: " + m_Tools.IntegertoStringConvert(iEncodingTime) 
+		+ " m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
+		);
 }
 
 bool CAudioCodec::SetBitrateOpus(int nBitrate){

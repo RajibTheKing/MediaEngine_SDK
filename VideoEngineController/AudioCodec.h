@@ -72,7 +72,6 @@ private:
 
 protected:
 
-
 	SmartPointer<CLockHandler> m_pMediaSocketMutex;
 
 };
