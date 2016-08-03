@@ -194,11 +194,35 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 //	ALOG("#V# E: DecideToChangeBitrate: Done");
 }
 
+
+void CAudioCodec::DecideToChangeComplexity(int iEncodingTime)
+{
+	ALOG("#BR# DecideToChangeComplexity: " + m_Tools.IntegertoStringConvert(iEncodingTime));
+	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && m_iComplexity > 1)
+	{
+		SetComplexityOpus(m_iComplexity - 1);
+	}
+	if (iEncodingTime < AUDIO_MAX_TOLERABLE_ENCODING_TIME/2 && m_iComplexity < 10)
+	{
+		SetComplexityOpus(m_iComplexity + 1);
+	}
+}
+
 bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
 
 	ALOG("#BR# E: NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
+
+	return ret != 0;
+}
+
+
+bool CAudioCodec::SetComplexityOpus(int nComplexity){
+	int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
+	m_iComplexity = nComplexity;
+
+	ALOG("#COMPLEXITY# E: NOW Complexity: " + m_Tools.IntegertoStringConvert(nComplexity));
 
 	return ret != 0;
 }

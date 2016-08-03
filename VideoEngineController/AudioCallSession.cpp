@@ -205,13 +205,14 @@ void CAudioCallSession::EncodingThreadProcedure()
             nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
 #endif
             m_saAudioEncodingFrame[0] = 0;
-            int time = m_Tools.CurrentTimestamp() - timeStamp;
-            avgCountTimeStamp += time;
+            int encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
+			avgCountTimeStamp += encodingTime;
             countFrame++;
 
             ALOG( "#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
                                                           + " nEncodedFrameSize = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize) +" ratio: " +m_Tools.DoubleToString((nEncodedFrameSize*100)/nEncodingFrameSize)
-                                                          +" EncodeTime: " + m_Tools.IntegertoStringConvert(time)
+														  + " EncodeTime: " + m_Tools.IntegertoStringConvert(encodingTime)
                                                           +" AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame));
 
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);

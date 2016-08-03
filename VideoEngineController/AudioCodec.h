@@ -43,7 +43,9 @@ public:
 	int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 	int encodeDecodeTest();
 	bool SetBitrateOpus(int nBitrate);
+	bool SetComplexityOpus(int nComplexity);
 	void DecideToChangeBitrate(int iNumPacketRecvd);
+	void DecideToChangeComplexity(int iEncodingTime);
 
 private:
 
