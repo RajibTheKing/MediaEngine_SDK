@@ -180,7 +180,7 @@ void CAudioCallSession::EncodingThreadProcedure()
     Tools toolsObject;
     int nEncodingFrameSize, nEncodedFrameSize;
     long long timeStamp;
-    long avgCountTimeStamp = 0;
+    double avgCountTimeStamp = 0;
     int countFrame = 0;
 
     while (m_bAudioEncodingThreadRunning)
@@ -308,9 +308,9 @@ void CAudioCallSession::DecodingThreadProcedure()
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
 
     Tools toolsObject;
-    int nDecodingFrameSize, nDecodedFrameSize;
-    long long timeStamp;
-
+    int nDecodingFrameSize, nDecodedFrameSize, iFrameCounter = 0;
+    long long timeStamp, nDecodingTime = 0;
+    double dbTotalTime = 0;
     toolsObject.SOSleep(1000);
     while (m_bAudioDecodingThreadRunning)
     {
@@ -352,7 +352,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 #else
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame, nDecodingFrameSize + m_AudioHeadersize, m_saDecodedFrame);
 #endif
-            ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(m_Tools.CurrentTimestamp() - timeStamp));
+            ++iFrameCounter;
+            nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+            dbTotalTime += nDecodingTime;
+            ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
 #if defined(DUMP_DECODED_AUDIO)
 
 			m_Tools.WriteToFile(m_saDecodedFrame, size);
