@@ -180,7 +180,10 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		m_inoLOssSlot = 0;
 		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
 		ALOG("#BR# NOW: "+Tools::IntegertoStringConvert(nChangedBitRate));
-		SetBitrateOpus(nChangedBitRate);
+		if (nChangedBitRate >= AUDIO_MIN_BITRATE)
+		{
+			SetBitrateOpus(nChangedBitRate);
+		}
 	}
 
 	if (m_inoLOssSlot == AUDIO_MAX_NO_LOSS_SLOT)
