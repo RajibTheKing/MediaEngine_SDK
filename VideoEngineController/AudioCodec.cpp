@@ -30,6 +30,14 @@ int CAudioCodec::CreateAudioEncoder()
 
 	int error = 0;
 	int sampling_rate = 8000;
+	int dummyDataSize = AUDIO_CLIENT_SAMPLE_SIZE;
+	dummyData = new opus_int16[dummyDataSize];
+	unsigned char * dummyDataOut = new unsigned char[dummyDataSize * 2];
+	for (int i = 0; i < dummyDataSize; i++)
+	{
+		dummyData[i] = rand();
+	}
+
 	//encoder_ = opus_encoder_create(sampling_rate, 1, OPUS_APPLICATION_AUDIO, &error);
 
 	/*encode = opus_encoder_create(sampling_rate, 2, OPUS_APPLICATION_VOIP, &err);
@@ -40,14 +48,42 @@ int CAudioCodec::CreateAudioEncoder()
 	if (error != 0) {
 		qWarning() << "opus_encoder_create() falied:" << error;
 	}*/
+	ALOG("#BR# opus_encoder_create init: ");
 
-	encoder = opus_encoder_create(SAMPLE_RATE, CHANNELS, APPLICATION, &err);
-	if (err<0) return EXIT_FAILURE;
+	encoder = opus_encoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, AUDIO_APPLICATION, &err);
+	if (err<0)
+	{
+		ALOG("#BR# opus_encoder_create failed: " + m_Tools.IntegertoStringConvert(err)
+			);
+		return EXIT_FAILURE;
+	}
 
 	/*err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(AUDIO_BITRATE_INIT));
 	if (err<0) return EXIT_FAILURE;*/
 	SetBitrateOpus(AUDIO_BITRATE_INIT);
 
+
+	m_iComplexity = 10;
+	long long encodingTime;
+	while (m_iComplexity >= 2)
+	{
+		opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(m_iComplexity));
+		encodingTime = m_Tools.CurrentTimestamp();
+		encodeAudio(dummyData, dummyDataSize, dummyDataOut);
+		encodingTime = m_Tools.CurrentTimestamp() - encodingTime;
+		if (encodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME)
+		{
+			m_iComplexity--;
+		}
+		else
+		{
+			break;
+		}
+	}
+	ALOG("#BR# m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
+		+ "#BR# encodingTime: " + m_Tools.IntegertoStringConvert(encodingTime));
+	delete dummyData;
+	delete dummyDataOut;
 	//err = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(10));
 	//if (err<0) return EXIT_FAILURE;
 
@@ -55,7 +91,7 @@ int CAudioCodec::CreateAudioEncoder()
 	//if (err<0) return EXIT_FAILURE;
 
 
-	decoder = opus_decoder_create(SAMPLE_RATE, CHANNELS, &err);
+	decoder = opus_decoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, &err);
 	if (err<0) return EXIT_FAILURE;
 
 
@@ -69,16 +105,16 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 	//m_Tools.WriteToFile(in_data, (int)in_size, 1);
 //	ALOG("#EN  #CO# InSize: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
 	int nbBytes;
-	if(in_size % FRAME_SIZE)
+	if (in_size % AUDIO_FRAME_SIZE)
 	{
 //		ALOG( "#EN  InSize2: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
 		return 0;
 	}
-	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize;
+	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize = 0;
 //	ALOG( "#EN  In: "+Tools::IntegertoStringConvert(in_size) +"  EFC: "+Tools::IntegertoStringConvert(nEncodedSize));
 	while(nProcessedDataSize < in_size)
 	{
-		nbBytes = opus_encode(encoder , in_data + iFrameCounter * FRAME_SIZE, FRAME_SIZE, out_buffer + nEncodedSize + 2 * iFrameCounter + 2 , MAX_PACKET_SIZE);
+		nbBytes = opus_encode(encoder, in_data + iFrameCounter * AUDIO_FRAME_SIZE, AUDIO_FRAME_SIZE, out_buffer + nEncodedSize + 2 * iFrameCounter + 2, AUDIO_MAX_PACKET_SIZE);
 //		ALOG( "#EN   #CO# Opus--> "+Tools::IntegertoStringConvert(nbBytes)+" ["+Tools::IntegertoStringConvert( nEncodedSize + 2 * iFrameCounter));
 		nbBytes = max( nbBytes, 0); //If opus return -1. Not sure about that.
 
@@ -86,7 +122,7 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 		out_buffer[ nEncodedSize + 2 * iFrameCounter + 1 ] = (nbBytes >> 8);
 		nEncodedSize += nbBytes;
 		++iFrameCounter;
-		nProcessedDataSize += FRAME_SIZE;
+		nProcessedDataSize += AUDIO_FRAME_SIZE;
 	}
 	int nEncodedPacketLenght = nEncodedSize + 2 * iFrameCounter;
 //	nbBytes = opus_encode(encoder, in_data, FRAME_SIZE, out_buffer, MAX_PACKET_SIZE);
@@ -102,7 +138,7 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
 	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0;
-	int nExpectedFrames = AUDIO_CLIENT_SAMPLE_SIZE / FRAME_SIZE, nCurrentFrameSize;
+	int nExpectedFrames = AUDIO_CLIENT_SAMPLE_SIZE / AUDIO_FRAME_SIZE, nCurrentFrameSize;
 //	ALOG("#DE#:  #CO# InSize: "+m_Tools.IntegertoStringConvert(in_size));
 	while(iFrameCounter < nExpectedFrames)
 	{
@@ -118,7 +154,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 			ALOG("#EXP# ZERO Frame For Decoding");
 			return 0;
 		}
-		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + 2 * iFrameCounter + 2, nCurrentFrameSize, out_buffer + iFrameCounter * FRAME_SIZE, MAX_FRAME_SIZE, 0);
+		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + 2 * iFrameCounter + 2, nCurrentFrameSize, out_buffer + iFrameCounter * AUDIO_FRAME_SIZE, AUDIO_MAX_FRAME_SIZE, 0);
 //		ALOG("#DE#:  #CO# Decode Done : " + Tools::IntegertoStringConvert(frame_size));
 		nDecodedDataSize += nCurrentFrameSize;		//FRAME_SIZE
 		++iFrameCounter;
@@ -129,7 +165,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 		fprintf(stderr, "decoder failed: %s\n", opus_strerror(err));
 		return EXIT_FAILURE;
 	}
-	return  iFrameCounter * FRAME_SIZE;
+	return  iFrameCounter * AUDIO_FRAME_SIZE;
 }
 
 void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)

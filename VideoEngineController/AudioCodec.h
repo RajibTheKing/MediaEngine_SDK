@@ -11,17 +11,13 @@
 #include "ThreadTools.h"
 #include "opus.h"
 #include "Tools.h"
+#include "size.h"
 
 //#define FRAME_SIZE 960
-#define AUDIO_CLIENT_SAMPLE_SIZE 960
-#define FRAME_SIZE 480
-#define SAMPLE_RATE 8000
-#define CHANNELS 1
-#define APPLICATION OPUS_APPLICATION_VOIP
 
 
-#define MAX_FRAME_SIZE 6*960
-#define MAX_PACKET_SIZE (3*1276)
+
+
 
 
 namespace IPV
@@ -54,15 +50,18 @@ private:
 	CCommonElementsBucket* m_pCommonElementsBucket;
 	int m_iCurrentBitRate;
 	int m_inoLOssSlot;
+	int m_iComplexity;
 
 	OpusEncoder	*encoder;
 	OpusDecoder	*decoder;
 	opus_int32	length;
 	int 		err;
 
-	opus_int16 in[FRAME_SIZE * CHANNELS];
-	opus_int16 out[MAX_FRAME_SIZE * CHANNELS];
-	unsigned char cbits[MAX_PACKET_SIZE];
+	opus_int16 in[AUDIO_FRAME_SIZE * AUDIO_CHANNELS];
+	opus_int16 out[AUDIO_MAX_FRAME_SIZE * AUDIO_CHANNELS];
+	opus_int16 *dummyData;
+	unsigned char cbits[AUDIO_MAX_PACKET_SIZE];
+
 	int nbBytes;
 
 	FILE *m_fin;
