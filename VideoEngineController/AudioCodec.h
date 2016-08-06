@@ -13,11 +13,7 @@
 #include "Tools.h"
 #include "size.h"
 
-//#define FRAME_SIZE 960
-
-
-
-
+//#define AUDIO_FIXED_BITRATE
 
 
 namespace IPV

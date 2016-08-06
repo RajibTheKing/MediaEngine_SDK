@@ -170,6 +170,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 
 void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 {
+#ifndef AUDIO_FIXED_BITRATE
 	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
 	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
 	{
@@ -195,6 +196,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		m_inoLOssSlot = 0;
 	}
 //	ALOG("#V# E: DecideToChangeBitrate: Done");
+#endif
 }
 
 
