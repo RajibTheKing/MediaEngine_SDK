@@ -180,7 +180,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 	{
 		m_inoLOssSlot = 0;
 		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
-		ALOG("#BR# NOW: "+Tools::IntegertoStringConvert(nChangedBitRate));
+//		ALOG("#BR# NOW: "+Tools::IntegertoStringConvert(nChangedBitRate));
 		if (nChangedBitRate >= AUDIO_MIN_BITRATE)
 		{
 			SetBitrateOpus(nChangedBitRate);
@@ -211,7 +211,7 @@ void CAudioCodec::DecideToChangeComplexity(int iEncodingTime)
 		SetComplexityOpus(m_iComplexity + 1);
 	}
 
-	ALOG("#COMPLEXITY# DecideToChangeComplexity: " + m_Tools.IntegertoStringConvert(iEncodingTime) 
+	ALOG("#COMPLEXITY# DecideToChangeComplexity E.Time: " + m_Tools.IntegertoStringConvert(iEncodingTime)
 		+ " m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
 		);
 }
@@ -220,7 +220,7 @@ bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
 
-	ALOG("#BR# E: NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
+	ALOG("#BR# =========================>  NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
 
 	return ret != 0;
 }
@@ -230,7 +230,7 @@ bool CAudioCodec::SetComplexityOpus(int nComplexity){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 	m_iComplexity = nComplexity;
 
-	ALOG("#COMPLEXITY# E: NOW Complexity: " + m_Tools.IntegertoStringConvert(nComplexity));
+	ALOG("#COMPLEXITY# ---------------------->  NOW Complexity: " + m_Tools.IntegertoStringConvert(nComplexity));
 
 	return ret != 0;
 }

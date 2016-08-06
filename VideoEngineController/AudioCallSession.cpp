@@ -3,6 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
+#define __AUDIO_SLEF_CALL__
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
 #endif
@@ -209,7 +210,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 			avgCountTimeStamp += encodingTime;
             countFrame++;
-
+            if(countFrame % 20 == 0)
             ALOG( "#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
                                                           + " nEncodedFrameSize = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize) +" ratio: " +m_Tools.DoubleToString((nEncodedFrameSize*100)/nEncodingFrameSize)
 														  + " EncodeTime: " + m_Tools.IntegertoStringConvert(encodingTime)
@@ -233,12 +234,18 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_iPacketNumber = (m_iPacketNumber + 1) % SendingHeader->GetFieldCapacity(PACKETNUMBER);
 			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
 			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
+
 //            ALOG("#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 //            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
-//			if (m_bIsCheckCall == LIVE_CALL_MOOD)
-//				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
-//			else
+
+#ifdef  __AUDIO_SLEF_CALL__
+            DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+#else
+            if (m_bIsCheckCall == LIVE_CALL_MOOD)
+				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+#endif
 
             toolsObject.SOSleep(0);
             
@@ -356,11 +363,10 @@ void CAudioCallSession::DecodingThreadProcedure()
             ++iFrameCounter;
             nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
             dbTotalTime += nDecodingTime;
-            ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
+            if(iFrameCounter % 20 == 0)
+                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
 #if defined(DUMP_DECODED_AUDIO)
-
 			m_Tools.WriteToFile(m_saDecodedFrame, size);
-
 #endif
             if(nDecodedFrameSize < 1)
             {
