@@ -414,6 +414,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 	{
 		CLogPrinter_WriteSpecific6(CLogPrinter::DEBUGS, "SendVideoData stopped");
 		return -1;
+
 	}
 	CVideoCallSession* pVideoSession;
 

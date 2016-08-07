@@ -229,6 +229,7 @@ bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	if (nBitrate >= (AUDIO_MIN_BITRATE + AUDIO_BITRATE_INIT) / 2)
 	{
 		g_StopVideoSending = 0;
+
 	}
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
