@@ -514,6 +514,8 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 
 void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, int nMiniPacketType)
 {
+    if(m_bIsCheckCall != LIVE_CALL_MOOD) return;
+    
 	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
     
 	CPacketHeader PacketHeader;
