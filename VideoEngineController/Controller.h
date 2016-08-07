@@ -95,6 +95,10 @@ private:
 	CCommonElementsBucket *m_pCommonElementsBucket;
 	CDeviceCapabilityCheckThread *m_pDeviceCapabilityCheckThread;
 	CDeviceCapabilityCheckBuffer *m_pDeviceCapabilityCheckBuffer;
+    
+    bool m_bDeviceCapabilityRunning;
+    bool m_bLiveCallRunning;
+    
 
 	int m_nDeviceSupportedCallFPS;
 

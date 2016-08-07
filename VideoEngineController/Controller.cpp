@@ -15,7 +15,9 @@ m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL),
 m_pDeviceCapabilityCheckBuffer(NULL),
 m_pDeviceCapabilityCheckThread(NULL),
-m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED)
+m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
+m_bDeviceCapabilityRunning(false),
+m_bLiveCallRunning(false)
 
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
@@ -233,6 +235,9 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
         m_Quality[0].iWidth = iVideoWidth;
     }
     
+    if(m_bDeviceCapabilityRunning == true) return false;
+    
+    
 	CVideoCallSession* pVideoSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartVideoCall called");
@@ -244,6 +249,8 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 
 	if (!bExist)
 	{
+        m_bLiveCallRunning = true;
+        
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
 		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel);
@@ -253,6 +260,8 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
+        
+        
 
 		return true;
 	}
@@ -478,6 +487,9 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
         m_Quality[1].iHeight = iHeightHigh;
         m_Quality[1].iWidth = iWidthHigh;
 
+    if(m_bLiveCallRunning == true) return -1;
+    
+    m_bDeviceCapabilityRunning = true;
     
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
 		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
@@ -599,6 +611,8 @@ bool CController::StopTestVideoCall(const LongLong& lFriendID)
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() ended with bReturnedValue " + m_Tools.IntegertoStringConvert(bReturnedValue));
 
+    m_bDeviceCapabilityRunning = false;
+    
 	return bReturnedValue;
 }
 
@@ -625,6 +639,9 @@ bool CController::StopVideoCall(const LongLong& lFriendID)
     bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
 
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
+    
+    
+    m_bLiveCallRunning = false;
     
     return bReturnedValue;
 }
