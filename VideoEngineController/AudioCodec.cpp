@@ -80,8 +80,8 @@ int CAudioCodec::CreateAudioEncoder()
 			break;
 		}
 	}
-	ALOG("#BR# m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
-		+ "#BR# encodingTime: " + m_Tools.IntegertoStringConvert(encodingTime));
+//	ALOG("#BR# m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
+//		+ "#BR# encodingTime: " + m_Tools.IntegertoStringConvert(encodingTime));
 	delete dummyData;
 	delete dummyDataOut;
 	//err = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(10));
@@ -171,7 +171,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 {
 #ifndef AUDIO_FIXED_BITRATE
-	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
+//	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
 	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
 	{
 		m_inoLOssSlot++;
@@ -180,10 +180,14 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 	{
 		m_inoLOssSlot = 0;
 		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
-//		ALOG("#BR# NOW: "+Tools::IntegertoStringConvert(nChangedBitRate));
+		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
 		if (nChangedBitRate >= AUDIO_MIN_BITRATE)
 		{
 			SetBitrateOpus(nChangedBitRate);
+		}
+		else
+		{
+			SetBitrateOpus(AUDIO_MIN_BITRATE);
 		}
 	}
 
@@ -192,6 +196,10 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		if (m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP <= AUDIO_MAX_BITRATE)
 		{
 			SetBitrateOpus(m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP);
+		}
+		else
+		{
+			SetBitrateOpus(AUDIO_MAX_BITRATE);
 		}
 		m_inoLOssSlot = 0;
 	}
@@ -211,9 +219,9 @@ void CAudioCodec::DecideToChangeComplexity(int iEncodingTime)
 		SetComplexityOpus(m_iComplexity + 1);
 	}
 
-	ALOG("#COMPLEXITY# DecideToChangeComplexity E.Time: " + m_Tools.IntegertoStringConvert(iEncodingTime)
-		+ " m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
-		);
+//	ALOG("#COMPLEXITY# DecideToChangeComplexity E.Time: " + m_Tools.IntegertoStringConvert(iEncodingTime)
+//		+ " m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
+//		);
 }
 
 bool CAudioCodec::SetBitrateOpus(int nBitrate){
