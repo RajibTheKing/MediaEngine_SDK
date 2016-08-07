@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-#define __AUDIO_SLEF_CALL__
+//#define __AUDIO_SLEF_CALL__
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
 #endif
@@ -210,7 +210,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 			avgCountTimeStamp += encodingTime;
             countFrame++;
-            if(countFrame % 20 == 0)
+            if(countFrame % 100 == 0)
             ALOG( "#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
                                                           + " nEncodedFrameSize = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize) +" ratio: " +m_Tools.DoubleToString((nEncodedFrameSize*100)/nEncodingFrameSize)
 														  + " EncodeTime: " + m_Tools.IntegertoStringConvert(encodingTime)
@@ -363,7 +363,7 @@ void CAudioCallSession::DecodingThreadProcedure()
             ++iFrameCounter;
             nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
             dbTotalTime += nDecodingTime;
-            if(iFrameCounter % 20 == 0)
+            if(iFrameCounter % 100 == 0)
                 ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
 #if defined(DUMP_DECODED_AUDIO)
 			m_Tools.WriteToFile(m_saDecodedFrame, size);
