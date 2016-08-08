@@ -107,7 +107,7 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 	int nbBytes;
 	if (in_size % AUDIO_FRAME_SIZE)
 	{
-//		ALOG( "#EN  InSize2: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
+		ALOG( "#EXP#**************************** Input: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(AUDIO_FRAME_SIZE));
 		return 0;
 	}
 	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize = 0;
@@ -117,7 +117,10 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 		nbBytes = opus_encode(encoder, in_data + iFrameCounter * AUDIO_FRAME_SIZE, AUDIO_FRAME_SIZE, out_buffer + nEncodedSize + 2 * iFrameCounter + 2, AUDIO_MAX_PACKET_SIZE);
 //		ALOG( "#EN   #CO# Opus--> "+Tools::IntegertoStringConvert(nbBytes)+" ["+Tools::IntegertoStringConvert( nEncodedSize + 2 * iFrameCounter));
 		nbBytes = max( nbBytes, 0); //If opus return -1. Not sure about that.
-
+		if(nbBytes == 0)
+		{
+			ALOG( "#EXP#**************************** Encode Failed");
+		}
 		out_buffer[ nEncodedSize + 2 * iFrameCounter ] = (nbBytes & 0x000000FF);
 		out_buffer[ nEncodedSize + 2 * iFrameCounter + 1 ] = (nbBytes >> 8);
 		nEncodedSize += nbBytes;
