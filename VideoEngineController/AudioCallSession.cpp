@@ -4,6 +4,7 @@
 #include "Tools.h"
 
 //#define __AUDIO_SLEF_CALL__
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
 #endif
@@ -218,6 +219,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
 
+//            SendingHeader->SetInformation( (countFrame%100 == 0)? 0 : 1, PACKETTYPE);
+            SendingHeader->SetInformation( 1, PACKETTYPE);
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
 			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
 			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
@@ -316,7 +319,7 @@ void CAudioCallSession::DecodingThreadProcedure()
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
 
     Tools toolsObject;
-    int nDecodingFrameSize, nDecodedFrameSize, iFrameCounter = 0;
+    int nDecodingFrameSize, nDecodedFrameSize, iFrameCounter = 0, nCurrentAudioPacketType;
     long long timeStamp, nDecodingTime = 0;
     double dbTotalTime = 0;
     toolsObject.SOSleep(1000);
@@ -330,12 +333,22 @@ void CAudioCallSession::DecodingThreadProcedure()
 //            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
             timeStamp = m_Tools.CurrentTimestamp();
 			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
-//            ALOG("#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
-//                    + " #V# SLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(SLOTNUMBER))
-//                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
-//                    + " #V# RECVDSLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(RECVDSLOTNUMBER))
-//            );
+            ALOG("#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
+                    + " #V# SLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(SLOTNUMBER))
+                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
+                    + " #V# RECVDSLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(RECVDSLOTNUMBER))
+            );
 
+            nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
+
+            ALOG("#V#TYPE# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
+
+            if( AUDIO_SKIPPET_PACKET_TYPE == nCurrentAudioPacketType)
+            {
+                ALOG("#V#TYPE# ############################################### SKIPPET");
+                toolsObject.SOSleep(0);
+                continue;
+            }
 			m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
 			
 			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
