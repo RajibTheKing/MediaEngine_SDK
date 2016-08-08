@@ -11,6 +11,10 @@
 #define CHANNELS 7
 #define SAMPLERATE 8
 
+/////////PacketTypes//////
+#define NORMALPACKET 1
+#define NORMALPACKETSTOPVIDEO 2
+
 #define MAXFIELDSINHEADER 15
 #define MAXHEADERSIZE 100
 
