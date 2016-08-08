@@ -5,6 +5,7 @@
 #include "G729CodecNative.h"
 
 int g_StopVideoSending = 0;
+extern int g_iNextPacketType;
 
 CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject) :
 m_pCommonElementsBucket(sharedObject)
@@ -191,6 +192,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		else
 		{
 			g_StopVideoSending = 1;
+			g_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
 			SetBitrateOpus(AUDIO_MIN_BITRATE);
 		}
 	}
@@ -229,11 +231,11 @@ void CAudioCodec::DecideToChangeComplexity(int iEncodingTime)
 }
 
 bool CAudioCodec::SetBitrateOpus(int nBitrate){
-	if (nBitrate >= (AUDIO_MIN_BITRATE + AUDIO_BITRATE_INIT) / 2)
+	/*if (nBitrate >= (AUDIO_MIN_BITRATE + AUDIO_BITRATE_INIT) / 2)
 	{
 		g_StopVideoSending = 0;
-
-	}
+		g_iNextPacketType = NORMALPACKET;
+	}*/
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
 

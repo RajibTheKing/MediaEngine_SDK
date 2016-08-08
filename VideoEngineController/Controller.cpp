@@ -368,8 +368,18 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 
 long long g_lPrevAudioFrame = 0;
 
+int iDataSentInCurrentSec = 0;
+long long llTimeStamp = 0;
 int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
 {
+	long long llNow = m_Tools.CurrentTimestamp();
+	if(llNow - llTimeStamp >= 1000)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataSent = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+		iDataSentInCurrentSec = 0;
+		llTimeStamp = llNow;
+	}
+	iDataSentInCurrentSec ++;
 	CAudioCallSession* pAudioSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData");

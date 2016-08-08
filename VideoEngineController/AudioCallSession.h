@@ -64,6 +64,7 @@ private:
 	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot, m_iReceivedPacketsInCurrentSlot;
 	int m_iOpponentReceivedPackets;
+	
 
     bool m_bIsCheckCall;
 

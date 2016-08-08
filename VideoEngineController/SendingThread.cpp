@@ -5,7 +5,7 @@
 #include "CommonElementsBucket.h"
 #include "VideoCallSession.h"
 
-#define SEND_VIDEO_TO_SELF 1
+//#define SEND_VIDEO_TO_SELF 1
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
