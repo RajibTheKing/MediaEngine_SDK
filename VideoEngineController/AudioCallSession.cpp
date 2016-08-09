@@ -11,7 +11,13 @@ int g_iNextPacketType = 1;
     #include <dispatch/dispatch.h>
 #endif
 
-//#define OPUS_ENABLE
+#define OPUS_ENABLE
+#define __DUMP_FILE__
+
+#ifdef __DUMP_FILE__
+FILE *FileInput;
+FILE *FileOutput;
+#endif
 
 extern int g_StopVideoSending;
 
@@ -67,6 +73,10 @@ CAudioCallSession::~CAudioCallSession()
 	}*/
 
 	m_FriendID = -1;
+#ifdef __DUMP_FILE__
+	fclose(FileOutput);
+	fclose(FileInput);
+#endif
 
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 }
@@ -183,6 +193,10 @@ void *CAudioCallSession::CreateAudioEncodingThread(void* param)
 void CAudioCallSession::EncodingThreadProcedure()
 {
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+#ifdef __DUMP_FILE__
+	FileInput = fopen("/storage/emulated/0/InputPCMN.pcm", "w");
+	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
+#endif
     Tools toolsObject;
     int nEncodingFrameSize, nEncodedFrameSize, encodingTime;
     long long timeStamp;
@@ -201,6 +215,9 @@ void CAudioCallSession::EncodingThreadProcedure()
                 ALOG("#EXP# nEncodingFrameSize: "+Tools::IntegertoStringConvert(nEncodingFrameSize));
                 continue;
             }
+#ifdef __DUMP_FILE__
+			fwrite(m_saAudioEncodingFrame, 2, nEncodingFrameSize, FileInput);
+#endif
             int nEncodedFrameSize;
 
             timeStamp = m_Tools.CurrentTimestamp();
@@ -334,6 +351,9 @@ void CAudioCallSession::DecodingThreadProcedure()
     toolsObject.SOSleep(1000);
     int iDataSentInCurrentSec = 0;
     long long llTimeStamp = 0;
+#ifdef __DUMP_FILE__
+	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
+#endif
 
     while (m_bAudioDecodingThreadRunning)
     {
@@ -392,6 +412,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #else
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame  + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+#endif
+#ifdef __DUMP_FILE__
+			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
             long long llNow = m_Tools.CurrentTimestamp();
             ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
