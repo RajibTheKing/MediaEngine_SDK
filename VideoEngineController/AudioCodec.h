@@ -15,6 +15,9 @@
 
 //#define AUDIO_FIXED_BITRATE
 
+#define OPUS_MIN_COMPLEXITY 1
+#define OPUS_MAX_COMPLEXITY 10
+
 
 namespace IPV
 {

@@ -216,11 +216,11 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 void CAudioCodec::DecideToChangeComplexity(int iEncodingTime)
 {
-	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && m_iComplexity > 1)
+	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && m_iComplexity > OPUS_MIN_COMPLEXITY)
 	{
 		SetComplexityOpus(m_iComplexity - 1);
 	}
-	if (iEncodingTime < AUDIO_MAX_TOLERABLE_ENCODING_TIME/2 && m_iComplexity < 10)
+	if (iEncodingTime < AUDIO_MAX_TOLERABLE_ENCODING_TIME / 2 && m_iComplexity < OPUS_MAX_COMPLEXITY)
 	{
 		SetComplexityOpus(m_iComplexity + 1);
 	}
