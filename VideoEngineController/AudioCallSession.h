@@ -59,6 +59,7 @@ private:
     CAudioDecoderBuffer m_AudioDecodingBuffer;
     CAudioCodec *m_pAudioCodec;
 
+    int m_nMaxAudioPacketNumber;
     int m_iPacketNumber;
 	int m_iSlotID;
 	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;

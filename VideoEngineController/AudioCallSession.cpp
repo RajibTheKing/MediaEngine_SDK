@@ -43,6 +43,7 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iCurrentRecvdSlotID = -1;
 	m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
+    m_nMaxAudioPacketNumber = ( (1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
@@ -238,7 +239,8 @@ void CAudioCallSession::EncodingThreadProcedure()
                 ALOG("#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
                      + " nEncodedFrameSize = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize) + " ratio: " + m_Tools.DoubleToString((nEncodedFrameSize * 100) / nEncodingFrameSize)
                      + " EncodeTime: " + m_Tools.IntegertoStringConvert(encodingTime)
-                     + " AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame));
+                     + " AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame)
+                     + " MaxFrameNumber: " + m_Tools.IntegertoStringConvert(m_nMaxAudioPacketNumber));
 
 
             m_saAudioEncodingFrame[0] = 0;
@@ -246,6 +248,10 @@ void CAudioCallSession::EncodingThreadProcedure()
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
 
 //            SendingHeader->SetInformation( (countFrame%100 == 0)? 0 : 1, PACKETTYPE);
+
+            m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
+            m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
+
 			SendingHeader->SetInformation(g_iNextPacketType, PACKETTYPE);
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
 			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
@@ -259,10 +265,11 @@ void CAudioCallSession::EncodingThreadProcedure()
 //                + " #V# E: NUMPACKETRECVD: "+m_Tools.IntegertoStringConvert(m_iReceivedPacketsInPrevSlot)
 //                + " #V# E: RECVDSLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iPrevRecvdSlotID)
 //            );
-			
-			m_iPacketNumber = (m_iPacketNumber + 1) % SendingHeader->GetFieldCapacity(PACKETNUMBER);
-			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
-			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
+
+            if(m_iPacketNumber >= m_nMaxAudioPacketNumber)
+			    m_iPacketNumber = 0;
+            else
+                ++m_iPacketNumber;
 
 //            ALOG("#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 //            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
@@ -345,6 +352,7 @@ void CAudioCallSession::DecodingThreadProcedure()
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
 
     Tools toolsObject;
+    bool bIsProcessablePacket;
     int nDecodingFrameSize, nDecodedFrameSize, iFrameCounter = 0, nCurrentAudioPacketType;
     long long timeStamp, nDecodingTime = 0;
     double dbTotalTime = 0;
@@ -362,7 +370,7 @@ void CAudioCallSession::DecodingThreadProcedure()
         else
         {
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
-
+            bIsProcessablePacket = false;
 //            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
             timeStamp = m_Tools.CurrentTimestamp();
 			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
@@ -374,7 +382,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
             nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
 
-            ALOG("#V#TYPE# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
+//            ALOG("#V#TYPE# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
 
             if( AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
             {
@@ -385,7 +393,15 @@ void CAudioCallSession::DecodingThreadProcedure()
 			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
 			{
 				g_StopVideoSending = 1;
+                bIsProcessablePacket = true;
 			}
+            else if(AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
+            {
+                bIsProcessablePacket = true;
+            }
+
+            if(!bIsProcessablePacket) continue;
+
 			m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
 			
 			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
@@ -420,7 +436,7 @@ void CAudioCallSession::DecodingThreadProcedure()
             ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
             if(llNow - llTimeStamp >= 1000)
             {
-                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+//                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
                 iDataSentInCurrentSec = 0;
                 llTimeStamp = llNow;
             }
