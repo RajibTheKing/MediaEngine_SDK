@@ -723,11 +723,6 @@ void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPoi
     m_EventNotifier.SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
-{
-    m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
-}
-
 void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
 {
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);

@@ -331,13 +331,6 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioDataCallback(void(*ca
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
-{
-    if (NULL != m_pcController)
-    {
-        m_pcController->SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
-    }
-}
 
 void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
 {

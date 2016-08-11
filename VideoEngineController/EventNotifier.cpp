@@ -7,7 +7,7 @@ void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
 void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int, int) = NULL;
 void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
 void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
-void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
+
 
 void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[])
 {
@@ -87,10 +87,6 @@ void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunction
     notifyClientWithAudioDataCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
-{
-    notifyClientWithAudioPacketDataCallback = callBackFunctionPointer;
-}
 
 
 

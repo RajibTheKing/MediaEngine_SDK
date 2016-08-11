@@ -79,6 +79,8 @@ static FILE *logfp = NULL;
 #endif
 #define printf(...)
 
+#define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+
 using namespace std;
 
 class CLogPrinter
