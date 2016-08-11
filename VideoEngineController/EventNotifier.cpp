@@ -57,20 +57,12 @@ void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
     }
 }
 
-void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[])
-{
-    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 1");
 
-    notifyClientWithAudioPacketDataCallback(200, data, dataLenth);
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 2");
-}
-
-void CEventNotifier::fireAudioEvent(int eventType, int dataLenth, short data[])
+void CEventNotifier::fireAudioEvent(int friendID, int dataLenth, short data[])
 {
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent " + Tools::IntegertoStringConvert(eventType));
 
-    notifyClientWithAudioDataCallback(eventType, data, dataLenth);
+	notifyClientWithAudioDataCallback(friendID, data, dataLenth);
     
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent 2");
 }
