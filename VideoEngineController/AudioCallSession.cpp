@@ -19,7 +19,7 @@ FILE *FileInput;
 FILE *FileOutput;
 #endif
 
-extern int g_StopVideoSending;
+//extern int g_StopVideoSending;
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
 
@@ -371,7 +371,7 @@ void CAudioCallSession::DecodingThreadProcedure()
         {
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
             bIsProcessablePacket = false;
-//            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
+            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
             timeStamp = m_Tools.CurrentTimestamp();
 			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
 //            ALOG("#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
@@ -392,7 +392,8 @@ void CAudioCallSession::DecodingThreadProcedure()
             }
 			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
 			{
-				g_StopVideoSending = 1;
+				//g_StopVideoSending = 1;*/
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
                 bIsProcessablePacket = true;
 			}
             else if(AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)

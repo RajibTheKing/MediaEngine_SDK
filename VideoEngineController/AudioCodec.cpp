@@ -4,7 +4,7 @@
 #include "LogPrinter.h"
 #include "G729CodecNative.h"
 
-int g_StopVideoSending = 0;
+//int g_StopVideoSending = 0;
 extern int g_iNextPacketType;
 
 CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject) :
@@ -191,7 +191,8 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		}
 		else
 		{
-			g_StopVideoSending = 1;
+			//g_StopVideoSending = 1;
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
 			g_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
 			SetBitrateOpus(AUDIO_MIN_BITRATE);
 		}

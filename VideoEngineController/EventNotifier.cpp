@@ -7,6 +7,7 @@ void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
 void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int, int) = NULL;
 void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
 void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
+void(*notifyClientWithAudioAlarmCallback)(LongLong, short*, int) = NULL;
 
 
 void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[])
@@ -60,11 +61,20 @@ void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
 
 void CEventNotifier::fireAudioEvent(int friendID, int dataLenth, short data[])
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent " + Tools::IntegertoStringConvert(eventType));
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent " + Tools::IntegertoStringConvert(friendID));
 
 	notifyClientWithAudioDataCallback(friendID, data, dataLenth);
     
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent 2");
+}
+
+void CEventNotifier::fireAudioAlarm(int eventType, int dataLenth, short data[])
+{
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm " + Tools::IntegertoStringConvert(eventType));
+
+	notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm 2");
 }
 
 void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
@@ -85,6 +95,11 @@ void CEventNotifier::SetNotifyClientWithVideoNotificationCallback(void(*callBack
 void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
     notifyClientWithAudioDataCallback = callBackFunctionPointer;
+}
+
+void CEventNotifier::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+{
+	notifyClientWithAudioAlarmCallback = callBackFunctionPointer;
 }
 
 

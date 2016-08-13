@@ -5,7 +5,7 @@
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 
-extern int g_StopVideoSending;
+//extern int g_StopVideoSending;
 
 CController::CController():
 
@@ -420,12 +420,12 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 
 int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
 {
-	if (g_StopVideoSending)
+	/*if (g_StopVideoSending)
 	{
 		CLogPrinter_WriteSpecific6(CLogPrinter::DEBUGS, "SendVideoData stopped");
 		return -1;
 
-	}
+	}*/
 	CVideoCallSession* pVideoSession;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
@@ -721,6 +721,11 @@ void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFun
 void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
     m_EventNotifier.SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);
+}
+
+void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+{
+	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
 }
 
 void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
