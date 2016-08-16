@@ -185,7 +185,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		else
 		{
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
-            printf("Decoding end--> fn = %d\n", nFrameNumber);
+            //printf("Decoding end--> fn = %d\n", nFrameNumber);
             
             if(llFirstFrameTimeStamp == -1)
             {
@@ -193,7 +193,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
                 nFirstFrameNumber = nFrameNumber;
                 
                 llTargetTimeStampDiff = (FPS_MAXIMUM*5 - nFirstFrameNumber) * (1000/FPS_MAXIMUM);
-                printf("llFirstFrameTimeStamp = %lld, nFirstFrameNumber = %d, llTargetTimeStampDiff = %lld\n",llFirstFrameTimeStamp, nFirstFrameNumber, llTargetTimeStampDiff);
+                //printf("llFirstFrameTimeStamp = %lld, nFirstFrameNumber = %d, llTargetTimeStampDiff = %lld\n",llFirstFrameTimeStamp, nFirstFrameNumber, llTargetTimeStampDiff);
                 
             }
 
@@ -202,14 +202,14 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			nMaxProcessableByMine = m_pVideoCallSession->GetFPSController()->GetMaxOwnProcessableFPS();
 
 			/*if (nOponnentFPS > 1 + nMaxProcessableByMine && (nFrameNumber & 7) > 3) {
-                printf("TheKing-->nMaxProcessableByMine inside ifffffff, nFrameNumber = %d\n", nFrameNumber);
+                //printf("TheKing-->nMaxProcessableByMine inside ifffffff, nFrameNumber = %d\n", nFrameNumber);
                 
 				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDecodingThread::DecodingThreadProcedure() Force:: Frame: " + m_Tools.IntegertoStringConvert(nFrameNumber) + "  FPS: " + m_Tools.IntegertoStringConvert(nOponnentFPS) + " ~" + toolsObject.IntegertoStringConvert(nMaxProcessableByMine));
 				toolsObject.SOSleep(5);
 				continue;
 			}*/
         
-            printf("TheKing-->nMaxProcessableByMine success, nFrameNumber = %d\n", nFrameNumber);
+            //printf("TheKing-->nMaxProcessableByMine success, nFrameNumber = %d\n", nFrameNumber);
             
             
 
@@ -237,18 +237,18 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				++m_iDecodedFrameCounter;
                 
                 if(m_nMaxDecodingTime<decodingTime)
-                    printf("Increasing   nMaxDecodingTime to %lld\n", m_nMaxDecodingTime);
+                    //printf("Increasing   nMaxDecodingTime to %lld\n", m_nMaxDecodingTime);
 				m_nMaxDecodingTime = max(m_nMaxDecodingTime, decodingTime);
                 
 				if (0 == (m_iDecodedFrameCounter & 3))
 				{
 					m_dbAverageDecodingTime = m_dbTotalDecodingTime / m_iDecodedFrameCounter;
 					m_dbAverageDecodingTime *= 1.5;
-                    printf("Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
+                    //printf("Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
 					if (m_dbAverageDecodingTime > MINIMUM_DECODING_TIME_FOR_FORCE_FPS)
 					{
 						fps = 1000 / m_dbAverageDecodingTime;
-						printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
+						//printf("WinD--> Error Case Average Decoding time = %lf, fps = %d\n", m_dbAverageDecodingTime, fps);
 						if (fps < m_nCallFPS)
 							m_pVideoCallSession->GetFPSController()->SetMaxOwnProcessableFPS(fps);
 					}
@@ -351,7 +351,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     {
         m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
         
-        printf("Current Decoding FPS = %d\n", m_FpsCounter);
+        //printf("Current Decoding FPS = %d\n", m_FpsCounter);
 		if (m_FpsCounter >(m_nCallFPS - FPS_TOLERANCE_FOR_FPS))
         {
             //kaj korte hobe

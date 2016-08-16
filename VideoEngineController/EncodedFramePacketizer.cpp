@@ -68,7 +68,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         
         if(bIsDummy)
         {
-            printf("bIsDummy PacketSize = %d\n", m_nPacketSize);
+            //printf("bIsDummy PacketSize = %d\n", m_nPacketSize);
         }
         
 		if (uchSendVersion)
@@ -98,7 +98,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 		memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
         if(bIsDummy)
         {
-            printf("TheVersion--> Sending dummy with own version = %d\n", m_pVideoCallSession->GetVersionController()->GetOwnVersion());
+            //printf("TheVersion--> Sending dummy with own version = %d\n", m_pVideoCallSession->GetVersionController()->GetOwnVersion());
             m_ucaPacket[ nPacketHeaderLenghtWithMediaType ] = m_pVideoCallSession->GetVersionController()->GetOwnVersion();
 			m_ucaPacket[nPacketHeaderLenghtWithMediaType + 1] = 0;
             m_ucaPacket[ nPacketHeaderLenghtWithMediaType + 1] |= (m_pVideoCallSession->GetOwnVideoCallQualityLevel() << 1); //Resolution, FPS
@@ -127,7 +127,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         {
             unsigned char *pEncodedFrame = m_ucaPacket;
             int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
-            printf("Sending data for nFrameNumber--> %d\n", iFrameNumber);
+            //printf("Sending data for nFrameNumber--> %d\n", iFrameNumber);
             m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize, true);
 //            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
@@ -152,7 +152,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "set HighResolutionSupportStatus 1, get = " + m_Tools.IntegertoStringConvert(m_cPacketHeader.GetOpponentResolution(m_ucaPacket+1)));
                 }
                 
-                //printf("TheVersion--> Sending RealData\n");
+                ////printf("TheVersion--> Sending RealData\n");
             }*/
             
             

@@ -367,7 +367,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             {
                 m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
                 
-                printf("Current Encoding FPS = %d\n", m_FpsCounter);
+                //printf("Current Encoding FPS = %d\n", m_FpsCounter);
 				if (m_FpsCounter >(m_nCallFPS - FPS_TOLERANCE_FOR_FPS))
                 {
                     //kaj korte hobe

@@ -29,9 +29,9 @@ void CDeviceCapabilityCheckBuffer::ResetBuffer()
 
 int CDeviceCapabilityCheckBuffer::Queue(LongLong llFriendID, int nOperation, int nNotification, int nVideoHeight, int nVideoWidth)
 {
-    printf("DeviceCapabilityCheckBuffer QUEUE Locked\n");
+    //printf("DeviceCapabilityCheckBuffer QUEUE Locked\n");
 	Locker lock(*m_pDeviceCapabilityCheckBufferMutex);
-    printf("DeviceCapabilityCheckBuffer QUEUE UN--Locked\n");
+    //printf("DeviceCapabilityCheckBuffer QUEUE UN--Locked\n");
 
 	m_naBufferOperations[m_iPushIndex] = nOperation;
 	m_llaBufferFriendIDs[m_iPushIndex] = llFriendID;
@@ -55,9 +55,9 @@ int CDeviceCapabilityCheckBuffer::Queue(LongLong llFriendID, int nOperation, int
 
 int CDeviceCapabilityCheckBuffer::DeQueue(LongLong &llrFriendID,  int &nrNotification, int &nrVideoHeight, int &nrVideoWidth)
 {
-    printf("DeviceCapabilityCheckBuffer DeQUEUE Locked\n");
+    //printf("DeviceCapabilityCheckBuffer DeQUEUE Locked\n");
 	Locker lock(*m_pDeviceCapabilityCheckBufferMutex);
-    printf("DeviceCapabilityCheckBuffer DeQUEUE Un--Locked\n");
+    //printf("DeviceCapabilityCheckBuffer DeQUEUE Un--Locked\n");
 
 	if (m_nQueueSize <= 0)
 	{

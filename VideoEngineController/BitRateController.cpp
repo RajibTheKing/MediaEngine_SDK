@@ -113,7 +113,7 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 
 bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 {
-    printf("TheKing--> Bitrate MiniPacket Found\n");
+    //printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
 	m_nOppNotifiedByterate = crTempHeader.getTimeStamp();
@@ -122,7 +122,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
     {
 		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert(crTempHeader.getFrameNumber()));
         
-        printf("TheKing--> Bitrate MiniPacket slot not found\n");
+        //printf("TheKing--> Bitrate MiniPacket slot not found\n");
 
 		if (m_nLastSendingSlot <= crTempHeader.getFrameNumber())
         {
@@ -144,7 +144,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
     {
         double dMegaRatio =  (m_nBytesReceivedInMegaSlotInterval *1.0) / (1.0 * m_nBytesSendInMegaSlotInverval) * 100.0;
 
-        printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
+       // printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
 
         long long llTimeStampForMiniPkt = m_TimeDiffMapHelper[iSlotNumber];
 

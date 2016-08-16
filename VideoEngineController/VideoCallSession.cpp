@@ -330,7 +330,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         }*/
         
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
-        printf("PushPacketForMerging--> nFrameNumber = %d\n", unFrameNumber);
+        //printf("PushPacketForMerging--> nFrameNumber = %d\n", unFrameNumber);
         
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
@@ -347,7 +347,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / m_nCallFPS;
                 
-                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
+//                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_TYPE_MINIPACKET);
 			}
@@ -421,7 +421,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
             Locker lock(*m_pVideoCallSessionMutex);
             if(m_ClientFrameCounter > MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS)
             {
-                printf("RajibTheKing, setting m_ClientFrameCounter = %d\n", m_ClientFrameCounter);
+                //printf("RajibTheKing, setting m_ClientFrameCounter = %d\n", m_ClientFrameCounter);
                 m_pFPSController->SetClientFPS(m_ClientFrameCounter);
             }
         }
@@ -470,7 +470,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     g_TimeTraceFromCaptureToSend[g_CapturingFrameCounter] = m_Tools.CurrentTimestamp();
 
     if(g_CapturingFrameCounter<30)
-        printf("Frame %d --> Trying to Set --> %d..... Capture Time = %lld\n", g_CapturingFrameCounter, nCaptureTimeDiff, m_Tools.CurrentTimestamp());
+        //printf("Frame %d --> Trying to Set --> %d..... Capture Time = %lld\n", g_CapturingFrameCounter, nCaptureTimeDiff, m_Tools.CurrentTimestamp());
     
     g_CapturingFrameCounter++;
     
@@ -665,7 +665,7 @@ void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, in
         
         if(m_bHighResolutionSupportedForOwn == false || m_bHighResolutionSupportedForOpponent == false)
         {
-            printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
+            //printf("m_bReinitialized SET_CAMERA_RESOLUTION_352x288_OR_320x240  = %d\n", m_bReinitialized);
             
             //m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288_OR_320x240);
             
@@ -790,20 +790,20 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 {
     return;
     
-    printf("Reinitializing........\n");
+    //printf("Reinitializing........\n");
     long long llReinitializationStartTime = m_Tools.CurrentTimestamp();
     
 
     
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 1");
     m_pVideoEncodingThread->StopEncodingThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 2");
     m_pVideoDepacketizationThread->StopDepacketizationThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 4");
     //m_pVideoDecodingThread->StopDecodingThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 5");
     m_pVideoRenderingThread->StopRenderingThread();
-    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
 
 	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1, m_bIsCheckCall);
@@ -842,7 +842,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     
     m_bReinitialized = true;
     
-    printf("TheKing--> Reinitialization time = %lld\n",m_Tools.CurrentTimestamp() - llReinitializationStartTime);
+    //printf("TheKing--> Reinitialization time = %lld\n",m_Tools.CurrentTimestamp() - llReinitializationStartTime);
     
     
 }

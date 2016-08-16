@@ -8,6 +8,8 @@ void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int
 void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
 void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
 void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
+void(*notifyClientWithAudioAlarmCallback)(LongLong, short*, int) = NULL;
+
 
 void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[])
 {
@@ -59,20 +61,29 @@ void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
 
 void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[])
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 1");
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 1");
 
-    notifyClientWithAudioPacketDataCallback(200, data, dataLenth);
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 2");
+	notifyClientWithAudioPacketDataCallback(200, data, dataLenth);
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 2");
 }
 
-void CEventNotifier::fireAudioEvent(int eventType, int dataLenth, short data[])
+void CEventNotifier::fireAudioEvent(int friendID, int dataLenth, short data[])
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent " + Tools::IntegertoStringConvert(eventType));
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent " + Tools::IntegertoStringConvert(friendID));
 
-    notifyClientWithAudioDataCallback(eventType, data, dataLenth);
+	notifyClientWithAudioDataCallback(friendID, data, dataLenth);
     
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent 2");
+}
+
+void CEventNotifier::fireAudioAlarm(int eventType, int dataLenth, short data[])
+{
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm " + Tools::IntegertoStringConvert(eventType));
+
+	notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm 2");
 }
 
 void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
@@ -97,8 +108,14 @@ void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunction
 
 void CEventNotifier::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
 {
-    notifyClientWithAudioPacketDataCallback = callBackFunctionPointer;
+	notifyClientWithAudioPacketDataCallback = callBackFunctionPointer;
 }
+
+void CEventNotifier::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+{
+	notifyClientWithAudioAlarmCallback = callBackFunctionPointer;
+}
+
 
 
 

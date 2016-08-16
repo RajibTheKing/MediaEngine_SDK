@@ -124,7 +124,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             m_llRenderFrameCounter++;
 			if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD && m_llRenderFrameCounter<FPS_MAXIMUM * 2)
             {
-                printf("Skipping for frame = %lld\n", m_llRenderFrameCounter);
+                //printf("Skipping for frame = %lld\n", m_llRenderFrameCounter);
                 continue;
             }
             

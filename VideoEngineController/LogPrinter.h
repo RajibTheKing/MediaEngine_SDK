@@ -9,6 +9,7 @@
 #include <android/log.h>
 
 #define LOG_TAG "LibraryLog"
+#define LOGF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 #endif
@@ -25,13 +26,14 @@
 //#define __PACKET_LOSS_INFO_LOG__
 //#define __THREAD_LOG__
 //#define __BITRATE_CHNANGE_LOG__
+#define  __SPECIFIC_LOG6__
 
 #define ON 1
 #define OFF 0
 
-//#define LOG_ENABLED
+#define LOG_ENABLED
 
-#define INSTENT_TEST_LOG		OFF
+#define INSTENT_TEST_LOG		ON
 #define CHECK_CAPABILITY_LOG	OFF
 #define QUEUE_OVERFLOW_LOG		OFF
 #define OPERATION_TIME_LOG		OFF
@@ -76,6 +78,8 @@ static FILE *logfp = NULL;
 #define printfiledone() fclose(logfp);
 #endif
 #define printf(...)
+
+#define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 using namespace std;
 
@@ -159,6 +163,12 @@ private:
 #define CLogPrinter_WriteSpecific3(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteSpecific3(...)
+#endif
+
+#ifdef __SPECIFIC_LOG6__
+#define CLogPrinter_WriteSpecific6(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific6(...)
 #endif
 
 #ifdef __INSTENT_TEST_LOG__

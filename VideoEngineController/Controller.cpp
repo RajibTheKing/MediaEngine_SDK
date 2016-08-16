@@ -5,6 +5,8 @@
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 
+//extern int g_StopVideoSending;
+
 CController::CController():
 
 m_nDeviceStrongness(STATUS_UNCHECKED),
@@ -354,8 +356,6 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 				//LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
         
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
-        
-		CAudioDecoder *pCAudioDecoder = pAudioSession->GetAudioDecoder();
 
 		//if (pCAudioDecoder)
         {
@@ -377,8 +377,18 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 
 long long g_lPrevAudioFrame = 0;
 
+int iDataSentInCurrentSec = 0;
+long long llTimeStamp = 0;
 int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
 {
+	long long llNow = m_Tools.CurrentTimestamp();
+	if(llNow - llTimeStamp >= 1000)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataSent = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+		iDataSentInCurrentSec = 0;
+		llTimeStamp = llNow;
+	}
+	iDataSentInCurrentSec ++;
 	CAudioCallSession* pAudioSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData");
@@ -392,7 +402,7 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	if (bExist)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData getting encoder");
-		CAudioEncoder *pAudioEncoder = pAudioSession->GetAudioEncoder();
+		CAudioCodec *pAudioEncoder = pAudioSession->GetAudioEncoder();
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData got encoder");
 
 		//if (pAudioEncoder)
@@ -419,6 +429,12 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 
 int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
 {
+	/*if (g_StopVideoSending)
+	{
+		CLogPrinter_WriteSpecific6(CLogPrinter::DEBUGS, "SendVideoData stopped");
+		return -1;
+
+	}*/
 	CVideoCallSession* pVideoSession;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
@@ -726,7 +742,12 @@ void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPoi
 
 void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
 {
-    m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
+	m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
+}
+
+void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+{
+	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
 }
 
 void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))

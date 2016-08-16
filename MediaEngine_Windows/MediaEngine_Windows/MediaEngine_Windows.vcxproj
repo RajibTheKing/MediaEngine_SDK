@@ -66,7 +66,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <IncludePath>D:\AndroidProject\FahadOpus\app\src\main\jni\videoengine\include\opus\include;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
     <OutDir>..\..\..\IPV-RingIDSDK\RingIDSDK_Windows\Libs_Windows</OutDir>
@@ -149,11 +149,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\AudioDecoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
@@ -193,15 +193,17 @@
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
+    <ClCompile Include="AudioDecoder.cpp" />
+    <ClCompile Include="AudioEncoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioDecoder.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioEncoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
@@ -254,6 +256,8 @@
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
+    <ClInclude Include="AudioDecoder.h" />
+    <ClInclude Include="AudioEncoder.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\libopenh264.a" />
