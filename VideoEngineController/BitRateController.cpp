@@ -301,8 +301,8 @@ void BitRateController::SetInitialBitrate()
 	if (GetOpponentNetworkType() == NETWORK_TYPE_2G || GetOwnNetworkType() == NETWORK_TYPE_2G)
 	{
 
-		m_pVideoEncoder->SetBitrate(BITRATE_MIN);
-		m_pVideoEncoder->SetMaxBitrate(BITRATE_MIN);
+		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_2G);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_MAX_FOR_2G);
 
 	}
 	else
