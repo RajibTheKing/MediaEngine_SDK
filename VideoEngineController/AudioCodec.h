@@ -25,13 +25,14 @@ namespace IPV
 }
 
 class CCommonElementsBucket;
+class CAudioCallSession;
 
 class CAudioCodec
 {
 
 public:
 
-	CAudioCodec(CCommonElementsBucket* sharedObject);
+	CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession);
 	~CAudioCodec();
 
 	int CreateAudioEncoder();
@@ -49,6 +50,7 @@ public:
 private:
 
 	CCommonElementsBucket* m_pCommonElementsBucket;
+	CAudioCallSession* m_pAudioCallSession;
 	int m_iCurrentBitRate;
 	int m_inoLOssSlot;
 	int m_iComplexity;

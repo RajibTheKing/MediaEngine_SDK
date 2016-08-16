@@ -3,9 +3,9 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-#define __AUDIO_SLEF_CALL__
+//#define __AUDIO_SLEF_CALL__
 
-int g_iNextPacketType = 1;
+//int g_iNextPacketType = 1;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
@@ -44,7 +44,7 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
     m_nMaxAudioPacketNumber = ( (1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
-
+	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
@@ -92,7 +92,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 
 	//m_pAudioDecoder->CreateAudioDecoder();
 #ifdef OPUS_ENABLE
-    this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket);
+    this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket, this);
     m_pAudioCodec->CreateAudioEncoder();
 #else
     m_pG729CodecNative = new G729CodecNative();
@@ -252,7 +252,7 @@ void CAudioCallSession::EncodingThreadProcedure()
             m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
             m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
 
-			SendingHeader->SetInformation(g_iNextPacketType, PACKETTYPE);
+			SendingHeader->SetInformation(m_iNextPacketType, PACKETTYPE);
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
 			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
 			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
@@ -362,7 +362,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
 #endif
-
+	toolsObject.SOSleep(1000);
     while (m_bAudioDecodingThreadRunning)
     {
         if (m_AudioDecodingBuffer.GetQueueSize() == 0)

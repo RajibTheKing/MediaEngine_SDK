@@ -19,6 +19,7 @@
 class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioPacketHeader;
+class CAudioCodec;
 
 class CAudioCallSession
 {
@@ -44,6 +45,7 @@ public:
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
+	int m_iNextPacketType;
 
 private:
 

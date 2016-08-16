@@ -5,13 +5,13 @@
 #include "G729CodecNative.h"
 
 //int g_StopVideoSending = 0;
-extern int g_iNextPacketType;
+//extern int g_iNextPacketType;
 
-CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject) :
+CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession) :
 m_pCommonElementsBucket(sharedObject)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
-	
+	m_pAudioCallSession = AudioCallSession;
 	m_inoLOssSlot = 0;
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CAudioCodec");
 }
@@ -193,7 +193,8 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		{
 			//g_StopVideoSending = 1;
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
-			g_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
+			//g_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
+			m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
 			SetBitrateOpus(AUDIO_MIN_BITRATE);
 		}
 	}
