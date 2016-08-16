@@ -166,7 +166,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 bool CFPSController::IsProcessableFrame()
 {
     Tools tools;
-    printf(" CFPSController::IsProcessableFrame--> m_nOwnFPS = %d, m_ClientFPS = %lf\n", m_nOwnFPS, m_ClientFPS);
+    //printf(" CFPSController::IsProcessableFrame--> m_nOwnFPS = %d, m_ClientFPS = %lf\n", m_nOwnFPS, m_ClientFPS);
     if(m_nOwnFPS + FPS_COMPARISON_EPS > m_ClientFPS) return true;
 
     double diff = m_ClientFPS - m_nOwnFPS;
