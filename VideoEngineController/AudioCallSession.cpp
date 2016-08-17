@@ -211,10 +211,9 @@ void CAudioCallSession::EncodingThreadProcedure()
         else
         {
 			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame);
-            if(AUDIO_CLIENT_SAMPLE_SIZE != nEncodingFrameSize)
+            if( nEncodingFrameSize % AUDIO_FRAME_SIZE >0)
             {
-                ALOG("#EXP# nEncodingFrameSize: "+Tools::IntegertoStringConvert(nEncodingFrameSize));
-                continue;
+                ALOG("#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = "+Tools::IntegertoStringConvert(nEncodingFrameSize));
             }
 #ifdef __DUMP_FILE__
 			fwrite(m_saAudioEncodingFrame, 2, nEncodingFrameSize, FileInput);

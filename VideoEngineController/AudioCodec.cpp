@@ -106,14 +106,9 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 	//m_Tools.WriteToFile(in_data, (int)in_size, 1);
 //	ALOG("#EN  #CO# InSize: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(FRAME_SIZE));
 	int nbBytes;
-	if (in_size % AUDIO_FRAME_SIZE)
-	{
-		ALOG( "#EXP#**************************** Input: "+Tools::IntegertoStringConvert(in_size) +"  FS: "+Tools::IntegertoStringConvert(AUDIO_FRAME_SIZE));
-		return 0;
-	}
 	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize = 0;
 //	ALOG( "#EN  In: "+Tools::IntegertoStringConvert(in_size) +"  EFC: "+Tools::IntegertoStringConvert(nEncodedSize));
-	while(nProcessedDataSize < in_size)
+	while(nProcessedDataSize + AUDIO_FRAME_SIZE <= in_size)
 	{
 		nbBytes = opus_encode(encoder, in_data + iFrameCounter * AUDIO_FRAME_SIZE, AUDIO_FRAME_SIZE, out_buffer + nEncodedSize + 2 * iFrameCounter + 2, AUDIO_MAX_PACKET_SIZE);
 //		ALOG( "#EN   #CO# Opus--> "+Tools::IntegertoStringConvert(nbBytes)+" ["+Tools::IntegertoStringConvert( nEncodedSize + 2 * iFrameCounter));
@@ -136,21 +131,28 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 		fprintf(stderr, "encode failed: %s\n", opus_strerror(nbBytes));
 		return EXIT_FAILURE;
 	}
+
+	if(nProcessedDataSize != in_size)
+	{
+		ALOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
+	}
 	return nEncodedPacketLenght;
 }
 
 int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
-	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0;
-	int nExpectedFrames = AUDIO_CLIENT_SAMPLE_SIZE / AUDIO_FRAME_SIZE, nCurrentFrameSize;
+	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0, nProcessedDataSize = 0, nCurrentFrameSize = 0;
 //	ALOG("#DE#:  #CO# InSize: "+m_Tools.IntegertoStringConvert(in_size));
-	while(iFrameCounter < nExpectedFrames)
+	while(nProcessedDataSize + 2 <= in_size)
 	{
 		nCurrentFrameSize =  in_data[nDecodedDataSize + 2 * iFrameCounter + 1];
 		nCurrentFrameSize <<= 8;
 		nCurrentFrameSize += in_data[nDecodedDataSize + 2 * iFrameCounter];
 
-
+		if(nProcessedDataSize + nCurrentFrameSize + 2 > in_size) {
+			ALOG("#EXP# Encoded data not matched.");
+			break;
+		}
 //		ALOG("#DE#:  #CO# Decode: "+m_Tools.IntegertoStringConvert(nCurrentFrameSize)
 //				+"  ["+ Tools::IntegertoStringConvert( nDecodedDataSize + 2*iFrameCounter) );
 		if(nCurrentFrameSize < 1)
@@ -162,6 +164,7 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 //		ALOG("#DE#:  #CO# Decode Done : " + Tools::IntegertoStringConvert(frame_size));
 		nDecodedDataSize += nCurrentFrameSize;		//FRAME_SIZE
 		++iFrameCounter;
+		nProcessedDataSize += nCurrentFrameSize + 2;
 	}
 
 	if (nDecodedDataSize<0)
