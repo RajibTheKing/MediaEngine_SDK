@@ -29,7 +29,7 @@ public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall=false);
     ~CAudioCallSession();
 
-    CAudioCodec* GetAudioEncoder();
+    CAudioCodec* GetAudioCodec();
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);

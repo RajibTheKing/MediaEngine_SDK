@@ -52,7 +52,8 @@ private:
 	CCommonElementsBucket* m_pCommonElementsBucket;
 	CAudioCallSession* m_pAudioCallSession;
 	int m_iCurrentBitRate;
-	int m_inoLOssSlot;
+	int m_inoLossSlot;
+	int m_ihugeLossSlot;
 	int m_iComplexity;
 
 	OpusEncoder	*encoder;

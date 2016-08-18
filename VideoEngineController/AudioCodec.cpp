@@ -12,7 +12,8 @@ m_pCommonElementsBucket(sharedObject)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
 	m_pAudioCallSession = AudioCallSession;
-	m_inoLOssSlot = 0;
+	m_inoLossSlot = 0;
+	m_ihugeLossSlot = 0;
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CAudioCodec");
 }
 
@@ -181,28 +182,35 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 //	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
 	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
 	{
-		m_inoLOssSlot++;
+		m_inoLossSlot++;
+		m_ihugeLossSlot = 0;
 	}
 	else
 	{
-		m_inoLOssSlot = 0;
+		m_inoLossSlot = 0;
 		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
 		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
 		if (nChangedBitRate >= AUDIO_MIN_BITRATE)
 		{
 			SetBitrateOpus(nChangedBitRate);
+			m_ihugeLossSlot = 0;
 		}
 		else
 		{
 			//g_StopVideoSending = 1;
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
-			//g_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
-			m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
+			m_ihugeLossSlot++;
+			if (m_ihugeLossSlot == AUDIO_MAX_HUGE_LOSS_SLOT)
+			{
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
+				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
+				m_ihugeLossSlot = 0;
+			}
+			
 			SetBitrateOpus(AUDIO_MIN_BITRATE);
 		}
 	}
 
-	if (m_inoLOssSlot == AUDIO_MAX_NO_LOSS_SLOT)
+	if (m_inoLossSlot == AUDIO_MAX_NO_LOSS_SLOT)
 	{
 		if (m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP <= AUDIO_MAX_BITRATE)
 		{
@@ -212,7 +220,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		{
 			SetBitrateOpus(AUDIO_MAX_BITRATE);
 		}
-		m_inoLOssSlot = 0;
+		m_inoLossSlot = 0;
 	}
 //	ALOG("#V# E: DecideToChangeBitrate: Done");
 #endif

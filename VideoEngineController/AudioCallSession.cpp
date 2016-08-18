@@ -130,7 +130,7 @@ int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, uns
 	return returnedValue;
 }
 
-CAudioCodec* CAudioCallSession::GetAudioEncoder()
+CAudioCodec* CAudioCallSession::GetAudioCodec()
 {
 	//	return sessionMediaList.GetFromAudioEncoderList(mediaName);
 
@@ -252,6 +252,10 @@ void CAudioCallSession::EncodingThreadProcedure()
             m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
 
 			SendingHeader->SetInformation(m_iNextPacketType, PACKETTYPE);
+			if (m_iNextPacketType == AUDIO_NOVIDEO_PACKET_TYPE)
+			{
+				m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
+			}
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
 			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
 			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
