@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-//#define __AUDIO_SLEF_CALL__
+//#define __AUDIO_SELF_CALL__
 
 //int g_iNextPacketType = 1;
 
@@ -273,7 +273,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 //            ALOG("#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 //            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 
-#ifdef  __AUDIO_SLEF_CALL__
+#ifdef  __AUDIO_SELF_CALL__
             DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 #else
             if (m_bIsCheckCall == LIVE_CALL_MOOD)
