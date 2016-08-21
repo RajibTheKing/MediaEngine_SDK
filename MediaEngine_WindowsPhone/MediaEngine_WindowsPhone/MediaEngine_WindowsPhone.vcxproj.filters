@@ -20,13 +20,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioDecoder.h">
-      <Filter>VideoEngineController</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h">
-      <Filter>VideoEngineController</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioEncoder.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h">
@@ -188,6 +182,12 @@
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioCodec.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -196,13 +196,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioDecoder.cpp">
-      <Filter>VideoEngineController</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp">
-      <Filter>VideoEngineController</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp">
@@ -324,6 +318,12 @@
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
