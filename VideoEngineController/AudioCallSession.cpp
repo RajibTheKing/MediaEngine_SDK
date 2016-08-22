@@ -119,12 +119,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
 {
-	/*if (unLength > 300)
-    {
-        CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
-        return 0;
-    }*/
-    
+//    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
 	int returnedValue = m_AudioDecodingBuffer.Queue(&pucaDecodingAudioData[1], unLength - 1);
 
 	return returnedValue;
@@ -132,8 +127,6 @@ int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, uns
 
 CAudioCodec* CAudioCallSession::GetAudioCodec()
 {
-	//	return sessionMediaList.GetFromAudioEncoderList(mediaName);
-
 	return m_pAudioCodec;
 }
 
@@ -241,9 +234,6 @@ void CAudioCallSession::EncodingThreadProcedure()
                      + " AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame)
                      + " MaxFrameNumber: " + m_Tools.IntegertoStringConvert(m_nMaxAudioPacketNumber));
 
-
-            m_saAudioEncodingFrame[0] = 0;
-
             //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
 
 //            SendingHeader->SetInformation( (countFrame%100 == 0)? 0 : 1, PACKETTYPE);
@@ -263,6 +253,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 			SendingHeader->SetInformation(m_iReceivedPacketsInPrevSlot, NUMPACKETRECVD);
 			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
 
+            m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
+
 //            ALOG("#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber)
 //                + " #V# E: SLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iSlotID)
 //                + " #V# E: NUMPACKETRECVD: "+m_Tools.IntegertoStringConvert(m_iReceivedPacketsInPrevSlot)
@@ -280,8 +272,12 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef  __AUDIO_SELF_CALL__
             DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 #else
-            if (m_bIsCheckCall == LIVE_CALL_MOOD)
-				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+            if (m_bIsCheckCall == LIVE_CALL_MOOD) {
+//                ALOG("#H#Sent PacketType: "+m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[0]));
+                m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame,
+                                                             nEncodedFrameSize + m_AudioHeadersize +
+                                                             1);
+            }
 			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 #endif
