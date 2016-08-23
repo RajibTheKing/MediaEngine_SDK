@@ -323,6 +323,14 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoNotificationCallback(
 	}
 }
 
+void CInterfaceOfAudioVideoEngine::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int))
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->SetNotifyClientWithNetworkStrengthNotificationCallback(callBackFunctionPointer);
+	}
+}
+
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
 	if (NULL != m_pcController)

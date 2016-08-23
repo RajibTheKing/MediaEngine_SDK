@@ -56,6 +56,10 @@ private:
 	int m_ihugeLossSlot;
 	int m_iComplexity;
 
+	bool m_bAudioQualityLowNotified;
+	bool m_bAudioQualityHighNotified;
+	bool m_bAudioShouldStopNotified;
+
 	OpusEncoder	*encoder;
 	OpusDecoder	*decoder;
 	opus_int32	length;

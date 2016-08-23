@@ -17,19 +17,22 @@ public:
 	void fireAudioEvent(int friendID, int dataLenth, short data[]);
 	void fireAudioAlarm(int eventType, int dataLenth, short data[]);
     void fireVideoNotificationEvent(long long callID, int eventType);
+	void fireNetworkStrengthNotificationEvent(long long callID, int eventType);
     
     void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
     void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
+	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
     void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
 	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
 
 
 	
-    static const int VIDEO_QUALITY_LOW = 202;
-	static const int VIDEO_QUALITY_HIGH = 204;
-    static const int VIDEO_SHOULD_STOP = 203;
+    static const int NETWORK_STRENTH_GOOD = 202;
+	static const int NETWORK_STRENTH_EXCELLENT = 204;
+    static const int NETWORK_STRENTH_BAD = 203;
+	static const int VIDEO_SHOULD_STOP = 201;
 
 	static const int SET_CAMERA_RESOLUTION_640x480_25FPS = 205;
     static const int SET_CAMERA_RESOLUTION_640x480_25FPS_NOT_SUPPORTED = 206;

@@ -38,7 +38,10 @@ BitRateController::BitRateController(int nFPS):
 	m_dPreviousMegaSlotStatus(1),
 	m_nOwnNetworkType(NETWORK_TYPE_NOT_2G),
 	m_nGoodSlotCounterToUp(GOOD_MEGASLOT_TO_UP * GOOD_MEGASLOT_TO_UP_TOLERANCE),
-	m_nCallFPS(nFPS)
+	m_nCallFPS(nFPS),
+	m_bVideoQualityLowNotified(false),
+	m_bVideoQualityHighNotified(false),
+	m_bVideoShouldStopNotified(false)
 
 {
 
@@ -422,7 +425,7 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 
 		if (false == m_bVideoQualityLowNotified)
 		{
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_QUALITY_LOW);
+			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_GOOD);
 
 			m_bVideoQualityLowNotified = true;
 			m_bVideoQualityHighNotified = false;
@@ -435,6 +438,7 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 
 		if (false == m_bVideoShouldStopNotified && m_nStopNotificationCounter >= STOP_NOTIFICATION_SENDING_COUNTER)
         {
+			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_BAD);
 			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_SHOULD_STOP);
 
 			m_bVideoShouldStopNotified = true;
@@ -448,7 +452,7 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 
 		if (false == m_bVideoQualityHighNotified)
 		{
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_QUALITY_HIGH);
+			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
 
 			m_bVideoQualityHighNotified = true;
 			m_bVideoQualityLowNotified = false;

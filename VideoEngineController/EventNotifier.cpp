@@ -6,6 +6,7 @@
 void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
 void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int, int) = NULL;
 void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
+void(*notifyClientWithNetworkStrengthNotificationCallback)(LongLong, int) = NULL;
 void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
 void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
 void(*notifyClientWithAudioAlarmCallback)(LongLong, short*, int) = NULL;
@@ -33,19 +34,7 @@ void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
 
 	notifyClientWithVideoNotificationCallback(callID, eventType);
     
-    if(eventType == VIDEO_QUALITY_LOW)
-    {
-		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video quality low");
-    }
-	else if (eventType == VIDEO_QUALITY_HIGH)
-	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video quality high");
-	}
-    else if(eventType == VIDEO_SHOULD_STOP)
-    {
-		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video must stop");
-    }
-	else if (eventType == SET_CAMERA_RESOLUTION_640x480_25FPS)
+	if (eventType == SET_CAMERA_RESOLUTION_640x480_25FPS)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_640x480_25FPS called");
 	}
@@ -57,6 +46,26 @@ void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
     {
         CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "SET_CAMERA_RESOLUTION_352x288_15FPS called");
     }
+}
+
+void CEventNotifier::fireNetworkStrengthNotificationEvent(long long callID, int eventType)
+{
+	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType));
+
+	notifyClientWithNetworkStrengthNotificationCallback(callID, eventType);
+
+	if (eventType == NETWORK_STRENTH_GOOD)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video quality low");
+	}
+	else if (eventType == NETWORK_STRENTH_EXCELLENT)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video quality high");
+	}
+	else if (eventType == NETWORK_STRENTH_BAD)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, VIDEO_NOTIFICATION_LOG, "Video must stop");
+	}
 }
 
 void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[])
@@ -99,6 +108,11 @@ void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunction
 void CEventNotifier::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
 {
 	notifyClientWithVideoNotificationCallback = callBackFunctionPointer;
+}
+
+void CEventNotifier::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
+{
+	notifyClientWithNetworkStrengthNotificationCallback = callBackFunctionPointer;
 }
 
 void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))

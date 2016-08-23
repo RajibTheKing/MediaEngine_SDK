@@ -735,6 +735,11 @@ void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFun
 	m_EventNotifier.SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
 }
 
+void CController::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int))
+{
+	m_EventNotifier.SetNotifyClientWithNetworkStrengthNotificationCallback(callBackFunctionPointer);
+}
+
 void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
     m_EventNotifier.SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);

@@ -8,7 +8,10 @@
 //extern int g_iNextPacketType;
 
 CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession) :
-m_pCommonElementsBucket(sharedObject)
+m_pCommonElementsBucket(sharedObject),
+m_bAudioQualityLowNotified(false),
+m_bAudioQualityHighNotified(false),
+m_bAudioShouldStopNotified(false)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
 	m_pAudioCallSession = AudioCallSession;
@@ -190,23 +193,53 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		m_inoLossSlot = 0;
 		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
 		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
-		if (nChangedBitRate >= AUDIO_MIN_BITRATE)
+		
+		if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
 		{
-			SetBitrateOpus(nChangedBitRate);
 			m_ihugeLossSlot = 0;
-		}
-		else
-		{
-			//g_StopVideoSending = 1;
-			m_ihugeLossSlot++;
-			if (m_ihugeLossSlot == AUDIO_MAX_HUGE_LOSS_SLOT)
+
+			SetBitrateOpus(nChangedBitRate);
+
+			if (false == m_bAudioQualityLowNotified)
 			{
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_GOOD);
+			
+				m_bAudioQualityLowNotified = true;
+				m_bAudioQualityHighNotified = false;
+				m_bAudioShouldStopNotified = false;
+			}
+		}
+		else if (nChangedBitRate <AUDIO_MIN_BITRATE)
+		{
+			m_ihugeLossSlot++;
+
+			SetBitrateOpus(AUDIO_MIN_BITRATE);
+
+			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= STOP_NOTIFICATION_SENDING_COUNTER)
+			{
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_BAD);
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
 				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
-				m_ihugeLossSlot = 0;
+
+				m_bAudioShouldStopNotified = true;
+				m_bAudioQualityHighNotified = false;
+				m_bAudioQualityLowNotified = false;
 			}
-			
-			SetBitrateOpus(AUDIO_MIN_BITRATE);
+		}
+		else if (nChangedBitRate >= AUDIO_LOW_BITRATE)
+		{
+			m_ihugeLossSlot = 0;
+
+			SetBitrateOpus(nChangedBitRate);
+
+			if (false == m_bAudioQualityHighNotified)
+			{
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
+
+				m_bAudioQualityHighNotified = true;
+				m_bAudioQualityLowNotified = false;
+				m_bAudioShouldStopNotified = false;
+			}
 		}
 	}
 
