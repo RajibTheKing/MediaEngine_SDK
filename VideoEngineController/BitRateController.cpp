@@ -439,7 +439,7 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 		if (false == m_bVideoShouldStopNotified && m_nStopNotificationCounter >= STOP_NOTIFICATION_SENDING_COUNTER)
         {
 			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_BAD);
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_SHOULD_STOP);
+			//m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_SHOULD_STOP);
 
 			m_bVideoShouldStopNotified = true;
 			m_bVideoQualityHighNotified = false;
