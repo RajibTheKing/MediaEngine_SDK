@@ -215,8 +215,10 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 				m_pVideoCallSession->SetCurrentVideoCallQualityLevel( min( m_pVideoCallSession->GetOwnVideoCallQualityLevel(), m_pVideoCallSession->GetOpponentVideoCallQualityLevel() ) );
 			}
 
-			if (bIs2GOpponentNetwork)
+			if (bIs2GOpponentNetwork) {
+				m_pVideoCallSession->GetVideoEncoder()->SetNetworkType(NETWORK_TYPE_2G);
 				m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_2G);
+			}
 
             continue;
         }

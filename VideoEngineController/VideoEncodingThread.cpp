@@ -163,6 +163,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int sumOfEncodingTimediff = 0;
 	int sumOfZeroLengthEncodingTimediff = 0;
 	int countZeroLengthFrame = 0;
+	bool bIsBitrateInitialized = false;
 
 	/*for(int i = 0; i < 200; i++)
 	{
@@ -174,8 +175,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 		toolsObject.SOSleep(10);
 	}*/
-
-	m_pBitRateController->SetInitialBitrate();
+	if(m_bIsCheckCall) {
+		m_pBitRateController->SetInitialBitrate();
+		bIsBitrateInitialized = true;
+	}
 
 	while (bEncodingThreadRunning)
 	{
@@ -217,6 +220,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		{
             
 			int timeDiff;
+
+			if(!bIsBitrateInitialized)
+			{
+				m_pBitRateController->SetInitialBitrate();
+				bIsBitrateInitialized = true;
+			}
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 

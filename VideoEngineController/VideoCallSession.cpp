@@ -264,16 +264,19 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_ClientFrameCounter = 0;
 	m_EncodingFrameCounter = 0;
 	m_llFirstFrameCapturingTimeStamp = -1;
+
+
+	m_BitRateController->SetOwnNetworkType(iNetworkType);
+	CreateAndSendMiniPacket(iNetworkType, NETWORK_TYPE_MINIPACKET);
+
+
 	m_pSendingThread->StartSendingThread();
-	
 	m_pVideoEncodingThread->StartEncodingThread();
-	
 	m_pVideoRenderingThread->StartRenderingThread();	
 	m_pVideoDepacketizationThread->StartDepacketizationThread();
 	m_pVideoDecodingThread->StartDecodingThread();
 
-	m_BitRateController->SetOwnNetworkType(iNetworkType);
-	CreateAndSendMiniPacket(iNetworkType, NETWORK_TYPE_MINIPACKET);
+
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
 }
