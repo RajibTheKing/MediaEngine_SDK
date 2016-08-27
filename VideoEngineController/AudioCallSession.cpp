@@ -383,6 +383,11 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 //            ALOG("#V#TYPE# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
 
+			if (!ReceivingHeader->IsPacketTypeSupported())
+			{
+				continue;
+			}
+
             if( AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
             {
                 ALOG("#V#TYPE# ############################################### SKIPPET");

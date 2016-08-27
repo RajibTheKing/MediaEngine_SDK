@@ -33,6 +33,13 @@ static int HeaderBitmap[] =
 	5 /*SAMPLERATE*/
 };
 
+static int SupportedPacketTypes[] =
+{
+	AUDIO_SKIP_PACKET_TYPE,
+	AUDIO_NORMAL_PACKET_TYPE,
+	AUDIO_NOVIDEO_PACKET_TYPE
+};
+
 
 class CAudioPacketHeader {
 
@@ -61,5 +68,7 @@ public:
 	unsigned int GetInformation(int InfoType);
 
 	unsigned int GetFieldCapacity(int InfoType);
+	bool IsPacketTypeSupported(unsigned int PacketType);
+	bool IsPacketTypeSupported();
 
 };
