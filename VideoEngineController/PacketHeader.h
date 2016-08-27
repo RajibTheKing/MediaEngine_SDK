@@ -12,7 +12,7 @@ public:
     ~CPacketHeader();
 
     void setPacketHeader(unsigned char *headerData);
-    void setPacketHeader(unsigned char packetType, unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength, int nQualityLevel, int deviceOrientation = 0);
+    void setPacketHeader(unsigned char packetType, unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,unsigned int TimeStamp, unsigned int FPS, unsigned int PacketLength, int nQualityLevel, int deviceOrientation, int nNetworkType);
     void ShowDetails(string sTag);
     void SetPacketType(unsigned char packetType);
     unsigned char GetPacketType();
@@ -21,6 +21,10 @@ public:
     int GetVideoQualityLevel();
     void SetVideoQualityLevel(int nQualityLevel);
     void SetVideoQualityLevel(unsigned char* data);
+
+    int GetNetworkType();
+    void SetNetworkType(int nNetworkType);
+    void SetNetworkType(unsigned char* data);
 
     int GetHeaderInByteArray(unsigned char* data);
     //hello
@@ -103,6 +107,7 @@ private:
     int m_iPacketLength;             // 2 byte
     int m_iDeviceOrientation;             // 2 bit in retransmission signal
     int m_nVideoQualityLevel;
+    int m_nNetworkType;
     //Total: 15 byte
 
 };

@@ -115,28 +115,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		if (0 == queSize && 0 == miniPacketQueueSize)
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
-            
-            //printf("Rajib: OwnCallVersion = %d, oppCallVersion = %d\n", m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion());
-            /*if(m_pVersionController->GetOpponentVersion() == -1)
-            {
-                if(m_Tools.CurrentTimestamp()-llDepacitazationThreadStartTime >= TIMEOUT_START_SENDING_VIDEO_DATA)
-                {
-                    
-                    m_pVersionController->SetOpponentVersion(0); //version code
-                    
-                    m_pVersionController->SetCurrentCallVersion(0); //version code
-                    
-                    if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel())
-                    {		//Not necessary
-                        m_pVideoCallSession->SetOpponentVideoCallQualityLevel(SUPPORTED_RESOLUTION_FPS_352_15);
-                        
-                        m_pVideoCallSession->SetCurrentVideoCallQualityLevel(min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
-                        
-                        m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_NOT_2G);
-                    }
-                }
-            }*/
-            
+
 			toolsObject.SOSleep(10);
 
 			continue;
@@ -187,26 +166,17 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         {
             if(m_pVersionController->GetOpponentVersion() == -1)
             {
-				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert((int)m_PacketToBeMerged[PACKET_HEADER_LENGTH]));
+				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert(m_RcvdPacketHeader.getVersionCode()));
                 
-                m_pVersionController->SetOpponentVersion((int)m_PacketToBeMerged[PACKET_HEADER_LENGTH]);
+                m_pVersionController->SetOpponentVersion((int)m_RcvdPacketHeader.getVersionCode());     //NEGOTIATION PACKETS CONTAIN OPPONENT VERSION.
 				VLOG("#SOV# ########################################TheKing2 : " + Tools::IntegertoStringConvert((int)m_pVersionController->GetOpponentVersion()));
                 //printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
                 
                 m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
-                
-                
-                //printf("TheVersion --> Setting current Call Version to %d\n", m_pVersionController->GetCurrentCallVersion());
-//				if(1 == m_pVersionController->GetOpponentVersion()){
-//					m_pVideoCallSession->SetOpponentVideoCallQualityLevel(0);
-//					m_pVideoCallSession->SetCurrentVideoCallQualityLevel(0);
-//					continue;
-//				}
-
             }
 
-			bool bIs2GOpponentNetwork = (m_PacketToBeMerged[PACKET_HEADER_LENGTH + 1] & 0x01);
-			int nOpponentVideoCallQualityLevel = (m_PacketToBeMerged[PACKET_HEADER_LENGTH + 1] & 0x06) >> 1;
+			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
+			int nOpponentVideoCallQualityLevel = m_RcvdPacketHeader.GetVideoQualityLevel();
 
 			VLOG("TheKing--> Got nOpponentVideoCallQualityLevel " + Tools::IntegertoStringConvert(nOpponentVideoCallQualityLevel));
 
@@ -224,35 +194,9 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
             continue;
         }
         
-        
-//        if(m_pVersionController->GetOpponentVersionCompatibleFlag() == true)
-//        {
-//            //if (m_pVersionController->GetOpponentVersion() == -1 && m_RcvdPacketHeader.getVersionCode()>0)
-//
-//            unsigned char uchOpponentVersion = max(1, (int)m_RcvdPacketHeader.getVersionCode());
-//            //printf("TheVersion--> RcvPacketHeader.getVersionCode = %d, packetSize = %d, frameNumber = %d\n", m_RcvdPacketHeader.getVersionCode(), m_RcvdPacketHeader.getPacketLength(), m_RcvdPacketHeader.getFrameNumber());
-//
-//            if(uchOpponentVersion > m_pVersionController->GetOpponentVersion())
-//            {
-//                m_pVersionController->SetOpponentVersion(uchOpponentVersion);
-//                //printf("TheVersion --> setOpponentVersion %d, because GetOpponentVersionCompatibleFlag() == true\n", m_pVersionController->GetOpponentVersion());
-//
-//
-//                m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
-//
-//				if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {		//Not necessary
-//					m_pVideoCallSession->SetOpponentVideoCallQualityLevel(m_RcvdPacketHeader.GetOpponentResolution(m_PacketToBeMerged) );
-//
-//					m_pVideoCallSession->SetCurrentVideoCallQualityLevel(min(m_pVideoCallSession->GetOwnVideoCallQualityLevel(),m_pVideoCallSession->GetOpponentVideoCallQualityLevel()));
-//
-//					m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType( m_RcvdPacketHeader.GetOpponentNetworkType(m_PacketToBeMerged) );
-//				}
-//            }
-//        }
-//        else
 		if(-1 == m_pVersionController->GetOpponentVersion() && __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())  //It's a VIDEO packet. No dummy packet found before.
         {
-            m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());
+            m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());		//VIDEO PACKET CONTAINS CURRENT CALL VERSION.
 
             m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
 

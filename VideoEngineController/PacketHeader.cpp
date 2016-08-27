@@ -45,12 +45,22 @@ void CPacketHeader::setPacketHeader(unsigned char *headerData)
 
     SetDeviceOrientation(headerData + RETRANSMISSION_ORIENTION_INDEX);
     SetVideoQualityLevel(headerData + RETRANSMISSION_ORIENTION_INDEX);
+    SetNetworkType(headerData + RETRANSMISSION_ORIENTION_INDEX);
 }
 
 
 
-void CPacketHeader::setPacketHeader(unsigned char packetType,unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
-                             unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength, int nQualityLevel, int deviceOrientation)
+void CPacketHeader::setPacketHeader(unsigned char packetType,
+                                    unsigned char uchVersion,
+                                    unsigned int FrameNumber,
+                                    unsigned int NumberOfPacket,
+                                    unsigned int PacketNumber,
+                                    unsigned int TimeStamp,
+                                    unsigned int FPS,
+                                    unsigned int PacketLength,
+                                    int nQualityLevel,
+                                    int deviceOrientation,
+                                    int nNetworkType)
 {
     SetPacketType(packetType);
     setVersionCode(uchVersion);
@@ -61,10 +71,10 @@ void CPacketHeader::setPacketHeader(unsigned char packetType,unsigned char uchVe
     setPacketNumber(PacketNumber);
     setTimeStamp(TimeStamp);
     setFPS(FPS);
-    setRetransSignal(RetransSignal);
     setPacketLength(PacketLength);
     SetDeviceOrientation(deviceOrientation);
     SetVideoQualityLevel(nQualityLevel);
+    SetNetworkType(nNetworkType);
 }
 
 void CPacketHeader::ShowDetails(string sTag){
@@ -76,6 +86,8 @@ void CPacketHeader::ShowDetails(string sTag){
     +" Ver:"+Tools::IntegertoStringConvert(m_cVersionCode)
     +" TS:"+Tools::IntegertoStringConvert(m_iTimeStamp)
     +" QL:"+Tools::IntegertoStringConvert(m_nVideoQualityLevel)
+    +" NT:"+Tools::IntegertoStringConvert(m_nNetworkType)
+    +" OR:"+Tools::IntegertoStringConvert(m_iDeviceOrientation)
     );
 }
 int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
@@ -88,9 +100,10 @@ int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
     data[index++] = (m_iFrameNumber >> 8);
     data[index++] = m_iFrameNumber;
 
-    data[index] = m_iRetransSignal;
-    data[index] |= (m_iDeviceOrientation & 3) << 1;
-    data[index] |= (m_nVideoQualityLevel & 3) << 3;
+    data[index] = 0;
+    data[index] |= (m_nNetworkType & 1);    //0th BIT
+    data[index] |= (m_iDeviceOrientation & 3) << 1;  //1,2 BITs
+    data[index] |= (m_nVideoQualityLevel & 3) << 3;  //3,4 BITs
 
     index++;
 
@@ -259,10 +272,6 @@ int CPacketHeader::GetOpponentResolution(unsigned char *PacketHeader)
     return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
 }
 
-int CPacketHeader::GetVideoQualityLevel(){
-    return m_nVideoQualityLevel;
-}
-
 void CPacketHeader::SetNetworkTypeBit(unsigned char *PacketHeader , int value)
 {
     PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= value;
@@ -270,6 +279,10 @@ void CPacketHeader::SetNetworkTypeBit(unsigned char *PacketHeader , int value)
 int CPacketHeader::GetOpponentNetworkType(unsigned char *PacketHeader)
 {
     return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x01;
+}
+
+void CPacketHeader::SetNetworkType(unsigned char* data){
+    m_nNetworkType = (data[0] & 1);
 }
 
 void CPacketHeader::SetDeviceOrientation(unsigned char *packetData)
@@ -281,6 +294,10 @@ void CPacketHeader::SetVideoQualityLevel(unsigned char* data){
     m_nVideoQualityLevel = (GetIntFromChar(data, 0, 1) >> 3 ) & 3;
 }
 
+void CPacketHeader::SetNetworkType(int nNetworkType){
+    m_nNetworkType = nNetworkType;
+}
+
 void CPacketHeader::SetVideoQualityLevel(int nQualityLevel){
     m_nVideoQualityLevel = nQualityLevel;
 }
@@ -290,10 +307,14 @@ void CPacketHeader::SetDeviceOrientation(int deviceOrientation)
     m_iDeviceOrientation = deviceOrientation;
 }
 
-int CPacketHeader::GetDeviceOrientation()
-{
+int CPacketHeader::GetDeviceOrientation() {
     return m_iDeviceOrientation;
 }
 
+int CPacketHeader::GetVideoQualityLevel(){
+    return m_nVideoQualityLevel;
+}
 
-
+int CPacketHeader::GetNetworkType(){
+    return m_nNetworkType;
+}
