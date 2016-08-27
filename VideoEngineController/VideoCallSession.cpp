@@ -307,7 +307,7 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
 {
 	unsigned char uchPacketType = in_data[__PACKET_TYPE_INDEX];
-	if(uchPacketType == __SKIPPED_PACKET_TYPE)
+	if(uchPacketType < __MIN_PACKET_TYPE || __MAX_PACKET_TYPE < uchPacketType)
 		return false;
 
 

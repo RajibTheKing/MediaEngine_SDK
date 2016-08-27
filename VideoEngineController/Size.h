@@ -23,6 +23,10 @@
 #define __BITRATE_CONTROLL_PACKET_TYPE 3
 #define __NETWORK_INFO_PACKET_TYPE 4
 
+#define __MIN_PACKET_TYPE   1
+#define __MAX_PACKET_TYPE   4
+
+
 #define LOW_FRAME_RATE 15
 #define HIGH_FRAME_RATE 40
 
