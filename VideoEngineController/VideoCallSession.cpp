@@ -267,7 +267,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 
 	m_BitRateController->SetOwnNetworkType(iNetworkType);
-	CreateAndSendMiniPacket(iNetworkType, NETWORK_TYPE_MINIPACKET);
+	CreateAndSendMiniPacket(iNetworkType, __NETWORK_INFO_PACKET_TYPE);
 
 
 	m_pSendingThread->StartSendingThread();
@@ -344,7 +344,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
-				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_TYPE_MINIPACKET);
+				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, __BITRATE_CONTROLL_PACKET_TYPE);
 			}
 
 			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % m_nCallFPS);
@@ -515,11 +515,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
     
 	CPacketHeader PacketHeader;
 
-	if (nMiniPacketType == BITRATE_TYPE_MINIPACKET)
+	if (nMiniPacketType == __BITRATE_CONTROLL_PACKET_TYPE)
 	{
 		PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0);
 	}
-	else if (nMiniPacketType == NETWORK_TYPE_MINIPACKET)
+	else if (nMiniPacketType == __NETWORK_INFO_PACKET_TYPE)
 	{
 		PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0);
 	}
