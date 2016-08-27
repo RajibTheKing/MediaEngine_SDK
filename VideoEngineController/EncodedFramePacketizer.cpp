@@ -58,23 +58,17 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	{
 		if (nPacketizedDataLength + m_nPacketSize > unLength)
 			m_nPacketSize = unLength - nPacketizedDataLength;
-        
-        /*if(bIsDummy && m_nPacketSize == 1)
-        {
-            ++ m_nPacketSize;
-        }*/
-        
-        if(bIsDummy)
-        {
-            //printf("bIsDummy PacketSize = %d\n", m_nPacketSize);
+
+
+        if(bIsDummy) {
+            m_cPacketHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,
+                                            m_pVideoCallSession->GetVersionController()->GetOwnVersion(),
+                                            0, 0, 0, unCaptureTimeDifference, 0, 0, m_nPacketSize,
+                                            m_pVideoCallSession->GetOwnVideoCallQualityLevel());
         }
-        
-		if (uchSendVersion)
+        else
         {
-//            if(1 == uchSendVersion)
-//                m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE, uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
-//            else
-            m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE, uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize, device_orientation);
+            m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE, uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize, m_pVideoCallSession->GetOwnVideoCallQualityLevel(), device_orientation);
 //            VLOG("#PKT#  +++++ MADE  PT: "+Tools::IntegertoStringConvert(__VIDEO_PACKET_TYPE)
 //                 +"  FN:"+Tools::IntegertoStringConvert(iFrameNumber)
 //                 +" NP:"+Tools::IntegertoStringConvert(nNumberOfPackets)
@@ -85,12 +79,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             m_ucaPacket[ RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= (m_pVideoCallSession->GetOwnVideoCallQualityLevel() << 1); //Resolution, FPS
             m_ucaPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType(); //2G
         }
-		else
-        {
-            m_cPacketHeader.setPacketHeader(bIsDummy? __NEGOTIATION_PACKET_TYPE : __VIDEO_PACKET_TYPE, uchSendVersion, bIsDummy? 0 : iFrameNumber, bIsDummy? 0 : nNumberOfPackets, bIsDummy? 0 :nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize);
-        }
-//Packet lenght issue should be fixed.
-//        m_cPacketHeader.ShowDetails("JUST Before");
+
 		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
 //        m_cPacketHeader.ShowDetails("JUST");
 
@@ -112,9 +101,13 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         {
             //printf("TheVersion--> Sending dummy with own version = %d\n", m_pVideoCallSession->GetVersionController()->GetOwnVersion());
             m_ucaPacket[ nPacketHeaderLenghtWithMediaType ] = m_pVideoCallSession->GetVersionController()->GetOwnVersion();
+
 			m_ucaPacket[nPacketHeaderLenghtWithMediaType + 1] = 0;
             m_ucaPacket[ nPacketHeaderLenghtWithMediaType + 1] |= (m_pVideoCallSession->GetOwnVideoCallQualityLevel() << 1); //Resolution, FPS
 			m_ucaPacket[nPacketHeaderLenghtWithMediaType + 1] |= m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType(); //2G
+
+            VLOG("#VR# Snt OwnVersion: "+Tools::IntegertoStringConvert(m_ucaPacket[ nPacketHeaderLenghtWithMediaType ]) +"  "
+                 +Tools::IntegertoStringConvert(m_pVideoCallSession->GetVersionController()->GetOwnVersion()));
         }
 
 //		m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, m_PacketSize, nPacketHeaderLenghtWithMedia + m_PacketSize, m_Packet);
