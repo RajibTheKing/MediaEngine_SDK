@@ -21,37 +21,40 @@ CPacketHeader::~CPacketHeader()
 
 }
 
+#define PACKET_TYPE_INDEX 0
+#define FPS_INDEX 1
+#define FRAME_NUMBER_INDEX 2
+#define RETRANSMISSION_ORIENTION_INDEX 5
+#define VERSION_CODE_INDEX 6
+#define NUMBER_OF_PACKET_INDEX 7
+#define PACKET_NUMBER_INDEX 8
+#define TIMESTAMP_INDEX 9
+#define PACKET_LENGTH_INDEX 13
+
 void CPacketHeader::setPacketHeader(unsigned char *headerData)
 {
-    if(headerData[VERSION_BYTE_INDEX]) {        //Version > 0
-        setFPS(headerData);
-        setFrameNumber(headerData + 1);
-        setRetransSignal(headerData + 4);
-        setVersionCode(headerData + 5);
-        setNumberOfPacket(headerData + 6);
-        setPacketNumber(headerData + 7);
-        setTimeStamp(headerData + 8);
-        setPacketLength(headerData + 12);
+    setPacketType(headerData + PACKET_TYPE_INDEX);
+    setFPS(headerData + FPS_INDEX);
+    setFrameNumber(headerData + FRAME_NUMBER_INDEX);
+    setRetransSignal(headerData + RETRANSMISSION_ORIENTION_INDEX);
+    setVersionCode(headerData + VERSION_CODE_INDEX);
+    setNumberOfPacket(headerData + NUMBER_OF_PACKET_INDEX);
+    setPacketNumber(headerData + PACKET_NUMBER_INDEX);
+    setTimeStamp(headerData + TIMESTAMP_INDEX);
+    setPacketLength(headerData + PACKET_LENGTH_INDEX);
 
-        SetDeviceOrientation(headerData + 4);
-    }
-    else
-    {
-        setFPS(headerData);
-        setFrameNumber(headerData + 1);
-        setRetransSignal(headerData + 4);
-        setVersionCode(headerData + 5);
-        setNumberOfPacket(headerData + 7);
-        setPacketNumber(headerData + 11);
-        setPacketLength(headerData + 14);
-        setTimeStamp(headerData + 16);
-    }
+    SetDeviceOrientation(headerData + RETRANSMISSION_ORIENTION_INDEX);
 }
 
-void CPacketHeader::setPacketHeader(unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
+
+
+void CPacketHeader::setPacketHeader(unsigned char packetType,unsigned char uchVersion, unsigned int FrameNumber, unsigned int NumberOfPacket, unsigned int PacketNumber,
                              unsigned int TimeStamp, unsigned int FPS, unsigned int RetransSignal, unsigned int PacketLength, int deviceOrientation)
 {
-    m_cVersionCode = uchVersion;
+    SetPacketType(packetType);
+    setVersionCode(uchVersion);
+
+    m_iFrameNumber = FrameNumber;
     setFrameNumber(FrameNumber);
     setNumberOfPacket(NumberOfPacket);
     setPacketNumber(PacketNumber);
@@ -60,108 +63,86 @@ void CPacketHeader::setPacketHeader(unsigned char uchVersion, unsigned int Frame
     setRetransSignal(RetransSignal);
     setPacketLength(PacketLength);
     SetDeviceOrientation(deviceOrientation);
-
 }
 
+void CPacketHeader::ShowDetails(string sTag){
+    VLOG("#PKT#  ->"+sTag+"#  PT: "+Tools::IntegertoStringConvert(m_ucPacketType)
+    +"  FN:"+Tools::IntegertoStringConvert(m_iFrameNumber)
+    +" NP:"+Tools::IntegertoStringConvert(m_iNumberOfPacket)
+    +" PN:"+Tools::IntegertoStringConvert(m_iPacketNumber)
+    +" PLen:"+Tools::IntegertoStringConvert(m_iPacketLength)
+    +" Ver:"+Tools::IntegertoStringConvert(m_cVersionCode)
+    +" TS:"+Tools::IntegertoStringConvert(m_iTimeStamp)
+    );
+}
 int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
 {
     int index = 0;
+    data[index++] = m_ucPacketType;
+    data[index++] = m_iFPS;
 
-    if(m_cVersionCode) {
-        data[index++] = m_iFPS;
+    data[index++] = (m_iFrameNumber >> 16);
+    data[index++] = (m_iFrameNumber >> 8);
+    data[index++] = m_iFrameNumber;
 
-        data[index++] = (m_iFrameNumber >> 16);
-        data[index++] = (m_iFrameNumber >> 8);
-        data[index++] = m_iFrameNumber;
+    data[index] = m_iRetransSignal;
+    data[index] |= (m_iDeviceOrientation & 3) << 1;
 
-        data[index] = m_iRetransSignal;
-        data[index] |= (m_iDeviceOrientation & 3) << 1;
+    index++;
 
-        index++;
+    data[index++] = m_cVersionCode;
 
-        data[index++] = m_cVersionCode;
+    data[index++] = m_iNumberOfPacket;
+    data[index++] = m_iPacketNumber;
 
-        data[index++] = m_iNumberOfPacket;
-        data[index++] = m_iPacketNumber;
+    data[index++] = (m_iTimeStamp >> 24);
+    data[index++] = (m_iTimeStamp >> 16);
+    data[index++] = (m_iTimeStamp >> 8);
+    data[index++] = m_iTimeStamp;
 
-        data[index++] = (m_iTimeStamp >> 24);
-        data[index++] = (m_iTimeStamp >> 16);
-        data[index++] = (m_iTimeStamp >> 8);
-        data[index++] = m_iTimeStamp;
-
-        data[index++] = (m_iPacketLength >> 8);
-        data[index++] = m_iPacketLength;
-        return PACKET_HEADER_LENGTH;
-    }
-    else
-    {
-        memset(data, 0, PACKET_HEADER_LENGTH_NO_VERSION);
-
-        index = 0;
-        data[index] = m_iFPS;
-
-        index = 1;
-        data[index++] = (m_iFrameNumber >> 16);
-        data[index++] = (m_iFrameNumber >> 8);
-        data[index++] = m_iFrameNumber;
-
-        index = 4;
-        data[index] = m_iRetransSignal;
-
-        index = 5;
-//        data[index] = m_cVersionCode;
-
-        index = 7;
-        data[index] = m_iNumberOfPacket;
-
-        index = 11;
-        data[index] = m_iPacketNumber;
-
-        index = 14;
-        data[index++] = (m_iPacketLength >> 8);
-        data[index++] = m_iPacketLength;
-
-        index = 16;
-        data[index++] = (m_iTimeStamp >> 24);
-        data[index++] = (m_iTimeStamp >> 16);
-        data[index++] = (m_iTimeStamp >> 8);
-        data[index++] = m_iTimeStamp;
-        return PACKET_HEADER_LENGTH_NO_VERSION;
-    }
-    return 1;
+    data[index++] = (m_iPacketLength >> 8);
+    data[index++] = m_iPacketLength;
+    return PACKET_HEADER_LENGTH;
 }
 
-
-void CPacketHeader::setVersionCode(unsigned char m_cVersionCode) {
-    CPacketHeader::m_cVersionCode = m_cVersionCode;
+void CPacketHeader::SetPacketType(unsigned char packetType){
+    m_ucPacketType = packetType;
 }
 
-void CPacketHeader::setFrameNumber(unsigned int m_iFrameNumber) {
-    CPacketHeader::m_iFrameNumber = m_iFrameNumber;
+unsigned char CPacketHeader::GetPacketType(){
+    return m_ucPacketType;
 }
 
-void CPacketHeader::setNumberOfPacket(unsigned int m_iNumberOfPacket) {
-    CPacketHeader::m_iNumberOfPacket = m_iNumberOfPacket;
+void CPacketHeader::setVersionCode(unsigned char cVersionCode) {
+    m_cVersionCode = cVersionCode;
 }
 
-void CPacketHeader::setPacketNumber(unsigned int m_iPacketNumber) {
-    CPacketHeader::m_iPacketNumber = m_iPacketNumber;
+void CPacketHeader::setFrameNumber(unsigned int iFrameNumber) {
+    m_iFrameNumber = iFrameNumber;
 }
 
-void CPacketHeader::setTimeStamp(unsigned int m_iTimeStamp) {
-    CPacketHeader::m_iTimeStamp = m_iTimeStamp;
+void CPacketHeader::setNumberOfPacket(unsigned int iNumberOfPacket) {
+    m_iNumberOfPacket = iNumberOfPacket;
 }
 
-void CPacketHeader::setFPS(unsigned int m_iFPS) {
-    CPacketHeader::m_iFPS = m_iFPS;
+void CPacketHeader::setPacketNumber(unsigned int iPacketNumber) {
+    m_iPacketNumber = iPacketNumber;
 }
 
-void CPacketHeader::setRetransSignal(unsigned int m_iRetransSignal) {
-    CPacketHeader::m_iRetransSignal = m_iRetransSignal;
+void CPacketHeader::setTimeStamp(unsigned int iTimeStamp) {
+    m_iTimeStamp = iTimeStamp;
 }
 
-void CPacketHeader::setPacketLength(int m_iPacketLength) {
-    CPacketHeader::m_iPacketLength = m_iPacketLength;
+void CPacketHeader::setFPS(unsigned int iFPS) {
+    m_iFPS = iFPS;
+}
+
+void CPacketHeader::setRetransSignal(unsigned int iRetransSignal) {
+    m_iRetransSignal = iRetransSignal;
+}
+
+void CPacketHeader::setPacketLength(int iPacketLength) {
+    m_iPacketLength = iPacketLength;
 }
 
 unsigned char CPacketHeader::getVersionCode() {
@@ -176,10 +157,14 @@ unsigned int CPacketHeader::getFrameNumber()
 {
     return m_iFrameNumber;
 }
+void CPacketHeader::setPacketType(unsigned char *pData)
+{
+    m_ucPacketType = pData[0];
+}
 
 void CPacketHeader::setFrameNumber(unsigned char *FrameNumber)
 {
-    CPacketHeader::m_iFrameNumber = GetIntFromChar(FrameNumber, 0, 3);
+    m_iFrameNumber = GetIntFromChar(FrameNumber, 0, 3);
 }
 
 unsigned int CPacketHeader::getNumberOfPacket()
@@ -189,7 +174,7 @@ unsigned int CPacketHeader::getNumberOfPacket()
 
 void CPacketHeader::setNumberOfPacket(unsigned char *NumberOfPacket)
 {
-    CPacketHeader::m_iNumberOfPacket = GetIntFromChar(NumberOfPacket, 0, 1);
+    m_iNumberOfPacket = GetIntFromChar(NumberOfPacket, 0, 1);
 }
 
 unsigned int CPacketHeader::getPacketNumber()
@@ -199,7 +184,7 @@ unsigned int CPacketHeader::getPacketNumber()
 
 void CPacketHeader::setPacketNumber(unsigned char *PacketNumber)
 {
-    CPacketHeader::m_iPacketNumber = GetIntFromChar(PacketNumber, 0, 1);
+    m_iPacketNumber = GetIntFromChar(PacketNumber, 0, 1);
 }
 
 unsigned int CPacketHeader::getTimeStamp()
@@ -209,7 +194,7 @@ unsigned int CPacketHeader::getTimeStamp()
 
 void CPacketHeader::setTimeStamp(unsigned char *TimeStamp)
 {
-    CPacketHeader::m_iTimeStamp = GetIntFromChar(TimeStamp, 0, 4);
+    m_iTimeStamp = GetIntFromChar(TimeStamp, 0, 4);
 }
 
 unsigned int CPacketHeader::getFPS()
@@ -219,7 +204,7 @@ unsigned int CPacketHeader::getFPS()
 
 void CPacketHeader::setFPS(unsigned char *FPS)
 {
-    CPacketHeader::m_iFPS  = GetIntFromChar(FPS, 0, 1);
+    m_iFPS  = GetIntFromChar(FPS, 0, 1);
 }
 
 unsigned int CPacketHeader::getRetransSignal()
@@ -229,7 +214,7 @@ unsigned int CPacketHeader::getRetransSignal()
 
 void CPacketHeader::setRetransSignal(unsigned char *RetransSignal)
 {
-    CPacketHeader::m_iRetransSignal = GetIntFromChar(RetransSignal, 0, 1);
+    m_iRetransSignal = GetIntFromChar(RetransSignal, 0, 1);
 }
 
 int CPacketHeader::getPacketLength()
@@ -239,12 +224,12 @@ int CPacketHeader::getPacketLength()
 
 void CPacketHeader::setPacketLength(unsigned char *PacketLength)
 {
-    CPacketHeader::m_iPacketLength = GetIntFromChar(PacketLength, 0, 2);
+    m_iPacketLength = GetIntFromChar(PacketLength, 0, 2);
 }
 
 unsigned int CPacketHeader::GetFrameNumberDirectly(unsigned char *packetData)
 {
-	return GetIntFromChar(packetData + 1, 0, 3);
+	return GetIntFromChar(packetData + FRAME_NUMBER_INDEX, 0, 3);
     
 }
 

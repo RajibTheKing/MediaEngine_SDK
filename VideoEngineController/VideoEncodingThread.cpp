@@ -207,6 +207,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
         {
             
 			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);
+
+
             toolsObject.SOSleep(20);
             continue;
         }
@@ -334,8 +336,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
 			else
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
-            
-			
+
+			VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
+
 			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
 			sumOfEncodingTimediff += timeDiff;
 			if(nENCODEDFrameSize == 0)
@@ -357,8 +360,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             
             m_pCalculatorEncodeTime->UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
             
-            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_pCalculatorEncodeTime->GetAverage()));
-            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
+//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_pCalculatorEncodeTime->GetAverage()));
+//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
 			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
 

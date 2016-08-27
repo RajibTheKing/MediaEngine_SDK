@@ -151,9 +151,14 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		else if (queSize > 0) {
 			frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
 		}
-        
+
+		VLOG("#VR# CallVersion: " + Tools::IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion())
+			 +"  OP: "+Tools::IntegertoStringConvert(m_pVersionController->GetOpponentVersion())
+			 +"  VersionComFlag: "+Tools::IntegertoStringConvert(m_pVersionController->GetOpponentVersionCompatibleFlag())
+		);
 
 		m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
+		m_RcvdPacketHeader.ShowDetails("RCV");
         
         
 		CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
@@ -162,36 +167,34 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
 		//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 
-		bool bRetransmitted = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1;
-		bool bMiniPacket = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1;
+
 		m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] = 0;
 
-		if (bMiniPacket) {
-			if (m_RcvdPacketHeader.getPacketNumber() == BITRATE_TYPE_MINIPACKET) {                    /* Opponent response of data receive. */
-				m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
-			}
-			else if (m_RcvdPacketHeader.getPacketNumber() == NETWORK_TYPE_MINIPACKET) {        /* Opponent Network type */
-				m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
-				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,
-										   "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");
-			}
 
+		if (m_RcvdPacketHeader.GetPacketType() == __BITRATE_CONTROLL_PACKET_TYPE) {                    /* Opponent response of data receive. */
+			VLOG("__BITRATE_CONTROLL_PACKET_TYPE");
+			m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
 			toolsObject.SOSleep(1);
+			continue;
+		}
+		else if (m_RcvdPacketHeader.GetPacketType() == __NETWORK_INFO_PACKET_TYPE) {        /* Opponent Network type */
+			m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
+			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,
+									   "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");
+			toolsObject.SOSleep(1);
+			continue;
+		}
 
-			continue;
-		}
-		else if(bRetransmitted)
-		{
-			continue;
-		}
+
+
         
         
-        if(m_RcvdPacketHeader.getNumberOfPacket() == 0)
+        if(m_RcvdPacketHeader.GetPacketType() == __NEGOTIATION_PACKET_TYPE)
         {
             if(m_pVersionController->GetOpponentVersion() == -1)
             {
                 
-                m_pVersionController->SetOpponentVersion((int)m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION]);
+                m_pVersionController->SetOpponentVersion((int)m_PacketToBeMerged[PACKET_HEADER_LENGTH]);
                 //printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
                 
                 m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
@@ -206,8 +209,8 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
             }
 
-			bool bIs2GOpponentNetwork = (m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION + 1] & 0x01);
-			int nOpponentVideoCallQualityLevel = (m_PacketToBeMerged[PACKET_HEADER_LENGTH_NO_VERSION + 1] & 0x06) >> 1;
+			bool bIs2GOpponentNetwork = (m_PacketToBeMerged[PACKET_HEADER_LENGTH + 1] & 0x01);
+			int nOpponentVideoCallQualityLevel = (m_PacketToBeMerged[PACKET_HEADER_LENGTH + 1] & 0x06) >> 1;
 
 			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel())
 			{
@@ -260,11 +263,11 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         }
         
         
-        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
-                             "TheKing--> Finally, CurrentCallVersion = "+ m_Tools.IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion()) +
-                             ", CurrentVideoQuality = "+ m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetCurrentVideoCallQualityLevel()) +
-                             ", OppVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) +
-                             ", OwnVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOwnVideoCallQualityLevel()) );
+//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
+//                             "TheKing--> Finally, CurrentCallVersion = "+ m_Tools.IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion()) +
+//                             ", CurrentVideoQuality = "+ m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetCurrentVideoCallQualityLevel()) +
+//                             ", OppVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) +
+//                             ", OwnVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOwnVideoCallQualityLevel()) );
 
 #if 0
 		ExpectedPacket();	//Calculate Expected Video Packet For Debugging.

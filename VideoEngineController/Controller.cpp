@@ -384,7 +384,7 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	long long llNow = m_Tools.CurrentTimestamp();
 	if(llNow - llTimeStamp >= 1000)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataSent = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+//		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataSent = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
 		iDataSentInCurrentSec = 0;
 		llTimeStamp = llNow;
 	}

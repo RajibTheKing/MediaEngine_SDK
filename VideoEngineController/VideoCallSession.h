@@ -168,7 +168,7 @@ private:
 
 	CColorConverter *m_pColorConverter;
 
-	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
+	unsigned char m_miniPacket[PACKET_HEADER_LENGTH + 1];
     
     CVersionController *m_pVersionController;
     CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;

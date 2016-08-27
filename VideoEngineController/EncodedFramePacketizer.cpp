@@ -32,17 +32,15 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	int nOpponentVersion = m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
     unsigned char uchSendVersion = 0;
 
-	int nVersionWiseHeaderLength;
+	int nVersionWiseHeaderLength = PACKET_HEADER_LENGTH;
     
     if(nOpponentVersion == -1 || nOpponentVersion == 0 || bIsDummy == true)
     {
-        nVersionWiseHeaderLength = PACKET_HEADER_LENGTH_NO_VERSION;
         uchSendVersion = 0;
     }
     else
     {
         uchSendVersion = (unsigned char)m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
-        nVersionWiseHeaderLength = PACKET_HEADER_LENGTH;
     }
 
 	int nPacketHeaderLenghtWithMediaType = nVersionWiseHeaderLength + 1;
@@ -73,23 +71,37 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         
 		if (uchSendVersion)
         {
-            if(1 == uchSendVersion)
-                m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
-            else
-                m_cPacketHeader.setPacketHeader(uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize, device_orientation);
-
+//            if(1 == uchSendVersion)
+//                m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE, uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize + nPacketHeaderLenghtWithMediaType, device_orientation);
+//            else
+            m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE, uchSendVersion, iFrameNumber, nNumberOfPackets, nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize, device_orientation);
+//            VLOG("#PKT#  +++++ MADE  PT: "+Tools::IntegertoStringConvert(__VIDEO_PACKET_TYPE)
+//                 +"  FN:"+Tools::IntegertoStringConvert(iFrameNumber)
+//                 +" NP:"+Tools::IntegertoStringConvert(nNumberOfPackets)
+//                 +" PN:"+Tools::IntegertoStringConvert(nPacketNumber)
+//                 +" PLen:"+Tools::IntegertoStringConvert(m_nPacketSize)
+//                 +" Ver:"+Tools::IntegertoStringConvert(uchSendVersion)
+//            );
             m_ucaPacket[ RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= (m_pVideoCallSession->GetOwnVideoCallQualityLevel() << 1); //Resolution, FPS
             m_ucaPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType(); //2G
         }
 		else
         {
-            m_cPacketHeader.setPacketHeader(uchSendVersion, bIsDummy? 0 : iFrameNumber, bIsDummy? 0 : nNumberOfPackets, bIsDummy? 0 :nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize);
+            m_cPacketHeader.setPacketHeader(bIsDummy? __NEGOTIATION_PACKET_TYPE : __VIDEO_PACKET_TYPE, uchSendVersion, bIsDummy? 0 : iFrameNumber, bIsDummy? 0 : nNumberOfPackets, bIsDummy? 0 :nPacketNumber, unCaptureTimeDifference, 0, 0, m_nPacketSize);
         }
 //Packet lenght issue should be fixed.
+//        m_cPacketHeader.ShowDetails("JUST Before");
 		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+//        m_cPacketHeader.ShowDetails("JUST");
+
+
+//        CPacketHeader nowPkt;
+//        nowPkt.setPacketHeader(m_ucaPacket + 1);
+//        nowPkt.ShowDetails("SNT");
 
 		//m_cPacketHeader.SetDeviceOrientation(m_ucaPacket+5);
 		int deviceoritationTemp = m_cPacketHeader.GetDeviceOrientation();
+
 
 		//CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, "device orientaion : >>>>>>>>>>>>>>>>>>>>>>>>>  " + m_Tools.IntegertoStringConvert(deviceoritationTemp) + " ......>> " +m_Tools.IntegertoStringConvert(device_orientation));
 

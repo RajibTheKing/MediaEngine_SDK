@@ -121,8 +121,8 @@ unsigned char CFPSController::GetFPSSignalByte()
             ret = tmp;
     }
 
-    if(changeSignal == 0)
-        ret |= 0xC0;    //Version Detectability Flag.
+//    if(changeSignal == 0)
+//        ret |= 0xC0;    //Version Detectability Flag.
 
     return ret;
 }

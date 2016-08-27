@@ -16,7 +16,7 @@ CVersionController::CVersionController()
     m_iOppVersion = -1;
     m_iCurrentCallVersion = -1;
     
-    m_bIsOpponentVersionDetectable = false;
+    m_bIsOpponentVersionDetectable = true;
     
 }
 
@@ -54,10 +54,10 @@ int  CVersionController::GetOpponentVersion()
 }
 
 
-void CVersionController::SetOpponentVersionCompatibleFlag(bool bValue)
-{
-    m_bIsOpponentVersionDetectable = bValue;
-}
+//void CVersionController::SetOpponentVersionCompatibleFlag(bool bValue)
+//{
+//    m_bIsOpponentVersionDetectable = bValue;
+//}
 
 bool CVersionController::GetOpponentVersionCompatibleFlag()
 {

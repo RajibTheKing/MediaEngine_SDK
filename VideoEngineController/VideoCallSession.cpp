@@ -306,21 +306,12 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
 {
-    
-#ifdef FIRST_BUILD_COMPATIBLE
-    
-	if (!m_pVersionController->GetOpponentVersionCompatibleFlag() && (in_data[SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] & 0xC0) == 0xC0)
-	{
-		//g_bIsVersionDetectableOpponent = true;
-		//g_uchSendPacketVersion = VIDEO_VERSION_CODE;
-		//CLogPrinter_WriteSpecific(CLogPrinter::INFO, "$$$# ######################################## Version #################################################");
-        
-        
-        m_pVersionController->SetOpponentVersionCompatibleFlag(true);
-	}
-#endif
+	unsigned char uchPacketType = in_data[__PACKET_TYPE_INDEX];
+	if(uchPacketType == __SKIPPED_PACKET_TYPE)
+		return false;
 
-	if (((in_data[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1)) // It is a minipacket
+
+	if (__BITRATE_CONTROLL_PACKET_TYPE == uchPacketType || __NETWORK_INFO_PACKET_TYPE == uchPacketType) // It is a minipacket
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
 		m_pMiniPacketQueue->Queue(in_data, in_size);
@@ -333,6 +324,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         }*/
         
 		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
+//		VLOG("#DR# --------------------------> FrameNumber : "+Tools::IntegertoStringConvert(unFrameNumber));
         //printf("PushPacketForMerging--> nFrameNumber = %d\n", unFrameNumber);
         
 
@@ -349,7 +341,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			else
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / m_nCallFPS;
-                
+				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_TYPE_MINIPACKET);
@@ -472,7 +464,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
     g_TimeTraceFromCaptureToSend[g_CapturingFrameCounter] = m_Tools.CurrentTimestamp();
 
-    if(g_CapturingFrameCounter<30)
+    if(g_CapturingFrameCounter < 30)
         //printf("Frame %d --> Trying to Set --> %d..... Capture Time = %lld\n", g_CapturingFrameCounter, nCaptureTimeDiff, m_Tools.CurrentTimestamp());
     
     g_CapturingFrameCounter++;
@@ -517,6 +509,7 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 
 void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, int nMiniPacketType)
 {
+	return ;
     if(m_bIsCheckCall != LIVE_CALL_MOOD) return;
     
 	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
@@ -525,27 +518,24 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
 	if (nMiniPacketType == BITRATE_TYPE_MINIPACKET)
 	{
-		if(0 == uchVersion) return;
+//		if(0 == uchVersion) return;
 
-		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0);
+		PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0);
 	}
 	else if (nMiniPacketType == NETWORK_TYPE_MINIPACKET)
 	{
 		//if(0 == uchVersion) return;
 
-		PacketHeader.setPacketHeader(uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0);
+		PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0);
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
-	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; 
+//	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET;
 
-	if(uchVersion)
-		m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
-	else
-		m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
 }
 
 long long CVideoCallSession::GetShiftedTime()

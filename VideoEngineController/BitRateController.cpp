@@ -121,7 +121,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 
 	m_nOppNotifiedByterate = crTempHeader.getTimeStamp();
 
-	if (m_BandWidthRatioHelper.find(crTempHeader.getFrameNumber()) == m_BandWidthRatioHelper.end())
+	if (m_BandWidthRatioHelper.find(crTempHeader.getFrameNumber()) == -1)
     {
 		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert(crTempHeader.getFrameNumber()));
         

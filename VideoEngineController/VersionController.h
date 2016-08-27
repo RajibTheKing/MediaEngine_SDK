@@ -25,7 +25,7 @@ public:
     void SetOpponentVersion(int iVersion);
     int  GetOpponentVersion();
 
-    void SetOpponentVersionCompatibleFlag(bool bValue);
+//    void SetOpponentVersionCompatibleFlag(bool bValue);
     bool GetOpponentVersionCompatibleFlag();
     
     

@@ -14,7 +14,7 @@
 #include <string>
 #include <map>
 
-#define ALOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+#define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
 class CCommonElementsBucket;
 class CVideoEncoder;
