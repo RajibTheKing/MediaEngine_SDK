@@ -19,7 +19,7 @@ CVersionController::CVersionController()
     m_iCurrentCallVersion = -1;
     
     m_bIsOpponentVersionDetectable = true;
-    
+    m_bFirstVideoPacketReceivedFlag = false;
 }
 
 CVersionController::~CVersionController()
@@ -34,7 +34,13 @@ unsigned char CVersionController::GetOwnVersion()
     return m_uchOwnVersion;
 }
 
+bool CVersionController::IsFirstVideoPacetReceived(){
+    return m_bFirstVideoPacketReceivedFlag;
+}
 
+void CVersionController::NotifyFirstVideoPacetReceived(){
+    m_bFirstVideoPacketReceivedFlag = true;
+}
 
 void CVersionController::SetCurrentCallVersion(int  iVersion)
 {

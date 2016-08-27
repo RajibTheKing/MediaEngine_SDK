@@ -28,7 +28,8 @@ public:
 //    void SetOpponentVersionCompatibleFlag(bool bValue);
     bool GetOpponentVersionCompatibleFlag();
     
-    
+    bool IsFirstVideoPacetReceived();
+    void NotifyFirstVideoPacetReceived();
     
     
 private:
@@ -37,6 +38,7 @@ private:
     
     int m_iOppVersion;
     int m_iCurrentCallVersion;
+    bool m_bFirstVideoPacketReceivedFlag;
     
     bool m_bIsOpponentVersionDetectable;
     

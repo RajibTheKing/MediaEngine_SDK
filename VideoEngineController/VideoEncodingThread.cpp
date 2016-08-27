@@ -203,11 +203,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
         
         //printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
 
-        if(m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
+        if( m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1  && m_bIsCheckCall == false)
         {
-            
 			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, 2, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);
-
 
             toolsObject.SOSleep(20);
             continue;
@@ -215,7 +213,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
         
 		if (m_pEncodingBuffer->GetQueueSize() == 0)
 		{
-			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time buffer size 0");
+//			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time buffer size 0");
+			if( !m_pVideoCallSession->GetVersionController()->IsFirstVideoPacetReceived() && m_bIsCheckCall == false) {
+//			toolsObject.SOSleep(10000);
+//				VLOG("--------------------------------------------------------------> NOT RECEIVED");
+				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame,
+													 2, /*m_iFrameNumber*/
+													 0, /*nCaptureTimeDifference*/0, 0,
+													 BLANK_DATA_MOOD);
+
+			}
 			toolsObject.SOSleep(10);
 		}
 		else

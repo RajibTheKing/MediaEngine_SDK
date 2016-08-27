@@ -250,9 +250,10 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 //            }
 //        }
 //        else
-		if(m_pVersionController->GetOpponentVersion() == -1)  //It's a VIDEO packet. No dummy packet found before.
+		if(-1 == m_pVersionController->GetOpponentVersion() && __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())  //It's a VIDEO packet. No dummy packet found before.
         {
             m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());
+
             m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
 
 			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {	//Not necessary
@@ -260,6 +261,9 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 				m_pVideoCallSession->SetCurrentVideoCallQualityLevel(m_pVideoCallSession->GetOpponentVideoCallQualityLevel());
 			}
         }
+
+		if( !m_pVersionController->IsFirstVideoPacetReceived() &&  __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())
+			m_pVersionController->NotifyFirstVideoPacetReceived();
         
         
 //        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
