@@ -509,7 +509,6 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 
 void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, int nMiniPacketType)
 {
-	return ;
     if(m_bIsCheckCall != LIVE_CALL_MOOD) return;
     
 	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
@@ -518,22 +517,16 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
 	if (nMiniPacketType == BITRATE_TYPE_MINIPACKET)
 	{
-//		if(0 == uchVersion) return;
-
 		PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0);
 	}
 	else if (nMiniPacketType == NETWORK_TYPE_MINIPACKET)
 	{
-		//if(0 == uchVersion) return;
-
 		PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0);
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
-
-//	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET;
 
 	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
 }
