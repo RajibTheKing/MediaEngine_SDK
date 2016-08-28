@@ -2,6 +2,8 @@
 #include <string.h>
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "Size.h"
+#include "Controller.h"
 
 void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
 void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int, int) = NULL;
@@ -11,6 +13,11 @@ void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
 void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
 void(*notifyClientWithAudioAlarmCallback)(LongLong, short*, int) = NULL;
 
+
+CEventNotifier::CEventNotifier(CController *pController)
+{
+	m_pController = pController;
+}
 
 void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[])
 {
@@ -90,8 +97,14 @@ void CEventNotifier::fireAudioAlarm(int eventType, int dataLenth, short data[])
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm " + Tools::IntegertoStringConvert(eventType));
 
-	notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
-
+	if (((eventType == AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO || eventType == AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO) && m_pController->m_bLiveCallRunning)
+		||
+		(eventType != AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO && eventType != AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO)
+		)
+	{
+		notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
+	}
+	
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm 2");
 }
 

@@ -6,10 +6,12 @@
 #include "AudioVideoEngineDefinitions.h"
 #include "LogPrinter.h"
 
+class CController;
 class CEventNotifier
 {
-    
+	
 public:
+	CEventNotifier(CController *pController);
 
 	void firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[]);
 	void fireVideoEvent(int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iOrientation);
@@ -43,6 +45,9 @@ public:
 
 	static const int SET_CAMERA_RESOLUTION_352x288 = 210;
 	static const int SET_CAMERA_RESOLUTION_640x480 = 211;
+
+private:
+	CController *m_pController;
 };
 
 #endif

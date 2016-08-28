@@ -227,10 +227,10 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 			avgCountTimeStamp += encodingTime;
 #ifdef FIRE_ENC_TIME
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(encodingTime, 55, 0);
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_ENCODING_TIME, encodingTime,  0);
 			cumulitiveenctime += encodingTime;
 			encodingtimetimes ++;
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(cumulitiveenctime * 1.0 / encodingtimetimes, 56, 0);
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_AVG_ENCODING_TIME, cumulitiveenctime * 1.0 / encodingtimetimes, 0);
 #endif
 
 #else
