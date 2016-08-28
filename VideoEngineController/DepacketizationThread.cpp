@@ -191,14 +191,22 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         
 		if(-1 == m_pVersionController->GetOpponentVersion() && __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())  //It's a VIDEO packet. No dummy packet found before.
         {
-            m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());		//VIDEO PACKET CONTAINS CURRENT CALL VERSION.
-
-            m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
+			int nCurrentCallQualityLevelSetByOpponent = m_RcvdPacketHeader.GetVideoQualityLevel();
+			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
 
 			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {	//Not necessary
-				m_pVideoCallSession->SetOpponentVideoCallQualityLevel(m_RcvdPacketHeader.GetVideoQualityLevel());
+				m_pVideoCallSession->SetOpponentVideoCallQualityLevel(nCurrentCallQualityLevelSetByOpponent);
 				m_pVideoCallSession->SetCurrentVideoCallQualityLevel(m_pVideoCallSession->GetOpponentVideoCallQualityLevel());
 			}
+
+			if (bIs2GOpponentNetwork) {
+				m_pVideoCallSession->GetVideoEncoder()->SetNetworkType(NETWORK_TYPE_2G);
+				m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_2G);
+			}
+
+			m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());		//VIDEO PACKET CONTAINS CURRENT CALL VERSION.
+
+			m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
         }
 
 		if( !m_pVersionController->IsFirstVideoPacetReceived() &&  __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())

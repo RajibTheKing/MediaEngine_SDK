@@ -107,8 +107,9 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "m_iNetworkType = " + m_Tools.IntegertoStringConvert(m_nOpponentNetworkType));
 
     m_bNetworkTypeMiniPacketReceived = true;
-    
+
     m_pVideoEncoder->SetNetworkType(m_nOwnNetworkType || m_nOpponentNetworkType);
+    SetOpponentNetworkType(m_nOpponentNetworkType);
 
 	return true;
 }
