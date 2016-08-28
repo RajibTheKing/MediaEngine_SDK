@@ -56,13 +56,14 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
     int nNetworkType = m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType();
     unsigned char uchOwnVersion = m_pVideoCallSession->GetVersionController()->GetOwnVersion();
-    int nQualityLevel = m_pVideoCallSession->GetOwnVideoCallQualityLevel();
+    int nOwnQualityLevel = m_pVideoCallSession->GetOwnVideoCallQualityLevel();
+    int nCurrentCallQualityLevel = m_pVideoCallSession->GetCurrentVideoCallQualityLevel();
 
     if(bIsDummy) {
         m_cPacketHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,
                                         uchOwnVersion,
                                         0, 0, 0, unCaptureTimeDifference, 0, 0,
-                                        nQualityLevel, 0, nNetworkType);
+                                        nOwnQualityLevel, 0, nNetworkType);
 
         m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
         m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
@@ -85,7 +86,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                             unCaptureTimeDifference,
                                             0,
                                             m_nPacketSize,
-                                            nQualityLevel,
+                                            nCurrentCallQualityLevel,
                                             device_orientation,
                                             nNetworkType);
 
