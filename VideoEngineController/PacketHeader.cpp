@@ -13,8 +13,10 @@ CPacketHeader::CPacketHeader()
     m_iPacketNumber = 0;    // 1 byte
     m_iTimeStamp = 0;       // 4 byte
     m_iFPS = 0;             // 1 byte
-    m_iRetransSignal = 0;   // 1 byte
     m_iPacketLength = 0;
+    m_nNetworkType = 0;
+    m_nVideoQualityLevel = 0;
+    m_iDeviceOrientation = 0;
 }
 CPacketHeader::~CPacketHeader()
 {
@@ -24,7 +26,7 @@ CPacketHeader::~CPacketHeader()
 #define PACKET_TYPE_INDEX 0
 #define FPS_INDEX 1
 #define FRAME_NUMBER_INDEX 2
-#define RETRANSMISSION_ORIENTION_INDEX 5
+#define CALL_INFO_INDEX 5
 #define VERSION_CODE_INDEX 6
 #define NUMBER_OF_PACKET_INDEX 7
 #define PACKET_NUMBER_INDEX 8
@@ -36,16 +38,16 @@ void CPacketHeader::setPacketHeader(unsigned char *headerData)
     setPacketType(headerData + PACKET_TYPE_INDEX);
     setFPS(headerData + FPS_INDEX);
     setFrameNumber(headerData + FRAME_NUMBER_INDEX);
-    setRetransSignal(headerData + RETRANSMISSION_ORIENTION_INDEX);
     setVersionCode(headerData + VERSION_CODE_INDEX);
     setNumberOfPacket(headerData + NUMBER_OF_PACKET_INDEX);
     setPacketNumber(headerData + PACKET_NUMBER_INDEX);
     setTimeStamp(headerData + TIMESTAMP_INDEX);
     setPacketLength(headerData + PACKET_LENGTH_INDEX);
 
-    SetDeviceOrientation(headerData + RETRANSMISSION_ORIENTION_INDEX);
-    SetVideoQualityLevel(headerData + RETRANSMISSION_ORIENTION_INDEX);
-    SetNetworkType(headerData + RETRANSMISSION_ORIENTION_INDEX);
+    //CallInfoByte
+    SetDeviceOrientation(headerData + CALL_INFO_INDEX);
+    SetVideoQualityLevel(headerData + CALL_INFO_INDEX);
+    SetNetworkType(headerData + CALL_INFO_INDEX);
 }
 
 
@@ -64,7 +66,6 @@ void CPacketHeader::setPacketHeader(unsigned char packetType,
 {
     SetPacketType(packetType);
     setVersionCode(uchVersion);
-
     m_iFrameNumber = FrameNumber;
     setFrameNumber(FrameNumber);
     setNumberOfPacket(NumberOfPacket);
@@ -72,6 +73,8 @@ void CPacketHeader::setPacketHeader(unsigned char packetType,
     setTimeStamp(TimeStamp);
     setFPS(FPS);
     setPacketLength(PacketLength);
+
+    //CallInfoByte
     SetDeviceOrientation(deviceOrientation);
     SetVideoQualityLevel(nQualityLevel);
     SetNetworkType(nNetworkType);
@@ -100,6 +103,7 @@ int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
     data[index++] = (m_iFrameNumber >> 8);
     data[index++] = m_iFrameNumber;
 
+    //CallInfoByte
     data[index] = 0;
     data[index] |= (m_nNetworkType & 1);    //0th BIT
     data[index] |= (m_iDeviceOrientation & 3) << 1;  //1,2 BITs
@@ -152,10 +156,6 @@ void CPacketHeader::setTimeStamp(unsigned int iTimeStamp) {
 
 void CPacketHeader::setFPS(unsigned int iFPS) {
     m_iFPS = iFPS;
-}
-
-void CPacketHeader::setRetransSignal(unsigned int iRetransSignal) {
-    m_iRetransSignal = iRetransSignal;
 }
 
 void CPacketHeader::setPacketLength(int iPacketLength) {
@@ -224,16 +224,6 @@ void CPacketHeader::setFPS(unsigned char *FPS)
     m_iFPS  = GetIntFromChar(FPS, 0, 1);
 }
 
-unsigned int CPacketHeader::getRetransSignal()
-{
-    return m_iRetransSignal;
-}
-
-void CPacketHeader::setRetransSignal(unsigned char *RetransSignal)
-{
-    m_iRetransSignal = GetIntFromChar(RetransSignal, 0, 1);
-}
-
 int CPacketHeader::getPacketLength()
 {
     return m_iPacketLength;
@@ -265,20 +255,20 @@ int CPacketHeader::GetIntFromChar(unsigned char *packetData, int index, int nLen
 
 void CPacketHeader::SetResolutionBit(unsigned char *PacketHeader, int value)
 {
-    PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA+1] |= (unsigned char)value;
+    PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (unsigned char)value;
 }
 int CPacketHeader::GetOpponentResolution(unsigned char *PacketHeader)
 {
-    return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
+    return PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
 }
 
 void CPacketHeader::SetNetworkTypeBit(unsigned char *PacketHeader , int value)
 {
-    PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] |= value;
+    PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] |= value;
 }
 int CPacketHeader::GetOpponentNetworkType(unsigned char *PacketHeader)
 {
-    return PacketHeader[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] & 0x01;
+    return PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] & 0x01;
 }
 
 void CPacketHeader::SetNetworkType(unsigned char* data){

@@ -40,8 +40,6 @@ public:
 
     void setFPS(unsigned int iFPS) ;
 
-    void setRetransSignal(unsigned int iRetransSignal) ;
-
     void setPacketLength(int iPacketLength) ;
 
     //hello1
@@ -69,10 +67,6 @@ public:
     unsigned int getFPS();
 
     void setFPS(unsigned char * FPS);
-
-    unsigned int getRetransSignal();
-
-    void setRetransSignal(unsigned char * RetransSignal);
 
     int getPacketLength() ;
 
@@ -103,7 +97,6 @@ private:
     unsigned int m_iPacketNumber;    // 1 byte
     unsigned int m_iTimeStamp;       // 4 byte
     unsigned int m_iFPS;             // 1 byte
-    unsigned int m_iRetransSignal;   // 1 byte
     int m_iPacketLength;             // 2 byte
     int m_iDeviceOrientation;             // 2 bit in retransmission signal
     int m_nVideoQualityLevel;
