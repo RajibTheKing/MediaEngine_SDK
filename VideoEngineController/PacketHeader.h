@@ -18,14 +18,6 @@ public:
     unsigned char GetPacketType();
     void setPacketType(unsigned char *pData);
 
-    int GetVideoQualityLevel();
-    void SetVideoQualityLevel(int nQualityLevel);
-    void SetVideoQualityLevel(unsigned char* data);
-
-    int GetNetworkType();
-    void SetNetworkType(int nNetworkType);
-    void SetNetworkType(unsigned char* data);
-
     int GetHeaderInByteArray(unsigned char* data);
     //hello
     void setVersionCode(unsigned char VersionCode) ;
@@ -75,16 +67,22 @@ public:
     int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
 
 	unsigned int GetFrameNumberDirectly(unsigned char *packetData);
-    
-    void SetResolutionBit(unsigned char *PacketHeader , int value);
+
     int GetOpponentResolution(unsigned char *PacketHeader);
     
-    void SetNetworkTypeBit(unsigned char *PacketHeader , int value);
-    int GetOpponentNetworkType(unsigned char *PacketHeader);
+//    void SetNetworkTypeBit(unsigned char *PacketHeader , int value);
+//    int GetOpponentNetworkType(unsigned char *PacketHeader);
+
+    int GetVideoQualityLevel();
+    void SetVideoQualityLevel(int nQualityLevel);
+    void SetVideoQualityLevel(unsigned char* data);
+
+    int GetNetworkType();
+    void SetNetworkType(int nNetworkType);
+    void SetNetworkType(unsigned char* data);
 
     void SetDeviceOrientation(int deviceOrientation);
     void SetDeviceOrientation(unsigned char *packetData);
-
     int GetDeviceOrientation();
 
     //hello

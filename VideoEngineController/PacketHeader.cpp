@@ -253,23 +253,19 @@ int CPacketHeader::GetIntFromChar(unsigned char *packetData, int index, int nLen
     return result;
 }
 
-void CPacketHeader::SetResolutionBit(unsigned char *PacketHeader, int value)
-{
-    PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA + 1] |= (unsigned char)value;
-}
 int CPacketHeader::GetOpponentResolution(unsigned char *PacketHeader)
 {
     return PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
 }
 
-void CPacketHeader::SetNetworkTypeBit(unsigned char *PacketHeader , int value)
-{
-    PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] |= value;
-}
-int CPacketHeader::GetOpponentNetworkType(unsigned char *PacketHeader)
-{
-    return PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] & 0x01;
-}
+//void CPacketHeader::SetNetworkTypeBit(unsigned char *PacketHeader , int value)
+//{
+//    PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] |= value;
+//}
+//int CPacketHeader::GetOpponentNetworkType(unsigned char *PacketHeader)
+//{
+//    return PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] & 0x01;
+//}
 
 void CPacketHeader::SetNetworkType(unsigned char* data){
     m_nNetworkType = (data[0] & 1);
