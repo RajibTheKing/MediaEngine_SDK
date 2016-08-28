@@ -70,9 +70,6 @@ public:
 
     int GetOpponentResolution(unsigned char *PacketHeader);
     
-//    void SetNetworkTypeBit(unsigned char *PacketHeader , int value);
-//    int GetOpponentNetworkType(unsigned char *PacketHeader);
-
     int GetVideoQualityLevel();
     void SetVideoQualityLevel(int nQualityLevel);
     void SetVideoQualityLevel(unsigned char* data);
