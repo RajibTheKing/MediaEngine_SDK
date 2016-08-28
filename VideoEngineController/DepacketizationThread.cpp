@@ -135,8 +135,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 		m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
 		m_RcvdPacketHeader.ShowDetails("RCV");
-        
-        
+
 		CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
 								   "CVideoDepacketizationThread::StartDepacketizationThread() !@# Versions: " +
 								   m_Tools.IntegertoStringConvert(g_uchSendPacketVersion));
@@ -160,17 +159,6 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
         if(m_RcvdPacketHeader.GetPacketType() == __NEGOTIATION_PACKET_TYPE)
         {
-            if(m_pVersionController->GetOpponentVersion() == -1)
-            {
-				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert(m_RcvdPacketHeader.getVersionCode()));
-                
-                m_pVersionController->SetOpponentVersion((int)m_RcvdPacketHeader.getVersionCode());     //NEGOTIATION PACKETS CONTAIN OPPONENT VERSION.
-				VLOG("#SOV# ########################################TheKing2 : " + Tools::IntegertoStringConvert((int)m_pVersionController->GetOpponentVersion()));
-                //printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
-                
-                m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
-            }
-
 			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
 			int nOpponentVideoCallQualityLevel = m_RcvdPacketHeader.GetVideoQualityLevel();
 
@@ -185,6 +173,17 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			if (bIs2GOpponentNetwork) {
 				m_pVideoCallSession->GetVideoEncoder()->SetNetworkType(NETWORK_TYPE_2G);
 				m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_2G);
+			}
+
+			if(m_pVersionController->GetOpponentVersion() == -1)
+			{
+				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert(m_RcvdPacketHeader.getVersionCode()));
+
+				m_pVersionController->SetOpponentVersion((int)m_RcvdPacketHeader.getVersionCode());     //NEGOTIATION PACKETS CONTAIN OPPONENT VERSION.
+				VLOG("#SOV# ########################################TheKing2 : " + Tools::IntegertoStringConvert((int)m_pVersionController->GetOpponentVersion()));
+				//printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
+
+				m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
 			}
 
             continue;
