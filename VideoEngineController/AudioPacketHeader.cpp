@@ -64,6 +64,22 @@ int CAudioPacketHeader::GetHeaderSize()
 	return m_nHeaderSizeInByte;
 }
 
+bool CAudioPacketHeader::IsPacketTypeSupported(unsigned int PacketType)
+{
+	int nPacketTypes = sizeof(SupportedPacketTypes) / sizeof(int);
+	for (int i = 0; i < nPacketTypes; i++)
+	{
+		if (SupportedPacketTypes[i] == PacketType) return true;
+	}
+	return false;
+}
+
+bool CAudioPacketHeader::IsPacketTypeSupported()
+{
+	unsigned int iPackeType = GetInformation(PACKETTYPE);
+	return IsPacketTypeSupported(iPackeType);
+}
+
 void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 {
 	ma_nInformation[InfoType] = Information;

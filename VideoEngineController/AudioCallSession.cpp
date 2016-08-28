@@ -4,6 +4,7 @@
 #include "Tools.h"
 
 //#define __AUDIO_SELF_CALL__
+//#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
 
@@ -184,6 +185,10 @@ void *CAudioCallSession::CreateAudioEncodingThread(void* param)
     return NULL;
 }
 
+#ifdef FIRE_ENC_TIME
+int encodingtimetimes = 0, cumulitiveenctime = 0;
+#endif
+
 void CAudioCallSession::EncodingThreadProcedure()
 {
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -221,6 +226,12 @@ void CAudioCallSession::EncodingThreadProcedure()
 			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 			avgCountTimeStamp += encodingTime;
+#ifdef FIRE_ENC_TIME
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(encodingTime, 55, 0);
+			cumulitiveenctime += encodingTime;
+			encodingtimetimes ++;
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(cumulitiveenctime * 1.0 / encodingtimetimes, 56, 0);
+#endif
 
 #else
             nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
@@ -382,6 +393,11 @@ void CAudioCallSession::DecodingThreadProcedure()
             nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
 
 //            ALOG("#V#TYPE# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
+
+			if (!ReceivingHeader->IsPacketTypeSupported())
+			{
+				continue;
+			}
 
             if( AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
             {
