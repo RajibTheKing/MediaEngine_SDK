@@ -43,11 +43,14 @@ int CAudioDecoderBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLen
 	memcpy(m_s2aAudioDecodingBuffer[m_iPushIndex], saReceivedAudioFrameData, nLength);
 
 	m_naBufferDataLength[m_iPushIndex] = nLength;
+
+#ifdef QUEUE_OVERFLOW_LOG
 	m_BufferInsertionTime[m_iPushIndex] =  m_Tools.CurrentTimestamp();
+#endif
 
 	if (m_nQueueSize == m_nQueueCapacity)
 	{
-
+#ifdef QUEUE_OVERFLOW_LOG
         if(mt_lPrevOverFlowTime == -1)
         {
             mt_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
@@ -64,7 +67,7 @@ int CAudioDecoderBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLen
             mt_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
         }
 
-        
+#endif
 		IncreamentIndex(m_iPopIndex);
 	}
 	else
