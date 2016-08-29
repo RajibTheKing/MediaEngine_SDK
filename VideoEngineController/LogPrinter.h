@@ -20,20 +20,21 @@
 //#define __SPECIFIC_LOG4__
 //#define __SPECIFIC_LOG5__
 //#define __SPECIFIC_LOG3__
-#define __INSTENT_TEST_LOG__
+//#define __INSTENT_TEST_LOG__
 //#define __OPERATION_TIME_LOG__
 //#define __QUEUE_TIME_LOG__
 //#define __PACKET_LOSS_INFO_LOG__
-#define __THREAD_LOG__
+//#define __THREAD_LOG__
 //#define __BITRATE_CHNANGE_LOG__
-#define  __SPECIFIC_LOG6__
+
+//#define  __SPECIFIC_LOG6__
 
 #define ON 1
 #define OFF 0
 
 #define LOG_ENABLED
 
-#define INSTENT_TEST_LOG		ON
+#define INSTENT_TEST_LOG		OFF
 #define CHECK_CAPABILITY_LOG	OFF
 #define QUEUE_OVERFLOW_LOG		OFF
 #define OPERATION_TIME_LOG		OFF
