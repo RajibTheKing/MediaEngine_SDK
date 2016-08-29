@@ -6,6 +6,8 @@
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 {
 	m_pcController = new CController();
+
+	m_pcController->initializeEventHandler();
 }
 
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
