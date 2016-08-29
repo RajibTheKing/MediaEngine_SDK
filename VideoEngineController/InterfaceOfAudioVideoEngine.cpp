@@ -11,6 +11,8 @@ CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 {
 	m_pcController = new CController(szLoggerPath, nLoggerPrintLevel);
+
+	m_pcController->initializeEventHandler();
 }
 
 bool CInterfaceOfAudioVideoEngine::Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel)
