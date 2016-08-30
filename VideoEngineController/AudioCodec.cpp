@@ -10,6 +10,8 @@
 //int g_StopVideoSending = 0;
 //extern int g_iNextPacketType;
 
+#define BYTES_TO_STORE_AUDIO_EFRAME_LEN 2
+
 CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession) :
 m_pCommonElementsBucket(sharedObject),
 m_bAudioQualityLowNotified(false),
@@ -124,13 +126,13 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 		{
 			ALOG( "#EXP#**************************** Encode Failed");
 		}
-		out_buffer[ nEncodedSize + 2 * iFrameCounter ] = (nbBytes & 0x000000FF);
-		out_buffer[ nEncodedSize + 2 * iFrameCounter + 1 ] = (nbBytes >> 8);
+		out_buffer[ nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter ] = (nbBytes & 0x000000FF);
+		out_buffer[ nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter + 1 ] = (nbBytes >> 8);
 		nEncodedSize += nbBytes;
 		++iFrameCounter;
 		nProcessedDataSize += AUDIO_FRAME_SIZE;
 	}
-	int nEncodedPacketLenght = nEncodedSize + 2 * iFrameCounter;
+	int nEncodedPacketLenght = nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter;
 //	nbBytes = opus_encode(encoder, in_data, FRAME_SIZE, out_buffer, MAX_PACKET_SIZE);
 
 	if (nEncodedSize < 0)
@@ -150,13 +152,13 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 {
 	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0, nProcessedDataSize = 0, nCurrentFrameSize = 0;
 //	ALOG("#DE#:  #CO# InSize: "+m_Tools.IntegertoStringConvert(in_size));
-	while(nProcessedDataSize + 2 <= in_size)
+	while(nProcessedDataSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN <= in_size)
 	{
-		nCurrentFrameSize =  in_data[nDecodedDataSize + 2 * iFrameCounter + 1];
+		nCurrentFrameSize =  in_data[nDecodedDataSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter + 1];
 		nCurrentFrameSize <<= 8;
-		nCurrentFrameSize += in_data[nDecodedDataSize + 2 * iFrameCounter];
+		nCurrentFrameSize += in_data[nDecodedDataSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter];
 
-		if(nProcessedDataSize + nCurrentFrameSize + 2 > in_size) {
+		if(nProcessedDataSize + nCurrentFrameSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN > in_size) {
 			ALOG("#EXP# Encoded data not matched.");
 			break;
 		}
@@ -167,11 +169,12 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 			ALOG("#EXP# ZERO Frame For Decoding");
 			return 0;
 		}
-		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + 2 * iFrameCounter + 2, nCurrentFrameSize, out_buffer + iFrameCounter * AUDIO_FRAME_SIZE, AUDIO_MAX_FRAME_SIZE, 0);
+		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter + BYTES_TO_STORE_AUDIO_EFRAME_LEN,
+								 nCurrentFrameSize, out_buffer + iFrameCounter * AUDIO_FRAME_SIZE, AUDIO_MAX_FRAME_SIZE, 0);
 //		ALOG("#DE#:  #CO# Decode Done : " + Tools::IntegertoStringConvert(frame_size));
 		nDecodedDataSize += nCurrentFrameSize;		//FRAME_SIZE
 		++iFrameCounter;
-		nProcessedDataSize += nCurrentFrameSize + 2;
+		nProcessedDataSize += nCurrentFrameSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN;
 	}
 
 	if (nDecodedDataSize<0)
