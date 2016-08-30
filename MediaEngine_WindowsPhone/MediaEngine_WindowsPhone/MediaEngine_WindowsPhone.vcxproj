@@ -138,6 +138,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
