@@ -57,8 +57,9 @@ int CAudioFileEncodeDecodeSession::StartAudioEncodeDecodeSession()
 	if(NULL == this->m_pAudioCodec)
 	{
 		this->m_pAudioCodec = new CAudioFileCodec();
-		m_pAudioCodec->CreateAudioEncoder();
+		
 	}
+    return m_pAudioCodec->CreateAudioEncoder();
 #else
 	if (NULL == m_pG729CodecNative)
 	{
