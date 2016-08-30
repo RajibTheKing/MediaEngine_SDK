@@ -77,8 +77,8 @@
     <OutDir>E:\TestCamera_WindowsPhone_Opus\TestCamera_WindowsPhone\Windows_Phone_Libs</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IncludePath>$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
-    <OutDir>..\..\..\TestCamera_WindowsPhone\Windows_Phone_Libs\Release</OutDir>
+    <IncludePath>$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\OthersLib\boost\;$(SolutionDir)\..\Include\Opus\include;$(IncludePath)</IncludePath>
+    <OutDir>E:\TestCamera_WindowsPhone_Opus\TestCamera_WindowsPhone\Windows_Phone_Libs\Release</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
