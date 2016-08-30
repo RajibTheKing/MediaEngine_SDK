@@ -1,9 +1,12 @@
-#include "AudioCodec.h"
+
 #include "CommonElementsBucket.h"
 #include "DefinedDataTypes.h"
 #include "LogPrinter.h"
+#ifdef OPUS_ENABLE
+#include "AudioCodec.h"
+#else
 #include "G729CodecNative.h"
-
+#endif
 //int g_StopVideoSending = 0;
 //extern int g_iNextPacketType;
 

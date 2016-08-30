@@ -2,8 +2,15 @@
 #ifndef _AUDIO_FILE_ENCODE_DECODE_SESSION_H_
 #define _AUDIO_FILE_ENCODE_DECODE_SESSION_H_
 
-#include "G729CodecNative.h"
+#define OPUS_ENABLE
 
+#ifdef OPUS_ENABLE
+#include "AudioFileCodec.h"
+#else
+#include "G729CodecNative.h"
+#endif
+
+#define OPUS_ENABLE
 
 class CAudioFileEncodeDecodeSession
 {
@@ -19,8 +26,11 @@ public:
 	int StopAudioEncodeDecodeSession();
 
 private:
-
+#ifdef OPUS_ENABLE
+	CAudioFileCodec *m_pAudioCodec;
+#else
 	G729CodecNative *m_pG729CodecNative;
+#endif
 };
 
 

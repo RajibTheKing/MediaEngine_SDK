@@ -2,10 +2,10 @@
 #ifndef _AUDIO_CALL_SESSION_H_
 #define _AUDIO_CALL_SESSION_H_
 
+#define OPUS_ENABLE
+
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
-#include "G729CodecNative.h"
-#include "AudioCodec.h"
 #include "LockHandler.h"
 #include "Tools.h"
 #include "AudioPacketHeader.h"
@@ -13,6 +13,12 @@
 #include <stdio.h>
 #include <string>
 #include <map>
+
+#ifdef OPUS_ENABLE
+#include "AudioCodec.h"
+#else
+#include "G729CodecNative.h"
+#endif
 
 #define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
@@ -59,7 +65,12 @@ private:
     CCommonElementsBucket* m_pCommonElementsBucket;
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
+
+#ifdef OPUS_ENABLE
     CAudioCodec *m_pAudioCodec;
+#else
+    G729CodecNative *m_pG729CodecNative;
+#endif
 
     int m_nMaxAudioPacketNumber;
     int m_iPacketNumber;
@@ -83,7 +94,7 @@ private:
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
 
-    G729CodecNative *m_pG729CodecNative;
+
 
 protected:
 
