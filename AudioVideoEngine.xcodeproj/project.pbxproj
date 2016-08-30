@@ -47,6 +47,7 @@
 		DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */; };
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
 		DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */; };
+		DA550FE01D7557BA00638DA6 /* AudioFileCodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */; };
 		DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */; };
 		DA77B0EE1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */; };
 		DA77B0EF1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */; };
@@ -163,6 +164,8 @@
 		DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PacketHeader.cpp; path = VideoEngineController/PacketHeader.cpp; sourceTree = "<group>"; };
 		DA3AF4BA1C55F67400E566BB /* PacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PacketHeader.h; path = VideoEngineController/PacketHeader.h; sourceTree = "<group>"; };
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
+		DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFileCodec.cpp; path = VideoEngineController/AudioFileCodec.cpp; sourceTree = "<group>"; };
+		DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFileCodec.h; path = VideoEngineController/AudioFileCodec.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
 		DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceCapabilityCheckBuffer.cpp; path = VideoEngineController/DeviceCapabilityCheckBuffer.cpp; sourceTree = "<group>"; };
@@ -252,6 +255,8 @@
 				9D00A8B81C1C17E5001A52BC /* AudioDecoderBuffer.h */,
 				9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */,
 				9D00A8B51C1BF161001A52BC /* AudioEncoderBuffer.h */,
+				DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */,
+				DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */,
 				D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */,
 				D11DAA681CE1B829008D74C0 /* AudioFileEncodeDecodeSession.h */,
 				DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */,
@@ -479,6 +484,7 @@
 				188587EF1C0AEEAC00B1F435 /* DecodingBuffer.cpp in Sources */,
 				DA91E7B01D6824AF006F50E2 /* AudioPacketHeader.cpp in Sources */,
 				188587EE1C0AEEAC00B1F435 /* Controller.cpp in Sources */,
+				DA550FE01D7557BA00638DA6 /* AudioFileCodec.cpp in Sources */,
 				D11DAA691CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp in Sources */,
 				188587F61C0AEEAC00B1F435 /* VideoCallSession.cpp in Sources */,
 				DA77B0EE1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp in Sources */,
