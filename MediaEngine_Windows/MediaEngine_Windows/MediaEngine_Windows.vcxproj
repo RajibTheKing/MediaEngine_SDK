@@ -66,7 +66,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\AndroidProject\FahadOpus\app\src\main\jni\videoengine\include\opus\include;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\include\opus\include;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
     <OutDir>..\..\..\IPV-RingIDSDK\RingIDSDK_Windows\Libs_Windows</OutDir>
@@ -152,6 +152,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
