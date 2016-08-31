@@ -53,9 +53,17 @@ void CSynchronizedMap::insert(int iIndex, int nElement)
 void CSynchronizedMap::erase(int iIndex)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
-    //printf("map size = %ld, iIndex = %d\n", m_STLMapSynchronizedMap.size(), iIndex);
-    while(m_STLMapSynchronizedMap.begin()->first <= iIndex)
-    {
-        m_STLMapSynchronizedMap.erase(m_STLMapSynchronizedMap.begin());
-    }
+
+	if (m_STLMapSynchronizedMap.find(iIndex) != m_STLMapSynchronizedMap.end())
+	{
+		m_STLMapSynchronizedMap.erase(iIndex);
+	}
+}
+
+void CSynchronizedMap::eraseAllSmallerEqual(int iIndex){
+	Locker lock(*m_pSynchronizedMapMutex);
+	while(m_STLMapSynchronizedMap.size() > 0 && m_STLMapSynchronizedMap.begin()->first <= iIndex)
+	{
+		m_STLMapSynchronizedMap.erase(m_STLMapSynchronizedMap.begin());
+	}
 }

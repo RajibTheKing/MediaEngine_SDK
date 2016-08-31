@@ -21,6 +21,7 @@ public:
 	int end();
 	void insert(int iIndex, int nElement);
 	void erase(int iIndex);
+	void eraseAllSmallerEqual(int iIndex);
 
 private:
 

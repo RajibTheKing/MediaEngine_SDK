@@ -216,7 +216,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 
     //printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", dRatio);
 
-	m_BandWidthRatioHelper.erase(crTempHeader.getFrameNumber());
+	m_BandWidthRatioHelper.eraseAllSmallerEqual(crTempHeader.getFrameNumber());
 
     return true;
 }
