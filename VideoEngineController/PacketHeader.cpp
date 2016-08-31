@@ -33,6 +33,12 @@ CPacketHeader::~CPacketHeader()
 #define TIMESTAMP_INDEX 9
 #define PACKET_LENGTH_INDEX 13
 
+#define QUALITY_BITS_N      2
+#define ORIENTATION_BITS_N  2
+
+#define QUALITY_LEVEL_BITSET    ((1<<QUALITY_BITS_N) - 1)
+#define ORIENTATION_BITSET      ((1<<ORIENTATION_BITS_N) - 1)
+
 void CPacketHeader::setPacketHeader(unsigned char *headerData)
 {
     setPacketType(headerData + PACKET_TYPE_INDEX);
@@ -106,8 +112,8 @@ int CPacketHeader::GetHeaderInByteArray(unsigned char* data)
     //CallInfoByte
     data[index] = 0;
     data[index] |= (m_nNetworkType & 1);    //0th BIT
-    data[index] |= (m_iDeviceOrientation & 3) << 1;  //1,2 BITs
-    data[index] |= (m_nVideoQualityLevel & 3) << 3;  //3,4 BITs
+    data[index] |= (m_iDeviceOrientation & ORIENTATION_BITSET) << 1;  //1,2 BITs
+    data[index] |= (m_nVideoQualityLevel & QUALITY_LEVEL_BITSET) << 3;  //3,4 BITs
 
     index++;
 
@@ -264,11 +270,11 @@ void CPacketHeader::SetNetworkType(unsigned char* data){
 
 void CPacketHeader::SetDeviceOrientation(unsigned char *packetData)
 {
-    m_iDeviceOrientation = (GetIntFromChar(packetData, 0, 1) >> 1 ) & 3;
+    m_iDeviceOrientation = (GetIntFromChar(packetData, 0, 1) >> 1 ) & ORIENTATION_BITSET;
 }
 
 void CPacketHeader::SetVideoQualityLevel(unsigned char* data){
-    m_nVideoQualityLevel = (GetIntFromChar(data, 0, 1) >> 3 ) & 3;
+    m_nVideoQualityLevel = (GetIntFromChar(data, 0, 1) >> 3 ) & QUALITY_LEVEL_BITSET;
 }
 
 void CPacketHeader::SetNetworkType(int nNetworkType){
