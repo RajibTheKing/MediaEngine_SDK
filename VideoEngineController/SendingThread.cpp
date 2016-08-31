@@ -190,23 +190,23 @@ void CSendingThread::SendingThreadProcedure()
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			if (m_BandWidthController.IsSendeablePacket(packetSize)) {
 #endif
- 
+
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+			{
 
 #if defined(SEND_VIDEO_TO_SELF)
-			CVideoCallSession* pVideoSession;
-			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
-			unsigned char *pEncodedFrame = m_EncodedFrame;
-			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
+
+				CVideoCallSession* pVideoSession;
+                bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+                unsigned char *pEncodedFrame = m_EncodedFrame;
+                pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 
-				if (m_bIsCheckCall == LIVE_CALL_MOOD)
-					m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
-
+				m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
-
-
 #endif
+			}
 
 #if 0
 
