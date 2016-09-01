@@ -372,7 +372,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
 #endif
-	toolsObject.SOSleep(1000);
+	//toolsObject.SOSleep(1000);
     while (m_bAudioDecodingThreadRunning)
     {
         if (m_AudioDecodingBuffer.GetQueueSize() == 0)
