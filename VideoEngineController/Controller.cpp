@@ -504,6 +504,8 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
         m_Quality[1].iWidth = iWidthHigh;
 
     if(m_bLiveCallRunning == true) return -1;
+
+	if (m_bDeviceCapabilityRunning == true) return -1;
     
     m_bDeviceCapabilityRunning = true;
     
