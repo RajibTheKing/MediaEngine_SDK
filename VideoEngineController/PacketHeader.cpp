@@ -33,7 +33,7 @@ CPacketHeader::~CPacketHeader()
 #define TIMESTAMP_INDEX 9
 #define PACKET_LENGTH_INDEX 13
 
-#define QUALITY_BITS_N      2
+#define QUALITY_BITS_N      3
 #define ORIENTATION_BITS_N  2
 
 #define QUALITY_LEVEL_BITSET    ((1<<QUALITY_BITS_N) - 1)
