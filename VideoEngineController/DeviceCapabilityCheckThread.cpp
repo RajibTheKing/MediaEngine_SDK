@@ -172,7 +172,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				for (int i = 0; i < numberOfFrames; i++)
 				{
 					long long now = m_Tools.CurrentTimestamp();
-					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, now, i);
+					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, now, 0);
 					/*
 					printFile("Push Difference = %lld\n", now - lastFramePushTime);
 					if (i)
