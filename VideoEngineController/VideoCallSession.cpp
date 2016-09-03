@@ -315,8 +315,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 	{
 		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
 		m_pMiniPacketQueue->Queue(in_data, in_size);
-	}
-	else
+	}	
+	else if (__VIDEO_PACKET_TYPE == uchPacketType)
 	{
         /*if(bSelfData == false && m_bResolutionNegotiationDone == false)
         {
@@ -356,6 +356,15 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 		}
 
 		m_pVideoPacketQueue->Queue(in_data, in_size);
+	}
+	else if (__NEGOTIATION_PACKET_TYPE == uchPacketType)
+	{
+		m_pVideoPacketQueue->Queue(in_data, in_size);
+	}
+	else
+	{
+		//This condition will not be appeared
+		return false;
 	}
 
 	return true;
