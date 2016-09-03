@@ -221,7 +221,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			SetBitrateOpus(AUDIO_MIN_BITRATE);
 
-			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= STOP_NOTIFICATION_SENDING_COUNTER)
+			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
 			{
 				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_BAD);
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
