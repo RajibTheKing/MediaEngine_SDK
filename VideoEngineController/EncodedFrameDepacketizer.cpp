@@ -268,24 +268,23 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 
 	int isCompleteFrame = m_CVideoPacketBuffer[index].IsComplete();
 
-	if(m_bIsDpkgBufferFilledUp)
+	if(m_bIsDpkgBufferFilledUp)		// 300 Milliseconds delay has preserved.
 	{
-//		if(nEcodingTime == -1 && nRight && m_FrontFrame < m_iMaxFrameNumRecvd)	{
+		// No packet of this frame is found and it is not the only frame of buffer.
 		if(nEcodingTime == -1 && m_FrontFrame < m_iMaxFrameNumRecvd)	{
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"No Pkt Found Dropped-----> "+m_Tools.IntegertoStringConvert(m_FrontFrame)+"  ExpTime: "+m_Tools.IntegertoStringConvert(nExpectedTime));
 //			g_FPSController.NotifyFrameDropped(m_FrontFrame);
-			MoveForward(m_FrontFrame);
+			MoveForward(m_FrontFrame);	//Drop the frame
 			return -1;
 		}
-
+		//At least one packet is found and it is not the right time to send this frame to decoder.
 		if(-1 != nExpectedTime && nEcodingTime > nExpectedTime)
-//		if(-1 != nExpectedTime && !isCompleteFrame)
 		{
 			return -1;
 		}
 	}
 
-
+	// Before 300 completing milliseconds.
 	if(!m_bIsDpkgBufferFilledUp) {
 		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 		if (m_iFirstFrameReceived != DEFAULT_FIRST_FRAME_RCVD && TIME_DELAY_FOR_RETRANSMISSION_IN_MS <= llCurrentTimeStamp - m_VideoCallSession->GetFirstVideoPacketTime()) {
@@ -299,13 +298,14 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 		return -1;
 	}
 
+	//Complete front frame and it is the right time to send the front frame to decoder.
 	if(isCompleteFrame)
 	{
 		nFrameLength = ProcessFrame(data,index,m_FrontFrame,nFramNumber);
 //		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " GetReceivedFrame# : Complete Frame EncodingTime "+m_Tools.IntegertoStringConvert(nEcodingTime)+"  Frame: "+m_Tools.IntegertoStringConvert(nFramNumber));
 		return nFrameLength;
 	}
-	else if(m_FrontFrame < m_iMaxFrameNumRecvd)
+	else if(m_FrontFrame < m_iMaxFrameNumRecvd)		// Front frame is not complete and it is not the only frame of buffer.
 	{
 		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG,"Incomplete Frame Dropped-----> "+m_Tools.IntegertoStringConvert(m_FrontFrame)+"  ExpTime: "+m_Tools.IntegertoStringConvert(nExpectedTime));
 //		g_FPSController.NotifyFrameDropped(m_FrontFrame);
