@@ -118,8 +118,8 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 {
 #ifdef __LIVE_STREAMING__
-    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate());
-    LOGE( "%s", __Message.c_str());
+//    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate());
+//    LOGE( "%s", __Message.c_str());
     return false;
 #endif
     //printf("TheKing--> Bitrate MiniPacket Found\n");
