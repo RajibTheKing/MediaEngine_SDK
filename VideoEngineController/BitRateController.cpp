@@ -117,6 +117,11 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 
 bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 {
+#ifdef __LIVE_STREAMING__
+    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate());
+    LOGE( "%s", __Message.c_str());
+    return false;
+#endif
     //printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
@@ -165,7 +170,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
                       +" SlotNo: " + Tools::IntegertoStringConvert(iSlotNumber) + " MiniPkt time delley: "+ m_Tools.IntegertoStringConvert(nTimeDifferenceBetweenMiniPackets);
 
         //CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, sMsg);
-        //LOGE( "%s", sMsg.c_str());
+        LOGE( "%s", sMsg.c_str());
 
         if(nNeedToChange == BITRATE_CHANGE_DOWN)
         {
