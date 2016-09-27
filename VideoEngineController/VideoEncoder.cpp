@@ -51,7 +51,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encoderParemeters.iTemporalLayerNum = 0;
-	encoderParemeters.uiIntraPeriod = nIFrameInterval;
+	encoderParemeters.uiIntraPeriod = 5; /*nIFrameInterval;*/
 	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
 	encoderParemeters.bEnableSSEI = false;
 	encoderParemeters.bEnableFrameCroppingFlag = true;
@@ -66,9 +66,9 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
     
     if(!bCheckDeviceCapability)
     {
-        encoderParemeters.iRCMode = RC_BITRATE_MODE;
-        encoderParemeters.iMinQp = 0;
-        encoderParemeters.iMaxQp = 52;
+        encoderParemeters.iRCMode = RC_OFF_MODE;
+        //encoderParemeters.iMinQp = 0;
+        //encoderParemeters.iMaxQp = 52;
     }
     else
     {
