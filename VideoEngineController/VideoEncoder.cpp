@@ -163,9 +163,9 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
     
     if(!bCheckDeviceCapability)
     {
-        encoderParemeters.iRCMode = RC_BITRATE_MODE;
-        encoderParemeters.iMinQp = 0;
-        encoderParemeters.iMaxQp = 52;
+        encoderParemeters.iRCMode = RC_OFF_MODE;
+        //encoderParemeters.iMinQp = 0;
+        //encoderParemeters.iMaxQp = 52;
     }
     else
     {
