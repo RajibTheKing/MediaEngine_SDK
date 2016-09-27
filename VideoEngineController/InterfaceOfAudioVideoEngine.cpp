@@ -114,16 +114,26 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
     }
     else
     {
-		if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
-        {
-            iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
-        }
-		else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
-        {
-            iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data, unLength);
-        }
-        else
-            return 0;
+//		if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+//        {
+//            iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
+//        }
+//		else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
+//        {
+//            iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data, unLength);
+//        }
+//		else
+//			return 0;
+
+		if (100 > (int)in_data[1])
+		{
+			iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
+		}
+		else
+		{
+			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data, unLength);
+		}
+
     }
 
 	return iReturnedValue;
