@@ -118,7 +118,10 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 {
 #ifdef __LIVE_STREAMING__
-//    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate());
+//    double __ratio = 100.00 * crTempHeader.getTimeStamp() * 8.00 /  m_pVideoEncoder->GetBitrate();
+//    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())
+//    +"  Ratio: "+Tools::DoubleToString(__ratio)
+//    +"  Size in Bit: "+Tools::IntegertoStringConvert(crTempHeader.getTimeStamp()*8);
 //    LOGE( "%s", __Message.c_str());
     return false;
 #endif
