@@ -50,7 +50,7 @@ public:
 	 void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	 void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
 
-     void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int));
+     void SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int));
     
 private:
     

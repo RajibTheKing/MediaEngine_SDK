@@ -285,7 +285,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #else
             if (m_bIsCheckCall == LIVE_CALL_MOOD) {
 //                ALOG("#H#Sent PacketType: "+m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[0]));
-                m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame,
+                m_pCommonElementsBucket->SendFunctionPointer(m_ucaEncodedFrame,
                                                              nEncodedFrameSize + m_AudioHeadersize +
                                                              1);
             }

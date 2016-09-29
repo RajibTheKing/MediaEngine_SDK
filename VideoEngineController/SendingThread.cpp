@@ -203,7 +203,7 @@ void CSendingThread::SendingThreadProcedure()
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 
-				m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+				m_pCommonElementsBucket->SendFunctionPointer(m_EncodedFrame, packetSize);
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
 #endif
 			}

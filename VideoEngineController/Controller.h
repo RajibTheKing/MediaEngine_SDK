@@ -72,7 +72,7 @@ public:
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
 
 
-    void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int));
+    void SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int));
 
 	int m_nDeviceStrongness;
 	int m_nMemoryEnoughness;

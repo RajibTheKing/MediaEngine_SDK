@@ -537,7 +537,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
-	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
+	m_pCommonElementsBucket->SendFunctionPointer(m_miniPacket,PACKET_HEADER_LENGTH + 1);
 }
 
 long long CVideoCallSession::GetShiftedTime()
