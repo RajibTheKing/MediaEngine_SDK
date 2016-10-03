@@ -2,11 +2,15 @@
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#ifdef USE_AECM
+#include "echo_control_mobile.h"
+#endif
 
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
@@ -46,6 +50,16 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
     m_nMaxAudioPacketNumber = ( (1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
+
+#ifdef USE_AECM
+	bWritingFarEnd = false;
+	bReadingFarEnd = false;
+	int iAECERR = WebRtcAecm_Create(&AECM_instance);
+	if (!iAECERR)
+	{
+		iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
+	}	
+#endif
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
@@ -220,6 +234,20 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             timeStamp = m_Tools.CurrentTimestamp();
             countFrame++;
+#ifdef USE_AECM
+			while (bWritingFarEnd)
+			{
+				toolsObject.SOSleep(1);
+			}
+			bReadingFarEnd = true;
+			if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saFarEndDecodedFrame, AUDIO_CLIENT_SAMPLE_SIZE)){  //farend value??? audio
+				ALOG( "WebRtcAec_BufferFarend failed");
+			}
+			bReadingFarEnd = false;
+			if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingFrame, NULL, m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE, 0)){
+				ALOG( "WebRtcAec_Process failed ");
+			}
+#endif
 
 #ifdef OPUS_ENABLE
             nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
@@ -444,6 +472,15 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #else
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame  + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+#endif
+#ifdef USE_AECM
+			while (bReadingFarEnd)
+			{
+				toolsObject.SOSleep(1);
+			}
+			bWritingFarEnd = true;
+			memcpy(m_saFarEndDecodedFrame, m_saDecodedFrame, nDecodedFrameSize * sizeof(short));
+			bWritingFarEnd = false;
 #endif
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);

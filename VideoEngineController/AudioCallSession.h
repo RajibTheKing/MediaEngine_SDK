@@ -20,6 +20,8 @@
 #include "G729CodecNative.h"
 #endif
 
+#define USE_AECM
+
 #define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
 class CCommonElementsBucket;
@@ -66,6 +68,10 @@ private:
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
 
+#ifdef USE_AECM
+	void* AECM_instance;
+#endif
+
 #ifdef OPUS_ENABLE
     CAudioCodec *m_pAudioCodec;
 #else
@@ -86,6 +92,11 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
+#ifdef USE_AECM
+	short m_saFarEndDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
+	bool bWritingFarEnd;
+	bool bReadingFarEnd;
+#endif
 
 
     bool m_bAudioEncodingThreadRunning;
