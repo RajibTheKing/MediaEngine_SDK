@@ -63,6 +63,7 @@ LOCAL_C_INCLUDES := \
 			../../../RingIDSDK \
 			../../../videoengine/OthersLib/boost \
 			../../../videoengine/include/ \
+			../../../videoengine/include/aecm \
 
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
