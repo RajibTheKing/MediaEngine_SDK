@@ -16,7 +16,7 @@
 #include "size.h"
 #include "LogPrinter.h"
 
-#define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
+#define AFLOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
 //#define AUDIO_FIXED_BITRATE
 

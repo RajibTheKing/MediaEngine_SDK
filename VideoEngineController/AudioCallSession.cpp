@@ -55,6 +55,7 @@ m_bIsCheckCall(bIsCheckCall)
 
 	bAecmCreated = false;
 	bAecmInited = false;
+	bNoDataFromFarendYet = true;
 	int iAECERR = WebRtcAecm_Create(&AECM_instance);
 	if (iAECERR)
 	{
@@ -255,25 +256,28 @@ void CAudioCallSession::EncodingThreadProcedure()
             timeStamp = m_Tools.CurrentTimestamp();
             countFrame++;
 #ifdef USE_AECM
-
-			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
-
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += 160)
+			if (!bNoDataFromFarendYet)
 			{
-				if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingFrame + i, 160, 0))
+				memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += 160)
 				{
-					ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
-				}				
-			}
+					if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingFrame + i, 160, 0))
+					{
+						ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
+					}
+				}
 
-			if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
-			{
-				ALOG("WebRtcAec_Process did nothing ");
+				if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
+				{
+					ALOG("WebRtcAec_Process did nothing ");
+				}
+				else
+				{
+					ALOG("WebRtcAec_Process tried to do something, believe me :-( ");
+				}
 			}
-			else
-			{
-				ALOG("WebRtcAec_Process tried to do something, believe me :-( ");
-			}
+			
 			
 #endif
 
@@ -517,7 +521,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 					}
 				}
 			}
-			
+			bNoDataFromFarendYet = false;
 #endif
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);

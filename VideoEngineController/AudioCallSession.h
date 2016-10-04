@@ -72,6 +72,7 @@ private:
 	void* AECM_instance;
 	bool bAecmCreated;
 	bool bAecmInited;
+	bool bNoDataFromFarendYet;
 #endif
 
 #ifdef OPUS_ENABLE
