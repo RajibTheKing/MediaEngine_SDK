@@ -93,7 +93,8 @@ private:
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
 #ifdef USE_AECM
-	short m_saFarEndDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
+	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
+	short m_saFarEndDecodedFrame[AUDIO_CLIENT_SAMPLE_SIZE * AUDIO_FAREND_RINGBUFFER_FRAME_COUNT];
 	bool bWritingFarEnd;
 	bool bReadingFarEnd;
 #endif

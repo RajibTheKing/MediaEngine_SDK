@@ -240,11 +240,12 @@ void CAudioCallSession::EncodingThreadProcedure()
 				toolsObject.SOSleep(1);
 			}
 			bReadingFarEnd = true;
-			if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saFarEndDecodedFrame, AUDIO_CLIENT_SAMPLE_SIZE)){  //farend value??? audio
+			if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saFarEndDecodedFrame, AUDIO_CLIENT_SAMPLE_SIZE * AUDIO_CLIENT_SAMPLE_SIZE)){  //farend value??? audio
 				ALOG( "WebRtcAec_BufferFarend failed");
 			}
 			bReadingFarEnd = false;
-			if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingFrame, NULL, m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE, 0)){
+			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize);
+			if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame, NULL, m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE, 0)){
 				ALOG( "WebRtcAec_Process failed ");
 			}
 #endif
@@ -479,7 +480,17 @@ void CAudioCallSession::DecodingThreadProcedure()
 				toolsObject.SOSleep(1);
 			}
 			bWritingFarEnd = true;
-			memcpy(m_saFarEndDecodedFrame, m_saDecodedFrame, nDecodedFrameSize * sizeof(short));
+
+			if (nDecodedFrameSize != AUDIO_CLIENT_SAMPLE_SIZE)
+			{
+				ALOG("Sorry, told you to send data of size " + m_Tools.IntegertoStringConvert(AUDIO_CLIENT_SAMPLE_SIZE));
+			}
+			else
+			{
+				memcpy(m_saFarEndDecodedFrame, m_saFarEndDecodedFrame + AUDIO_CLIENT_SAMPLE_SIZE, (AUDIO_CLIENT_SAMPLE_SIZE * (AUDIO_FAREND_RINGBUFFER_FRAME_COUNT - 1)) * sizeof(short));
+				memcpy(m_saFarEndDecodedFrame + (AUDIO_CLIENT_SAMPLE_SIZE * (AUDIO_FAREND_RINGBUFFER_FRAME_COUNT - 1)), m_saDecodedFrame, nDecodedFrameSize * sizeof(short));
+			}
+			
 			bWritingFarEnd = false;
 #endif
 #ifdef __DUMP_FILE__
