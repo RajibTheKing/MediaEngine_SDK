@@ -22,7 +22,7 @@
 
 #define USE_AECM
 
-#define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
+#define ALOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -70,6 +70,8 @@ private:
 
 #ifdef USE_AECM
 	void* AECM_instance;
+	bool bAecmCreated;
+	bool bAecmInited;
 #endif
 
 #ifdef OPUS_ENABLE
@@ -94,9 +96,6 @@ private:
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
 #ifdef USE_AECM
 	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
-	short m_saFarEndDecodedFrame[AUDIO_CLIENT_SAMPLE_SIZE * AUDIO_FAREND_RINGBUFFER_FRAME_COUNT];
-	bool bWritingFarEnd;
-	bool bReadingFarEnd;
 #endif
 
 

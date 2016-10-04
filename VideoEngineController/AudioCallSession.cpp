@@ -52,13 +52,33 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
 #ifdef USE_AECM
-	bWritingFarEnd = false;
-	bReadingFarEnd = false;
+
+	bAecmCreated = false;
+	bAecmInited = false;
 	int iAECERR = WebRtcAecm_Create(&AECM_instance);
-	if (!iAECERR)
+	if (iAECERR)
 	{
-		iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
-	}	
+		ALOG("WebRtcAecm_Create failed");
+	}
+	else
+	{
+		ALOG("WebRtcAecm_Create successful");
+		bAecmCreated = true;
+	}
+	
+	iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
+	if (iAECERR)
+	{
+		ALOG("WebRtcAecm_Init failed");
+	}
+	else
+	{
+		ALOG("WebRtcAecm_Init successful");
+		bAecmInited = true;
+	}
+
+	
+	
 #endif
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
@@ -235,19 +255,26 @@ void CAudioCallSession::EncodingThreadProcedure()
             timeStamp = m_Tools.CurrentTimestamp();
             countFrame++;
 #ifdef USE_AECM
-			while (bWritingFarEnd)
+
+			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += 160)
 			{
-				toolsObject.SOSleep(1);
+				if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingFrame + i, 160, 0))
+				{
+					ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
+				}				
 			}
-			bReadingFarEnd = true;
-			if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saFarEndDecodedFrame, AUDIO_CLIENT_SAMPLE_SIZE * AUDIO_CLIENT_SAMPLE_SIZE)){  //farend value??? audio
-				ALOG( "WebRtcAec_BufferFarend failed");
+
+			if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
+			{
+				ALOG("WebRtcAec_Process did nothing ");
 			}
-			bReadingFarEnd = false;
-			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize);
-			if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame, NULL, m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE, 0)){
-				ALOG( "WebRtcAec_Process failed ");
+			else
+			{
+				ALOG("WebRtcAec_Process tried to do something, believe me :-( ");
 			}
+			
 #endif
 
 #ifdef OPUS_ENABLE
@@ -475,11 +502,6 @@ void CAudioCallSession::DecodingThreadProcedure()
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame  + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
 #ifdef USE_AECM
-			while (bReadingFarEnd)
-			{
-				toolsObject.SOSleep(1);
-			}
-			bWritingFarEnd = true;
 
 			if (nDecodedFrameSize != AUDIO_CLIENT_SAMPLE_SIZE)
 			{
@@ -487,11 +509,15 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 			else
 			{
-				memcpy(m_saFarEndDecodedFrame, m_saFarEndDecodedFrame + AUDIO_CLIENT_SAMPLE_SIZE, (AUDIO_CLIENT_SAMPLE_SIZE * (AUDIO_FAREND_RINGBUFFER_FRAME_COUNT - 1)) * sizeof(short));
-				memcpy(m_saFarEndDecodedFrame + (AUDIO_CLIENT_SAMPLE_SIZE * (AUDIO_FAREND_RINGBUFFER_FRAME_COUNT - 1)), m_saDecodedFrame, nDecodedFrameSize * sizeof(short));
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += 160)
+				{
+					if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saDecodedFrame + i, 160))
+					{  //farend value??? audio
+						ALOG("WebRtcAec_BufferFarend failed");
+					}
+				}
 			}
 			
-			bWritingFarEnd = false;
 #endif
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
