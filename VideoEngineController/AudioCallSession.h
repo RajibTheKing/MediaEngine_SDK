@@ -21,8 +21,20 @@
 #endif
 
 #define USE_AECM
+#define USE_ANS
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+#ifdef USE_ANS
+#include "noise_suppression.h"
+#endif
 
-#define ALOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+#ifdef USE_ANS
+#define ANS_SAMPLE_SIZE 80
+#endif
+
+#ifdef USE_AECM
+#define AECM_SAMPLE_SIZE 80
+#endif
+
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -75,6 +87,10 @@ private:
 	bool bNoDataFromFarendYet;
 #endif
 
+#ifdef USE_ANS
+	NsHandle* NS_instance;
+#endif
+
 #ifdef OPUS_ENABLE
     CAudioCodec *m_pAudioCodec;
 #else
@@ -95,7 +111,10 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
-#ifdef USE_AECM
+#ifdef USE_ANS
+	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
+#endif
+#if defined(USE_AECM) || defined(USE_ANS)
 	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
 
