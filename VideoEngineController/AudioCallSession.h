@@ -29,6 +29,9 @@
 
 #ifdef USE_ANS
 #define ANS_SAMPLE_SIZE 80
+#define Mild 0
+#define Medium 1
+#define Aggressive 2
 #endif
 
 #ifdef USE_AECM

@@ -97,7 +97,7 @@ m_bIsCheckCall(bIsCheckCall)
 		ALOG("WebRtcNs_Init successful");
 	}
 
-	if ((ret = WebRtcNs_set_policy(NS_instance, 1)))
+	if ((ret = WebRtcNs_set_policy(NS_instance, Medium)))
 	{
 		ALOG( "WebRtcNs_set_policy failed with error code = " + m_Tools.IntegertoStringConvert(ret));
 	}
