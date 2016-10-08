@@ -31,7 +31,9 @@
 #ifdef USE_ANS
 #include "noise_suppression.h"
 #endif
-
+#ifdef USE_AGC
+#include "gain_control.h"
+#endif
 
 #ifdef USE_ANS
 #define ANS_SAMPLE_SIZE 80
