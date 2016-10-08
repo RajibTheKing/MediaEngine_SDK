@@ -322,7 +322,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 #ifdef USE_AECM
 			if (!bNoDataFromFarendYet)
-			{				
+			{
+				long long llNow = m_Tools.CurrentTimestamp();
 				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
 				{
 #ifdef USE_ANS
@@ -337,11 +338,11 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 				if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
 				{
-					ALOG("WebRtcAec_Process did nothing ");
+					ALOG("WebRtcAec_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
 				}
 				else
 				{
-					ALOG("WebRtcAec_Process tried to do something, believe me :-( ");
+					ALOG("WebRtcAec_Process tried to do something, believe me :-( . It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
 				}
 			}			
 #endif
