@@ -22,10 +22,16 @@
 
 #define USE_AECM
 #define USE_ANS
+#define USE_AGC
+
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+#ifdef USE_AECM
+#include "echo_control_mobile.h"
+#endif
 #ifdef USE_ANS
 #include "noise_suppression.h"
 #endif
+
 
 #ifdef USE_ANS
 #define ANS_SAMPLE_SIZE 80

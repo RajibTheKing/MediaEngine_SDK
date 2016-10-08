@@ -2,9 +2,7 @@
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
 #include "Tools.h"
-#ifdef USE_AECM
-#include "echo_control_mobile.h"
-#endif
+
 
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
