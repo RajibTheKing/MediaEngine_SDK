@@ -77,31 +77,51 @@ m_bIsCheckCall(bIsCheckCall)
 #endif
 
 #ifdef USE_ANS
-	int ret = -1;
-	if ((ret = WebRtcNs_Create(&NS_instance))) 
+	int ansret = -1;
+	if ((ansret = WebRtcNs_Create(&NS_instance)))
 	{
-		ALOG( "WebRtcNs_Create failed with error code = " + m_Tools.IntegertoStringConvert(ret));
+		ALOG("WebRtcNs_Create failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
 	}
 	else
 	{
 		ALOG("WebRtcNs_Create successful");
 	}
-	if ((ret = WebRtcNs_Init(NS_instance, AUDIO_SAMPLE_RATE))) 
+	if ((ansret = WebRtcNs_Init(NS_instance, AUDIO_SAMPLE_RATE)))
 	{
-		ALOG( "WebRtcNs_Init failed with error code= " + m_Tools.IntegertoStringConvert(ret));
+		ALOG("WebRtcNs_Init failed with error code= " + m_Tools.IntegertoStringConvert(ansret));
 	}
 	else
 	{
 		ALOG("WebRtcNs_Init successful");
 	}
 
-	if ((ret = WebRtcNs_set_policy(NS_instance, Medium)))
+	if ((ansret = WebRtcNs_set_policy(NS_instance, Medium)))
 	{
-		ALOG( "WebRtcNs_set_policy failed with error code = " + m_Tools.IntegertoStringConvert(ret));
+		ALOG("WebRtcNs_set_policy failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
 	}
 	else
 	{
 		ALOG("WebRtcNs_set_policy successful");
+	}
+#endif
+
+#ifdef USE_AGC
+	int agcret = -1;
+	if ((agcret = WebRtcAgc_Create(&AGC_instance)))
+	{
+		ALOG("WebRtcAgc_Create failed with error code = " + m_Tools.IntegertoStringConvert(agcret));
+	}
+	else
+	{
+		ALOG("WebRtcAgc_Create successful");
+	}
+	if ((agcret = WebRtcAgc_Init(AGC_instance, MINLEVEL, MAXLEVEL, AGNMODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
+	{
+		ALOG("WebRtcAgc_Create failed with error code= " + m_Tools.IntegertoStringConvert(ansret));
+	}
+	else
+	{
+		ALOG("WebRtcAgc_Create successful");
 	}
 #endif
 
@@ -123,6 +143,9 @@ CAudioCallSession::~CAudioCallSession()
 #endif
 #ifdef USE_ANS
 	WebRtcNs_Free(NS_instance);
+#endif
+#ifdef USE_AGC
+	WebRtcAgc_Free(AGC_instance);
 #endif
 
 	/*if (NULL != m_pAudioDecoder)
@@ -288,7 +311,15 @@ void CAudioCallSession::EncodingThreadProcedure()
 #if defined(USE_AECM) || defined(USE_ANS)
 			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 #endif
-
+#ifdef USE_AGC
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_AddMic(AGC_instance, m_saAudioEncodingFrame + i, NULL, AGC_SAMPLE_SIZE))
+				{
+					ALOG("WebRtcAgc_AddMic failed");
+				}
+			}
+#endif
 #ifdef USE_ANS
 			long long llNow = m_Tools.CurrentTimestamp();
 			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
@@ -343,6 +374,20 @@ void CAudioCallSession::EncodingThreadProcedure()
 					ALOG("WebRtcAec_Process tried to do something, believe me :-( . It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
 				}
 			}			
+#endif
+#ifdef USE_AGC
+			uint8_t saturationWarning;
+			int32_t inMicLevel = 1;
+			int32_t outMicLevel;
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_Process(AGC_instance, m_saAudioEncodingFrame + i, NULL, AGC_SAMPLE_SIZE,
+					m_saAudioEncodingTempFrame + i, NULL,
+					inMicLevel, &outMicLevel, 0, &saturationWarning))
+				{
+					ALOG("WebRtcAgc_Process failed");
+				}
+			}
 #endif
 
 #ifdef OPUS_ENABLE
@@ -569,24 +614,25 @@ void CAudioCallSession::DecodingThreadProcedure()
 #else
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame  + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
-#ifdef USE_AECM
-
-			if (nDecodedFrameSize != AUDIO_CLIENT_SAMPLE_SIZE)
+#ifdef USE_AECM			
+			for (int i = 0; i < nDecodedFrameSize; i += AECM_SAMPLE_SIZE)
 			{
-				ALOG("Sorry, told you to send data of size " + m_Tools.IntegertoStringConvert(AUDIO_CLIENT_SAMPLE_SIZE));
-			}
-			else
-			{
-				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
+				if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saDecodedFrame + i, AECM_SAMPLE_SIZE))
 				{
-					if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saDecodedFrame + i, AECM_SAMPLE_SIZE))
-					{  //farend value??? audio
-						ALOG("WebRtcAec_BufferFarend failed");
-					}
+					ALOG("WebRtcAec_BufferFarend failed");
 				}
-			}
-			bNoDataFromFarendYet = false;
+			}						
 #endif
+#ifdef USE_AGC
+			for (int i = 0; i < nDecodedFrameSize; i += AGC_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_AddFarend(AGC_instance, m_saDecodedFrame + i, AGC_SAMPLE_SIZE))
+				{
+					ALOG("WebRtcAgc_AddFarend failed");
+				}
+			}		
+#endif
+			bNoDataFromFarendYet = false;
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif

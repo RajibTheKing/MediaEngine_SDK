@@ -46,6 +46,16 @@
 #define AECM_SAMPLE_SIZE 80
 #endif
 
+#ifdef USE_AGC
+#define AGC_SAMPLE_SIZE 80
+#define AGCMODE_UNCHANGED 0
+#define AGCMODE_ADAPTIVE_ANALOG 1
+#define AGNMODE_ADAPTIVE_DIGITAL 2
+#define AGCMODE_FIXED_DIGITAL 2
+#define MINLEVEL 1
+#define MAXLEVEL 20
+#endif
+
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -91,15 +101,19 @@ private:
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
 
+	bool bNoDataFromFarendYet;
 #ifdef USE_AECM
 	void* AECM_instance;
 	bool bAecmCreated;
 	bool bAecmInited;
-	bool bNoDataFromFarendYet;
 #endif
 
 #ifdef USE_ANS
 	NsHandle* NS_instance;
+#endif
+
+#ifdef USE_AGC
+	void* AGC_instance;
 #endif
 
 #ifdef OPUS_ENABLE
@@ -125,7 +139,7 @@ private:
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
-#if defined(USE_AECM) || defined(USE_ANS)
+#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
 	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
 
