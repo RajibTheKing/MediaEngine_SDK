@@ -223,8 +223,11 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 #ifdef OPUS_ENABLE
             nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
+
+#ifndef __AUDIO_FIXED_COMPLEXITY__
 			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
+#endif
 			avgCountTimeStamp += encodingTime;
 #ifdef FIRE_ENC_TIME
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_ENCODING_TIME, encodingTime,  0);
@@ -431,7 +434,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 				m_iCurrentRecvdSlotID = ReceivingHeader->GetInformation(SLOTNUMBER);
 				m_iReceivedPacketsInCurrentSlot = 0;
 #ifdef OPUS_ENABLE
+#ifndef __AUDIO_FIXED_BITRATE__
 				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+#endif
 #endif
 			}
 			

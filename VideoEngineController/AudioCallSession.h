@@ -22,6 +22,9 @@
 
 #define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
+//#define __AUDIO_FIXED_COMPLEXITY__
+#define __AUDIO_FIXED_BITRATE__
+
 class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioPacketHeader;
