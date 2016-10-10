@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string>
 #include <map>
+#include <stdlib.h>
 
 #ifdef OPUS_ENABLE
 #include "AudioCodec.h"
@@ -24,6 +25,13 @@
 #define USE_ANS
 #define USE_AGC
 
+#ifdef USE_AGC
+//#define USE_WEBRTC_AGC
+#ifndef USE_WEBRTC_AGC
+#define USE_NAIVE_AGC
+#endif
+#endif
+
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 #ifdef USE_AECM
 #include "echo_control_mobile.h"
@@ -31,8 +39,10 @@
 #ifdef USE_ANS
 #include "noise_suppression.h"
 #endif
-#ifdef USE_AGC
+#ifdef USE_WEBRTC_AGC
+
 #include "gain_control.h"
+#include "signal_processing_library.h"
 #endif
 
 #ifdef USE_ANS
@@ -46,14 +56,15 @@
 #define AECM_SAMPLE_SIZE 80
 #endif
 
-#ifdef USE_AGC
+#ifdef USE_WEBRTC_AGC
 #define AGC_SAMPLE_SIZE 80
+#define AGC_ANALYSIS_SAMPLE_SIZE 160
 #define AGCMODE_UNCHANGED 0
 #define AGCMODE_ADAPTIVE_ANALOG 1
 #define AGNMODE_ADAPTIVE_DIGITAL 2
 #define AGCMODE_FIXED_DIGITAL 2
 #define MINLEVEL 1
-#define MAXLEVEL 20
+#define MAXLEVEL 255
 #endif
 
 
@@ -112,7 +123,7 @@ private:
 	NsHandle* NS_instance;
 #endif
 
-#ifdef USE_AGC
+#ifdef USE_WEBRTC_AGC
 	void* AGC_instance;
 #endif
 
@@ -139,8 +150,20 @@ private:
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
-#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
+#if defined(USE_AECM) || defined(USE_ANS)
 	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
+#endif
+#ifdef USE_WEBRTC_AGC
+	short m_saAudioEncodingTempFrameLow[MAX_AUDIO_FRAME_LENGHT];
+	short m_saAudioEncodingTempFrameHigh[MAX_AUDIO_FRAME_LENGHT];
+#endif
+#ifdef USE_WEBRTC_AGC
+	short m_saAudioEncodingFrameLow[MAX_AUDIO_FRAME_LENGHT];
+	short m_saAudioEncodingFrameHi[MAX_AUDIO_FRAME_LENGHT];
+	int m_Filter_state1[MAX_AUDIO_FRAME_LENGHT];
+	int m_Filter_state2[MAX_AUDIO_FRAME_LENGHT];
+	int m_PostFilter_state1[MAX_AUDIO_FRAME_LENGHT];
+	int m_PostFilter_state2[MAX_AUDIO_FRAME_LENGHT];
 #endif
 
 

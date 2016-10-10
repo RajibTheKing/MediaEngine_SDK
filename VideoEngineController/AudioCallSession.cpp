@@ -4,7 +4,7 @@
 #include "Tools.h"
 
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
@@ -105,7 +105,12 @@ m_bIsCheckCall(bIsCheckCall)
 	}
 #endif
 
-#ifdef USE_AGC
+#ifdef USE_WEBRTC_AGC
+	memset(m_Filter_state1, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
+	memset(m_Filter_state2, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
+
+	memset(m_PostFilter_state1, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
+	memset(m_PostFilter_state1, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
 	int agcret = -1;
 	if ((agcret = WebRtcAgc_Create(&AGC_instance)))
 	{
@@ -117,7 +122,20 @@ m_bIsCheckCall(bIsCheckCall)
 	}
 	if ((agcret = WebRtcAgc_Init(AGC_instance, MINLEVEL, MAXLEVEL, AGNMODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
 	{
-		ALOG("WebRtcAgc_Create failed with error code= " + m_Tools.IntegertoStringConvert(ansret));
+		ALOG("WebRtcAgc_Create failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
+	}
+	else
+	{
+		ALOG("WebRtcAgc_Create successful");
+	}
+	WebRtcAgc_config_t gain_config;
+
+	gain_config.targetLevelDbfs = 1;
+	gain_config.compressionGaindB = 20;
+	gain_config.limiterEnable = kAgcTrue;
+	if ((agcret = WebRtcAgc_set_config(AGC_instance, gain_config)))
+	{
+		ALOG("WebRtcAgc_set_config failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
 	}
 	else
 	{
@@ -144,7 +162,7 @@ CAudioCallSession::~CAudioCallSession()
 #ifdef USE_ANS
 	WebRtcNs_Free(NS_instance);
 #endif
-#ifdef USE_AGC
+#ifdef USE_WEBRTC_AGC
 	WebRtcAgc_Free(AGC_instance);
 #endif
 
@@ -311,10 +329,15 @@ void CAudioCallSession::EncodingThreadProcedure()
 #if defined(USE_AECM) || defined(USE_ANS)
 			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 #endif
-#ifdef USE_AGC
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
+#ifdef USE_WEBRTC_AGC
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
 			{
-				if (0 != WebRtcAgc_AddMic(AGC_instance, m_saAudioEncodingFrame + i, NULL, AGC_SAMPLE_SIZE))
+				WebRtcSpl_AnalysisQMF(m_saAudioEncodingFrame + i, m_saAudioEncodingFrameLow + i, m_saAudioEncodingFrameHi + i, m_Filter_state1 , m_Filter_state2 );
+			}
+			
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_AddMic(AGC_instance, m_saAudioEncodingFrameLow + i, m_saAudioEncodingFrameHi + i, AGC_SAMPLE_SIZE))
 				{
 					ALOG("WebRtcAgc_AddMic failed");
 				}
@@ -375,19 +398,49 @@ void CAudioCallSession::EncodingThreadProcedure()
 				}
 			}			
 #endif
-#ifdef USE_AGC
+#if defined(USE_WEBRTC_AGC)
 			uint8_t saturationWarning;
-			int32_t inMicLevel = 1;
+			int32_t inMicLevel = 0;
 			int32_t outMicLevel;
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
 			{
-				if (0 != WebRtcAgc_Process(AGC_instance, m_saAudioEncodingFrame + i, NULL, AGC_SAMPLE_SIZE,
-					m_saAudioEncodingTempFrame + i, NULL,
+				if (0 != WebRtcAgc_Process(AGC_instance, m_saAudioEncodingFrameLow + i, m_saAudioEncodingFrameHi + i, AGC_SAMPLE_SIZE,
+					m_saAudioEncodingTempFrameLow + i, m_saAudioEncodingTempFrameHigh + i,
 					inMicLevel, &outMicLevel, 0, &saturationWarning))
 				{
 					ALOG("WebRtcAgc_Process failed");
 				}
 			}
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				WebRtcSpl_SynthesisQMF(m_saAudioEncodingTempFrameLow + i, m_saAudioEncodingTempFrameHigh + i, m_saAudioEncodingFrame + i, m_PostFilter_state1 , m_PostFilter_state2 );
+			}
+
+
+			/*for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				WebRtcSpl_SynthesisQMF(m_saAudioEncodingFrameLow + i/2, m_saAudioEncodingFrameHi + i/2, m_saAudioEncodingFrame + i, m_PostFilter_state1 , m_PostFilter_state2 );
+			}*/
+
+#elif defined(USE_NAIVE_AGC)
+
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			{
+				//if(abs((int)m_saAudioEncodingFrame) > 10)
+				{
+					int temp = (int)m_saAudioEncodingFrame[i] * 10;
+					if(temp > SHRT_MAX)
+					{
+						temp = SHRT_MAX;
+					}
+					if(temp < SHRT_MIN)
+					{
+						temp = SHRT_MIN;
+					}
+					m_saAudioEncodingFrame[i] = temp;
+				}
+			}
+			
 #endif
 
 #ifdef OPUS_ENABLE
@@ -623,7 +676,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 			}						
 #endif
-#ifdef USE_AGC
+#ifdef USE_WEBRTC_AGC
 			for (int i = 0; i < nDecodedFrameSize; i += AGC_SAMPLE_SIZE)
 			{
 				if (0 != WebRtcAgc_AddFarend(AGC_instance, m_saDecodedFrame + i, AGC_SAMPLE_SIZE))
