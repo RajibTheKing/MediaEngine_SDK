@@ -21,9 +21,10 @@
 #include "G729CodecNative.h"
 #endif
 
-#define USE_AECM
-#define USE_ANS
-#define USE_AGC
+//#define USE_AECM
+//#define USE_ANS
+//#define USE_AGC
+#define USE_VAD
 
 #ifdef USE_AGC
 //#define USE_WEBRTC_AGC
@@ -40,9 +41,11 @@
 #include "noise_suppression.h"
 #endif
 #ifdef USE_WEBRTC_AGC
-
 #include "gain_control.h"
 #include "signal_processing_library.h"
+#endif
+#ifdef USE_VAD
+#include "webrtc_vad.h"
 #endif
 
 #ifdef USE_ANS
@@ -65,6 +68,10 @@
 #define AGCMODE_FIXED_DIGITAL 2
 #define MINLEVEL 1
 #define MAXLEVEL 255
+#endif
+
+#ifdef USE_VAD
+#define VAD_ANALYSIS_SAMPLE_SIZE 80
 #endif
 
 
@@ -125,6 +132,10 @@ private:
 
 #ifdef USE_WEBRTC_AGC
 	void* AGC_instance;
+#endif
+
+#ifdef USE_VAD
+	VadInst* VAD_instance;
 #endif
 
 #ifdef OPUS_ENABLE

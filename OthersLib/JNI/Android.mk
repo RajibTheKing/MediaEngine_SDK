@@ -64,6 +64,12 @@ LOCAL_MODULE := AGC
 LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_agc.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Prebuilt VAD
+include $(CLEAR_VARS)
+LOCAL_MODULE := VAD
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_vad.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 #  VideoEngineController
 include $(CLEAR_VARS)
 G729    := g729
@@ -198,6 +204,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AECM NS AGC IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AECM NS AGC VAD IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)

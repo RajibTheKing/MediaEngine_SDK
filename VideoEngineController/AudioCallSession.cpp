@@ -122,11 +122,11 @@ m_bIsCheckCall(bIsCheckCall)
 	}
 	if ((agcret = WebRtcAgc_Init(AGC_instance, MINLEVEL, MAXLEVEL, AGNMODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
 	{
-		ALOG("WebRtcAgc_Create failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
+		ALOG("WebRtcAgc_Init failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
 	}
 	else
 	{
-		ALOG("WebRtcAgc_Create successful");
+		ALOG("WebRtcAgc_Init successful");
 	}
 	WebRtcAgc_config_t gain_config;
 
@@ -140,6 +140,34 @@ m_bIsCheckCall(bIsCheckCall)
 	else
 	{
 		ALOG("WebRtcAgc_Create successful");
+	}
+#endif
+
+#ifdef USE_VAD
+	int vadret = -1;
+	if ((vadret = WebRtcVad_Create(&VAD_instance)))
+	{
+		ALOG("WebRtcVad_Create failed with error code = " + m_Tools.IntegertoStringConvert(vadret));
+	}
+	else
+	{
+		ALOG("WebRtcVad_Create successful");
+	}
+	/*if ((vadret = WebRtcVad_set_mode(VAD_instance, 2)))
+	{
+		ALOG("WebRtcVad_set_mode failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
+	}
+	else
+	{
+		ALOG("WebRtcVad_set_mode successful");
+	}*/
+	if ((vadret = WebRtcVad_Init(VAD_instance)))
+	{
+		ALOG("WebRtcVad_Init failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
+	}
+	else
+	{
+		ALOG("WebRtcVad_Init successful");
 	}
 #endif
 
@@ -164,6 +192,9 @@ CAudioCallSession::~CAudioCallSession()
 #endif
 #ifdef USE_WEBRTC_AGC
 	WebRtcAgc_Free(AGC_instance);
+#endif
+#ifdef USE_VAD
+	WebRtcVad_Free(VAD_instance);
 #endif
 
 	/*if (NULL != m_pAudioDecoder)
@@ -326,6 +357,29 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             timeStamp = m_Tools.CurrentTimestamp();
             countFrame++;
+#ifdef USE_VAD
+			if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
+			{
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += VAD_ANALYSIS_SAMPLE_SIZE)
+				{
+					int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saAudioEncodingFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
+					if (iVadRet != 1)
+					{
+						ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet));
+						memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));
+					}
+					else
+					{
+						ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
+					}
+				}
+			}
+			else
+			{
+				ALOG("Invalid combo");
+			}
+		
+#endif
 #if defined(USE_AECM) || defined(USE_ANS)
 			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 #endif
