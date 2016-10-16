@@ -384,7 +384,7 @@ void CAudioCallSession::DecodingThreadProcedure()
         {
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
             bIsProcessablePacket = false;
-            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
+//            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
             timeStamp = m_Tools.CurrentTimestamp();
 			ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
 //            ALOG("#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
@@ -392,7 +392,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 //                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
 //                    + " #V# RECVDSLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(RECVDSLOTNUMBER))
 //            );
-
+#ifndef __LIVE_STREAMING__
             nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
 
 //            ALOG("#V#TYPE# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
@@ -441,9 +441,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 			
 			m_iReceivedPacketsInCurrentSlot ++;
+#endif
             //continue;
 			nDecodingFrameSize -= m_AudioHeadersize;
-            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
+//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
 #ifdef OPUS_ENABLE
             nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 
@@ -453,8 +454,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
-            long long llNow = m_Tools.CurrentTimestamp();
-            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
+
+#ifndef __LIVE_STREAMING__
+            llNow = m_Tools.CurrentTimestamp();
+//            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
             if(llNow - llTimeStamp >= 1000)
             {
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
@@ -466,8 +469,10 @@ void CAudioCallSession::DecodingThreadProcedure()
             ++iFrameCounter;
             nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
             dbTotalTime += nDecodingTime;
-            if(iFrameCounter % 100 == 0)
-                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
+//            if(iFrameCounter % 100 == 0)
+//                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
+#endif
+
 #if defined(DUMP_DECODED_AUDIO)
 			m_Tools.WriteToFile(m_saDecodedFrame, size);
 #endif
@@ -487,4 +492,5 @@ void CAudioCallSession::DecodingThreadProcedure()
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
+
 
