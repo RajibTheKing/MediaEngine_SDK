@@ -24,6 +24,32 @@ FILE *FileOutput;
 
 //extern int g_StopVideoSending;
 
+#ifdef USE_ANS
+#define ANS_SAMPLE_SIZE 80
+#define Mild 0
+#define Medium 1
+#define Aggressive 2
+#endif
+
+#ifdef USE_AECM
+#define AECM_SAMPLE_SIZE 80
+#endif
+
+#ifdef USE_WEBRTC_AGC
+#define AGC_SAMPLE_SIZE 80
+#define AGC_ANALYSIS_SAMPLE_SIZE 160
+#define AGCMODE_UNCHANGED 0
+#define AGCMODE_ADAPTIVE_ANALOG 1
+#define AGNMODE_ADAPTIVE_DIGITAL 2
+#define AGCMODE_FIXED_DIGITAL 2
+#define MINLEVEL 1
+#define MAXLEVEL 255
+#endif
+
+#ifdef USE_VAD
+#define VAD_ANALYSIS_SAMPLE_SIZE 80
+#endif
+
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
 
 m_pCommonElementsBucket(pSharedObject),
@@ -153,14 +179,14 @@ m_bIsCheckCall(bIsCheckCall)
 	{
 		ALOG("WebRtcVad_Create successful");
 	}
-	/*if ((vadret = WebRtcVad_set_mode(VAD_instance, 2)))
+	if ((vadret = WebRtcVad_set_mode(VAD_instance,3)))
 	{
 		ALOG("WebRtcVad_set_mode failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
 	}
 	else
 	{
 		ALOG("WebRtcVad_set_mode successful");
-	}*/
+	}
 	if ((vadret = WebRtcVad_Init(VAD_instance)))
 	{
 		ALOG("WebRtcVad_Init failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
@@ -357,29 +383,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             timeStamp = m_Tools.CurrentTimestamp();
             countFrame++;
-#ifdef USE_VAD
-			if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
-			{
-				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += VAD_ANALYSIS_SAMPLE_SIZE)
-				{
-					int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saAudioEncodingFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
-					if (iVadRet != 1)
-					{
-						ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet));
-						memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));
-					}
-					else
-					{
-						ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
-					}
-				}
-			}
-			else
-			{
-				ALOG("Invalid combo");
-			}
-		
-#endif
+
 #if defined(USE_AECM) || defined(USE_ANS)
 			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 #endif
@@ -707,7 +711,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				m_iCurrentRecvdSlotID = ReceivingHeader->GetInformation(SLOTNUMBER);
 				m_iReceivedPacketsInCurrentSlot = 0;
 #ifdef OPUS_ENABLE
-				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+				//m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 #endif
 			}
 			
@@ -766,8 +770,37 @@ void CAudioCallSession::DecodingThreadProcedure()
                 ALOG("#EXP# Decoding Failed.");
                 continue;
             }
-			if (m_bIsCheckCall == LIVE_CALL_MOOD )
-				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+			{
+#ifdef USE_VAD
+				int nhasVoice = 0;
+				if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
+				{
+					for (int i = 0; i < nDecodedFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
+					{
+						int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saDecodedFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
+						if (iVadRet != 1)
+						{
+							ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet));
+							//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
+						}
+						else
+						{
+							ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
+							nhasVoice = 1;
+						}
+					}
+				}
+				else
+				{
+					ALOG("Invalid combo");
+				}
+				if (nhasVoice)
+
+#endif
+				
+					m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
+			}
 
             toolsObject.SOSleep(0);
         }

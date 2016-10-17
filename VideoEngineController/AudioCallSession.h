@@ -21,7 +21,7 @@
 #include "G729CodecNative.h"
 #endif
 
-//#define USE_AECM
+#define USE_AECM
 //#define USE_ANS
 //#define USE_AGC
 #define USE_VAD
@@ -33,7 +33,8 @@
 #endif
 #endif
 
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+static string colon = "ALOG:";
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
 #ifdef USE_AECM
 #include "echo_control_mobile.h"
 #endif
@@ -46,32 +47,6 @@
 #endif
 #ifdef USE_VAD
 #include "webrtc_vad.h"
-#endif
-
-#ifdef USE_ANS
-#define ANS_SAMPLE_SIZE 80
-#define Mild 0
-#define Medium 1
-#define Aggressive 2
-#endif
-
-#ifdef USE_AECM
-#define AECM_SAMPLE_SIZE 80
-#endif
-
-#ifdef USE_WEBRTC_AGC
-#define AGC_SAMPLE_SIZE 80
-#define AGC_ANALYSIS_SAMPLE_SIZE 160
-#define AGCMODE_UNCHANGED 0
-#define AGCMODE_ADAPTIVE_ANALOG 1
-#define AGNMODE_ADAPTIVE_DIGITAL 2
-#define AGCMODE_FIXED_DIGITAL 2
-#define MINLEVEL 1
-#define MAXLEVEL 255
-#endif
-
-#ifdef USE_VAD
-#define VAD_ANALYSIS_SAMPLE_SIZE 80
 #endif
 
 
