@@ -21,9 +21,9 @@
 #include "G729CodecNative.h"
 #endif
 
-#define USE_AECM
+//#define USE_AECM
 //#define USE_ANS
-//#define USE_AGC
+#define USE_AGC
 #define USE_VAD
 
 #ifdef USE_AGC
@@ -111,6 +111,7 @@ private:
 
 #ifdef USE_VAD
 	VadInst* VAD_instance;
+	int nNextFrameMayHaveVoice;
 #endif
 
 #ifdef OPUS_ENABLE

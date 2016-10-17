@@ -50,8 +50,9 @@ FILE *FileOutput;
 #define VAD_ANALYSIS_SAMPLE_SIZE 80
 #endif
 
-CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
+int gSetMode = -5;
 
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
 m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall)
 
@@ -179,14 +180,7 @@ m_bIsCheckCall(bIsCheckCall)
 	{
 		ALOG("WebRtcVad_Create successful");
 	}
-	if ((vadret = WebRtcVad_set_mode(VAD_instance,3)))
-	{
-		ALOG("WebRtcVad_set_mode failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
-	}
-	else
-	{
-		ALOG("WebRtcVad_set_mode successful");
-	}
+	
 	if ((vadret = WebRtcVad_Init(VAD_instance)))
 	{
 		ALOG("WebRtcVad_Init failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
@@ -195,6 +189,16 @@ m_bIsCheckCall(bIsCheckCall)
 	{
 		ALOG("WebRtcVad_Init successful");
 	}
+
+	if ((gSetMode = vadret = WebRtcVad_set_mode(VAD_instance, 3)))
+	{
+		ALOG("WebRtcVad_set_mode failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
+	}
+	else
+	{
+		ALOG("WebRtcVad_set_mode successful");
+	}
+	nNextFrameMayHaveVoice = 0;
 #endif
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
@@ -781,13 +785,14 @@ void CAudioCallSession::DecodingThreadProcedure()
 						int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saDecodedFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
 						if (iVadRet != 1)
 						{
-							ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet));
+							ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
 							//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
 						}
 						else
 						{
 							ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
 							nhasVoice = 1;
+							nNextFrameMayHaveVoice = 1;
 						}
 					}
 				}
@@ -795,11 +800,21 @@ void CAudioCallSession::DecodingThreadProcedure()
 				{
 					ALOG("Invalid combo");
 				}
-				if (nhasVoice)
+				if (nhasVoice || nNextFrameMayHaveVoice)
+				{
 
 #endif
-				
+
 					m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
+#ifdef USE_VAD
+					
+				}
+				if (!nhasVoice)
+				{
+					nNextFrameMayHaveVoice = 0;
+				}
+#endif
+				
 			}
 
             toolsObject.SOSleep(0);
