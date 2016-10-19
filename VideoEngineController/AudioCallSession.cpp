@@ -48,6 +48,7 @@ FILE *FileOutput;
 
 #ifdef USE_VAD
 #define VAD_ANALYSIS_SAMPLE_SIZE 80
+#define NEXT_N_FRAMES_MAYE_VOICE 3
 #endif
 
 int gSetMode = -5;
@@ -792,7 +793,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 						{
 							ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
 							nhasVoice = 1;
-							nNextFrameMayHaveVoice = 1;
+							nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
 						}
 					}
 				}
@@ -811,7 +812,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 				if (!nhasVoice)
 				{
-					nNextFrameMayHaveVoice = 0;
+					if (nNextFrameMayHaveVoice > 0)
+					{
+						nNextFrameMayHaveVoice--;
+					}						
 				}
 #endif
 				
