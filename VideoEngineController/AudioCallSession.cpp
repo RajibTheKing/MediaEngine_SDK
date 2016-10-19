@@ -48,7 +48,7 @@ FILE *FileOutput;
 
 #ifdef USE_VAD
 #define VAD_ANALYSIS_SAMPLE_SIZE 80
-#define NEXT_N_FRAMES_MAYE_VOICE 3
+#define NEXT_N_FRAMES_MAYE_VOICE 11
 #endif
 
 int gSetMode = -5;
@@ -191,7 +191,7 @@ m_bIsCheckCall(bIsCheckCall)
 		ALOG("WebRtcVad_Init successful");
 	}
 
-	if ((gSetMode = vadret = WebRtcVad_set_mode(VAD_instance, 3)))
+	if ((gSetMode = vadret = WebRtcVad_set_mode(VAD_instance, 1)))
 	{
 		ALOG("WebRtcVad_set_mode failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
 	}
@@ -388,7 +388,48 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             timeStamp = m_Tools.CurrentTimestamp();
             countFrame++;
-
+#ifdef USE_VAD			
+			if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
+			{
+				int nhasVoice = 0;
+				for (int i = 0; i < nEncodingFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
+				{
+					int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saAudioEncodingFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
+					if (iVadRet != 1)
+					{
+						ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
+						//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
+					}
+					else
+					{
+						ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
+						nhasVoice = 1;
+						nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
+					}
+				}
+				if (!nhasVoice)
+				{
+					if (nNextFrameMayHaveVoice > 0)
+					{
+						nNextFrameMayHaveVoice--;
+					}
+				}
+				if (!nhasVoice && !nNextFrameMayHaveVoice)
+				{
+					ALOG("not sending audio");
+					m_Tools.SOSleep(90);
+					continue;
+				}
+				else
+				{
+					ALOG("sending audio");
+				}
+			}
+			else
+			{
+				ALOG("Invalid combo");
+			}						
+#endif
 #if defined(USE_AECM) || defined(USE_ANS)
 			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 #endif
@@ -484,25 +525,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 			{
 				WebRtcSpl_SynthesisQMF(m_saAudioEncodingFrameLow + i/2, m_saAudioEncodingFrameHi + i/2, m_saAudioEncodingFrame + i, m_PostFilter_state1 , m_PostFilter_state2 );
 			}*/
-
-#elif defined(USE_NAIVE_AGC)
-
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
-			{
-				//if(abs((int)m_saAudioEncodingFrame) > 10)
-				{
-					int temp = (int)m_saAudioEncodingFrame[i] * 10;
-					if(temp > SHRT_MAX)
-					{
-						temp = SHRT_MAX;
-					}
-					if(temp < SHRT_MIN)
-					{
-						temp = SHRT_MIN;
-					}
-					m_saAudioEncodingFrame[i] = temp;
-				}
-			}
 			
 #endif
 
@@ -746,7 +768,25 @@ void CAudioCallSession::DecodingThreadProcedure()
 				{
 					ALOG("WebRtcAgc_AddFarend failed");
 				}
-			}		
+			}	
+#elif defined(USE_NAIVE_AGC)
+
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			{
+				//if(abs((int)m_saAudioEncodingFrame) > 10)
+				{
+					int temp = (int)m_saDecodedFrame[i] * 10;
+					if (temp > SHRT_MAX)
+					{
+						temp = SHRT_MAX;
+					}
+					if (temp < SHRT_MIN)
+					{
+						temp = SHRT_MIN;
+					}
+					m_saDecodedFrame[i] = temp;
+			}
+		}
 #endif
 			bNoDataFromFarendYet = false;
 #ifdef __DUMP_FILE__
@@ -777,50 +817,8 @@ void CAudioCallSession::DecodingThreadProcedure()
             }
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
 			{
-#ifdef USE_VAD
-				int nhasVoice = 0;
-				if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
-				{
-					for (int i = 0; i < nDecodedFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
-					{
-						int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saDecodedFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
-						if (iVadRet != 1)
-						{
-							ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
-							//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
-						}
-						else
-						{
-							ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
-							nhasVoice = 1;
-							nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
-						}
-					}
-				}
-				else
-				{
-					ALOG("Invalid combo");
-				}
-				if (nhasVoice || nNextFrameMayHaveVoice)
-				{
-
-#endif
-
-					m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
-#ifdef USE_VAD
-					
-				}
-				if (!nhasVoice)
-				{
-					if (nNextFrameMayHaveVoice > 0)
-					{
-						nNextFrameMayHaveVoice--;
-					}						
-				}
-#endif
-				
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
 			}
-
             toolsObject.SOSleep(0);
         }
     }
