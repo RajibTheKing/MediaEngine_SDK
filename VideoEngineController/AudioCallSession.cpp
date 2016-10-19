@@ -391,6 +391,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef USE_VAD			
 			if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
 			{
+				long long vadtimeStamp = m_Tools.CurrentTimestamp();
 				int nhasVoice = 0;
 				for (int i = 0; i < nEncodingFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
 				{
@@ -414,10 +415,11 @@ void CAudioCallSession::EncodingThreadProcedure()
 						nNextFrameMayHaveVoice--;
 					}
 				}
+				ALOG(" vad time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - vadtimeStamp));
 				if (!nhasVoice && !nNextFrameMayHaveVoice)
 				{
 					ALOG("not sending audio");
-					m_Tools.SOSleep(90);
+					m_Tools.SOSleep(1);
 					continue;
 				}
 				else
