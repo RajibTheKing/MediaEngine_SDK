@@ -783,11 +783,18 @@ BitRateController* CVideoCallSession::GetBitRateController(){
 
 int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
 {
-	m_nVideoCallHeight = height;
-	m_nVideoCallWidth = width;
-	this->m_pColorConverter->SetHeightWidth(height, width);
-	this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
-	return 1;
+	if(m_nVideoCallHeight != height && m_nVideoCallWidth != width)
+	{
+		m_nVideoCallHeight = height;
+		m_nVideoCallWidth = width;
+		this->m_pColorConverter->SetHeightWidth(height, width);
+		this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
+		return 1;
+	}else
+	{
+		return -1;
+	}
+
 }
 
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
