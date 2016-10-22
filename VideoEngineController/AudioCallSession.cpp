@@ -46,6 +46,11 @@ FILE *FileOutput;
 #define MAXLEVEL 255
 #endif
 
+#ifdef USE_AGC
+#define MAX_GAIN 20
+#define DEF_GAIN 5
+#endif
+
 #ifdef USE_VAD
 #define VAD_ANALYSIS_SAMPLE_SIZE 80
 #define NEXT_N_FRAMES_MAYE_VOICE 11
@@ -53,16 +58,16 @@ FILE *FileOutput;
 
 int gSetMode = -5;
 
-CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bUsingLoudSpeaker, int iVolume, bool bIsCheckCall) :
 m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall)
 
 {
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
-    
-    StartEncodingThread();
-    StartDecodingThread();
+
+	StartEncodingThread();
+	StartDecodingThread();
 
 	SendingHeader = new CAudioPacketHeader();
 	ReceivingHeader = new CAudioPacketHeader();
@@ -74,13 +79,34 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iCurrentRecvdSlotID = -1;
 	m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
-    m_nMaxAudioPacketNumber = ( (1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+	m_nMaxAudioPacketNumber = ((1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
+#ifdef USE_AGC
+	if (!bUsingLoudSpeaker)
+	{
+		if (iVolume >= 0 && iVolume <= MAX_GAIN)
+		{
+			m_iVolume = iVolume;
+		}
+		else
+		{
+			m_iVolume = DEF_GAIN;
+		}
+	}
+	else
+	{
+		m_iVolume = 1;
+	}
+#else
+	m_iVolume = 1;
+#endif
+
+	m_bUsingLoudSpeaker = bUsingLoudSpeaker;
 #ifdef USE_AECM
 	bAecmCreated = false;
 	bAecmInited = false;
-	bNoDataFromFarendYet = true;
+	m_bNoDataFromFarendYet = true;
 	int iAECERR = WebRtcAecm_Create(&AECM_instance);
 	if (iAECERR)
 	{
@@ -200,6 +226,7 @@ m_bIsCheckCall(bIsCheckCall)
 		ALOG("WebRtcVad_set_mode successful");
 	}
 	nNextFrameMayHaveVoice = 0;
+	memset(m_saAudioBlankFrame, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(short));
 #endif
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
@@ -284,6 +311,21 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
 
     return returnedValue;
+}
+
+void CAudioCallSession::SetVolume(int iVolume)
+{
+#ifdef USE_AGC
+	if (iVolume >=0 && iVolume <= MAX_GAIN)
+	{
+		m_iVolume = iVolume;
+		ALOG("SetVolume called with: " + Tools::IntegertoStringConvert(iVolume));
+	}
+	else
+	{
+		m_iVolume = DEF_GAIN;
+	}
+#endif
 }
 
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
@@ -419,7 +461,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 				if (!nhasVoice && !nNextFrameMayHaveVoice)
 				{
 					ALOG("not sending audio");
-					m_Tools.SOSleep(1);
+					m_Tools.SOSleep(70);
 					continue;
 				}
 				else
@@ -467,7 +509,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 				ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
 			}
 #ifdef USE_AECM
-			if (bNoDataFromFarendYet)
+			if (m_bNoDataFromFarendYet)
 			{
 				memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLE_SIZE);
 			}
@@ -479,7 +521,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #endif
 
 #ifdef USE_AECM
-			if (!bNoDataFromFarendYet)
+			if (!m_bNoDataFromFarendYet)
 			{
 				long long llNow = m_Tools.CurrentTimestamp();
 				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
@@ -772,25 +814,28 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 			}	
 #elif defined(USE_NAIVE_AGC)
-
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			if (!m_bUsingLoudSpeaker)
 			{
-				//if(abs((int)m_saAudioEncodingFrame) > 10)
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
 				{
-					int temp = (int)m_saDecodedFrame[i] * 10;
-					if (temp > SHRT_MAX)
+					//if(abs((int)m_saAudioEncodingFrame) > 10)
 					{
-						temp = SHRT_MAX;
+						int temp = (int)m_saDecodedFrame[i] * m_iVolume;
+						if (temp > SHRT_MAX)
+						{
+							temp = SHRT_MAX;
+						}
+						if (temp < SHRT_MIN)
+						{
+							temp = SHRT_MIN;
+						}
+						m_saDecodedFrame[i] = temp;
 					}
-					if (temp < SHRT_MIN)
-					{
-						temp = SHRT_MIN;
-					}
-					m_saDecodedFrame[i] = temp;
 			}
+			
 		}
 #endif
-			bNoDataFromFarendYet = false;
+			m_bNoDataFromFarendYet = false;
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif

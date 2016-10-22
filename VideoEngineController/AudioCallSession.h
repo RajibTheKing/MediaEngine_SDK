@@ -24,7 +24,7 @@
 //#define USE_AECM
 //#define USE_ANS
 #define USE_AGC
-#define USE_VAD
+//#define USE_VAD
 
 #ifdef USE_AGC
 //#define USE_WEBRTC_AGC
@@ -60,7 +60,7 @@ class CAudioCallSession
 
 public:
 
-    CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall=false);
+	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bUsingLoudSpeaker, int iVolume, bool bIsCheckCall = false);
     ~CAudioCallSession();
 
     CAudioCodec* GetAudioCodec();
@@ -76,6 +76,8 @@ public:
     void DecodingThreadProcedure();
     void StopDecodingThread();
     void StartDecodingThread();
+
+	void SetVolume(int iVolume);
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
@@ -94,7 +96,8 @@ private:
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
 
-	bool bNoDataFromFarendYet;
+	bool m_bUsingLoudSpeaker;
+	bool m_bNoDataFromFarendYet;
 #ifdef USE_AECM
 	void* AECM_instance;
 	bool bAecmCreated;
@@ -134,6 +137,9 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
+#ifdef USE_VAD
+	short m_saAudioBlankFrame[MAX_AUDIO_FRAME_LENGHT];
+#endif
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
@@ -160,7 +166,7 @@ private:
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
 
-
+	int m_iVolume;
 
 protected:
 
