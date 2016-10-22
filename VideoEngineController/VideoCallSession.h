@@ -96,6 +96,8 @@ public:
 
 	BitRateController* GetBitRateController();
 
+	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
+
 	bool m_bVideoCallStarted;
     CController *m_pController;
     

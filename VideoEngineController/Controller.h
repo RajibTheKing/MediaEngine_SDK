@@ -43,7 +43,7 @@ public:
 	int PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
-	int SetHeightWidth(const LongLong& lFriendID, int width, int height); 
+	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
 
     int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);

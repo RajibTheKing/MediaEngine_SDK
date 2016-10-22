@@ -153,14 +153,14 @@ int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, un
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight)
+int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->SetHeightWidth(llFriendID, nVideoWidth, nVideoHeight);
+	int iReturnedValue = m_pcController->SetEncoderHeightWidth(llFriendID, nVideoHeight, nVideoWidth);
 
 	return iReturnedValue;
 }
