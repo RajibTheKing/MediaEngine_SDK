@@ -4,7 +4,7 @@
 #include "Tools.h"
 
 
-#define __AUDIO_SELF_CALL__
+//#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
@@ -48,7 +48,8 @@ FILE *FileOutput;
 
 #ifdef USE_AGC
 #define MAX_GAIN 20
-#define DEF_GAIN 5
+#define DEF_GAIN 10
+#define LS_RATIO 5
 #endif
 
 #ifdef USE_VAD
@@ -81,28 +82,28 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 	m_nMaxAudioPacketNumber = ((1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
+	m_bUsingLoudSpeaker = bUsingLoudSpeaker;
 
 #ifdef USE_AGC
-	if (!bUsingLoudSpeaker)
+	
+	if (iVolume >= 0 && iVolume <= MAX_GAIN)
 	{
-		if (iVolume >= 0 && iVolume <= MAX_GAIN)
-		{
-			m_iVolume = iVolume;
-		}
-		else
-		{
-			m_iVolume = DEF_GAIN;
-		}
+		m_fVolume = iVolume;
 	}
 	else
 	{
-		m_iVolume = 1;
+		m_fVolume = DEF_GAIN;
 	}
+	if (m_bUsingLoudSpeaker)
+	{
+		m_fVolume = m_fVolume * 1.0 / LS_RATIO;
+	}
+	
 #else
-	m_iVolume = 1;
+	m_fVolume = 1;
 #endif
 
-	m_bUsingLoudSpeaker = bUsingLoudSpeaker;
+	
 #ifdef USE_AECM
 	bAecmCreated = false;
 	bAecmInited = false;
@@ -318,12 +319,34 @@ void CAudioCallSession::SetVolume(int iVolume)
 #ifdef USE_AGC
 	if (iVolume >=0 && iVolume <= MAX_GAIN)
 	{
-		m_iVolume = iVolume;
+		m_fVolume = iVolume;
 		ALOG("SetVolume called with: " + Tools::IntegertoStringConvert(iVolume));
 	}
 	else
 	{
-		m_iVolume = DEF_GAIN;
+		m_fVolume = DEF_GAIN;
+	}
+	if (m_bUsingLoudSpeaker)
+	{
+		m_fVolume = m_fVolume * 1.0 / LS_RATIO;
+	}
+#endif
+}
+
+void CAudioCallSession::SetLoudSpeaker(bool bOn)
+{
+#ifdef USE_AGC
+	if (m_bUsingLoudSpeaker != bOn)
+	{
+		m_bUsingLoudSpeaker = bOn;
+		if (bOn)
+		{
+			m_fVolume = m_fVolume * 1.0 / LS_RATIO;
+		}
+		else
+		{
+			m_fVolume *= LS_RATIO;
+		}
 	}
 #endif
 }
@@ -814,25 +837,22 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 			}	
 #elif defined(USE_NAIVE_AGC)
-			if (!m_bUsingLoudSpeaker)
-			{
-				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			{				
+				int temp = (int)m_saDecodedFrame[i] * m_fVolume;
+				if (temp > SHRT_MAX)
 				{
-					//if(abs((int)m_saAudioEncodingFrame) > 10)
-					{
-						int temp = (int)m_saDecodedFrame[i] * m_iVolume;
-						if (temp > SHRT_MAX)
-						{
-							temp = SHRT_MAX;
-						}
-						if (temp < SHRT_MIN)
-						{
-							temp = SHRT_MIN;
-						}
-						m_saDecodedFrame[i] = temp;
-					}
-				}			
-			}
+					temp = SHRT_MAX;
+				}
+				if (temp < SHRT_MIN)
+				{
+					temp = SHRT_MIN;
+				}
+				m_saDecodedFrame[i] = temp;
+				
+			}			
+			
 #endif
 			m_bNoDataFromFarendYet = false;
 #ifdef __DUMP_FILE__

@@ -78,6 +78,7 @@ public:
     void StartDecodingThread();
 
 	void SetVolume(int iVolume);
+	void SetLoudSpeaker(bool bOn);
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
@@ -166,7 +167,7 @@ private:
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
 
-	int m_iVolume;
+	float m_fVolume;
 
 protected:
 

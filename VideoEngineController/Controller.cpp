@@ -177,6 +177,22 @@ bool CController::SetVolume(const LongLong& lFriendID, int iVolume)
 	}
 }
 
+bool CController::SetLoudSpeaker(const LongLong& lFriendID, bool bOn)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetLoudSpeaker(bOn);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool CController::StartTestAudioCall(const LongLong& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() called");
