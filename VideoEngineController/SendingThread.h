@@ -45,7 +45,15 @@ private:
 
 	bool m_bIsCheckCall;
 
-	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
+#ifdef ONLY_FOR_LIVESTREAMING
+	unsigned char m_DataToSend[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE * 10];
+
+
+	bool firstFrame;
+	int m_iDataToSendIndex;
+	long long int llPrevTime;
+#endif
 
 	Tools m_Tools;
 

@@ -74,8 +74,40 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
 //    string __show = "#VP FrameNumber: "+Tools::IntegertoStringConvert(iFrameNumber)+"  NP: "+Tools::IntegertoStringConvert(nNumberOfPackets)+"  Size: "+Tools::IntegertoStringConvert(unLength);
 //    LOGE("%s",__show.c_str());
+#ifdef ONLY_FOR_LIVESTREAMING
+	{
 
-	for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
+			int nPacketNumber = 0;
+            int nNumberOfPackets = 1;
+
+
+            m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+                                            uchSendVersion,
+                                            iFrameNumber,
+                                            nNumberOfPackets,
+                                            nPacketNumber,
+                                            unCaptureTimeDifference,
+                                            0,
+                                            unLength,
+                                            nCurrentCallQualityLevel,
+                                            device_orientation,
+                                            nNetworkType);
+
+        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
+		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+//        m_cPacketHeader.ShowDetails("JUST");
+
+		memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData , unLength);
+
+
+        {
+            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + unLength, iFrameNumber, nPacketNumber);
+            
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+        }
+	}
+#else
+````for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
 	{
 		if (nPacketizedDataLength + m_nPacketSize > unLength)
 			m_nPacketSize = unLength - nPacketizedDataLength;
@@ -115,6 +147,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
         }
 	}
+#endif
 
 	return 1;
 }

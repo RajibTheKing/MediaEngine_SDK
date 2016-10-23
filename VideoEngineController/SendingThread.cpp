@@ -18,6 +18,11 @@ m_bIsCheckCall(bIsCheckCall)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
+#ifdef ONLY_FOR_LIVESTREAMING
+	llPrevTime = -1;
+	m_iDataToSendIndex = 0;
+	firstFrame = true;
+#endif
 }
 
 CSendingThread::~CSendingThread()
@@ -132,9 +137,37 @@ void CSendingThread::SendingThreadProcedure()
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
+#ifdef ONLY_FOR_LIVESTREAMING
+            LOGE("fahadRAjib -- >> only for ONLY_FOR_LIVESTREAMING ");
+			/*if(llPrevTime == -1)
+			{
+				llPrevTime = toolsObject.CurrentTimestamp();
+			}*/
+			int nalType = 0;
+			if(packetSize> 20) {
+				//nalType = m_EncodedFrame[2 + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] == 1 ? (m_EncodedFrame[3+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f) : (m_EncodedFrame[4+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f);
+				LOGE("fahad-->> rajib -->>>>>>  ---------- dataTo send length -- -- sendingLastFrame -- %d  --nalType == %d", frameNumber, nalType);
+			}
 
 
+			toolsObject.SOSleep(1);
+			/*if(nalType != 7 ||  firstFrame == true)
+			{
+				memcpy(m_DataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
+				m_iDataToSendIndex += packetSize;
+			}
+			else
+			{
+
+				//m_pCommonElementsBucket->SendFunctionPointer(m_DataToSend, m_iDataToSendIndex);
+
+				memcpy(m_DataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
+				m_iDataToSendIndex += packetSize;
+			}*/
+			firstFrame = false;
+#else
 			//packetHeader.setPacketHeader(m_EncodedFrame + 1);
+
 
 			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
 			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
@@ -241,6 +274,7 @@ void CSendingThread::SendingThreadProcedure()
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
 #endif
+#endif// End of ONLY_FOR_LIVESTREAMING
 
 		}
 	}

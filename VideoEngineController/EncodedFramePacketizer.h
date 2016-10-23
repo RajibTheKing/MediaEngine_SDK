@@ -34,8 +34,11 @@ private:
 	CPacketHeader m_cPacketHeader;
 	CSendingBuffer *m_pcSendingBuffer;
 	CCommonElementsBucket* m_pcCommonElementsBucket;
-
+#ifdef ONLY_FOR_LIVESTREAMING
+	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
+#else
 	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SIZE];
+#endif
 };
 
 #endif
