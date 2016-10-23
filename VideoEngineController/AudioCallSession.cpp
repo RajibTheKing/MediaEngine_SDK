@@ -4,7 +4,7 @@
 #include "Tools.h"
 
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
@@ -48,7 +48,7 @@ FILE *FileOutput;
 
 #ifdef USE_AGC
 #define MAX_GAIN 20
-#define DEF_GAIN 10
+#define DEF_GAIN 5
 #define LS_RATIO 5
 #endif
 

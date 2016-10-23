@@ -21,10 +21,12 @@
 #include "G729CodecNative.h"
 #endif
 
+#ifdef __ANDROID__
 //#define USE_AECM
 //#define USE_ANS
 #define USE_AGC
 //#define USE_VAD
+#endif
 
 #ifdef USE_AGC
 //#define USE_WEBRTC_AGC
