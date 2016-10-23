@@ -831,9 +831,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 						}
 						m_saDecodedFrame[i] = temp;
 					}
+				}			
 			}
-			
-		}
 #endif
 			m_bNoDataFromFarendYet = false;
 #ifdef __DUMP_FILE__
