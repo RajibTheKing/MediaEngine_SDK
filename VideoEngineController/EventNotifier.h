@@ -28,7 +28,7 @@ public:
     void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
 	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
-
+	bool IsVideoCallRunning();
 
 	
     static const int NETWORK_STRENTH_GOOD = 202;
