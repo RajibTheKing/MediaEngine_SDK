@@ -20,7 +20,9 @@
 #include "G729CodecNative.h"
 #endif
 
-#define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
+#define ALOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a)
+
+#define __AUDIO_CALL_VERSION__  1
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -54,7 +56,6 @@ public:
 	int m_iNextPacketType;
 
 private:
-
     Tools m_Tools;
     LongLong m_FriendID;
 
@@ -71,7 +72,8 @@ private:
 #else
     G729CodecNative *m_pG729CodecNative;
 #endif
-
+//    int m_iNextPacketType;
+    int m_iLastDecodedPacketNumber;
     int m_nMaxAudioPacketNumber;
     int m_iPacketNumber;
 	int m_iSlotID;
@@ -93,7 +95,8 @@ private:
 
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
-
+    int m_iAudioVersionFriend;
+    int m_iAudioVersionSelf;
 
 
 protected:
