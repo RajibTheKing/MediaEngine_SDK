@@ -139,32 +139,31 @@ void CSendingThread::SendingThreadProcedure()
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 #ifdef ONLY_FOR_LIVESTREAMING
             LOGE("fahadRAjib -- >> only for ONLY_FOR_LIVESTREAMING ");
-			/*if(llPrevTime == -1)
-			{
-				llPrevTime = toolsObject.CurrentTimestamp();
-			}*/
+
 			int nalType = 0;
-			if(packetSize> 20) {
-				//nalType = m_EncodedFrame[2 + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] == 1 ? (m_EncodedFrame[3+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f) : (m_EncodedFrame[4+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f);
-				LOGE("fahad-->> rajib -->>>>>>  ---------- dataTo send length -- -- sendingLastFrame -- %d  --nalType == %d", frameNumber, nalType);
-			}
+			/*if(packetSize> 20) {
+				nalType = m_EncodedFrame[2 + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] == 1 ? (m_EncodedFrame[3+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f) : (m_EncodedFrame[4+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f);
+
+			}*/
 
 
-			toolsObject.SOSleep(1);
-			/*if(nalType != 7 ||  firstFrame == true)
+			if(frameNumber%5 == 0 &&  firstFrame == false)
 			{
+				//m_pCommonElementsBucket->SendFunctionPointer(m_DataToSend, m_iDataToSendIndex);
+				LOGE("fahad-->> rajib -->>>>>>  ---------- dataTo send length -- -- m_iDataToSendIndex -- %d  --frameNumber == %d", m_iDataToSendIndex, frameNumber);
+
+				m_iDataToSendIndex = 0;
 				memcpy(m_DataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
 				m_iDataToSendIndex += packetSize;
+
 			}
 			else
 			{
-
-				//m_pCommonElementsBucket->SendFunctionPointer(m_DataToSend, m_iDataToSendIndex);
-
 				memcpy(m_DataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
 				m_iDataToSendIndex += packetSize;
-			}*/
+			}
 			firstFrame = false;
+			toolsObject.SOSleep(1);
 #else
 			//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 

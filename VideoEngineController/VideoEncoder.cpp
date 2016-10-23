@@ -148,7 +148,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encoderParemeters.iTemporalLayerNum = 0;
-	encoderParemeters.uiIntraPeriod = nIFrameInterval;
+	encoderParemeters.uiIntraPeriod = 5;
 	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
 	encoderParemeters.bEnableSSEI = false;
 	encoderParemeters.bEnableFrameCroppingFlag = true;
