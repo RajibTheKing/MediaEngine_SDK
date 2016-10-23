@@ -51,16 +51,36 @@ bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)
 	return Ret;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID)
+bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, bool bUsingLoudSpeaker, int iVolume)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID);
+	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, bUsingLoudSpeaker, iVolume);
 
 	return bReturnedValue;
+}
+
+bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->SetVolume(lFriendID, iVolume);
+}
+
+bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool bOn)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->SetLoudSpeaker(lFriendID, bOn);
 }
 
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType)

@@ -18,7 +18,9 @@ public:
      bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
      bool InitializeLibrary(const IPVLongType& llUserID);
      bool SetUserName(const IPVLongType llUserName);
-     bool StartAudioCall(const IPVLongType llFriendID);
+     bool StartAudioCall(const IPVLongType llFriendID, bool bUsingLoudSpeaker, int iVolume);
+	 bool SetVolume(const LongLong lFriendID, int iVolume);
+	 bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
      bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType = 0);
      int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);

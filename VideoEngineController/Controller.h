@@ -34,7 +34,9 @@ public:
 	~CController();
 
 	bool SetUserName(const LongLong& lUserName);
-	bool StartAudioCall(const LongLong& lFriendID);
+	bool StartAudioCall(const LongLong& lFriendID, bool bUsingLoudSpeaker, int iVolume);
+	bool SetVolume(const LongLong& lFriendID, int iVolume);
+	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
 	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	bool StartTestAudioCall(const LongLong& lFriendID);
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);

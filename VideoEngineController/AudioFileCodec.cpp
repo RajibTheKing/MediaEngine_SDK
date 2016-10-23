@@ -48,7 +48,7 @@ int CAudioFileCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned 
         nbBytes = max( nbBytes, 0); //If opus return -1. Not sure about that.
         if(nbBytes == 0)
         {
-            ALOG( "#EXP#**************************** Encode Failed");
+            AFLOG( "#EXP#**************************** Encode Failed");
         }
         out_buffer[ nEncodedSize + 2 * iFrameCounter ] = (nbBytes & 0x000000FF);
         out_buffer[ nEncodedSize + 2 * iFrameCounter + 1 ] = (nbBytes >> 8);
@@ -66,7 +66,7 @@ int CAudioFileCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned 
 
     if(nProcessedDataSize != in_size)
     {
-        ALOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
+        AFLOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
     }
     return nEncodedPacketLenght;
 }
@@ -82,13 +82,13 @@ int CAudioFileCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, s
         nCurrentFrameSize += in_data[nDecodedDataSize + 2 * iFrameCounter];
 
         if(nProcessedDataSize + nCurrentFrameSize + 2 > in_size) {
-            ALOG("#EXP# Encoded data not matched.");
+            AFLOG("#EXP# Encoded data not matched.");
             break;
         }
 
         if(nCurrentFrameSize < 1)
         {
-            ALOG("#EXP# ZERO Frame For Decoding");
+            AFLOG("#EXP# ZERO Frame For Decoding");
             return 0;
         }
         frame_size = opus_decode(decoder, in_data + nDecodedDataSize + 2 * iFrameCounter + 2, nCurrentFrameSize, out_buffer + iFrameCounter * AUDIO_FRAME_SIZE, AUDIO_MAX_FRAME_SIZE, 0);
@@ -111,7 +111,7 @@ bool CAudioFileCodec::SetBitrateOpus(int nBitrate){
 
     int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 
-    ALOG("#BR# =========================>  NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
+    AFLOG("#BR# =========================>  NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
 
     return ret != 0;
 }
@@ -121,7 +121,7 @@ bool CAudioFileCodec::SetComplexityOpus(int nComplexity){
 
     int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 
-    ALOG("#COMPLEXITY# ---------------------->  NOW Complexity: " + m_Tools.IntegertoStringConvert(nComplexity));
+    AFLOG("#COMPLEXITY# ---------------------->  NOW Complexity: " + m_Tools.IntegertoStringConvert(nComplexity));
 
     return ret != 0;
 }

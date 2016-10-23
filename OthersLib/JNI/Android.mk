@@ -46,6 +46,30 @@ LOCAL_MODULE := Opus
 LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libopus.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Prebuilt AECM
+include $(CLEAR_VARS)
+LOCAL_MODULE := AECM
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_aecm.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt NS
+include $(CLEAR_VARS)
+LOCAL_MODULE := NS
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_ns.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt AGC
+include $(CLEAR_VARS)
+LOCAL_MODULE := AGC
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_agc.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt VAD
+include $(CLEAR_VARS)
+LOCAL_MODULE := VAD
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_vad.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 #  VideoEngineController
 include $(CLEAR_VARS)
 G729    := g729
@@ -57,6 +81,7 @@ LOCAL_C_INCLUDES := \
 			../../../RingIDSDK \
 			../../../videoengine/OthersLib/boost \
 			../../../videoengine/include/ \
+			../../../videoengine/include/aecm \
 
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
@@ -179,6 +204,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AECM NS AGC VAD IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)

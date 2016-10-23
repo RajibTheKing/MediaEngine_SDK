@@ -130,7 +130,7 @@ bool CController::SetUserName(const LongLong& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const LongLong& lFriendID)
+bool CController::StartAudioCall(const LongLong& lFriendID, bool bUsingLoudSpeaker, int iVolume)
 {
 	CAudioCallSession* pAudioSession;
     
@@ -145,7 +145,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, bUsingLoudSpeaker, iVolume);
 
 		pAudioSession->InitializeAudioCallSession(lFriendID);
 
@@ -153,6 +153,38 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session started");
 
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::SetVolume(const LongLong& lFriendID, int iVolume)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetVolume(iVolume);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::SetLoudSpeaker(const LongLong& lFriendID, bool bOn)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetLoudSpeaker(bOn);
 		return true;
 	}
 	else
@@ -173,7 +205,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session creating");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, DEVICE_ABILITY_CHECK_MOOD);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket,0,0, DEVICE_ABILITY_CHECK_MOOD);
 
 		pAudioSession->InitializeAudioCallSession(lFriendID);
 

@@ -356,6 +356,9 @@
     <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\webrtc\modules\audio_processing\aecm\include\echo_control_mobile.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\libopenh264.a">

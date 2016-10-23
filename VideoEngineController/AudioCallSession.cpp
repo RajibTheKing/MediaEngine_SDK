@@ -3,10 +3,12 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
+
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
     #include <dispatch/dispatch.h>
@@ -22,17 +24,51 @@ FILE *FileOutput;
 
 //extern int g_StopVideoSending;
 
-CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
+#ifdef USE_ANS
+#define ANS_SAMPLE_SIZE 80
+#define Mild 0
+#define Medium 1
+#define Aggressive 2
+#endif
 
+#ifdef USE_AECM
+#define AECM_SAMPLE_SIZE 80
+#endif
+
+#ifdef USE_WEBRTC_AGC
+#define AGC_SAMPLE_SIZE 80
+#define AGC_ANALYSIS_SAMPLE_SIZE 160
+#define AGCMODE_UNCHANGED 0
+#define AGCMODE_ADAPTIVE_ANALOG 1
+#define AGNMODE_ADAPTIVE_DIGITAL 2
+#define AGCMODE_FIXED_DIGITAL 2
+#define MINLEVEL 1
+#define MAXLEVEL 255
+#endif
+
+#ifdef USE_AGC
+#define MAX_GAIN 20
+#define DEF_GAIN 10
+#define LS_RATIO 5
+#endif
+
+#ifdef USE_VAD
+#define VAD_ANALYSIS_SAMPLE_SIZE 80
+#define NEXT_N_FRAMES_MAYE_VOICE 11
+#endif
+
+int gSetMode = -5;
+
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bUsingLoudSpeaker, int iVolume, bool bIsCheckCall) :
 m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall)
 
 {
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
-    
-    StartEncodingThread();
-    StartDecodingThread();
+
+	StartEncodingThread();
+	StartDecodingThread();
 
 	SendingHeader = new CAudioPacketHeader();
 	ReceivingHeader = new CAudioPacketHeader();
@@ -44,8 +80,156 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iCurrentRecvdSlotID = -1;
 	m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
-    m_nMaxAudioPacketNumber = ( (1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+	m_nMaxAudioPacketNumber = ((1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
+	m_bUsingLoudSpeaker = bUsingLoudSpeaker;
+
+#ifdef USE_AGC
+	
+	if (iVolume >= 0 && iVolume <= MAX_GAIN)
+	{
+		m_fVolume = iVolume;
+	}
+	else
+	{
+		m_fVolume = DEF_GAIN;
+	}
+	if (m_bUsingLoudSpeaker)
+	{
+		m_fVolume = m_fVolume * 1.0 / LS_RATIO;
+	}
+	
+#else
+	m_fVolume = 1;
+#endif
+
+	
+#ifdef USE_AECM
+	bAecmCreated = false;
+	bAecmInited = false;
+	m_bNoDataFromFarendYet = true;
+	int iAECERR = WebRtcAecm_Create(&AECM_instance);
+	if (iAECERR)
+	{
+		ALOG("WebRtcAecm_Create failed");
+	}
+	else
+	{
+		ALOG("WebRtcAecm_Create successful");
+		bAecmCreated = true;
+	}
+	
+	iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
+	if (iAECERR)
+	{
+		ALOG("WebRtcAecm_Init failed");
+	}
+	else
+	{
+		ALOG("WebRtcAecm_Init successful");
+		bAecmInited = true;
+	}
+#endif
+
+#ifdef USE_ANS
+	int ansret = -1;
+	if ((ansret = WebRtcNs_Create(&NS_instance)))
+	{
+		ALOG("WebRtcNs_Create failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
+	}
+	else
+	{
+		ALOG("WebRtcNs_Create successful");
+	}
+	if ((ansret = WebRtcNs_Init(NS_instance, AUDIO_SAMPLE_RATE)))
+	{
+		ALOG("WebRtcNs_Init failed with error code= " + m_Tools.IntegertoStringConvert(ansret));
+	}
+	else
+	{
+		ALOG("WebRtcNs_Init successful");
+	}
+
+	if ((ansret = WebRtcNs_set_policy(NS_instance, Medium)))
+	{
+		ALOG("WebRtcNs_set_policy failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
+	}
+	else
+	{
+		ALOG("WebRtcNs_set_policy successful");
+	}
+#endif
+
+#ifdef USE_WEBRTC_AGC
+	memset(m_Filter_state1, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
+	memset(m_Filter_state2, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
+
+	memset(m_PostFilter_state1, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
+	memset(m_PostFilter_state1, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(int));
+	int agcret = -1;
+	if ((agcret = WebRtcAgc_Create(&AGC_instance)))
+	{
+		ALOG("WebRtcAgc_Create failed with error code = " + m_Tools.IntegertoStringConvert(agcret));
+	}
+	else
+	{
+		ALOG("WebRtcAgc_Create successful");
+	}
+	if ((agcret = WebRtcAgc_Init(AGC_instance, MINLEVEL, MAXLEVEL, AGNMODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
+	{
+		ALOG("WebRtcAgc_Init failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
+	}
+	else
+	{
+		ALOG("WebRtcAgc_Init successful");
+	}
+	WebRtcAgc_config_t gain_config;
+
+	gain_config.targetLevelDbfs = 1;
+	gain_config.compressionGaindB = 20;
+	gain_config.limiterEnable = kAgcTrue;
+	if ((agcret = WebRtcAgc_set_config(AGC_instance, gain_config)))
+	{
+		ALOG("WebRtcAgc_set_config failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
+	}
+	else
+	{
+		ALOG("WebRtcAgc_Create successful");
+	}
+#endif
+
+#ifdef USE_VAD
+	int vadret = -1;
+	if ((vadret = WebRtcVad_Create(&VAD_instance)))
+	{
+		ALOG("WebRtcVad_Create failed with error code = " + m_Tools.IntegertoStringConvert(vadret));
+	}
+	else
+	{
+		ALOG("WebRtcVad_Create successful");
+	}
+	
+	if ((vadret = WebRtcVad_Init(VAD_instance)))
+	{
+		ALOG("WebRtcVad_Init failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
+	}
+	else
+	{
+		ALOG("WebRtcVad_Init successful");
+	}
+
+	if ((gSetMode = vadret = WebRtcVad_set_mode(VAD_instance, 1)))
+	{
+		ALOG("WebRtcVad_set_mode failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
+	}
+	else
+	{
+		ALOG("WebRtcVad_set_mode successful");
+	}
+	nNextFrameMayHaveVoice = 0;
+	memset(m_saAudioBlankFrame, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(short));
+#endif
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
@@ -58,6 +242,18 @@ CAudioCallSession::~CAudioCallSession()
     delete m_pAudioCodec;
 #else
     delete m_pG729CodecNative;
+#endif
+#ifdef USE_AECM
+	WebRtcAecm_Free(AECM_instance);
+#endif
+#ifdef USE_ANS
+	WebRtcNs_Free(NS_instance);
+#endif
+#ifdef USE_WEBRTC_AGC
+	WebRtcAgc_Free(AGC_instance);
+#endif
+#ifdef USE_VAD
+	WebRtcVad_Free(VAD_instance);
 #endif
 
 	/*if (NULL != m_pAudioDecoder)
@@ -116,6 +312,43 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
 
     return returnedValue;
+}
+
+void CAudioCallSession::SetVolume(int iVolume)
+{
+#ifdef USE_AGC
+	if (iVolume >=0 && iVolume <= MAX_GAIN)
+	{
+		m_fVolume = iVolume;
+		ALOG("SetVolume called with: " + Tools::IntegertoStringConvert(iVolume));
+	}
+	else
+	{
+		m_fVolume = DEF_GAIN;
+	}
+	if (m_bUsingLoudSpeaker)
+	{
+		m_fVolume = m_fVolume * 1.0 / LS_RATIO;
+	}
+#endif
+}
+
+void CAudioCallSession::SetLoudSpeaker(bool bOn)
+{
+#ifdef USE_AGC
+	if (m_bUsingLoudSpeaker != bOn)
+	{
+		m_bUsingLoudSpeaker = bOn;
+		if (bOn)
+		{
+			m_fVolume = m_fVolume * 1.0 / LS_RATIO;
+		}
+		else
+		{
+			m_fVolume *= LS_RATIO;
+		}
+	}
+#endif
 }
 
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
@@ -220,6 +453,147 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             timeStamp = m_Tools.CurrentTimestamp();
             countFrame++;
+#ifdef USE_VAD			
+			if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
+			{
+				long long vadtimeStamp = m_Tools.CurrentTimestamp();
+				int nhasVoice = 0;
+				for (int i = 0; i < nEncodingFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
+				{
+					int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saAudioEncodingFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
+					if (iVadRet != 1)
+					{
+						ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
+						//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
+					}
+					else
+					{
+						ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
+						nhasVoice = 1;
+						nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
+					}
+				}
+				if (!nhasVoice)
+				{
+					if (nNextFrameMayHaveVoice > 0)
+					{
+						nNextFrameMayHaveVoice--;
+					}
+				}
+				ALOG(" vad time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - vadtimeStamp));
+				if (!nhasVoice && !nNextFrameMayHaveVoice)
+				{
+					ALOG("not sending audio");
+					m_Tools.SOSleep(70);
+					continue;
+				}
+				else
+				{
+					ALOG("sending audio");
+				}
+			}
+			else
+			{
+				ALOG("Invalid combo");
+			}						
+#endif
+#if defined(USE_AECM) || defined(USE_ANS)
+			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+#endif
+#ifdef USE_WEBRTC_AGC
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				WebRtcSpl_AnalysisQMF(m_saAudioEncodingFrame + i, m_saAudioEncodingFrameLow + i, m_saAudioEncodingFrameHi + i, m_Filter_state1 , m_Filter_state2 );
+			}
+			
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_AddMic(AGC_instance, m_saAudioEncodingFrameLow + i, m_saAudioEncodingFrameHi + i, AGC_SAMPLE_SIZE))
+				{
+					ALOG("WebRtcAgc_AddMic failed");
+				}
+			}
+#endif
+#ifdef USE_ANS
+			long long llNow = m_Tools.CurrentTimestamp();
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcNs_Process(NS_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingDenoisedFrame + i, NULL))
+				{
+					ALOG("WebRtcNs_Process failed");
+				}
+			}
+			if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingDenoisedFrame, nEncodingFrameSize * sizeof(short)) == 0)
+			{
+				ALOG("WebRtcNs_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+			}
+			else
+			{
+				ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+			}
+#ifdef USE_AECM
+			if (m_bNoDataFromFarendYet)
+			{
+				memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLE_SIZE);
+			}
+#else
+			memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLE_SIZE);
+#endif
+
+			
+#endif
+
+#ifdef USE_AECM
+			if (!m_bNoDataFromFarendYet)
+			{
+				long long llNow = m_Tools.CurrentTimestamp();
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
+				{
+#ifdef USE_ANS
+					if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, m_saAudioEncodingDenoisedFrame + i, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
+#else
+					if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
+#endif
+					{
+						ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
+					}
+				}
+
+				if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
+				{
+					ALOG("WebRtcAec_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+				}
+				else
+				{
+					ALOG("WebRtcAec_Process tried to do something, believe me :-( . It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+				}
+			}			
+#endif
+#if defined(USE_WEBRTC_AGC)
+			uint8_t saturationWarning;
+			int32_t inMicLevel = 0;
+			int32_t outMicLevel;
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_Process(AGC_instance, m_saAudioEncodingFrameLow + i, m_saAudioEncodingFrameHi + i, AGC_SAMPLE_SIZE,
+					m_saAudioEncodingTempFrameLow + i, m_saAudioEncodingTempFrameHigh + i,
+					inMicLevel, &outMicLevel, 0, &saturationWarning))
+				{
+					ALOG("WebRtcAgc_Process failed");
+				}
+			}
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				WebRtcSpl_SynthesisQMF(m_saAudioEncodingTempFrameLow + i, m_saAudioEncodingTempFrameHigh + i, m_saAudioEncodingFrame + i, m_PostFilter_state1 , m_PostFilter_state2 );
+			}
+
+
+			/*for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+			{
+				WebRtcSpl_SynthesisQMF(m_saAudioEncodingFrameLow + i/2, m_saAudioEncodingFrameHi + i/2, m_saAudioEncodingFrame + i, m_PostFilter_state1 , m_PostFilter_state2 );
+			}*/
+			
+#endif
 
 #ifdef OPUS_ENABLE
             nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
@@ -431,7 +805,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				m_iCurrentRecvdSlotID = ReceivingHeader->GetInformation(SLOTNUMBER);
 				m_iReceivedPacketsInCurrentSlot = 0;
 #ifdef OPUS_ENABLE
-				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+				//m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 #endif
 			}
 			
@@ -445,6 +819,42 @@ void CAudioCallSession::DecodingThreadProcedure()
 #else
             nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame  + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
+#ifdef USE_AECM			
+			for (int i = 0; i < nDecodedFrameSize; i += AECM_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saDecodedFrame + i, AECM_SAMPLE_SIZE))
+				{
+					ALOG("WebRtcAec_BufferFarend failed");
+				}
+			}						
+#endif
+#ifdef USE_WEBRTC_AGC
+			for (int i = 0; i < nDecodedFrameSize; i += AGC_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_AddFarend(AGC_instance, m_saDecodedFrame + i, AGC_SAMPLE_SIZE))
+				{
+					ALOG("WebRtcAgc_AddFarend failed");
+				}
+			}	
+#elif defined(USE_NAIVE_AGC)
+			
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			{				
+				int temp = (int)m_saDecodedFrame[i] * m_fVolume;
+				if (temp > SHRT_MAX)
+				{
+					temp = SHRT_MAX;
+				}
+				if (temp < SHRT_MIN)
+				{
+					temp = SHRT_MIN;
+				}
+				m_saDecodedFrame[i] = temp;
+				
+			}			
+			
+#endif
+			m_bNoDataFromFarendYet = false;
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
@@ -471,9 +881,10 @@ void CAudioCallSession::DecodingThreadProcedure()
                 ALOG("#EXP# Decoding Failed.");
                 continue;
             }
-			if (m_bIsCheckCall == LIVE_CALL_MOOD )
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+			{
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
-
+			}
             toolsObject.SOSleep(0);
         }
     }
