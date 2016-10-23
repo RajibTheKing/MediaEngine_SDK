@@ -47,8 +47,9 @@ private:
 
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
 #ifdef ONLY_FOR_LIVESTREAMING
-	unsigned char m_DataToSend[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE * 10];
-
+	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
+	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
+	int m_iAudioDataToSendIndex;
 
 	bool firstFrame;
 	int m_iDataToSendIndex;

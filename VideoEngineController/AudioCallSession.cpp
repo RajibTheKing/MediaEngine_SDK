@@ -46,6 +46,9 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
     m_nMaxAudioPacketNumber = ( (1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
+#ifdef ONLY_FOR_LIVESTREAMING
+    m_iAudioDataSendIndex = 0;
+#endif
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
@@ -288,9 +291,24 @@ void CAudioCallSession::EncodingThreadProcedure()
 #else
             if (m_bIsCheckCall == LIVE_CALL_MOOD) {
 //                ALOG("#H#Sent PacketType: "+m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[0]));
-                m_pCommonElementsBucket->SendFunctionPointer(m_ucaEncodedFrame,
+#ifdef ONLY_FOR_LIVESTREAMING
+
+                {
+                    LOGE("fahad-->> rajib --- audioDataCopyed --------Before ^^^^^^^^^^^^^^^^^^^^---------");
+                    //Locker lock(*m_pAudioCallSessionMutex);
+                    LOGE("fahad-->> rajib --- audioDataCopyed --------*******************************---------");
+                    if((m_iAudioDataSendIndex + nEncodedFrameSize + m_AudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE )
+                    {
+                        memcpy(m_ucaAudioDataToSend + m_iAudioDataSendIndex,  m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+                        m_iAudioDataSendIndex += (nEncodedFrameSize + m_AudioHeadersize + 1);
+                    }
+                }
+
+#endif
+                /*m_pCommonElementsBucket->SendFunctionPointer(m_ucaEncodedFrame,
                                                              nEncodedFrameSize + m_AudioHeadersize +
-                                                             1);
+                                                             1);*/
+
             }
 			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
@@ -492,5 +510,14 @@ void CAudioCallSession::DecodingThreadProcedure()
     
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
+#ifdef ONLY_FOR_LIVESTREAMING
+void CAudioCallSession::getAudioSendToData(unsigned char * pAudioDataToSend, int &length)
+{
+    //Locker lock(*m_pAudioCallSessionMutex);
+    memcpy(pAudioDataToSend, m_ucaAudioDataToSend, m_iAudioDataSendIndex);
+    length = m_iAudioDataSendIndex;
+    m_iAudioDataSendIndex = 0;
+}
+#endif
 
 

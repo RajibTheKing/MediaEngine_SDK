@@ -141,26 +141,32 @@ void CSendingThread::SendingThreadProcedure()
             LOGE("fahadRAjib -- >> only for ONLY_FOR_LIVESTREAMING ");
 
 			int nalType = 0;
-			/*if(packetSize> 20) {
-				nalType = m_EncodedFrame[2 + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] == 1 ? (m_EncodedFrame[3+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f) : (m_EncodedFrame[4+ PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE] & 0x1f);
-
-			}*/
 
 
 			if(frameNumber%5 == 0 &&  firstFrame == false)
 			{
-				//m_pCommonElementsBucket->SendFunctionPointer(m_DataToSend, m_iDataToSendIndex);
-				LOGE("fahad-->> rajib -->>>>>>  ---------- dataTo send length -- -- m_iDataToSendIndex -- %d  --frameNumber == %d", m_iDataToSendIndex, frameNumber);
+				CAudioCallSession *pAudioSession;
+
+				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+				pAudioSession->getAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex);
+
+				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
+				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
+
+				LOGE("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
 
 				m_iDataToSendIndex = 0;
-				memcpy(m_DataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
+				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
 				m_iDataToSendIndex += packetSize;
 
 			}
 			else
 			{
-				memcpy(m_DataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
-				m_iDataToSendIndex += packetSize;
+				if(m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
+				{
+					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
+					m_iDataToSendIndex += packetSize;
+				}
 			}
 			firstFrame = false;
 			toolsObject.SOSleep(1);

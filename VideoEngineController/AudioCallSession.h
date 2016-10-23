@@ -55,6 +55,9 @@ public:
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
 	int m_iNextPacketType;
+#ifdef ONLY_FOR_LIVESTREAMING
+	void getAudioSendToData(unsigned char * pAudioDataToSend, int &length);
+#endif
 
 private:
 
@@ -89,8 +92,10 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
-
-
+#ifdef ONLY_FOR_LIVESTREAMING
+	unsigned char m_ucaAudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+	int m_iAudioDataSendIndex;
+#endif
     bool m_bAudioEncodingThreadRunning;
     bool m_bAudioEncodingThreadClosed;
 
