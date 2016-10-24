@@ -1,6 +1,12 @@
 
 #include "VideoDecodingThread.h"
 #include "VideoCallSession.h"
+#include "Globals.h"
+
+#include "LiveVideoDecodingQueue.h"
+
+//extern LiveReceiver *g_LiveReceiver;
+extern LiveVideoDecodingQueue g_LiveVideoDecodingQueue;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -130,7 +136,21 @@ void CVideoDecodingThread::DecodingThreadProcedure()
     long long llTargetTimeStampDiff = -1;
 	while (bDecodingThreadRunning)
 	{
-        
+		if(Globals::g_bIsLiveStreaming)
+		{
+			if(g_LiveVideoDecodingQueue.GetQueueSize() == 0) {
+				toolsObject.SOSleep(10);
+			}
+			else
+			{
+				nFrameLength = g_LiveVideoDecodingQueue.DeQueue(m_PacketizedFrame);
+				LOGE("#V## Queue: %d",nFrameLength);
+				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
+
+				toolsObject.SOSleep(10);
+			}
+			continue;
+		}
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
 
 		if( -1 == m_pVideoCallSession->GetShiftedTime())
@@ -274,7 +294,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    
+	LOGE("#V### Decoded Size -> %d +++E.Size:  %d",m_decodedFrameSize,(int)frameSize);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
     
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime) + ", CurrentCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth) + ", AverageDecodeTime --> " + m_Tools.DoubleToString(m_pCalculatorDecodeTime->GetAverage()) + ", Decoder returned = " + m_Tools.IntegertoStringConvert(m_decodedFrameSize) + ", FrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));

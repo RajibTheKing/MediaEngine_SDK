@@ -2,7 +2,11 @@
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "LiveReceiver.h"
+#include "Globals.h"
 
+extern LiveReceiver *g_LiveReceiver;
+extern LiveVideoDecodingQueue g_LiveVideoDecodingQueue;
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
@@ -28,6 +32,9 @@ m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall)
 
 {
+    Globals::g_bIsLiveStreaming = true;
+    g_LiveReceiver = new LiveReceiver(&m_AudioDecodingBuffer,&g_LiveVideoDecodingQueue);
+
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
     

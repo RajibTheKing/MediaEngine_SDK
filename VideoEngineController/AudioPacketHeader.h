@@ -20,6 +20,9 @@
 #define MAXHEADERSIZE 100
 
 
+#define __AUDIO_HEADER_LENGTH__ 7
+
+
 static int HeaderBitmap[] =
 {
 	8 /*PACKETTYPE*/,

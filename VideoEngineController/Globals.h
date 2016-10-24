@@ -12,7 +12,9 @@
 //CFPSController g_FPSController;
 
 class Globals {
-
+public:
+    Globals();
+    static bool g_bIsLiveStreaming;
 };
 
 
