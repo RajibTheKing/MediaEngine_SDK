@@ -138,7 +138,7 @@ void CSendingThread::SendingThreadProcedure()
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 #ifdef ONLY_FOR_LIVESTREAMING
-            LOGE("fahadRAjib -- >> only for ONLY_FOR_LIVESTREAMING ");
+            //LOGE("fahadRAjib -- >> only for ONLY_FOR_LIVESTREAMING ");
 
 			int nalType = 0;
 
@@ -153,7 +153,7 @@ void CSendingThread::SendingThreadProcedure()
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
 
-				LOGE("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
+				printf("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d\n", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
 
 				m_iDataToSendIndex = 0;
 				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );

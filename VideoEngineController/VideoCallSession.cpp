@@ -404,7 +404,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
         if(m_nDeviceCheckFrameCounter>75) return m_nDeviceCheckFrameCounter;
     }*/
 
-    LOGE("CVideoCallSession::PushIntoBufferForEncoding called");
+    //LOGE("CVideoCallSession::PushIntoBufferForEncoding called");
     
 	m_nCapturedFrameCounter++;
 
@@ -417,7 +417,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
         //      return 1;
         //}
 
-        LOGE("CVideoCallSession::PushIntoBufferForEncoding  GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false so returning" );
+        //LOGE("CVideoCallSession::PushIntoBufferForEncoding  GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false so returning" );
 
         return 1;
     }
@@ -431,7 +431,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
 	if (m_pVideoEncodingThread->IsThreadStarted() == false)
 	{
-	    LOGE("CVideoCallSession::PushIntoBufferForEncoding m_pVideoEncodingThread->IsThreadStarted() == false so returning");
+	    //LOGE("CVideoCallSession::PushIntoBufferForEncoding m_pVideoEncodingThread->IsThreadStarted() == false so returning");
 
 	    return 1;
 	}
@@ -440,7 +440,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	
 	if (m_bIsCheckCall == true)
 	{
-	    LOGE("CVideoCallSession::PushIntoBufferForEncoding m_bIsCheckCall == true so returning");
+	    //LOGE("CVideoCallSession::PushIntoBufferForEncoding m_bIsCheckCall == true so returning");
 
 	    return 1;
 	}

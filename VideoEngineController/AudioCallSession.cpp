@@ -294,9 +294,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef ONLY_FOR_LIVESTREAMING
 
                 {
-                    LOGE("fahad-->> rajib --- audioDataCopyed --------Before ^^^^^^^^^^^^^^^^^^^^---------");
-                    //Locker lock(*m_pAudioCallSessionMutex);
-                    LOGE("fahad-->> rajib --- audioDataCopyed --------*******************************---------");
+                    //LOGE("fahad-->> rajib --- audioDataCopyed --------Before ^^^^^^^^^^^^^^^^^^^^---------");
+                    Locker lock(*m_pAudioCallSessionMutex);
+                    //LOGE("fahad-->> rajib --- audioDataCopyed --------*******************************---------");
                     if((m_iAudioDataSendIndex + nEncodedFrameSize + m_AudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE )
                     {
                         memcpy(m_ucaAudioDataToSend + m_iAudioDataSendIndex,  m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
@@ -513,7 +513,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef ONLY_FOR_LIVESTREAMING
 void CAudioCallSession::getAudioSendToData(unsigned char * pAudioDataToSend, int &length)
 {
-    //Locker lock(*m_pAudioCallSessionMutex);
+    Locker lock(*m_pAudioCallSessionMutex);
     memcpy(pAudioDataToSend, m_ucaAudioDataToSend, m_iAudioDataSendIndex);
     length = m_iAudioDataSendIndex;
     m_iAudioDataSendIndex = 0;
