@@ -5,6 +5,12 @@
 #include "CommonElementsBucket.h"
 #include "VideoCallSession.h"
 
+#include "LiveReceiver.h"
+#include "LiveVideoDecodingQueue.h"
+#include "Globals.h"
+extern LiveReceiver *g_LiveReceiver;
+
+
 //#define SEND_VIDEO_TO_SELF 1
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -152,20 +158,47 @@ void CSendingThread::SendingThreadProcedure()
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
+                if(NULL != g_LiveReceiver)
+                {
+                    printf("Sending to liovestream \n");
+                    g_LiveReceiver->PushAudioData(m_AudioDataToSend, m_iAudioDataToSendIndex);
+                    g_LiveReceiver->PushVideoData(m_VideoDataToSend, m_iDataToSendIndex);
+                }
+                    
+                
+                
+                
 
 				printf("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d\n", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
 
 				m_iDataToSendIndex = 0;
-				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
-				m_iDataToSendIndex += packetSize;
+				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
+				m_iDataToSendIndex += (packetSize);
 
 			}
 			else
 			{
 				if(m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
 				{
-					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize );
-					m_iDataToSendIndex += packetSize;
+                    
+                    
+					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
+                    
+                    unsigned char *p = m_VideoDataToSend+m_iDataToSendIndex + 1;
+                    int nCurrentFrameLen = ((int)p[13] << 8) + p[14];
+                    CPacketHeader   ccc;
+                    ccc.setPacketHeader(p);
+                    int nTemp = ccc.getPacketLength();
+                    //printf("SendingSide--> nCurrentFrameLen = %d, but packetSize = %d, iDataToSendIndex = %d, gotLengthFromHeader = %d\n", nCurrentFrameLen, packetSize, m_iDataToSendIndex, nTemp);
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+					m_iDataToSendIndex += (packetSize);
 				}
 			}
 			firstFrame = false;

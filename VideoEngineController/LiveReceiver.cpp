@@ -28,10 +28,11 @@ void LiveReceiver::PushAudioData(unsigned char* uchAudioData,int iLen){
     while(iUsedLen < iLen)
     {
         nFrames++;
-        audioPacketHeaderObject.CopyHeaderToInformation(uchAudioData + iUsedLen);
+        audioPacketHeaderObject.CopyHeaderToInformation(uchAudioData + iUsedLen+1);
         int nCurrentFrameLen = audioPacketHeaderObject.GetInformation(PACKETLENGTH);
-        m_pAudioDecoderBuffer->Queue(uchAudioData + iUsedLen, nCurrentFrameLen + __AUDIO_HEADER_LENGTH__);
-        iUsedLen += nCurrentFrameLen + __AUDIO_HEADER_LENGTH__;
+        printf("THeKing--> Audio FrameCounter = %d, FrameLength  = %d, iLen = %d\n", nFrames, nCurrentFrameLen, iLen);
+        m_pAudioDecoderBuffer->Queue(uchAudioData + iUsedLen+1, nCurrentFrameLen + __AUDIO_HEADER_LENGTH__);
+        iUsedLen += nCurrentFrameLen + __AUDIO_HEADER_LENGTH__+1;
     }
 }
 
@@ -43,16 +44,21 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData,int iLen){
     while(iUsedLen < iLen)
     {
         nFrames++;
-        packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
-
-        int nCurrentFrameLen = packetHeaderObj.getPacketLength();
-        m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, nCurrentFrameLen + PACKET_HEADER_LENGTH);
-        iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH;
+//        packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
+        
+        int nCurrentFrameLen = ((int)uchVideoData[1+iUsedLen+13] << 8) + uchVideoData[1+iUsedLen+14];
+        
+        printf("THeKing--> Video FrameCounter = %d, FrameLength  = %d, iLen = %d\n", nFrames, nCurrentFrameLen, iLen);
+        
+        m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen+1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
+        iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
     }
 
 //    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
 }
 
-bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen){
+bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
+{
     Locker lock(*m_pLiveReceiverMutex);
+    return false;
 }

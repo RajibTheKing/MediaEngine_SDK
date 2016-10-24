@@ -82,6 +82,7 @@ bool CAudioPacketHeader::IsPacketTypeSupported()
 
 void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 {
+    Information = (Information & ((1<<HeaderBitmap[InfoType]) - 1));
 	ma_nInformation[InfoType] = Information;
 
 	int infoStartBit = 0;
@@ -106,7 +107,7 @@ void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 		ma_uchHeader[infoStartByte] |= (Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte));
 
 		int remainingBits = HeaderBitmap[InfoType] - numberOfBitsIn1stByte;
-		int remainingBytes = remainingBits/8;
+		int remainingBytes = remainingBits / 8;
 		int nBitsInLastByte = remainingBits % 8;
 		int byte = 1;
 
@@ -151,9 +152,10 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 	int infoStartByte = infoStartBit / 8;
 	int infoStartBitOfByte = infoStartBit % 8;
 
+    
 	if (infoStartBitOfByte + HeaderBitmap[InfoType] <= 8)//fits in 1 byte
 	{
-		Information = (ma_uchHeader[infoStartByte] << infoStartBitOfByte) >> 8 - HeaderBitmap[InfoType];
+		Information = (ma_uchHeader[infoStartByte] << infoStartBitOfByte) >> (8 - HeaderBitmap[InfoType]);
 	}
 	else
 	{
@@ -164,6 +166,7 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 			Information <<= 8;
 			Information += ma_uchHeader[infoStartByte + i];
 		}
+
 		int shift = ((HeaderBitmap[InfoType] + infoStartBitOfByte ) % 8);
 		if(shift)
 			Information >>= 8 - shift;

@@ -270,13 +270,27 @@ void CAudioCallSession::EncodingThreadProcedure()
 			{
 				m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 			}
+            int tempVal;
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
 			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
 			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
+            printf("m_iPrevRecvdSlotID = %d\n", m_iPrevRecvdSlotID);
+            //if(!Globals::g_bIsLiveStreaming)
+            {
 			SendingHeader->SetInformation(m_iPrevRecvdSlotID, RECVDSLOTNUMBER);
+//            tempVal = ((int)(m_ucaEncodedFrame[4] & 0x3F)<<6) + ((int)(m_ucaEncodedFrame[5]&0xFC)>>2);
+//            printf("^^ RECVDSLOTNUMBER : %d\n",tempVal);
 			SendingHeader->SetInformation(m_iReceivedPacketsInPrevSlot, NUMPACKETRECVD);
+                
+//            tempVal = ((int)(m_ucaEncodedFrame[4] & 0x3F)<<6) + ((int)(m_ucaEncodedFrame[5]&0xFC)>>2);
+//            printf("^^ NUMPACKETRECVD : %d\n",tempVal);
+            }
 			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
-
+            
+            CAudioPacketHeader tmp;
+            tmp.CopyHeaderToInformation(&m_ucaEncodedFrame[1]);
+//            int val = ((int)(m_ucaEncodedFrame[4] & 0x3F)<<6) + ((int)(m_ucaEncodedFrame[5]&0xFC)>>2);
+//            printf("^^ LEN: %d    LEN2: %d  Len3: %d\n",nEncodedFrameSize,tmp.GetInformation(PACKETLENGTH),val);
             m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
 
 //            ALOG("#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber)
@@ -301,13 +315,14 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef ONLY_FOR_LIVESTREAMING
 
                 {
-                    //LOGE("fahad-->> rajib --- audioDataCopyed --------Before ^^^^^^^^^^^^^^^^^^^^---------");
                     Locker lock(*m_pAudioCallSessionMutex);
-                    //LOGE("fahad-->> rajib --- audioDataCopyed --------*******************************---------");
                     if((m_iAudioDataSendIndex + nEncodedFrameSize + m_AudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE )
                     {
+                        
                         memcpy(m_ucaAudioDataToSend + m_iAudioDataSendIndex,  m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
                         m_iAudioDataSendIndex += (nEncodedFrameSize + m_AudioHeadersize + 1);
+                        
+                        
                     }
                 }
 
