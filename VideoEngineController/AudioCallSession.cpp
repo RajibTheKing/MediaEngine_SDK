@@ -131,6 +131,11 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
 {
 //    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
+    if(Globals::g_bIsLiveStreaming)
+    {
+        g_LiveReceiver->PushAudioData(pucaDecodingAudioData, unLength);
+    }
+
 	int returnedValue = m_AudioDecodingBuffer.Queue(&pucaDecodingAudioData[1], unLength - 1);
 
 	return returnedValue;

@@ -12,6 +12,7 @@ extern LiveReceiver *g_LiveReceiver;
 
 
 //#define SEND_VIDEO_TO_SELF 1
+//#define __LIVE_STREAMIN_SELF__
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -158,14 +159,20 @@ void CSendingThread::SendingThreadProcedure()
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
+
+#ifndef __LIVE_STREAMIN_SELF__
+				m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
+				m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
+#else
                 if(NULL != g_LiveReceiver)
                 {
                     printf("Sending to liovestream \n");
                     g_LiveReceiver->PushAudioData(m_AudioDataToSend, m_iAudioDataToSendIndex);
                     g_LiveReceiver->PushVideoData(m_VideoDataToSend, m_iDataToSendIndex);
                 }
-                    
-                
+#endif
+
+
                 
                 
 

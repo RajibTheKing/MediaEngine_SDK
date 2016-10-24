@@ -327,7 +327,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 //		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
 //		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
-			return pVideoSession->PushPacketForMerging(++in_data, in_size-1,false);
+			return pVideoSession->PushPacketForMerging(in_data, in_size,false);
 		else
 			return -1;
 	}

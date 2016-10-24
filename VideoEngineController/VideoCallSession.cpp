@@ -5,6 +5,14 @@
 #include "Globals.h"
 #include "Controller.h"
 
+#include "LiveReceiver.h"
+
+
+
+
+//PairMap g_timeInt;
+
+extern LiveReceiver *g_LiveReceiver;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -325,6 +333,17 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
 {
+	if(Globals::g_bIsLiveStreaming)
+	{
+		if(NULL!= g_LiveReceiver)
+		{
+			g_LiveReceiver->PushVideoData(in_data, in_size);
+		}
+
+		return true;
+	}
+
+
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 326");
 	unsigned char uchPacketType = in_data[__PACKET_TYPE_INDEX];
 	if(uchPacketType < __MIN_PACKET_TYPE || __MAX_PACKET_TYPE < uchPacketType)
