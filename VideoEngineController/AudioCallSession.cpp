@@ -59,7 +59,7 @@ FILE *FileOutput;
 
 int gSetMode = -5;
 
-CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bUsingLoudSpeaker, int iVolume, bool bIsCheckCall) :
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
 m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall)
 
@@ -82,23 +82,10 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 	m_nMaxAudioPacketNumber = ((1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
-	m_bUsingLoudSpeaker = bUsingLoudSpeaker;
+	m_bUsingLoudSpeaker = false;
 
 #ifdef USE_AGC
-
-	if (iVolume >= 0 && iVolume <= MAX_GAIN)
-	{
-		m_fVolume = iVolume;
-	}
-	else
-	{
-		m_fVolume = DEF_GAIN;
-	}
-	if (m_bUsingLoudSpeaker)
-	{
-		m_fVolume = m_fVolume * 1.0 / LS_RATIO;
-	}
-
+	m_fVolume = DEF_GAIN;
 #else
 	m_fVolume = 1;
 #endif

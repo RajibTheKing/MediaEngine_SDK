@@ -62,7 +62,7 @@ class CAudioCallSession
 
 public:
 
-	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bUsingLoudSpeaker, int iVolume, bool bIsCheckCall = false);
+	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall = false);
     ~CAudioCallSession();
 
     CAudioCodec* GetAudioCodec();

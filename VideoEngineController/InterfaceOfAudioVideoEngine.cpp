@@ -51,14 +51,14 @@ bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)
 	return Ret;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, bool bUsingLoudSpeaker, int iVolume)
+bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, bUsingLoudSpeaker, iVolume);
+	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID);
 
 	return bReturnedValue;
 }

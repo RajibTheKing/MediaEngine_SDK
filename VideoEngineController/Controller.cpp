@@ -130,7 +130,7 @@ bool CController::SetUserName(const LongLong& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const LongLong& lFriendID, bool bUsingLoudSpeaker, int iVolume)
+bool CController::StartAudioCall(const LongLong& lFriendID)
 {
 	CAudioCallSession* pAudioSession;
     
@@ -145,7 +145,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, bool bUsingLoudSpeak
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, bUsingLoudSpeaker, iVolume);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket);
 
 		pAudioSession->InitializeAudioCallSession(lFriendID);
 
@@ -205,7 +205,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session creating");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket,0,0, DEVICE_ABILITY_CHECK_MOOD);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, DEVICE_ABILITY_CHECK_MOOD);
 
 		pAudioSession->InitializeAudioCallSession(lFriendID);
 
