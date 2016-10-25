@@ -175,7 +175,7 @@ private:
     
     int m_nDeviceCheckFrameCounter;
     long long m_llClientFrameFPSTimeStamp;
-    
+    CAverageCalculator *m_VideoFpsCalculator;
     
 
 protected:

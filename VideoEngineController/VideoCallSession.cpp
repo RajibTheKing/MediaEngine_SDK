@@ -58,7 +58,9 @@ m_nDeviceCheckFrameCounter(0),
 m_nCapturedFrameCounter(0)
 
 {
-
+    
+    m_VideoFpsCalculator = new CAverageCalculator();
+    
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 54");
     m_llClientFrameFPSTimeStamp = -1;
     m_pController = pController;
@@ -223,6 +225,13 @@ CVideoCallSession::~CVideoCallSession()
     {
         delete m_pVersionController;
         m_pVersionController = NULL;    
+    }
+    
+    if(NULL != m_VideoFpsCalculator)
+    {
+        delete m_VideoFpsCalculator;
+        m_VideoFpsCalculator = NULL;
+        
     }
     
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::~~~CVideoCallSession 220");
@@ -417,6 +426,7 @@ int g_CapturingFrameCounter = 0;
 
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
+    m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
     /*if(m_bIsCheckCall==true)
     {
         m_nDeviceCheckFrameCounter++;
