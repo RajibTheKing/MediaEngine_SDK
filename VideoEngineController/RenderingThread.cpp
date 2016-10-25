@@ -101,6 +101,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	bool m_b1stDecodedFrame = true;
 	long long m_ll1stDecodedFrameTimeStamp = 0;
     long long lRenderingTimeDiff = 0;
+    long long llPrevTimeStamp = 0;
+	CAverageCalculator *pRenderingFps = new CAverageCalculator();
 	while (bRenderingThreadRunning)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
@@ -182,15 +184,25 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             
             lRenderingTimeDiff = m_Tools.CurrentTimestamp();
             
-			toolsObject.SOSleep(1);
+
             //CalculateFPS();
             
             //if(m_pVideoCallSession->GetResolutionNegotiationStatus() == true)
 
+
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
             {
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+				pRenderingFps->CalculateFPS("RenderingFPS--> ");
+				long long nowCurrentTimeStampDiff = m_Tools.CurrentTimestamp() - llPrevTimeStamp;
+				LOGE(" fahadRajib  time diff for rendering-->----------------------  %d", minTimeGap );
+				if(nowCurrentTimeStampDiff < 30)
+					toolsObject.SOSleep(30 - nowCurrentTimeStampDiff);
+				else toolsObject.SOSleep(0);
+				m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+
+				llPrevTimeStamp = m_Tools.CurrentTimestamp();
             }
+
 		}
 	}
 
