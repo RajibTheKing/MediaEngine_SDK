@@ -150,18 +150,8 @@ private:
 	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
 #ifdef USE_WEBRTC_AGC
-	short m_saAudioEncodingTempFrameLow[MAX_AUDIO_FRAME_LENGHT];
-	short m_saAudioEncodingTempFrameHigh[MAX_AUDIO_FRAME_LENGHT];
+	short m_saAudioDecodedFrameTemp[MAX_AUDIO_FRAME_LENGHT];
 #endif
-#ifdef USE_WEBRTC_AGC
-	short m_saAudioEncodingFrameLow[MAX_AUDIO_FRAME_LENGHT];
-	short m_saAudioEncodingFrameHi[MAX_AUDIO_FRAME_LENGHT];
-	int m_Filter_state1[MAX_AUDIO_FRAME_LENGHT];
-	int m_Filter_state2[MAX_AUDIO_FRAME_LENGHT];
-	int m_PostFilter_state1[MAX_AUDIO_FRAME_LENGHT];
-	int m_PostFilter_state2[MAX_AUDIO_FRAME_LENGHT];
-#endif
-
 
     bool m_bAudioEncodingThreadRunning;
     bool m_bAudioEncodingThreadClosed;
