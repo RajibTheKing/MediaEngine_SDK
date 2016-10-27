@@ -277,8 +277,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 //            SendingHeader->CopyHeaderToInformation(&m_ucaEncodedFrame[1]);
 //
 //            int version = SendingHeader->GetInformation(VERSIONCODE);
-            ALOG( "#2AE#--->> PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber)
-                  +" m_iAudioVersionSelf = "+ m_Tools.IntegertoStringConvert(version));
+//            ALOG( "#2AE#--->> PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber)
+//                  +" m_iAudioVersionSelf = "+ m_Tools.IntegertoStringConvert(version));
 
             m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
 
@@ -310,7 +310,7 @@ void CAudioCallSession::EncodingThreadProcedure()
                 if(0 < m_iAudioVersionFriend && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()) {
                     toolsObject.SOSleep(5);
                     m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
-                    ALOG("#2AE# Sent Second Times");
+//                    ALOG("#2AE# Sent Second Times");
                 }
 #endif
             }
@@ -420,7 +420,7 @@ void CAudioCallSession::DecodingThreadProcedure()
             nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
             iPacketNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
 
-            ALOG( "#2A#RCV--->> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
+            ALOG( "#2A#RCV---> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
                   +"  Last: "+m_Tools.IntegertoStringConvert(m_iLastDecodedPacketNumber)
                   +" m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
 
@@ -434,9 +434,9 @@ void CAudioCallSession::DecodingThreadProcedure()
                     continue;
                 }
             }
+            ALOG( "#2A#RCV---------> Decoding = " + m_Tools.IntegertoStringConvert(iPacketNumber));
 #endif
-//            ALOG( "#2A#--->> Decoding");
-//            ALOG("#2A# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
+
 
 			if (!ReceivingHeader->IsPacketTypeSupported())
 			{
