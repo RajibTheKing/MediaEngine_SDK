@@ -20,7 +20,6 @@
 #include "G729CodecNative.h"
 #endif
 
-#define ALOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a)
 
 #define __AUDIO_CALL_VERSION__  1
 

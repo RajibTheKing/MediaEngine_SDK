@@ -16,8 +16,6 @@
 #include "size.h"
 #include "LogPrinter.h"
 
-#define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
-
 //#define AUDIO_FIXED_BITRATE
 
 #define OPUS_MIN_COMPLEXITY 1
