@@ -128,13 +128,13 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
 		}
 
-		VLOG("#VR# CallVersion: " + Tools::IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion())
-			 +"  OP: "+Tools::IntegertoStringConvert(m_pVersionController->GetOpponentVersion())
-			 +"  OWN: "+Tools::IntegertoStringConvert(m_pVersionController->GetOwnVersion())
-		);
+//		VLOG("#VR# CallVersion: " + Tools::IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion())
+//			 +"  OP: "+Tools::IntegertoStringConvert(m_pVersionController->GetOpponentVersion())
+//			 +"  OWN: "+Tools::IntegertoStringConvert(m_pVersionController->GetOwnVersion())
+//		);
 
 		m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
-		m_RcvdPacketHeader.ShowDetails("RCV");
+//		m_RcvdPacketHeader.ShowDetails("RCV");
 
 		CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
 								   "CVideoDepacketizationThread::StartDepacketizationThread() !@# Versions: " +
@@ -143,7 +143,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 
 		if (m_RcvdPacketHeader.GetPacketType() == __BITRATE_CONTROLL_PACKET_TYPE) {                    /* Opponent response of data receive. */
-			VLOG("__BITRATE_CONTROLL_PACKET_TYPE");
+//			VLOG("__BITRATE_CONTROLL_PACKET_TYPE");
 			m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
 			toolsObject.SOSleep(1);
 			continue;
@@ -162,7 +162,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
 			int nOpponentVideoCallQualityLevel = m_RcvdPacketHeader.GetVideoQualityLevel();
 
-			VLOG("TheKing--> Got nOpponentVideoCallQualityLevel " + Tools::IntegertoStringConvert(nOpponentVideoCallQualityLevel));
+//			VLOG("TheKing--> Got nOpponentVideoCallQualityLevel " + Tools::IntegertoStringConvert(nOpponentVideoCallQualityLevel));
 
 			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel())
 			{
@@ -177,10 +177,10 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 			if(m_pVersionController->GetOpponentVersion() == -1)
 			{
-				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert(m_RcvdPacketHeader.getVersionCode()));
+//				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert(m_RcvdPacketHeader.getVersionCode()));
 
 				m_pVersionController->SetOpponentVersion((int)m_RcvdPacketHeader.getVersionCode());     //NEGOTIATION PACKETS CONTAIN OPPONENT VERSION.
-				VLOG("#SOV# ########################################TheKing2 : " + Tools::IntegertoStringConvert((int)m_pVersionController->GetOpponentVersion()));
+//				VLOG("#SOV# ########################################TheKing2 : " + Tools::IntegertoStringConvert((int)m_pVersionController->GetOpponentVersion()));
 				//printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
 
 				m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
