@@ -265,6 +265,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 				m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 			}
 
+//			SendingHeader->SetInformation(m_iPacketNumber + (m_iPacketNumber<30?400:0), PACKETNUMBER);
+            int nCurrentPacketNumber = m_iPacketNumber;
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
 			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
 			SendingHeader->SetInformation(nEncodedFrameSize, PACKETLENGTH);
@@ -275,9 +277,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 //            SendingHeader->CopyHeaderToInformation(&m_ucaEncodedFrame[1]);
 //
 //            int version = SendingHeader->GetInformation(VERSIONCODE);
-//            ALOG( "#2AE#--->> PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber)
-//                  +" m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(version) +" # "+
-//                  m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[7]&0x1F));
+            ALOG( "#2AE#--->> PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber)
+                  +" m_iAudioVersionSelf = "+ m_Tools.IntegertoStringConvert(version));
 
             m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
 
@@ -287,8 +288,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 //                + " #V# E: RECVDSLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iPrevRecvdSlotID)
 //            );
 
-            if(m_iPacketNumber%100 ==0)
-                ALOG("#2AE#  Version: "+Tools::IntegertoStringConvert(m_iAudioVersionFriend) +" isVideo: "+Tools::IntegertoStringConvert(m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()));
+//            if(m_iPacketNumber%100 ==0)
+//                ALOG("#2AE#  ------------------------ Version: "+Tools::IntegertoStringConvert(m_iAudioVersionFriend) +" isVideo: "+Tools::IntegertoStringConvert(m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()));
 
             if(m_iPacketNumber >= m_nMaxAudioPacketNumber)
 			    m_iPacketNumber = 0;
@@ -305,11 +306,13 @@ void CAudioCallSession::EncodingThreadProcedure()
 //                ALOG("#H#Sent PacketType: "+m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[0]));
                 m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 
+#ifdef  __DUPLICATE_AUDIO__
                 if(0 < m_iAudioVersionFriend && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()) {
                     toolsObject.SOSleep(5);
                     m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
                     ALOG("#2AE# Sent Second Times");
                 }
+#endif
             }
 			else
 				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
@@ -391,7 +394,7 @@ void CAudioCallSession::DecodingThreadProcedure()
     toolsObject.SOSleep(1000);
     int iDataSentInCurrentSec = 0;
     long long llTimeStamp = 0;
-    int nTolarance = 3000;
+    int nTolarance = m_nMaxAudioPacketNumber / 2;
 
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
@@ -417,22 +420,23 @@ void CAudioCallSession::DecodingThreadProcedure()
             nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
             iPacketNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
 
-            ALOG( "#2A#--->> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
+            ALOG( "#2A#RCV--->> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
                   +"  Last: "+m_Tools.IntegertoStringConvert(m_iLastDecodedPacketNumber)
                   +" m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
 
+#ifdef  __DUPLICATE_AUDIO__
             //iPacketNumber rotates
-            if( iPacketNumber <= m_iLastDecodedPacketNumber && iPacketNumber + nTolarance > m_iLastDecodedPacketNumber)
-            {
-                continue;
+            if(m_iLastDecodedPacketNumber > -1) {
+                if (iPacketNumber <= m_iLastDecodedPacketNumber && iPacketNumber + nTolarance > m_iLastDecodedPacketNumber) {
+                    continue;
+                }
+                else if (iPacketNumber > m_iLastDecodedPacketNumber && iPacketNumber > nTolarance + m_iLastDecodedPacketNumber) {
+                    continue;
+                }
             }
-            else if(iPacketNumber > m_iLastDecodedPacketNumber && iPacketNumber > nTolarance + m_iLastDecodedPacketNumber)
-            {
-                continue;
-            }
-
-            ALOG( "#2A#--->> Decoding");
-//            ALOG("#V#TYPE# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
+#endif
+//            ALOG( "#2A#--->> Decoding");
+//            ALOG("#2A# Type: "+ m_Tools.IntegertoStringConvert(nCurrentAudioPacketType));
 
 			if (!ReceivingHeader->IsPacketTypeSupported())
 			{
@@ -454,7 +458,9 @@ void CAudioCallSession::DecodingThreadProcedure()
             else if(AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
             {
                 bIsProcessablePacket = true;
-                m_iAudioVersionFriend = ReceivingHeader->GetInformation(VERSIONCODE);
+                if(-1 == m_iAudioVersionFriend)
+                    m_iAudioVersionFriend = ReceivingHeader->GetInformation(VERSIONCODE);
+//                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
             }
 
             if(!bIsProcessablePacket) continue;
