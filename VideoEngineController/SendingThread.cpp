@@ -12,7 +12,7 @@ extern LiveReceiver *g_LiveReceiver;
 
 
 //#define SEND_VIDEO_TO_SELF 1
-//#define __LIVE_STREAMIN_SELF__
+#define __LIVE_STREAMIN_SELF__
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -29,6 +29,7 @@ m_bIsCheckCall(bIsCheckCall)
 	llPrevTime = -1;
 	m_iDataToSendIndex = 0;
 	firstFrame = true;
+    m_llPrevTimeWhileSendingToLive = 0;
 #endif
 }
 
@@ -161,12 +162,44 @@ void CSendingThread::SendingThreadProcedure()
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
 
 #ifndef __LIVE_STREAMIN_SELF__
-				m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
-				m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
+                long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
+                long long llNowTimeDiff;
+                
+                if(m_llPrevTimeWhileSendingToLive == 0)
+                {
+                    llNowTimeDiff = 0;
+                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+                }
+                else
+                {
+                    llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
+                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+                    
+                }
+                
+                
+				m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
 #else
+                long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
+                long long llNowTimeDiff;
+                
+                if(m_llPrevTimeWhileSendingToLive == 0)
+                {
+                    llNowTimeDiff = 0;
+                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+                }
+                else
+                {
+                    llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
+                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+                    
+                }
+                
+                printf("Sending to liovestream, llNowTimeDiff = %lld\n", llNowTimeDiff);
+                
                 if(NULL != g_LiveReceiver)
                 {
-                    printf("Sending to liovestream \n");
                     g_LiveReceiver->PushAudioData(m_AudioDataToSend, m_iAudioDataToSendIndex);
                     g_LiveReceiver->PushVideoData(m_VideoDataToSend, m_iDataToSendIndex);
                 }

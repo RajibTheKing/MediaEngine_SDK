@@ -369,7 +369,7 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioAlarmCallback(void(*c
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int))
+void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int, int))
 {
     if (NULL != m_pcController)
     {

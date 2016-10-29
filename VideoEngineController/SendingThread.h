@@ -54,6 +54,7 @@ private:
 	bool firstFrame;
 	int m_iDataToSendIndex;
 	long long int llPrevTime;
+    long long m_llPrevTimeWhileSendingToLive;
 #endif
 
 	Tools m_Tools;
