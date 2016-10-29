@@ -26,7 +26,7 @@
 #define __MIN_PACKET_TYPE   1
 #define __MAX_PACKET_TYPE   4
 
-#define LOW_FRAME_RATE 15
+#define LOW_FRAME_RATE 25
 #define HIGH_FRAME_RATE 40
 
 #define BLANK_DATA_MOOD true
