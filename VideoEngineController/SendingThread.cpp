@@ -12,7 +12,7 @@ extern LiveReceiver *g_LiveReceiver;
 
 
 //#define SEND_VIDEO_TO_SELF 1
-#define __LIVE_STREAMIN_SELF__
+//#define __LIVE_STREAMIN_SELF__
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
