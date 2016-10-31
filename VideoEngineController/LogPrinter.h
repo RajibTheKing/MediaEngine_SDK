@@ -80,7 +80,6 @@ static FILE *logfp = NULL;
 #endif
 #define printf(...)
 
-#define ALOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a)
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 using namespace std;
