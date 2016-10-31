@@ -439,6 +439,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	long long timeStamp;
 	double avgCountTimeStamp = 0;
 	int countFrame = 0;
+    int version = __AUDIO_CALL_VERSION__;
 
 	while (m_bAudioEncodingThreadRunning)
 	{
@@ -608,7 +609,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 			}
 
 			//			SendingHeader->SetInformation(m_iPacketNumber + (m_iPacketNumber<30?400:0), PACKETNUMBER);
-			int version = -1;
 			int nCurrentPacketNumber = m_iPacketNumber;
 			SendingHeader->SetInformation(m_iPacketNumber, PACKETNUMBER);
 			SendingHeader->SetInformation(m_iSlotID, SLOTNUMBER);
@@ -809,6 +809,13 @@ void CAudioCallSession::DecodingThreadProcedure()
 					m_iAudioVersionFriend = ReceivingHeader->GetInformation(VERSIONCODE);
 				//                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
 			}
+            else if(AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
+            {
+                bIsProcessablePacket = true;
+                if(-1 == m_iAudioVersionFriend)
+                    m_iAudioVersionFriend = ReceivingHeader->GetInformation(VERSIONCODE);
+//                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
+            }
 
 			if (!bIsProcessablePacket) continue;
 
@@ -830,7 +837,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 
 			m_iLastDecodedPacketNumber = iPacketNumber;
-			m_iReceivedPacketsInCurrentSlot++;
+			m_iReceivedPacketsInCurrentSlot ++;
 			//continue;
 			nDecodingFrameSize -= m_AudioHeadersize;
 			//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
@@ -927,7 +934,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				iDataSentInCurrentSec = 0;
 				llTimeStamp = llNow;
 			}
-			iDataSentInCurrentSec++;
+            iDataSentInCurrentSec ++;
 
 			++iFrameCounter;
 			nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
@@ -937,7 +944,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #if defined(DUMP_DECODED_AUDIO)
 			m_Tools.WriteToFile(m_saDecodedFrame, size);
 #endif
-			if (nDecodedFrameSize < 1)
+            if(nDecodedFrameSize < 1)
 			{
 				ALOG("#EXP# Decoding Failed.");
 				continue;
