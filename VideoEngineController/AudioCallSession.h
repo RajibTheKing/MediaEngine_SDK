@@ -21,6 +21,11 @@
 #include "G729CodecNative.h"
 #endif
 
+
+#define __AUDIO_CALL_VERSION__  1
+#define  __DUPLICATE_AUDIO__
+
+
 //#ifdef __ANDROID__
 //#define USE_AECM
 //#define USE_ANS
@@ -50,6 +55,10 @@ static string colon = "ALOG:";
 #ifdef USE_VAD
 #include "webrtc_vad.h"
 #endif
+
+#define __AUDIO_CALL_VERSION__  1
+
+#define  __DUPLICATE_AUDIO__
 
 
 class CCommonElementsBucket;
@@ -87,7 +96,6 @@ public:
 	int m_iNextPacketType;
 
 private:
-
     Tools m_Tools;
     LongLong m_FriendID;
 
@@ -125,7 +133,8 @@ private:
 #else
     G729CodecNative *m_pG729CodecNative;
 #endif
-
+//    int m_iNextPacketType;
+    int m_iLastDecodedPacketNumber;
     int m_nMaxAudioPacketNumber;
     int m_iPacketNumber;
 	int m_iSlotID;
@@ -160,6 +169,9 @@ private:
     bool m_bAudioDecodingThreadClosed;
 
 	float m_fVolume;
+
+    int m_iAudioVersionFriend;
+    int m_iAudioVersionSelf;
 
 protected:
 

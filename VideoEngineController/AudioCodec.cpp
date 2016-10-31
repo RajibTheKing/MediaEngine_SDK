@@ -58,13 +58,12 @@ int CAudioCodec::CreateAudioEncoder()
 	if (error != 0) {
 		qWarning() << "opus_encoder_create() falied:" << error;
 	}*/
-	ALOG("#BR# opus_encoder_create init: ");
+//	ALOG("#BR# opus_encoder_create init: ");
 
 	encoder = opus_encoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, AUDIO_APPLICATION, &err);
 	if (err<0)
 	{
-		ALOG("#BR# opus_encoder_create failed: " + m_Tools.IntegertoStringConvert(err)
-			);
+//		ALOG("#BR# opus_encoder_create failed: " + m_Tools.IntegertoStringConvert(err));
 		return EXIT_FAILURE;
 	}
 
@@ -124,7 +123,7 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 		nbBytes = max( nbBytes, 0); //If opus return -1. Not sure about that.
 		if(nbBytes == 0)
 		{
-			ALOG( "#EXP#**************************** Encode Failed");
+//			ALOG( "#EXP#**************************** Encode Failed");
 		}
 		out_buffer[ nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter ] = (nbBytes & 0x000000FF);
 		out_buffer[ nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter + 1 ] = (nbBytes >> 8);
@@ -143,7 +142,7 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 
 	if(nProcessedDataSize != in_size)
 	{
-		ALOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
+//		ALOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
 	}
 	return nEncodedPacketLenght;
 }
@@ -159,14 +158,14 @@ int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short
 		nCurrentFrameSize += in_data[nDecodedDataSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter];
 
 		if(nProcessedDataSize + nCurrentFrameSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN > in_size) {
-			ALOG("#EXP# Encoded data not matched.");
+//			ALOG("#EXP# Encoded data not matched.");
 			break;
 		}
 //		ALOG("#DE#:  #CO# Decode: "+m_Tools.IntegertoStringConvert(nCurrentFrameSize)
 //				+"  ["+ Tools::IntegertoStringConvert( nDecodedDataSize + 2*iFrameCounter) );
 		if(nCurrentFrameSize < 1)
 		{
-			ALOG("#EXP# ZERO Frame For Decoding");
+//			ALOG("#EXP# ZERO Frame For Decoding");
 			return 0;
 		}
 		frame_size = opus_decode(decoder, in_data + nDecodedDataSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter + BYTES_TO_STORE_AUDIO_EFRAME_LEN,
@@ -198,7 +197,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 	{
 		m_inoLossSlot = 0;
 		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
-		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
+//		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
 		
 		if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
 		{
@@ -291,7 +290,7 @@ bool CAudioCodec::SetBitrateOpus(int nBitrate){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
 
-	ALOG("#BR# =========================>  NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
+//	ALOG("#BR# =========================>  NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
 
 	return ret != 0;
 }
@@ -301,7 +300,7 @@ bool CAudioCodec::SetComplexityOpus(int nComplexity){
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 	m_iComplexity = nComplexity;
 
-	ALOG("#COMPLEXITY# ---------------------->  NOW Complexity: " + m_Tools.IntegertoStringConvert(nComplexity));
+//	ALOG("#COMPLEXITY# ---------------------->  NOW Complexity: " + m_Tools.IntegertoStringConvert(nComplexity));
 
 	return ret != 0;
 }
@@ -358,7 +357,7 @@ int CAudioCodec::encodeDecodeTest()
 	encoder = opus_encoder_create(SAMPLE_RATE, CHANNELS, APPLICATION, &err);
 	if (err<0)
 	{
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to create an encoder: "); //+ opus_strerror(err)
+//		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to create an encoder: "); //+ opus_strerror(err)
 		return EXIT_FAILURE;
 	}
 
@@ -370,7 +369,7 @@ int CAudioCodec::encodeDecodeTest()
 	err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(BITRATE));
 	if (err<0)
 	{
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to set bitrate: "); //+ opus_strerror(err)
+//		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to set bitrate: "); //+ opus_strerror(err)
 		return EXIT_FAILURE;
 	}
 
@@ -378,7 +377,7 @@ int CAudioCodec::encodeDecodeTest()
 	fin = fopen("/sdcard/pcmDataDump.pcm", "r");
 	if (fin==NULL)
 	{
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,  "failed to open file: "); //+ strerror(errno)
+//		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,  "failed to open file: "); //+ strerror(errno)
 		return EXIT_FAILURE;
 	}
 
@@ -388,7 +387,7 @@ int CAudioCodec::encodeDecodeTest()
 	decoder = opus_decoder_create(SAMPLE_RATE, CHANNELS, &err);
 	if (err<0)
 	{
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to create decoder: "); //+ opus_strerror(err)
+//		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to create decoder: "); //+ opus_strerror(err)
 		return EXIT_FAILURE;
 	}
 
@@ -396,7 +395,7 @@ int CAudioCodec::encodeDecodeTest()
 	fout = fopen("/sdcard/outputData.pcm", "w");
 	if (fout==NULL)
 	{
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to open file: "); //+ strerror(errno)
+//		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "failed to open file: "); //+ strerror(errno)
 		return EXIT_FAILURE;
 	}
 
@@ -426,10 +425,10 @@ int CAudioCodec::encodeDecodeTest()
 
 		nbBytes = opus_encode(encoder, in, FRAME_SIZE, cbits, MAX_PACKET_SIZE);
 
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "Test_opus -->  FRAME_SIZE "+ Tools::IntegertoStringConvert(FRAME_SIZE) + " endoedSize: " + Tools::IntegertoStringConvert(nbBytes));
+//		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "Test_opus -->  FRAME_SIZE "+ Tools::IntegertoStringConvert(FRAME_SIZE) + " endoedSize: " + Tools::IntegertoStringConvert(nbBytes));
 		if (nbBytes<0)
 		{
-			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "encode failed: ");  // + opus_strerror(nbBytes)
+//			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "encode failed: ");  // + opus_strerror(nbBytes)
 			return EXIT_FAILURE;
 		}
 
@@ -443,7 +442,7 @@ int CAudioCodec::encodeDecodeTest()
 		frame_size = opus_decode(decoder, cbits, nbBytes, out, MAX_FRAME_SIZE, 0);
 		if (frame_size<0)
 		{
-			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "decoder failed: " );  // + opus_strerror(err)
+//			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "decoder failed: " );  // + opus_strerror(err)
 			return EXIT_FAILURE;
 		}
 

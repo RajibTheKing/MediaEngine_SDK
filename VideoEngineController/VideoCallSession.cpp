@@ -341,7 +341,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			else
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / m_nCallFPS;
-				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
+//				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, __BITRATE_CONTROLL_PACKET_TYPE);
