@@ -26,12 +26,12 @@
 #define  __DUPLICATE_AUDIO__
 
 
-//#ifdef __ANDROID__
+#ifdef __ANDROID__
 //#define USE_AECM
 //#define USE_ANS
 #define USE_AGC
 //#define USE_VAD
-//#endif
+#endif
 
 #ifdef USE_AGC
 #define USE_WEBRTC_AGC
@@ -168,7 +168,7 @@ private:
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
 
-	float m_fVolume;
+	int m_iVolume;
 
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
