@@ -21,6 +21,8 @@
 #define OPUS_MIN_COMPLEXITY 1
 #define OPUS_MAX_COMPLEXITY 10
 
+#define AFLOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
+
 class CAudioFileCodec
 {
 
