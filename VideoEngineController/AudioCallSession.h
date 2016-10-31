@@ -42,6 +42,7 @@
 
 static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+
 #ifdef USE_AECM
 #include "echo_control_mobile.h"
 #endif
