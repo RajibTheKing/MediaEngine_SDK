@@ -51,7 +51,8 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData,int iLen){
         printf("THeKing--> Video FrameCounter = %d, FrameLength  = %d, iLen = %d\n", nFrames, nCurrentFrameLen, iLen);
         
         m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen+1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
-        iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
+       // iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
+		iUsedLen += LIVE_STREAMING_PACKETIZATION_PACKET_SIZE * ((nCurrentFrameLen + PACKET_HEADER_LENGTH + 1 + LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - 1) / LIVE_STREAMING_PACKETIZATION_PACKET_SIZE);
     }
 
 //    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
