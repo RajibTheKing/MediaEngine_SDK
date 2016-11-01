@@ -59,8 +59,6 @@ static string colon = "ALOG:";
 
 #define __AUDIO_CALL_VERSION__  1
 
-#define  __DUPLICATE_AUDIO__
-
 
 class CCommonElementsBucket;
 class CVideoEncoder;
