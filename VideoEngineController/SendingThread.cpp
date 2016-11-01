@@ -224,13 +224,15 @@ void CSendingThread::SendingThreadProcedure()
 				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
 				m_iDataToSendIndex += (packetSize);
 
+				int diff = m_iDataToSendIndex % LIVE_STREAMING_PACKETIZATION_PACKET_SIZE;
+
+				if (diff != 0)
+					m_iDataToSendIndex += (LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - diff);
 			}
 			else
 			{
 				if(m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
-				{
-                    
-                    
+				{  
 					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
                     
                     unsigned char *p = m_VideoDataToSend+m_iDataToSendIndex + 1;
@@ -238,16 +240,14 @@ void CSendingThread::SendingThreadProcedure()
                     CPacketHeader   ccc;
                     ccc.setPacketHeader(p);
                     int nTemp = ccc.getPacketLength();
-                    //printf("SendingSide--> nCurrentFrameLen = %d, but packetSize = %d, iDataToSendIndex = %d, gotLengthFromHeader = %d\n", nCurrentFrameLen, packetSize, m_iDataToSendIndex, nTemp);
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                    //printf("SendingSide--> nCurrentFrameLen = %d, but packetSize = %d, iDataToSendIndex = %d, gotLengthFromHeader = %d\n", nCurrentFrameLen, packetSize, m_iDataToSendIndex, nTemp); 
                     
 					m_iDataToSendIndex += (packetSize);
+
+					int diff = m_iDataToSendIndex % LIVE_STREAMING_PACKETIZATION_PACKET_SIZE;
+
+					if (diff != 0)
+						m_iDataToSendIndex += (LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - diff);
 				}
 			}
 			firstFrame = false;
