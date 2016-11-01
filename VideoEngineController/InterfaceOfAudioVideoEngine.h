@@ -53,6 +53,12 @@ public:
      void SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int, int));
     
 private:
+
+#ifdef ONLY_FOR_LIVESTREAMING
+
+	Tools m_Tools;
+
+#endif
     
     CController* m_pcController;
 };

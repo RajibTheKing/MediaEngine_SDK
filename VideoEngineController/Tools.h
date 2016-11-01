@@ -37,6 +37,9 @@ public:
 	static unsigned long long GetTotalSystemMemory();
 	unsigned long long GetAvailableSystemMemory();
 
+	void IntToUnsignedCharConversion(int number, unsigned char convertedArray[], int index);
+	int UnsignedCharToIntConversion(unsigned char convertedArray[], int index);
+
 
 private:
 

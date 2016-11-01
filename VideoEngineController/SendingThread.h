@@ -49,6 +49,7 @@ private:
 #ifdef ONLY_FOR_LIVESTREAMING
 	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
+	unsigned char m_AudioVideoDataToSend[MAX_AUDIO_VIDEO_DATA_TO_SEND_SIZE];
 	int m_iAudioDataToSendIndex;
 
 	bool firstFrame;

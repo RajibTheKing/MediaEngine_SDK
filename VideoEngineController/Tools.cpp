@@ -268,3 +268,20 @@ unsigned long long Tools::GetAvailableSystemMemory()
 	return 0;
 #endif
 }
+
+void Tools::IntToUnsignedCharConversion(int number, unsigned char convertedArray[], int index)
+{
+	convertedArray[index + 0] = (number >> 24) & 0xFF;
+	convertedArray[index + 1] = (number >> 16) & 0xFF;
+	convertedArray[index + 2] = (number >> 8) & 0xFF;
+	convertedArray[index + 3] = number & 0xFF;
+}
+
+int Tools::UnsignedCharToIntConversion(unsigned char convertedArray[], int index)
+{
+	int number;
+
+	number = ((convertedArray[index + 0] & 0xFF) << 24) | ((convertedArray[index + 1] & 0xFF) << 16) | ((convertedArray[index + 2] & 0xFF) << 8) | convertedArray[3];
+
+	return number;
+}

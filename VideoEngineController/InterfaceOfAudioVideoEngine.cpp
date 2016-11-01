@@ -125,6 +125,16 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 //		else
 //			return 0;
 
+#ifdef ONLY_FOR_LIVESTREAMING
+
+		int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
+		int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
+
+		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 8, lengthOfVideoData);
+		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data + lengthOfVideoData + 8, lengthOfAudioData);
+
+#endif
+
 		if (100 > (int)in_data[1])
 		{
 			iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);

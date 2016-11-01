@@ -162,6 +162,13 @@ void CSendingThread::SendingThreadProcedure()
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
 
 #ifndef __LIVE_STREAMIN_SELF__
+
+				m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
+				m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
+
+				memcpy(m_AudioVideoDataToSend + 8, m_VideoDataToSend, m_iDataToSendIndex);
+				memcpy(m_AudioVideoDataToSend + 8 + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
+
                 long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
                 long long llNowTimeDiff;
                 
@@ -173,13 +180,15 @@ void CSendingThread::SendingThreadProcedure()
                 else
                 {
                     llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
-                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
-                    
+                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;             
                 }
+
+				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, 8 + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
                 
-                
-				m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
-				m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
+				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
+
+
 #else
                 long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
                 long long llNowTimeDiff;
