@@ -14,7 +14,7 @@ class LiveReceiver {
 public:
     LiveReceiver(CAudioDecoderBuffer *pAudioDecoderBuffer, LiveVideoDecodingQueue *pLiveVideoDecodingQueue);
     ~LiveReceiver();
-    void PushAudioData(unsigned char* uchAudioData,int iLen);
+	void PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL);
     void PushVideoData(unsigned char* uchVideoData,int iLen);
     bool GetVideoFrame(unsigned char* uchVideoFrame,int iLen);
 

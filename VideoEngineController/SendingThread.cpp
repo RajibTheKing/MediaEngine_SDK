@@ -5,6 +5,8 @@
 #include "CommonElementsBucket.h"
 #include "VideoCallSession.h"
 
+#include <vector>
+
 #include "LiveReceiver.h"
 #include "LiveVideoDecodingQueue.h"
 #include "Globals.h"
@@ -109,6 +111,9 @@ void CSendingThread::SendingThreadProcedure()
 	int fractionInterval = BYTE_SIZE;
 	int fpsSignal, frameNumber, packetNumber;
 	CPacketHeader packetHeader;
+	std::vector<int> vAudioDataLengthVector;
+	int videoPacketSizes[30];
+	int numberOfVideoPackets = 0;
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 	m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
@@ -150,24 +155,52 @@ void CSendingThread::SendingThreadProcedure()
 
 			int nalType = 0;
 
-
 			if(frameNumber%5 == 0 &&  firstFrame == false)
 			{
 				CAudioCallSession *pAudioSession;
 
 				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
-				pAudioSession->getAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex);
+				pAudioSession->getAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
 
 #ifndef __LIVE_STREAMIN_SELF__
 
-				m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
-				m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
 
-				memcpy(m_AudioVideoDataToSend + 8, m_VideoDataToSend, m_iDataToSendIndex);
-				memcpy(m_AudioVideoDataToSend + 8 + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
+
+			//	m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
+			//	m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
+
+				m_Tools.SetMediaUnitVersionInMediaChunck(0, m_AudioVideoDataToSend);
+
+				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
+				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
+
+				m_Tools.SetNumberOfAudioFramesInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, vAudioDataLengthVector.size(), m_AudioVideoDataToSend);
+
+				int index = LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
+
+				for (int i = 0; i < vAudioDataLengthVector.size(); i++)
+				{
+					m_Tools.SetNextAudioFramePositionInMediaChunck(index, vAudioDataLengthVector[i], m_AudioVideoDataToSend);
+
+					index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
+				}
+
+				m_Tools.SetNumberOfVideoFramesInMediaChunck(index, numberOfVideoPackets, m_AudioVideoDataToSend);
+
+				index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
+
+				for (int i = 0; i < numberOfVideoPackets; i++)
+				{
+					m_Tools.SetNextAudioFramePositionInMediaChunck(index, videoPacketSizes[i], m_AudioVideoDataToSend);
+
+					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
+				}
+
+				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
+				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
 
                 long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
                 long long llNowTimeDiff;
@@ -220,14 +253,12 @@ void CSendingThread::SendingThreadProcedure()
 
 				printf("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d\n", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
 
+				numberOfVideoPackets = 0;
 				m_iDataToSendIndex = 0;
 				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
 				m_iDataToSendIndex += (packetSize);
 
-				int diff = m_iDataToSendIndex % LIVE_STREAMING_PACKETIZATION_PACKET_SIZE;
-
-				if (diff != 0)
-					m_iDataToSendIndex += (LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - diff);
+				videoPacketSizes[numberOfVideoPackets++] = packetSize;
 			}
 			else
 			{
@@ -244,10 +275,7 @@ void CSendingThread::SendingThreadProcedure()
                     
 					m_iDataToSendIndex += (packetSize);
 
-					int diff = m_iDataToSendIndex % LIVE_STREAMING_PACKETIZATION_PACKET_SIZE;
-
-					if (diff != 0)
-						m_iDataToSendIndex += (LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - diff);
+					videoPacketSizes[numberOfVideoPackets++] = packetSize;
 				}
 			}
 			firstFrame = false;

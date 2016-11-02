@@ -127,11 +127,45 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 
 #ifdef ONLY_FOR_LIVESTREAMING
 
-		int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
-		int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
+		//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
+		//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
+
+
+		int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data);
+
+		int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data);
+		int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data);
+
+		int audioFrameSizes[100];
+		int videoFrameSizes[100];
+
+		int numberOfAudioFrames = m_Tools.GetNumberOfAudioFramesFromMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, in_data);
+
+		int index = LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
+
+		for (int i = 0; i < numberOfAudioFrames; i++)
+		{
+			audioFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data);
+
+			index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
+		}
+
+		int numberOfVideoFrames = m_Tools.GetNumberOfVideoFramesFromMediaChunck(index, in_data);
+
+		index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
+
+		for (int i = 0; i < numberOfVideoFrames; i++)
+		{
+			videoFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data);
+
+			index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
+		}
 
 		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 8, lengthOfVideoData);
-		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data + lengthOfVideoData + 8, lengthOfAudioData);
+		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data + lengthOfVideoData + 8, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes);
+
+
+
 
 #endif
 

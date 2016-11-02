@@ -55,6 +55,7 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 #ifdef ONLY_FOR_LIVESTREAMING
     m_iAudioDataSendIndex = 0;
+    m_vEncodedFrameLenght.clear();
 #endif
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
@@ -128,12 +129,12 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
     return returnedValue;
 }
 
-int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
+int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes)
 {
 //    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
     if(Globals::g_bIsLiveStreaming)
     {
-        g_LiveReceiver->PushAudioData(pucaDecodingAudioData, unLength);
+        g_LiveReceiver->PushAudioData(pucaDecodingAudioData, unLength, numberOfFrames, frameSizes);
     }
 
 	int returnedValue = m_AudioDecodingBuffer.Queue(&pucaDecodingAudioData[1], unLength - 1);
@@ -326,8 +327,7 @@ void CAudioCallSession::EncodingThreadProcedure()
                         
                         memcpy(m_ucaAudioDataToSend + m_iAudioDataSendIndex,  m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
                         m_iAudioDataSendIndex += (nEncodedFrameSize + m_AudioHeadersize + 1);
-                        
-                        
+                        m_vEncodedFrameLenght.push_back( nEncodedFrameSize + m_AudioHeadersize + 1 );
                     }
                 }
 
@@ -538,10 +538,15 @@ void CAudioCallSession::DecodingThreadProcedure()
     CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 #ifdef ONLY_FOR_LIVESTREAMING
-void CAudioCallSession::getAudioSendToData(unsigned char * pAudioDataToSend, int &length)
+void CAudioCallSession::getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector)
 {
     Locker lock(*m_pAudioCallSessionMutex);
+
+    vDataLengthVector = m_vEncodedFrameLenght;
+    m_vEncodedFrameLenght.clear();
+
     memcpy(pAudioDataToSend, m_ucaAudioDataToSend, m_iAudioDataSendIndex);
+
     length = m_iAudioDataSendIndex;
     m_iAudioDataSendIndex = 0;
 }

@@ -337,7 +337,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 	}
 }
 
-int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
+int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -360,7 +360,7 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 		//if (pCAudioDecoder)
         {
             CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
-            return pAudioSession->DecodeAudioData(in_data, in_size);
+            return pAudioSession->DecodeAudioData(in_data, in_size, numberOfFrames, frameSizes);
         }
 			
 		/*else

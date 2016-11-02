@@ -171,6 +171,8 @@
     <ClCompile Include="..\..\VideoEngineController\FPSController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Globals.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
@@ -228,6 +230,8 @@
     <ClInclude Include="..\..\VideoEngineController\G729CodecNative.h" />
     <ClInclude Include="..\..\VideoEngineController\Globals.h" />
     <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveReceiver.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
     <ClInclude Include="..\..\VideoEngineController\PacketHeader.h" />

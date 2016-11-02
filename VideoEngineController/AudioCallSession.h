@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string>
 #include <map>
-
+#include <vector>
 #ifdef OPUS_ENABLE
 #include "AudioCodec.h"
 #else
@@ -42,7 +42,7 @@ public:
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
-    int DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength);
+	int DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames = 0, int *frameSizes = NULL);
 
     void EncodingThreadProcedure();
     void StopEncodingThread();
@@ -56,7 +56,7 @@ public:
     static void *CreateAudioDecodingThread(void* param);
 	int m_iNextPacketType;
 #ifdef ONLY_FOR_LIVESTREAMING
-	void getAudioSendToData(unsigned char * pAudioDataToSend, int &length);
+	void getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector);
 #endif
 
 private:
@@ -71,6 +71,10 @@ private:
     CCommonElementsBucket* m_pCommonElementsBucket;
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
+#ifdef ONLY_FOR_LIVESTREAMING
+    std::vector<int> m_vEncodedFrameLenght;
+#endif
+
 
 #ifdef OPUS_ENABLE
     CAudioCodec *m_pAudioCodec;

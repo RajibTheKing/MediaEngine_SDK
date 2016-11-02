@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "Size.h"
+
 #include "AudioVideoEngineDefinitions.h"
 
 #if defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
@@ -37,8 +39,39 @@ public:
 	static unsigned long long GetTotalSystemMemory();
 	unsigned long long GetAvailableSystemMemory();
 
+
+
 	void IntToUnsignedCharConversion(int number, unsigned char convertedArray[], int index);
 	int UnsignedCharToIntConversion(unsigned char convertedArray[], int index);
+
+
+
+	void SetMediaUnitVersionInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetMediaUnitVersionFromMediaChunck(unsigned char convertedArray[]);
+
+	void SetAudioBlockSizeInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetAudioBlockSizeFromMediaChunck(unsigned char convertedArray[]);
+
+	void SetVideoBlockSizeInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetVideoBlockSizeFromMediaChunck(unsigned char convertedArray[]);
+
+	void SetNumberOfAudioFramesInMediaChunck(int index, int number, unsigned char convertedArray[]);
+	int GetNumberOfAudioFramesFromMediaChunck(int index, unsigned char convertedArray[]);
+
+	void SetNumberOfVideoFramesInMediaChunck(int index, int number, unsigned char convertedArray[]);
+	int GetNumberOfVideoFramesFromMediaChunck(int index, unsigned char convertedArray[]);
+
+	void SetNextAudioFramePositionInMediaChunck(int index, int number, unsigned char convertedArray[]);
+	int GetNextAudioFramePositionFromMediaChunck(int index, unsigned char convertedArray[]);
+
+	void SetNextVideoFramePositionInMediaChunck(int index, int number, unsigned char convertedArray[]);
+	int GetNextVideoFramePositionFromMediaChunck(int index, unsigned char convertedArray[]);
+
+
+
+
+	int GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
+	void SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value);
 
 
 private:
