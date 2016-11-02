@@ -4,6 +4,7 @@
 #include "PacketHeader.h"
 #include "CommonElementsBucket.h"
 #include "VideoCallSession.h"
+#include "Controller.h"
 
 #include <vector>
 
@@ -165,9 +166,19 @@ void CSendingThread::SendingThreadProcedure()
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
 
-#ifndef __LIVE_STREAMIN_SELF__
+				long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
+				long long llNowTimeDiff;
 
-
+				if (m_llPrevTimeWhileSendingToLive == 0)
+				{
+					llNowTimeDiff = 0;
+					m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+				}
+				else
+				{
+					llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
+					m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+				}
 
 			//	m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
 			//	m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
@@ -199,22 +210,12 @@ void CSendingThread::SendingThreadProcedure()
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
 
+				index = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
+
 				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
 
-                long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
-                long long llNowTimeDiff;
-                
-                if(m_llPrevTimeWhileSendingToLive == 0)
-                {
-                    llNowTimeDiff = 0;
-                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
-                }
-                else
-                {
-                    llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
-                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;             
-                }
+#ifndef __LIVE_STREAMIN_SELF__
 
 				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, 8 + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
                 
@@ -222,29 +223,21 @@ void CSendingThread::SendingThreadProcedure()
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
 
 
-#else
-                long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
-                long long llNowTimeDiff;
-                
-                if(m_llPrevTimeWhileSendingToLive == 0)
-                {
-                    llNowTimeDiff = 0;
-                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
-                }
-                else
-                {
-                    llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
-                    m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
-                    
-                }
-                
-                printf("Sending to liovestream, llNowTimeDiff = %lld\n", llNowTimeDiff);
+#else        
+              /*  printf("Sending to liovestream, llNowTimeDiff = %lld\n", llNowTimeDiff);
                 
                 if(NULL != g_LiveReceiver)
                 {
                     g_LiveReceiver->PushAudioData(m_AudioDataToSend, m_iAudioDataToSendIndex);
                     g_LiveReceiver->PushVideoData(m_VideoDataToSend, m_iDataToSendIndex);
-                }
+                }*/
+
+				CVideoCallSession* pVideoSession;
+
+				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+
 #endif
 
 
