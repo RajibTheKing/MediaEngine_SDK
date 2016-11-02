@@ -340,13 +340,13 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 	return m_nFirstFrameEncodingTimeDiff;
 }
 
-bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
+bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 	if(Globals::g_bIsLiveStreaming)
 	{
 		if(NULL!= g_LiveReceiver)
 		{
-			g_LiveReceiver->PushVideoData(in_data, in_size);
+			g_LiveReceiver->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
 		}
 
 		return true;

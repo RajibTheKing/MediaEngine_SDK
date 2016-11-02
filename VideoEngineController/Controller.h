@@ -39,7 +39,7 @@ public:
 	bool StartTestAudioCall(const LongLong& lFriendID);
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
-	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
+	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 	int PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);

@@ -36,15 +36,37 @@ void LiveReceiver::PushAudioData(unsigned char* uchAudioData, int iLen, int numb
     }
 }
 
-void LiveReceiver::PushVideoData(unsigned char* uchVideoData,int iLen){
+void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames){
     Locker lock(*m_pLiveReceiverMutex);
     int iUsedLen = 0, nFrames = 0;
     CPacketHeader packetHeaderObj;
+	int tillIndex = 0;
     
-    while(iUsedLen < iLen)
+	for (int j = 0; iUsedLen < iLen;j++)
     {
         nFrames++;
-//        packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
+
+		int indexOfThisFrame = tillIndex;
+		int endOfThisFrame = indexOfThisFrame + frameSizes[j] - 1;
+
+		if (j == 0)
+		{
+			if (endOfThisFrame >= missingFrames[0] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__)
+				return;
+		}
+		else
+		{
+			for (int i = 0; i < numberOfMissingFrames-1; i++)
+			{
+				if (endOfThisFrame >= missingFrames[i] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && endOfThisFrame < missingFrames[i+1] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__)
+					continue;
+			}
+
+			if (endOfThisFrame >= missingFrames[numberOfMissingFrames - 1] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && endOfThisFrame < iLen)
+				continue;
+		}	
+
+//      packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
         
         int nCurrentFrameLen = ((int)uchVideoData[1+iUsedLen+13] << 8) + uchVideoData[1+iUsedLen+14];
         
@@ -53,7 +75,9 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData,int iLen){
         m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen+1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
         iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
 		//iUsedLen += LIVE_STREAMING_PACKETIZATION_PACKET_SIZE * ((nCurrentFrameLen + PACKET_HEADER_LENGTH + 1 + LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - 1) / LIVE_STREAMING_PACKETIZATION_PACKET_SIZE);
-    }
+   
+		tillIndex += endOfThisFrame + 1;
+	}
 
 //    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
 }

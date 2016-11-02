@@ -43,7 +43,7 @@ public:
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 
-	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData);
+	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 	CEncodedFrameDepacketizer * GetEncodedFrameDepacketizer();
 
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);

@@ -303,7 +303,7 @@ int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_d
 	}
 }
 
-int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
+int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 	CVideoCallSession* pVideoSession = NULL;
 
@@ -327,7 +327,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 //		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
 //		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
-			return pVideoSession->PushPacketForMerging(in_data, in_size,false);
+			return pVideoSession->PushPacketForMerging(in_data, in_size, false, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
 		else
 			return -1;
 	}
