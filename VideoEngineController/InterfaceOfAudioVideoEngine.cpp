@@ -161,7 +161,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 			index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 		}
 
-		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 8, lengthOfVideoData);
+		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 8, lengthOfVideoData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data + lengthOfVideoData + 8, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 
 
