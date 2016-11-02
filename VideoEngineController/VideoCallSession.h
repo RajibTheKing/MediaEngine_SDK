@@ -98,6 +98,7 @@ public:
 
 	bool m_bVideoCallStarted;
     CController *m_pController;
+	int m_nCallFPS;
     
 
 private:
@@ -121,8 +122,6 @@ private:
 	long long m_llFirstFrameCapturingTimeStamp;
 
 	unsigned int m_miniPacketBandCounter;
-
-	int m_nCallFPS;
 
 	int m_nCapturedFrameCounter;
 

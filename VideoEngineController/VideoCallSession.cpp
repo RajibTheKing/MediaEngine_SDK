@@ -265,7 +265,15 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
 
-	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS /2 + 1, m_bIsCheckCall);
+#ifdef ONLY_FOR_LIVESTREAMING
+
+	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 5, m_bIsCheckCall);
+
+#else
+
+	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
+
+#endif
 
 	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
@@ -843,7 +851,16 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
     m_pFPSController->Reset(m_nCallFPS);
 
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
+
+#ifdef ONLY_FOR_LIVESTREAMING
+
+	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 5, m_bIsCheckCall);
+
+#else
+
 	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
+
+#endif
 
 	m_pVideoEncodingThread->SetNotifierFlag(true);
 }
@@ -871,8 +888,16 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     m_pVideoRenderingThread->StopRenderingThread();
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
+#ifdef ONLY_FOR_LIVESTREAMING
+
+	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/5, m_bIsCheckCall);
+
+#else
 
 	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1, m_bIsCheckCall);
+
+#endif
+
 	m_pColorConverter->SetHeightWidth(iHeight, iWidth);
 
 	m_SendingBuffer->ResetBuffer();

@@ -158,6 +158,12 @@ void CSendingThread::SendingThreadProcedure()
 
 			int nalType = 0;
 
+			CVideoCallSession* pVideoSession;
+
+			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+			
+			int iIntervalIFrame = pVideoSession->m_nCallFPS / 5;
+
 			if(frameNumber%5 == 0 &&  firstFrame == false)
 			{
 				CAudioCallSession *pAudioSession;

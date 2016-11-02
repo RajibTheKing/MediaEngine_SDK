@@ -51,7 +51,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encoderParemeters.iTemporalLayerNum = 0;
-	encoderParemeters.uiIntraPeriod = 5; /*nIFrameInterval;*/
+	encoderParemeters.uiIntraPeriod = nIFrameInterval;
 	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
 	encoderParemeters.bEnableSSEI = false;
 	encoderParemeters.bEnableFrameCroppingFlag = true;
@@ -148,7 +148,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encoderParemeters.iTemporalLayerNum = 0;
-	encoderParemeters.uiIntraPeriod = 5;
+	encoderParemeters.uiIntraPeriod = nIFrameInterval;
 	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
 	encoderParemeters.bEnableSSEI = false;
 	encoderParemeters.bEnableFrameCroppingFlag = true;
