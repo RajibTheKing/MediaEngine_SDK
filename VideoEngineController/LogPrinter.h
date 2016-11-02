@@ -29,6 +29,8 @@
 
 //#define  __SPECIFIC_LOG6__
 
+#define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+
 #define ON 1
 #define OFF 0
 

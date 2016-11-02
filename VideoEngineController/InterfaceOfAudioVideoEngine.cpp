@@ -3,8 +3,11 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "LogPrinter.h"
 
+CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine = NULL;
+
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 {
+	G_pInterfaceOfAudioVideoEngine = this;
 	m_pcController = new CController();
 
 	m_pcController->initializeEventHandler();
@@ -157,26 +160,22 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 		for (int i = 0; i < numberOfVideoFrames; i++)
 		{
 			videoFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data);
-
 			index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 		}
 
-		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 8, lengthOfVideoData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
-		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data + lengthOfVideoData + 8, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
-
-
-
+		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__, lengthOfVideoData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
+		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 
 #endif
 
-		if (100 > (int)in_data[1])
-		{
-			iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
-		}
-		else
-		{
-			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data, unLength);
-		}
+//		if (100 > (int)in_data[1])
+//		{
+//			iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
+//		}
+//		else
+//		{
+//			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data, unLength);
+//		}
 
     }
 

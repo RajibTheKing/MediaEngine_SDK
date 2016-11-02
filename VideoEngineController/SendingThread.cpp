@@ -11,8 +11,10 @@
 #include "LiveReceiver.h"
 #include "LiveVideoDecodingQueue.h"
 #include "Globals.h"
-extern LiveReceiver *g_LiveReceiver;
+#include "InterfaceOfAudioVideoEngine.h"
 
+extern LiveReceiver *g_LiveReceiver;
+extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
 //#define __LIVE_STREAMIN_SELF__
@@ -192,10 +194,14 @@ void CSendingThread::SendingThreadProcedure()
 
 				int index = LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
 
+//				LLG("#IV#S#     m_iAudioDataToSendIndex  = "+Tools::IntegertoStringConvert(m_iAudioDataToSendIndex));
+//				LLG("#IV#S#     m_iDataToSendIndex  = "+Tools::IntegertoStringConvert(m_iDataToSendIndex));
+
+
 				for (int i = 0; i < vAudioDataLengthVector.size(); i++)
 				{
 					m_Tools.SetNextAudioFramePositionInMediaChunck(index, vAudioDataLengthVector[i], m_AudioVideoDataToSend);
-
+//					LLG("#IV#S#     AudiData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(vAudioDataLengthVector[i]));
 					index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
 				}
 
@@ -206,7 +212,7 @@ void CSendingThread::SendingThreadProcedure()
 				for (int i = 0; i < numberOfVideoPackets; i++)
 				{
 					m_Tools.SetNextAudioFramePositionInMediaChunck(index, videoPacketSizes[i], m_AudioVideoDataToSend);
-
+//					LLG("#IV#S#     VideoData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(videoPacketSizes[i]));
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
 
@@ -217,7 +223,7 @@ void CSendingThread::SendingThreadProcedure()
 
 #ifndef __LIVE_STREAMIN_SELF__
 
-				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, 8 + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
                 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
@@ -234,10 +240,11 @@ void CSendingThread::SendingThreadProcedure()
 
 				CVideoCallSession* pVideoSession;
 
-				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
 
-				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
-
+//				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+//				if(bExist)
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(200,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ + m_iDataToSendIndex + m_iAudioDataToSendIndex, 0, NULL);
 #endif
 
 
