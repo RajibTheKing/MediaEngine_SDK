@@ -63,3 +63,55 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
     Locker lock(*m_pLiveReceiverMutex);
     return false;
 }
+
+void LiveReceiver::ProcessAudioStream(unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks){
+    //starting
+    Locker lock(*m_pLiveReceiverMutex);
+//    CAudioPacketHeader audioPacketHeaderObject;
+    int nCallSDKPacketLength = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
+    bool bCompleteFrame = false;
+    int iMissingIndex = 0;
+    int iFrameNumber = 0;
+    int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
+    int nCurrentFrameLenWithMediaHeader;
+
+    while(iFrameNumber < nNumberOfAudioFrames)
+    {
+        bCompleteFrame = true;
+        nFrameLeftRange = pAudioFramsStartingByte[iFrameNumber];
+
+        if(iFrameNumber + 1 == nNumberOfAudioFrames) {
+            nFrameRightRange = nDataLenght - 1;
+        }
+        else {
+            nFrameRightRange = pAudioFramsStartingByte[ 1 + iFrameNumber ] - 1;
+        }
+
+        while(iMissingIndex < nNumberOfMissingBlocks &&  (pMissingBlocks[iMissingIndex] + 1) *nCallSDKPacketLength  <= nFrameLeftRange)
+            ++ iMissingIndex;
+
+        if(iMissingIndex < nNumberOfMissingBlocks)
+        {
+            iLeftRange = pMissingBlocks[iMissingIndex] * nCallSDKPacketLength;
+            iRightRange =  iLeftRange + nCallSDKPacketLength - 1;
+
+            nFrameLeftRange =  max(nFrameLeftRange, iLeftRange);
+            nFrameRightRange = min(nFrameRightRange,iRightRange);
+            if(nFrameLeftRange <= nFrameRightRange)
+                bCompleteFrame = false;
+        }
+
+        if( !bCompleteFrame )
+            continue;
+
+        nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
+        m_pAudioDecoderBuffer->Queue(uchAudioData + nFrameLeftRange, nCurrentFrameLenWithMediaHeader);
+
+//        iUsedLen += nCurrentFrameLenWithMediaHeader;
+//        audioPacketHeaderObject.CopyHeaderToInformation(uchAudioData + iUsedLen + 1);
+//        int nCurrentFrameLen = audioPacketHeaderObject.GetInformation(PACKETLENGTH);
+//        int nCurrentFrameLen = audioPacketHeaderObject.GetInformation(PACKETLENGTH);
+        printf("THeKing--> Audio FrameCounter = %d, FrameLength  = %d, iLen = %d\n", iFrameNumber, nCurrentFrameLenWithMediaHeader, nDataLenght);
+    }
+}
+

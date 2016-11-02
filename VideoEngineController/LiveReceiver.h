@@ -17,6 +17,7 @@ public:
 	void PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL);
     void PushVideoData(unsigned char* uchVideoData,int iLen);
     bool GetVideoFrame(unsigned char* uchVideoFrame,int iLen);
+    void ProcessAudioStream(unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks);
 
 private:
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;

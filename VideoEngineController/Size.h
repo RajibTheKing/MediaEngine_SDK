@@ -11,6 +11,8 @@
 
 #define FPS_CHANGE_SIGNALING
 
+#define __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ 512
+
 ///Packet Types
 
 #define NORMAL_PACKET 1
