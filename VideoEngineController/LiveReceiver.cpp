@@ -20,7 +20,7 @@ LiveReceiver::~LiveReceiver(){
     SHARED_PTR_DELETE(m_pLiveReceiverMutex);
 }
 
-void LiveReceiver::PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames, int *frameSizes){
+void LiveReceiver::PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames){
     Locker lock(*m_pLiveReceiverMutex);
     int iUsedLen = 0, nFrames = 0;
     CAudioPacketHeader audioPacketHeaderObject;

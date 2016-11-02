@@ -129,13 +129,13 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
     return returnedValue;
 }
 
-int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes)
+int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 //    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
     if(Globals::g_bIsLiveStreaming)
     {
-//        g_LiveReceiver->PushAudioData(pucaDecodingAudioData, unLength);
-        g_LiveReceiver->ProcessAudioStream(pucaDecodingAudioData, unLength, NULL, 0, NULL, 0);
+//        g_LiveReceiver->PushAudioData(pucaDecodingAudioData, unLength, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
+        g_LiveReceiver->ProcessAudioStream(pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, missingFrames, numberOfMissingFrames);
         return 1;
     }
 

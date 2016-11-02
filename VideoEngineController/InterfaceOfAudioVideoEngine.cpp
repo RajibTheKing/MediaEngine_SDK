@@ -92,7 +92,7 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFrie
 	return -1;
 }
 
-int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength)
+int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames)
 { 
     int iReturnedValue = 0;
     
@@ -162,7 +162,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 		}
 
 		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 8, lengthOfVideoData);
-		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data + lengthOfVideoData + 8, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes);
+		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data + lengthOfVideoData + 8, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 
 
 
