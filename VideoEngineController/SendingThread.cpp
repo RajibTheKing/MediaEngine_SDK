@@ -164,7 +164,7 @@ void CSendingThread::SendingThreadProcedure()
 			
 			int iIntervalIFrame = pVideoSession->m_nCallFPS / 5;
 
-			if(frameNumber%5 == 0 &&  firstFrame == false)
+			if (frameNumber%iIntervalIFrame == 0 && firstFrame == false)
 			{
 				CAudioCallSession *pAudioSession;
 
