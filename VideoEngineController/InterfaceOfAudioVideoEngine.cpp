@@ -133,6 +133,13 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 		//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
 		//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
 
+		for (int i = 0; numberOfMissingFrames > i && missingFrames[i] == 0; i++)
+		{
+			if (i == NUMBER_OF_HEADER_FOR_STREAMING)
+				return 5;
+			else
+				in_data = in_data + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * (i + 1);
+		}
 
 		int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data);
 
@@ -163,8 +170,8 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 			index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 		}
 
-		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__, lengthOfVideoData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
-		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
+		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING, lengthOfVideoData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
+		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 
 #else
 

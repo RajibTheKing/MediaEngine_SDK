@@ -222,7 +222,10 @@ void CSendingThread::SendingThreadProcedure()
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
 
-				index = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
+				for (int i = 1; i < NUMBER_OF_HEADER_FOR_STREAMING; i++)
+					memcpy(m_AudioVideoDataToSend + i * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__, m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__);
+
+				index = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING;
 
 				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
