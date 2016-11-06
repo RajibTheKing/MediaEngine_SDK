@@ -232,7 +232,7 @@ void CSendingThread::SendingThreadProcedure()
 
 #ifndef __LIVE_STREAMIN_SELF__
 
-				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
                 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
@@ -253,7 +253,7 @@ void CSendingThread::SendingThreadProcedure()
 
 //				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
-					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(200,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ + m_iDataToSendIndex + m_iAudioDataToSendIndex, 0, NULL);
+				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(200,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, 0, NULL);
 #endif
 
 
