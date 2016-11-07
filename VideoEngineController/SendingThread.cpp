@@ -19,6 +19,8 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 //#define SEND_VIDEO_TO_SELF 1
 //#define __LIVE_STREAMIN_SELF__
 
+#define __RANDOM_MISSING_PACKET__
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
@@ -253,7 +255,19 @@ void CSendingThread::SendingThreadProcedure()
 
 //				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
-				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(200,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, 0, NULL);
+                int nTotalSizeToSend = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
+                const int nMaxMissingFrames = (nTotalSizeToSend +  __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ - 1 ) / __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
+                int missingFrames[nMaxMissingFrames];
+
+                int nMissingFrames = 0;
+#ifdef	__RANDOM_MISSING_PACKET__
+                for(int i=0; i < nMaxMissingFrames; i ++)
+                {
+                    if(rand()%10 < 2)
+                        missingFrames[nMissingFrames++] = i;
+                }
+#endif
+				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(200,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
 #endif
 
 
