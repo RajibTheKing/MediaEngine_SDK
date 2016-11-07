@@ -71,7 +71,7 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 //      packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
         
         int nCurrentFrameLen = ((int)uchVideoData[1+iUsedLen+13] << 8) + uchVideoData[1+iUsedLen+14];
-        LLG("#IV#    LiveReceiver::PushVideoData , nCurrentFrameLen = " + Tools::IntegertoStringConvert(nCurrentFrameLen));
+        //LLG("#IV#    LiveReceiver::PushVideoData , nCurrentFrameLen = " + Tools::IntegertoStringConvert(nCurrentFrameLen));
         printf("THeKing--> Video FrameCounter = %d, FrameLength  = %d, iLen = %d\n", nFrames, nCurrentFrameLen, iLen);
         
         m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen+1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
@@ -117,7 +117,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
         nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
         nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
 
-        LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
+        //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
 
         while(iMissingIndex < nNumberOfMissingBlocks &&  (pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength  <= nFrameLeftRange)
             ++ iMissingIndex;

@@ -344,7 +344,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			else
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
-			VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
+			//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
 			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
 			sumOfEncodingTimediff += timeDiff;
