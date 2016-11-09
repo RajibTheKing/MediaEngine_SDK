@@ -179,7 +179,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 			LOGS("#LV# StartPosOfMissingPacket : " + Tools::IntegertoStringConvert(__MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * missingFrames[i]));
 
 		iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING,
-			lengthOfVideoData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
+			lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, numberOfMissingFrames, missingFrames);
 		iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING,
 			in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 

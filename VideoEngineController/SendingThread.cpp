@@ -19,7 +19,7 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 //#define SEND_VIDEO_TO_SELF 1
 //#define __LIVE_STREAMIN_SELF__
 
-#define __RANDOM_MISSING_PACKET__
+//#define __RANDOM_MISSING_PACKET__
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
