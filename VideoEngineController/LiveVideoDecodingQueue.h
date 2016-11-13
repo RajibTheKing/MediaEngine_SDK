@@ -7,9 +7,10 @@
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
+#include "Tools.h"
 
 #define LIVE_VIDEO_DECODING_QUEUE_SIZE 20
-#define MAX_VIDEO_ENCODED_FRAME_SIZE 30000
+#define MAX_VIDEO_ENCODED_FRAME_SIZE 100000
 
 
 class LiveVideoDecodingQueue {
@@ -30,6 +31,7 @@ private:
     int m_iPopIndex;
     int m_nQueueCapacity;
     int m_nQueueSize;
+    Tools m_Tools;
 
     unsigned char m_uchBuffer[LIVE_VIDEO_DECODING_QUEUE_SIZE][MAX_VIDEO_ENCODED_FRAME_SIZE];
     int m_naBufferDataLength[LIVE_VIDEO_DECODING_QUEUE_SIZE];

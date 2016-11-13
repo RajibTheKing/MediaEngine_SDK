@@ -4,6 +4,7 @@
 
 #include "LiveVideoDecodingQueue.h"
 #include "ThreadTools.h"
+#include "LogPrinter.h"
 
 LiveVideoDecodingQueue::LiveVideoDecodingQueue() :
         m_iPushIndex(0),
@@ -31,6 +32,15 @@ void LiveVideoDecodingQueue::ResetBuffer()
 int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedAudioFrameData, int nLength)
 {
     Locker lock(*m_pLiveVideoDecodingQueueMutex);
+
+    if(nLength > 30000)
+    {
+        CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + m_Tools.IntegertoStringConvert(nLength));
+    }
+    if(nLength > MAX_VIDEO_ENCODED_FRAME_SIZE)
+    {
+        return 0;
+    }
 
     memcpy(m_uchBuffer[m_iPushIndex], saReceivedAudioFrameData, nLength);
 
