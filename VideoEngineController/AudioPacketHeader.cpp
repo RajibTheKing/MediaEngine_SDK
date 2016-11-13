@@ -155,7 +155,8 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
     
 	if (infoStartBitOfByte + HeaderBitmap[InfoType] <= 8)//fits in 1 byte
 	{
-		Information = (ma_uchHeader[infoStartByte] << infoStartBitOfByte) >> (8 - HeaderBitmap[InfoType]);
+		unsigned char temp = (ma_uchHeader[infoStartByte] << infoStartBitOfByte);
+		Information = (temp >>( 8 - HeaderBitmap[InfoType]));
 	}
 	else
 	{
