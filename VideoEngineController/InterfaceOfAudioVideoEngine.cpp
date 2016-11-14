@@ -141,12 +141,17 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 				return 5;
 		}
 
+		if(headerPosition >= NUMBER_OF_HEADER_FOR_STREAMING)
+			return 6;
+
 		int nValidHeaderOffset = headerPosition * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
 
 		int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
 
 		int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
 		int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+
+		//LOGEF("THeKing--> interface:receive **** lengthOfVideoData =  %d  Pos=%d   Offset= %d,  \n", lengthOfVideoData,headerPosition, nValidHeaderOffset);
 
 		int audioFrameSizes[100];
 		int videoFrameSizes[100];
