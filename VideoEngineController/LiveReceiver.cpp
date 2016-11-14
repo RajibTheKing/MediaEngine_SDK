@@ -41,7 +41,8 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
     Locker lock(*m_pLiveReceiverMutex);
     int iUsedLen = 0, nFrames = 0;
     CPacketHeader packetHeaderObj;
-	int tillIndex = 0;
+	int offset = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING;
+	int tillIndex = offset;
     
 	for (int j = 0; iUsedLen < iLen;j++)
     {
@@ -49,11 +50,29 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 
 		int indexOfThisFrame = tillIndex;
 		int endOfThisFrame = indexOfThisFrame + frameSizes[j] - 1;
+		int commonLeft, commonRight;
+		bool bBroken = false;
 
+		for (int i = 0; i < numberOfMissingFrames - 1; i++)
+		{
+			commonLeft = max(indexOfThisFrame, missingFrames[i] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__);
+			commonRight = min(endOfThisFrame,( (missingFrames[i] + 1) * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__) - 1);
+
+			if (commonLeft <= commonRight)
+			{
+				bBroken = true;
+				break;
+			}
+		}
+
+		if (bBroken && j == 0)	//If I frame is missing.
+			return;
+		else if (bBroken)	//If P frame is missing.
+			continue;
+		/*
 		if (j == 0)
 		{
-
-			if ( 0 < numberOfMissingFrames &&  endOfThisFrame >= missingFrames[0] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__)
+			if (0 < numberOfMissingFrames &&  endOfThisFrame >= missingFrames[0] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && missingFrames[0] >= NUMBER_OF_HEADER_FOR_STREAMING)
 				return;
 		}
 		else
@@ -64,10 +83,10 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 					continue;
 			}
 
-			if ( numberOfMissingFrames > 0 &&   endOfThisFrame >= missingFrames[numberOfMissingFrames - 1] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && endOfThisFrame < iLen)
+			if (numberOfMissingFrames > 0 && endOfThisFrame >= missingFrames[numberOfMissingFrames - 1] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && endOfThisFrame < (iLen + offset))
 				continue;
 		}	
-
+		*/
 //      packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
         
         int nCurrentFrameLen = ((int)uchVideoData[1+iUsedLen+13] << 8) + uchVideoData[1+iUsedLen+14];
@@ -78,7 +97,7 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
         iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
 		//iUsedLen += LIVE_STREAMING_PACKETIZATION_PACKET_SIZE * ((nCurrentFrameLen + PACKET_HEADER_LENGTH + 1 + LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - 1) / LIVE_STREAMING_PACKETIZATION_PACKET_SIZE);
    
-		tillIndex += endOfThisFrame + 1;
+		tillIndex = endOfThisFrame + 1;
 	}
 
 //    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
