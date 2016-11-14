@@ -67,8 +67,8 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 
 		if (bBroken && j == 0)	//If I frame is missing.
 			return;
-		else if (bBroken)	//If P frame is missing.
-			continue;
+		
+		
 		/*
 		if (j == 0)
 		{
@@ -88,15 +88,17 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 		}	
 		*/
 //      packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
-        
-        int nCurrentFrameLen = ((int)uchVideoData[1+iUsedLen+13] << 8) + uchVideoData[1+iUsedLen+14];
-        //LLG("#IV#    LiveReceiver::PushVideoData , nCurrentFrameLen = " + Tools::IntegertoStringConvert(nCurrentFrameLen));
-        printf("THeKing--> Video FrameCounter = %d, FrameLength  = %d, iLen = %d\n", nFrames, nCurrentFrameLen, iLen);
-        
-        m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen+1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
-        iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
-		//iUsedLen += LIVE_STREAMING_PACKETIZATION_PACKET_SIZE * ((nCurrentFrameLen + PACKET_HEADER_LENGTH + 1 + LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - 1) / LIVE_STREAMING_PACKETIZATION_PACKET_SIZE);
-   
+
+		if (!bBroken)	//If the current frame is not broken.
+		{
+			int nCurrentFrameLen = ((int)uchVideoData[1 + iUsedLen + 13] << 8) + uchVideoData[1 + iUsedLen + 14];
+			//LLG("#IV#    LiveReceiver::PushVideoData , nCurrentFrameLen = " + Tools::IntegertoStringConvert(nCurrentFrameLen));
+			printf("THeKing--> Video FrameCounter = %d, FrameLength  = %d, iLen = %d\n", nFrames, nCurrentFrameLen, iLen);
+
+			m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
+			iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
+			//iUsedLen += LIVE_STREAMING_PACKETIZATION_PACKET_SIZE * ((nCurrentFrameLen + PACKET_HEADER_LENGTH + 1 + LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - 1) / LIVE_STREAMING_PACKETIZATION_PACKET_SIZE);
+		}
 		tillIndex = endOfThisFrame + 1;
 	}
 
