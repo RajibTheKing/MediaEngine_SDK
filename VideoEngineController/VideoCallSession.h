@@ -21,6 +21,9 @@
 #include "VersionController.h"
 #include "DeviceCapabilityCheckBuffer.h"
 #include "FPSController.h"
+#include "LiveReceiver.h"
+#include "LiveVideoDecodingQueue.h"
+
 
 using namespace std;
 
@@ -99,7 +102,6 @@ public:
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
-    
 
 private:
 
@@ -175,6 +177,10 @@ private:
     int m_nDeviceCheckFrameCounter;
     long long m_llClientFrameFPSTimeStamp;
     CAverageCalculator *m_VideoFpsCalculator;
+    
+    LiveReceiver *m_pLiveReceiverVideo;
+    LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+    
     
 
 protected:

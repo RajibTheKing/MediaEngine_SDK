@@ -5,14 +5,8 @@
 #include "Globals.h"
 #include "Controller.h"
 
-#include "LiveReceiver.h"
-
-
-
 
 //PairMap g_timeInt;
-
-extern LiveReceiver *g_LiveReceiver;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -60,6 +54,15 @@ m_nCapturedFrameCounter(0)
 {
     
     m_VideoFpsCalculator = new CAverageCalculator();
+    
+#ifdef ONLY_FOR_LIVESTREAMING
+    m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
+    m_pLiveReceiverVideo = new LiveReceiver();
+    m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
+#endif
+    
+    
+    
     
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 54");
     m_llClientFrameFPSTimeStamp = -1;
@@ -234,6 +237,22 @@ CVideoCallSession::~CVideoCallSession()
         
     }
     
+#ifdef ONLY_FOR_LIVESTREAMING
+    if(NULL != m_pLiveReceiverVideo)
+    {
+        delete m_pLiveReceiverVideo;
+        m_pLiveReceiverVideo = NULL;
+    }
+    
+    if(NULL != m_pLiveVideoDecodingQueue)
+    {
+        delete m_pLiveVideoDecodingQueue;
+        
+        m_pLiveVideoDecodingQueue = NULL;
+    }
+#endif
+    
+    
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::~~~CVideoCallSession 220");
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
 }
@@ -289,7 +308,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this, m_bIsCheckCall);
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_pCommonElementsBucket, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
-	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
+	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoder, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController, this);
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 270");
@@ -351,12 +370,9 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 	if(Globals::g_bIsLiveStreaming)
-	{
-		if(NULL!= g_LiveReceiver)
-		{
-			g_LiveReceiver->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
-		}
-
+	{		
+			m_pLiveReceiverVideo->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
+			
 		return true;
 	}
 

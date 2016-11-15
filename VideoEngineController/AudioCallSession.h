@@ -21,6 +21,7 @@
 #endif
 
 #include "LiveAudioDecodingQueue.h"
+#include "LiveReceiver.h"
 
 #define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
@@ -109,6 +110,8 @@ private:
     bool m_bAudioDecodingThreadClosed;
     
     LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
+    LiveReceiver *m_pLiveReceiverAudio;
+    
     
 
 

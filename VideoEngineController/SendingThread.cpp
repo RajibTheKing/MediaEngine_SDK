@@ -13,7 +13,6 @@
 #include "Globals.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
-extern LiveReceiver *g_LiveReceiver;
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
@@ -237,7 +236,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				int tempILen2 = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
 
-				LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
+				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
 
 				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
@@ -291,7 +290,7 @@ void CSendingThread::SendingThreadProcedure()
 				CPacketHeader packetHeader;
 				int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
-				LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %d\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
+				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %d\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
 
 				videoPacketSizes[numberOfVideoPackets++] = packetSize;
 			}
@@ -304,7 +303,7 @@ void CSendingThread::SendingThreadProcedure()
 					CPacketHeader packetHeader;
 					int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
-					LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d\n", frameNumber, frameNumberHeader, packetSize);
+					//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d\n", frameNumber, frameNumberHeader, packetSize);
                     
                     unsigned char *p = m_VideoDataToSend+m_iDataToSendIndex + 1;
                     int nCurrentFrameLen = ((int)p[13] << 8) + p[14];

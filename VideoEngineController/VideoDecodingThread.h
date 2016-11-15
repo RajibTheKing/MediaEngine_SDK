@@ -11,6 +11,8 @@
 #include "ColorConverter.h"
 #include "FPSController.h"
 #include "AverageCalculator.h"
+#include "LiveVideoDecodingQueue.h"
+
 //#include "Helper_IOS.hpp"
 #include <thread>
 
@@ -21,7 +23,16 @@ class CVideoDecodingThread
 
 public:
 
-	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS);
+	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer,
+                         CRenderingBuffer *renderingBuffer,
+                         LiveVideoDecodingQueue *pLiveVideoDecodingQueue,
+                         CVideoDecoder *videoDecoder,
+                         CColorConverter *colorConverter,
+                         CVideoCallSession* pVideoCallSession,
+                         bool bIsCheckCall,
+                         int nFPS
+                         );
+    
 	~CVideoDecodingThread();
     void Reset();
 	void StartDecodingThread();
@@ -74,6 +85,8 @@ private:
     
     int m_FpsCounter;
     long long m_FPS_TimeDiff;
+    
+    LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     
 };
 

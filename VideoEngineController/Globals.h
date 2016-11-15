@@ -11,7 +11,8 @@
 //PairMap g_timeInt;
 //CFPSController g_FPSController;
 
-class Globals {
+class Globals
+{
 public:
     Globals();
     static bool g_bIsLiveStreaming;

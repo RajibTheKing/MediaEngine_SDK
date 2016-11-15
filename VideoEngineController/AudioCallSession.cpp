@@ -2,11 +2,8 @@
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
 #include "Tools.h"
-#include "LiveReceiver.h"
 #include "Globals.h"
 
-extern LiveReceiver *g_LiveReceiver;
-extern LiveVideoDecodingQueue g_LiveVideoDecodingQueue;
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
@@ -34,10 +31,12 @@ m_bIsCheckCall(bIsCheckCall)
 {
     Globals::g_bIsLiveStreaming = true;
     
-    g_LiveReceiver = new LiveReceiver(&m_AudioDecodingBuffer,&g_LiveVideoDecodingQueue);
-    
+#ifdef ONLY_FOR_LIVESTREAMING
     m_pLiveAudioDecodingQueue = new LiveAudioDecodingQueue();
-    g_LiveReceiver->SetAudioDecodingQueue(m_pLiveAudioDecodingQueue);
+    m_pLiveReceiverAudio = new LiveReceiver();
+    m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioDecodingQueue);
+#endif  
+    
 
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
@@ -89,12 +88,23 @@ CAudioCallSession::~CAudioCallSession()
 		m_pAudioCodec = NULL;
 	}*/
     
+    
+#ifdef ONLY_FOR_LIVESTREAMING
+    if(NULL != m_pLiveReceiverAudio)
+    {
+        delete m_pLiveReceiverAudio;
+        m_pLiveReceiverAudio = NULL;
+    }
+    
     if(NULL != m_pLiveAudioDecodingQueue)
     {
         delete m_pLiveAudioDecodingQueue;
         
         m_pLiveAudioDecodingQueue = NULL;
     }
+#endif
+    
+    
     
 	m_FriendID = -1;
 #ifdef __DUMP_FILE__
@@ -145,8 +155,8 @@ int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingA
 //    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
     if(Globals::g_bIsLiveStreaming)
     {
-//        g_LiveReceiver->PushAudioData(pucaDecodingAudioData, unLength, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
-        g_LiveReceiver->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, missingFrames, numberOfMissingFrames);
+        m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, missingFrames, numberOfMissingFrames);
+        
         return 1;
     }
 

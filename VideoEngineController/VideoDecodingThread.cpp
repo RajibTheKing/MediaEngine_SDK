@@ -5,9 +5,6 @@
 
 #include "LiveVideoDecodingQueue.h"
 
-//extern LiveReceiver *g_LiveReceiver;
-extern LiveVideoDecodingQueue g_LiveVideoDecodingQueue;
-
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
@@ -16,7 +13,9 @@ extern map<int,long long>g_ArribalTime;
 
 #define MINIMUM_DECODING_TIME_FOR_FORCE_FPS 35
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer,
+                                           LiveVideoDecodingQueue *pLiveVideoDecodingQueue,CVideoDecoder *videoDecoder, CColorConverter *colorConverter,
+                                           CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
 
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
@@ -31,6 +30,7 @@ m_nCallFPS(nFPS)
 
 {
     m_pCalculatorDecodeTime = new CAverageCalculator();
+    m_pLiveVideoDecodingQueue  = pLiveVideoDecodingQueue;
 }
 
 CVideoDecodingThread::~CVideoDecodingThread()
@@ -138,12 +138,12 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	{
 		if(Globals::g_bIsLiveStreaming)
 		{
-			if(g_LiveVideoDecodingQueue.GetQueueSize() == 0) {
+			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
 				toolsObject.SOSleep(10);
 			}
 			else
 			{
-				nFrameLength = g_LiveVideoDecodingQueue.DeQueue(m_PacketizedFrame);
+				nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
                 printf("#V## Queue: %d\n",nFrameLength);
 				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
 
