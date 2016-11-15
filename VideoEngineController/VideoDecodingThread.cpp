@@ -136,7 +136,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
     long long llTargetTimeStampDiff = -1;
 	while (bDecodingThreadRunning)
 	{
-		if(Globals::g_bIsLiveStreaming)
+		if(m_pVideoCallSession->isLiveVideoStreamRunning())
 		{
 			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
 				toolsObject.SOSleep(10);

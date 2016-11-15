@@ -15,7 +15,7 @@ class Globals
 {
 public:
     Globals();
-    static bool g_bIsLiveStreaming;
+    //static bool g_bIsLiveStreaming;
 };
 
 

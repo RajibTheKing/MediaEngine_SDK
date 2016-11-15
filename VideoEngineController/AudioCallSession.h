@@ -112,6 +112,8 @@ private:
     LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
     LiveReceiver *m_pLiveReceiverAudio;
     
+    bool m_bLiveAudioStreamRunning;
+    
     
 
 

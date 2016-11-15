@@ -98,10 +98,12 @@ public:
 	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel); 
 
 	BitRateController* GetBitRateController();
+    bool isLiveVideoStreamRunning();
 
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
+    bool m_bLiveVideoStreamRunning;
 
 private:
 

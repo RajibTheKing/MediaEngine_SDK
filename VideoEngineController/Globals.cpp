@@ -13,8 +13,8 @@
 
 //LiveReceiver *g_LiveReceiver = NULL;
 //LiveVideoDecodingQueue g_LiveVideoDecodingQueue;
+//bool Globals::g_bIsLiveStreaming = false;
 
-bool Globals::g_bIsLiveStreaming = false;
 
 Globals::Globals()
 {

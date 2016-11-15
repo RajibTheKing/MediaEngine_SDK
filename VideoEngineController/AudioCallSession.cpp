@@ -29,9 +29,11 @@ m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall)
 
 {
-    Globals::g_bIsLiveStreaming = true;
+    
+    m_bLiveAudioStreamRunning = false;
     
 #ifdef ONLY_FOR_LIVESTREAMING
+    m_bLiveAudioStreamRunning = true;
     m_pLiveAudioDecodingQueue = new LiveAudioDecodingQueue();
     m_pLiveReceiverAudio = new LiveReceiver();
     m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioDecodingQueue);
@@ -153,7 +155,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 //    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
-    if(Globals::g_bIsLiveStreaming)
+    if(m_bLiveAudioStreamRunning)
     {
         m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, missingFrames, numberOfMissingFrames);
         
@@ -459,7 +461,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #ifdef ONLY_FOR_LIVESTREAMING
             nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
-            LOGEF("THeKing--> *** CAudioCallSession::DecodingThreadProcedure : decodingFrameSize: %d", nDecodingFrameSize);
+            //LOGEF("THeKing--> *** CAudioCallSession::DecodingThreadProcedure : decodingFrameSize: %d", nDecodingFrameSize);
 #else
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
 #endif

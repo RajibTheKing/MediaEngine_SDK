@@ -54,8 +54,9 @@ m_nCapturedFrameCounter(0)
 {
     
     m_VideoFpsCalculator = new CAverageCalculator();
-    
+    m_bLiveVideoStreamRunning = false;
 #ifdef ONLY_FOR_LIVESTREAMING
+    m_bLiveVideoStreamRunning = true;
     m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
     m_pLiveReceiverVideo = new LiveReceiver();
     m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
@@ -369,7 +370,7 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
-	if(Globals::g_bIsLiveStreaming)
+	if(m_bLiveVideoStreamRunning)
 	{		
 			m_pLiveReceiverVideo->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
 			
@@ -957,5 +958,10 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 CFPSController* CVideoCallSession::GetFPSController()
 {
 	return m_pFPSController;
+}
+
+bool CVideoCallSession::isLiveVideoStreamRunning()
+{
+    return m_bLiveVideoStreamRunning;
 }
 
