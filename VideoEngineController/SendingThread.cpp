@@ -119,6 +119,7 @@ void CSendingThread::SendingThreadProcedure()
 	std::vector<int> vAudioDataLengthVector;
 	int videoPacketSizes[30];
 	int numberOfVideoPackets = 0;
+	int frameCounter = 0;
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 	m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
@@ -198,6 +199,8 @@ void CSendingThread::SendingThreadProcedure()
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
 
+				int tempILen = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
+
 				m_Tools.SetNumberOfAudioFramesInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, vAudioDataLengthVector.size(), m_AudioVideoDataToSend);
 
 				int index = LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
@@ -232,6 +235,9 @@ void CSendingThread::SendingThreadProcedure()
 				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
 
+				int tempILen2 = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
+
+				LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
 
 				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
@@ -263,7 +269,7 @@ void CSendingThread::SendingThreadProcedure()
 #ifdef	__RANDOM_MISSING_PACKET__
                 for(int i=0; i < nMaxMissingFrames; i ++)
                 {
-                    if(rand()%10 < 2)
+                    if(rand()%10 < 3)
                         missingFrames[nMissingFrames++] = i;
                 }
 #endif
@@ -276,10 +282,16 @@ void CSendingThread::SendingThreadProcedure()
 
 				printf("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d\n", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
 
+				int tempIndex = m_iDataToSendIndex;
 				numberOfVideoPackets = 0;
 				m_iDataToSendIndex = 0;
 				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
 				m_iDataToSendIndex += (packetSize);
+
+				CPacketHeader packetHeader;
+				int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
+
+				LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %d\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
 
 				videoPacketSizes[numberOfVideoPackets++] = packetSize;
 			}
@@ -288,6 +300,11 @@ void CSendingThread::SendingThreadProcedure()
 				if(m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
 				{  
 					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
+
+					CPacketHeader packetHeader;
+					int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
+
+					LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d\n", frameNumber, frameNumberHeader, packetSize);
                     
                     unsigned char *p = m_VideoDataToSend+m_iDataToSendIndex + 1;
                     int nCurrentFrameLen = ((int)p[13] << 8) + p[14];
