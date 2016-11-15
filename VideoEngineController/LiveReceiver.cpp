@@ -187,14 +187,23 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
                 bCompleteFrame = false;
         }
 
+        ++ iFrameNumber;
+
         if( !bCompleteFrame )
         {
-            LLG("#IV#    LiveReceiver::ProcessAudioStream Audio FRAME not Completed");
+            CAudioPacketHeader audioPacketHeader;
+            int audioFrameNumber = audioPacketHeader.GetInformation(PACKETNUMBER);
+            LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME not Completed -- FrameNumber = %d", audioFrameNumber);
             continue;
+        }else{
+            CAudioPacketHeader audioPacketHeader;
+            int audioFrameNumber = audioPacketHeader.GetInformation(PACKETNUMBER);
+            int audioFrameLength = audioPacketHeader.GetInformation(PACKETLENGTH);
+            LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
         }
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
-        ++ iFrameNumber;
+
 
         m_pAudioDecoderBuffer->Queue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
 
