@@ -194,7 +194,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             {
 				pRenderingFps->CalculateFPS("RenderingFPS--> ");
 				long long nowCurrentTimeStampDiff = m_Tools.CurrentTimestamp() - llPrevTimeStamp;
-				LOGE(" fahadRajib  time diff for rendering-->----------------------  %d", minTimeGap );
+				//LOGE(" fahadRajib  time diff for rendering-->----------------------  %d", minTimeGap );
 				if(nowCurrentTimeStampDiff < 30)
 					toolsObject.SOSleep(30 - nowCurrentTimeStampDiff);
 				else toolsObject.SOSleep(0);
