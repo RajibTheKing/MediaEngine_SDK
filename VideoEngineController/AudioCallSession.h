@@ -20,6 +20,8 @@
 #include "G729CodecNative.h"
 #endif
 
+#include "LiveAudioDecodingQueue.h"
+
 #define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
 //#define __AUDIO_FIXED_COMPLEXITY__
@@ -105,6 +107,9 @@ private:
 
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
+    
+    LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
+    
 
 
 

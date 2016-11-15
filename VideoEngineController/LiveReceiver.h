@@ -9,11 +9,15 @@
 #include "LockHandler.h"
 #include "AudioDecoderBuffer.h"
 #include "LiveVideoDecodingQueue.h"
+#include "LiveAudioDecodingQueue.h"
 
 class LiveReceiver {
 public:
     LiveReceiver(CAudioDecoderBuffer *pAudioDecoderBuffer, LiveVideoDecodingQueue *pLiveVideoDecodingQueue);
     ~LiveReceiver();
+    void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);
+    void SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue);
+    
 	void PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 	void PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
     bool GetVideoFrame(unsigned char* uchVideoFrame,int iLen);
@@ -23,6 +27,7 @@ private:
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;
     CAudioDecoderBuffer *m_pAudioDecoderBuffer;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+    LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
 };
 
 

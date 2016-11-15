@@ -19,8 +19,8 @@ public:
     LiveVideoDecodingQueue();
     ~LiveVideoDecodingQueue();
 
-    int Queue(unsigned char *saReceivedAudioFrameData, int nLength);
-    int DeQueue(unsigned char *saReceivedAudioFrameData);
+    int Queue(unsigned char *saReceivedVideoFrameData, int nLength);
+    int DeQueue(unsigned char *saReceivedVideoFrameData);
     void IncreamentIndex(int &irIndex);
     int GetQueueSize();
     void ResetBuffer();

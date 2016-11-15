@@ -33,7 +33,11 @@ m_bIsCheckCall(bIsCheckCall)
 
 {
     Globals::g_bIsLiveStreaming = true;
+    
     g_LiveReceiver = new LiveReceiver(&m_AudioDecodingBuffer,&g_LiveVideoDecodingQueue);
+    
+    m_pLiveAudioDecodingQueue = new LiveAudioDecodingQueue();
+    g_LiveReceiver->SetAudioDecodingQueue(m_pLiveAudioDecodingQueue);
 
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
@@ -84,7 +88,14 @@ CAudioCallSession::~CAudioCallSession()
 
 		m_pAudioCodec = NULL;
 	}*/
-
+    
+    if(NULL != m_pLiveAudioDecodingQueue)
+    {
+        delete m_pLiveAudioDecodingQueue;
+        
+        m_pLiveAudioDecodingQueue = NULL;
+    }
+    
 	m_FriendID = -1;
 #ifdef __DUMP_FILE__
 	fclose(FileOutput);
@@ -429,7 +440,12 @@ void CAudioCallSession::DecodingThreadProcedure()
             toolsObject.SOSleep(10);
         else
         {
+#ifdef ONLY_FOR_LIVESTREAMING
+            nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
+#else
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
+#endif
+            
             bIsProcessablePacket = false;
 //            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
             timeStamp = m_Tools.CurrentTimestamp();

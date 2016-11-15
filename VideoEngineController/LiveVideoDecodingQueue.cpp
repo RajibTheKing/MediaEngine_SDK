@@ -29,7 +29,7 @@ void LiveVideoDecodingQueue::ResetBuffer()
     m_nQueueSize = 0;
 }
 
-int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedAudioFrameData, int nLength)
+int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int nLength)
 {
     Locker lock(*m_pLiveVideoDecodingQueueMutex);
 
@@ -43,7 +43,7 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedAudioFrameData, int n
         //return 0;
     }
 
-    memcpy(m_uchBuffer[m_iPushIndex], saReceivedAudioFrameData, nLength);
+    memcpy(m_uchBuffer[m_iPushIndex], saReceivedVideoFrameData, nLength);
 
     m_naBufferDataLength[m_iPushIndex] = nLength;
     
@@ -62,7 +62,7 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedAudioFrameData, int n
     return 1;
 }
 
-int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData)
+int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedVideoFrameData)
 {
     Locker lock(*m_pLiveVideoDecodingQueueMutex);
 
@@ -74,7 +74,7 @@ int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData)
     {
         int length = m_naBufferDataLength[m_iPopIndex];
 
-        memcpy(saReceivedAudioFrameData, m_uchBuffer[m_iPopIndex], length);
+        memcpy(saReceivedVideoFrameData, m_uchBuffer[m_iPopIndex], length);
 
         IncreamentIndex(m_iPopIndex);
 
