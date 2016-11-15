@@ -13,12 +13,12 @@
 
 class LiveReceiver {
 public:
-    LiveReceiver(CAudioDecoderBuffer *pAudioDecoderBuffer, LiveVideoDecodingQueue *pLiveVideoDecodingQueue);
+    LiveReceiver();
     ~LiveReceiver();
     void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);
     void SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue);
     
-	void PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+//	void PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 	void PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
     bool GetVideoFrame(unsigned char* uchVideoFrame,int iLen);
     void ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks);

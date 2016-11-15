@@ -10,9 +10,11 @@
 
 
 
-LiveReceiver::LiveReceiver(CAudioDecoderBuffer *pAudioDecoderBuffer, LiveVideoDecodingQueue *pLiveVideoDecodingQueue){
-    m_pAudioDecoderBuffer = pAudioDecoderBuffer;
-    m_pLiveVideoDecodingQueue = pLiveVideoDecodingQueue;
+LiveReceiver::LiveReceiver()
+{
+    //m_pAudioDecoderBuffer = pAudioDecoderBuffer;
+    m_pLiveAudioDecodingQueue = NULL;
+    m_pLiveVideoDecodingQueue = NULL;
     m_pLiveReceiverMutex.reset(new CLockHandler);
 }
 
@@ -28,7 +30,7 @@ void LiveReceiver::SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue)
     m_pLiveAudioDecodingQueue = pQueue;
 }
 
-void LiveReceiver::PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames){
+/*void LiveReceiver::PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames){
     Locker lock(*m_pLiveReceiverMutex);
     int iUsedLen = 0, nFrames = 0;
     CAudioPacketHeader audioPacketHeaderObject;
@@ -43,6 +45,7 @@ void LiveReceiver::PushAudioData(unsigned char* uchAudioData, int iLen, int numb
         iUsedLen += nCurrentFrameLen + __AUDIO_HEADER_LENGTH__+1;
     }
 }
+*/
 
 void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
