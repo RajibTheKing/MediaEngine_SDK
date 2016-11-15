@@ -506,14 +506,73 @@ void CAudioCallSession::EncodingThreadProcedure()
 #if defined(USE_AECM) || defined(USE_ANS)
 			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 #endif
+
+
 #ifdef USE_WEBRTC_AGC
-			for (int i = 0; i < nEncodingFrameSize; i += AGC_SAMPLE_SIZE)
+
+			uint8_t saturationWarning;
+			int32_t inMicLevel = 1;
+			int32_t outMicLevel;
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
 			{
-				if (0 != WebRtcAgc_AddFarend(AGC_instance, m_saAudioEncodingFrame + i, AGC_SAMPLE_SIZE))
+				if (0 != WebRtcAgc_AddMic(AGC_instance, m_saAudioEncodingFrame + i, 0, AGC_SAMPLE_SIZE))
 				{
-					ALOG("WebRtcAgc_AddFarend failed");
+					ALOG("WebRtcAgc_AddMic failed");
+				}
+				if (0 != WebRtcAgc_VirtualMic(AGC_instance, m_saAudioEncodingFrame + i, 0, AGC_SAMPLE_SIZE, inMicLevel, &outMicLevel))
+				{
+					ALOG("WebRtcAgc_AddMic failed");
+				}
+				if (0 != WebRtcAgc_Process(AGC_instance, m_saAudioEncodingFrame + i, 0, AGC_SAMPLE_SIZE,
+					m_saAudioEncodingTempFrame + i, 0,
+					inMicLevel, &outMicLevel, 0, &saturationWarning))
+				{
+					ALOG("WebRtcAgc_Process failed");
 				}
 			}
+			if (memcmp(m_saAudioEncodingFrame, m_saAudioEncodingTempFrame, nEncodingFrameSize * sizeof(short)) == 0)
+			{
+				ALOG("WebRtcAgc_Process did nothing");
+			}
+			else
+			{
+				ALOG("WebRtcAgc_Process tried to do something, believe me :-( . Outputmic =  "
+					+ m_Tools.IntegertoStringConvert(outMicLevel) + " saturationWarning = " + m_Tools.IntegertoStringConvert(saturationWarning));
+			}
+
+			int k = 1;
+			double iRatio = 0;
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			{
+				if (m_saAudioEncodingFrame[i])
+				{
+					//ALOG("ratio = " + m_Tools.IntegertoStringConvert(m_saAudioDecodedFrameTemp[i] / m_saAudioEncodingFrame[i]));
+					iRatio += m_saAudioEncodingTempFrame[i] * 1.0 / m_saAudioEncodingFrame[i];
+					k++;
+				}
+			}
+			ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
+
+			memcpy(m_saAudioEncodingFrame, m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
+
+
+#elif defined(USE_NAIVE_AGC)
+
+			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+			{
+				int temp = (int)m_saDecodedFrame[i] * m_iVolume;
+				if (temp > SHRT_MAX)
+				{
+					temp = SHRT_MAX;
+				}
+				if (temp < SHRT_MIN)
+				{
+					temp = SHRT_MIN;
+				}
+				m_saDecodedFrame[i] = temp;
+
+			}
+
 #endif
 #ifdef USE_ANS
 			long long llNow = m_Tools.CurrentTimestamp();
@@ -847,6 +906,16 @@ void CAudioCallSession::DecodingThreadProcedure()
 #else
 			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
+
+#ifdef USE_WEBRTC_AGC
+			for (int i = 0; i < nDecodedFrameSize; i += AGC_SAMPLE_SIZE)
+			{
+				if (0 != WebRtcAgc_AddFarend(AGC_instance, m_saDecodedFrame + i, AGC_SAMPLE_SIZE))
+				{
+					ALOG("WebRtcAgc_AddFarend failed");
+			}
+			}
+#endif
 #ifdef USE_AECM			
 			for (int i = 0; i < nDecodedFrameSize; i += AECM_SAMPLE_SIZE)
 			{
@@ -856,72 +925,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 			}
 #endif
-#ifdef USE_WEBRTC_AGC
 
-			uint8_t saturationWarning;
-			int32_t inMicLevel = 1;
-			int32_t outMicLevel;
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
-			{
-				if (0 != WebRtcAgc_AddMic(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE))
-				{
-					ALOG("WebRtcAgc_AddMic failed");
-				}
-				if (0 != WebRtcAgc_VirtualMic(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE, inMicLevel, &outMicLevel))
-				{
-					ALOG("WebRtcAgc_AddMic failed");
-				}
-				if (0 != WebRtcAgc_Process(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE,
-					m_saAudioDecodedFrameTemp + i, 0,
-					inMicLevel, &outMicLevel, 0, &saturationWarning))
-				{
-					ALOG("WebRtcAgc_Process failed");
-				}
-			}
-			if (memcmp(m_saDecodedFrame, m_saAudioDecodedFrameTemp, nDecodedFrameSize * sizeof(short)) == 0)
-			{
-				ALOG("WebRtcAgc_Process did nothing");
-			}
-			else
-			{
-				ALOG("WebRtcAgc_Process tried to do something, believe me :-( . Outputmic =  "
-					+ m_Tools.IntegertoStringConvert(outMicLevel) + " saturationWarning = " + m_Tools.IntegertoStringConvert(saturationWarning));
-			}
-
-			int k = 1;
-			double iRatio = 0;
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
-			{
-				if (m_saDecodedFrame[i])
-				{
-					//ALOG("ratio = " + m_Tools.IntegertoStringConvert(m_saAudioDecodedFrameTemp[i] / m_saAudioEncodingFrame[i]));
-					iRatio += m_saAudioDecodedFrameTemp[i] * 1.0 / m_saDecodedFrame[i];
-					k++;
-				}
-			}
-			ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
-
-			memcpy(m_saDecodedFrame, m_saAudioDecodedFrameTemp, AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
-
-
-#elif defined(USE_NAIVE_AGC)
-
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
-			{
-				int temp = (int)m_saDecodedFrame[i] * m_iVolume;
-				if (temp > SHRT_MAX)
-				{
-					temp = SHRT_MAX;
-				}
-				if (temp < SHRT_MIN)
-				{
-					temp = SHRT_MIN;
-				}
-				m_saDecodedFrame[i] = temp;
-
-			}
-
-#endif
 			m_bNoDataFromFarendYet = false;
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);

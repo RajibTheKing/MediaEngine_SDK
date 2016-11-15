@@ -154,7 +154,7 @@ private:
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
-#if defined(USE_AECM) || defined(USE_ANS)
+#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_WEBRTC_AGC)
 	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
 #ifdef USE_WEBRTC_AGC
