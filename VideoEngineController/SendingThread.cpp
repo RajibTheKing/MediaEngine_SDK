@@ -16,7 +16,7 @@
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
-//#define __LIVE_STREAMIN_SELF__
+#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
 
@@ -236,7 +236,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				int tempILen2 = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
 
-				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
+				LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
 
 				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);

@@ -188,14 +188,10 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
         if( !bCompleteFrame )
         {
-            CAudioPacketHeader audioPacketHeader;
-            int audioFrameNumber = audioPacketHeader.GetInformation(PACKETNUMBER);
-            //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME not Completed -- FrameNumber = %d", audioFrameNumber);
+
             continue;
         }else{
-            CAudioPacketHeader audioPacketHeader;
-            int audioFrameNumber = audioPacketHeader.GetInformation(PACKETNUMBER);
-            int audioFrameLength = audioPacketHeader.GetInformation(PACKETLENGTH);
+
             //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
         }
 

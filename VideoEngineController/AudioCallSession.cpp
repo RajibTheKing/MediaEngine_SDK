@@ -446,12 +446,20 @@ void CAudioCallSession::DecodingThreadProcedure()
 	//toolsObject.SOSleep(1000);
     while (m_bAudioDecodingThreadRunning)
     {
+#ifdef ONLY_FOR_LIVESTREAMING
+        if (m_pLiveAudioDecodingQueue->GetQueueSize() == 0)
+#else
         if (m_AudioDecodingBuffer.GetQueueSize() == 0)
+#endif
+        {
             toolsObject.SOSleep(10);
+        }
         else
         {
+
 #ifdef ONLY_FOR_LIVESTREAMING
             nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
+            LOGEF("THeKing--> *** CAudioCallSession::DecodingThreadProcedure : decodingFrameSize: %d", nDecodingFrameSize);
 #else
 			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
 #endif
