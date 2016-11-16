@@ -26,7 +26,6 @@
 #define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
 //#define __AUDIO_FIXED_COMPLEXITY__
-#define __AUDIO_FIXED_BITRATE__
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -59,6 +58,7 @@ public:
     static void *CreateAudioDecodingThread(void* param);
 	int m_iNextPacketType;
     void getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector);
+    int GetServiceType();
 
 private:
 

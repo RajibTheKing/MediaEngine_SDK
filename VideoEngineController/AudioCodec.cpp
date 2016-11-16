@@ -70,7 +70,11 @@ int CAudioCodec::CreateAudioEncoder()
 
 	/*err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(AUDIO_BITRATE_INIT));
 	if (err<0) return EXIT_FAILURE;*/
-	SetBitrateOpus(AUDIO_BITRATE_INIT);
+    
+    if(m_pAudioCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pAudioCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+        SetBitrateOpus(AUDIO_BITRATE_LIVE);
+    else
+        SetBitrateOpus(AUDIO_BITRATE_INIT);
 
 
 	m_iComplexity = 10;

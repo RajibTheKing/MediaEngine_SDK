@@ -117,14 +117,20 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 
 bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 {
-#ifdef __LIVE_STREAMING__
+    CVideoCallSession* pVideoSession;
+    bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+    if(!bExist) return false;
+    
+    if(pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+    {
 //    double __ratio = 100.00 * crTempHeader.getTimeStamp() * 8.00 /  m_pVideoEncoder->GetBitrate();
 //    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())
 //    +"  Ratio: "+Tools::DoubleToString(__ratio)
 //    +"  Size in Bit: "+Tools::IntegertoStringConvert(crTempHeader.getTimeStamp()*8);
 //    LOGE( "%s", __Message.c_str());
-    return false;
-#endif
+      return false;
+    }
+
     //printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
