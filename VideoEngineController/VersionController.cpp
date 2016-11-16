@@ -15,11 +15,12 @@ CVersionController::CVersionController()
 {
     m_uchOwnVersion = VIDEO_VERSION_CODE;
     
-    m_iOppVersion = VIDEO_VERSION_CODE;
-    m_iCurrentCallVersion = VIDEO_VERSION_CODE;
+    m_iOppVersion = -1;
+    m_iCurrentCallVersion = -1;
     
     m_bIsOpponentVersionDetectable = true;
-    m_bFirstVideoPacketReceivedFlag = true;
+    m_bFirstVideoPacketReceivedFlag = false;
+    
 }
 
 CVersionController::~CVersionController()

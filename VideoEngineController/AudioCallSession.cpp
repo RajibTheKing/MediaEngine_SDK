@@ -4,7 +4,7 @@
 #include "Tools.h"
 #include "Globals.h"
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
@@ -271,11 +271,13 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 #ifdef OPUS_ENABLE
             nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
+            
+            if(m_bLiveAudioStreamRunning == false)
+            {
+                encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+                m_pAudioCodec->DecideToChangeComplexity(encodingTime);
+            }
 
-#ifndef __AUDIO_FIXED_COMPLEXITY__
-			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
-			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
-#endif
 			avgCountTimeStamp += encodingTime;
 #ifdef FIRE_ENC_TIME
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_ENCODING_TIME, encodingTime,  0);
@@ -346,9 +348,10 @@ void CAudioCallSession::EncodingThreadProcedure()
 //            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 
 #ifdef  __AUDIO_SELF_CALL__
-            DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+            DecodeAudioData(0,m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 #else
-            if (m_bIsCheckCall == LIVE_CALL_MOOD) {
+            if (m_bIsCheckCall == LIVE_CALL_MOOD)
+            {
 //                ALOG("#H#Sent PacketType: "+m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[0]));
                 if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
                 {

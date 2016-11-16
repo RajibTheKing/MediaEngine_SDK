@@ -15,7 +15,7 @@
 
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
-//#define SEND_VIDEO_TO_SELF 1
+#define SEND_VIDEO_TO_SELF 1
 #define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
@@ -286,6 +286,7 @@ void CSendingThread::SendingThreadProcedure()
                 }
 #endif
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushing for selfcall");
+                printf("TheKing--> Processing LIVESTREAM\n");
 				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
 #endif
@@ -403,6 +404,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 				CVideoCallSession* pVideoSession;
                 bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
                 unsigned char *pEncodedFrame = m_EncodedFrame;
+                printf("TheKing--> Processing CALL!!!\n");
                 pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
@@ -445,7 +447,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
 #endif
-        }// End of ONLY_FOR_LIVESTREAMING
+        }
 
 
 		}

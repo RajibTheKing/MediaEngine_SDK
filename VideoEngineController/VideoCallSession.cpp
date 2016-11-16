@@ -44,8 +44,6 @@ m_bIsCheckCall(bIsCheckCall),
 m_nCallFPS(nFPS),
 pnDeviceSupportedFPS(nrDeviceSupportedCallFPS),
 m_nOwnVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
-m_nOpponentVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
-m_nCurrentVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false),
 m_nDeviceCheckFrameCounter(0),
@@ -53,6 +51,8 @@ m_nCapturedFrameCounter(0),
 m_nServiceType(nServiceType)
 
 {
+    m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
+    m_nCurrentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
     
     m_VideoFpsCalculator = new CAverageCalculator();
     m_bLiveVideoStreamRunning = false;
@@ -63,7 +63,14 @@ m_nServiceType(nServiceType)
         m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
         m_pLiveReceiverVideo = new LiveReceiver();
         m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
+        
+        
+        
+        m_nOpponentVideoCallQualityLevel = nOwnSupportedResolutionFPSLevel;
+        m_nCurrentVideoCallQualityLevel = nOwnSupportedResolutionFPSLevel;
     }
+    
+    
     
     
     
@@ -278,6 +285,18 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
     m_pVersionController = new CVersionController();
     
+    if(m_bLiveVideoStreamRunning == true)
+    {
+        //m_iOppVersion = VIDEO_VERSION_CODE;
+        //m_iCurrentCallVersion = VIDEO_VERSION_CODE;
+        //m_bFirstVideoPacketReceivedFlag = true;
+        
+        m_pVersionController->SetOpponentVersion(VIDEO_VERSION_CODE);
+        m_pVersionController->SetCurrentCallVersion(VIDEO_VERSION_CODE);
+        m_pVersionController->NotifyFirstVideoPacetReceived();
+    }
+    
+    
     g_llFirstFrameReceiveTime = 0;
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 240");
@@ -484,12 +503,13 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
         return 1;
     }
 
-	/*if (m_bVideoCallStarted == false && m_bIsCheckCall == false)
+	if (m_bVideoCallStarted == false && m_bIsCheckCall == false)
 	{
-	    LOGE("CVideoCallSession::PushIntoBufferForEncoding  m_bVideoCallStarted == false && m_bIsCheckCall == false so returning");
-
-		return 1;
-	}*/
+	    //LOGE("CVideoCallSession::PushIntoBufferForEncoding  m_bVideoCallStarted == false && m_bIsCheckCall == false so returning");
+        
+        if(m_bLiveVideoStreamRunning == false)
+            return 1;
+	}
     
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 2");
     
@@ -627,7 +647,9 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 
 void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, int nMiniPacketType)
 {
-    return;
+    if(m_bLiveVideoStreamRunning == true)
+        return;
+    
     if(m_bIsCheckCall != LIVE_CALL_MOOD) return;
     
 	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
