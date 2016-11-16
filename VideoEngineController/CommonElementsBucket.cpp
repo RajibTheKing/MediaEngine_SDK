@@ -60,7 +60,7 @@ LongLong CCommonElementsBucket::GetUsername()
     return userName;
 }
 
-void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int, int))
+void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int))
 {
     
     SendFunctionPointer = callBackFunctionPointer;

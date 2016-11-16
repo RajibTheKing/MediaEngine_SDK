@@ -3,6 +3,9 @@
 #define _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 
 #include <string>
+#define MEDIA_TYPE_AUDIO 1
+#define MEDIA_TYPE_VIDEO 2
+#define MEDIA_TYPE_LIVE_STREAM 3
 
 class CController;
 
@@ -22,7 +25,7 @@ public:
      bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType = 0);
      int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
-     int PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);
+     int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);
      int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
      int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
      int SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight);
@@ -50,7 +53,7 @@ public:
 	 void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	 void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
 
-     void SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int, int));
+     void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int));
     
 private:
 

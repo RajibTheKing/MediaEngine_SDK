@@ -95,7 +95,7 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFrie
 	return -1;
 }
 
-int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames)
+int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames)
 { 
     int iReturnedValue = 0;
     
@@ -436,7 +436,7 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioAlarmCallback(void(*c
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int, int))
+void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int))
 {
     if (NULL != m_pcController)
     {

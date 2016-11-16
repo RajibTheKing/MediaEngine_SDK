@@ -16,7 +16,7 @@ public:
 	CCommonElementsBucket();
 	~CCommonElementsBucket();
     
-    void(*SendFunctionPointer)(unsigned char*, int, int) = NULL;
+    void(*SendFunctionPointer)(LongLong, int, unsigned char*, int, int) = NULL;
     
     void SetUserName(const LongLong& username);
     LongLong GetUsername();
@@ -27,7 +27,7 @@ public:
 	CVideoEncoderListHandler *m_pVideoEncoderList;
 	CLockHandler* GetSharedMutex();
     
-    void SetSendFunctionPointer(void(*callBackFunctionPointer)(unsigned char*, int, int));
+    void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int));
     
 private:
 

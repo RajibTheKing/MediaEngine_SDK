@@ -16,7 +16,7 @@
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
-//#define __LIVE_STREAMIN_SELF__
+#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
 
@@ -239,7 +239,7 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
 
-				m_pCommonElementsBucket->SendFunctionPointer(m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
                 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
@@ -272,7 +272,7 @@ void CSendingThread::SendingThreadProcedure()
                         missingFrames[nMissingFrames++] = i;
                 }
 #endif
-				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(200,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
 #endif
 
 
