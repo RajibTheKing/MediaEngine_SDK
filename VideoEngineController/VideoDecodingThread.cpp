@@ -143,6 +143,9 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			}
 			else
 			{
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() Got packet for decoding");
+                
+
 				nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
                 printf("#V## Queue: %d\n",nFrameLength);
 				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
@@ -151,7 +154,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			}
 			continue;
 		}
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
 
 		if( -1 == m_pVideoCallSession->GetShiftedTime())
 		{

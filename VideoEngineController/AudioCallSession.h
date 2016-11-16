@@ -38,12 +38,12 @@ class CAudioCallSession
 
 public:
 
-    CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall=false);
+    CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
 
     CAudioCodec* GetAudioCodec();
 
-    void InitializeAudioCallSession(LongLong llFriendID);
+    void InitializeAudioCallSession(LongLong llFriendID, int nServiceType);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 
@@ -58,9 +58,7 @@ public:
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
 	int m_iNextPacketType;
-#ifdef ONLY_FOR_LIVESTREAMING
-	void getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector);
-#endif
+    void getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector);
 
 private:
 
@@ -74,9 +72,9 @@ private:
     CCommonElementsBucket* m_pCommonElementsBucket;
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
-#ifdef ONLY_FOR_LIVESTREAMING
+
     std::vector<int> m_vEncodedFrameLenght;
-#endif
+
 
 
 #ifdef OPUS_ENABLE
@@ -99,10 +97,12 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
-#ifdef ONLY_FOR_LIVESTREAMING
+    
+
 	unsigned char m_ucaAudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	int m_iAudioDataSendIndex;
-#endif
+
+    
     bool m_bAudioEncodingThreadRunning;
     bool m_bAudioEncodingThreadClosed;
 
@@ -113,7 +113,7 @@ private:
     LiveReceiver *m_pLiveReceiverAudio;
     
     bool m_bLiveAudioStreamRunning;
-    
+    int m_nServiceType;
     
 
 

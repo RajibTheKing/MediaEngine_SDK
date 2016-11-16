@@ -46,7 +46,8 @@ private:
 	bool m_bIsCheckCall;
 
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
-#ifdef ONLY_FOR_LIVESTREAMING
+    
+
 	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioVideoDataToSend[MAX_AUDIO_VIDEO_DATA_TO_SEND_SIZE];
@@ -56,7 +57,7 @@ private:
 	int m_iDataToSendIndex;
 	long long int llPrevTime;
     long long m_llPrevTimeWhileSendingToLive;
-#endif
+
 
 	Tools m_Tools;
 

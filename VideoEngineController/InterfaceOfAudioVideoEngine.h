@@ -7,6 +7,13 @@
 #define MEDIA_TYPE_VIDEO 2
 #define MEDIA_TYPE_LIVE_STREAM 3
 
+#define SERVICE_TYPE_CALL 11
+#define SERVICE_TYPE_LIVE_STREAM 12
+#define SERVICE_TYPE_SELF_CALL 13
+#define SERVICE_TYPE_SELF_STREAM 14
+
+
+
 class CController;
 
 class CInterfaceOfAudioVideoEngine
@@ -21,8 +28,8 @@ public:
      bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
      bool InitializeLibrary(const IPVLongType& llUserID);
      bool SetUserName(const IPVLongType llUserName);
-     bool StartAudioCall(const IPVLongType llFriendID);
-     bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType = 0);
+     bool StartAudioCall(const IPVLongType llFriendID, int nServiceType);
+     bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nNetworkType = 0);
      int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);
@@ -57,11 +64,9 @@ public:
     
 private:
 
-#ifdef ONLY_FOR_LIVESTREAMING
 
 	Tools m_Tools;
 
-#endif
     
     CController* m_pcController;
 };

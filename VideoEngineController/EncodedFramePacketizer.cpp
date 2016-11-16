@@ -74,7 +74,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
 //    string __show = "#VP FrameNumber: "+Tools::IntegertoStringConvert(iFrameNumber)+"  NP: "+Tools::IntegertoStringConvert(nNumberOfPackets)+"  Size: "+Tools::IntegertoStringConvert(unLength);
 //    LOGE("%s",__show.c_str());
-#ifdef ONLY_FOR_LIVESTREAMING
+    if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType()  == SERVICE_TYPE_SELF_STREAM)
 	{
 
 			int nPacketNumber = 0;
@@ -106,12 +106,13 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
         }
 	}
-#else
-````for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
-	{
-		if (nPacketizedDataLength + m_nPacketSize > unLength)
-			m_nPacketSize = unLength - nPacketizedDataLength;
-
+    else
+    {
+        for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
+        {
+            if (nPacketizedDataLength + m_nPacketSize > unLength)
+                m_nPacketSize = unLength - nPacketizedDataLength;
+            
             m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
                                             uchSendVersion,
                                             iFrameNumber,
@@ -123,31 +124,31 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                             nCurrentCallQualityLevel,
                                             device_orientation,
                                             nNetworkType);
-
-        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
-		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-//        m_cPacketHeader.ShowDetails("JUST");
-
-		memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
-
-        
-        if(m_pVideoCallSession->GetResolationCheck() == false)
-        {
-            unsigned char *pEncodedFrame = m_ucaPacket;
-            int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
-            //printf("Sending data for nFrameNumber--> %d\n", iFrameNumber);
-            m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize, true);
-//            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
-            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
-        }
-        else
-        {
-            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
             
-            //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+            m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
+            m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+            //        m_cPacketHeader.ShowDetails("JUST");
+            
+            memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
+            
+            
+            if(m_pVideoCallSession->GetResolationCheck() == false)
+            {
+                unsigned char *pEncodedFrame = m_ucaPacket;
+                int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
+                //printf("Sending data for nFrameNumber--> %d\n", iFrameNumber);
+                m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize, true);
+                //            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
+                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+            }
+            else
+            {
+                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                
+                //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+            }
         }
-	}
-#endif
+    }
 
 	return 1;
 }

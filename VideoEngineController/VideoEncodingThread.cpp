@@ -182,7 +182,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	while (bEncodingThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
 		m_bIsThisThreadStarted = true;
 
@@ -227,7 +227,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		}
 		else
 		{
-            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() GOT packet for Encoding");
 			int timeDiff;
 
 			if(!bIsBitrateInitialized)

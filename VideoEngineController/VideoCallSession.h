@@ -36,11 +36,11 @@ class CVideoCallSession
 
 public:
 
-    CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel);
+    CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
-	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
+	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
@@ -95,7 +95,8 @@ public:
 	void SetOpponentVideoCallQualityLevel(int nVideoCallQualityLevel);
 	
 	int GetCurrentVideoCallQualityLevel();
-	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel); 
+	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel);
+    int GetServiceType();
 
 	BitRateController* GetBitRateController();
     bool isLiveVideoStreamRunning();
@@ -104,6 +105,7 @@ public:
     CController *m_pController;
 	int m_nCallFPS;
     bool m_bLiveVideoStreamRunning;
+    
 
 private:
 
@@ -147,6 +149,8 @@ private:
     bool m_bHighResolutionSupportedForOpponent;
     bool m_bReinitialized;
     bool m_bResolutionNegotiationDone;
+    
+    int m_nServiceType;
     
 	Tools m_Tools;
 	LongLong m_lfriendID;

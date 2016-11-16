@@ -31,12 +31,14 @@ m_bIsCheckCall(bIsCheckCall)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
-#ifdef ONLY_FOR_LIVESTREAMING
-	llPrevTime = -1;
-	m_iDataToSendIndex = 0;
-	firstFrame = true;
-    m_llPrevTimeWhileSendingToLive = 0;
-#endif
+    
+    if(pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+    {
+        llPrevTime = -1;
+        m_iDataToSendIndex = 0;
+        firstFrame = true;
+        m_llPrevTimeWhileSendingToLive = 0;
+    }
 }
 
 CSendingThread::~CSendingThread()
@@ -142,7 +144,7 @@ void CSendingThread::SendingThreadProcedure()
 
 	while (bSendingThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
 
 		if (m_SendingBuffer->GetQueueSize() == 0)
 		{
@@ -152,12 +154,17 @@ void CSendingThread::SendingThreadProcedure()
 		}
 		else
 		{
+            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() GOT packet for Sending method");
+            
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
-#ifdef ONLY_FOR_LIVESTREAMING
-            //LOGE("fahadRAjib -- >> only for ONLY_FOR_LIVESTREAMING ");
-
+            
+            printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
+            
+            if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+            {
+            
 			int nalType = 0;
 
 			CVideoCallSession* pVideoSession;
@@ -165,9 +172,13 @@ void CSendingThread::SendingThreadProcedure()
 			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 			
 			int iIntervalIFrame = pVideoSession->m_nCallFPS / 5;
+                
+            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() session got");
 
 			if (frameNumber%iIntervalIFrame == 0 && firstFrame == false)
 			{
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() 200 ms completed");
+                
 				CAudioCallSession *pAudioSession;
 
 				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
@@ -235,6 +246,8 @@ void CSendingThread::SendingThreadProcedure()
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
 
 				int tempILen2 = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
+                
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() chunck ready");
 
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
@@ -272,7 +285,9 @@ void CSendingThread::SendingThreadProcedure()
                         missingFrames[nMissingFrames++] = i;
                 }
 #endif
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushing for selfcall");
 				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
 #endif
 
 
@@ -296,6 +311,8 @@ void CSendingThread::SendingThreadProcedure()
 			}
 			else
 			{
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() 200 ms not ready");
+                
 				if(m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
 				{  
 					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
@@ -319,10 +336,10 @@ void CSendingThread::SendingThreadProcedure()
 			}
 			firstFrame = false;
 			toolsObject.SOSleep(1);
-#else
-			//packetHeader.setPacketHeader(m_EncodedFrame + 1);
+        }
+else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
-
+        CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() came for CALL !!!!!!!");
 			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
 			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
 
@@ -390,7 +407,7 @@ void CSendingThread::SendingThreadProcedure()
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 
-				m_pCommonElementsBucket->SendFunctionPointer(m_EncodedFrame, packetSize);
+				m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), 2, m_EncodedFrame, packetSize,0);
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
 #endif
 			}
@@ -428,7 +445,8 @@ void CSendingThread::SendingThreadProcedure()
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
 #endif
-#endif// End of ONLY_FOR_LIVESTREAMING
+        }// End of ONLY_FOR_LIVESTREAMING
+
 
 		}
 	}

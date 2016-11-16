@@ -130,7 +130,7 @@ bool CController::SetUserName(const LongLong& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const LongLong& lFriendID)
+bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
 {
 	CAudioCallSession* pAudioSession;
     
@@ -145,9 +145,9 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType);
 
-		pAudioSession->InitializeAudioCallSession(lFriendID);
+		pAudioSession->InitializeAudioCallSession(lFriendID, nServiceType);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -175,7 +175,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, DEVICE_ABILITY_CHECK_MOOD);
 
-		pAudioSession->InitializeAudioCallSession(lFriendID);
+		pAudioSession->InitializeAudioCallSession(lFriendID, 11);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -204,9 +204,9 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session creating");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, 11);
 
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, iNetworkType);
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
@@ -224,7 +224,7 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 	}
 }
 
-bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
 {
     if(iVideoHeight * iVideoWidth > 352 * 288)
     {
@@ -255,9 +255,9 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
         
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel,nServiceType);
 
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,nServiceType,iNetworkType);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
@@ -358,6 +358,7 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, int nOffset, un
         CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
 
 		//if (pCAudioDecoder)
+        
         {
             CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
             return pAudioSession->DecodeAudioData(nOffset,in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);

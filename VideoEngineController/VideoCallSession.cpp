@@ -15,7 +15,7 @@
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(CController *pController,LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel) :
+CVideoCallSession::CVideoCallSession(CController *pController,LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
@@ -49,18 +49,21 @@ m_nCurrentVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false),
 m_nDeviceCheckFrameCounter(0),
-m_nCapturedFrameCounter(0)
+m_nCapturedFrameCounter(0),
+m_nServiceType(nServiceType)
 
 {
     
     m_VideoFpsCalculator = new CAverageCalculator();
     m_bLiveVideoStreamRunning = false;
-#ifdef ONLY_FOR_LIVESTREAMING
-    m_bLiveVideoStreamRunning = true;
-    m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
-    m_pLiveReceiverVideo = new LiveReceiver();
-    m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
-#endif
+    
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+    {
+        m_bLiveVideoStreamRunning = true;
+        m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
+        m_pLiveReceiverVideo = new LiveReceiver();
+        m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
+    }
     
     
     
@@ -238,20 +241,21 @@ CVideoCallSession::~CVideoCallSession()
         
     }
     
-#ifdef ONLY_FOR_LIVESTREAMING
-    if(NULL != m_pLiveReceiverVideo)
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
     {
-        delete m_pLiveReceiverVideo;
-        m_pLiveReceiverVideo = NULL;
-    }
-    
-    if(NULL != m_pLiveVideoDecodingQueue)
-    {
-        delete m_pLiveVideoDecodingQueue;
+        if(NULL != m_pLiveReceiverVideo)
+        {
+            delete m_pLiveReceiverVideo;
+            m_pLiveReceiverVideo = NULL;
+        }
         
-        m_pLiveVideoDecodingQueue = NULL;
+        if(NULL != m_pLiveVideoDecodingQueue)
+        {
+            delete m_pLiveVideoDecodingQueue;
+            
+            m_pLiveVideoDecodingQueue = NULL;
+        }
     }
-#endif
     
     
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::~~~CVideoCallSession 220");
@@ -263,10 +267,12 @@ LongLong CVideoCallSession::GetFriendID()
 	return m_lfriendID;
 }
 
-void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
 {
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
+    m_nServiceType = nServiceType;
+    
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
 
@@ -285,15 +291,15 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
 
-#ifdef ONLY_FOR_LIVESTREAMING
+if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
 
 	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 5, m_bIsCheckCall);
 
-#else
+else
 
 	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
 
-#endif
+
 
 	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
@@ -451,6 +457,8 @@ int g_CapturingFrameCounter = 0;
 
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
+    
     m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
     /*if(m_bIsCheckCall==true)
     {
@@ -483,12 +491,16 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 		return 1;
 	}*/
     
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 2");
+    
 	if (m_pVideoEncodingThread->IsThreadStarted() == false)
 	{
 	    //LOGE("CVideoCallSession::PushIntoBufferForEncoding m_pVideoEncodingThread->IsThreadStarted() == false so returning");
 
 	    return 1;
 	}
+    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 3");
 
 #if defined(SOUL_SELF_DEVICE_CHECK)
 	
@@ -500,6 +512,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	}
 	
 #endif
+    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 4");
 
     if(g_llFirstFrameReceiveTime == 0) g_llFirstFrameReceiveTime = m_Tools.CurrentTimestamp();
     
@@ -508,7 +522,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	LongLong currentTimeStamp = m_Tools.CurrentTimestamp();
 
-    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 5");
     //Capturing fps calculation
     if(m_llClientFrameFPSTimeStamp==-1) m_llClientFrameFPSTimeStamp = currentTimeStamp;
     m_ClientFrameCounter++;
@@ -869,15 +883,12 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
 
-#ifdef ONLY_FOR_LIVESTREAMING
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+        this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 5, m_bIsCheckCall);
+    else
+        this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
 
-	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 5, m_bIsCheckCall);
 
-#else
-
-	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
-
-#endif
 
 	m_pVideoEncodingThread->SetNotifierFlag(true);
 }
@@ -905,15 +916,12 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     m_pVideoRenderingThread->StopRenderingThread();
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
-#ifdef ONLY_FOR_LIVESTREAMING
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+        m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/5, m_bIsCheckCall);
+    else
+        m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1, m_bIsCheckCall);
 
-	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/5, m_bIsCheckCall);
 
-#else
-
-	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1, m_bIsCheckCall);
-
-#endif
 
 	m_pColorConverter->SetHeightWidth(iHeight, iWidth);
 
@@ -964,4 +972,8 @@ bool CVideoCallSession::isLiveVideoStreamRunning()
 {
     return m_bLiveVideoStreamRunning;
 }
-
+int CVideoCallSession::GetServiceType()
+{
+    return m_nServiceType;
+    
+}
