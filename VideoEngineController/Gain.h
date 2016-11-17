@@ -18,6 +18,7 @@ class CGain
 #endif
 	Tools m_Tools;
 	int m_iVolume;
+	bool m_bGainEnabled;
 public:
 	CGain();
 	~CGain();

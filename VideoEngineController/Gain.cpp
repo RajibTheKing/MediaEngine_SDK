@@ -21,6 +21,7 @@
 CGain::CGain()
 {
 	m_iVolume = DEF_GAIN;
+	m_bGainEnabled = true;
 
 #ifdef USE_WEBRTC_AGC
 	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLE_SIZE];
@@ -67,6 +68,14 @@ CGain::~CGain()
 
 int CGain::SetGain(int iGain)
 {
+	if(iGain == -1)
+	{
+		m_bGainEnabled = false;
+	}
+	else if (iGain >= 0)
+	{
+		m_bGainEnabled = true;
+	}
 #ifdef USE_NAIVE_AGC
 	if (iGain >= 0 && iGain <= MAX_GAIN)
 	{
@@ -103,6 +112,10 @@ int CGain::SetGain(int iGain)
 
 int CGain::AddGain(short *sInBuf, int nBufferSize)
 {
+	if (!m_bGainEnabled)
+	{
+		return false;
+	}
 #ifdef USE_WEBRTC_AGC
 	uint8_t saturationWarning;
 	int32_t inMicLevel = 1;
@@ -170,6 +183,10 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 
 int CGain::AddFarEnd(short *sBuffer, int nBufferSize)
 {
+	if (!m_bGainEnabled)
+	{
+		return false;
+	}
 #ifdef USE_WEBRTC_AGC
 	for (int i = 0; i < nBufferSize; i += AGC_SAMPLE_SIZE)
 	{
