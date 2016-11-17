@@ -348,8 +348,12 @@ void CAudioCallSession::EncodingThreadProcedure()
 //            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 
 #ifdef  __AUDIO_SELF_CALL__
-            DecodeAudioData(0,m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
-#else
+            if(m_bLiveAudioStreamRunning == false)
+            {
+                DecodeAudioData(0,m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+                continue;
+            }
+#endif
             if (m_bIsCheckCall == LIVE_CALL_MOOD)
             {
 //                ALOG("#H#Sent PacketType: "+m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[0]));
@@ -370,7 +374,6 @@ void CAudioCallSession::EncodingThreadProcedure()
             }
 //			else
 //				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
-#endif
 
             toolsObject.SOSleep(0);
             
