@@ -29,10 +29,6 @@ FILE *FileOutput;
 #define Aggressive 2
 #endif
 
-#ifdef USE_AECM
-#define AECM_SAMPLE_SIZE 80
-#endif
-
 #ifdef USE_WEBRTC_AGC
 #define AGC_SAMPLE_SIZE 80
 #define AGC_ANALYSIS_SAMPLE_SIZE 80
@@ -92,30 +88,8 @@ m_bIsCheckCall(bIsCheckCall)
 
 
 #ifdef USE_AECM
-	bAecmCreated = false;
-	bAecmInited = false;
 	m_bNoDataFromFarendYet = true;
-	int iAECERR = WebRtcAecm_Create(&AECM_instance);
-	if (iAECERR)
-	{
-		ALOG("WebRtcAecm_Create failed");
-	}
-	else
-	{
-		ALOG("WebRtcAecm_Create successful");
-		bAecmCreated = true;
-	}
-
-	iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
-	if (iAECERR)
-	{
-		ALOG("WebRtcAecm_Init failed");
-	}
-	else
-	{
-		ALOG("WebRtcAecm_Init successful");
-		bAecmInited = true;
-	}
+	m_pEcho = new CEcho();
 #endif
 
 #ifdef USE_ANS
@@ -232,7 +206,7 @@ CAudioCallSession::~CAudioCallSession()
 	delete m_pG729CodecNative;
 #endif
 #ifdef USE_AECM
-	WebRtcAecm_Free(AECM_instance);
+	delete m_pEcho;
 #endif
 #ifdef USE_ANS
 	WebRtcNs_Free(NS_instance);
@@ -606,27 +580,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef USE_AECM
 			if (!m_bNoDataFromFarendYet)
 			{
-				long long llNow = m_Tools.CurrentTimestamp();
-				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
-				{
-#ifdef USE_ANS
-					if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, m_saAudioEncodingDenoisedFrame + i, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
-#else
-					if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
-#endif
-					{
-						ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
-					}
-				}
-
-				if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
-				{
-					ALOG("WebRtcAec_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
-				}
-				else
-				{
-					ALOG("WebRtcAec_Process tried to do something, believe me :-( . It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
-				}
+				m_pEcho->CancelEcho(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLE_SIZE, m_saAudioEncodingFrame);
 			}
 #endif
 
@@ -917,13 +871,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 #endif
 #ifdef USE_AECM			
-			for (int i = 0; i < nDecodedFrameSize; i += AECM_SAMPLE_SIZE)
-			{
-				if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saDecodedFrame + i, AECM_SAMPLE_SIZE))
-				{
-					ALOG("WebRtcAec_BufferFarend failed");
-				}
-			}
+			m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
 #endif
 
 			m_bNoDataFromFarendYet = false;

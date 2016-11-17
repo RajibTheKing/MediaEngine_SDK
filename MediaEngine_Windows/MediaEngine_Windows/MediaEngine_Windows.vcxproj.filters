@@ -155,16 +155,10 @@
     <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="AudioEncoder.cpp">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioDecoder.cpp">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="Echo.cpp">
+    <ClCompile Include="..\..\VideoEngineController\Echo.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
@@ -346,19 +340,13 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCodec.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
-    <ClInclude Include="AudioEncoder.h">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioDecoder.h">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\webrtc\modules\audio_processing\aecm\include\echo_control_mobile.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
-    <ClInclude Include="Echo.h">
+    <ClInclude Include="..\..\VideoEngineController\Echo.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>

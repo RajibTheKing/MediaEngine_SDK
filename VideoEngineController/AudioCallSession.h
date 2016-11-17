@@ -26,12 +26,12 @@
 #define  __DUPLICATE_AUDIO__
 
 
-#ifdef __ANDROID__
-//#define USE_AECM
+//#ifdef __ANDROID__
+#define USE_AECM
 //#define USE_ANS
 #define USE_AGC
 //#define USE_VAD
-#endif
+//#endif
 
 #ifdef USE_AGC
 #define USE_WEBRTC_AGC
@@ -44,7 +44,7 @@ static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
 
 #ifdef USE_AECM
-#include "echo_control_mobile.h"
+#include "Echo.h"
 #endif
 #ifdef USE_ANS
 #include "noise_suppression.h"
@@ -64,6 +64,7 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioPacketHeader;
 class CAudioCodec;
+
 
 class CAudioCallSession
 {
@@ -109,9 +110,7 @@ private:
 	bool m_bUsingLoudSpeaker;
 	bool m_bNoDataFromFarendYet;
 #ifdef USE_AECM
-	void* AECM_instance;
-	bool bAecmCreated;
-	bool bAecmInited;
+	CEcho *m_pEcho;
 #endif
 
 #ifdef USE_ANS
