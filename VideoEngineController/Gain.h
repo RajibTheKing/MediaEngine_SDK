@@ -9,12 +9,12 @@
 #include "signal_processing_library.h"
 #endif
 #include "Tools.h"
-#define AUDIO_CLIENT_SAMPLE_SIZE 8000
+
 class CGain
 {
 #ifdef USE_WEBRTC_AGC
 	void* AGC_instance;
-	short m_sTempBuf[AUDIO_CLIENT_SAMPLE_SIZE];
+	short *m_sTempBuf;
 #endif
 	Tools m_Tools;
 	int m_iVolume;

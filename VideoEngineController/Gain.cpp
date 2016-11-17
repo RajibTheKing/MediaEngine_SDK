@@ -23,6 +23,7 @@ CGain::CGain()
 	m_iVolume = DEF_GAIN;
 
 #ifdef USE_WEBRTC_AGC
+	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLE_SIZE];
 	int agcret = -1;
 	if ((agcret = WebRtcAgc_Create(&AGC_instance)))
 	{
