@@ -40,11 +40,6 @@ FILE *FileOutput;
 #define LS_RATIO 1
 #endif
 
-#ifdef USE_VAD
-#define VAD_ANALYSIS_SAMPLE_SIZE 80
-#define NEXT_N_FRAMES_MAYE_VOICE 11
-#endif
-
 int gSetMode = -5;
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
@@ -125,35 +120,7 @@ m_bIsCheckCall(bIsCheckCall)
 #endif
 
 #ifdef USE_VAD
-	int vadret = -1;
-	if ((vadret = WebRtcVad_Create(&VAD_instance)))
-	{
-		ALOG("WebRtcVad_Create failed with error code = " + m_Tools.IntegertoStringConvert(vadret));
-	}
-	else
-	{
-		ALOG("WebRtcVad_Create successful");
-	}
-
-	if ((vadret = WebRtcVad_Init(VAD_instance)))
-	{
-		ALOG("WebRtcVad_Init failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
-	}
-	else
-	{
-		ALOG("WebRtcVad_Init successful");
-	}
-
-	if ((gSetMode = vadret = WebRtcVad_set_mode(VAD_instance, 1)))
-	{
-		ALOG("WebRtcVad_set_mode failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
-	}
-	else
-	{
-		ALOG("WebRtcVad_set_mode successful");
-	}
-	nNextFrameMayHaveVoice = 0;
-	memset(m_saAudioBlankFrame, 0, MAX_AUDIO_FRAME_LENGHT*sizeof(short));
+	m_pVoice = new CVoice();
 #endif
 
 
@@ -184,7 +151,7 @@ CAudioCallSession::~CAudioCallSession()
 	WebRtcAgc_Free(AGC_instance);
 #endif
 #ifdef USE_VAD
-	WebRtcVad_Free(VAD_instance);
+	delete m_pVoice;
 #endif
 
 
@@ -390,47 +357,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 			timeStamp = m_Tools.CurrentTimestamp();
 			countFrame++;
 #ifdef USE_VAD			
-			if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
+			if (!m_pVoice->HasVoice(m_saAudioEncodingFrame, nEncodingFrameSize))
 			{
-				long long vadtimeStamp = m_Tools.CurrentTimestamp();
-				int nhasVoice = 0;
-				for (int i = 0; i < nEncodingFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
-				{
-					int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saAudioEncodingFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
-					if (iVadRet != 1)
-					{
-						ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
-						//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
-					}
-					else
-					{
-						ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
-						nhasVoice = 1;
-						nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
-					}
-				}
-				if (!nhasVoice)
-				{
-					if (nNextFrameMayHaveVoice > 0)
-					{
-						nNextFrameMayHaveVoice--;
-					}
-				}
-				ALOG(" vad time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - vadtimeStamp));
-				if (!nhasVoice && !nNextFrameMayHaveVoice)
-				{
-					ALOG("not sending audio");
-					m_Tools.SOSleep(70);
-					continue;
-				}
-				else
-				{
-					ALOG("sending audio");
-				}
-			}
-			else
-			{
-				ALOG("Invalid combo");
+				continue;
 			}
 #endif
 #if defined(USE_AECM) || defined(USE_ANS)

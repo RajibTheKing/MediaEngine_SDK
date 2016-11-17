@@ -30,7 +30,7 @@
 #define USE_AECM
 #define USE_ANS
 #define USE_AGC
-//#define USE_VAD
+#define USE_VAD
 //#endif
 
 #ifdef USE_AGC
@@ -54,7 +54,7 @@ static string colon = "ALOG:";
 #include "signal_processing_library.h"
 #endif
 #ifdef USE_VAD
-#include "webrtc_vad.h"
+#include "Voice.h"
 #endif
 
 #define __AUDIO_CALL_VERSION__  1
@@ -122,8 +122,7 @@ private:
 #endif
 
 #ifdef USE_VAD
-	VadInst* VAD_instance;
-	int nNextFrameMayHaveVoice;
+	CVoice *m_pVoice;
 #endif
 
 #ifdef OPUS_ENABLE
@@ -147,9 +146,7 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
-#ifdef USE_VAD
-	short m_saAudioBlankFrame[MAX_AUDIO_FRAME_LENGHT];
-#endif
+
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif

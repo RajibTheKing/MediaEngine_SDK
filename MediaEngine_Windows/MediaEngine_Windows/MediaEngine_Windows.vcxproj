@@ -194,6 +194,7 @@
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Voice.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
   </ItemGroup>
@@ -256,6 +257,7 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
+    <ClInclude Include="..\..\VideoEngineController\Voice.h" />
     <ClInclude Include="..\..\VideoEngineController\webrtc\modules\audio_processing\aecm\include\echo_control_mobile.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
