@@ -804,7 +804,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	int nDecodingFrameSize, nDecodedFrameSize, iFrameCounter = 0, nCurrentAudioPacketType, iPacketNumber;
 	long long timeStamp, nDecodingTime = 0;
 	double dbTotalTime = 0;
-	toolsObject.SOSleep(1000);
+
 	int iDataSentInCurrentSec = 0;
 	long long llTimeStamp = 0;
 	int nTolarance = m_nMaxAudioPacketNumber / 2;
