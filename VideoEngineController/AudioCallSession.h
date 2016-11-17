@@ -33,13 +33,6 @@
 #define USE_VAD
 //#endif
 
-#ifdef USE_AGC
-#define USE_WEBRTC_AGC
-#ifndef USE_WEBRTC_AGC
-#define USE_NAIVE_AGC
-#endif
-#endif
-
 static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
 
@@ -49,9 +42,8 @@ static string colon = "ALOG:";
 #ifdef USE_ANS
 #include "Noise.h"
 #endif
-#ifdef USE_WEBRTC_AGC
-#include "gain_control.h"
-#include "signal_processing_library.h"
+#ifdef USE_AGC
+#include "Gain.h"
 #endif
 #ifdef USE_VAD
 #include "Voice.h"
@@ -117,8 +109,8 @@ private:
 	CNoise *m_pNoise;
 #endif
 
-#ifdef USE_WEBRTC_AGC
-	void* AGC_instance;
+#ifdef USE_AGC
+	CGain * m_pGain;
 #endif
 
 #ifdef USE_VAD
@@ -150,11 +142,8 @@ private:
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
-#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_WEBRTC_AGC)
+#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
 	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
-#endif
-#ifdef USE_WEBRTC_AGC
-	short m_saAudioDecodedFrameTemp[MAX_AUDIO_FRAME_LENGHT];
 #endif
 
     bool m_bAudioEncodingThreadRunning;
