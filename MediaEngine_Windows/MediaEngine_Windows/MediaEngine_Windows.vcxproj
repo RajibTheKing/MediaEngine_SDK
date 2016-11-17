@@ -164,6 +164,7 @@
     <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Echo.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFrameDepacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodingBuffer.cpp" />
@@ -194,9 +195,6 @@
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
-    <ClCompile Include="AudioDecoder.cpp" />
-    <ClCompile Include="AudioEncoder.cpp" />
-    <ClCompile Include="Echo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
@@ -221,6 +219,7 @@
     <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h" />
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\Echo.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFrameDepacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFramePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodingBuffer.h" />
@@ -260,9 +259,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
-    <ClInclude Include="AudioDecoder.h" />
-    <ClInclude Include="AudioEncoder.h" />
-    <ClInclude Include="Echo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />
