@@ -439,7 +439,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			else
 			{
 				m_miniPacketBandCounter = m_SlotResetLeftRange / m_nCallFPS;
-				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
+//				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, __BITRATE_CONTROLL_PACKET_TYPE);
@@ -917,6 +917,22 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 BitRateController* CVideoCallSession::GetBitRateController(){
 	return m_BitRateController;
+}
+
+int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
+{
+	if(m_nVideoCallHeight != height && m_nVideoCallWidth != width)
+	{
+		m_nVideoCallHeight = height;
+		m_nVideoCallWidth = width;
+		this->m_pColorConverter->SetHeightWidth(height, width);
+		this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
+		return 1;
+	}else
+	{
+		return -1;
+	}
+
 }
 
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)

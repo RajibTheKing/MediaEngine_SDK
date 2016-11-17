@@ -16,12 +16,12 @@
 #include "size.h"
 #include "LogPrinter.h"
 
-#define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
-
 //#define AUDIO_FIXED_BITRATE
 
 #define OPUS_MIN_COMPLEXITY 1
 #define OPUS_MAX_COMPLEXITY 10
+
+#define AFLOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
 class CAudioFileCodec
 {

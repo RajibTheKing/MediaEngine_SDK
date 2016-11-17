@@ -143,7 +143,9 @@ void CEventNotifier::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctio
 	notifyClientWithAudioAlarmCallback = callBackFunctionPointer;
 }
 
-
+bool CEventNotifier::IsVideoCallRunning(){
+	return m_pController->m_bLiveCallRunning;
+}
 
 
 

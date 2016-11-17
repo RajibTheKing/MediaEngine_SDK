@@ -35,6 +35,8 @@ public:
 
 	bool SetUserName(const LongLong& lUserName);
 	bool StartAudioCall(const LongLong& lFriendID, int nServiceType);
+	bool SetVolume(const LongLong& lFriendID, int iVolume);
+	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
 	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType);
 	bool StartTestAudioCall(const LongLong& lFriendID);
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
@@ -43,7 +45,7 @@ public:
 	int PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
-	int SetHeightWidth(const LongLong& lFriendID, int width, int height); 
+	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
 
     int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);

@@ -101,6 +101,8 @@ public:
 	BitRateController* GetBitRateController();
     bool isLiveVideoStreamRunning();
 
+	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
+
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;

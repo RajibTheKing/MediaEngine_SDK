@@ -161,6 +161,38 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
 	}
 }
 
+bool CController::SetVolume(const LongLong& lFriendID, int iVolume)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetVolume(iVolume);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::SetLoudSpeaker(const LongLong& lFriendID, bool bOn)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetLoudSpeaker(bOn);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool CController::StartTestAudioCall(const LongLong& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() called");
@@ -470,24 +502,31 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 	}
 }
 
-int CController::SetHeightWidth(const LongLong& lFriendID, int width, int height)
+int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
 {
-/*	CVideoCallSession* pVideoSession;
+	CVideoCallSession* pVideoSession;
+
+	if(height * width > 352 * 288)
+	{
+		m_Quality[1].iHeight = height;
+		m_Quality[1].iWidth = width;
+	}
+	else
+	{
+		m_Quality[0].iHeight = height;
+		m_Quality[0].iWidth = width;
+	}
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
 	if (bExist)
 	{
-		CVideoDecoder *pVideoDecoder = pVideoSession->GetVideoDecoder();
-
-		if (pVideoDecoder)
-			return pVideoDecoder->Decode(in_data, in_size, out_buffer, width, height);
-		else return -1;
+		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width);
 	}
 	else
-	{*/
+	{
 		return -1;
-//	}
+	}
 }
 
 int CController::SetBitRate(const LongLong& lFriendID, int bitRate)

@@ -66,6 +66,28 @@ bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID ,
 	return bReturnedValue;
 }
 
+bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->SetVolume(lFriendID, iVolume);
+    return bReturnedValue;
+}
+
+bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool bOn)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->SetLoudSpeaker(lFriendID, bOn);
+    return bReturnedValue;
+}
+
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nNetworkType)
 {
 	if (NULL == m_pcController)
@@ -192,14 +214,16 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
         else
         {
             
-            if (100 > (int)in_data[1])
-            {
-                iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
-            }
-            else
-            {
-                iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data, unLength);
-            }
+            if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+        	{
+            	iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
+        	}
+			else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
+        	{
+            	iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data, unLength);
+        	}
+        	else
+            	return 0;
             
         }
 
@@ -232,14 +256,14 @@ int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, un
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SetHeightWidth(const IPVLongType llFriendID, int nVideoWidth, int nVideoHeight)
+int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->SetHeightWidth(llFriendID, nVideoWidth, nVideoHeight);
+	int iReturnedValue = m_pcController->SetEncoderHeightWidth(llFriendID, nVideoHeight, nVideoWidth);
 
 	return iReturnedValue;
 }

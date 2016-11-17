@@ -10,9 +10,13 @@
 #include "Tools.h"
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
+#include "LiveAudioDecodingQueue.h"
+#include "LiveReceiver.h"
+
 #include <stdio.h>
 #include <string>
 #include <map>
+#include <stdlib.h>
 #include <vector>
 #ifdef OPUS_ENABLE
 #include "AudioCodec.h"
@@ -20,10 +24,42 @@
 #include "G729CodecNative.h"
 #endif
 
-#include "LiveAudioDecodingQueue.h"
-#include "LiveReceiver.h"
 
-#define ALOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
+#define __AUDIO_CALL_VERSION__  1
+#define  __DUPLICATE_AUDIO__
+
+
+#ifdef __ANDROID__
+//#define USE_AECM
+//#define USE_ANS
+#define USE_AGC
+//#define USE_VAD
+#endif
+
+#ifdef USE_AGC
+#define USE_WEBRTC_AGC
+#ifndef USE_WEBRTC_AGC
+#define USE_NAIVE_AGC
+#endif
+#endif
+
+static string colon = "ALOG:";
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+
+#ifdef USE_AECM
+#include "echo_control_mobile.h"
+#endif
+#ifdef USE_ANS
+#include "noise_suppression.h"
+#endif
+#ifdef USE_WEBRTC_AGC
+#include "gain_control.h"
+#include "signal_processing_library.h"
+#endif
+#ifdef USE_VAD
+#include "webrtc_vad.h"
+#endif
+
 
 //#define __AUDIO_FIXED_COMPLEXITY__
 
@@ -54,6 +90,9 @@ public:
     void StopDecodingThread();
     void StartDecodingThread();
 
+	void SetVolume(int iVolume);
+	void SetLoudSpeaker(bool bOn);
+
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
 	int m_iNextPacketType;
@@ -74,15 +113,34 @@ private:
     CAudioDecoderBuffer m_AudioDecodingBuffer;
 
     std::vector<int> m_vEncodedFrameLenght;
+	bool m_bUsingLoudSpeaker;
+	bool m_bNoDataFromFarendYet;
+#ifdef USE_AECM
+	void* AECM_instance;
+	bool bAecmCreated;
+	bool bAecmInited;
+#endif
 
+#ifdef USE_ANS
+	NsHandle* NS_instance;
+#endif
 
+#ifdef USE_WEBRTC_AGC
+	void* AGC_instance;
+#endif
+
+#ifdef USE_VAD
+	VadInst* VAD_instance;
+	int nNextFrameMayHaveVoice;
+#endif
 
 #ifdef OPUS_ENABLE
     CAudioCodec *m_pAudioCodec;
 #else
     G729CodecNative *m_pG729CodecNative;
 #endif
-
+//    int m_iNextPacketType;
+    int m_iLastDecodedPacketNumber;
     int m_nMaxAudioPacketNumber;
     int m_iPacketNumber;
 	int m_iSlotID;
@@ -97,12 +155,23 @@ private:
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
-    
 
-	unsigned char m_ucaAudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+    unsigned char m_ucaAudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	int m_iAudioDataSendIndex;
 
-    
+#ifdef USE_VAD
+	short m_saAudioBlankFrame[MAX_AUDIO_FRAME_LENGHT];
+#endif
+#ifdef USE_ANS
+	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
+#endif
+#if defined(USE_AECM) || defined(USE_ANS)
+	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
+#endif
+#ifdef USE_WEBRTC_AGC
+	short m_saAudioDecodedFrameTemp[MAX_AUDIO_FRAME_LENGHT];
+#endif
+
     bool m_bAudioEncodingThreadRunning;
     bool m_bAudioEncodingThreadClosed;
 
@@ -116,7 +185,10 @@ private:
     int m_nServiceType;
     
 
+	int m_iVolume;
 
+    int m_iAudioVersionFriend;
+    int m_iAudioVersionSelf;
 
 protected:
 
