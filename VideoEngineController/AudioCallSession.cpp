@@ -22,12 +22,6 @@ FILE *FileOutput;
 
 //extern int g_StopVideoSending;
 
-#ifdef USE_ANS
-#define ANS_SAMPLE_SIZE 80
-#define Mild 0
-#define Medium 1
-#define Aggressive 2
-#endif
 
 #ifdef USE_WEBRTC_AGC
 #define AGC_SAMPLE_SIZE 80
@@ -93,32 +87,7 @@ m_bIsCheckCall(bIsCheckCall)
 #endif
 
 #ifdef USE_ANS
-	int ansret = -1;
-	if ((ansret = WebRtcNs_Create(&NS_instance)))
-	{
-		ALOG("WebRtcNs_Create failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
-	}
-	else
-	{
-		ALOG("WebRtcNs_Create successful");
-	}
-	if ((ansret = WebRtcNs_Init(NS_instance, AUDIO_SAMPLE_RATE)))
-	{
-		ALOG("WebRtcNs_Init failed with error code= " + m_Tools.IntegertoStringConvert(ansret));
-	}
-	else
-	{
-		ALOG("WebRtcNs_Init successful");
-	}
-
-	if ((ansret = WebRtcNs_set_policy(NS_instance, Medium)))
-	{
-		ALOG("WebRtcNs_set_policy failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
-	}
-	else
-	{
-		ALOG("WebRtcNs_set_policy successful");
-	}
+	m_pNoise = new CNoise();
 #endif
 
 #ifdef USE_WEBRTC_AGC
@@ -209,7 +178,7 @@ CAudioCallSession::~CAudioCallSession()
 	delete m_pEcho;
 #endif
 #ifdef USE_ANS
-	WebRtcNs_Free(NS_instance);
+	delete m_pNoise;
 #endif
 #ifdef USE_WEBRTC_AGC
 	WebRtcAgc_Free(AGC_instance);
@@ -218,19 +187,6 @@ CAudioCallSession::~CAudioCallSession()
 	WebRtcVad_Free(VAD_instance);
 #endif
 
-	/*if (NULL != m_pAudioDecoder)
-	{
-	delete m_pAudioDecoder;
-
-	m_pAudioDecoder = NULL;
-	}
-
-	if (NULL != m_pAudioCodec)
-	{
-	delete m_pAudioCodec;
-
-	m_pAudioCodec = NULL;
-	}*/
 
 	m_FriendID = -1;
 #ifdef __DUMP_FILE__
@@ -549,22 +505,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 #endif
 #ifdef USE_ANS
-			long long llNow = m_Tools.CurrentTimestamp();
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
-			{
-				if (0 != WebRtcNs_Process(NS_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingDenoisedFrame + i, NULL))
-				{
-					ALOG("WebRtcNs_Process failed");
-				}
-			}
-			if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingDenoisedFrame, nEncodingFrameSize * sizeof(short)) == 0)
-			{
-				ALOG("WebRtcNs_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
-			}
-			else
-			{
-				ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
-			}
+			m_pNoise->Denoise(m_saAudioEncodingTempFrame, nEncodingFrameSize, m_saAudioEncodingDenoisedFrame);
 #ifdef USE_AECM
 			if (m_bNoDataFromFarendYet)
 			{

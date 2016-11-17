@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\VideoEngineController\Globals.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Noise.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\RenderingBuffer.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
+    <ClInclude Include="..\..\VideoEngineController\Noise.h" />
     <ClInclude Include="..\..\VideoEngineController\PacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\PairMap.h" />
     <ClInclude Include="..\..\VideoEngineController\RenderingBuffer.h" />

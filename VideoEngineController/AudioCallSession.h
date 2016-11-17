@@ -28,7 +28,7 @@
 
 //#ifdef __ANDROID__
 #define USE_AECM
-//#define USE_ANS
+#define USE_ANS
 #define USE_AGC
 //#define USE_VAD
 //#endif
@@ -47,7 +47,7 @@ static string colon = "ALOG:";
 #include "Echo.h"
 #endif
 #ifdef USE_ANS
-#include "noise_suppression.h"
+#include "Noise.h"
 #endif
 #ifdef USE_WEBRTC_AGC
 #include "gain_control.h"
@@ -114,7 +114,7 @@ private:
 #endif
 
 #ifdef USE_ANS
-	NsHandle* NS_instance;
+	CNoise *m_pNoise;
 #endif
 
 #ifdef USE_WEBRTC_AGC
