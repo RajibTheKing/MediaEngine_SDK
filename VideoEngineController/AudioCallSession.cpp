@@ -65,6 +65,7 @@ m_bIsCheckCall(bIsCheckCall)
 
 #ifdef USE_AGC
 	m_pRecorderGain = new CGain();
+	m_pPlayerGain = new CGain();
 #endif
 
 #ifdef USE_VAD
@@ -95,8 +96,9 @@ CAudioCallSession::~CAudioCallSession()
 #ifdef USE_ANS
 	delete m_pNoise;
 #endif
-#ifdef USE_GAIN
+#ifdef USE_AGC
 	delete m_pRecorderGain;
+	delete m_pPlayerGain;
 #endif
 #ifdef USE_VAD
 	delete m_pVoice;
@@ -147,10 +149,17 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	return returnedValue;
 }
 
-void CAudioCallSession::SetVolume(int iVolume)
+void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 {
 #ifdef USE_AGC
-	m_pRecorderGain->SetGain(iVolume);
+	if (bRecorder)
+	{
+		m_pRecorderGain->SetGain(iVolume);
+	}
+	else
+	{
+		m_pPlayerGain->SetGain(iVolume);
+	}
 #endif
 }
 
@@ -288,6 +297,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 
 #ifdef USE_AGC
+			m_pPlayerGain->AddFarEnd(m_saAudioEncodingFrame, nEncodingFrameSize);
 			m_pRecorderGain->AddGain(m_saAudioEncodingFrame, nEncodingFrameSize);
 #endif
 
@@ -592,6 +602,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #ifdef USE_AGC
 			m_pRecorderGain->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
+			m_pPlayerGain->AddGain(m_saDecodedFrame, nDecodedFrameSize);
 #endif
 #ifdef USE_AECM			
 			m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);

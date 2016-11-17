@@ -26,12 +26,12 @@
 #define  __DUPLICATE_AUDIO__
 
 
-#ifdef __ANDROID__
+//#ifdef __ANDROID__
 //#define USE_AECM
 //#define USE_ANS
 #define USE_AGC
 //#define USE_VAD
-#endif
+//#endif
 
 static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
@@ -80,7 +80,7 @@ public:
     void StopDecodingThread();
     void StartDecodingThread();
 
-	void SetVolume(int iVolume);
+	void SetVolume(int iVolume, bool bRecorder);
 	void SetLoudSpeaker(bool bOn);
 
     static void *CreateAudioEncodingThread(void* param);
@@ -111,6 +111,7 @@ private:
 
 #ifdef USE_AGC
 	CGain * m_pRecorderGain;
+	CGain * m_pPlayerGain;
 #endif
 
 #ifdef USE_VAD

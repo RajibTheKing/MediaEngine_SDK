@@ -63,14 +63,14 @@ bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID)
 	return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume)
+bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->SetVolume(lFriendID, iVolume);
+	bool bReturnedValue = m_pcController->SetVolume(lFriendID, iVolume, bRecorder);
 }
 
 bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool bOn)

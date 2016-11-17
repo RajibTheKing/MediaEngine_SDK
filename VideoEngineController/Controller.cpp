@@ -161,14 +161,14 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 	}
 }
 
-bool CController::SetVolume(const LongLong& lFriendID, int iVolume)
+bool CController::SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder)
 {
 	CAudioCallSession* pAudioSession;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->SetVolume(iVolume);
+		pAudioSession->SetVolume(iVolume, bRecorder);
 		return true;
 	}
 	else

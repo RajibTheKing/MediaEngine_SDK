@@ -19,7 +19,7 @@ public:
      bool InitializeLibrary(const IPVLongType& llUserID);
      bool SetUserName(const IPVLongType llUserName);
      bool StartAudioCall(const IPVLongType llFriendID);
-	 bool SetVolume(const LongLong lFriendID, int iVolume);
+	 bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
 	 bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
      bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType = 0);
      int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);

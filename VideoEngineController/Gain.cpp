@@ -21,7 +21,7 @@
 CGain::CGain()
 {
 	m_iVolume = DEF_GAIN;
-	m_bGainEnabled = true;
+	m_bGainEnabled = false;
 
 #ifdef USE_WEBRTC_AGC
 	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLE_SIZE];
@@ -68,9 +68,10 @@ CGain::~CGain()
 
 int CGain::SetGain(int iGain)
 {
-	if(iGain == -1)
+	if(iGain < 0)
 	{
 		m_bGainEnabled = false;
+		return false;
 	}
 	else if (iGain >= 0)
 	{
