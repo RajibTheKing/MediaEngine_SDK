@@ -90,7 +90,7 @@ int CGain::SetGain(int iGain)
 	{
 		m_iVolume = m_iVolume * 1.0 / LS_RATIO;
 	}
-#else
+#elif defined(USE_WEBRTC_AGC)
 	WebRtcAgc_config_t gain_config;
 
 	m_iVolume = iGain;
