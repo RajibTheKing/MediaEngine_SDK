@@ -488,16 +488,18 @@ void CAudioCallSession::EncodingThreadProcedure()
 	int countFrame = 0;
     int version = __AUDIO_CALL_VERSION__;
 
+	if(m_bLiveAudioStreamRunning)
+		version = 0;
+
 	while (m_bAudioEncodingThreadRunning)
 	{
 		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
-		else
-		{
+		else {
 			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame);
-			if (nEncodingFrameSize % AUDIO_FRAME_SIZE >0)
-			{
-				ALOG("#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " + Tools::IntegertoStringConvert(nEncodingFrameSize));
+			if (nEncodingFrameSize % AUDIO_FRAME_SIZE > 0) { ALOG(
+						"#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " +
+						Tools::IntegertoStringConvert(nEncodingFrameSize));
 			}
 #ifdef __DUMP_FILE__
 			fwrite(m_saAudioEncodingFrame, 2, nEncodingFrameSize, FileInput);
@@ -506,117 +508,126 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 			timeStamp = m_Tools.CurrentTimestamp();
 			countFrame++;
-#ifdef USE_VAD			
-			if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
+
+/*
+ * ONLY FOR CALL
+ * */
+			if(!m_bLiveAudioStreamRunning)
 			{
-				long long vadtimeStamp = m_Tools.CurrentTimestamp();
-				int nhasVoice = 0;
-				for (int i = 0; i < nEncodingFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
+#ifdef USE_VAD
+				if (WebRtcVad_ValidRateAndFrameLength(AUDIO_SAMPLE_RATE, VAD_ANALYSIS_SAMPLE_SIZE) == 0)
 				{
-					int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saAudioEncodingFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
-					if (iVadRet != 1)
+					long long vadtimeStamp = m_Tools.CurrentTimestamp();
+					int nhasVoice = 0;
+					for (int i = 0; i < nEncodingFrameSize; i += VAD_ANALYSIS_SAMPLE_SIZE)
 					{
-						ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
-						//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
+						int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, m_saAudioEncodingFrame + i, VAD_ANALYSIS_SAMPLE_SIZE);
+						if (iVadRet != 1)
+						{
+							ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
+							//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));
+						}
+						else
+						{
+							ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
+							nhasVoice = 1;
+							nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
+						}
+					}
+					if (!nhasVoice)
+					{
+						if (nNextFrameMayHaveVoice > 0)
+						{
+							nNextFrameMayHaveVoice--;
+						}
+					}
+					ALOG(" vad time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - vadtimeStamp));
+					if (!nhasVoice && !nNextFrameMayHaveVoice)
+					{
+						ALOG("not sending audio");
+						m_Tools.SOSleep(70);
+						continue;
 					}
 					else
 					{
-						ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
-						nhasVoice = 1;
-						nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
+						ALOG("sending audio");
 					}
-				}
-				if (!nhasVoice)
-				{
-					if (nNextFrameMayHaveVoice > 0)
-					{
-						nNextFrameMayHaveVoice--;
-					}
-				}
-				ALOG(" vad time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - vadtimeStamp));
-				if (!nhasVoice && !nNextFrameMayHaveVoice)
-				{
-					ALOG("not sending audio");
-					m_Tools.SOSleep(70);
-					continue;
 				}
 				else
 				{
-					ALOG("sending audio");
+					ALOG("Invalid combo");
 				}
-			}
-			else
-			{
-				ALOG("Invalid combo");
-			}
 #endif
 #if defined(USE_AECM) || defined(USE_ANS)
-			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+				memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 #endif
 #ifdef USE_WEBRTC_AGC
-			for (int i = 0; i < nEncodingFrameSize; i += AGC_SAMPLE_SIZE)
-			{
-				if (0 != WebRtcAgc_AddFarend(AGC_instance, m_saAudioEncodingFrame + i, AGC_SAMPLE_SIZE))
-				{
-					ALOG("WebRtcAgc_AddFarend failed");
-				}
-			}
-#endif
-#ifdef USE_ANS
-			long long llNow = m_Tools.CurrentTimestamp();
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
-			{
-				if (0 != WebRtcNs_Process(NS_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingDenoisedFrame + i, NULL))
-				{
-					ALOG("WebRtcNs_Process failed");
-				}
-			}
-			if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingDenoisedFrame, nEncodingFrameSize * sizeof(short)) == 0)
-			{
-				ALOG("WebRtcNs_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
-			}
-			else
-			{
-				ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
-			}
-#ifdef USE_AECM
-			if (m_bNoDataFromFarendYet)
-			{
-				memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLE_SIZE);
-			}
-#else
-			memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLE_SIZE);
-#endif
-
-
-#endif
-
-#ifdef USE_AECM
-			if (!m_bNoDataFromFarendYet)
-			{
-				long long llNow = m_Tools.CurrentTimestamp();
-				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
-				{
-#ifdef USE_ANS
-					if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, m_saAudioEncodingDenoisedFrame + i, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
-#else
-					if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
-#endif
-					{
-						ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
+				for (int i = 0; i < nEncodingFrameSize; i += AGC_SAMPLE_SIZE) {
+					if (0 != WebRtcAgc_AddFarend(AGC_instance, m_saAudioEncodingFrame + i,
+												 AGC_SAMPLE_SIZE)) { ALOG("WebRtcAgc_AddFarend failed");
 					}
 				}
-
-				if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
+#endif
+#ifdef USE_ANS
+				long long llNow = m_Tools.CurrentTimestamp();
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
 				{
-					ALOG("WebRtcAec_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+					if (0 != WebRtcNs_Process(NS_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingDenoisedFrame + i, NULL))
+					{
+						ALOG("WebRtcNs_Process failed");
+					}
+				}
+				if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingDenoisedFrame, nEncodingFrameSize * sizeof(short)) == 0)
+				{
+					ALOG("WebRtcNs_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
 				}
 				else
 				{
-					ALOG("WebRtcAec_Process tried to do something, believe me :-( . It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+					ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
 				}
-			}
+#ifdef USE_AECM
+				if (m_bNoDataFromFarendYet)
+				{
+					memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLE_SIZE);
+				}
+#else
+				memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLE_SIZE);
 #endif
+
+
+#endif
+
+#ifdef USE_AECM
+				if (!m_bNoDataFromFarendYet)
+				{
+					long long llNow = m_Tools.CurrentTimestamp();
+					for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
+					{
+#ifdef USE_ANS
+						if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, m_saAudioEncodingDenoisedFrame + i, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
+#else
+						if (0 != WebRtcAecm_Process(AECM_instance, m_saAudioEncodingTempFrame + i, NULL, m_saAudioEncodingFrame + i, AECM_SAMPLE_SIZE, 0))
+#endif
+						{
+							ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
+						}
+					}
+
+					if (memcmp(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short)) == 0)
+					{
+						ALOG("WebRtcAec_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+					}
+					else
+					{
+						ALOG("WebRtcAec_Process tried to do something, believe me :-( . It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+					}
+				}
+#endif
+			}
+
+/*
+ * ONLY FOR CALL END
+ * */
 
 #ifdef OPUS_ENABLE
             nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
@@ -628,13 +639,15 @@ void CAudioCallSession::EncodingThreadProcedure()
             }
 
 			avgCountTimeStamp += encodingTime;
-#ifdef FIRE_ENC_TIME
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_ENCODING_TIME, encodingTime, 0);
-			cumulitiveenctime += encodingTime;
-			encodingtimetimes++;
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_AVG_ENCODING_TIME, cumulitiveenctime * 1.0 / encodingtimetimes, 0);
-#endif
 
+			if(!m_bLiveAudioStreamRunning) {
+#ifdef FIRE_ENC_TIME
+                m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_ENCODING_TIME, encodingTime, 0);
+                cumulitiveenctime += encodingTime;
+                encodingtimetimes++;
+                m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_AVG_ENCODING_TIME, cumulitiveenctime * 1.0 / encodingtimetimes, 0);
+#endif
+			}
 #else
 			nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
 			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
