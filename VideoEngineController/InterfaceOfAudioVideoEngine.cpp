@@ -216,11 +216,11 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
             
             if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
         	{
-            	iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
+            	iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data+1, unLength-1); //Skip First byte for Video Data
         	}
 			else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
         	{
-            	iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data, unLength);
+            	iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data+1, unLength-1); //Skip First byte for Audio Data
         	}
         	else
             	return 0;

@@ -406,7 +406,7 @@ int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingA
         return 1;
     }
 
-	int returnedValue = m_AudioDecodingBuffer.Queue(&pucaDecodingAudioData[1], unLength - 1);
+	int returnedValue = m_AudioDecodingBuffer.Queue(pucaDecodingAudioData, unLength);
 
 	return returnedValue;
 }
