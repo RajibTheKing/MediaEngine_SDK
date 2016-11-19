@@ -687,6 +687,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			SendingHeader->SetInformation(m_iReceivedPacketsInPrevSlot, NUMPACKETRECVD);
 			SendingHeader->SetInformation(version, VERSIONCODE);
 			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
+
 			//            SendingHeader->CopyHeaderToInformation(&m_ucaEncodedFrame[1]);
 			//
 			//            int version = SendingHeader->GetInformation(VERSIONCODE);
@@ -713,7 +714,7 @@ void CAudioCallSession::EncodingThreadProcedure()
             if(m_bLiveAudioStreamRunning == false)
             {
 				ALOG("#A#EN#--->> Self#  PacketNumber = "+m_Tools.IntegertoStringConvert(m_iPacketNumber));
-                DecodeAudioData(0,m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
+                DecodeAudioData(0, m_ucaEncodedFrame + 1, nEncodedFrameSize + m_AudioHeadersize);
                 continue;
             }
 #endif
