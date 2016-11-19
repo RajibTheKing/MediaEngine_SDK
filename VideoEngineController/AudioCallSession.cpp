@@ -667,7 +667,11 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
 			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
 
-			SendingHeader->SetInformation(m_iNextPacketType, PACKETTYPE);
+			if(m_bLiveAudioStreamRunning)
+				SendingHeader->SetInformation(AUDIO_NORMAL_PACKET_TYPE, PACKETTYPE);
+			else
+				SendingHeader->SetInformation(m_iNextPacketType, PACKETTYPE);
+
 			if (m_iNextPacketType == AUDIO_NOVIDEO_PACKET_TYPE)
 			{
 				m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
@@ -732,7 +736,7 @@ void CAudioCallSession::EncodingThreadProcedure()
                     m_pCommonElementsBucket->SendFunctionPointer( 200, 1, m_ucaEncodedFrame,nEncodedFrameSize + m_AudioHeadersize + 1, 0);
 
 #ifdef  __DUPLICATE_AUDIO__
-					if (0 < m_iAudioVersionFriend && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
+					if (false == m_bLiveAudioStreamRunning && 0 < m_iAudioVersionFriend && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
 					{
 						toolsObject.SOSleep(5);
 						m_pCommonElementsBucket->SendFunctionPointer( 200, 1, m_ucaEncodedFrame,nEncodedFrameSize + m_AudioHeadersize + 1, 0);
@@ -823,10 +827,13 @@ void CAudioCallSession::DecodingThreadProcedure()
 	long long llTimeStamp = 0;
 	int nTolarance = m_nMaxAudioPacketNumber / 2;
 	long long llNow = 0;
+
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
 #endif
+
 	//toolsObject.SOSleep(1000);
+
 	while (m_bAudioDecodingThreadRunning)
 	{
 		if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM) && m_pLiveAudioDecodingQueue->GetQueueSize() == 0 )
@@ -839,13 +846,11 @@ void CAudioCallSession::DecodingThreadProcedure()
         }
 		else
 		{
-            
             if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
                 nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
             else
                 nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
 
-            
 			bIsProcessablePacket = false;
 			//            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
 			timeStamp = m_Tools.CurrentTimestamp();
@@ -855,88 +860,81 @@ void CAudioCallSession::DecodingThreadProcedure()
 			//                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
 			//                    + " #V# RECVDSLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(RECVDSLOTNUMBER))
 			//            );
-            
-            if(m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL)
-            {
-                nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
-                iPacketNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
-                
-                ALOG("#2A#RCV---> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
-                     + "  Last: " + m_Tools.IntegertoStringConvert(m_iLastDecodedPacketNumber)
-                     + " m_iAudioVersionFriend = " + m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
-                
+
+			nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
+			iPacketNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
+
+			ALOG("#2A#RCV---> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
+				 + "  Last: " + m_Tools.IntegertoStringConvert(m_iLastDecodedPacketNumber)
+				 + " m_iAudioVersionFriend = " + m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
+
 #ifdef  __DUPLICATE_AUDIO__
-                //iPacketNumber rotates
-                if (m_iLastDecodedPacketNumber > -1) {
-                    if (iPacketNumber <= m_iLastDecodedPacketNumber && iPacketNumber + nTolarance > m_iLastDecodedPacketNumber) {
-                        continue;
-                    }
-                    else if (iPacketNumber > m_iLastDecodedPacketNumber && iPacketNumber > nTolarance + m_iLastDecodedPacketNumber) {
-                        continue;
-                    }
-                }
-                ALOG("#2A#RCV---------> Decoding = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+			//iPacketNumber rotates
+			if (m_iLastDecodedPacketNumber > -1) {
+				if (iPacketNumber <= m_iLastDecodedPacketNumber && iPacketNumber + nTolarance > m_iLastDecodedPacketNumber) {
+					continue;
+				}
+				else if (iPacketNumber > m_iLastDecodedPacketNumber && iPacketNumber > nTolarance + m_iLastDecodedPacketNumber) {
+					continue;
+				}
+			}
+			ALOG("#2A#RCV---------> Decoding = " + m_Tools.IntegertoStringConvert(iPacketNumber));
 #endif
-                
-                
-                if (!ReceivingHeader->IsPacketTypeSupported())
-                {
-                    continue;
-                }
-                
-                if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
-                {
-                    //                ALOG("#V#TYPE# ############################################### SKIPPET");
-                    toolsObject.SOSleep(0);
-                    continue;
-                }
-                else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
-                {
-                    //g_StopVideoSending = 1;*/
-                    m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
-                    bIsProcessablePacket = true;
-                }
-                else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
-                {
-                    bIsProcessablePacket = true;
-                }
-                else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
-                {
-                    bIsProcessablePacket = true;
-                    if (-1 == m_iAudioVersionFriend)
-                        m_iAudioVersionFriend = ReceivingHeader->GetInformation(VERSIONCODE);
-                    //                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
-                }
-                else if(AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
-                {
-                    bIsProcessablePacket = true;
-                    if(-1 == m_iAudioVersionFriend)
-                        m_iAudioVersionFriend = ReceivingHeader->GetInformation(VERSIONCODE);
-                    //                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
-                }
-                
-                if (!bIsProcessablePacket) continue;
-                
-                m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
-                
-                if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
-                {
-                    m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
-                    if (m_iPrevRecvdSlotID != -1)
-                    {
-                        m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
-                    }
-                    
-                    m_iCurrentRecvdSlotID = ReceivingHeader->GetInformation(SLOTNUMBER);
-                    m_iReceivedPacketsInCurrentSlot = 0;
+
+
+			if (!ReceivingHeader->IsPacketTypeSupported())
+			{
+				continue;
+			}
+
+			if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
+			{
+				//                ALOG("#V#TYPE# ############################################### SKIPPET");
+				toolsObject.SOSleep(0);
+				continue;
+			}
+			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
+			{
+				//g_StopVideoSending = 1;*/
+				if(m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL)
+					m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
+				bIsProcessablePacket = true;
+			}
+			else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
+			{
+				bIsProcessablePacket = true;
+#ifdef  __DUPLICATE_AUDIO__
+				if (-1 == m_iAudioVersionFriend )
+					m_iAudioVersionFriend = ReceivingHeader->GetInformation(VERSIONCODE);
+				//                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
+#endif
+			}
+
+			if (!bIsProcessablePacket) continue;
+
+			m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
+
+			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
+			{
+				m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
+				if (m_iPrevRecvdSlotID != -1)
+				{
+					m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
+				}
+
+				m_iCurrentRecvdSlotID = ReceivingHeader->GetInformation(SLOTNUMBER);
+				m_iReceivedPacketsInCurrentSlot = 0;
+
 #ifdef OPUS_ENABLE
-                    m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+				if(m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL) {
+					m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+				}
 #endif
-                }
+			}
                 
-                m_iLastDecodedPacketNumber = iPacketNumber;
-                m_iReceivedPacketsInCurrentSlot ++;
-            }
+			m_iLastDecodedPacketNumber = iPacketNumber;
+			m_iReceivedPacketsInCurrentSlot ++;
+
 			//continue;
 			nDecodingFrameSize -= m_AudioHeadersize;
 			//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
@@ -947,82 +945,92 @@ void CAudioCallSession::DecodingThreadProcedure()
 #else
 			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
-#ifdef USE_AECM			
-			for (int i = 0; i < nDecodedFrameSize; i += AECM_SAMPLE_SIZE)
+
+/*
+ * Start call block.
+ *
+ */
+			if(!m_bLiveAudioStreamRunning)
 			{
-				if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saDecodedFrame + i, AECM_SAMPLE_SIZE))
-				{
-					ALOG("WebRtcAec_BufferFarend failed");
-				}
-			}
+#ifdef USE_AECM
+                for (int i = 0; i < nDecodedFrameSize; i += AECM_SAMPLE_SIZE)
+                {
+                    if (0 != WebRtcAecm_BufferFarend(AECM_instance, m_saDecodedFrame + i, AECM_SAMPLE_SIZE))
+                    {
+                        ALOG("WebRtcAec_BufferFarend failed");
+                    }
+                }
 #endif
 #ifdef USE_WEBRTC_AGC
 
-			uint8_t saturationWarning;
-			int32_t inMicLevel = 1;
-			int32_t outMicLevel;
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
-			{
-				if (0 != WebRtcAgc_AddMic(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE))
-				{
-					ALOG("WebRtcAgc_AddMic failed");
+				uint8_t saturationWarning;
+				int32_t inMicLevel = 1;
+				int32_t outMicLevel;
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE) {
+					if (0 != WebRtcAgc_AddMic(AGC_instance, m_saDecodedFrame + i, 0,
+											  AGC_SAMPLE_SIZE)) { ALOG("WebRtcAgc_AddMic failed");
+					}
+					if (0 !=
+						WebRtcAgc_VirtualMic(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE,
+											 inMicLevel, &outMicLevel)) { ALOG(
+								"WebRtcAgc_AddMic failed");
+					}
+					if (0 !=
+						WebRtcAgc_Process(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE,
+										  m_saAudioDecodedFrameTemp + i, 0,
+										  inMicLevel, &outMicLevel, 0, &saturationWarning)) { ALOG(
+								"WebRtcAgc_Process failed");
+					}
 				}
-				if (0 != WebRtcAgc_VirtualMic(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE, inMicLevel, &outMicLevel))
-				{
-					ALOG("WebRtcAgc_AddMic failed");
+				if (memcmp(m_saDecodedFrame, m_saAudioDecodedFrameTemp,
+						   nDecodedFrameSize * sizeof(short)) == 0) { ALOG(
+							"WebRtcAgc_Process did nothing");
 				}
-				if (0 != WebRtcAgc_Process(AGC_instance, m_saDecodedFrame + i, 0, AGC_SAMPLE_SIZE,
-					m_saAudioDecodedFrameTemp + i, 0,
-					inMicLevel, &outMicLevel, 0, &saturationWarning))
-				{
-					ALOG("WebRtcAgc_Process failed");
+				else { ALOG("WebRtcAgc_Process tried to do something, believe me :-( . Outputmic =  "
+							+ m_Tools.IntegertoStringConvert(outMicLevel) +
+							" saturationWarning = " +
+							m_Tools.IntegertoStringConvert(saturationWarning));
 				}
-			}
-			if (memcmp(m_saDecodedFrame, m_saAudioDecodedFrameTemp, nDecodedFrameSize * sizeof(short)) == 0)
-			{
-				ALOG("WebRtcAgc_Process did nothing");
-			}
-			else
-			{
-				ALOG("WebRtcAgc_Process tried to do something, believe me :-( . Outputmic =  "
-					+ m_Tools.IntegertoStringConvert(outMicLevel) + " saturationWarning = " + m_Tools.IntegertoStringConvert(saturationWarning));
-			}
 
-			int k = 1;
-			double iRatio = 0;
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
-			{
-				if (m_saDecodedFrame[i])
-				{
-					//ALOG("ratio = " + m_Tools.IntegertoStringConvert(m_saAudioDecodedFrameTemp[i] / m_saAudioEncodingFrame[i]));
-					iRatio += m_saAudioDecodedFrameTemp[i] * 1.0 / m_saDecodedFrame[i];
-					k++;
-				}
-			}
-			ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
+				int k = 1;
+				double iRatio = 0;
+				for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++) {
+					if (m_saDecodedFrame[i]) {
+						//ALOG("ratio = " + m_Tools.IntegertoStringConvert(m_saAudioDecodedFrameTemp[i] / m_saAudioEncodingFrame[i]));
+						iRatio += m_saAudioDecodedFrameTemp[i] * 1.0 / m_saDecodedFrame[i];
+						k++;
+					}
+				}ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
 
-			memcpy(m_saDecodedFrame, m_saAudioDecodedFrameTemp, AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
+				memcpy(m_saDecodedFrame, m_saAudioDecodedFrameTemp,
+					   AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
 
 
 #elif defined(USE_NAIVE_AGC)
 
-			for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
-			{
-				int temp = (int)m_saDecodedFrame[i] * m_iVolume;
-				if (temp > SHRT_MAX)
-				{
-					temp = SHRT_MAX;
-				}
-				if (temp < SHRT_MIN)
-				{
-					temp = SHRT_MIN;
-				}
-				m_saDecodedFrame[i] = temp;
+                for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+                {
+                    int temp = (int)m_saDecodedFrame[i] * m_iVolume;
+                    if (temp > SHRT_MAX)
+                    {
+                        temp = SHRT_MAX;
+                    }
+                    if (temp < SHRT_MIN)
+                    {
+                        temp = SHRT_MIN;
+                    }
+                    m_saDecodedFrame[i] = temp;
 
-			}
+                }
 
 #endif
+			}
+/*
+ * Start call block end.
+ *
+ */
 			m_bNoDataFromFarendYet = false;
+
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
