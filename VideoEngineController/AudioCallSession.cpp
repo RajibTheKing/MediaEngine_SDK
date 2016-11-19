@@ -620,7 +620,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 #ifdef OPUS_ENABLE
             nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
-            
+			ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)+  " PacketNumber = "+m_Tools.IntegertoStringConvert(m_iPacketNumber));
             if(m_bLiveAudioStreamRunning == false)
             {
                 encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
@@ -695,6 +695,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef  __AUDIO_SELF_CALL__
             if(m_bLiveAudioStreamRunning == false)
             {
+				ALOG("#A#EN#--->> Self#  PacketNumber = "+m_Tools.IntegertoStringConvert(m_iPacketNumber));
                 DecodeAudioData(0,m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
                 continue;
             }
@@ -928,6 +929,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
 #ifdef OPUS_ENABLE
 			nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+			ALOG("#A#DE#--->> Self#  PacketNumber = "+m_Tools.IntegertoStringConvert(iPacketNumber));
 
 #else
 			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
@@ -1040,10 +1042,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 				ALOG("#EXP# Decoding Failed.");
 				continue;
 			}
-			if (m_bIsCheckCall == LIVE_CALL_MOOD)
-			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
-			}
+
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
+
 			toolsObject.SOSleep(0);
 		}
 	}
