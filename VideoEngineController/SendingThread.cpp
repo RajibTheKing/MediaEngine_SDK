@@ -286,8 +286,11 @@ void CSendingThread::SendingThreadProcedure()
                 }
 #endif
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushing for selfcall");
-                printf("TheKing--> Processing LIVESTREAM\n");
-				G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+                LOGEF("TheKing--> Processing LIVESTREAM\n");
+				if(bExist)
+				{
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+				}
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
 #endif
 
@@ -295,7 +298,7 @@ void CSendingThread::SendingThreadProcedure()
                 
                 
 
-				printf("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d\n", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
+				LOGEF("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d\n", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
 
 				int tempIndex = m_iDataToSendIndex;
 				numberOfVideoPackets = 0;
@@ -404,7 +407,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 				CVideoCallSession* pVideoSession;
                 bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
                 unsigned char *pEncodedFrame = m_EncodedFrame;
-                printf("TheKing--> Processing CALL!!!\n");
+                LOGEF("TheKing--> Processing CALL!!!\n");
                 pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);

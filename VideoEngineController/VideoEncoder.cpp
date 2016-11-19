@@ -69,7 +69,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
         CVideoCallSession* pVideoSession;
         bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
         
-        if(pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+        if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
             encoderParemeters.iRCMode = RC_OFF_MODE;
         else
         {
@@ -177,7 +177,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
         CVideoCallSession* pVideoSession;
         bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
         
-        if(pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+        if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
             encoderParemeters.iRCMode = RC_OFF_MODE;
         else
         {
