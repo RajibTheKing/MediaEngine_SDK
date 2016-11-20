@@ -414,7 +414,7 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callB
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int))
+void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
 {
 	if (NULL != m_pcController)
 	{
@@ -438,7 +438,7 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithNetworkStrengthNotificatio
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int))
 {
 	if (NULL != m_pcController)
 	{

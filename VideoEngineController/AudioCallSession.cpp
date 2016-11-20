@@ -1065,7 +1065,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, nDecodedFrameSize, m_saDecodedFrame);
+			if (m_bLiveAudioStreamRunning == true)
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nDecodedFrameSize, m_saDecodedFrame);
+			else
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_CALL, nDecodedFrameSize, m_saDecodedFrame);
 
 			toolsObject.SOSleep(0);
 		}

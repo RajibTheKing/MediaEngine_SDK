@@ -55,10 +55,10 @@ public:
     int StopAudioEncodeDecodeSession();
     
      void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
-     void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int, int, int, int));
+     void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, int, int));
 	 void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
 	 void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
-     void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
+     void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, short*, int));
 	 void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	 void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
 

@@ -202,14 +202,14 @@ void CVideoRenderingThread::RenderingThreadProcedure()
                     else
                         toolsObject.SOSleep(0);
                     
-                    m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
 
                     llPrevTimeStamp = m_Tools.CurrentTimestamp();
                 }
                 else
                 {
                     toolsObject.SOSleep(1);
-                    m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
                     
                 }
                 
