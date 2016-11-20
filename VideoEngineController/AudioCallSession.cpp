@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-#define __AUDIO_SELF_CALL__
+//#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 
@@ -49,7 +49,7 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
 	m_bUsingLoudSpeaker = false;
-	m_bEchoCancellerEnabled = true;
+	m_bEchoCancellerEnabled = false;
 
 
 
@@ -134,8 +134,6 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 
 }
 
-long long iMS = -1;
-int iAudioDataCounter = 0;
 
 void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
