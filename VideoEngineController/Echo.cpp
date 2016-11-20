@@ -29,6 +29,18 @@ CEcho::CEcho()
 		ALOG("WebRtcAecm_Init successful");
 		bAecmInited = true;
 	}
+
+	AecmConfig aecConfig;
+	aecConfig.cngMode = AecmTrue;
+	aecConfig.echoMode = 4;
+	if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
+	{
+		ALOG("WebRtcAecm_set_config unsuccessful");
+	}
+	else
+	{
+		ALOG("WebRtcAecm_set_config successful");
+	}
 }
 
 
@@ -44,7 +56,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, short * sOutBuf)
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
 	{
 
-		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sOutBuf + i, AECM_SAMPLE_SIZE, 0))
+		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sOutBuf + i, AECM_SAMPLE_SIZE, 10))
 		{
 			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
 		}
