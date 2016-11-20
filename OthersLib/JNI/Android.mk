@@ -47,10 +47,10 @@ LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libopus.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt AECM
-# include $(CLEAR_VARS)
-# LOCAL_MODULE := AECM
-# LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_aecm.a
-# include $(PREBUILT_STATIC_LIBRARY)
+include $(CLEAR_VARS)
+LOCAL_MODULE := AECM
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_aecm.a
+include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt NS
 # include $(CLEAR_VARS)
@@ -208,6 +208,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AGC IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AGC AECM IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)

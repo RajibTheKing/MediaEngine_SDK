@@ -27,7 +27,7 @@
 
 
 //#ifdef __ANDROID__
-//#define USE_AECM
+#define USE_AECM
 //#define USE_ANS
 #define USE_AGC
 //#define USE_VAD
@@ -82,6 +82,7 @@ public:
 
 	void SetVolume(int iVolume, bool bRecorder);
 	void SetLoudSpeaker(bool bOn);
+	void SetEchoCanceller(bool bOn);
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
@@ -90,6 +91,7 @@ public:
 private:
     Tools m_Tools;
     LongLong m_FriendID;
+	bool m_bEchoCancellerEnabled;
 
     CAudioPacketHeader *SendingHeader;
     CAudioPacketHeader *ReceivingHeader;

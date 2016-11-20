@@ -83,6 +83,16 @@ bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool
 	bool bReturnedValue = m_pcController->SetLoudSpeaker(lFriendID, bOn);
 }
 
+bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bool bOn)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->SetEchoCanceller(lFriendID, bOn);
+}
+
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nNetworkType)
 {
 	if (NULL == m_pcController)

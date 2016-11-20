@@ -37,6 +37,7 @@ public:
 	bool StartAudioCall(const LongLong& lFriendID);
 	bool SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder);
 	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
+	bool SetEchoCanceller(const LongLong& lFriendID, bool bOn);
 	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	bool StartTestAudioCall(const LongLong& lFriendID);
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);

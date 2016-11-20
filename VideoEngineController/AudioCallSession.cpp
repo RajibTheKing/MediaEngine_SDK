@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 
@@ -22,7 +22,6 @@ FILE *FileOutput;
 //extern int g_StopVideoSending;
 
 
-int gSetMode = -5;
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall) :
 m_pCommonElementsBucket(pSharedObject),
@@ -50,7 +49,7 @@ m_bIsCheckCall(bIsCheckCall)
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
 	m_bUsingLoudSpeaker = false;
-
+	m_bEchoCancellerEnabled = true;
 
 
 
@@ -137,6 +136,13 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 
 long long iMS = -1;
 int iAudioDataCounter = 0;
+
+void CAudioCallSession::SetEchoCanceller(bool bOn)
+{
+#ifdef USE_AECM
+	m_bEchoCancellerEnabled = bOn;
+#endif
+}
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
@@ -292,7 +298,10 @@ void CAudioCallSession::EncodingThreadProcedure()
 			}
 #endif
 #if defined(USE_AECM) || defined(USE_ANS)
-			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+			if (m_bEchoCancellerEnabled)
+			{
+				memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+			}
 #endif
 
 
@@ -317,7 +326,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #endif
 
 #ifdef USE_AECM
-			if (!m_bNoDataFromFarendYet)
+			if (m_bEchoCancellerEnabled && !m_bNoDataFromFarendYet)
 			{
 				m_pEcho->CancelEcho(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLE_SIZE, m_saAudioEncodingFrame);
 			}
@@ -606,9 +615,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 #endif
 #ifdef USE_AECM			
 			m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
+			m_bNoDataFromFarendYet = false;
 #endif
 
-			m_bNoDataFromFarendYet = false;
+			
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
