@@ -46,7 +46,7 @@ bool CVoice::HasVoice(short *sInBuf, int sBufferSize)
 			int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, sInBuf + i, VAD_ANALYSIS_SAMPLE_SIZE);
 			if (iVadRet != 1)
 			{
-				ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet) + " setmode = " + Tools::IntegertoStringConvert(gSetMode));
+				ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet));
 				//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLE_SIZE * sizeof(short));						
 			}
 			else
