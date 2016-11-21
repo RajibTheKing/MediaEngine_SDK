@@ -295,17 +295,18 @@ void CAudioCallSession::EncodingThreadProcedure()
 				continue;
 			}
 #endif
-#if defined(USE_AECM) || defined(USE_ANS)
-			if (m_bEchoCancellerEnabled)
-			{
-				memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
-			}
-#endif
 
 
 #ifdef USE_AGC
 			m_pPlayerGain->AddFarEnd(m_saAudioEncodingFrame, nEncodingFrameSize);
 			m_pRecorderGain->AddGain(m_saAudioEncodingFrame, nEncodingFrameSize);
+#endif
+
+#if defined(USE_AECM) || defined(USE_ANS)
+			if (m_bEchoCancellerEnabled)
+			{
+				memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+			}
 #endif
 
 
