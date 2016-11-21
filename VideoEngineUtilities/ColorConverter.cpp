@@ -537,6 +537,213 @@ int CColorConverter::ConvertRGB24ToI420(unsigned char *input, unsigned char *out
 	return m_iVideoHeight * m_iVideoWidth * 3 / 2;
 }
 */
+int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageNotApplied(byte* pData, int &iHeight, int &iWidth, byte* outputData)
+{
+    
+    int YPlaneLength = iHeight*iWidth;
+    int indx = 0;
+    
+    for(int i=0;i<iHeight;i+=4)
+    {
+        for(int j=0;j<iWidth;j+=2)
+        {
+            outputData[indx++] = pData[i*iWidth + j];
+        }
+        
+        for(int j=0;j<iWidth;j+=2)
+        {
+            outputData[indx++] = pData[(i+1)*iWidth + j];
+        }
+    }
+    
+    byte*p = pData+YPlaneLength;
+    
+    for(int i=0;i<iHeight/2;i+=2)
+    {
+        for(int j=0;j<iWidth;j+=4)
+        {
+            outputData[indx++] = p[i*iWidth + j];
+            outputData[indx++] = p[i*iWidth + j+1];
+        }
+    }
+    
+    //cout<<"CurrentLen = "<<indx<<endl;
+    
+    iHeight = iHeight>>1;
+    iWidth = iWidth>>1;
+    
+    
+    return indx;
+    
+}
+
+int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageVersion1(byte* pData, int &iHeight, int &iWidth, byte* outputData)
+{
+    
+    int YPlaneLength = iHeight*iWidth;
+    int indx = 0;
+    
+    for(int i=0;i<iHeight;i+=4)
+    {
+        for(int j=0;j<iWidth;j+=2)
+        {
+            //outputData[indx++] = pData[i*iWidth + j];
+            
+            int w,x,y,z;
+            w = pData[i*iWidth + j];
+            x = pData[i*iWidth + j+2];
+            y = pData[(i+2)*iWidth + j];
+            z = pData[(i+2)*iWidth + j+2];
+            int avg = (w+x+y+z)/4;
+            outputData[indx++] = (byte)avg;
+            
+        }
+        
+        for(int j=0;j<iWidth;j+=2)
+        {
+            int I = i+1;
+            
+            int w,x,y,z;
+            w = pData[I*iWidth + j];
+            x = pData[I*iWidth + j+2];
+            y = pData[(I+2)*iWidth + j];
+            z = pData[(I+2)*iWidth + j+2];
+            int avg = (w+x+y+z)/4;
+            outputData[indx++] = (byte)avg;
+        }
+    }
+    
+    byte*p = pData+YPlaneLength;
+    for(int i=0;i<iHeight/2;i+=2)
+    {
+        for(int j=0;j<iWidth;j+=4)
+        {
+            int w,x,y,z, J, avg;
+            
+            
+            w = p[i*iWidth + j];
+            x = p[i*iWidth + j+2];
+            y = p[(i+1)*iWidth + j];
+            z = p[(i+1)*iWidth + j+2];
+            avg = (w+x+y+z)/4;
+            outputData[indx++] = (byte)avg;
+            //outputData[indx++] = p[i*iWidth + j];
+            
+            J = j+1;
+            w = p[i*iWidth + J];
+            x = p[i*iWidth + J+2];
+            y = p[(i+1)*iWidth + J];
+            z = p[(i+1)*iWidth + J+2];
+            avg = (w+x+y+z)/4;
+            outputData[indx++] = (byte)avg;
+            //outputData[indx++] = p[i*iWidth + j+1];
+        }
+    }
+    
+    cout<<"CurrentLen = "<<indx<<endl;
+    
+    iHeight = iHeight>>1;
+    iWidth = iWidth>>1;
+    
+    
+    return indx;
+    
+}
+
+
+int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageVersion2(byte* pData, int &iHeight, int &iWidth, byte* outputData)
+{
+    
+    int YPlaneLength = iHeight*iWidth;
+    int indx = 0;
+    
+    for(int i=0;i<iHeight;i+=4)
+    {
+        for(int j=0;j<iWidth;j+=2)
+        {
+            //outputData[indx++] = pData[i*iWidth + j];
+            int w,x,y,z;
+            if(j%2==0)
+            {
+                w = pData[i*iWidth + j];
+                x = pData[i*iWidth + j+1];
+                y = pData[(i+1)*iWidth + j];
+                z = pData[(i+1)*iWidth + j+1];
+                int avg = (w+x+y+z)/4;
+                outputData[indx++] = (byte)avg;
+            }
+            else
+            {
+                w = pData[i*iWidth + j+1];
+                x = pData[i*iWidth + j+2];
+                y = pData[(i+1)*iWidth + j+1];
+                z = pData[(i+1)*iWidth + j+2];
+                int avg = (w+x+y+z)/4;
+                outputData[indx++] = (byte)avg;
+            }
+        }
+        
+        for(int j=0;j<iWidth;j+=2)
+        {
+            int I = i+1;
+            
+            int w,x,y,z;
+            if(j%2==0)
+            {
+                w = pData[(I+1)*iWidth + j];
+                x = pData[(I+1)*iWidth + j+1];
+                y = pData[(I+2)*iWidth + j];
+                z = pData[(I+2)*iWidth + j+1];
+                int avg = (w+x+y+z)/4;
+                outputData[indx++] = (byte)avg;
+            }
+            else
+            {
+                w = pData[(I+1)*iWidth + j+1];
+                x = pData[(I+1)*iWidth + j+2];
+                y = pData[(I+2)*iWidth + j+1];
+                z = pData[(I+2)*iWidth + j+2];
+                int avg = (w+x+y+z)/4;
+                outputData[indx++] = (byte)avg;
+            }
+        }
+    }
+    
+    byte*p = pData+YPlaneLength;
+    for(int i=0;i<iHeight/2;i+=2)
+    {
+        for(int j=0;j<iWidth;j+=4)
+        {
+            int w,x,y,z, J, avg;
+            
+            
+            w = p[i*iWidth + j];
+            x = p[i*iWidth + j+2];
+            y = p[(i+1)*iWidth + j];
+            z = p[(i+1)*iWidth + j+2];
+            avg = (w+x+y+z)/4;
+            outputData[indx++] = (byte)avg;
+            
+            J = j+1;
+            w = p[i*iWidth + J];
+            x = p[i*iWidth + J+2];
+            y = p[(i+1)*iWidth + J];
+            z = p[(i+1)*iWidth + J+2];
+            avg = (w+x+y+z)/4;
+            outputData[indx++] = (byte)avg;
+        }
+    }
+    
+    //cout<<"CurrentLen = "<<indx<<endl;
+    
+    iHeight = iHeight>>1;
+    iWidth = iWidth>>1;
+    
+    
+    return indx;
+    
+}
+
 
 
 int CColorConverter::GetWidth()

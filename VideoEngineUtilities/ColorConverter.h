@@ -38,6 +38,10 @@ public:
 	void mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
 
 	int ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width);
+    
+    int DownScaleYUVNV12_YUVNV21_AverageNotApplied(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+    int DownScaleYUVNV12_YUVNV21_AverageVersion1(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+    int DownScaleYUVNV12_YUVNV21_AverageVersion2(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
 
 	int GetWidth();
 	int GetHeight();
