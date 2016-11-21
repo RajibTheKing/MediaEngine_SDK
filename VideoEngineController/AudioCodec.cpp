@@ -95,8 +95,8 @@ int CAudioCodec::CreateAudioEncoder()
 	}
 //	ALOG("#BR# m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
 //		+ "#BR# encodingTime: " + m_Tools.IntegertoStringConvert(encodingTime));
-	delete dummyData;
-	delete dummyDataOut;
+	delete[] dummyData;
+	delete[] dummyDataOut;
 	//err = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(10));
 	//if (err<0) return EXIT_FAILURE;
 
