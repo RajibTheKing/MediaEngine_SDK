@@ -56,6 +56,7 @@ m_bIsCheckCall(bIsCheckCall)
 #ifdef USE_AECM
 	m_bNoDataFromFarendYet = true;
 	m_pEcho = new CEcho();
+	m_pEcho2 = new CEcho();
 #endif
 
 #ifdef USE_ANS
@@ -91,6 +92,7 @@ CAudioCallSession::~CAudioCallSession()
 #endif
 #ifdef USE_AECM
 	delete m_pEcho;
+	delete m_pEcho2;
 #endif
 #ifdef USE_ANS
 	delete m_pNoise;
@@ -325,9 +327,10 @@ void CAudioCallSession::EncodingThreadProcedure()
 #endif
 
 #ifdef USE_AECM
-			if (m_bEchoCancellerEnabled && !m_bNoDataFromFarendYet)
+			if (m_bEchoCancellerEnabled /*&& !m_bNoDataFromFarendYet*/)
 			{
 				m_pEcho->CancelEcho(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLE_SIZE, m_saAudioEncodingFrame);
+				m_pEcho2->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE);
 			}
 #endif
 
@@ -614,6 +617,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #endif
 #ifdef USE_AECM			
 			m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
+			m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize, m_saDecodedFrame);
 			m_bNoDataFromFarendYet = false;
 #endif
 
