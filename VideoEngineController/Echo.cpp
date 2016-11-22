@@ -52,7 +52,9 @@ CEcho::~CEcho()
 
 int CEcho::CancelEcho(short *sInBuf, int sBufferSize, short * sOutBuf)
 {
+#if 0
 	long long llNow = m_Tools.CurrentTimestamp();
+#endif
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
 	{
 
