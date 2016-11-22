@@ -349,7 +349,7 @@ else
 
 	m_BitRateController->SetOwnNetworkType(iNetworkType);
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 281");
-	CreateAndSendMiniPacket(iNetworkType, __NETWORK_INFO_PACKET_TYPE);
+	//CreateAndSendMiniPacket(iNetworkType, __NETWORK_INFO_PACKET_TYPE);
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 282");
 
