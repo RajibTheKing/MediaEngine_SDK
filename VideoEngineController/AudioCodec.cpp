@@ -41,11 +41,10 @@ int CAudioCodec::CreateAudioEncoder()
 	int error = 0;
 	int sampling_rate = AUDIO_SAMPLE_RATE;
 	int dummyDataSize = AUDIO_CLIENT_SAMPLE_SIZE;
-	dummyData = new opus_int16[dummyDataSize];
-	unsigned char * dummyDataOut = new unsigned char[dummyDataSize * 2];
+
 	for (int i = 0; i < dummyDataSize; i++)
 	{
-		dummyData[i] = rand();
+		m_DummyData[i] = rand();
 	}
 
 	//encoder_ = opus_encoder_create(sampling_rate, 1, OPUS_APPLICATION_AUDIO, &error);
@@ -82,7 +81,7 @@ int CAudioCodec::CreateAudioEncoder()
 	{
 		opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(m_iComplexity));
 		encodingTime = m_Tools.CurrentTimestamp();
-		encodeAudio(dummyData, dummyDataSize, dummyDataOut);
+		encodeAudio(m_DummyData, dummyDataSize, m_DummyDataOut);
 		encodingTime = m_Tools.CurrentTimestamp() - encodingTime;
 		if (encodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME)
 		{
@@ -95,8 +94,8 @@ int CAudioCodec::CreateAudioEncoder()
 	}
 //	ALOG("#BR# m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
 //		+ "#BR# encodingTime: " + m_Tools.IntegertoStringConvert(encodingTime));
-	delete[] dummyData;
-	delete[] dummyDataOut;
+	
+	
 	//err = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(10));
 	//if (err<0) return EXIT_FAILURE;
 

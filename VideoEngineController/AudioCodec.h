@@ -67,7 +67,8 @@ private:
 
 	opus_int16 in[AUDIO_FRAME_SIZE * AUDIO_CHANNELS];
 	opus_int16 out[AUDIO_MAX_FRAME_SIZE * AUDIO_CHANNELS];
-	opus_int16 *dummyData;
+	opus_int16 m_DummyData[AUDIO_CLIENT_SAMPLE_SIZE + 10];
+	unsigned char m_DummyDataOut[AUDIO_CLIENT_SAMPLE_SIZE * 2 + 10];
 	unsigned char cbits[AUDIO_MAX_PACKET_SIZE];
 
 	int nbBytes;
