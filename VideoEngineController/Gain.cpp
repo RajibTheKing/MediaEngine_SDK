@@ -121,23 +121,28 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 	uint8_t saturationWarning;
 	int32_t inMicLevel = 1;
 	int32_t outMicLevel;
+	bool bSucceeded = true;
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
 	{
 		if (0 != WebRtcAgc_AddMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLE_SIZE))
 		{
 			ALOG("WebRtcAgc_AddMic failed");
+			bSucceeded = false;
 		}
 		if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLE_SIZE, inMicLevel, &outMicLevel))
 		{
 			ALOG("WebRtcAgc_AddMic failed");
+			bSucceeded = false;
 		}
 		if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLE_SIZE,
 			m_sTempBuf + i, 0,
 			inMicLevel, &outMicLevel, 0, &saturationWarning))
 		{
 			ALOG("WebRtcAgc_Process failed");
+			bSucceeded = false;
 		}
 	}
+#if 0
 	if (memcmp(sInBuf, m_sTempBuf, nBufferSize * sizeof(short)) == 0)
 	{
 		ALOG("WebRtcAgc_Process did nothing");
@@ -161,8 +166,9 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 		}
 	}
 	ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
+#endif
 	memcpy(sInBuf, m_sTempBuf, AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
-	return true;
+	return bSucceeded;;
 #elif defined(USE_NAIVE_AGC)
 
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)

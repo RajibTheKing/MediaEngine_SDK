@@ -61,7 +61,8 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, short * sOutBuf)
 			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " bAecmInited = " + m_Tools.IntegertoStringConvert((int)bAecmInited));
 		}
 	}
-
+	return true;
+#if 0
 	if (memcmp(sInBuf, sOutBuf, sBufferSize * sizeof(short)) == 0)
 	{
 		ALOG("WebRtcAec_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
@@ -72,6 +73,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, short * sOutBuf)
 		ALOG("WebRtcAec_Process tried to do something, believe me :-( . It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
 		return true;
 	}
+#endif
 	
 }
 
