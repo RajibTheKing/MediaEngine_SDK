@@ -53,9 +53,6 @@
     <ClCompile Include="..\..\VideoEngineController\FPSController.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\Globals.cpp">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>

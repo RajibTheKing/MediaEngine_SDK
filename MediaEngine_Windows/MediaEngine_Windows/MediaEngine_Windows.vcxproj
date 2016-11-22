@@ -171,7 +171,6 @@
     <ClCompile Include="..\..\VideoEngineController\EventNotifier.cpp" />
     <ClCompile Include="..\..\VideoEngineController\FPSController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Gain.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\Globals.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Noise.cpp" />
