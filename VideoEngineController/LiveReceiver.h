@@ -11,9 +11,11 @@
 #include "LiveVideoDecodingQueue.h"
 #include "LiveAudioDecodingQueue.h"
 
+class CCommonElementsBucket;
+
 class LiveReceiver {
 public:
-    LiveReceiver();
+	LiveReceiver(CCommonElementsBucket* sharedObject);
     ~LiveReceiver();
     void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);
     void SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue);
@@ -28,6 +30,7 @@ private:
     CAudioDecoderBuffer *m_pAudioDecoderBuffer;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
+	CCommonElementsBucket* m_pCommonElementsBucket;
 };
 
 

@@ -3,14 +3,14 @@
 //
 
 #include "LiveReceiver.h"
-#include "AudioPacketHeader.h"
 #include "PacketHeader.h"
 #include "Tools.h"
 #include "ThreadTools.h"
+#include "CommonElementsBucket.h"
 
 
-
-LiveReceiver::LiveReceiver()
+LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject):
+m_pCommonElementsBucket(sharedObject)
 {
     //m_pAudioDecoderBuffer = pAudioDecoderBuffer;
     m_pLiveAudioDecodingQueue = NULL;
@@ -52,7 +52,8 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
     Locker lock(*m_pLiveReceiverMutex);
     int iUsedLen = 0, nFrames = 0;
     CPacketHeader packetHeaderObj;
-	int offset = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING;
+	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+	int offset = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
 	int tillIndex = offset;
     int frameCounter = 0;
 
@@ -71,8 +72,8 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 
 		for (int i = 0; i < numberOfMissingFrames; i++)
 		{
-			commonLeft = max(indexOfThisFrame, missingFrames[i] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__);
-			commonRight = min(endOfThisFrame,( (missingFrames[i] + 1) * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__) - 1);
+			commonLeft = max(indexOfThisFrame, missingFrames[i] * packetSizeOfNetwork);
+			commonRight = min(endOfThisFrame,( (missingFrames[i] + 1) * packetSizeOfNetwork) - 1);
 
 			if (commonLeft <= commonRight)
 			{
@@ -90,18 +91,18 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 		/*
 		if (j == 0)
 		{
-			if (0 < numberOfMissingFrames &&  endOfThisFrame >= missingFrames[0] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && missingFrames[0] >= NUMBER_OF_HEADER_FOR_STREAMING)
+			if (0 < numberOfMissingFrames &&  endOfThisFrame >= missingFrames[0] * packetSizeOfNetwork && missingFrames[0] >= NUMBER_OF_HEADER_FOR_STREAMING)
 				return;
 		}
 		else
 		{
 			for (int i = 0; i < numberOfMissingFrames-1; i++)
 			{
-				if (endOfThisFrame >= missingFrames[i] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && endOfThisFrame < missingFrames[i+1] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__)
+				if (endOfThisFrame >= missingFrames[i] * packetSizeOfNetwork && endOfThisFrame < missingFrames[i+1] * packetSizeOfNetwork)
 					continue;
 			}
 
-			if (numberOfMissingFrames > 0 && endOfThisFrame >= missingFrames[numberOfMissingFrames - 1] * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ && endOfThisFrame < (iLen + offset))
+			if (numberOfMissingFrames > 0 && endOfThisFrame >= missingFrames[numberOfMissingFrames - 1] * packetSizeOfNetwork && endOfThisFrame < (iLen + offset))
 				continue;
 		}	
 		*/
@@ -145,7 +146,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
     Locker lock(*m_pLiveReceiverMutex);
 
-    int nCallSDKPacketLength = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
+	int nCallSDKPacketLength = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
     bool bCompleteFrame = false;
     int iMissingIndex = 0;
     int iFrameNumber = 0, nUsedLength = 0;
