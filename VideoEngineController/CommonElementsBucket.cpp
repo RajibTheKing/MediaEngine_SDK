@@ -2,8 +2,9 @@
 #include "LockHandler.h"
 #include "LogPrinter.h"
 
-CCommonElementsBucket::CCommonElementsBucket():
+CCommonElementsBucket::CCommonElementsBucket() :
 userName(-1),
+m_nPacketSizeOfNetwork(-1),
 sharedMutex(NULL)
 
 {
@@ -43,6 +44,16 @@ void CCommonElementsBucket::InstantiateSharedMutex()
     {
 		sharedMutex = new CLockHandler();
     }
+}
+
+void CCommonElementsBucket::SetPacketSizeOfNetwork(int packetSizeOfNetwork)
+{
+	m_nPacketSizeOfNetwork = packetSizeOfNetwork;
+}
+
+int CCommonElementsBucket::GetPacketSizeOfNetwork()
+{
+	return m_nPacketSizeOfNetwork;
 }
 
 CLockHandler* CCommonElementsBucket::GetSharedMutex()

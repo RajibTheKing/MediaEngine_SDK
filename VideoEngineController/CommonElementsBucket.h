@@ -28,11 +28,15 @@ public:
 	CLockHandler* GetSharedMutex();
     
     void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int));
+
+	void SetPacketSizeOfNetwork(int packetSizeOfNetwork);
+	int GetPacketSizeOfNetwork();
     
 private:
 
     void InstantiateSharedMutex();
-
+	
+	int m_nPacketSizeOfNetwork;
     LongLong m_friendID;
 	LongLong userName;
 	CLockHandler* sharedMutex;
