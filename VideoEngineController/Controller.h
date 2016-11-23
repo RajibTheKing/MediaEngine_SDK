@@ -87,6 +87,8 @@ public:
     
     VideoQuality m_Quality[2];
 	bool m_bLiveCallRunning;
+
+	CCommonElementsBucket *m_pCommonElementsBucket;
 	
 private:
 
@@ -98,7 +100,7 @@ private:
 
 	CAudioFileEncodeDecodeSession *m_pAudioEncodeDecodeSession;
 
-	CCommonElementsBucket *m_pCommonElementsBucket;
+	
 	CDeviceCapabilityCheckThread *m_pDeviceCapabilityCheckThread;
 	CDeviceCapabilityCheckBuffer *m_pDeviceCapabilityCheckBuffer;
     

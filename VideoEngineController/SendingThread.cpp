@@ -121,6 +121,7 @@ void CSendingThread::SendingThreadProcedure()
 	int videoPacketSizes[30];
 	int numberOfVideoPackets = 0;
 	int frameCounter = 0;
+	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 	m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
@@ -238,9 +239,9 @@ void CSendingThread::SendingThreadProcedure()
 				}
 
 				for (int i = 1; i < NUMBER_OF_HEADER_FOR_STREAMING; i++)
-					memcpy(m_AudioVideoDataToSend + i * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__, m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__);
+					memcpy(m_AudioVideoDataToSend + i * packetSizeOfNetwork, m_AudioVideoDataToSend, packetSizeOfNetwork);
 
-				index = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING;
+				index = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
 
 				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
@@ -252,7 +253,7 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
 
-				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
                 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
@@ -273,8 +274,8 @@ void CSendingThread::SendingThreadProcedure()
 
 //				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
-                int nTotalSizeToSend = __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
-                const int nMaxMissingFrames = (nTotalSizeToSend +  __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ - 1 ) / __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
+                int nTotalSizeToSend = packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
+                const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfNetwork - 1 ) / packetSizeOfNetwork;
                 int missingFrames[nMaxMissingFrames];
 
                 int nMissingFrames = 0;
@@ -289,7 +290,7 @@ void CSendingThread::SendingThreadProcedure()
                 LOGEF("TheKing--> Processing LIVESTREAM\n");
 				if(bExist)
 				{
-					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, __MEDIA_DATA_SIZE_IN_LIVE_PACKET__  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
 				}
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
 #endif

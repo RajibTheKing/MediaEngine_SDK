@@ -88,7 +88,7 @@ bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool
     return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nNetworkType)
+bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork, int nNetworkType)
 {
 	if (NULL == m_pcController)
 	{
@@ -96,6 +96,9 @@ bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, 
 	}
 
 	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nNetworkType);
+
+	if (bReturnedValue)
+		m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
 
 	return bReturnedValue;
 }
@@ -120,6 +123,7 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFrie
 int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames)
 { 
     int iReturnedValue = 0;
+	int packetSizeOfNetwork = m_pcController->m_pCommonElementsBucket->GetPacketSizeOfNetwork();
     
 	if (NULL == m_pcController)
     {
@@ -152,6 +156,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 
         if(mediaType == MEDIA_TYPE_LIVE_STREAM)
         {
+			m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
             
             //int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
             //int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
@@ -167,7 +172,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
             if(headerPosition >= NUMBER_OF_HEADER_FOR_STREAMING)
                 return 6;
             
-            int nValidHeaderOffset = headerPosition * __MEDIA_DATA_SIZE_IN_LIVE_PACKET__;
+            int nValidHeaderOffset = headerPosition * packetSizeOfNetwork;
             
             int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
             
@@ -202,17 +207,17 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
             }
             
             LOGS("#LV# ------------------------> nMissing: " + Tools::IntegertoStringConvert(numberOfMissingFrames)
-                 + "  AudioStartLen: " + Tools::IntegertoStringConvert(lengthOfVideoData + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING));
+                 + "  AudioStartLen: " + Tools::IntegertoStringConvert(lengthOfVideoData + packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING));
             for (int i = 0; i < numberOfMissingFrames; i++)
-                LOGS("#LV# StartPosOfMissingPacket : " + Tools::IntegertoStringConvert(__MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * missingFrames[i]));
+                LOGS("#LV# StartPosOfMissingPacket : " + Tools::IntegertoStringConvert(packetSizeOfNetwork * missingFrames[i]));
             
 
-            iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING,
+            iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING,
                                                                   in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 
 			m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
 
-			iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + __MEDIA_DATA_SIZE_IN_LIVE_PACKET__ * NUMBER_OF_HEADER_FOR_STREAMING,
+			iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING,
 																   lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, numberOfMissingFrames, missingFrames);
         }
         else

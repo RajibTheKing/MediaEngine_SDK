@@ -61,7 +61,7 @@ m_nServiceType(nServiceType)
     {
         m_bLiveVideoStreamRunning = true;
         m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
-        m_pLiveReceiverVideo = new LiveReceiver();
+		m_pLiveReceiverVideo = new LiveReceiver(m_pCommonElementsBucket);
         m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
         
         

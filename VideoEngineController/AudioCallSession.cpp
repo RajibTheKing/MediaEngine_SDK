@@ -71,7 +71,7 @@ m_nServiceType(nServiceType)
     {
         m_bLiveAudioStreamRunning = true;
         m_pLiveAudioDecodingQueue = new LiveAudioDecodingQueue();
-        m_pLiveReceiverAudio = new LiveReceiver();
+		m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket);
         m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioDecodingQueue);
     }
     
