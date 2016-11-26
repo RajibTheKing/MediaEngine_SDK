@@ -630,13 +630,19 @@ void CAudioCallSession::EncodingThreadProcedure()
  * */
 
 #ifdef OPUS_ENABLE
-            nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
-			ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)+  " PacketNumber = "+m_Tools.IntegertoStringConvert(m_iPacketNumber));
-            if(m_bLiveAudioStreamRunning == false)
-            {
+
+			if(m_bLiveAudioStreamRunning == false)
+			{
+            	nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
+				ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)+  " PacketNumber = "+m_Tools.IntegertoStringConvert(m_iPacketNumber));
                 encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
                 m_pAudioCodec->DecideToChangeComplexity(encodingTime);
             }
+			else
+			{
+				nEncodedFrameSize = nEncodingFrameSize * sizeof(short);
+				memcpy(&m_ucaEncodedFrame[1 + m_AudioHeadersize], m_saAudioEncodingFrame, nEncodedFrameSize);
+			}
 
 			avgCountTimeStamp += encodingTime;
 
@@ -939,6 +945,14 @@ void CAudioCallSession::DecodingThreadProcedure()
 			//continue;
 			nDecodingFrameSize -= m_AudioHeadersize;
 			//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
+
+/*
+ * Start call block.
+ *
+ */
+
+			if(!m_bLiveAudioStreamRunning)
+			{
 #ifdef OPUS_ENABLE
 			nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 			ALOG("#A#DE#--->> Self#  PacketNumber = "+m_Tools.IntegertoStringConvert(iPacketNumber));
@@ -947,12 +961,6 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
 
-/*
- * Start call block.
- *
- */
-			if(!m_bLiveAudioStreamRunning)
-			{
 #ifdef USE_AECM
                 for (int i = 0; i < nDecodedFrameSize; i += AECM_SAMPLE_SIZE)
                 {
@@ -1025,6 +1033,10 @@ void CAudioCallSession::DecodingThreadProcedure()
                 }
 
 #endif
+			}
+			else {
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
+				nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
 			}
 /*
  * Start call block end.
