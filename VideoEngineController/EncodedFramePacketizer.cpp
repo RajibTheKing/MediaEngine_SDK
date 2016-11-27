@@ -102,9 +102,6 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
 
         {
-            //long long now = m_Tools.CurrentTimestamp()  ;
-            //printf("TheKing--> PacketizeTimeStamp = %lld, sending QQQQ = %lld\n", now, now - llSendingquePrevTime);
-            //llSendingquePrevTime = now;
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + unLength, iFrameNumber, nPacketNumber);
             
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));

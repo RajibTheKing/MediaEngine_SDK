@@ -160,9 +160,6 @@ void CSendingThread::SendingThreadProcedure()
             
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
-            long long now = m_Tools.CurrentTimestamp()  ;
-            printf("TheKing--> PacketizeTimeStamp = %lld, sending dqueue = %lld\n", now, now - llSendingDequePrevTime);
-            llSendingDequePrevTime = now;
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
             
             printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());

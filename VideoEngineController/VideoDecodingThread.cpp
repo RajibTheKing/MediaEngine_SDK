@@ -177,10 +177,6 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					}
 				}
                 
-                long long nowTime = m_Tools.CurrentTimestamp();
-                printf("TheKing--> VideoDecodingThread = %lld, diffTime = %lld , DecodeAndSendToClientTimeDiff = %lld\n", nowTime, diifTime,nowTime-llQueuePrevTime);
-                llQueuePrevTime = nowTime;
-                
 				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
 
 				toolsObject.SOSleep(1);
