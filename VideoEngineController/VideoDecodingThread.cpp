@@ -31,6 +31,7 @@ m_nCallFPS(nFPS)
 {
     m_pCalculatorDecodeTime = new CAverageCalculator();
     m_pLiveVideoDecodingQueue  = pLiveVideoDecodingQueue;
+    llQueuePrevTime = 0;
 }
 
 CVideoDecodingThread::~CVideoDecodingThread()
@@ -147,6 +148,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			}
 			else
 			{
+                long long diifTime;
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() Got packet for decoding");
 
 				nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
@@ -158,21 +160,30 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 				if(-1 == llFirstFrameTimeStamp)
 				{
+                    toolsObject.SOSleep(300);
+                    currentTime = m_Tools.CurrentTimestamp();
 					llFirstFrameTimeStamp = currentTime;
 					llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
+                    
 				}
 				else
 				{
+                     diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
+                    
 					while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
 					{
-						toolsObject.SOSleep(10);
+						toolsObject.SOSleep(1);
 						currentTime = m_Tools.CurrentTimestamp();
 					}
 				}
-
+                
+                long long nowTime = m_Tools.CurrentTimestamp();
+                printf("TheKing--> VideoDecodingThread = %lld, diffTime = %lld , DecodeAndSendToClientTimeDiff = %lld\n", nowTime, diifTime,nowTime-llQueuePrevTime);
+                llQueuePrevTime = nowTime;
+                
 				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
 
-				toolsObject.SOSleep(10);
+				toolsObject.SOSleep(1);
 			}
 			continue;
 		}
@@ -225,7 +236,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
 
-			toolsObject.SOSleep(1);
+			toolsObject.SOSleep(10);
 		}
 		else
 		{
@@ -415,7 +426,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #else
-
+    
+    
 	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #endif

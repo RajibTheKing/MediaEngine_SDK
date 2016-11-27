@@ -103,6 +103,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
     long long lRenderingTimeDiff = 0;
     long long llPrevTimeStamp = 0;
 	CAverageCalculator *pRenderingFps = new CAverageCalculator();
+    long long llFirePrevTime = 0;
+    long long llDequeuePrevTime = 0;
 	while (bRenderingThreadRunning)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
@@ -121,7 +123,9 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue, orientation);
             
-            
+           // long long nowTime = m_Tools.CurrentTimestamp();
+            //printf("TheKing--> RenderingTimeStamp = %lld, llDequeuePrevTime = %lld\n", nowTime, nowTime-llDequeuePrevTime);
+            //llDequeuePrevTime = nowTime;
             
             m_llRenderFrameCounter++;
 			if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD && m_llRenderFrameCounter<FPS_MAXIMUM * 2)
@@ -209,6 +213,10 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 //                else
                 {
                     toolsObject.SOSleep(1);
+                    long long nowTime = m_Tools.CurrentTimestamp();
+                    printf("TheKing--> RenderingTimeStamp = %lld, RenderingTimeDiff = %lld\n", nowTime, nowTime-llFirePrevTime);
+                    llFirePrevTime = nowTime;
+                    
 					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
                     
                 }

@@ -143,7 +143,7 @@ void CSendingThread::SendingThreadProcedure()
 	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);*/
 	m_BandWidthController.SetTimeInterval(m_BandWidthList, m_TimePeriodInterval);
 #endif
-
+    long long llSendingDequePrevTime = 0;
 	while (bSendingThreadRunning)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
@@ -160,6 +160,9 @@ void CSendingThread::SendingThreadProcedure()
             
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
+            long long now = m_Tools.CurrentTimestamp()  ;
+            printf("TheKing--> PacketizeTimeStamp = %lld, sending dqueue = %lld\n", now, now - llSendingDequePrevTime);
+            llSendingDequePrevTime = now;
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
             
             printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
@@ -343,7 +346,7 @@ void CSendingThread::SendingThreadProcedure()
 				}
 			}
 			firstFrame = false;
-			toolsObject.SOSleep(1);
+			toolsObject.SOSleep(0);
         }
 else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 

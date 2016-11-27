@@ -85,7 +85,7 @@ private:
     
     int m_FpsCounter;
     long long m_FPS_TimeDiff;
-    
+    long long llQueuePrevTime;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     
 };

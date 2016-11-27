@@ -215,7 +215,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
             iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING,
                                                                   in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, numberOfMissingFrames, missingFrames);
 
-			m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
+			//m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
 
 			iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING,
 																   lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, numberOfMissingFrames, missingFrames);

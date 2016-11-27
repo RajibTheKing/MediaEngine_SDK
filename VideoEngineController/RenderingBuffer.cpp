@@ -28,7 +28,8 @@ void CRenderingBuffer::ResetBuffer()
 
 int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth,int nOrientation)
 {
-    //printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
+    if(m_nQueueSize>=MAX_VIDEO_RENDERER_BUFFER_SIZE)
+        printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
 	Locker lock(*m_pRenderingBufferMutex);
     
 	memcpy(m_uc2aDecodedVideoDataBuffer[m_iPushIndex], ucaDecodedVideoFrameData, nLength);
