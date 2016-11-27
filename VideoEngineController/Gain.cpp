@@ -80,16 +80,12 @@ int CGain::SetGain(int iGain)
 #ifdef USE_NAIVE_AGC
 	if (iGain >= 0 && iGain <= MAX_GAIN)
 	{
-		m_iVolume = iVolume;
+		m_iVolume = iGain;
 		ALOG("SetVolume called with: " + Tools::IntegertoStringConvert(iVolume));
 	}
 	else
 	{
 		m_iVolume = DEF_GAIN;
-	}
-	if (m_bUsingLoudSpeaker)
-	{
-		m_iVolume = m_iVolume * 1.0 / LS_RATIO;
 	}
 #elif defined(USE_WEBRTC_AGC)
 	WebRtcAgc_config_t gain_config;
