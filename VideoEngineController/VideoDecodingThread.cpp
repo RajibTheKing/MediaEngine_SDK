@@ -134,6 +134,10 @@ void CVideoDecodingThread::DecodingThreadProcedure()
     long long llFirstFrameTimeStamp = -1;
     int nFirstFrameNumber = -1;
     long long llTargetTimeStampDiff = -1;
+    long long llExpectedTimeOffset = -1;
+
+	CPacketHeader packetHeaderObject;
+
 	while (bDecodingThreadRunning)
 	{
 		if(m_pVideoCallSession->isLiveVideoStreamRunning())
@@ -144,10 +148,28 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			else
 			{
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() Got packet for decoding");
-                
 
 				nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
-                printf("#V## Queue: %d\n",nFrameLength);
+				packetHeaderObject.setPacketHeader(m_PacketizedFrame);
+
+				printf("#V## Queue: %d\n",nFrameLength);
+
+				currentTime = m_Tools.CurrentTimestamp();
+
+				if(-1 == llFirstFrameTimeStamp)
+				{
+					llFirstFrameTimeStamp = currentTime;
+					llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
+				}
+				else
+				{
+					while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
+					{
+						toolsObject.SOSleep(10);
+						currentTime = m_Tools.CurrentTimestamp();
+					}
+				}
+
 				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
 
 				toolsObject.SOSleep(10);
