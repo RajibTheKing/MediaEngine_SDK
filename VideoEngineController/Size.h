@@ -54,7 +54,7 @@
 #if defined(TARGET_OS_WINDOWS_PHONE)
 #define BITRATE_MAX 500000
 #else
-#define BITRATE_MAX 500000
+#define BITRATE_MAX 1000000
 #endif
 
 #define BITRATE_MIN 75000
