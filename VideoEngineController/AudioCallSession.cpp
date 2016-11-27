@@ -329,8 +329,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef USE_AECM
 			if (m_bEchoCancellerEnabled /*&& !m_bNoDataFromFarendYet*/)
 			{
-				m_pEcho->CancelEcho(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLE_SIZE, m_saAudioEncodingFrame);
 				m_pEcho2->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE);
+				m_pEcho->CancelEcho(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLE_SIZE, m_saAudioEncodingFrame);				
 			}
 #endif
 
@@ -615,9 +615,12 @@ void CAudioCallSession::DecodingThreadProcedure()
 			m_pRecorderGain->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
 			m_pPlayerGain->AddGain(m_saDecodedFrame, nDecodedFrameSize);
 #endif
-#ifdef USE_AECM			
-			m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
-			m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize, m_saDecodedFrame);
+#ifdef USE_AECM
+			if (m_bEchoCancellerEnabled)
+			{								
+				m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize, m_saDecodedFrame);
+				m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
+			}			
 			m_bNoDataFromFarendYet = false;
 #endif
 
