@@ -122,7 +122,7 @@ void CSendingThread::SendingThreadProcedure()
 	int videoPacketSizes[30];
 	int numberOfVideoPackets = 0;
 	int frameCounter = 0;
-	int packetSizeOfNetwork = 1000;// m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 	m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);

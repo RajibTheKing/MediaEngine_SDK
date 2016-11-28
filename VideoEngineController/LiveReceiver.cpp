@@ -52,7 +52,7 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
     Locker lock(*m_pLiveReceiverMutex);
     int iUsedLen = 0, nFrames = 0;
     CPacketHeader packetHeaderObj;
-	int packetSizeOfNetwork = 1000;// m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
 	int offset = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
 	int tillIndex = offset;
     int frameCounter = 0;
@@ -146,7 +146,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
     Locker lock(*m_pLiveReceiverMutex);
 
-	int nCallSDKPacketLength = 1000;// m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+	int nCallSDKPacketLength = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
     bool bCompleteFrame = false;
     int iMissingIndex = 0;
     int iFrameNumber = 0, nUsedLength = 0;
