@@ -401,7 +401,7 @@ int CAudioCallSession::DecodeAudioDataVector(int nOffset, unsigned char *pucaDec
 	//    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
 	if (m_bLiveAudioStreamRunning)
 	{
-		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
+		m_pLiveReceiverAudio->ProcessAudioStreamVector(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
 
 		return 1;
 	}
@@ -418,7 +418,7 @@ int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingA
     if(m_bLiveAudioStreamRunning)
     {
         m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, missingFrames, numberOfMissingFrames);
-        
+
         return 1;
     }
 

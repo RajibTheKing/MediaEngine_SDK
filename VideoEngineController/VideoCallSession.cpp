@@ -397,7 +397,7 @@ bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in
 {
 	if (m_bLiveVideoStreamRunning)
 	{
-		m_pLiveReceiverVideo->PushVideoData(offset in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+		m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
 
 		return true;
 	}

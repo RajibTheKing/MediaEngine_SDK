@@ -25,7 +25,7 @@ public:
 	void PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
     bool GetVideoFrame(unsigned char* uchVideoFrame,int iLen);
     void ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks);
-	void ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks);
+	void ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks);
 
 private:
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;

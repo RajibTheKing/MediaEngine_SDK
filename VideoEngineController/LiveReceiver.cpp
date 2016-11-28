@@ -195,8 +195,6 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 	int iUsedLen = 0, nFrames = 0;
 	CPacketHeader packetHeaderObj;
-	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
-	int offset = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
 	int tillIndex = offset;
 	int frameCounter = 0;
 
@@ -280,7 +278,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 }
 
 
-void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
+void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
 
         Locker lock(*m_pLiveReceiverMutex);
 
