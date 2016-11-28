@@ -30,22 +30,6 @@ void LiveReceiver::SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue)
     m_pLiveAudioDecodingQueue = pQueue;
 }
 
-/*void LiveReceiver::PushAudioData(unsigned char* uchAudioData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames){
-    Locker lock(*m_pLiveReceiverMutex);
-    int iUsedLen = 0, nFrames = 0;
-    CAudioPacketHeader audioPacketHeaderObject;
-
-    while(iUsedLen < iLen)
-    {
-        nFrames++;
-        audioPacketHeaderObject.CopyHeaderToInformation(uchAudioData + iUsedLen+1);
-        int nCurrentFrameLen = audioPacketHeaderObject.GetInformation(PACKETLENGTH);
-        printf("THeKing--> Audio FrameCounter = %d, FrameLength  = %d, iLen = %d\n", nFrames, nCurrentFrameLen, iLen);
-        m_pAudioDecoderBuffer->Queue(uchAudioData + iUsedLen+1, nCurrentFrameLen + __AUDIO_HEADER_LENGTH__);
-        iUsedLen += nCurrentFrameLen + __AUDIO_HEADER_LENGTH__+1;
-    }
-}
-*/
 
 void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
@@ -198,15 +182,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-
-        //m_pAudioDecoderBuffer->Queue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
         m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
-
-//        iUsedLen += nCurrentFrameLenWithMediaHeader;
-//        audioPacketHeaderObject.CopyHeaderToInformation(uchAudioData + iUsedLen + 1);
-//        int nCurrentFrameLen = audioPacketHeaderObject.GetInformation(PACKETLENGTH);
-//        int nCurrentFrameLen = audioPacketHeaderObject.GetInformation(PACKETLENGTH);
-//        LLG("#IV# THeKing--> Audio  FrameLength  = "+ Tools::IntegertoStringConvert(nCurrentFrameLenWithMediaHeader));
 
     }
 }
