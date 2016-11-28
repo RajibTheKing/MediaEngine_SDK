@@ -126,11 +126,11 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
     return false;
 }
 
-void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks){
+void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) {
 
     Locker lock(*m_pLiveReceiverMutex);
 
-	int nCallSDKPacketLength = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+    int nCallSDKPacketLength = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
     bool bCompleteFrame = false;
     int iMissingIndex = 0;
     int iFrameNumber = 0, nUsedLength = 0;
@@ -139,10 +139,8 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
     nFrameLeftRange = nOffset;
 
 
-    while(iFrameNumber < nNumberOfAudioFrames)
-    {
-        if(pMissingBlocks == NULL)
-        {
+    while (iFrameNumber < nNumberOfAudioFrames) {
+        if (pMissingBlocks == NULL) {
 //            LLG("#IV#    LiveReceiver::ProcessAudioStream pMissingBlocks is NULLLLLLL");
         }
 
@@ -150,40 +148,97 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 //        nFrameLeftRange = pAudioFramsStartingByte[iFrameNumber];
 
         nFrameLeftRange = nUsedLength + nOffset;
-        nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
-        nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
+        nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[iFrameNumber] - 1;
+        nUsedLength += pAudioFramsStartingByte[iFrameNumber];
 
         //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
 
-        while(iMissingIndex < nNumberOfMissingBlocks &&  (pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength  <= nFrameLeftRange)
-            ++ iMissingIndex;
+        while (iMissingIndex < nNumberOfMissingBlocks &&
+               (pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength <= nFrameLeftRange)
+            ++iMissingIndex;
 
-        if(iMissingIndex < nNumberOfMissingBlocks)
-        {
+        if (iMissingIndex < nNumberOfMissingBlocks) {
             iLeftRange = pMissingBlocks[iMissingIndex] * nCallSDKPacketLength;
-            iRightRange =  iLeftRange + nCallSDKPacketLength - 1;
+            iRightRange = iLeftRange + nCallSDKPacketLength - 1;
 
-            iLeftRange =  max(nFrameLeftRange, iLeftRange);
-            iRightRange = min(nFrameRightRange,iRightRange);
-            if(iLeftRange <= iRightRange)
+            iLeftRange = max(nFrameLeftRange, iLeftRange);
+            iRightRange = min(nFrameRightRange, iRightRange);
+            if (iLeftRange <= iRightRange)
                 bCompleteFrame = false;
         }
 
-        ++ iFrameNumber;
+        ++iFrameNumber;
 
-        if( !bCompleteFrame )
-        {
+        if (!bCompleteFrame) {
 
             continue;
-        }else{
+        } else {
 
             //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
         }
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-        m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+        m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange + 1,
+                                         nCurrentFrameLenWithMediaHeader - 1);
 
     }
+}
+
+
+
+void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
+
+        Locker lock(*m_pLiveReceiverMutex);
+
+        size_t nNumberOfMissingBlocks = vMissingBlocks.size();
+        size_t iMissingIndex = 0;
+
+        bool bCompleteFrame = false;
+        int iFrameNumber = 0, nUsedLength = 0;
+        int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
+        int nCurrentFrameLenWithMediaHeader;
+        nFrameLeftRange = nOffset;
+
+
+        while(iFrameNumber < nNumberOfAudioFrames)
+        {
+            bCompleteFrame = true;
+
+            nFrameLeftRange = nUsedLength + nOffset;
+            nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
+            nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
+
+            //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
+
+//            while(iMissingIndex < nNumberOfMissingBlocks &&  (pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength  <= nFrameLeftRange)
+            while(iMissingIndex < nNumberOfMissingBlocks &&  vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange)
+                ++ iMissingIndex;
+
+            if(iMissingIndex < nNumberOfMissingBlocks)
+            {
+                iLeftRange = vMissingBlocks[iMissingIndex].first;
+                iRightRange = vMissingBlocks[iMissingIndex].second;
+
+                iLeftRange =  max(nFrameLeftRange, iLeftRange);
+                iRightRange = min(nFrameRightRange,iRightRange);
+                if(iLeftRange <= iRightRange)
+                    bCompleteFrame = false;
+            }
+
+            ++ iFrameNumber;
+
+            if( !bCompleteFrame )
+            {
+                continue;
+            }else{
+                //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
+            }
+
+            nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
+
+            m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+
+        }
 }
 

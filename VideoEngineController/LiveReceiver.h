@@ -11,6 +11,7 @@
 #include "LiveVideoDecodingQueue.h"
 #include "LiveAudioDecodingQueue.h"
 
+
 class CCommonElementsBucket;
 
 class LiveReceiver {
@@ -23,6 +24,7 @@ public:
 	void PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
     bool GetVideoFrame(unsigned char* uchVideoFrame,int iLen);
     void ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks);
+	void ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks);
 
 private:
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;
