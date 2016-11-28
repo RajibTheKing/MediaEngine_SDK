@@ -168,15 +168,18 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				}
 				else
 				{
-                     diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
-                    
+                    diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
+					int iCurrentFrame = packetHeaderObject.getFrameNumber();
+
+					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
+
 					while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
 					{
 						toolsObject.SOSleep(1);
 						currentTime = m_Tools.CurrentTimestamp();
 					}
 				}
-                
+				
 				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
 
 				toolsObject.SOSleep(1);

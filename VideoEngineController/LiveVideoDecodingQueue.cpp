@@ -50,6 +50,8 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int n
 
     if (m_nQueueSize == m_nQueueCapacity)
     {
+		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "checked time");
+
         IncreamentIndex(m_iPopIndex);
     }
     else
