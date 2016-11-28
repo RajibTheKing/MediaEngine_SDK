@@ -82,6 +82,8 @@ public:
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 
+	int DecodeAudioDataVector(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
+
     void EncodingThreadProcedure();
     void StopEncodingThread();
     void StartEncodingThread();

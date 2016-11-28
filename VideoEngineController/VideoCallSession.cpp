@@ -393,6 +393,18 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 	return m_nFirstFrameEncodingTimeDiff;
 }
 
+bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+{
+	if (m_bLiveVideoStreamRunning)
+	{
+		m_pLiveReceiverVideo->PushVideoData(offset in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+
+		return true;
+	}
+
+	return true;
+}
+
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 	if(m_bLiveVideoStreamRunning)
