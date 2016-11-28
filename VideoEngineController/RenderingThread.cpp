@@ -192,8 +192,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
             {
-//                if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
-//                {
+                if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+                {
 //                    pRenderingFps->CalculateFPS("RenderingFPS--> ");
 //                    long long nowCurrentTimeStampDiff = m_Tools.CurrentTimestamp() - llPrevTimeStamp;
 //                    //LOGE(" fahadRajib  time diff for rendering-->----------------------  %d", minTimeGap );
@@ -202,11 +202,14 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 //                    else
 //                        toolsObject.SOSleep(0);
 //
-//					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+
+					toolsObject.SOSleep(1);
+
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);					
 //
 //                    llPrevTimeStamp = m_Tools.CurrentTimestamp();
-//                }
-//                else
+                }
+	            else
                 {
                     toolsObject.SOSleep(1);
                     
