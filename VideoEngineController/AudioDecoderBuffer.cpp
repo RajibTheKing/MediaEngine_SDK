@@ -40,7 +40,7 @@ int CAudioDecoderBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLen
 {
 	Locker lock(*m_pAudioDecodingBufferMutex);
 
-	LOGE("fahad --> CAudioDocderBuffer:Queue nLength = %d", nLength);
+	//LOGE("fahad --> CAudioDocderBuffer:Queue nLength = %d", nLength);
 
 	memcpy(m_s2aAudioDecodingBuffer[m_iPushIndex], saReceivedAudioFrameData, nLength);
 

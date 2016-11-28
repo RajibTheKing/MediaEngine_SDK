@@ -15,15 +15,6 @@
 
 #include "LogPrinter.h"
 
-#ifdef __ANDROID__
-
-#include <android/log.h>
-
-#define LOG_TAG "LibraryLog"
-#define LOGE(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
-#endif
-
 Tools::Tools()
 {
 	m_filePointerToWriteByteData = NULL;
