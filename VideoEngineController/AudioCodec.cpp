@@ -40,7 +40,7 @@ int CAudioCodec::CreateAudioEncoder()
 
 	int error = 0;
 	int sampling_rate = AUDIO_SAMPLE_RATE;
-	int dummyDataSize = AUDIO_CLIENT_SAMPLE_SIZE;
+	int dummyDataSize = AUDIO_CLIENT_SAMPLES_IN_FRAME;
 	dummyData = new opus_int16[dummyDataSize];
 	unsigned char * dummyDataOut = new unsigned char[dummyDataSize * 2];
 	for (int i = 0; i < dummyDataSize; i++)

@@ -2,8 +2,8 @@
 #include "AudioCallSession.h"
 
 #ifdef USE_WEBRTC_AGC
-#define AGC_SAMPLE_SIZE 80
-#define AGC_ANALYSIS_SAMPLE_SIZE 80
+#define AGC_SAMPLES_IN_FRAME 80
+#define AGC_ANALYSIS_SAMPLES_IN_FRAME 80
 #define AGCMODE_UNCHANGED 0
 #define AGCMODE_ADAPTIVE_ANALOG 1
 #define AGNMODE_ADAPTIVE_DIGITAL 2
@@ -24,7 +24,7 @@ CGain::CGain()
 	m_bGainEnabled = false;
 
 #ifdef USE_WEBRTC_AGC
-	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLE_SIZE];
+	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLES_IN_FRAME];
 	int agcret = -1;
 	if ((agcret = WebRtcAgc_Create(&AGC_instance)))
 	{
@@ -118,19 +118,19 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 	int32_t inMicLevel = 1;
 	int32_t outMicLevel;
 	bool bSucceeded = true;
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AGC_ANALYSIS_SAMPLE_SIZE)
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
 	{
-		if (0 != WebRtcAgc_AddMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLE_SIZE))
+		if (0 != WebRtcAgc_AddMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME))
 		{
 			ALOG("WebRtcAgc_AddMic failed");
 			bSucceeded = false;
 		}
-		if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLE_SIZE, inMicLevel, &outMicLevel))
+		if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
 		{
 			ALOG("WebRtcAgc_AddMic failed");
 			bSucceeded = false;
 		}
-		if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLE_SIZE,
+		if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME,
 			m_sTempBuf + i, 0,
 			inMicLevel, &outMicLevel, 0, &saturationWarning))
 		{
@@ -152,7 +152,7 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 
 	int k = 1;
 	double iRatio = 0;
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i++)
 	{
 		if (sInBuf[i])
 		{
@@ -163,11 +163,11 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 	}
 	ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
 #endif
-	memcpy(sInBuf, m_sTempBuf, AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
+	memcpy(sInBuf, m_sTempBuf, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
 	return bSucceeded;;
 #elif defined(USE_NAIVE_AGC)
 
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i++)
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i++)
 	{
 		int temp = (int)sInBuf[i] * m_iVolume;
 		if (temp > SHRT_MAX)
@@ -191,9 +191,9 @@ int CGain::AddFarEnd(short *sBuffer, int nBufferSize)
 		return false;
 	}
 #ifdef USE_WEBRTC_AGC
-	for (int i = 0; i < nBufferSize; i += AGC_SAMPLE_SIZE)
+	for (int i = 0; i < nBufferSize; i += AGC_SAMPLES_IN_FRAME)
 	{
-		if (0 != WebRtcAgc_AddFarend(AGC_instance, sBuffer + i, AGC_SAMPLE_SIZE))
+		if (0 != WebRtcAgc_AddFarend(AGC_instance, sBuffer + i, AGC_SAMPLES_IN_FRAME))
 		{
 			ALOG("WebRtcAgc_AddFarend failed");
 		}

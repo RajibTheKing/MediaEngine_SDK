@@ -1,7 +1,7 @@
 #include "Noise.h"
 #include "AudioCallSession.h"
 
-#define ANS_SAMPLE_SIZE 80
+#define ANS_SAMPLES_IN_FRAME 80
 #define Mild 0
 #define Medium 1
 #define Aggressive 2
@@ -46,7 +46,7 @@ CNoise::~CNoise()
 int CNoise::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf)
 {
 	long long llNow = m_Tools.CurrentTimestamp();
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += ANS_SAMPLE_SIZE)
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += ANS_SAMPLES_IN_FRAME)
 	{
 		if (0 != WebRtcNs_Process(NS_instance, sInBuf + i, NULL, sOutBuf + i, NULL))
 		{

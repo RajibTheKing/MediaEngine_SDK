@@ -1,7 +1,7 @@
 #include "Echo.h"
 #include "AudioCallSession.h"
 
-#define AECM_SAMPLE_SIZE 80
+#define AECM_SAMPLES_IN_FRAME 80
 
 CEcho::CEcho()
 {
@@ -43,8 +43,8 @@ CEcho::CEcho()
 	}
 	m_sZeroBuf = new short[100];
 	memset(m_sZeroBuf, 0, 100 * sizeof(short));
-	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLE_SIZE];
-	memset(m_sZeroBuf, 0, AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
+	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLES_IN_FRAME];
+	memset(m_sZeroBuf, 0, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
 	m_llLastFarendTime = 0;
 }
 
@@ -63,11 +63,11 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 	long long llNow = m_Tools.CurrentTimestamp();
 #endif
 	memcpy(m_sTempBuf, sInBuf, sBufferSize * sizeof(short));
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLE_SIZE; i += AECM_SAMPLE_SIZE)
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
 		bool bFailed = false, bZeroed = false;
-		int delay = m_Tools.CurrentTimestamp() - m_llLastFarendTime;
-		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLE_SIZE, delay))
+		int delay = /*m_Tools.CurrentTimestamp() - m_llLastFarendTime*/10;
+		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, delay))
 		{
 			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)delay));
 			bFailed = true;
@@ -76,14 +76,14 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		{
 			ALOG("WebRtcAec_Process Delay = " + m_Tools.IntegertoStringConvert((int)delay));
 		}
-		if (memcmp(m_sZeroBuf, sInBuf + i, AECM_SAMPLE_SIZE * sizeof(short)) == 0)
+		if (memcmp(m_sZeroBuf, sInBuf + i, AECM_SAMPLES_IN_FRAME * sizeof(short)) == 0)
 		{
 			ALOG("WebRtcAec_Process zeroed the buffer :-( :-(" + m_Tools.IntegertoStringConvert((int)this));
 			bZeroed = true;
 		}
 		if (bFailed || bZeroed)
 		{
-			memcpy(sInBuf + i, m_sTempBuf + i, AECM_SAMPLE_SIZE * sizeof(short));
+			memcpy(sInBuf + i, m_sTempBuf + i, AECM_SAMPLES_IN_FRAME * sizeof(short));
 		}
 	}
 	return true;
@@ -105,9 +105,9 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 
 int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
 {
-	for (int i = 0; i < sBufferSize; i += AECM_SAMPLE_SIZE)
+	for (int i = 0; i < sBufferSize; i += AECM_SAMPLES_IN_FRAME)
 	{
-		if (0 != WebRtcAecm_BufferFarend(AECM_instance, sBuffer + i, AECM_SAMPLE_SIZE))
+		if (0 != WebRtcAecm_BufferFarend(AECM_instance, sBuffer + i, AECM_SAMPLES_IN_FRAME))
 		{			
 			ALOG("WebRtcAec_BufferFarend failed");
 		}
