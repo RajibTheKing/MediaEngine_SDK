@@ -304,13 +304,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_pRecorderGain->AddGain(m_saAudioEncodingFrame, nEncodingFrameSize);
 #endif
 
-#if defined(USE_AECM) || defined(USE_ANS)
-			if (m_bEchoCancellerEnabled)
-			{
-				memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
-			}
-#endif
-
 
 #ifdef USE_ANS
 			m_pNoise->Denoise(m_saAudioEncodingTempFrame, nEncodingFrameSize, m_saAudioEncodingDenoisedFrame);
@@ -330,7 +323,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			if (m_bEchoCancellerEnabled /*&& !m_bNoDataFromFarendYet*/)
 			{
 				m_pEcho2->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE);
-				m_pEcho->CancelEcho(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLE_SIZE, m_saAudioEncodingFrame);				
+				m_pEcho->CancelEcho(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLE_SIZE);
 			}
 #endif
 
@@ -611,17 +604,19 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
 
-#ifdef USE_AGC
-			m_pRecorderGain->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
-			m_pPlayerGain->AddGain(m_saDecodedFrame, nDecodedFrameSize);
-#endif
+
 #ifdef USE_AECM
 			if (m_bEchoCancellerEnabled)
 			{								
-				m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize, m_saDecodedFrame);
+				m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize);
 				m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
 			}			
 			m_bNoDataFromFarendYet = false;
+#endif
+
+#ifdef USE_AGC
+			m_pRecorderGain->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
+			m_pPlayerGain->AddGain(m_saDecodedFrame, nDecodedFrameSize);
 #endif
 
 			
