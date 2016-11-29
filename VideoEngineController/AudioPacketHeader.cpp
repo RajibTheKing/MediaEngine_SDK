@@ -4,7 +4,6 @@
 
 CAudioPacketHeader::CAudioPacketHeader(bool bIsLive)
 {
-	LOGEF("### CHANGED");
 	nNumberOfHeaderElements = sizeof(HeaderBitmap)/sizeof(int);
 
 	if (bIsLive == false)

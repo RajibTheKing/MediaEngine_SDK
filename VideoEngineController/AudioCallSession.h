@@ -104,6 +104,7 @@ private:
     Tools m_Tools;
     LongLong m_FriendID;
 	long long m_llEncodingTimeStampOffset;
+	long long m_llDecodingTimeStampOffset;
     CAudioPacketHeader *SendingHeader;
     CAudioPacketHeader *ReceivingHeader;
     int m_AudioHeadersize;

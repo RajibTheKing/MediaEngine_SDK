@@ -97,6 +97,8 @@
 #define START_DEVICE_CHECK 1
 #define STOP_DEVICE_CHECK 2
 
+#define __LIVE_FIRST_FRAME_SLEEP_TIME__ 300
+
 #define DEVICE_ABILITY_CHECK_MOOD true
 #define LIVE_CALL_MOOD false
 
