@@ -57,6 +57,9 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 	int tillIndex = offset;
     int frameCounter = 0;
 
+	if (packetSizeOfNetwork < 0)
+		return;
+
 	for (int j = 0; iUsedLen < iLen;j++)
     {
         nFrames++;
@@ -153,6 +156,9 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
     int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
     int nCurrentFrameLenWithMediaHeader;
     nFrameLeftRange = nOffset;
+
+	if (nCallSDKPacketLength < 0)
+		return;
 
 
     while(iFrameNumber < nNumberOfAudioFrames)
