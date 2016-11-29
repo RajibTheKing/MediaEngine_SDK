@@ -4,6 +4,7 @@
 #include "LogPrinter.h"
 #include "Globals.h"
 #include "VideoCallSession.h"
+#include "HashGenerator.h"
 
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
@@ -75,6 +76,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
 //    string __show = "#VP FrameNumber: "+Tools::IntegertoStringConvert(iFrameNumber)+"  NP: "+Tools::IntegertoStringConvert(nNumberOfPackets)+"  Size: "+Tools::IntegertoStringConvert(unLength);
 //    LOGE("%s",__show.c_str());
+    printf("Inside packetize len = %d\n", m_nPacketSize);
     if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType()  == SERVICE_TYPE_SELF_STREAM)
 	{
 
@@ -109,8 +111,13 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	}
     else
     {
+        nNumberOfPackets = CalculateNumberOfPackets(iFrameNumber, unLength);
+        CHashGenerator hashGenerator;
+        
         for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
         {
+            m_nPacketSize = hashGenerator.GetHashedPacketSize(iFrameNumber, nPacketNumber);
+            
             if (nPacketizedDataLength + m_nPacketSize > unLength)
                 m_nPacketSize = unLength - nPacketizedDataLength;
             
@@ -145,6 +152,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             else
             {
                 m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                printf("QueueSendingBuffer len = %d\n", m_nPacketSize);
                 
                 //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
             }
@@ -152,6 +160,22 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
     }
 
 	return 1;
+}
+
+int CEncodedFramePacketizer::CalculateNumberOfPackets(int nFrameNumber, int iLen)
+{
+    CHashGenerator hashGenerator;
+    
+    int cnt = 0;
+    int sum = 0;
+    
+    while(sum<iLen)
+    {
+        sum+=hashGenerator.GetHashedPacketSize(nFrameNumber, cnt);
+        cnt++;
+    }
+    
+    return cnt;
 }
 
 

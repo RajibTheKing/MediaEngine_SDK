@@ -226,6 +226,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 //							   m_Tools.IntegertoStringConvert(frameNumber)+" == "+m_Tools.IntegertoStringConvert(timeStampDiff));
 
 	m_CVideoPacketBuffer[index].SetNumberOfPackets(numberOfPackets);
+    m_CVideoPacketBuffer[index].SetFrameNumber(frameNumber);
+    
 	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber);
 
 	return 1;

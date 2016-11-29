@@ -1,8 +1,8 @@
 
 #include "VideoPacketBuffer.h"
+#include "HashGenerator.h"
 
 CVideoPacketBuffer::CVideoPacketBuffer():
-
 m_nNumberOfGotPackets(0),
 m_nNumberOfPackets(MAX_NUMBER_OF_PACKETS),
 m_nFrameSize(0),
@@ -37,8 +37,19 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsi
 
 		m_baPacketTracker[nPacketNumber] = true;
 		m_nNumberOfGotPackets++;
-
-		memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + PACKET_HEADER_LENGTH, nPacketDataLength);
+        
+        
+        
+        CHashGenerator hashGenerator;
+        
+        int sum = 0;
+        for(int i=0;i<nPacketNumber;i++)
+        {
+            sum+=hashGenerator.GetHashedPacketSize(m_nFrameNumber, i);
+        }
+        printf("nPacketDataLength = %d\n", nPacketDataLength);
+        
+		memcpy(m_ucaFrameData + sum, pucVideoPacketData + PACKET_HEADER_LENGTH, nPacketDataLength);
 		m_nFrameSize += nPacketDataLength;
 
 		return (m_nNumberOfGotPackets == m_nNumberOfPackets);
@@ -65,6 +76,11 @@ void CVideoPacketBuffer::SetNumberOfPackets(int nNumberOfPackets)
 	m_nNumberOfPackets = nNumberOfPackets;
 }
 
+
+void CVideoPacketBuffer::SetFrameNumber(int nFrameNumber)
+{
+    m_nFrameNumber = nFrameNumber;
+}
 
 
 

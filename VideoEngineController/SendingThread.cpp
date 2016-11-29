@@ -15,7 +15,7 @@
 
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
-//#define SEND_VIDEO_TO_SELF 1
+#define SEND_VIDEO_TO_SELF 1
 //#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
@@ -158,6 +158,9 @@ void CSendingThread::SendingThreadProcedure()
 		}
 		else
 		{
+           
+            
+            
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() GOT packet for Sending method");
 
 			if (packetSizeOfNetwork < 0)
@@ -165,9 +168,10 @@ void CSendingThread::SendingThreadProcedure()
             
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
+            
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
             
-            printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
+            //printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
             
             if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
             {

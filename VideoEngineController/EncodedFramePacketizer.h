@@ -23,6 +23,7 @@ public:
 	~CEncodedFramePacketizer();
 
 	int Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy);
+    int CalculateNumberOfPackets(int nFrameNumber, int iLen);
 
 private:
 
