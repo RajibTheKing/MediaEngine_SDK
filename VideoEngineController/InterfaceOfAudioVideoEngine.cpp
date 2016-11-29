@@ -123,9 +123,6 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 { 
     int iReturnedValue = 0;
 	int packetSizeOfNetwork = m_pcController->m_pCommonElementsBucket->GetPacketSizeOfNetwork();
-
-	if (packetSizeOfNetwork < 0)
-		return 0;
     
 	if (NULL == m_pcController)
     {
@@ -160,6 +157,9 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
         {           
             //int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
             //int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
+
+			if (packetSizeOfNetwork < 0)
+				return 0;
             
             int headerPosition;
             
