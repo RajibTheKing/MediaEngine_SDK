@@ -1,7 +1,6 @@
 #include "Echo.h"
 #include "AudioCallSession.h"
 
-#define AECM_SAMPLES_IN_FRAME 80
 
 CEcho::CEcho()
 {
@@ -41,9 +40,7 @@ CEcho::CEcho()
 	{
 		ALOG("WebRtcAecm_set_config successful");
 	}
-	m_sZeroBuf = new short[100];
-	memset(m_sZeroBuf, 0, 100 * sizeof(short));
-	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLES_IN_FRAME];
+	memset(m_sZeroBuf, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
 	memset(m_sZeroBuf, 0, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
 	m_llLastFarendTime = 0;
 }
@@ -51,8 +48,6 @@ CEcho::CEcho()
 
 CEcho::~CEcho()
 {
-	delete[] m_sZeroBuf;
-	delete[] m_sTempBuf;
 	WebRtcAecm_Free(AECM_instance);
 }
 
