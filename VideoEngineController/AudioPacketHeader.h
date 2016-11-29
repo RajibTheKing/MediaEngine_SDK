@@ -10,6 +10,7 @@
 #define NUMPACKETRECVD 6
 #define CHANNELS 7
 #define VERSIONCODE 8
+#define TIMESTAMP 9
 
 /////////PacketTypes//////
 #define AUDIO_SKIP_PACKET_TYPE 0
@@ -21,7 +22,7 @@
 #define MAXHEADERSIZE 100
 
 
-#define __AUDIO_HEADER_LENGTH__ 7
+//#define __AUDIO_HEADER_LENGTH__ 7
 
 
 static int HeaderBitmap[] =
@@ -34,7 +35,8 @@ static int HeaderBitmap[] =
 	3 /*RECVDSLOTNUMBER*/,
 	8 /*NUMPACKETRECVD*/,
 	2 /*CHANNELS*/,
-	5 /*VERSIONCODE*/
+	5 /*VERSIONCODE*/,
+	32  /*TIMESTAMP*/
 };
 
 static int SupportedPacketTypes[] =
@@ -57,9 +59,9 @@ class CAudioPacketHeader {
 	int nNumberOfHeaderElements;
 
 public:
-	CAudioPacketHeader();
-	CAudioPacketHeader(unsigned int * Information);
-	CAudioPacketHeader(unsigned char *Header);
+	CAudioPacketHeader(bool bIsLive = false) ;
+	CAudioPacketHeader(unsigned int * Information, bool bIsLive = false);
+	CAudioPacketHeader(unsigned char *Header, bool bIsLive = false);
 	~CAudioPacketHeader();
 
 	int CopyInformationToHeader(unsigned int * Information);

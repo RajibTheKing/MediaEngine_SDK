@@ -160,7 +160,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 				if(-1 == llFirstFrameTimeStamp)
 				{
-                    toolsObject.SOSleep(300);
+					toolsObject.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
                     currentTime = m_Tools.CurrentTimestamp();
 					llFirstFrameTimeStamp = currentTime;
 					llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();

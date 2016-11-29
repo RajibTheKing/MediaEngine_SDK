@@ -9,7 +9,7 @@
 #include "LockHandler.h"
 #include "Tools.h"
 
-#define LIVE_AUDIO_DECODING_QUEUE_SIZE 5
+#define LIVE_AUDIO_DECODING_QUEUE_SIZE 40
 #define MAX_AUDIO_ENCODED_FRAME_LEN 4096
 
 
