@@ -103,7 +103,7 @@ private:
 
     Tools m_Tools;
     LongLong m_FriendID;
-
+	long long m_llEncodingTimeStampOffset;
     CAudioPacketHeader *SendingHeader;
     CAudioPacketHeader *ReceivingHeader;
     int m_AudioHeadersize;
