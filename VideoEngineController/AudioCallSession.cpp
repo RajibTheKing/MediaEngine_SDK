@@ -306,6 +306,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 
 #ifdef USE_ANS
+			memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 			m_pNoise->Denoise(m_saAudioEncodingTempFrame, nEncodingFrameSize, m_saAudioEncodingDenoisedFrame);
 #ifdef USE_AECM
 			if (m_bNoDataFromFarendYet)
