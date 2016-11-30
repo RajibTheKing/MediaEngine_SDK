@@ -8,8 +8,8 @@
 #include "LockHandler.h"
 
 
-#define MAX_PACKET_SIZE 508
-#define MIN_PACKET_SIZE 208
+#define MAX_PACKET_SIZE 450
+#define MIN_PACKET_SIZE 200
 #define DEFAULT_SEED 23232323
 
 class CHashGenerator
