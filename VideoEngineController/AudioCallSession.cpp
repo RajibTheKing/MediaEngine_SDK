@@ -58,7 +58,7 @@ FILE *FileOutput;
 
 int gSetMode = -5;
 
-#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 35
+#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 16
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
 
@@ -842,6 +842,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	long long llTimeStamp = 0;
 	int nTolarance = m_nMaxAudioPacketNumber / 2;
 	long long llNow = 0;
+	long long llExpectedEncodingTimeStamp = 0, llWaitingTime = 0;
 
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
@@ -852,17 +853,17 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 	while (m_bAudioDecodingThreadRunning)
 	{
-		if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM) && m_pLiveAudioDecodingQueue->GetQueueSize() == 0 )
+		if ( m_bLiveAudioStreamRunning && m_pLiveAudioDecodingQueue->GetQueueSize() == 0 )
         {
             toolsObject.SOSleep(10);
         }
-        else if ((m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL) && m_AudioDecodingBuffer.GetQueueSize() == 0)
+        else if ( false == m_bLiveAudioStreamRunning && m_AudioDecodingBuffer.GetQueueSize() == 0)
         {
             toolsObject.SOSleep(10);
         }
 		else
 		{
-            if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+            if(m_bLiveAudioStreamRunning)
                 nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
             else
                 nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
@@ -943,15 +944,17 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 				else
 				{
-					long long llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
-
+					llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
+					llWaitingTime = iTimeStampOffset - llExpectedEncodingTimeStamp;
 					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < iTimeStampOffset)
 					{
-						m_Tools.SOSleep(20);
+						m_Tools.SOSleep(10);
 						llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
 					}
 				}
 			}
+
+			__LOG("@@@@@@@@@@@@@@@@@--> FrameNumber: %d\t\tAudio Waiting Time: %lld", iPacketNumber, llWaitingTime);
 
 			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
 			{
