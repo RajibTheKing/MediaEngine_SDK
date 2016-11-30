@@ -57,6 +57,10 @@ private:
 	int m_UVPlaneMidPoint;
 	int m_UVPlaneEnd;
 
+	int m_PrevAddValue;
+	int m_AverageValue;
+	int m_ThresholdValue;
+
 	unsigned char m_pVPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];

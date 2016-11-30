@@ -19,6 +19,10 @@ m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
 
+	m_PrevAddValue = 0;
+	m_AverageValue = 0;
+	m_ThresholdValue = 0;
+
 	for (int i = 0; i < 481; i++)
 		for (int j = 0; j < 641; j++)
 		{
@@ -204,6 +208,9 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *pData)
 }
 */
 
+
+#define getMin(a,b) a<b?a:b
+
 void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData)
 {
 	Locker lock(*m_pColorConverterMutex);
@@ -211,19 +218,70 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 	int iWidth = m_iVideoHeight;
 	int iHeight = m_iVideoWidth;
 
-	int i = 0;
+	//LOGEG("fahad -->> avgValue= %d, addValue= %d, thresholdVal= %d", m_AverageValue, m_PrevAddValue, m_ThresholdValue);
 
+	int i = 0;
+	int totalYValue = 0;
+	unsigned char yVal = 0;
 	for (int x = iWidth - 1; x >-1; --x)
 	{
 		for (int y = 0; y <iHeight; ++y)
 		{
-			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
+			yVal =  m_pFrame[m_Multiplication[y][iWidth] + x];
+			pData[i] = getMin(yVal + m_PrevAddValue, 255);
+			totalYValue += yVal;
 			i++;
 		}
 	}
 
-	int halfWidth = iWidth / 2;
-	int halfHeight = iHeight / 2;
+	m_AverageValue = totalYValue / (iHeight * iWidth);
+
+	if(m_AverageValue < 10)
+	{
+		m_ThresholdValue = 44;
+	}else if(m_AverageValue < 20)
+	{
+		m_ThresholdValue = 50;
+	}else if(m_AverageValue < 30)
+	{
+		m_ThresholdValue = 60;
+	}else if(m_AverageValue < 40)
+	{
+		m_ThresholdValue = 70;
+	}else if(m_AverageValue < 50)
+	{
+		m_ThresholdValue = 75;
+	}else if(m_AverageValue < 60)
+	{
+		m_ThresholdValue = 80;
+	}else if(m_AverageValue < 70)
+	{
+		m_ThresholdValue = 90;
+	}else if(m_AverageValue < 80)
+	{
+		m_ThresholdValue = 95;
+	}else if(m_AverageValue < 90)
+	{
+		m_ThresholdValue = 100;
+	}else if(m_AverageValue < 100)
+	{
+		m_ThresholdValue = 110;
+	}else if(m_AverageValue < 110){
+		m_ThresholdValue = 115;
+	}else if(m_AverageValue < 120){
+		m_ThresholdValue = 125;
+	}else{
+		m_ThresholdValue = 100;
+	}
+
+	m_PrevAddValue = (m_ThresholdValue - m_AverageValue);
+	m_PrevAddValue = m_PrevAddValue >> 1;
+	if (m_PrevAddValue < 0)
+		m_PrevAddValue = 0;
+
+
+	int halfWidth = iWidth >> 1;
+	int halfHeight = iHeight >> 1;
 	int dimention = m_Multiplication[iHeight][iWidth];
 	int vIndex = dimention + m_Multiplication[halfHeight][halfWidth];
 
