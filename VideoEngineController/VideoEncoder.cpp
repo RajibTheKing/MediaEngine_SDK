@@ -70,8 +70,11 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
         bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
         
         if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
-            encoderParemeters.iRCMode = RC_OFF_MODE;
-        else
+		{   encoderParemeters.iRCMode = RC_BITRATE_MODE;
+			encoderParemeters.iMinQp = 0;
+			encoderParemeters.iMaxQp = 52;
+		}
+		else
         {
             encoderParemeters.iRCMode = RC_BITRATE_MODE;
             encoderParemeters.iMinQp = 0;
@@ -178,7 +181,10 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
         bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
         
         if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
-            encoderParemeters.iRCMode = RC_OFF_MODE;
+		{   encoderParemeters.iRCMode = RC_BITRATE_MODE;
+			encoderParemeters.iMinQp = 0;
+			encoderParemeters.iMaxQp = 52;
+		}
         else
         {
             encoderParemeters.iRCMode = RC_BITRATE_MODE;
