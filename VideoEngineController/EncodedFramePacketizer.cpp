@@ -6,6 +6,8 @@
 #include "VideoCallSession.h"
 #include "HashGenerator.h"
 
+#define USE_HASH_GENERATOR_TO_PACKETIZE
+
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
 m_nPacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
@@ -111,12 +113,17 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	}
     else
     {
-        nNumberOfPackets = CalculateNumberOfPackets(iFrameNumber, unLength);
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
         CHashGenerator hashGenerator;
+        nNumberOfPackets = hashGenerator.CalculateNumberOfPackets(iFrameNumber, unLength);
+#endif
+        
         
         for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
         {
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
             m_nPacketSize = hashGenerator.GetHashedPacketSize(iFrameNumber, nPacketNumber);
+#endif
             
             if (nPacketizedDataLength + m_nPacketSize > unLength)
                 m_nPacketSize = unLength - nPacketizedDataLength;
@@ -151,8 +158,9 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             }
             else
             {
+                m_cPacketHeader.ShowDetails("SendingSide: ");
                 m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
-                printf("QueueSendingBuffer len = %d\n", m_nPacketSize);
+                
                 
                 //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
             }
@@ -160,22 +168,6 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
     }
 
 	return 1;
-}
-
-int CEncodedFramePacketizer::CalculateNumberOfPackets(int nFrameNumber, int iLen)
-{
-    CHashGenerator hashGenerator;
-    
-    int cnt = 0;
-    int sum = 0;
-    
-    while(sum<iLen)
-    {
-        sum+=hashGenerator.GetHashedPacketSize(nFrameNumber, cnt);
-        cnt++;
-    }
-    
-    return cnt;
 }
 
 

@@ -50,11 +50,37 @@ int CHashGenerator::GetHashedPacketSize(unsigned int nframeNumber, unsigned int 
     
     int newSize = hashedValue%MAX_PACKET_SIZE;
     
+    
+    /*
     while(newSize<MIN_PACKET_SIZE)
     {
         newSize+=MIN_PACKET_SIZE;
         newSize%=MAX_PACKET_SIZE;
     }
+    */
     
+    if(newSize<MIN_PACKET_SIZE)
+    {
+        newSize+=MIN_PACKET_SIZE;
+    }
     return newSize;
 }
+
+
+int CHashGenerator::CalculateNumberOfPackets(int nFrameNumber, int iLen)
+{
+    
+    int cnt = 0;
+    int sum = 0;
+    
+    while(sum<iLen)
+    {
+        sum+=GetHashedPacketSize(nFrameNumber, cnt);
+        cnt++;
+    }
+    
+    return cnt;
+}
+
+
+
