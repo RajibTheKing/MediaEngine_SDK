@@ -175,7 +175,11 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
             int nValidHeaderOffset = headerPosition * packetSizeOfNetwork;
             
             int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
-            
+
+			int timeStamp = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding " + m_Tools.IntegertoStringConvert(timeStamp));
+          
             int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
             int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
             

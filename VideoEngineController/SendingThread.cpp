@@ -28,7 +28,8 @@ CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSen
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 m_bIsCheckCall(bIsCheckCall),
-m_iAudioDataToSendIndex(0)
+m_iAudioDataToSendIndex(0),
+m_nTimeStampOfChunck(-1)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
@@ -215,6 +216,8 @@ void CSendingThread::SendingThreadProcedure()
 
 				m_Tools.SetMediaUnitVersionInMediaChunck(0, m_AudioVideoDataToSend);
 
+				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
+
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
 
@@ -318,12 +321,17 @@ void CSendingThread::SendingThreadProcedure()
 				CPacketHeader packetHeader;
 				int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
+				m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
 				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %d\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
 
 				videoPacketSizes[numberOfVideoPackets++] = packetSize;
 			}
 			else
 			{
+				if (firstFrame == true)
+					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() 200 ms not ready");
                 
 				if(m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
