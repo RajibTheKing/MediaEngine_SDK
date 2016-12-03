@@ -34,6 +34,7 @@ FILE *FileOutput;
 #define AECM_SAMPLE_SIZE 80
 #endif
 
+#define __TIMESTUMP_MOD__ 100000
 #ifdef USE_WEBRTC_AGC
 #define AGC_SAMPLE_SIZE 80
 #define AGC_ANALYSIS_SAMPLE_SIZE 80
@@ -58,7 +59,7 @@ FILE *FileOutput;
 
 int gSetMode = -5;
 
-#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 16
+#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 50
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
 
@@ -512,7 +513,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 			timeStamp = m_Tools.CurrentTimestamp();
 			countFrame++;
-			nCurrentTimeStamp = m_Tools.CurrentTimestamp() - m_llEncodingTimeStampOffset;
+			nCurrentTimeStamp = timeStamp - m_llEncodingTimeStampOffset;
 /*
  * ONLY FOR CALL
  * */
@@ -838,11 +839,13 @@ void CAudioCallSession::DecodingThreadProcedure()
 	long long timeStamp, nDecodingTime = 0;
 	double dbTotalTime = 0;
 
-	int iDataSentInCurrentSec = 0;
+	int iDataSentInCurrentSec = 0, iPlaiedFrameCounter = 0;
 	long long llTimeStamp = 0;
 	int nTolarance = m_nMaxAudioPacketNumber / 2;
 	long long llNow = 0;
 	long long llExpectedEncodingTimeStamp = 0, llWaitingTime = 0;
+	long long llLastDecodedTime = -1;
+	long long llLastDecodedFrameEncodedTimeStamp = -1;
 
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
@@ -888,6 +891,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ALOG("#2A#RCV---> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
 				 + "  Last: " + m_Tools.IntegertoStringConvert(m_iLastDecodedPacketNumber)
 				 + " m_iAudioVersionFriend = " + m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
+
+			__LOG("@@@@@@@@@@@@@@ PN: %d, Len: %d",iPacketNumber, ReceivingHeader->GetInformation(PACKETLENGTH));
 
 #ifdef  __DUPLICATE_AUDIO__
 			//iPacketNumber rotates
@@ -944,8 +949,16 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 				else
 				{
-					llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
+					llNow = m_Tools.CurrentTimestamp();
+					llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 					llWaitingTime = iTimeStampOffset - llExpectedEncodingTimeStamp;
+
+					if( llExpectedEncodingTimeStamp - 20 > iTimeStampOffset ) {
+						__LOG("@@@@@@@@@@@@@@@@@--> *********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime,
+							  llNow % __TIMESTUMP_MOD__);
+						continue;
+					}
+
 					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < iTimeStampOffset)
 					{
 						m_Tools.SOSleep(10);
@@ -954,7 +967,15 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 			}
 
-			__LOG("@@@@@@@@@@@@@@@@@--> FrameNumber: %d\t\tAudio Waiting Time: %lld", iPacketNumber, llWaitingTime);
+			++ iPlaiedFrameCounter;
+
+			llNow = m_Tools.CurrentTimestamp();
+
+			__LOG("@@@@@@@@@@@@@@@@@--> FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime,
+				  llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow- llLastDecodedTime);
+
+			llLastDecodedTime = llNow;
+			llLastDecodedFrameEncodedTimeStamp = iTimeStampOffset;
 
 			if (ReceivingHeader->GetInformation(SLOTNUMBER) != m_iCurrentRecvdSlotID)
 			{
