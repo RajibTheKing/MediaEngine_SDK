@@ -16,7 +16,7 @@
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
-//#define __LIVE_STREAMIN_SELF__
+#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
 
@@ -29,7 +29,8 @@ m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 m_bIsCheckCall(bIsCheckCall),
 m_iAudioDataToSendIndex(0),
-m_nTimeStampOfChunck(-1)
+m_nTimeStampOfChunck(-1),
+m_nTimeStampOfChunckSend(0)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
@@ -211,12 +212,14 @@ void CSendingThread::SendingThreadProcedure()
 					m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
 				}
 
+				m_nTimeStampOfChunckSend += llNowTimeDiff;
+
 			//	m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
 			//	m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
 
 				m_Tools.SetMediaUnitVersionInMediaChunck(0, m_AudioVideoDataToSend);
 
-				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunckSend, m_AudioVideoDataToSend);
 
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);

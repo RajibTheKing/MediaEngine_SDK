@@ -30,6 +30,7 @@ private:
 	int GetSleepTime();
 
 	int m_nTimeStampOfChunck;
+	int m_nTimeStampOfChunckSend;
 
 	CVideoCallSession* m_pVideoCallSession;
 #ifdef  BANDWIDTH_CONTROLLING_TEST
