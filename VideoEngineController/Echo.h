@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_WEBRTC_AECM
-//#define USE_SPEEX_AECM
+#define USE_SPEEX_AECM
 
 
 #ifdef USE_WEBRTC_AECM
