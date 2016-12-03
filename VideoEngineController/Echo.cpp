@@ -51,7 +51,8 @@ CEcho::CEcho(int id)
 	iCounter2 = 0;
 	farending = 0;
 	processing = 0;
-#elif defined(USE_SPEEX_AECM)
+#endif
+#if defined(USE_SPEEX_AECM)
 	int sampleRate = AUDIO_SAMPLE_RATE;
 	st = speex_echo_state_init(AECM_SAMPLES_IN_FRAME, 4000);
 	den = speex_preprocess_state_init(AECM_SAMPLES_IN_FRAME, sampleRate);
@@ -66,7 +67,8 @@ CEcho::~CEcho()
 #ifdef USE_WEBRTC_AECM
 	ALOG("WebRtcAec_destructor called");
 	WebRtcAecm_Free(AECM_instance);
-#elif defined(USE_SPEEX_AECM)
+#endif
+#if defined(USE_SPEEX_AECM)
 	speex_echo_state_destroy(st);
 #endif
 }
@@ -149,7 +151,8 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 	}
 
 #endif
-#elif defined(USE_SPEEX_AECM)
+#endif
+#if defined(USE_SPEEX_AECM)
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
 		speex_echo_capture(st, sInBuf + i, sInBuf + i);
@@ -195,7 +198,8 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
 	}
 	farending = 0;
 	return true;
-#elif defined(USE_SPEEX_AECM)
+#endif
+#if defined(USE_SPEEX_AECM)
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
 		speex_echo_playback(st, sBuffer + i);

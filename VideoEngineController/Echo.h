@@ -8,7 +8,8 @@
 
 #ifdef USE_WEBRTC_AECM
 #include "echo_control_mobile.h"
-#elif defined(USE_SPEEX_AECM)
+#endif
+#if defined(USE_SPEEX_AECM)
 #include "speex/speex_echo.h"
 #include "speex/speex_preprocess.h"
 #endif
@@ -22,7 +23,8 @@ class CEcho
 {
 #ifdef USE_WEBRTC_AECM
 	void* AECM_instance;
-#elif defined(USE_SPEEX_AECM)
+#endif
+#if defined(USE_SPEEX_AECM)
 	SpeexEchoState *st;
 	SpeexPreprocessState *den;
 #endif
