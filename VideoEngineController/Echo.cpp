@@ -104,7 +104,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		{
 			delay = 0;
 		}
-		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, delay))
+		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, 75))
 		{
 			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)delay)
 				+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
@@ -137,8 +137,8 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		}
 	}
 	processing = 0;
-	return true;
-#if 1
+	//return true;
+#if 0
 	if (memcmp(sInBuf, m_sTempBuf, sBufferSize * sizeof(short)) == 0)
 	{
 		ALOG("WebRtcAec_Process did nothing or failed or zeroed but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
@@ -157,10 +157,9 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 	{
 		speex_echo_capture(st, sInBuf + i, sInBuf + i);
 		speex_preprocess_run(den, sInBuf + i);
-	}
-	return true;
+	}	
 #endif
-	
+	return true;
 }
 
 int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
@@ -196,14 +195,13 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
 				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
 		}
 	}
-	farending = 0;
-	return true;
+	farending = 0;	
 #endif
 #if defined(USE_SPEEX_AECM)
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
 		speex_echo_playback(st, sBuffer + i);
-	}
-	return true;
+	}	
 #endif
+	return true;
 }
