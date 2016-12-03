@@ -112,9 +112,19 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
     if(!bCheckDeviceCapability)
     {
-        
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+		CVideoCallSession* pVideoSession;
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+
+		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+		{
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+		}
+		else
+		{
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+		}
     }
     else
     {
@@ -220,9 +230,19 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
     if(!bCheckDeviceCapability)
     {
-        
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+		CVideoCallSession* pVideoSession;
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+
+		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+		{
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+		}
+		else
+		{
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+		}     
     }
     else
     {
