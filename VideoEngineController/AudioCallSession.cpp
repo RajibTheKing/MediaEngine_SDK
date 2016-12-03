@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 
@@ -55,8 +55,8 @@ m_bIsCheckCall(bIsCheckCall)
 
 #ifdef USE_AECM
 	m_bNoDataFromFarendYet = true;
-	m_pEcho = new CEcho();
-	m_pEcho2 = new CEcho();
+	m_pEcho = new CEcho(66);
+	m_pEcho2 = new CEcho(77);
 #endif
 
 #ifdef USE_ANS
