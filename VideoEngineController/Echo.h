@@ -1,16 +1,29 @@
 #pragma once
 
+//#define USE_WEBRTC_AECM
+#ifndef USE_WEBRTC_AECM
+#define USE_SPEEX_AECM
+#endif
+
+
+#ifdef USE_WEBRTC_AECM
 #include "echo_control_mobile.h"
+#elif defined(USE_SPEEX_AECM)
+#include "speex/speex_echo.h"
+#endif
 #include "Tools.h"
 #include "Size.h"
-#include "SmartPointer.h"
-#include "LockHandler.h"
+
 
 #define AECM_SAMPLES_IN_FRAME 80
 
 class CEcho
 {
+#ifdef USE_WEBRTC_AECM
 	void* AECM_instance;
+#elif defined(USE_SPEEX_AECM)
+	SpeexEchoState *st;
+#endif
 	bool bAecmCreated;
 	bool bAecmInited;
 	Tools m_Tools;

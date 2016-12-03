@@ -3,6 +3,7 @@
 
 CEcho::CEcho(int id)
 {
+#ifdef USE_WEBRTC_AECM
 	bAecmCreated = false;
 	bAecmInited = false;
 	//m_pEchoMutex.reset(new CLockHandler);
@@ -50,24 +51,32 @@ CEcho::CEcho(int id)
 	iCounter2 = 0;
 	farending = 0;
 	processing = 0;
+#elif defined(USE_SPEEX_AECM)
+	st = speex_echo_state_init(AUDIO_CLIENT_SAMPLES_IN_FRAME, 1024);
+#endif
 }
 
 
 CEcho::~CEcho()
 {
+#ifdef USE_WEBRTC_AECM
 	ALOG("WebRtcAec_destructor called");
 	WebRtcAecm_Free(AECM_instance);
+#elif defined(USE_SPEEX_AECM)
+	speex_echo_state_destroy(st);
+#endif
 }
 
 
 int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 {
+
 	if (sBufferSize != AUDIO_CLIENT_SAMPLES_IN_FRAME)
-	{
-	
+	{	
 		ALOG("aec nearend Invalid size");
 		return false;
 	}
+#ifdef USE_WEBRTC_AECM
 	iCounter ++ ;
 	/*if (iCounter ++ > 5)
 		return 0;*/
@@ -136,11 +145,16 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 	}
 
 #endif
+#elif defined(USE_SPEEX_AECM)
+	speex_echo_capture(st, sInBuf, sInBuf);
+	return true;
+#endif
 	
 }
 
 int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
 {
+#ifdef USE_WEBRTC_AECM
 	if (sBufferSize != AUDIO_CLIENT_SAMPLES_IN_FRAME)
 	{
 		ALOG("aec farend Invalid size");
@@ -173,4 +187,8 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
 	}
 	farending = 0;
 	return true;
+#elif defined(USE_SPEEX_AECM)
+	speex_echo_playback(st, sBuffer);
+	return true;
+#endif
 }

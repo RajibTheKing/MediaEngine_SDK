@@ -66,7 +66,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\..\include\opus\include;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(SolutionDir)\..\include\aecm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\include\;$(SolutionDir)\..\include\opus\include;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(SolutionDir)\..\include\aecm;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
     <OutDir>..\..\..\IPV-RingIDSDK\RingIDSDK_Windows\Libs_Windows</OutDir>
