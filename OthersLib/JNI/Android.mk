@@ -52,6 +52,12 @@ LOCAL_MODULE := AECM
 LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_aecm.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Prebuilt SPEEXAECM
+include $(CLEAR_VARS)
+LOCAL_MODULE := SPEEXAECM
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libSpeexAECM.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 # Prebuilt NS
 include $(CLEAR_VARS)
 LOCAL_MODULE := NS
@@ -208,6 +214,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AGC AECM NS IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)
