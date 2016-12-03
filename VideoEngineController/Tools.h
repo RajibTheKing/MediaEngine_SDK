@@ -49,6 +49,9 @@ public:
 	void SetMediaUnitVersionInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetMediaUnitVersionFromMediaChunck(unsigned char convertedArray[]);
 
+	void SetMediaUnitTimestampInMediaChunck(int number, unsigned char data[]);
+	int GetMediaUnitTimestampInMediaChunck(unsigned char data[]);
+
 	void SetAudioBlockSizeInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetAudioBlockSizeFromMediaChunck(unsigned char convertedArray[]);
 

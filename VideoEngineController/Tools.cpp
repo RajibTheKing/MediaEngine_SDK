@@ -282,6 +282,20 @@ void Tools::SetMediaUnitVersionInMediaChunck(int number, unsigned char data[])
 	data[LIVE_MEDIA_UNIT_VERSION_BLOCK_POSITION] = number & 0xFF;
 }
 
+void Tools::SetMediaUnitTimestampInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE, number);
+}
+
+int Tools::GetMediaUnitTimestampInMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE);
+
+	return number;
+}
+
 int Tools::GetMediaUnitVersionFromMediaChunck(unsigned char data[])
 {
 	int number;
