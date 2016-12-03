@@ -28,7 +28,7 @@
 
 //#ifdef __ANDROID__
 #define USE_AECM
-//#define USE_ANS
+// #define USE_ANS
 #define USE_AGC
 //#define USE_VAD
 //#endif

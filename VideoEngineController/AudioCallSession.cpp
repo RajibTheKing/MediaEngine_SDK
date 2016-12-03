@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-#define __AUDIO_SELF_CALL__
+//#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 
@@ -20,6 +20,8 @@ FILE *FileOutput;
 #endif
 
 //extern int g_StopVideoSending;
+
+//#define USE_ECHO2
 
 
 
@@ -56,7 +58,9 @@ m_bIsCheckCall(bIsCheckCall)
 #ifdef USE_AECM
 	m_bNoDataFromFarendYet = true;
 	m_pEcho = new CEcho(66);
+#ifdef USE_ECHO2
 	m_pEcho2 = new CEcho(77);
+#endif
 #endif
 
 #ifdef USE_ANS
@@ -92,7 +96,9 @@ CAudioCallSession::~CAudioCallSession()
 #endif
 #ifdef USE_AECM
 	delete m_pEcho;
+#ifdef USE_ECHO2
 	delete m_pEcho2;
+#endif
 #endif
 #ifdef USE_ANS
 	delete m_pNoise;
@@ -323,7 +329,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef USE_AECM
 			if (m_bEchoCancellerEnabled /*&& !m_bNoDataFromFarendYet*/)
 			{
+#ifdef USE_ECHO2
 				m_pEcho2->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+#endif
 				m_pEcho->CancelEcho(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
 			}
 #endif
@@ -608,8 +616,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #ifdef USE_AECM
 			if (m_bEchoCancellerEnabled)
-			{								
+			{
+#ifdef USE_ECHO2
 				m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize);
+#endif
 				m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
 			}			
 			m_bNoDataFromFarendYet = false;

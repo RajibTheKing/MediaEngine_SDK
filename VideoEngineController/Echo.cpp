@@ -52,7 +52,11 @@ CEcho::CEcho(int id)
 	farending = 0;
 	processing = 0;
 #elif defined(USE_SPEEX_AECM)
-	st = speex_echo_state_init(AUDIO_CLIENT_SAMPLES_IN_FRAME, 1024);
+	int sampleRate = AUDIO_SAMPLE_RATE;
+	st = speex_echo_state_init(AECM_SAMPLES_IN_FRAME, 4000);
+	den = speex_preprocess_state_init(AECM_SAMPLES_IN_FRAME, sampleRate);
+	speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
 #endif
 }
 
@@ -146,7 +150,11 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 
 #endif
 #elif defined(USE_SPEEX_AECM)
-	speex_echo_capture(st, sInBuf, sInBuf);
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
+	{
+		speex_echo_capture(st, sInBuf + i, sInBuf + i);
+		speex_preprocess_run(den, sInBuf + i);
+	}
 	return true;
 #endif
 	
@@ -188,7 +196,10 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
 	farending = 0;
 	return true;
 #elif defined(USE_SPEEX_AECM)
-	speex_echo_playback(st, sBuffer);
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
+	{
+		speex_echo_playback(st, sBuffer + i);
+	}
 	return true;
 #endif
 }

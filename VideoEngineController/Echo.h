@@ -10,6 +10,7 @@
 #include "echo_control_mobile.h"
 #elif defined(USE_SPEEX_AECM)
 #include "speex/speex_echo.h"
+#include "speex/speex_preprocess.h"
 #endif
 #include "Tools.h"
 #include "Size.h"
@@ -23,6 +24,7 @@ class CEcho
 	void* AECM_instance;
 #elif defined(USE_SPEEX_AECM)
 	SpeexEchoState *st;
+	SpeexPreprocessState *den;
 #endif
 	bool bAecmCreated;
 	bool bAecmInited;
