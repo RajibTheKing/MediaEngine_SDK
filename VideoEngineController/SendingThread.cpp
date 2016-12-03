@@ -16,7 +16,7 @@
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
-#define __LIVE_STREAMIN_SELF__
+//#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
 
@@ -219,7 +219,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				m_Tools.SetMediaUnitVersionInMediaChunck(0, m_AudioVideoDataToSend);
 
-				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunckSend, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
 
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
@@ -267,7 +267,7 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
 
-				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)0);
                 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
