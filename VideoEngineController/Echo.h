@@ -42,6 +42,6 @@ public:
 	CEcho(int id);
 	~CEcho();
 	int CancelEcho(short *sInBuf, int sBufferSize);
-	int AddFarEnd(short *sInBuf, int sBufferSize);
+	int AddFarEnd(short *sInBuf, int sBufferSize, bool bLoudSpeakerEnabled = false);
 };
 

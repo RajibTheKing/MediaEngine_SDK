@@ -54,10 +54,13 @@ CEcho::CEcho(int id)
 #endif
 #if defined(USE_SPEEX_AECM)
 	int sampleRate = AUDIO_SAMPLE_RATE;
-	st = speex_echo_state_init(AECM_SAMPLES_IN_FRAME, 4000);
+	st = speex_echo_state_init(AECM_SAMPLES_IN_FRAME, 1024);
+	int db = -60;
 	den = speex_preprocess_state_init(AECM_SAMPLES_IN_FRAME, sampleRate);
 	speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS, &db);
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS_ACTIVE, &db);
 #endif
 }
 
@@ -82,13 +85,24 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		ALOG("aec nearend Invalid size");
 		return false;
 	}
+
+
+#if defined(USE_SPEEX_AECM)
+	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
+	{
+		speex_echo_capture(st, sInBuf + i, sInBuf + i);
+		speex_preprocess_run(den, sInBuf + i);
+	}	
+#endif
+
+
 #ifdef USE_WEBRTC_AECM
-	iCounter ++ ;
+	iCounter++;
 	/*if (iCounter ++ > 5)
-		return 0;*/
+	return 0;*/
 	/*while (farending)
 	{
-		m_Tools.SOSleep(5);
+	m_Tools.SOSleep(5);
 	}*/
 	processing = 1;
 #if 1
@@ -104,7 +118,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		{
 			delay = 0;
 		}
-		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, 75))
+		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, 70))
 		{
 			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)delay)
 				+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
@@ -115,8 +129,8 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		else
 		{
 			/*ALOG("WebRtcAec_Process successful Delay = " + m_Tools.IntegertoStringConvert((int)delay) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
-				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
+			+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
+			+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
 		}
 		if (memcmp(m_sZeroBuf, sInBuf + i, AECM_SAMPLES_IN_FRAME * sizeof(short)) == 0)
 		{
@@ -129,12 +143,12 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 			{
 				ALOG("WebRtcAec_Process did zero the buffer it was not already 0");
 				bZeroed = true;
-			}			
+			}
 		}
-		if (bFailed || bZeroed)
+		/*if (bFailed || bZeroed)
 		{
 			memcpy(sInBuf + i, m_sTempBuf + i, AECM_SAMPLES_IN_FRAME * sizeof(short));
-		}
+		}*/
 	}
 	processing = 0;
 	//return true;
@@ -152,17 +166,10 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 
 #endif
 #endif
-#if defined(USE_SPEEX_AECM)
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
-	{
-		speex_echo_capture(st, sInBuf + i, sInBuf + i);
-		speex_preprocess_run(den, sInBuf + i);
-	}	
-#endif
 	return true;
 }
 
-int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
+int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool bLoudSpeakerEnabled)
 {
 #ifdef USE_WEBRTC_AECM
 	if (sBufferSize != AUDIO_CLIENT_SAMPLES_IN_FRAME)
@@ -198,6 +205,13 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize)
 	farending = 0;	
 #endif
 #if defined(USE_SPEEX_AECM)
+	/*if (bLoudSpeakerEnabled)
+	{
+		for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i++)
+		{
+			sBuffer[i] *= 1000;
+		}
+	}*/
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
 		speex_echo_playback(st, sBuffer + i);

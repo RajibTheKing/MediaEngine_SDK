@@ -135,7 +135,7 @@ private:
 	int m_iOpponentReceivedPackets;
 	
 
-    bool m_bIsCheckCall;
+	bool m_bIsCheckCall, m_bLoudSpeakerEnabled;
 
     short m_saAudioEncodingFrame[MAX_AUDIO_FRAME_LENGHT];
     unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];

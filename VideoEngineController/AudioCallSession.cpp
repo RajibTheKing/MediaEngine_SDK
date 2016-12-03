@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 
@@ -53,7 +53,7 @@ m_bIsCheckCall(bIsCheckCall)
 	m_bUsingLoudSpeaker = false;
 	m_bEchoCancellerEnabled = false;
 
-
+	m_bLoudSpeakerEnabled = false;
 
 #ifdef USE_AECM
 	m_bNoDataFromFarendYet = true;
@@ -192,6 +192,16 @@ void CAudioCallSession::SetLoudSpeaker(bool bOn)
 	}*/
 	//This method may be used in future.
 #endif
+	m_bUsingLoudSpeaker = bOn;
+	/*
+#ifdef USE_AECM
+	delete m_pEcho;
+	m_pEcho = new CEcho(66);
+#ifdef USE_ECHO2
+	delete m_pEcho2;
+	m_pEcho2 = new CEcho(77);
+#endif
+#endif*/
 }
 
 int CAudioCallSession::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
@@ -620,7 +630,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef USE_ECHO2
 				m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize);
 #endif
-				m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
+				m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize, m_bLoudSpeakerEnabled);
 			}			
 			m_bNoDataFromFarendYet = false;
 #endif
