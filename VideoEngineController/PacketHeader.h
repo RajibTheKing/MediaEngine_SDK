@@ -28,6 +28,8 @@ public:
 
     void setPacketNumber(unsigned int iPacketNumber);
 
+	int getTimeStampDirectly(unsigned char *data);
+
     void setTimeStamp(unsigned int iTimeStamp) ;
 
     void setFPS(unsigned int iFPS) ;

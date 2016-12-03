@@ -210,6 +210,11 @@ void CPacketHeader::setPacketNumber(unsigned char *PacketNumber)
     m_iPacketNumber = GetIntFromChar(PacketNumber, 0, 1);
 }
 
+int CPacketHeader::getTimeStampDirectly(unsigned char *data)
+{
+	return GetIntFromChar(data + TIMESTAMP_INDEX, 0, 4);
+}
+
 unsigned int CPacketHeader::getTimeStamp()
 {
     return m_iTimeStamp;
