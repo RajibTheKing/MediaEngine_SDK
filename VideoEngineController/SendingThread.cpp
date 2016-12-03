@@ -267,7 +267,11 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 #ifndef __LIVE_STREAMIN_SELF__
 
-				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)0);
+				int timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+				int diff = timeNow - m_nTimeStampOfChunck;
+
+				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
                 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
@@ -321,7 +325,6 @@ void CSendingThread::SendingThreadProcedure()
 				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
 				m_iDataToSendIndex += (packetSize);
 
-				CPacketHeader packetHeader;
 				int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
 				m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
@@ -333,7 +336,23 @@ void CSendingThread::SendingThreadProcedure()
 			else
 			{
 				if (firstFrame == true)
+				{
 					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+					long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
+					long long llNowTimeDiff;
+
+					if (m_llPrevTimeWhileSendingToLive == 0)
+					{
+						llNowTimeDiff = 0;
+						m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+					}
+					else
+					{
+						llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
+						m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+					}
+				}
 
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() 200 ms not ready");
                 
