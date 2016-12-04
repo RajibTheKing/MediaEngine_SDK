@@ -107,7 +107,7 @@ m_nServiceType(nServiceType)
 	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject, m_SendingBuffer, this);
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
-	m_BitRateController = new BitRateController(m_nCallFPS);
+	m_BitRateController = new BitRateController(m_nCallFPS, m_lfriendID);
 
 	m_BitRateController->SetSharedObject(sharedObject);
 
@@ -308,7 +308,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 247");
 
-	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
+	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket, m_lfriendID);
 
 if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
 
@@ -331,7 +331,7 @@ else
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 262");
 
-	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this, m_bIsCheckCall);
+	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this, m_bIsCheckCall, m_lfriendID);
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_pCommonElementsBucket, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoder, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
@@ -971,7 +971,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 	m_pVideoPacketQueue->ResetBuffer();
 	m_pMiniPacketQueue->ResetBuffer();
 
-	m_BitRateController = new BitRateController(m_nCallFPS);
+	m_BitRateController = new BitRateController(m_nCallFPS, m_lfriendID);
     m_BitRateController->SetEncoder(m_pVideoEncoder);
     m_BitRateController->SetSharedObject(m_pCommonElementsBucket);
     

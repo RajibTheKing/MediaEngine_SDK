@@ -12,11 +12,12 @@
 
 #define BYTES_TO_STORE_AUDIO_EFRAME_LEN 2
 
-CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession) :
+CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID) :
 m_pCommonElementsBucket(sharedObject),
 m_bAudioQualityLowNotified(false),
 m_bAudioQualityHighNotified(false),
-m_bAudioShouldStopNotified(false)
+m_bAudioShouldStopNotified(false),
+m_FriendID(llfriendID)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
 	m_pAudioCallSession = AudioCallSession;
@@ -209,7 +210,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioQualityLowNotified)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_GOOD);
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
 			
 				m_bAudioQualityLowNotified = true;
 				m_bAudioQualityHighNotified = false;
@@ -224,7 +225,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_BAD);
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_BAD);
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
 				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
 
@@ -241,7 +242,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioQualityHighNotified)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
 
 				m_bAudioQualityHighNotified = true;
 				m_bAudioQualityLowNotified = false;

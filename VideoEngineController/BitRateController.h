@@ -19,7 +19,7 @@ class BitRateController
 
 public:
 
-	BitRateController(int nFPS);
+	BitRateController(int nFPS, LongLong llfriendID);
     ~BitRateController();
 
     void SetSharedObject(CCommonElementsBucket* pcSharedObject);
@@ -48,6 +48,8 @@ private:
 	int NeedToNotifyClient(int nCurrentByte);
 
     Tools m_Tools;
+
+	LongLong m_FriendID;
 
 	int m_nOppNotifiedByterate;
 	int m_nOpponentNetworkType;

@@ -24,13 +24,14 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall) :
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 m_bIsCheckCall(bIsCheckCall),
 m_iAudioDataToSendIndex(0),
 m_nTimeStampOfChunck(-1),
-m_nTimeStampOfChunckSend(0)
+m_nTimeStampOfChunckSend(0),
+m_lfriendID(llfriendID)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
@@ -298,15 +299,15 @@ void CSendingThread::SendingThreadProcedure()
 
 				CVideoCallSession* pVideoSession;
 
-				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
 
 				//LOGEF("fahad -->> m_pCommonElementsBucket 3 --> lFriendID = 200, bExist = %d", bExist);
 
-//				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+//				pVideoSession->m_pController->PushAudioForDecoding(m_lfriendID, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
                 int nTotalSizeToSend = packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
                 const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfNetwork - 1 ) / packetSizeOfNetwork;
-                int missingFrames[nMaxMissingFrames];
+                int missingFrames[1003];
 
                 int nMissingFrames = 0;
 #ifdef	__RANDOM_MISSING_PACKET__

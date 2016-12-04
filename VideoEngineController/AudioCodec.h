@@ -32,7 +32,7 @@ class CAudioCodec
 
 public:
 
-	CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession);
+	CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID);
 	~CAudioCodec();
 
 	int CreateAudioEncoder();
@@ -64,6 +64,8 @@ private:
 	OpusDecoder	*decoder;
 	opus_int32	length;
 	int 		err;
+
+	LongLong m_FriendID;
 
 	opus_int16 in[AUDIO_FRAME_SIZE * AUDIO_CHANNELS];
 	opus_int16 out[AUDIO_MAX_FRAME_SIZE * AUDIO_CHANNELS];
