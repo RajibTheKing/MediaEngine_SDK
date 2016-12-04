@@ -70,7 +70,8 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
         bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
         
         if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
-		{   encoderParemeters.iRCMode = RC_BITRATE_MODE;
+		{
+			encoderParemeters.iRCMode = RC_BITRATE_MODE;
 			encoderParemeters.iMinQp = 0;
 			encoderParemeters.iMaxQp = 52;
 		}
@@ -117,20 +118,20 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 		{
-			LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
+			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
 		}
 		else
 		{
-			LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_Call -- %d", BITRATE_BEGIN);
+			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_Call -- %d", BITRATE_BEGIN);
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
 		}
     }
     else
     {
-		LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
+		//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
         encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
         encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
     }
@@ -194,7 +195,8 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
         bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
         
         if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
-		{   encoderParemeters.iRCMode = RC_BITRATE_MODE;
+		{
+			encoderParemeters.iRCMode = RC_BITRATE_MODE;
 			encoderParemeters.iMinQp = 0;
 			encoderParemeters.iMaxQp = 52;
 		}
@@ -238,13 +240,13 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 		{
-			LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
+			//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
 		}
 		else
 		{
-			LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_Call -- %d, bExist= %d, pVideoSession->GetServiceType() = %d", BITRATE_BEGIN, bExist, pVideoSession->GetServiceType());
+			//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_Call -- %d, bExist= %d, pVideoSession->GetServiceType() = %d", BITRATE_BEGIN, bExist, pVideoSession->GetServiceType());
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
 		}     

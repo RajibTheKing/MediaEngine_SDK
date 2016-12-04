@@ -16,7 +16,7 @@
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
-//#define __LIVE_STREAMIN_SELF__
+#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
 
@@ -197,7 +197,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
-				LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
+				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
 				if (bExist)
 					pAudioSession->getAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector);
@@ -272,11 +272,14 @@ void CSendingThread::SendingThreadProcedure()
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() chunck ready");
 
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
-#ifndef __LIVE_STREAMIN_SELF__
 
 				int timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
 
 				int diff = timeNow - m_nTimeStampOfChunck;
+
+#ifndef __LIVE_STREAMIN_SELF__
+
+				
 
 				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
                 
@@ -297,7 +300,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
 
-				LOGEF("fahad -->> m_pCommonElementsBucket 3 --> lFriendID = 200, bExist = %d", bExist);
+				//LOGEF("fahad -->> m_pCommonElementsBucket 3 --> lFriendID = 200, bExist = %d", bExist);
 
 //				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
@@ -314,7 +317,7 @@ void CSendingThread::SendingThreadProcedure()
                 }
 #endif
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushing for selfcall");
-                LOGEF("TheKing--> Processing LIVESTREAM\n");
+                //LOGEF("TheKing--> Processing LIVESTREAM\n");
 				if(bExist)
 				{
 					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
@@ -326,7 +329,7 @@ void CSendingThread::SendingThreadProcedure()
                 
                 
 
-				LOGEF("fahad-->> rajib -->>>>>> (m_iDataToSendIndex,m_iAudioDataToSendIndex) -- (%d,%d)  --frameNumber == %d, bExist = %d\n", m_iDataToSendIndex,m_iAudioDataToSendIndex, frameNumber, bExist);
+				LOGEF("fahad (m_iDataToSendIndex,m_iAudioDataToSendIndex, total) -- ( %d, %d, %d )  --frameNumber == %d, bExist = %d %d %d\n", m_iDataToSendIndex, m_iAudioDataToSendIndex, m_iDataToSendIndex + m_iAudioDataToSendIndex, frameNumber, bExist, (int)llNowTimeDiff, diff);
 
 				int tempIndex = m_iDataToSendIndex;
 				numberOfVideoPackets = 0;
