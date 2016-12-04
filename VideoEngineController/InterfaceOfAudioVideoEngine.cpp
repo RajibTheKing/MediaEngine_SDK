@@ -171,6 +171,19 @@ int CInterfaceOfAudioVideoEngine::SendAudioData(const IPVLongType llFriendID, sh
 	return iReturnedValue;
 }
 
+int CInterfaceOfAudioVideoEngine::CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	int iReturnedValue = m_pcController->CancelAudioData(llFriendID, in_data, unLength);
+
+	return iReturnedValue;
+}
+
+
 int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
 {
 	if (NULL == m_pcController)

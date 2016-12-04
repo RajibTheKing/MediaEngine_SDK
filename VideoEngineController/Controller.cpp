@@ -475,6 +475,28 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	}
 }
 
+int CController::CancelAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
+{
+	CAudioCallSession* pAudioSession;
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::CancelAudioData");
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData audio session exists");
+
+	if (bExist)
+	{
+		int ret = pAudioSession->CancelAudioData(in_data, in_size);
+		return ret;		
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+
 int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
 {
 	/*if (g_StopVideoSending)

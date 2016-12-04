@@ -161,6 +161,21 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	return returnedValue;
 }
 
+int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
+{
+#ifdef USE_AECM
+	if (m_bEchoCancellerEnabled)
+	{
+#ifdef USE_ECHO2
+		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength);
+#endif
+		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, m_bLoudSpeakerEnabled);
+	}
+	m_bNoDataFromFarendYet = false;
+#endif
+	return true;
+}
+
 void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 {
 #ifdef USE_AGC
@@ -623,17 +638,6 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
 
-
-#ifdef USE_AECM
-			if (m_bEchoCancellerEnabled)
-			{
-#ifdef USE_ECHO2
-				m_pEcho2->CancelEcho(m_saDecodedFrame, nDecodedFrameSize);
-#endif
-				m_pEcho->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize, m_bLoudSpeakerEnabled);
-			}			
-			m_bNoDataFromFarendYet = false;
-#endif
 
 #ifdef USE_AGC
 			m_pRecorderGain->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);

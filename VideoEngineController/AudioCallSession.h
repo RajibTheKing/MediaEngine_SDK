@@ -70,6 +70,7 @@ public:
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
+	int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
     int DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength);
 
     void EncodingThreadProcedure();

@@ -27,6 +27,7 @@ public:
      int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int PushAudioForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
+	 int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
      int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
      int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
      int SetBitRate(const IPVLongType llFriendID, int nBitRate);
