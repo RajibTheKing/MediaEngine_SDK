@@ -394,7 +394,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 m_FpsCounter = 0;
             }
             
-			if (nENCODEDFrameSize > 0)
+			//if (nENCODEDFrameSize > 0)
 			{
 				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
 
