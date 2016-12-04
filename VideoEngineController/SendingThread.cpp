@@ -173,16 +173,21 @@ void CSendingThread::SendingThreadProcedure()
             
             if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
             {
-            
-			int nalType = 0;
+
 
 			CVideoCallSession* pVideoSession;
 
 			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 			
 			int iIntervalIFrame = pVideoSession->m_nCallFPS / 5;
                 
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() session got");
+
+			unsigned char *p = m_EncodedFrame + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
+
+			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
+			if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);
 
 			if (frameNumber%iIntervalIFrame == 0 && firstFrame == false)
 			{
@@ -191,6 +196,8 @@ void CSendingThread::SendingThreadProcedure()
 				CAudioCallSession *pAudioSession;
 
 				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+
+				LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
 				if (bExist)
 					pAudioSession->getAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector);
@@ -289,6 +296,8 @@ void CSendingThread::SendingThreadProcedure()
 				CVideoCallSession* pVideoSession;
 
 				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+
+				LOGEF("fahad -->> m_pCommonElementsBucket 3 --> lFriendID = 200, bExist = %d", bExist);
 
 //				pVideoSession->m_pController->PushAudioForDecoding(200, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
