@@ -36,18 +36,7 @@
 static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
 
-#ifdef USE_AECM
-#include "Echo.h"
-#endif
-#ifdef USE_ANS
-#include "Noise.h"
-#endif
-#ifdef USE_AGC
-#include "Gain.h"
-#endif
-#ifdef USE_VAD
-#include "Voice.h"
-#endif
+
 
 #define __AUDIO_CALL_VERSION__  1
 
@@ -56,6 +45,19 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioPacketHeader;
 class CAudioCodec;
+
+#ifdef USE_AECM
+class CEcho;
+#endif
+#ifdef USE_ANS
+class CNoise;
+#endif
+#ifdef USE_AGC
+class CGain;
+#endif
+#ifdef USE_VAD
+class CVoice;
+#endif
 
 
 class CAudioCallSession

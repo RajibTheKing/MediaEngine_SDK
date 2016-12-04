@@ -3,8 +3,21 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
+
+#ifdef USE_AECM
+#include "Echo.h"
+#endif
+#ifdef USE_ANS
+#include "Noise.h"
+#endif
+#ifdef USE_AGC
+#include "Gain.h"
+#endif
+#ifdef USE_VAD
+#include "Voice.h"
+#endif
 
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
