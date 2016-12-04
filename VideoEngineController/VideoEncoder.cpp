@@ -272,6 +272,14 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 int CVideoEncoder::SetBitrate(int nBitRate)
 {
+	CVideoCallSession* pVideoSession;
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+
+	if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+	{
+		return 0;
+	}
+
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
     
 	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN) 
@@ -288,6 +296,7 @@ int CVideoEncoder::SetBitrate(int nBitRate)
 	targetEncoderBitrateInfo.iLayer = SPATIAL_LAYER_0;
 	targetEncoderBitrateInfo.iBitrate = nTargetBitRate;
 
+	LOGEF("fahad -->> VideoEncoder::SetBitrate -- nTargetBitRate = %d", nTargetBitRate);
 	int nReturnedValueFromEncoder;
 
 	if(m_pSVCVideoEncoder)
@@ -320,6 +329,14 @@ void CVideoEncoder::SetNetworkType(int nNetworkType)
 
 int CVideoEncoder::SetMaxBitrate(int nBitRate)
 {
+	CVideoCallSession* pVideoSession;
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+
+	if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+	{
+		return 0;
+	}
+
 	nBitRate = nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR;
 
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
@@ -335,6 +352,7 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
 	maxEncoderBitRateInfo.iBitrate = nTargetBitRate;
 
+	LOGEF("fahad -->> VideoEncoder::SetMaxBitrate -- nTargetBitRate = %d", nTargetBitRate);
 	int nReturnedValueFromEncoder;
 
 	if(m_pSVCVideoEncoder)
