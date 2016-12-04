@@ -10,8 +10,10 @@
 
 #define LOG_TAG "LibraryLog"
 #define LOGF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define LOGEF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGEF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define __LOG(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
 #else
 
 #define LOGF(...) 
@@ -34,7 +36,7 @@
 
 //#define  __SPECIFIC_LOG6__
 
-#define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+//#define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 #define ON 1
 #define OFF 0
