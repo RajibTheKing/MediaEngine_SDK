@@ -865,35 +865,33 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
 	{
-        
-
 		m_nVideoCallHeight = m_pController->m_Quality[1].iHeight;
 		m_nVideoCallWidth = m_pController->m_Quality[1].iWidth;
         
-		m_nCallFPS = 25;
-		m_SlotResetRightRange = 25;
+		m_nCallFPS = HIGH_QUALITY_FPS;
+		m_SlotResetRightRange = HIGH_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_25)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
-		m_nCallFPS = 25;
-		m_SlotResetRightRange = 25;
+		m_nCallFPS = HIGH_QUALITY_FPS;
+		m_SlotResetRightRange = HIGH_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_15)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
         
-		m_nCallFPS = 15;
-		m_SlotResetRightRange = 15;
+		m_nCallFPS = LOW_QUALITY_FPS;
+		m_SlotResetRightRange = LOW_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
-		m_nCallFPS = 15;
-		m_SlotResetRightRange = 15;
+		m_nCallFPS = LOW_QUALITY_FPS;
+		m_SlotResetRightRange = LOW_QUALITY_FPS;
 	}
 
 	m_BitRateController->SetCallFPS(m_nCallFPS);
