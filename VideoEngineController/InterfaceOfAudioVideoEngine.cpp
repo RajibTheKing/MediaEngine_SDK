@@ -119,6 +119,123 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFrie
 	return -1;
 }
 
+int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames)
+{
+	int iReturnedValue = 0;
+	int packetSizeOfNetwork = m_pcController->m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+
+	if (packetSizeOfNetwork < 0)
+		return 0;
+
+	if (NULL == m_pcController)
+	{
+		return 0;
+	}
+	else if (nullptr == in_data)
+	{
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
+
+		return 0;
+	}
+	else if (NULL == in_data)
+	{
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "CInterfaceOfAudioVideoEngine::PushAudioForDecoding null data from connectivity");
+
+		return 0;
+	}
+	else
+	{
+		//		if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+		//        {
+		//            iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data, unLength);
+		//        }
+		//		else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
+		//        {
+		//            iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, in_data, unLength);
+		//        }
+		//		else
+		//			return 0;
+
+		if (mediaType == MEDIA_TYPE_LIVE_STREAM)
+		{
+			//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
+			//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
+
+			/*int headerPosition;
+
+			for (headerPosition = 0; numberOfMissingFrames > headerPosition && missingFrames[headerPosition] == headerPosition; headerPosition ++ )
+			{
+			if (headerPosition == NUMBER_OF_HEADER_FOR_STREAMING)
+			return 5;
+			}
+
+			if(headerPosition >= NUMBER_OF_HEADER_FOR_STREAMING)
+			return 6;*/
+
+			int nValidHeaderOffset = 0;// headerPosition * packetSizeOfNetwork;
+
+			int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
+
+			int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+			int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+
+			//LOGEF("THeKing--> interface:receive ############## lengthOfVideoData =  %d  Pos=%d   Offset= %d,  \n", lengthOfVideoData,headerPosition, nValidHeaderOffset);
+
+			int audioFrameSizes[100];
+			int videoFrameSizes[100];
+
+			int numberOfAudioFrames = m_Tools.GetNumberOfAudioFramesFromMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, in_data + nValidHeaderOffset);
+
+			int index = LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
+
+			for (int i = 0; i < numberOfAudioFrames; i++)
+			{
+				audioFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data + nValidHeaderOffset);
+
+				index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
+			}
+
+			int numberOfVideoFrames = m_Tools.GetNumberOfVideoFramesFromMediaChunck(index, in_data + nValidHeaderOffset);
+
+			index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
+
+			for (int i = 0; i < numberOfVideoFrames; i++)
+			{
+				videoFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data + nValidHeaderOffset);
+
+				index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
+			}
+
+			LOGS("#LV# ------------------------> nMissing: " + Tools::IntegertoStringConvert(numberOfMissingFrames)
+				+ "  AudioStartLen: " + Tools::IntegertoStringConvert(lengthOfVideoData + packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING));
+			for (int i = 0; i < vMissingFrames.size(); i++)
+				LOGS("#LV# StartPosOfMissingPacket : " + Tools::IntegertoStringConvert(packetSizeOfNetwork * missingFrames[i]));
+
+
+			iReturnedValue = m_pcController->PushAudioForDecodingVector(llFriendID, lengthOfVideoData + index, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
+
+			//m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
+
+			iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, index, in_data + index, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames);
+		}
+		else
+		{
+			if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+			{
+				iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 1, unLength - 1); //Skip First byte for Video Data
+			}
+			else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
+			{
+				iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data + 1, unLength - 1); //Skip First byte for Audio Data
+			}
+			else
+				return 0;
+		}
+	}
+
+	return iReturnedValue;
+}
+
 int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames)
 { 
     int iReturnedValue = 0;

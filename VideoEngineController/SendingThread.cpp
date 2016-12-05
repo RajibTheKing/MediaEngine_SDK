@@ -260,10 +260,14 @@ void CSendingThread::SendingThreadProcedure()
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
 
+#ifndef NEW_HEADER_FORMAT
+
 				for (int i = 1; i < NUMBER_OF_HEADER_FOR_STREAMING; i++)
 					memcpy(m_AudioVideoDataToSend + i * packetSizeOfNetwork, m_AudioVideoDataToSend, packetSizeOfNetwork);
 
 				index = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
+
+#endif
 
 				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
@@ -280,10 +284,16 @@ void CSendingThread::SendingThreadProcedure()
 
 #ifndef __LIVE_STREAMIN_SELF__
 
-				
+#ifdef NEW_HEADER_FORMAT
 
-				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
-                
+				m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+    
+#else
+
+				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+
+#endif
+
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
 
@@ -321,7 +331,17 @@ void CSendingThread::SendingThreadProcedure()
                 //LOGEF("TheKing--> Processing LIVESTREAM\n");
 				if(bExist)
 				{
-					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+
+#ifdef NEW_HEADER_FORMAT
+
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int,int> >() );
+				
+#else
+
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+
+#endif
+				
 				}
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
 #endif

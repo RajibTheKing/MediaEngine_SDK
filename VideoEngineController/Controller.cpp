@@ -336,6 +336,40 @@ int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_d
 	}
 }
 
+int CController::PushPacketForDecodingVector(const LongLong& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+{
+	CVideoCallSession* pVideoSession = NULL;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushPacketForDecoding called");
+
+	//	LOGE("CController::PushPacketForDecoding");
+
+	Locker lock(*m_pVideoReceiveMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	//	LOGE("CController::PushPacketForDecoding video session exists");
+
+	if (bExist)
+	{
+		//		LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
+		//		CVideoDecoder *pCVideoDecoder = pVideoSession->GetVideoDecoder();
+		//		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding1");
+		//		CEncodedFrameDepacketizer *p_CEncodedFrameDepacketizer = pCVideoDecoder->GetEncodedFrameDepacketizer();
+		//		CEncodedFrameDepacketizer *p_CEncodedFrameDepacketizer = pVideoSession->GetEncodedFrameDepacketizer();
+		//		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
+		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
+		if (pVideoSession)
+			return pVideoSession->PushPacketForMergingVector(offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames);
+		else
+			return -1;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 int CController::PushPacketForDecoding(const LongLong& lFriendID,unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 	CVideoCallSession* pVideoSession = NULL;
@@ -363,6 +397,45 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID,unsigned char *
 			return pVideoSession->PushPacketForMerging(in_data, in_size, false, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
 		else
 			return -1;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+int CController::PushAudioForDecodingVector(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+{
+	CAudioCallSession* pAudioSession;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called");
+
+	//	LOGE("CController::PushPacketForDecoding");
+
+	Locker lock(*m_pAudioReceiveMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+
+	//	LOGE("CController::PushPacketForDecoding Audio session exists");
+
+	if (bExist)
+	{
+		//LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
+
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
+
+		//if (pCAudioDecoder)
+
+		{
+			CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
+			return pAudioSession->DecodeAudioDataVector(nOffset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+		}
+
+		/*else
+		{
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder doesnt exist");
+		return -1;
+		}*/
 	}
 	else
 	{

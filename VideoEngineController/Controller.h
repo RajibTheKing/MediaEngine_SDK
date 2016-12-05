@@ -42,7 +42,9 @@ public:
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
 	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+	int PushPacketForDecodingVector(const LongLong& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 	int PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+	int PushAudioForDecodingVector(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);

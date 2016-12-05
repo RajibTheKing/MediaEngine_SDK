@@ -35,6 +35,7 @@ public:
      int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
      int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	 int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);
+	 int PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames);
      int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
      int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
      int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
