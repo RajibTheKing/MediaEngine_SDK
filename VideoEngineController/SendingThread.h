@@ -18,7 +18,7 @@ class CSendingThread
 {
 public:
 
-	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall);
+	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID);
 	~CSendingThread();
 
 	void StartSendingThread();
@@ -49,6 +49,7 @@ private:
 
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     
+	LongLong m_lfriendID;
 
 	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];

@@ -15,7 +15,7 @@ class CVideoEncoder
 {
 public:
 
-	CVideoEncoder(CCommonElementsBucket* pSharedObject);
+	CVideoEncoder(CCommonElementsBucket* pSharedObject, LongLong llfriendID);
 	~CVideoEncoder();
 
 	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability);
@@ -37,6 +37,8 @@ private:
     int m_nNetworkType;
 
 	Tools m_Tools; 
+
+	LongLong m_lfriendID;
 
 	ISVCEncoder* m_pSVCVideoEncoder;
 	CCommonElementsBucket* m_pCommonElementsBucket;

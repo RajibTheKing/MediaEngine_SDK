@@ -27,6 +27,9 @@
 #define __MIN_PACKET_TYPE   1
 #define __MAX_PACKET_TYPE   4
 
+#define HIGH_QUALITY_FPS 25
+#define LOW_QUALITY_FPS 15
+
 #define LOW_FRAME_RATE 25
 #define HIGH_FRAME_RATE 40
 
@@ -247,7 +250,7 @@
 //#define ENCODER_KEY_FRAME_RATE  8
 //#define MAX_BLOCK_RETRANSMISSION 4
 
-#define FPS_MAXIMUM     25
+#define FPS_MAXIMUM     HIGH_QUALITY_FPS
 #define FPS_MINIMUM     8
 
 #define FPS_COMPARISON_EPS 0.5

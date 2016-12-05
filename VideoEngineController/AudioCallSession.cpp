@@ -322,7 +322,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID, int nSer
 
 	//m_pAudioDecoder->CreateAudioDecoder();
 #ifdef OPUS_ENABLE
-	this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket, this);
+	this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket, this, llFriendID);
 	m_pAudioCodec->CreateAudioEncoder();
 #else
 	m_pG729CodecNative = new G729CodecNative();
@@ -749,13 +749,13 @@ void CAudioCallSession::EncodingThreadProcedure()
                 }
                 else
                 {
-                    m_pCommonElementsBucket->SendFunctionPointer( 200, 1, m_ucaEncodedFrame,nEncodedFrameSize + m_AudioHeadersize + 1, 0);
+					m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1, 0);
 
 #ifdef  __DUPLICATE_AUDIO__
 					if (false == m_bLiveAudioStreamRunning && 0 < m_iAudioVersionFriend && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
 					{
 						toolsObject.SOSleep(5);
-						m_pCommonElementsBucket->SendFunctionPointer( 200, 1, m_ucaEncodedFrame,nEncodedFrameSize + m_AudioHeadersize + 1, 0);
+						m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1, 0);
 					//                    ALOG("#2AE# Sent Second Times");
 					}
 #endif

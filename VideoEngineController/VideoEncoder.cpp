@@ -6,13 +6,14 @@
 
 #include <string>
 
-CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject):
+CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject, LongLong llfriendID) :
 
 m_pCommonElementsBucket(pSharedObject),
 m_nMaxBitRate(BITRATE_MAX),
 m_nBitRate(BITRATE_MAX - 25000),
 m_nNetworkType(NETWORK_TYPE_NOT_2G),
-m_pSVCVideoEncoder(NULL)
+m_pSVCVideoEncoder(NULL),
+m_lfriendID(llfriendID)
 
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
@@ -67,7 +68,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
     if(!bCheckDeviceCapability)
     {
         CVideoCallSession* pVideoSession;
-        bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
         
         if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 		{
@@ -114,7 +115,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
     if(!bCheckDeviceCapability)
     {
 		CVideoCallSession* pVideoSession;
-		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
 
 		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 		{
@@ -192,7 +193,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
     if(!bCheckDeviceCapability)
     {
         CVideoCallSession* pVideoSession;
-        bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
         
         if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 		{
@@ -236,7 +237,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
     if(!bCheckDeviceCapability)
     {
 		CVideoCallSession* pVideoSession;
-		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
 
 		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 		{
@@ -281,7 +282,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 int CVideoEncoder::SetBitrate(int nBitRate)
 {
 	CVideoCallSession* pVideoSession;
-	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
 
 	if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 	{
@@ -338,7 +339,7 @@ void CVideoEncoder::SetNetworkType(int nNetworkType)
 int CVideoEncoder::SetMaxBitrate(int nBitRate)
 {
 	CVideoCallSession* pVideoSession;
-	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(200, pVideoSession);
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
 
 	if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
 	{

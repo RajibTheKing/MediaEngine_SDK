@@ -294,6 +294,54 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 		}
 }
 
+void CColorConverter::NegativeRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData)
+{
+    Locker lock(*m_pColorConverterMutex);
+    
+    int iWidth = m_iVideoHeight;
+    int iHeight = m_iVideoWidth;
+    
+    int i = iWidth * iHeight - iHeight;
+    
+    for(int y=iWidth-1;y>=0; y--)
+    {
+        int temp = i;
+        for(int x = 0; x<iHeight;x++)
+        {
+            pData[temp++] = m_pFrame[x*iWidth + y];
+        }
+        
+        i-=iHeight;
+    }
+    
+    
+    int halfWidth = iWidth / 2;
+    int halfHeight = iHeight / 2;
+    int dimention = m_Multiplication[iHeight][iWidth];
+    int vIndex = dimention + m_Multiplication[halfHeight][halfWidth];
+    
+    i = dimention+ halfWidth*halfHeight - halfHeight;
+    vIndex = dimention + halfHeight*halfWidth + halfWidth*halfHeight - halfHeight;
+    
+    for(int y=halfWidth-1;y>=0; y--)
+    {
+        int temp = i;
+        int temp2 = vIndex;
+        for(int x = 0; x<halfHeight;x++)
+        {
+            int ind = (x*halfWidth + y) << 1;
+            
+            pData[temp2++] = m_pFrame[dimention + ind + 1];
+            pData[temp++] = m_pFrame[dimention + ind];
+        }
+        i-=halfHeight;
+        vIndex-=halfHeight;
+    }
+    
+    
+}
+
+
 void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData)
 {
 	Locker lock(*m_pColorConverterMutex);
