@@ -60,6 +60,7 @@ FILE *FileOutput;
 int gSetMode = -5;
 
 #define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 5
+#define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 20
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
 
@@ -953,11 +954,11 @@ void CAudioCallSession::DecodingThreadProcedure()
 					llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 					llWaitingTime = iTimeStampOffset - llExpectedEncodingTimeStamp;
 
-					if( llExpectedEncodingTimeStamp - 20 > iTimeStampOffset ) {
-						__LOG("@@@@@@@@@@@@@@@@@--> *********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime,
-							  llNow % __TIMESTUMP_MOD__);
+					if( llExpectedEncodingTimeStamp -  __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> iTimeStampOffset ) {
+						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
 						continue;
 					}
+
 
 					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < iTimeStampOffset)
 					{
