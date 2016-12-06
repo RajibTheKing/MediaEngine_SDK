@@ -11,7 +11,7 @@
 #include "LiveVideoDecodingQueue.h"
 #include "LiveAudioDecodingQueue.h"
 
-
+#include<vector>
 class CCommonElementsBucket;
 
 class LiveReceiver {
