@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-#define __AUDIO_SELF_CALL__
+//#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 #ifdef USE_AECM
@@ -166,6 +166,15 @@ void CAudioCallSession::SetEchoCanceller(bool bOn)
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+#ifdef USE_AECM
+	if (m_bEchoCancellerEnabled /*&& !m_bNoDataFromFarendYet*/)
+	{
+#ifdef USE_ECHO2
+		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength);
+#endif
+		m_pEcho->CancelEcho(psaEncodingAudioData, unLength);
+	}
+#endif
 
 	int returnedValue = m_AudioEncodingBuffer.Queue(psaEncodingAudioData, unLength);
 
@@ -364,15 +373,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 #endif
 
-#ifdef USE_AECM
-			if (m_bEchoCancellerEnabled /*&& !m_bNoDataFromFarendYet*/)
-			{
-#ifdef USE_ECHO2
-				m_pEcho2->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
-#endif
-				m_pEcho->CancelEcho(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
-			}
-#endif
 
 #ifdef OPUS_ENABLE
 			nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
