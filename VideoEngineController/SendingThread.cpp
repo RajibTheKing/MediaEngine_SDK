@@ -286,7 +286,7 @@ void CSendingThread::SendingThreadProcedure()
 
 #ifdef NEW_HEADER_FORMAT
 
-				m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+				m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
     
 #else
 
@@ -315,17 +315,21 @@ void CSendingThread::SendingThreadProcedure()
 
 //				pVideoSession->m_pController->PushAudioForDecoding(m_lfriendID, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
-                int nTotalSizeToSend = packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
-                const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfNetwork - 1 ) / packetSizeOfNetwork;
+                
                 int missingFrames[1003];
-
                 int nMissingFrames = 0;
+
 #ifdef	__RANDOM_MISSING_PACKET__
+
+				int nTotalSizeToSend = packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
+				const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfNetwork - 1 ) / packetSizeOfNetwork;
+
                 for(int i=0; i < nMaxMissingFrames; i ++)
                 {
                     if(rand()%10 < 3)
                         missingFrames[nMissingFrames++] = i;
                 }
+
 #endif
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushing for selfcall");
                 //LOGEF("TheKing--> Processing LIVESTREAM\n");
@@ -334,7 +338,7 @@ void CSendingThread::SendingThreadProcedure()
 
 #ifdef NEW_HEADER_FORMAT
 
-					G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int,int> >() );
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(pVideoSession->GetFriendID(), 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int, int> >());
 				
 #else
 
