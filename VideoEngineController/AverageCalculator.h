@@ -22,7 +22,8 @@ public:
     
     void CalculateFPS(string sTag);
 
-    
+    void StartingOperation(string sOperationName);
+    void EndingOperation();
 private:
     double m_dAvg;
     int m_nCounter;
@@ -31,6 +32,11 @@ private:
     
     long long m_llPrevFPSTime;
     int m_iFpsCounter;
+    
+    
+    long long m_llStartingTimeStamp;
+    long long m_llEndingTimeStamp;
+    string m_sOperationTag;
 };
 
 

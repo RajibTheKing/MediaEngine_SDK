@@ -69,3 +69,15 @@ void CAverageCalculator::CalculateFPS(string sTag)
     }
 }
 
+void CAverageCalculator::StartingOperation(string sOperationName)
+{
+    m_llStartingTimeStamp = m_Tools.CurrentTimestamp();
+    m_sOperationTag = sOperationName;
+}
+
+void CAverageCalculator::EndingOperation()
+{
+    m_llEndingTimeStamp = m_Tools.CurrentTimestamp();
+    printf("Operation Time for %s  = %d\n", m_sOperationTag.c_str(), m_llEndingTimeStamp - m_llStartingTimeStamp);
+}
+
