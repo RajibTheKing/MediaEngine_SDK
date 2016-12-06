@@ -502,17 +502,17 @@ void CAudioCallSession::EncodingThreadProcedure()
 		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
 		else {
-			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame);
-			if (nEncodingFrameSize % AUDIO_FRAME_SIZE > 0) { ALOG(
-						"#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " +
-						Tools::IntegertoStringConvert(nEncodingFrameSize));
+			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
+			if (nEncodingFrameSize % AUDIO_FRAME_SIZE > 0) {
+				ALOG(
+					"#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " +
+					Tools::IntegertoStringConvert(nEncodingFrameSize));
 			}
 #ifdef __DUMP_FILE__
 			fwrite(m_saAudioEncodingFrame, 2, nEncodingFrameSize, FileInput);
 #endif
 			int nEncodedFrameSize;
 
-			timeStamp = m_Tools.CurrentTimestamp();
 			countFrame++;
 			nCurrentTimeStamp = timeStamp - m_llEncodingTimeStampOffset;
 /*

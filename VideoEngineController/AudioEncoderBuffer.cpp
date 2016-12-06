@@ -46,6 +46,7 @@ int CAudioCodecBuffer::Queue(short *saCapturedAudioFrameData, int nlength)
 	memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);
 
 	m_naBufferDataLength[m_iPushIndex] = nlength;
+	m_laReceivedTimeList[m_iPushIndex] = m_Tools.CurrentTimestamp();
 
 	if (m_nQueueSize == m_nQueueCapacity)
 	{
@@ -79,7 +80,7 @@ int CAudioCodecBuffer::Queue(short *saCapturedAudioFrameData, int nlength)
 	return 1;
 }
 
-int CAudioCodecBuffer::DeQueue(short *saCapturedAudioFrameData)
+int CAudioCodecBuffer::DeQueue(short *saCapturedAudioFrameData, long long &receivedTime)
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 
@@ -90,6 +91,7 @@ int CAudioCodecBuffer::DeQueue(short *saCapturedAudioFrameData)
 	else
 	{
 		int nlength = m_naBufferDataLength[m_iPopIndex];
+		receivedTime = m_laReceivedTimeList[m_iPopIndex];
 
 		memcpy(saCapturedAudioFrameData, m_s2aAudioEncodingBuffer[m_iPopIndex], nlength * 2);
 
