@@ -59,7 +59,7 @@ FILE *FileOutput;
 
 int gSetMode = -5;
 
-#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 5
+#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 1
 #define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 20
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
@@ -336,15 +336,19 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID, int nSer
 
 long long iMS = -1;
 int iAudioDataCounter = 0;
-
+long long LastFrameTime = -1;
+int counter = 0;
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-
-	int returnedValue = m_AudioEncodingBuffer.Queue(psaEncodingAudioData, unLength);
+//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+	long long llCurrentTime = Tools::CurrentTimestamp();
+	if(LastFrameTime !=-1)
+		__LOG("@@@@@@@@@@@@@@ NO: %d  ----*--> DIFF : %lld  Length: %d", counter, Tools::CurrentTimestamp() - LastFrameTime, (int)unLength);
+	LastFrameTime = llCurrentTime;
+	int returnedValue = m_AudioEncodingBuffer.Queue(psaEncodingAudioData, unLength, llCurrentTime);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
-
+	counter ++;
 	return returnedValue;
 }
 
@@ -496,25 +500,32 @@ void CAudioCallSession::EncodingThreadProcedure()
 	int nCurrentTimeStamp;
 	if(m_bLiveAudioStreamRunning)
 		version = 0;
-
+	long long llLasstTime = -1;
+	int cnt = 1;
 	while (m_bAudioEncodingThreadRunning)
 	{
 		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
 		else {
 			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
+
+//			m_saAudioEncodingFrame[0] = 1000;
+//			m_saAudioEncodingFrame[nEncodingFrameSize - 1] = 2000;
+
 			if (nEncodingFrameSize % AUDIO_FRAME_SIZE > 0) {
-				ALOG(
-					"#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " +
-					Tools::IntegertoStringConvert(nEncodingFrameSize));
+				ALOG("#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " + Tools::IntegertoStringConvert(nEncodingFrameSize));
 			}
 #ifdef __DUMP_FILE__
 			fwrite(m_saAudioEncodingFrame, 2, nEncodingFrameSize, FileInput);
 #endif
 			int nEncodedFrameSize;
 
+			__LOG("Relative Time Counter: %d----------------------------- NO: %lld\n",cnt, timeStamp - llLasstTime);
+			cnt++;
+			llLasstTime = timeStamp;
 			countFrame++;
 			nCurrentTimeStamp = timeStamp - m_llEncodingTimeStampOffset;
+
 /*
  * ONLY FOR CALL
  * */
@@ -853,13 +864,14 @@ void CAudioCallSession::DecodingThreadProcedure()
 #endif
 
 	//toolsObject.SOSleep(1000);
+	long long llLastTime  = -1, llDiffTimeNow = -1;
 	long long iTimeStampOffset = 0;
 
 	while (m_bAudioDecodingThreadRunning)
 	{
 		if ( m_bLiveAudioStreamRunning && m_pLiveAudioDecodingQueue->GetQueueSize() == 0 )
         {
-            toolsObject.SOSleep(10);
+            toolsObject.SOSleep(1);
         }
         else if ( false == m_bLiveAudioStreamRunning && m_AudioDecodingBuffer.GetQueueSize() == 0)
         {
@@ -893,7 +905,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				 + "  Last: " + m_Tools.IntegertoStringConvert(m_iLastDecodedPacketNumber)
 				 + " m_iAudioVersionFriend = " + m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
 
-			__LOG("@@@@@@@@@@@@@@ PN: %d, Len: %d",iPacketNumber, ReceivingHeader->GetInformation(PACKETLENGTH));
+//			__LOG("@@@@@@@@@@@@@@ PN: %d, Len: %d",iPacketNumber, ReceivingHeader->GetInformation(PACKETLENGTH));
 
 #ifdef  __DUPLICATE_AUDIO__
 			//iPacketNumber rotates
@@ -955,14 +967,14 @@ void CAudioCallSession::DecodingThreadProcedure()
 					llWaitingTime = iTimeStampOffset - llExpectedEncodingTimeStamp;
 
 					if( llExpectedEncodingTimeStamp -  __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> iTimeStampOffset ) {
-						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
+//						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
 						continue;
 					}
 
 
 					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < iTimeStampOffset)
 					{
-						m_Tools.SOSleep(5);
+						m_Tools.SOSleep(1);
 						llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
 					}
 				}
@@ -972,8 +984,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			llNow = m_Tools.CurrentTimestamp();
 
-			__LOG("@@@@@@@@@@@@@@@@@--> FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime,
-				  llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow- llLastDecodedTime);
+//			__LOG("@@@@@@@@@@@@@@@@@--> FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow- llLastDecodedTime);
 
 			llLastDecodedTime = llNow;
 			llLastDecodedFrameEncodedTimeStamp = iTimeStampOffset;
@@ -1165,6 +1176,3 @@ int CAudioCallSession::GetServiceType()
 {
     return m_nServiceType;
 }
-
-
-

@@ -39,14 +39,14 @@ void CAudioCodecBuffer::ResetBuffer()
 	mt_llSumOverFlowTime = 0;
 }
 
-int CAudioCodecBuffer::Queue(short *saCapturedAudioFrameData, int nlength)
+int CAudioCodecBuffer::Queue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump)
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 
 	memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);
 
 	m_naBufferDataLength[m_iPushIndex] = nlength;
-	m_laReceivedTimeList[m_iPushIndex] = m_Tools.CurrentTimestamp();
+	m_laReceivedTimeList[m_iPushIndex] = llTimeStump;
 
 	if (m_nQueueSize == m_nQueueCapacity)
 	{
