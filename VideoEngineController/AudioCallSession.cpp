@@ -4,7 +4,7 @@
 #include "Tools.h"
 #include "Globals.h"
 
-#define __AUDIO_SELF_CALL__
+//#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 //int g_iNextPacketType = 1;
