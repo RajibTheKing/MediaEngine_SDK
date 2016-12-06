@@ -171,7 +171,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
                     diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
 					int iCurrentFrame = packetHeaderObject.getFrameNumber();
 
-					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
+					//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
 
 					while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
 					{
