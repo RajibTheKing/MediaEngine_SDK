@@ -27,7 +27,7 @@
 //#define __THREAD_LOG__
 //#define __BITRATE_CHNANGE_LOG__
 
-#define  __SPECIFIC_LOG6__
+//#define  __SPECIFIC_LOG6__
 
 #define ON 1
 #define OFF 0

@@ -132,6 +132,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 			+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
 			+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
 		}
+#if 0
 		if (memcmp(m_sZeroBuf, sInBuf + i, AECM_SAMPLES_IN_FRAME * sizeof(short)) == 0)
 		{
 			//ALOG("WebRtcAec_Process zeroed the buffer :-( :-( id = " + m_Tools.IntegertoStringConvert(m_ID));
@@ -149,6 +150,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		{
 			memcpy(sInBuf + i, m_sTempBuf + i, AECM_SAMPLES_IN_FRAME * sizeof(short));
 		}*/
+#endif
 	}
 	processing = 0;
 	//return true;
