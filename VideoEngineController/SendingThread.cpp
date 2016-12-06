@@ -162,9 +162,7 @@ void CSendingThread::SendingThreadProcedure()
 		else
 		{
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() GOT packet for Sending method");
-
-			if (packetSizeOfNetwork < 0)
-				return;
+			
             
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
