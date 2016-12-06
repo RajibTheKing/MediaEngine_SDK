@@ -73,8 +73,8 @@ public:
 
 
 
-	int GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
-	void SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value);
+	static int GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
+	static void SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value);
 
 
 private:

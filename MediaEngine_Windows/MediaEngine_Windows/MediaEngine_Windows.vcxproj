@@ -199,6 +199,7 @@
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
     <ClCompile Include="AudioDecoder.cpp" />
     <ClCompile Include="AudioEncoder.cpp" />
+    <ClCompile Include="LiveStreamingHeader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
@@ -267,6 +268,7 @@
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="AudioDecoder.h" />
     <ClInclude Include="AudioEncoder.h" />
+    <ClInclude Include="LiveStreamingHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\libopenh264.a" />
