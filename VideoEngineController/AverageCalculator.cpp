@@ -64,6 +64,13 @@ void CAverageCalculator::CalculateFPS(string sTag)
     if(m_Tools.CurrentTimestamp() - m_llPrevFPSTime >= 1000)
     {
         printf("%s %d\n", sTag.c_str(), m_iFpsCounter);
+
+#ifdef __ANDROID__
+
+		LOGEF("%s %d\n", sTag.c_str(), m_iFpsCounter);
+
+#endif
+
         m_llPrevFPSTime = m_Tools.CurrentTimestamp();
         m_iFpsCounter = 0;
     }

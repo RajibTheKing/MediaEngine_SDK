@@ -239,6 +239,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
 			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference, nDevice_orientation);
+
+			//LOGEF("Current bitrate %d", m_pVideoEncoder->GetBitrate());
             
             if(g_PrevEncodeTime!=0)
                 m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);

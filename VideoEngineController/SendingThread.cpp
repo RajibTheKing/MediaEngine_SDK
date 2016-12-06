@@ -15,8 +15,8 @@
 
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
-//#define SEND_VIDEO_TO_SELF 1
-//#define __LIVE_STREAMIN_SELF__
+#define SEND_VIDEO_TO_SELF 1
+#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
 
@@ -181,7 +181,7 @@ void CSendingThread::SendingThreadProcedure()
 			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 			
-			int iIntervalIFrame = pVideoSession->m_nCallFPS / 5;
+			int iIntervalIFrame = pVideoSession->m_nCallFPS / IFRAME_INTERVAL;
                 
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() session got");
 

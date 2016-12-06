@@ -211,6 +211,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
                 }
 	            else
                 {
+					//pRenderingFps->CalculateFPS("RenderingFPS--> ");
+
                     toolsObject.SOSleep(1);
                     
                     
