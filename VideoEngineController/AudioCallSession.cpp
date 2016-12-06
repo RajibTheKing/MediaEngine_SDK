@@ -58,7 +58,7 @@ FILE *FileOutput;
 
 int gSetMode = -5;
 
-#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 35
+#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 5
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
 
@@ -947,7 +947,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < iTimeStampOffset)
 					{
-						m_Tools.SOSleep(20);
+						m_Tools.SOSleep(5);
 						llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
 					}
 				}
