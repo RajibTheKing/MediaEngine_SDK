@@ -154,12 +154,14 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				m_pCController->StartTestAudioCall(llFriendID);
 
 				CVideoCallSession* pVideoSession = m_pCController->StartTestVideoCall(llFriendID, nVideoHeigth, nVideoWidth, 0);
-
+                
+                m_Tools.SOSleep(1000);
+                
 #if defined(SOUL_SELF_DEVICE_CHECK)
 
 				int numberOfFrames = HIGH_FRAME_RATE * 5;
                 long long llCurrentTimestamp = m_Tools.CurrentTimestamp();
-				int factor = 1000/HIGH_FRAME_RATE - 2;
+                int factor = 1;
 				
 				long long lastFramePushTime = m_Tools.CurrentTimestamp();
 				/*
@@ -172,6 +174,13 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				for (int i = 0; i < numberOfFrames; i++)
 				{
 					long long now = m_Tools.CurrentTimestamp();
+                    int nowQueueSize = pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->GetQueueSize();
+                    if(nowQueueSize == MAX_VIDEO_ENCODER_BUFFER_SIZE)
+                    {
+                        m_Tools.SOSleep(1);
+                        i--;
+                        continue;
+                    }
 					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, now, 0);
 					/*
 					printFile("Push Difference = %lld\n", now - lastFramePushTime);
