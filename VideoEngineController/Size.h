@@ -17,7 +17,7 @@
 #define NORMAL_PACKET 1
 #define MINI_PACKET 2
 
-#define NEW_HEADER_FORMAT
+//#define NEW_HEADER_FORMAT
 
 
 #define IFRAME_INTERVAL 5
