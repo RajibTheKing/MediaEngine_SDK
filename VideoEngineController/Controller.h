@@ -34,7 +34,7 @@ public:
 	~CController();
 
 	bool SetUserName(const LongLong& lUserName);
-	bool StartAudioCall(const LongLong& lFriendID);
+	bool StartAudioCall(const LongLong& lFriendID, int nServiceType);
 	bool SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder);
 	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
 	bool SetEchoCanceller(const LongLong& lFriendID, bool bOn);
@@ -42,8 +42,10 @@ public:
 	bool StartTestAudioCall(const LongLong& lFriendID);
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
-	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
-	int PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
+	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+	int PushPacketForDecodingVector(const LongLong& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
+	int PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+	int PushAudioForDecodingVector(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
 	int CancelAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
@@ -68,15 +70,15 @@ public:
 	int StopAudioEncodeDecodeSession();
 
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
-	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int));
+	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
 	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
-	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
+	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int));
 	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
 
 
-    void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int));
+    void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int));
 
 	int m_nDeviceStrongness;
 	int m_nMemoryEnoughness;
@@ -89,6 +91,8 @@ public:
     
     VideoQuality m_Quality[2];
 	bool m_bLiveCallRunning;
+
+	CCommonElementsBucket *m_pCommonElementsBucket;
 	
 private:
 
@@ -100,7 +104,7 @@ private:
 
 	CAudioFileEncodeDecodeSession *m_pAudioEncodeDecodeSession;
 
-	CCommonElementsBucket *m_pCommonElementsBucket;
+	
 	CDeviceCapabilityCheckThread *m_pDeviceCapabilityCheckThread;
 	CDeviceCapabilityCheckBuffer *m_pDeviceCapabilityCheckBuffer;
     

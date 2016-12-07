@@ -8,7 +8,7 @@
 #include "LogPrinter.h"
 #include "CommonElementsBucket.h"
 
-BitRateController::BitRateController(int nFPS):
+BitRateController::BitRateController(int nFPS, LongLong llfriendID) :
 
     m_nBytesReceivedInMegaSlotInterval(0),
     m_nSlotIntervalCounter(0),
@@ -41,7 +41,8 @@ BitRateController::BitRateController(int nFPS):
 	m_nCallFPS(nFPS),
 	m_bVideoQualityLowNotified(false),
 	m_bVideoQualityHighNotified(false),
-	m_bVideoShouldStopNotified(false)
+	m_bVideoShouldStopNotified(false),
+	m_FriendID(llfriendID)
 
 {
 
@@ -117,6 +118,19 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 
 bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
 {
+    CVideoCallSession* pVideoSession;
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_FriendID, pVideoSession);
+    
+    if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+    {
+//    double __ratio = 100.00 * crTempHeader.getTimeStamp() * 8.00 /  m_pVideoEncoder->GetBitrate();
+//    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())
+//    +"  Ratio: "+Tools::DoubleToString(__ratio)
+//    +"  Size in Bit: "+Tools::IntegertoStringConvert(crTempHeader.getTimeStamp()*8);
+//    LOGE( "%s", __Message.c_str());
+      return false;
+    }
+
     //printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
@@ -426,7 +440,7 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 
 		if (false == m_bVideoQualityLowNotified)
 		{
-			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_GOOD);
+			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
 
 			m_bVideoQualityLowNotified = true;
 			m_bVideoQualityHighNotified = false;
@@ -439,8 +453,8 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 
 		if (false == m_bVideoShouldStopNotified && m_nStopNotificationCounter >= STOP_NOTIFICATION_SENDING_COUNTER)
         {
-			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_BAD);
-			//m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(200, CEventNotifier::VIDEO_SHOULD_STOP);
+			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_BAD);
+			//m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_FriendID, CEventNotifier::VIDEO_SHOULD_STOP);
 
 			m_bVideoShouldStopNotified = true;
 			m_bVideoQualityHighNotified = false;
@@ -453,7 +467,7 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 
 		if (false == m_bVideoQualityHighNotified)
 		{
-			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
+			m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
 
 			m_bVideoQualityHighNotified = true;
 			m_bVideoQualityLowNotified = false;

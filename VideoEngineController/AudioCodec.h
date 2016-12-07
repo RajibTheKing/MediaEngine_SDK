@@ -13,7 +13,7 @@
 #include "Tools.h"
 #include "size.h"
 
-//#define AUDIO_FIXED_BITRATE
+
 
 #define OPUS_MIN_COMPLEXITY 1
 #define OPUS_MAX_COMPLEXITY 10
@@ -32,7 +32,7 @@ class CAudioCodec
 
 public:
 
-	CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession);
+	CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID);
 	~CAudioCodec();
 
 	int CreateAudioEncoder();
@@ -65,9 +65,12 @@ private:
 	opus_int32	length;
 	int 		err;
 
+	LongLong m_FriendID;
+
 	opus_int16 in[AUDIO_FRAME_SIZE * AUDIO_CHANNELS];
 	opus_int16 out[AUDIO_MAX_FRAME_SIZE * AUDIO_CHANNELS];
-	opus_int16 *dummyData;
+	opus_int16 m_DummyData[AUDIO_CLIENT_SAMPLES_IN_FRAME + 10];
+	unsigned char m_DummyDataOut[AUDIO_CLIENT_SAMPLES_IN_FRAME * 2 + 10];
 	unsigned char cbits[AUDIO_MAX_PACKET_SIZE];
 
 	int nbBytes;

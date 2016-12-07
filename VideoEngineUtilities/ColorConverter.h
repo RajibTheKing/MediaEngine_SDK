@@ -31,13 +31,19 @@ public:
 	int ConvertYUY2ToI420(unsigned char * input, unsigned char * output);
 	int ConvertRGB24ToI420(unsigned char *input, unsigned char *output);
 
+    
 	void mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData);
+    void NegativeRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
 
 	int ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width);
+    
+    int DownScaleYUVNV12_YUVNV21_AverageNotApplied(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+    int DownScaleYUVNV12_YUVNV21_AverageVersion1(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+    int DownScaleYUVNV12_YUVNV21_AverageVersion2(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
 
 	int GetWidth();
 	int GetHeight();
@@ -52,6 +58,10 @@ private:
 	int m_VPlaneLength;
 	int m_UVPlaneMidPoint;
 	int m_UVPlaneEnd;
+
+	int m_PrevAddValue;
+	int m_AverageValue;
+	int m_ThresholdValue;
 
 	unsigned char m_pVPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];

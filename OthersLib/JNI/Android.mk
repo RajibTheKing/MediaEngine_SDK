@@ -88,6 +88,7 @@ LOCAL_C_INCLUDES := \
 			../../../videoengine/OthersLib/boost \
 			../../../videoengine/include/ \
 			../../../videoengine/include/aecm \
+			../../../videoengine/include/aecm/webrtc \
 
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
@@ -143,6 +144,10 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/Voice.cpp \
 			../../../videoengine/VideoEngineController/Gain.cpp \
 			../../../videoengine/VideoEngineController/Echo.cpp \
+			../../../videoengine/VideoEngineController/LiveReceiver.cpp \
+			../../../videoengine/VideoEngineController/LiveVideoDecodingQueue.cpp \
+			../../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
+
 
 include $(BUILD_STATIC_LIBRARY)
 

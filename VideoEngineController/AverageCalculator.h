@@ -19,13 +19,24 @@ public:
     long long GetTotal();
     
     void OperationTheatre(long long llOperationStartTime, CVideoCallSession *pVideoCallSession, string sOperationType);
-
     
+    void CalculateFPS(string sTag);
+
+    void StartingOperation(string sOperationName);
+    void EndingOperation();
 private:
     double m_dAvg;
     int m_nCounter;
     long long m_llTotalValue;
     Tools m_Tools;
+    
+    long long m_llPrevFPSTime;
+    int m_iFpsCounter;
+    
+    
+    long long m_llStartingTimeStamp;
+    long long m_llEndingTimeStamp;
+    string m_sOperationTag;
 };
 
 

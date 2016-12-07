@@ -34,8 +34,9 @@ private:
 	CPacketHeader m_cPacketHeader;
 	CSendingBuffer *m_pcSendingBuffer;
 	CCommonElementsBucket* m_pcCommonElementsBucket;
+	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
+    long long llSendingquePrevTime;
 
-	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SIZE];
 };
 
 #endif

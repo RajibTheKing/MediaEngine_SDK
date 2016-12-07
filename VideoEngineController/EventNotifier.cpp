@@ -6,10 +6,10 @@
 #include "Controller.h"
 
 void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
-void(*notifyClientWithVideoDataCallback)(LongLong, unsigned char*, int, int, int, int) = NULL;
+void(*notifyClientWithVideoDataCallback)(LongLong, int, unsigned char*, int, int, int, int) = NULL;
 void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
 void(*notifyClientWithNetworkStrengthNotificationCallback)(LongLong, int) = NULL;
-void(*notifyClientWithAudioDataCallback)(LongLong, short*, int) = NULL;
+void(*notifyClientWithAudioDataCallback)(LongLong, int, short*, int) = NULL;
 void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
 void(*notifyClientWithAudioAlarmCallback)(LongLong, short*, int) = NULL;
 
@@ -28,11 +28,11 @@ void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberO
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent 2");
 }
 
-void CEventNotifier::fireVideoEvent(int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iDeviceOrientation)
+void CEventNotifier::fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iDeviceOrientation)
 {
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber) + " iOrientation --> " + Tools::IntegertoStringConvert(iDeviceOrientation));
     
-    notifyClientWithVideoDataCallback(eventType, data, dataLenth, iVideoHeight, iVideoWidth, iDeviceOrientation);
+	notifyClientWithVideoDataCallback(friendID, eventType, data, dataLenth, iVideoHeight, iVideoWidth, iDeviceOrientation);
 }
 
 void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
@@ -84,11 +84,11 @@ void CEventNotifier::fireAudioPacketEvent(int eventType, int dataLenth, unsigned
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioPacketEvent 2");
 }
 
-void CEventNotifier::fireAudioEvent(int friendID, int dataLenth, short data[])
+void CEventNotifier::fireAudioEvent(long long friendID, int eventType, int dataLenth, short data[])
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent " + Tools::IntegertoStringConvert(friendID));
 
-	notifyClientWithAudioDataCallback(friendID, data, dataLenth);
+	notifyClientWithAudioDataCallback(friendID, eventType, data, dataLenth);
     
     CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent 2");
 }
@@ -113,7 +113,7 @@ void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPoi
     notifyClientWithPacketCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int, int))
+void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
 {
     notifyClientWithVideoDataCallback = callBackFunctionPointer;
 }
@@ -128,7 +128,7 @@ void CEventNotifier::SetNotifyClientWithNetworkStrengthNotificationCallback(void
 	notifyClientWithNetworkStrengthNotificationCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int))
 {
     notifyClientWithAudioDataCallback = callBackFunctionPointer;
 }

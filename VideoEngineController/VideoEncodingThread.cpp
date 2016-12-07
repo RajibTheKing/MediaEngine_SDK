@@ -164,7 +164,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int sumOfZeroLengthEncodingTimediff = 0;
 	int countZeroLengthFrame = 0;
 	bool bIsBitrateInitialized = false;
-
+    long long llPacketizePrevTime = 0;
 	/*for(int i = 0; i < 200; i++)
 	{
 		if (m_pBitRateController->IsNetworkTypeMiniPacketReceived())
@@ -182,7 +182,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	while (bEncodingThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
 		m_bIsThisThreadStarted = true;
 
@@ -227,7 +227,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		}
 		else
 		{
-            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() GOT packet for Encoding");
 			int timeDiff;
 
 			if(!bIsBitrateInitialized)
@@ -239,6 +239,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
 			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference, nDevice_orientation);
+
+			//LOGEF("Current bitrate %d", m_pVideoEncoder->GetBitrate());
             
             if(g_PrevEncodeTime!=0)
                 m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
@@ -344,7 +346,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			else
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
-//			VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
+			//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
 			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
 			sumOfEncodingTimediff += timeDiff;
@@ -394,12 +396,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 m_FpsCounter = 0;
             }
             
-            
-			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
+			//if (nENCODEDFrameSize > 0)
+			{
+				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
 
-			//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
+				//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
 
-			++m_iFrameNumber;
+				++m_iFrameNumber;
+			}
 		
 			toolsObject.SOSleep(0);
 		}

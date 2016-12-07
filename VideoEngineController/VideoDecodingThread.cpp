@@ -1,6 +1,9 @@
 
 #include "VideoDecodingThread.h"
 #include "VideoCallSession.h"
+#include "Globals.h"
+
+#include "LiveVideoDecodingQueue.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -10,7 +13,9 @@ extern map<int,long long>g_ArribalTime;
 
 #define MINIMUM_DECODING_TIME_FOR_FORCE_FPS 35
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer,
+                                           LiveVideoDecodingQueue *pLiveVideoDecodingQueue,CVideoDecoder *videoDecoder, CColorConverter *colorConverter,
+                                           CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
 
 m_pEncodedFrameDepacketizer(encodedFrameDepacketizer),
 m_RenderingBuffer(renderingBuffer),
@@ -25,6 +30,8 @@ m_nCallFPS(nFPS)
 
 {
     m_pCalculatorDecodeTime = new CAverageCalculator();
+    m_pLiveVideoDecodingQueue  = pLiveVideoDecodingQueue;
+    llQueuePrevTime = 0;
 }
 
 CVideoDecodingThread::~CVideoDecodingThread()
@@ -128,10 +135,58 @@ void CVideoDecodingThread::DecodingThreadProcedure()
     long long llFirstFrameTimeStamp = -1;
     int nFirstFrameNumber = -1;
     long long llTargetTimeStampDiff = -1;
+    long long llExpectedTimeOffset = -1;
+
+	CPacketHeader packetHeaderObject;
+
 	while (bDecodingThreadRunning)
 	{
-        
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
+		if(m_pVideoCallSession->isLiveVideoStreamRunning())
+		{
+			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
+				toolsObject.SOSleep(10);
+			}
+			else
+			{
+                long long diifTime;
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() Got packet for decoding");
+
+				nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
+				packetHeaderObject.setPacketHeader(m_PacketizedFrame);
+
+				printf("#V## Queue: %d\n",nFrameLength);
+
+				currentTime = m_Tools.CurrentTimestamp();
+
+				if(-1 == llFirstFrameTimeStamp)
+				{
+					toolsObject.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
+                    currentTime = m_Tools.CurrentTimestamp();
+					llFirstFrameTimeStamp = currentTime;
+					llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
+                    
+				}
+				else
+				{
+                    diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
+					int iCurrentFrame = packetHeaderObject.getFrameNumber();
+
+					//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
+
+					while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
+					{
+						toolsObject.SOSleep(1);
+						currentTime = m_Tools.CurrentTimestamp();
+					}
+				}
+				
+				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
+
+				toolsObject.SOSleep(1);
+			}
+			continue;
+		}
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
 
 		if( -1 == m_pVideoCallSession->GetShiftedTime())
 		{
@@ -180,7 +235,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() NOTHING for decoding method");
 
-			toolsObject.SOSleep(1);
+			toolsObject.SOSleep(10);
 		}
 		else
 		{
@@ -274,7 +329,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    
+	printf("#V### Decoded Size -> %d +++E.Size:  %d\n",m_decodedFrameSize,(int)frameSize);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
     
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime) + ", CurrentCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth) + ", AverageDecodeTime --> " + m_Tools.DoubleToString(m_pCalculatorDecodeTime->GetAverage()) + ", Decoder returned = " + m_Tools.IntegertoStringConvert(m_decodedFrameSize) + ", FrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
@@ -313,7 +368,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
         long long diff = currentTimeStampForBrust - m_pVideoCallSession->GetCalculationStartTime();
 		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG || CHECK_CAPABILITY_LOG, "Inside m_Counter = " + m_Tools.IntegertoStringConvert(m_Counter)
                         +", CalculationStartTime = " + m_Tools.LongLongtoStringConvert(m_pVideoCallSession->GetCalculationStartTime())
-                        +", CurrentTime = "+m_Tools.LongLongtoStringConvert(currentTimeStampForBrust) + ", m_nCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS));
+                        +", CurrentTime = "+m_Tools.LongLongtoStringConvert(currentTimeStampForBrust) + ", m_nCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", diff = " + m_Tools.IntegertoStringConvert(diff));
     
 		if (m_Counter >= (m_nCallFPS - FPS_TOLERANCE_FOR_HIGH_RESOLUTION) && diff <= 1000)
         {
@@ -370,7 +425,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #else
-
+    
+    
 	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
 	return m_decodedFrameSize;
 #endif

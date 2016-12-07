@@ -8,6 +8,9 @@ CAverageCalculator::CAverageCalculator()
     m_nCounter = 0;
     m_dAvg = 0.0;
     m_llTotalValue = 0;
+    
+    m_llPrevFPSTime = -1;
+    m_iFpsCounter=0;
 }
 void CAverageCalculator::Reset()
 {
@@ -48,5 +51,40 @@ void CAverageCalculator::OperationTheatre(long long llOperationStartTime, CVideo
             pVideoCallSession->SetCalculationStartMechanism(false);
         }
     }
+}
+
+void CAverageCalculator::CalculateFPS(string sTag)
+{
+    m_iFpsCounter++;
+    if(m_llPrevFPSTime==-1)
+    {
+        m_llPrevFPSTime = m_Tools.CurrentTimestamp();
+    }
+    
+    if(m_Tools.CurrentTimestamp() - m_llPrevFPSTime >= 1000)
+    {
+        printf("%s %d\n", sTag.c_str(), m_iFpsCounter);
+
+#ifdef __ANDROID__
+
+		LOGEF("%s %d\n", sTag.c_str(), m_iFpsCounter);
+
+#endif
+
+        m_llPrevFPSTime = m_Tools.CurrentTimestamp();
+        m_iFpsCounter = 0;
+    }
+}
+
+void CAverageCalculator::StartingOperation(string sOperationName)
+{
+    m_llStartingTimeStamp = m_Tools.CurrentTimestamp();
+    m_sOperationTag = sOperationName;
+}
+
+void CAverageCalculator::EndingOperation()
+{
+    m_llEndingTimeStamp = m_Tools.CurrentTimestamp();
+    printf("Operation Time for %s  = %d\n", m_sOperationTag.c_str(), m_llEndingTimeStamp - m_llStartingTimeStamp);
 }
 

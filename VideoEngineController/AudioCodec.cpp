@@ -12,11 +12,12 @@
 
 #define BYTES_TO_STORE_AUDIO_EFRAME_LEN 2
 
-CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession) :
+CAudioCodec::CAudioCodec(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID) :
 m_pCommonElementsBucket(sharedObject),
 m_bAudioQualityLowNotified(false),
 m_bAudioQualityHighNotified(false),
-m_bAudioShouldStopNotified(false)
+m_bAudioShouldStopNotified(false),
+m_FriendID(llfriendID)
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
 	m_pAudioCallSession = AudioCallSession;
@@ -41,11 +42,10 @@ int CAudioCodec::CreateAudioEncoder()
 	int error = 0;
 	int sampling_rate = AUDIO_SAMPLE_RATE;
 	int dummyDataSize = AUDIO_CLIENT_SAMPLES_IN_FRAME;
-	dummyData = new opus_int16[dummyDataSize];
-	unsigned char * dummyDataOut = new unsigned char[dummyDataSize * 2];
+
 	for (int i = 0; i < dummyDataSize; i++)
 	{
-		dummyData[i] = rand();
+		m_DummyData[i] = rand();
 	}
 
 	//encoder_ = opus_encoder_create(sampling_rate, 1, OPUS_APPLICATION_AUDIO, &error);
@@ -69,7 +69,11 @@ int CAudioCodec::CreateAudioEncoder()
 
 	/*err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(AUDIO_BITRATE_INIT));
 	if (err<0) return EXIT_FAILURE;*/
-	SetBitrateOpus(AUDIO_BITRATE_INIT);
+    
+    if(m_pAudioCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pAudioCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+        SetBitrateOpus(AUDIO_BITRATE_LIVE);
+    else
+        SetBitrateOpus(AUDIO_BITRATE_INIT);
 
 
 	m_iComplexity = 10;
@@ -78,7 +82,7 @@ int CAudioCodec::CreateAudioEncoder()
 	{
 		opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(m_iComplexity));
 		encodingTime = m_Tools.CurrentTimestamp();
-		encodeAudio(dummyData, dummyDataSize, dummyDataOut);
+		encodeAudio(m_DummyData, dummyDataSize, m_DummyDataOut);
 		encodingTime = m_Tools.CurrentTimestamp() - encodingTime;
 		if (encodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME)
 		{
@@ -91,8 +95,8 @@ int CAudioCodec::CreateAudioEncoder()
 	}
 //	ALOG("#BR# m_iComplexity: " + m_Tools.IntegertoStringConvert(m_iComplexity)
 //		+ "#BR# encodingTime: " + m_Tools.IntegertoStringConvert(encodingTime));
-	delete dummyData;
-	delete dummyDataOut;
+	
+	
 	//err = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(10));
 	//if (err<0) return EXIT_FAILURE;
 
@@ -207,7 +211,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioQualityLowNotified)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_GOOD);
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
 			
 				m_bAudioQualityLowNotified = true;
 				m_bAudioQualityHighNotified = false;
@@ -222,7 +226,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_BAD);
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_BAD);
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
 				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
 
@@ -239,7 +243,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioQualityHighNotified)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(200, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
 
 				m_bAudioQualityHighNotified = true;
 				m_bAudioQualityLowNotified = false;

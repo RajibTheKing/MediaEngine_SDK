@@ -20,6 +20,7 @@ CVersionController::CVersionController()
     
     m_bIsOpponentVersionDetectable = true;
     m_bFirstVideoPacketReceivedFlag = false;
+    
 }
 
 CVersionController::~CVersionController()

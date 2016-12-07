@@ -101,9 +101,13 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	bool m_b1stDecodedFrame = true;
 	long long m_ll1stDecodedFrameTimeStamp = 0;
     long long lRenderingTimeDiff = 0;
+    long long llPrevTimeStamp = 0;
+	CAverageCalculator *pRenderingFps = new CAverageCalculator();
+    long long llFirePrevTime = 0;
+    long long llDequeuePrevTime = 0;
 	while (bRenderingThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
 
 		if (m_RenderingBuffer->GetQueueSize() == 0)
 		{
@@ -118,8 +122,6 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			int timeDiffForQueue, orientation;
 
 			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue, orientation);
-            
-            
             
             m_llRenderFrameCounter++;
 			if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD && m_llRenderFrameCounter<FPS_MAXIMUM * 2)
@@ -182,15 +184,45 @@ void CVideoRenderingThread::RenderingThreadProcedure()
             
             lRenderingTimeDiff = m_Tools.CurrentTimestamp();
             
-			toolsObject.SOSleep(1);
+
             //CalculateFPS();
             
             //if(m_pVideoCallSession->GetResolutionNegotiationStatus() == true)
 
+
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
             {
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+                if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+                {
+//                    pRenderingFps->CalculateFPS("RenderingFPS--> ");
+//                    long long nowCurrentTimeStampDiff = m_Tools.CurrentTimestamp() - llPrevTimeStamp;
+//                    //LOGE(" fahadRajib  time diff for rendering-->----------------------  %d", minTimeGap );
+//                    if(nowCurrentTimeStampDiff < 30)
+//                        toolsObject.SOSleep(30 - nowCurrentTimeStampDiff);
+//                    else
+//                        toolsObject.SOSleep(0);
+//
+
+					toolsObject.SOSleep(1);
+
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);					
+//
+//                    llPrevTimeStamp = m_Tools.CurrentTimestamp();
+                }
+	            else
+                {
+					//pRenderingFps->CalculateFPS("RenderingFPS--> ");
+
+                    toolsObject.SOSleep(1);
+                    
+                    
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+                    
+                }
+                
+                
             }
+
 		}
 	}
 

@@ -6,13 +6,14 @@
 
 #include <string>
 
-CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject):
+CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject, LongLong llfriendID) :
 
 m_pCommonElementsBucket(pSharedObject),
 m_nMaxBitRate(BITRATE_MAX),
 m_nBitRate(BITRATE_MAX - 25000),
 m_nNetworkType(NETWORK_TYPE_NOT_2G),
-m_pSVCVideoEncoder(NULL)
+m_pSVCVideoEncoder(NULL),
+m_lfriendID(llfriendID)
 
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
@@ -66,14 +67,29 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
     
     if(!bCheckDeviceCapability)
     {
-        encoderParemeters.iRCMode = RC_BITRATE_MODE;
-        encoderParemeters.iMinQp = 0;
-        encoderParemeters.iMaxQp = 52;
+        CVideoCallSession* pVideoSession;
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
+        
+        if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+		{
+			encoderParemeters.iRCMode = RC_BITRATE_MODE;
+			encoderParemeters.iMinQp = 0;
+			encoderParemeters.iMaxQp = 52;
+		}
+		else
+        {
+            encoderParemeters.iRCMode = RC_BITRATE_MODE;
+            encoderParemeters.iMinQp = 0;
+            encoderParemeters.iMaxQp = 52;
+        }
+        
     }
     else
     {
         encoderParemeters.iRCMode = RC_OFF_MODE;
     }
+    
+    
     
     
     
@@ -98,12 +114,27 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
     if(!bCheckDeviceCapability)
     {
-        
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+		CVideoCallSession* pVideoSession;
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
+
+		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+		{
+			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			m_nBitRate = BITRATE_BEGIN_FOR_STREAM;
+		}
+		else
+		{
+			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_Call -- %d", BITRATE_BEGIN);
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+			m_nBitRate = BITRATE_BEGIN;
+		}
     }
     else
     {
+		//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
         encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
         encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
     }
@@ -163,14 +194,28 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
     
     if(!bCheckDeviceCapability)
     {
-        encoderParemeters.iRCMode = RC_BITRATE_MODE;
-        encoderParemeters.iMinQp = 0;
-        encoderParemeters.iMaxQp = 52;
+        CVideoCallSession* pVideoSession;
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
+        
+        if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+		{
+			encoderParemeters.iRCMode = RC_BITRATE_MODE;
+			encoderParemeters.iMinQp = 0;
+			encoderParemeters.iMaxQp = 52;
+		}
+        else
+        {
+            encoderParemeters.iRCMode = RC_BITRATE_MODE;
+            encoderParemeters.iMinQp = 0;
+            encoderParemeters.iMaxQp = 52;
+        }
+        
     }
     else
     {
         encoderParemeters.iRCMode = RC_OFF_MODE;
     }
+    
     
     
 	encoderParemeters.bEnableDenoise = false;
@@ -193,12 +238,27 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
     if(!bCheckDeviceCapability)
     {
-        
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
-        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+		CVideoCallSession* pVideoSession;
+		bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
+
+		if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+		{
+			//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			m_nBitRate = BITRATE_BEGIN_FOR_STREAM;
+		}
+		else
+		{
+			//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_Call -- %d, bExist= %d, pVideoSession->GetServiceType() = %d", BITRATE_BEGIN, bExist, pVideoSession->GetServiceType());
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+			m_nBitRate = BITRATE_BEGIN;
+		}     
     }
     else
     {
+		LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
         encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
         encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
     }
@@ -225,6 +285,14 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 int CVideoEncoder::SetBitrate(int nBitRate)
 {
+	CVideoCallSession* pVideoSession;
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
+
+	if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+	{
+		return 0;
+	}
+
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
     
 	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN) 
@@ -241,6 +309,7 @@ int CVideoEncoder::SetBitrate(int nBitRate)
 	targetEncoderBitrateInfo.iLayer = SPATIAL_LAYER_0;
 	targetEncoderBitrateInfo.iBitrate = nTargetBitRate;
 
+	LOGEF("fahad -->> VideoEncoder::SetBitrate -- nTargetBitRate = %d", nTargetBitRate);
 	int nReturnedValueFromEncoder;
 
 	if(m_pSVCVideoEncoder)
@@ -273,6 +342,14 @@ void CVideoEncoder::SetNetworkType(int nNetworkType)
 
 int CVideoEncoder::SetMaxBitrate(int nBitRate)
 {
+	CVideoCallSession* pVideoSession;
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
+
+	if (bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+	{
+		return 0;
+	}
+
 	nBitRate = nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR;
 
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
@@ -288,6 +365,7 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
 	maxEncoderBitRateInfo.iBitrate = nTargetBitRate;
 
+	LOGEF("fahad -->> VideoEncoder::SetMaxBitrate -- nTargetBitRate = %d", nTargetBitRate);
 	int nReturnedValueFromEncoder;
 
 	if(m_pSVCVideoEncoder)

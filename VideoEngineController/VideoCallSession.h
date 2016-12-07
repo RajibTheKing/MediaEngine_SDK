@@ -21,6 +21,9 @@
 #include "VersionController.h"
 #include "DeviceCapabilityCheckBuffer.h"
 #include "FPSController.h"
+#include "LiveReceiver.h"
+#include "LiveVideoDecodingQueue.h"
+
 
 using namespace std;
 
@@ -33,17 +36,18 @@ class CVideoCallSession
 
 public:
 
-    CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel);
+    CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
-	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
+	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
 	CColorConverter* GetColorConverter();
 
-	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData);
+	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+	bool PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 	CEncodedFrameDepacketizer * GetEncodedFrameDepacketizer();
 
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
@@ -92,14 +96,18 @@ public:
 	void SetOpponentVideoCallQualityLevel(int nVideoCallQualityLevel);
 	
 	int GetCurrentVideoCallQualityLevel();
-	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel); 
+	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel);
+    int GetServiceType();
 
 	BitRateController* GetBitRateController();
+    bool isLiveVideoStreamRunning();
 
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
 
 	bool m_bVideoCallStarted;
     CController *m_pController;
+	int m_nCallFPS;
+    bool m_bLiveVideoStreamRunning;
     
 
 private:
@@ -124,8 +132,6 @@ private:
 
 	unsigned int m_miniPacketBandCounter;
 
-	int m_nCallFPS;
-
 	int m_nCapturedFrameCounter;
 
 	int m_nVideoCallHeight;
@@ -146,6 +152,8 @@ private:
     bool m_bHighResolutionSupportedForOpponent;
     bool m_bReinitialized;
     bool m_bResolutionNegotiationDone;
+    
+    int m_nServiceType;
     
 	Tools m_Tools;
 	LongLong m_lfriendID;
@@ -177,6 +185,10 @@ private:
     
     int m_nDeviceCheckFrameCounter;
     long long m_llClientFrameFPSTimeStamp;
+    CAverageCalculator *m_VideoFpsCalculator;
+    
+    LiveReceiver *m_pLiveReceiverVideo;
+    LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     
     
 

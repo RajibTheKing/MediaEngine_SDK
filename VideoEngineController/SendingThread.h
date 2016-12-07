@@ -18,7 +18,7 @@ class CSendingThread
 {
 public:
 
-	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall);
+	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID);
 	~CSendingThread();
 
 	void StartSendingThread();
@@ -29,6 +29,8 @@ public:
 private:
 	int GetSleepTime();
 
+	int m_nTimeStampOfChunck;
+	int m_nTimeStampOfChunckSend;
 
 	CVideoCallSession* m_pVideoCallSession;
 #ifdef  BANDWIDTH_CONTROLLING_TEST
@@ -45,7 +47,20 @@ private:
 
 	bool m_bIsCheckCall;
 
-	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
+    
+	LongLong m_lfriendID;
+
+	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
+	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
+	unsigned char m_AudioVideoDataToSend[MAX_AUDIO_VIDEO_DATA_TO_SEND_SIZE];
+	int m_iAudioDataToSendIndex;
+
+	bool firstFrame;
+	int m_iDataToSendIndex;
+	long long int llPrevTime;
+    long long m_llPrevTimeWhileSendingToLive;
+
 
 	Tools m_Tools;
 

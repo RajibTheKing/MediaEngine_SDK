@@ -102,7 +102,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
     long long llDepacitazationThreadStartTime = m_Tools.CurrentTimestamp();
 	while (bDepacketizationThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
 
 		queSize = m_pVideoPacketQueue->GetQueueSize();
 

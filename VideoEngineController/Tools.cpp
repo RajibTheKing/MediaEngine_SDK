@@ -15,15 +15,6 @@
 
 #include "LogPrinter.h"
 
-#ifdef __ANDROID__
-
-#include <android/log.h>
-
-#define LOG_TAG "LibraryLog"
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
-#endif
-
 Tools::Tools()
 {
 	m_filePointerToWriteByteData = NULL;
@@ -268,3 +259,158 @@ unsigned long long Tools::GetAvailableSystemMemory()
 	return 0;
 #endif
 }
+
+void Tools::IntToUnsignedCharConversion(int number, unsigned char convertedArray[], int index)
+{
+	convertedArray[index + 0] = (number >> 24) & 0xFF;
+	convertedArray[index + 1] = (number >> 16) & 0xFF;
+	convertedArray[index + 2] = (number >> 8) & 0xFF;
+	convertedArray[index + 3] = number & 0xFF;
+}
+
+int Tools::UnsignedCharToIntConversion(unsigned char convertedArray[], int index)
+{
+	int number;
+
+	number = ((convertedArray[index + 0] & 0xFF) << 24) | ((convertedArray[index + 1] & 0xFF) << 16) | ((convertedArray[index + 2] & 0xFF) << 8) | convertedArray[3];
+
+	return number;
+}
+
+void Tools::SetMediaUnitVersionInMediaChunck(int number, unsigned char data[])
+{
+	data[LIVE_MEDIA_UNIT_VERSION_BLOCK_POSITION] = number & 0xFF;
+}
+
+void Tools::SetMediaUnitTimestampInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE, number);
+}
+
+int Tools::GetMediaUnitTimestampInMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE);
+
+	return number;
+}
+
+int Tools::GetMediaUnitVersionFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = data[LIVE_MEDIA_UNIT_VERSION_BLOCK_POSITION] & 0xFF;
+
+	return number;
+}
+
+void Tools::SetAudioBlockSizeInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_POSITION, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE, number);
+}
+
+int Tools::GetAudioBlockSizeFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_POSITION, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE);
+
+	return number;
+}
+
+void Tools::SetVideoBlockSizeInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_POSITION, LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE, number);
+}
+
+int Tools::GetVideoBlockSizeFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_POSITION, LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE);
+
+	return number;
+}
+
+void Tools::SetNumberOfAudioFramesInMediaChunck(int index, int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, index, LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE, number);
+}
+
+int Tools::GetNumberOfAudioFramesFromMediaChunck(int index, unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, index, LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE);
+
+	return number;
+}
+
+void Tools::SetNumberOfVideoFramesInMediaChunck(int index, int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, index, LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE, number);
+}
+
+int Tools::GetNumberOfVideoFramesFromMediaChunck(int index, unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, index, LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE);
+
+	return number;
+}
+
+void Tools::SetNextAudioFramePositionInMediaChunck(int index, int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, index, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE, number);
+}
+
+int Tools::GetNextAudioFramePositionFromMediaChunck(int index, unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, index, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE);
+
+	return number;
+}
+
+void Tools::SetNextVideoFramePositionInMediaChunck(int index, int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, index, LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE, number);
+}
+
+int Tools::GetNextVideoFramePositionFromMediaChunck(int index, unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, index, LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE);
+
+	return number;
+}
+
+
+int Tools::GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLenght)
+{
+	int result = 0;
+	int interval = 8;
+	int startPoint = (nLenght - 1) << 3;
+
+	for (int i = startPoint; i >= 0; i -= interval)
+	{
+		result += (packetData[index++] & 0xFF) << i;
+	}
+
+	return result;
+}
+
+void Tools::SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value)
+{
+	int interval = 8;
+
+	for (int i = 0; i < nLenght; i++)
+	{
+		packetData[index + i] = (value >> (interval*(nLenght - i - 1)) & 0xFF);
+	}
+}
+

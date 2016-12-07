@@ -10,11 +10,14 @@
 #include "Tools.h"
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
+#include "LiveAudioDecodingQueue.h"
+#include "LiveReceiver.h"
+
 #include <stdio.h>
 #include <string>
 #include <map>
 #include <stdlib.h>
-
+#include <vector>
 #ifdef OPUS_ENABLE
 #include "AudioCodec.h"
 #else
@@ -38,8 +41,8 @@ static string colon = "ALOG:";
 
 
 
-#define __AUDIO_CALL_VERSION__  1
 
+//#define __AUDIO_FIXED_COMPLEXITY__
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -65,15 +68,17 @@ class CAudioCallSession
 
 public:
 
-	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, bool bIsCheckCall = false);
+    CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
 
     CAudioCodec* GetAudioCodec();
 
-    void InitializeAudioCallSession(LongLong llFriendID);
+    void InitializeAudioCallSession(LongLong llFriendID, int nServiceType);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
-    int DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength);
+    int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+    
+    int DecodeAudioDataVector(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
     void EncodingThreadProcedure();
     void StopEncodingThread();
@@ -90,11 +95,16 @@ public:
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
 	int m_iNextPacketType;
+    void getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector);
+    int GetServiceType();
 
 private:
+
     Tools m_Tools;
     LongLong m_FriendID;
 	bool m_bEchoCancellerEnabled;
+	long long m_llEncodingTimeStampOffset;
+	long long m_llDecodingTimeStampOffset;
 
     CAudioPacketHeader *SendingHeader;
     CAudioPacketHeader *ReceivingHeader;
@@ -104,6 +114,7 @@ private:
     CAudioCodecBuffer m_AudioEncodingBuffer;
     CAudioDecoderBuffer m_AudioDecodingBuffer;
 
+    std::vector<int> m_vEncodedFrameLenght;
 	bool m_bUsingLoudSpeaker;
 	bool m_bNoDataFromFarendYet;
 #ifdef USE_AECM
@@ -145,6 +156,8 @@ private:
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
 
+    unsigned char m_ucaAudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+	int m_iAudioDataSendIndex;
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
 #endif
@@ -157,6 +170,13 @@ private:
 
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
+    
+    LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
+    LiveReceiver *m_pLiveReceiverAudio;
+    
+    bool m_bLiveAudioStreamRunning;
+    int m_nServiceType;
+    
 
 	int m_iVolume;
 

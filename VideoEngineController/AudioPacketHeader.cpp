@@ -2,9 +2,14 @@
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
 
-CAudioPacketHeader::CAudioPacketHeader()
+CAudioPacketHeader::CAudioPacketHeader(bool bIsLive)
 {
 	nNumberOfHeaderElements = sizeof(HeaderBitmap)/sizeof(int);
+
+	if (bIsLive == false)
+	{
+		nNumberOfHeaderElements--;
+	}
 
 	int headerSizeInBit = 0;
 	for (int i = 0; i < nNumberOfHeaderElements; i++)
@@ -19,15 +24,15 @@ CAudioPacketHeader::CAudioPacketHeader()
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
 
-CAudioPacketHeader::CAudioPacketHeader(unsigned int * Information)
+CAudioPacketHeader::CAudioPacketHeader(unsigned int * Information, bool bIsLive)
 {
-	CAudioPacketHeader();
+	CAudioPacketHeader(bIsLive == true);
 	CopyInformationToHeader(Information);
 }
 
-CAudioPacketHeader::CAudioPacketHeader(unsigned char *Header)
+CAudioPacketHeader::CAudioPacketHeader(unsigned char *Header, bool bIsLive)
 {
-	CAudioPacketHeader();
+	CAudioPacketHeader(bIsLive == true);
 	CopyHeaderToInformation(Header);
 }
 
@@ -82,6 +87,7 @@ bool CAudioPacketHeader::IsPacketTypeSupported()
 
 void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 {
+    Information = (Information & ((1<<HeaderBitmap[InfoType]) - 1));
 	ma_nInformation[InfoType] = Information;
 
 	int infoStartBit = 0;
@@ -106,7 +112,7 @@ void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 		ma_uchHeader[infoStartByte] |= (Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte));
 
 		int remainingBits = HeaderBitmap[InfoType] - numberOfBitsIn1stByte;
-		int remainingBytes = remainingBits/8;
+		int remainingBytes = remainingBits / 8;
 		int nBitsInLastByte = remainingBits % 8;
 		int byte = 1;
 
@@ -151,6 +157,7 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 	int infoStartByte = infoStartBit / 8;
 	int infoStartBitOfByte = infoStartBit % 8;
 
+    
 	if (infoStartBitOfByte + HeaderBitmap[InfoType] <= 8)//fits in 1 byte
 	{
 		unsigned char temp = (ma_uchHeader[infoStartByte] << infoStartBitOfByte);
@@ -165,6 +172,7 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 			Information <<= 8;
 			Information += ma_uchHeader[infoStartByte + i];
 		}
+
 		int shift = ((HeaderBitmap[InfoType] + infoStartBitOfByte ) % 8);
 		if(shift)
 			Information >>= 8 - shift;

@@ -172,6 +172,9 @@
     <ClCompile Include="..\..\VideoEngineController\FPSController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Gain.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Noise.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
@@ -197,6 +200,7 @@
     <ClCompile Include="..\..\VideoEngineController\Voice.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
+	<ClCompile Include="LiveStreamingHeader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
@@ -231,6 +235,9 @@
     <ClInclude Include="..\..\VideoEngineController\Gain.h" />
     <ClInclude Include="..\..\VideoEngineController\Globals.h" />
     <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveReceiver.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
     <ClInclude Include="..\..\VideoEngineController\Noise.h" />
@@ -264,6 +271,7 @@
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
+    <ClInclude Include="LiveStreamingHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />

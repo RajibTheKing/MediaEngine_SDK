@@ -6,6 +6,8 @@
 #include "Controller.h"
 
 
+//PairMap g_timeInt;
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
@@ -13,7 +15,7 @@
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(CController *pController,LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel) :
+CVideoCallSession::CVideoCallSession(CController *pController,LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
@@ -42,14 +44,38 @@ m_bIsCheckCall(bIsCheckCall),
 m_nCallFPS(nFPS),
 pnDeviceSupportedFPS(nrDeviceSupportedCallFPS),
 m_nOwnVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
-m_nOpponentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
-m_nCurrentVideoCallQualityLevel(VIDEO_CALL_TYPE_UNKNOWN),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false),
 m_nDeviceCheckFrameCounter(0),
-m_nCapturedFrameCounter(0)
+m_nCapturedFrameCounter(0),
+m_nServiceType(nServiceType)
 
 {
+    m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
+    m_nCurrentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
+    
+    m_VideoFpsCalculator = new CAverageCalculator();
+    m_bLiveVideoStreamRunning = false;
+    
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+    {
+        m_bLiveVideoStreamRunning = true;
+        m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
+		m_pLiveReceiverVideo = new LiveReceiver(m_pCommonElementsBucket);
+        m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
+        
+        
+        
+        m_nOpponentVideoCallQualityLevel = nOwnSupportedResolutionFPSLevel;
+        m_nCurrentVideoCallQualityLevel = nOwnSupportedResolutionFPSLevel;
+    }
+    
+    
+    
+    
+    
+    
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 54");
     m_llClientFrameFPSTimeStamp = -1;
     m_pController = pController;
     
@@ -81,15 +107,16 @@ m_nCapturedFrameCounter(0)
 	m_pEncodedFramePacketizer = new CEncodedFramePacketizer(sharedObject, m_SendingBuffer, this);
 	m_pEncodedFrameDepacketizer = new CEncodedFrameDepacketizer(sharedObject, this);
 
-	m_BitRateController = new BitRateController(m_nCallFPS);
+	m_BitRateController = new BitRateController(m_nCallFPS, m_lfriendID);
 
 	m_BitRateController->SetSharedObject(sharedObject);
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::CVideoCallSession created");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
 
 CVideoCallSession::~CVideoCallSession()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::~~~CVideoCallSession 95");
 	m_pVideoEncodingThread->StopEncodingThread();
 	m_pSendingThread->StopSendingThread();
 	m_pVideoDepacketizationThread->StopDepacketizationThread();
@@ -214,6 +241,31 @@ CVideoCallSession::~CVideoCallSession()
         m_pVersionController = NULL;    
     }
     
+    if(NULL != m_VideoFpsCalculator)
+    {
+        delete m_VideoFpsCalculator;
+        m_VideoFpsCalculator = NULL;
+        
+    }
+    
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+    {
+        if(NULL != m_pLiveReceiverVideo)
+        {
+            delete m_pLiveReceiverVideo;
+            m_pLiveReceiverVideo = NULL;
+        }
+        
+        if(NULL != m_pLiveVideoDecodingQueue)
+        {
+            delete m_pLiveVideoDecodingQueue;
+            
+            m_pLiveVideoDecodingQueue = NULL;
+        }
+    }
+    
+    
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::~~~CVideoCallSession 220");
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
 }
 
@@ -222,27 +274,51 @@ LongLong CVideoCallSession::GetFriendID()
 	return m_lfriendID;
 }
 
-void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
 {
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
+    m_nServiceType = nServiceType;
+    
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
 
     m_pVersionController = new CVersionController();
     
+    if(m_bLiveVideoStreamRunning == true)
+    {
+        //m_iOppVersion = VIDEO_VERSION_CODE;
+        //m_iCurrentCallVersion = VIDEO_VERSION_CODE;
+        //m_bFirstVideoPacketReceivedFlag = true;
+        
+        m_pVersionController->SetOpponentVersion(VIDEO_VERSION_CODE);
+        m_pVersionController->SetCurrentCallVersion(VIDEO_VERSION_CODE);
+        m_pVersionController->NotifyFirstVideoPacetReceived();
+    }
+    
+    
     g_llFirstFrameReceiveTime = 0;
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 240");
 
 	if (sessionMediaList.IsVideoEncoderExist(iVideoHeight, iVideoWidth))
 	{
 		return;
 	}
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession 2");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 247");
 
-	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket);
+	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket, m_lfriendID);
 
-	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS /2 + 1, m_bIsCheckCall);
+if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+
+	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall);
+
+else
+
+	m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
+
+
 
 	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
@@ -253,32 +329,45 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
 
-	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this, m_bIsCheckCall);
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 262");
+
+	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this, m_bIsCheckCall, m_lfriendID);
 	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_pCommonElementsBucket, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
-	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pVideoDecoder, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
+	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoder, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController, this);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 270");
 
 	m_pCommonElementsBucket->m_pVideoEncoderList->AddToVideoEncoderList(lFriendID, m_pVideoEncoder);
 
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 274");
 	m_ClientFrameCounter = 0;
 	m_EncodingFrameCounter = 0;
 	m_llFirstFrameCapturingTimeStamp = -1;
 
 
 	m_BitRateController->SetOwnNetworkType(iNetworkType);
-	CreateAndSendMiniPacket(iNetworkType, __NETWORK_INFO_PACKET_TYPE);
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 281");
+	//CreateAndSendMiniPacket(iNetworkType, __NETWORK_INFO_PACKET_TYPE);
 
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 282");
 
 	m_pSendingThread->StartSendingThread();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 286");
 	m_pVideoEncodingThread->StartEncodingThread();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 289");
 	m_pVideoRenderingThread->StartRenderingThread();	
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 291");
 	m_pVideoDepacketizationThread->StartDepacketizationThread();
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 293");
 	m_pVideoDecodingThread->StartDecodingThread();
 
 
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::InitializeVideoSession session initialized");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 298");
 }
 
 CVideoEncoder* CVideoCallSession::GetVideoEncoder()
@@ -304,8 +393,29 @@ int CVideoCallSession::GetFirstFrameEncodingTime(){
 	return m_nFirstFrameEncodingTimeDiff;
 }
 
-bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData)
+bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
+	if (m_bLiveVideoStreamRunning)
+	{
+		m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+
+		return true;
+	}
+
+	return true;
+}
+
+bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
+{
+	if(m_bLiveVideoStreamRunning)
+	{		
+			m_pLiveReceiverVideo->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
+			
+		return true;
+	}
+
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 326");
 	unsigned char uchPacketType = in_data[__PACKET_TYPE_INDEX];
 	if(uchPacketType < __MIN_PACKET_TYPE || __MAX_PACKET_TYPE < uchPacketType)
 		return false;
@@ -313,7 +423,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 	if (__BITRATE_CONTROLL_PACKET_TYPE == uchPacketType || __NETWORK_INFO_PACKET_TYPE == uchPacketType) // It is a minipacket
 	{
-		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "PKTTYPE --> GOT MINI PACKET");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 334");
 		m_pMiniPacketQueue->Queue(in_data, in_size);
 	}	
 	else if (__VIDEO_PACKET_TYPE == uchPacketType)
@@ -356,10 +466,13 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 		}
 
 		m_pVideoPacketQueue->Queue(in_data, in_size);
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 378  in_size= " + m_Tools.IntegertoStringConvert(in_size));
 	}
 	else if (__NEGOTIATION_PACKET_TYPE == uchPacketType)
 	{
 		m_pVideoPacketQueue->Queue(in_data, in_size);
+		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 383");
 	}
 	else
 	{
@@ -375,13 +488,20 @@ int g_CapturingFrameCounter = 0;
 
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
+    
+    m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
     /*if(m_bIsCheckCall==true)
     {
         m_nDeviceCheckFrameCounter++;
         if(m_nDeviceCheckFrameCounter>75) return m_nDeviceCheckFrameCounter;
     }*/
+
+    //LOGE("CVideoCallSession::PushIntoBufferForEncoding called");
     
 	m_nCapturedFrameCounter++;
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 407");
     
 	if ( GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
     {
@@ -389,24 +509,43 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
         //{
         //      return 1;
         //}
-        
+
+        //LOGE("CVideoCallSession::PushIntoBufferForEncoding  GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false so returning" );
+
         return 1;
     }
 
 	if (m_bVideoCallStarted == false && m_bIsCheckCall == false)
 	{
-		return 1;
+	    //LOGE("CVideoCallSession::PushIntoBufferForEncoding  m_bVideoCallStarted == false && m_bIsCheckCall == false so returning");
+        
+        if(m_bLiveVideoStreamRunning == false)
+            return 1;
 	}
     
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 2");
+    
 	if (m_pVideoEncodingThread->IsThreadStarted() == false)
-		return 1;
+	{
+	    //LOGE("CVideoCallSession::PushIntoBufferForEncoding m_pVideoEncodingThread->IsThreadStarted() == false so returning");
+
+	    return 1;
+	}
+    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 3");
 
 #if defined(SOUL_SELF_DEVICE_CHECK)
 	
 	if (m_bIsCheckCall == true)
-		return 1;
+	{
+	    //LOGE("CVideoCallSession::PushIntoBufferForEncoding m_bIsCheckCall == true so returning");
+
+	    return 1;
+	}
 	
 #endif
+    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 4");
 
     if(g_llFirstFrameReceiveTime == 0) g_llFirstFrameReceiveTime = m_Tools.CurrentTimestamp();
     
@@ -415,7 +554,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	LongLong currentTimeStamp = m_Tools.CurrentTimestamp();
 
-    
+    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 5");
     //Capturing fps calculation
     if(m_llClientFrameFPSTimeStamp==-1) m_llClientFrameFPSTimeStamp = currentTimeStamp;
     m_ClientFrameCounter++;
@@ -478,6 +617,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
     g_CapturingFrameCounter++;
     
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 504 -- size " + m_Tools.IntegertoStringConvert(in_size) + "  device_orient = "+ m_Tools.IntegertoStringConvert(device_orientation));
+
 	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff, device_orientation);
     
     //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " nCaptureTimeDiff = " +  m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - mt_llCapturePrevTime));
@@ -487,7 +628,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
 //	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding Queue packetSize " + Tools::IntegertoStringConvert(in_size));
 
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoCallSession::PushIntoBufferForEncoding pushed to encoder queue");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 513");
 
 	return returnedValue;
 }
@@ -518,6 +659,9 @@ CEncodedFrameDepacketizer * CVideoCallSession::GetEncodedFrameDepacketizer()
 
 void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, int nMiniPacketType)
 {
+    if(m_bLiveVideoStreamRunning == true)
+        return;
+    
     if(m_bIsCheckCall != LIVE_CALL_MOOD) return;
     
 	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
@@ -537,7 +681,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
-	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID,1, m_miniPacket,PACKET_HEADER_LENGTH + 1,0);
 }
 
 long long CVideoCallSession::GetShiftedTime()
@@ -733,35 +877,33 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
 	{
-        
-
 		m_nVideoCallHeight = m_pController->m_Quality[1].iHeight;
 		m_nVideoCallWidth = m_pController->m_Quality[1].iWidth;
         
-		m_nCallFPS = 25;
-		m_SlotResetRightRange = 25;
+		m_nCallFPS = HIGH_QUALITY_FPS;
+		m_SlotResetRightRange = HIGH_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_25)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
-		m_nCallFPS = 25;
-		m_SlotResetRightRange = 25;
+		m_nCallFPS = HIGH_QUALITY_FPS;
+		m_SlotResetRightRange = HIGH_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_15)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
         
-		m_nCallFPS = 15;
-		m_SlotResetRightRange = 15;
+		m_nCallFPS = LOW_QUALITY_FPS;
+		m_SlotResetRightRange = LOW_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
-		m_nCallFPS = 15;
-		m_SlotResetRightRange = 15;
+		m_nCallFPS = LOW_QUALITY_FPS;
+		m_SlotResetRightRange = LOW_QUALITY_FPS;
 	}
 
 	m_BitRateController->SetCallFPS(m_nCallFPS);
@@ -772,7 +914,13 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
     m_pFPSController->Reset(m_nCallFPS);
 
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
-	this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
+
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall);
+    else
+        this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall);
+
+
 
 	m_pVideoEncodingThread->SetNotifierFlag(true);
 }
@@ -816,8 +964,13 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
     m_pVideoRenderingThread->StopRenderingThread();
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
+    if(m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall);
+    else
+        m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1, m_bIsCheckCall);
 
-	m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS/2 + 1, m_bIsCheckCall);
+
+
 	m_pColorConverter->SetHeightWidth(iHeight, iWidth);
 
 	m_SendingBuffer->ResetBuffer();
@@ -828,7 +981,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 	m_pVideoPacketQueue->ResetBuffer();
 	m_pMiniPacketQueue->ResetBuffer();
 
-	m_BitRateController = new BitRateController(m_nCallFPS);
+	m_BitRateController = new BitRateController(m_nCallFPS, m_lfriendID);
     m_BitRateController->SetEncoder(m_pVideoEncoder);
     m_BitRateController->SetSharedObject(m_pCommonElementsBucket);
     
@@ -863,3 +1016,12 @@ CFPSController* CVideoCallSession::GetFPSController()
 	return m_pFPSController;
 }
 
+bool CVideoCallSession::isLiveVideoStreamRunning()
+{
+    return m_bLiveVideoStreamRunning;
+}
+int CVideoCallSession::GetServiceType()
+{
+    return m_nServiceType;
+    
+}

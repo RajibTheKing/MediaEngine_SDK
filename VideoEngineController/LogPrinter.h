@@ -9,9 +9,16 @@
 #include <android/log.h>
 
 #define LOG_TAG "LibraryLog"
-#define LOGF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGEF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define __LOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+#else
+
+#define LOGF(...) 
+#define LOGE(...)
+#define LOGEF(...)
 #endif
 
 //#define __PRINT_LOG__
@@ -29,11 +36,16 @@
 
 //#define  __SPECIFIC_LOG6__
 
+#define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+#define __LOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+
 #define ON 1
 #define OFF 0
 
 #define LOG_ENABLED
 
+
+#define INSTENT_TEST_LOG_2		OFF
 #define INSTENT_TEST_LOG		OFF
 #define CHECK_CAPABILITY_LOG	OFF
 #define QUEUE_OVERFLOW_LOG		OFF
