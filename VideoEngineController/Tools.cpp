@@ -35,6 +35,7 @@ Tools::~Tools()
 	if (NULL != m_filePointerToWriteShortData)
 		fclose(m_filePointerToWriteShortData);
 }
+
 std::string Tools::DoubleToString(double dConvertingValue)
 {
 	stringstream convertedStringStream;
@@ -44,25 +45,62 @@ std::string Tools::DoubleToString(double dConvertingValue)
 	return convertedStringStream.str();
 }
 
-std::string Tools::LongLongToString(long long llConvertingValue)
-{
-	stringstream convertedStringStream;
-
-	convertedStringStream << llConvertingValue;
-
-	return convertedStringStream.str();
-}
-
-int Tools::StringToIntegerConvert(std::string strConvertingString)
-{
-	int nConvertedNumber;
-
-	nConvertedNumber = atoi(strConvertingString.c_str());
-
-	return nConvertedNumber;
-}
-
 std::string Tools::IntegertoStringConvert(int nConvertingNumber)
+{
+    char cConvertedCharArray[12];
+    
+#ifdef _WIN32
+    
+    _itoa_s(nConvertingNumber, cConvertedCharArray, 10);
+    
+#else
+    
+    sprintf(cConvertedCharArray, "%d", nConvertingNumber);
+    
+#endif
+    
+    return (std::string)cConvertedCharArray;
+}
+
+std::string Tools::LongLongtoStringConvert(long long number)
+{
+    char buf[22];
+    
+    int i, j, k;
+    
+    bool negative = false;
+    
+    if (number < (long long)0)
+    {
+        number *= (long long)-1;
+        negative = true;
+    }
+    
+    for (i = 0; number; i++)
+    {
+        buf[i] = number % 10 + '0';
+        number /= 10;
+    }
+    
+    if (negative)
+    {
+        buf[i++] = '-';
+    }
+    
+    for (j = i - 1, k = 0; k < j; k++, j--)
+    {
+        buf[j] ^= buf[k];
+        buf[k] ^= buf[j];
+        buf[j] ^= buf[k];
+    }
+    
+    buf[i] = '\0';
+    
+    return (std::string)buf;
+}
+
+
+std::string Tools::getText(int nConvertingNumber)
 {
 	char cConvertedCharArray[12];
 
@@ -79,10 +117,12 @@ std::string Tools::IntegertoStringConvert(int nConvertingNumber)
 	return (std::string)cConvertedCharArray;
 }
 
-std::string Tools::LongLongtoStringConvert(long long number)
+std::string Tools::getText(long long number)
 {
 	char buf[22];
+    
 	int i, j, k;
+    
 	bool negative = false;
 
 	if (number < (long long)0)
@@ -113,6 +153,36 @@ std::string Tools::LongLongtoStringConvert(long long number)
 
 	return (std::string)buf;
 }
+
+
+std::string Tools::getText(double dConvertingValue)
+{
+    stringstream convertedStringStream;
+    
+    convertedStringStream << dConvertingValue;
+    
+    return convertedStringStream.str();
+}
+
+int Tools::StringToIntegerConvert(std::string strConvertingString)
+{
+    int nConvertedNumber;
+    
+    nConvertedNumber = atoi(strConvertingString.c_str());
+    
+    return nConvertedNumber;
+}
+
+std::string Tools::LongLongToString(long long llConvertingValue)
+{
+    stringstream convertedStringStream;
+    
+    convertedStringStream << llConvertingValue;
+    
+    return convertedStringStream.str();
+}
+
+
 
 void Tools::SOSleep(int nSleepTimeout)
 {
