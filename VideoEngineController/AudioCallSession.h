@@ -143,8 +143,7 @@ private:
     G729CodecNative *m_pG729CodecNative;
 #endif
 //    int m_iNextPacketType;
-    int m_iLastDecodedPacketNumber;
-    int m_nMaxAudioPacketNumber;
+    int m_iLastDecodedPacketNumber;    
     int m_iPacketNumber;
 	int m_iSlotID;
 	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;
