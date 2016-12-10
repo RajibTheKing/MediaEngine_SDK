@@ -64,8 +64,8 @@ CEcho::CEcho(int id)
 
 	int i;
 	float f;
-	i = 1;
-	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_VAD, &i);
+	//i = 1;
+	//speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_VAD, &i);
 	i = 1;
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DENOISE, &i);
 	i = 1;
