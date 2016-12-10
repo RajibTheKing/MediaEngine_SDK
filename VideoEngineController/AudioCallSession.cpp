@@ -86,8 +86,8 @@ m_nServiceType(nServiceType)
 	StartEncodingThread();
 	StartDecodingThread();
 
-	SendingHeader = new CAudioPacketHeader(m_bLiveAudioStreamRunning);
-	ReceivingHeader = new CAudioPacketHeader(m_bLiveAudioStreamRunning);
+	SendingHeader = new CAudioPacketHeader();
+	ReceivingHeader = new CAudioPacketHeader();
 	m_AudioHeadersize = SendingHeader->GetHeaderSize();
 	
 	m_llEncodingTimeStampOffset = m_Tools.CurrentTimestamp();
@@ -725,10 +725,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 			SendingHeader->SetInformation(m_iPrevRecvdSlotID, RECVDSLOTNUMBER);
 			SendingHeader->SetInformation(m_iReceivedPacketsInPrevSlot, NUMPACKETRECVD);
 			SendingHeader->SetInformation(version, VERSIONCODE);
-			if (m_bLiveAudioStreamRunning)
-			{
-				SendingHeader->SetInformation(nCurrentTimeStamp, TIMESTAMP);
-			}
+
+			SendingHeader->SetInformation(nCurrentTimeStamp, TIMESTAMP);
+
 			SendingHeader->GetHeaderInByteArray(&m_ucaEncodedFrame[1]);
 
 			//            SendingHeader->CopyHeaderToInformation(&m_ucaEncodedFrame[1]);
