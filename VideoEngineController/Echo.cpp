@@ -61,6 +61,19 @@ CEcho::CEcho(int id)
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS, &db);
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS_ACTIVE, &db);
+
+	int i;
+	float f;
+	i = 1;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_VAD, &i);
+	i = 1;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DENOISE, &i);
+	i = 1;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DEREVERB, &i);
+	f = 0.9;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
+	f = 0.9;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
 #endif
 }
 
@@ -118,7 +131,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		{
 			delay = 0;
 		}
-		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, 60))
+		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, 50))
 		{
 			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)delay)
 				+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)

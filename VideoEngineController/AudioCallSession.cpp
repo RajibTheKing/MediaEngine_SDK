@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-//#define __AUDIO_SELF_CALL__
+#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
 #ifdef USE_AECM
