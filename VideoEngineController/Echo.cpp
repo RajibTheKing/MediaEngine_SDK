@@ -86,6 +86,7 @@ CEcho::~CEcho()
 #endif
 #if defined(USE_SPEEX_AECM)
 	speex_echo_state_destroy(st);
+	speex_preprocess_state_destroy(den);
 #endif
 }
 
