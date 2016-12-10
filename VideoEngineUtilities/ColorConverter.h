@@ -30,6 +30,8 @@ public:
 	int ConvertNV21ToI420(unsigned char *convertingData);
 	int ConvertYUY2ToI420(unsigned char * input, unsigned char * output);
 	int ConvertRGB24ToI420(unsigned char *input, unsigned char *output);
+    
+    int ConvertRGB32ToRGB24(unsigned char *input, int iHeight, int iWidth, unsigned char *output);
 
     
 	void mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData);

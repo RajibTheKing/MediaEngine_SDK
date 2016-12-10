@@ -643,6 +643,23 @@ int CColorConverter::ConvertRGB24ToI420(unsigned char *input, unsigned char *out
 	return m_iVideoHeight * m_iVideoWidth * 3 / 2;
 }
 */
+
+int CColorConverter::ConvertRGB32ToRGB24(unsigned char *input, int iHeight, int iWidth, unsigned char *output)
+{
+    int in_len = iHeight * iWidth * 4;
+    
+    int indx = 0;
+    for(int i=0;i<in_len; i+=4)
+    {
+        output[indx++] = input[i];
+        output[indx++] = input[i+1];
+        output[indx++] = input[i+2];
+    }
+    
+    return indx;
+}
+
+
 int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageNotApplied(byte* pData, int &iHeight, int &iWidth, byte* outputData)
 {
     
