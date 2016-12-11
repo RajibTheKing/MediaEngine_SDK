@@ -5,6 +5,7 @@
 #include <cstdlib>
 
 #ifdef _WIN32
+#include <chrono>
 #include <windows.h>
 #elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR) 
 #include <ctime>
@@ -207,7 +208,11 @@ LongLong  Tools::CurrentTimestamp()
 {
 	LongLong currentTime;
 
-#if defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+#if	defined(_DESKTOP_C_SHARP_)
+	auto timeEpoch = std::chrono::system_clock::now().time_since_epoch();
+	currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEpoch).count();
+
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_WIN32)
 
 	currentTime = GetTickCount64();
 
