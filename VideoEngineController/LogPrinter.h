@@ -19,6 +19,8 @@
 #define LOGF(...) 
 #define LOGE(...)
 #define LOGEF(...)
+#define __LOG(...) 
+
 #endif
 
 //#define __PRINT_LOG__
