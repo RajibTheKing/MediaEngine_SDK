@@ -16,7 +16,7 @@ CVideoMuxingAndEncodeSession::CVideoMuxingAndEncodeSession(CCommonElementsBucket
 #ifdef __CVideoFileEncodeDecodeSession_DUMP_FILE__
 	//FileOutput = fopen("/sdcard/OutputPCMN.pcm", "a+");
 	//Fileinput = fopen("/sdcard/FahadInputPCMN.pcm", "a+");
-	FileOutput = fopen("/storage/emulated/0/FahadO.h264", "w");;
+	FileOutput = fopen("/storage/emulated/0/FahadO.h264", "w");
 //	Fileinput = fopen("/storage/emulated/0/FahadInputPCMN.pcm", "w");;
 #endif
 
@@ -26,6 +26,9 @@ CVideoMuxingAndEncodeSession::CVideoMuxingAndEncodeSession(CCommonElementsBucket
 	m_VideoEncoder = NULL;
 	m_ColorConverter = NULL;
 	m_YUV420ConvertedLen = 0;
+	m_iFinalEncodedFrameBufferIndx = 0;
+
+	m_pVideoMuxingEncodeSessionMutex.reset(new CLockHandler);
 }
 
 CVideoMuxingAndEncodeSession::~CVideoMuxingAndEncodeSession()
@@ -56,10 +59,13 @@ CVideoMuxingAndEncodeSession::~CVideoMuxingAndEncodeSession()
 
 		this->m_ColorConverter = NULL;
 	}
+
+	SHARED_PTR_DELETE(m_pVideoMuxingEncodeSessionMutex);
 }
 
 int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth)
 {
+	Locker lock(*m_pVideoMuxingEncodeSessionMutex);
 	LOGE("fahad -->> CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession  nVideoHeight = %d, int nVideoWidth = %d, bmpLen = %d", nVideoHeight, nVideoWidth, iLen);
 	if(NULL == this->m_CMuxingVideoData)
 	{
@@ -100,6 +106,7 @@ int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char
 
 int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData)
 {
+	Locker lock(*m_pVideoMuxingEncodeSessionMutex);
 
 	if( NULL == this->m_VideoEncoder || NULL == m_ColorConverter || NULL == m_CMuxingVideoData)
 	{
@@ -113,22 +120,32 @@ int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, i
 	int iMergedYUVLen = m_CMuxingVideoData->MergeFrameYUV_With_VideoYUV(m_ucaYUVMuxFrame, m_ucaRotateYUVFrame, iHeight, iWidth, m_ucaMergedYUVFrame);
 
 	//m_ColorConverter->ConvertI420ToNV21(m_ucaMergedYUVFrame, iHeight, iWidth);
-	int size = m_VideoEncoder->EncodeVideoFrame(m_ucaMergedYUVFrame, iMergedYUVLen, pMergedData);
+	int encodedSize = m_VideoEncoder->EncodeVideoFrame(m_ucaMergedYUVFrame, iMergedYUVLen, pMergedData);
 
-	LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  size = %d", size);
+	if(m_iFinalEncodedFrameBufferIndx + encodedSize < FINAL_ENCODED_FRAME_BUFFER_LEN)
+	{
+		memcpy(m_ucaFinalEncodedFrameBuffer + m_iFinalEncodedFrameBufferIndx, pMergedData, encodedSize );
+		m_iFinalEncodedFrameBufferIndx += encodedSize;
+	}
 
-#ifdef __CVideoFileEncodeDecodeSession_DUMP_FILE__
-	fwrite(pMergedData, 1, size, FileOutput);
-	fflush(FileOutput);
-#endif
+	LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  encodedSize = %d", encodedSize);
 
-	return size;
+
+	return encodedSize;
 
 }
 
 
-int CVideoMuxingAndEncodeSession::StopVideoMuxingAndEncodeSession()
+int CVideoMuxingAndEncodeSession::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 {
+	Locker lock(*m_pVideoMuxingEncodeSessionMutex);
+	
+	memcpy(finalData, m_ucaFinalEncodedFrameBuffer, m_iFinalEncodedFrameBufferIndx);
+
+#ifdef __CVideoFileEncodeDecodeSession_DUMP_FILE__
+	fwrite(finalData, 1, m_iFinalEncodedFrameBufferIndx, FileOutput);
+	fflush(FileOutput);
+#endif
 
 	if (NULL != this->m_CMuxingVideoData)
 	{
@@ -151,7 +168,7 @@ int CVideoMuxingAndEncodeSession::StopVideoMuxingAndEncodeSession()
 		this->m_ColorConverter = NULL;
 	}
 
-	return 1;
+	return m_iFinalEncodedFrameBufferIndx;
 }
 
 

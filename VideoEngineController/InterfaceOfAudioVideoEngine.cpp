@@ -553,13 +553,13 @@ int CInterfaceOfAudioVideoEngine::FrameMuxAndEncode( unsigned char *pVideoYuv, i
 
 }
 
-int CInterfaceOfAudioVideoEngine::StopVideoMuxingAndEncodeSession()
+int CInterfaceOfAudioVideoEngine::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 {
 	int nReturnedValue = 0;
 
 	if (NULL != m_pcController)
 	{
-		nReturnedValue = m_pcController->StopVideoMuxingAndEncodeSession();
+		nReturnedValue = m_pcController->StopVideoMuxingAndEncodeSession(finalData);
 	}
 
 	return nReturnedValue;

@@ -118,13 +118,16 @@ int CMuxingVideoData::MergeFrameYUV_With_VideoYUV(unsigned char* pFrameYuv, unsi
             
             if(m_bCheckMatrix[now] == true)
             {
-                pVideoYuv[now] = pFrameYuv[now];
+                int yAddedVal = pFrameYuv[now] + pVideoYuv[now];
+                pVideoYuv[now] =  (unsigned char)(yAddedVal/2);
                 
                 int uIndex = m_IndexFor_U[now];
                 int vIndex = m_IndexFor_V[now];
-                
-                pVideoYuv[uIndex] = pFrameYuv[uIndex];
-                pVideoYuv[vIndex] = pFrameYuv[vIndex];
+
+                int uAddedVal = pFrameYuv[uIndex] + pVideoYuv[uIndex];
+                pVideoYuv[uIndex] = (unsigned char)(uAddedVal/2);
+                int vAddedVal = pFrameYuv[vIndex] + pVideoYuv[vIndex];
+                pVideoYuv[vIndex] = (unsigned char)(vAddedVal/2);
                 
             }
         }

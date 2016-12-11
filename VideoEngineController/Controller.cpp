@@ -852,17 +852,17 @@ int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int i
 		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth, pMergedData);
 }
 
-int CController::StopVideoMuxingAndEncodeSession()
+int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 {
 	if (NULL != m_pVideoMuxingAndEncodeSession)
 	{
-		m_pVideoMuxingAndEncodeSession->StopVideoMuxingAndEncodeSession();
+		int ret = m_pVideoMuxingAndEncodeSession->StopVideoMuxingAndEncodeSession(finalData);
 
 		delete m_pVideoMuxingAndEncodeSession;
 
 		m_pVideoMuxingAndEncodeSession = NULL;
 
-		return 1;
+		return ret;
 	}
 	else
 		return 0;
