@@ -289,10 +289,9 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 
 		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel,nServiceType);
 
-		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
-
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,nServiceType,iNetworkType);
 
+		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
         
