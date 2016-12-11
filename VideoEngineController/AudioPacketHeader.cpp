@@ -2,14 +2,9 @@
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
 
-CAudioPacketHeader::CAudioPacketHeader(bool bIsLive)
+CAudioPacketHeader::CAudioPacketHeader()
 {
 	nNumberOfHeaderElements = sizeof(HeaderBitmap)/sizeof(int);
-
-	if (bIsLive == false)
-	{
-		nNumberOfHeaderElements--;
-	}
 
 	int headerSizeInBit = 0;
 	for (int i = 0; i < nNumberOfHeaderElements; i++)
@@ -24,15 +19,15 @@ CAudioPacketHeader::CAudioPacketHeader(bool bIsLive)
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
 
-CAudioPacketHeader::CAudioPacketHeader(unsigned int * Information, bool bIsLive)
+CAudioPacketHeader::CAudioPacketHeader(unsigned int * Information)
 {
-	CAudioPacketHeader(bIsLive == true);
+	CAudioPacketHeader();
 	CopyInformationToHeader(Information);
 }
 
-CAudioPacketHeader::CAudioPacketHeader(unsigned char *Header, bool bIsLive)
+CAudioPacketHeader::CAudioPacketHeader(unsigned char *Header)
 {
-	CAudioPacketHeader(bIsLive == true);
+	CAudioPacketHeader();
 	CopyHeaderToInformation(Header);
 }
 

@@ -30,7 +30,7 @@ static int HeaderBitmap[] =
 	8 /*PACKETTYPE*/,
 	2 /*NETWORKTYPE*/,
 	3 /*SLOTNUMBER*/,
-	13 /*PACKETNUMBER*/,
+	21 /*PACKETNUMBER*/,
 	12 /*PACKETLENGTH*/,
 	3 /*RECVDSLOTNUMBER*/,
 	8 /*NUMPACKETRECVD*/,
@@ -59,9 +59,9 @@ class CAudioPacketHeader {
 	int nNumberOfHeaderElements;
 
 public:
-	CAudioPacketHeader(bool bIsLive = false) ;
-	CAudioPacketHeader(unsigned int * Information, bool bIsLive = false);
-	CAudioPacketHeader(unsigned char *Header, bool bIsLive = false);
+	CAudioPacketHeader();
+	CAudioPacketHeader(unsigned int * Information);
+	CAudioPacketHeader(unsigned char *Header);
 	~CAudioPacketHeader();
 
 	int CopyInformationToHeader(unsigned int * Information);
