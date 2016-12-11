@@ -15,6 +15,7 @@ m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL),
+m_pVideoMuxingAndEncodeSession(NULL),
 m_pDeviceCapabilityCheckBuffer(NULL),
 m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
@@ -48,6 +49,7 @@ m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL),
+m_pVideoMuxingAndEncodeSession(NULL),
 m_pDeviceCapabilityCheckBuffer(NULL),
 m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
@@ -111,6 +113,13 @@ CController::~CController()
 		delete m_pAudioEncodeDecodeSession;
 
 		m_pAudioEncodeDecodeSession = NULL;
+	}
+
+	if (NULL != m_pVideoMuxingAndEncodeSession)
+	{
+		delete m_pVideoMuxingAndEncodeSession;
+
+		m_pVideoMuxingAndEncodeSession = NULL;
 	}
     
     SHARED_PTR_DELETE(m_pVideoSendMutex);
@@ -814,6 +823,44 @@ int CController::StopAudioEncodeDecodeSession()
 		delete m_pAudioEncodeDecodeSession;
 
 		m_pAudioEncodeDecodeSession = NULL;
+
+		return 1;
+	}
+	else
+		return 0;
+}
+
+int CController::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth)
+{
+	LOGE("fahad -->> CController::StartVideoMuxingAndEncodeSession 0");
+	if (NULL == m_pVideoMuxingAndEncodeSession)
+	{
+		LOGE("fahad -->> CController::StartVideoMuxingAndEncodeSession null");
+		m_pVideoMuxingAndEncodeSession = new CVideoMuxingAndEncodeSession(m_pCommonElementsBucket);
+	}
+
+	return m_pVideoMuxingAndEncodeSession->StartVideoMuxingAndEncodeSession(pBMP32Data, iLen, nVideoHeight, nVideoWidth);
+}
+
+int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData)
+{
+	if (NULL == m_pVideoMuxingAndEncodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth, pMergedData);
+}
+
+int CController::StopVideoMuxingAndEncodeSession()
+{
+	if (NULL != m_pVideoMuxingAndEncodeSession)
+	{
+		m_pVideoMuxingAndEncodeSession->StopVideoMuxingAndEncodeSession();
+
+		delete m_pVideoMuxingAndEncodeSession;
+
+		m_pVideoMuxingAndEncodeSession = NULL;
 
 		return 1;
 	}

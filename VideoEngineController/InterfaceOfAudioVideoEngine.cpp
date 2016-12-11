@@ -526,6 +526,46 @@ int CInterfaceOfAudioVideoEngine::StopAudioEncodeDecodeSession()
 }
 
 
+int CInterfaceOfAudioVideoEngine::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth)
+{
+	int nReturnedValue = 0;
+
+	if (NULL != m_pcController)
+	{
+		nReturnedValue = m_pcController->StartVideoMuxingAndEncodeSession(pBMP32Data, iLen, nVideoHeight, nVideoWidth);
+	}
+
+	return nReturnedValue;
+
+}
+
+int CInterfaceOfAudioVideoEngine::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData)
+{
+
+	int nReturnedValue = 0;
+
+	if (NULL != m_pcController)
+	{
+		nReturnedValue = m_pcController->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth, pMergedData);
+	}
+
+	return nReturnedValue;
+
+}
+
+int CInterfaceOfAudioVideoEngine::StopVideoMuxingAndEncodeSession()
+{
+	int nReturnedValue = 0;
+
+	if (NULL != m_pcController)
+	{
+		nReturnedValue = m_pcController->StopVideoMuxingAndEncodeSession();
+	}
+
+	return nReturnedValue;
+
+}
+
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
 	if (NULL != m_pcController)

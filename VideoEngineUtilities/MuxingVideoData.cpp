@@ -23,9 +23,8 @@ CMuxingVideoData::~CMuxingVideoData()
 
 void CMuxingVideoData::SetBMP32Frame(unsigned char *pBMP32Data, int iLen, int iHeight, int iWidth)
 {
-    memcpy(m_ucaBMP32Frame, pBMP32Data + BMP_HEADER_SIZE, iLen - BMP_HEADER_SIZE);
     
-    GenerateCheckMatrix(iHeight, iWidth);
+    GenerateCheckMatrix(pBMP32Data, iHeight, iWidth);
     
     GenerateUVIndexMatrix(iHeight, iWidth);
     
@@ -74,7 +73,7 @@ void CMuxingVideoData::GenerateUVIndexMatrix(int iHeight, int iWidth) //Generati
     }
     
 }
-void CMuxingVideoData::GenerateCheckMatrix(int iHeight, int iWidth)
+void CMuxingVideoData::GenerateCheckMatrix(unsigned char *pBMP32Data, int iHeight, int iWidth)
 {
     
     int indx = iHeight*iWidth;
@@ -84,7 +83,7 @@ void CMuxingVideoData::GenerateCheckMatrix(int iHeight, int iWidth)
     
     for(int i=4; i<bmp32Len; i+=4)
     {
-        if(m_ucaBMP32Frame[i-3]==0 && m_ucaBMP32Frame[i-2]==0&&m_ucaBMP32Frame[i-1]==0&&m_ucaBMP32Frame[i]==0)
+        if(pBMP32Data[i-3]==0 && pBMP32Data[i-2]==0 && pBMP32Data[i-1]==0 && pBMP32Data[i]==0)
         {
             m_bCheckMatrix[temp++] = false;
         }
@@ -131,6 +130,6 @@ int CMuxingVideoData::MergeFrameYUV_With_VideoYUV(unsigned char* pFrameYuv, unsi
         }
     }
     
-    memcpy(pMergedData, pFrameYuv, iLen);
+    memcpy(pMergedData, pVideoYuv, iLen);
     return iLen;
 }

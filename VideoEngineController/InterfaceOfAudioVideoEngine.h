@@ -54,6 +54,10 @@ public:
     int EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer);
     int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
     int StopAudioEncodeDecodeSession();
+
+	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
+	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData);
+	int StopVideoMuxingAndEncodeSession();
     
      void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
      void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, int, int));

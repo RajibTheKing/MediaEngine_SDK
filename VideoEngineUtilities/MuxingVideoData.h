@@ -7,8 +7,8 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 
-#define MAX_FRAME_HEIGHT 1920
-#define MAX_FRAME_WIDTH 1080
+#define MAX_FRAME_HEIGHT_MUXING_SESSION 640
+#define MAX_FRAME_WIDTH_MUXING_SESSION 480
 
 #include <string>
 
@@ -29,17 +29,16 @@ public:
     void SetBMP32Frame(unsigned char *pBMP32Data, int iLen, int iHeight, int iWidth);
     
     void GenerateUVIndexMatrix(int iHeight, int iWidth);
-    void GenerateCheckMatrix(int iHeight, int iWidth);
+    void GenerateCheckMatrix(unsigned char *pBMP32Data, int iHeight, int iWidth);
     
     int MergeFrameYUV_With_VideoYUV(unsigned char* pFrameYuv, unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData);
 
 private:
-    unsigned char m_ucaBMP32Frame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 4];
+
+    int m_IndexFor_U[MAX_FRAME_HEIGHT_MUXING_SESSION * MAX_FRAME_WIDTH_MUXING_SESSION];
+    int m_IndexFor_V[MAX_FRAME_HEIGHT_MUXING_SESSION * MAX_FRAME_WIDTH_MUXING_SESSION];
     
-    int m_IndexFor_U[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH];
-    int m_IndexFor_V[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH];
-    
-    bool m_bCheckMatrix[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH];
+    bool m_bCheckMatrix[MAX_FRAME_HEIGHT_MUXING_SESSION * MAX_FRAME_WIDTH_MUXING_SESSION];
     bool m_bBMP32FrameIsSet;
     
 	SmartPointer<CLockHandler> m_pMuxingVideoMutex;

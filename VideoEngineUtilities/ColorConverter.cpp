@@ -32,10 +32,14 @@ m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 	m_pColorConverterMutex.reset(new CLockHandler);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CColorConverter::CColorConverter Prepared");
+	LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
+
+
 }
 
 CColorConverter::~CColorConverter()
 {
+	LOGE("fahad -->> CColorConverter Destructor Called");
 
 }
 
@@ -213,12 +217,12 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *pData)
 
 void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData)
 {
+	LOGE("fahad -->> avgValue= %d, addValue= %d, thresholdVal= %d, m_iVideoHeight=%d, m_iVideoWidth = %d", m_AverageValue, m_PrevAddValue, m_ThresholdValue,m_iVideoHeight, m_iVideoWidth);
+
 	Locker lock(*m_pColorConverterMutex);
 
 	int iWidth = m_iVideoHeight;
 	int iHeight = m_iVideoWidth;
-
-	//LOGEG("fahad -->> avgValue= %d, addValue= %d, thresholdVal= %d", m_AverageValue, m_PrevAddValue, m_ThresholdValue);
 
 	int i = 0;
 	int totalYValue = 0;
@@ -646,6 +650,8 @@ int CColorConverter::ConvertRGB24ToI420(unsigned char *input, unsigned char *out
 
 int CColorConverter::ConvertRGB32ToRGB24(unsigned char *input, int iHeight, int iWidth, unsigned char *output)
 {
+	Locker lock(*m_pColorConverterMutex);
+
     int in_len = iHeight * iWidth * 4;
     
     int indx = 0;
