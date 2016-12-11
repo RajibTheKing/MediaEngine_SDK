@@ -144,7 +144,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 		if (m_RcvdPacketHeader.GetPacketType() == __BITRATE_CONTROLL_PACKET_TYPE) {                    /* Opponent response of data receive. */
 //			VLOG("__BITRATE_CONTROLL_PACKET_TYPE");
-			m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
+			m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader, m_pVideoCallSession->GetServiceType());
 			toolsObject.SOSleep(1);
 			continue;
 		}

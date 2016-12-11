@@ -116,12 +116,9 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 }
 
 
-bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader)
-{
-    CVideoCallSession* pVideoSession;
-	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_FriendID, pVideoSession);
-    
-    if(bExist && (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType)
+{ 
+	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
     {
 //    double __ratio = 100.00 * crTempHeader.getTimeStamp() * 8.00 /  m_pVideoEncoder->GetBitrate();
 //    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())
