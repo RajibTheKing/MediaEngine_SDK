@@ -94,7 +94,6 @@ m_nServiceType(nServiceType)
 	m_bLoudSpeakerEnabled = false;
 
 #ifdef USE_AECM
-	m_bNoDataFromFarendYet = true;
 	m_pEcho = new CEcho(66);
 #ifdef USE_ECHO2
 	m_pEcho2 = new CEcho(77);
@@ -220,7 +219,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	}
 	LastFrameTime = llCurrentTime;
 #ifdef USE_AECM
-	if (m_bEchoCancellerEnabled /*&& !m_bNoDataFromFarendYet*/)
+	if (!m_bLiveAudioStreamRunning && m_bEchoCancellerEnabled)
 	{
 #ifdef USE_ECHO2
 		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength);
@@ -239,14 +238,13 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 {
 #ifdef USE_AECM
-	if (m_bEchoCancellerEnabled)
+	if (!m_bLiveAudioStreamRunning && m_bEchoCancellerEnabled)
 	{
 #ifdef USE_ECHO2
 		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength);
 #endif
 		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, m_bLoudSpeakerEnabled);
 	}
-	m_bNoDataFromFarendYet = false;
 #endif
 	return true;
 }
@@ -453,10 +451,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 				memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
 				m_pNoise->Denoise(m_saAudioEncodingTempFrame, nEncodingFrameSize, m_saAudioEncodingDenoisedFrame);
 #ifdef USE_AECM
-				if (m_bNoDataFromFarendYet)
-				{
-					memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
-				}
+				
+				memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
 #else
 				memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
 #endif

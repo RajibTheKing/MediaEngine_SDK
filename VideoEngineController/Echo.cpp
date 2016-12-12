@@ -112,14 +112,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 
 #ifdef USE_WEBRTC_AECM
 	iCounter++;
-	/*if (iCounter ++ > 5)
-	return 0;*/
-	/*while (farending)
-	{
-	m_Tools.SOSleep(5);
-	}*/
-	processing = 1;
-#if 1
+#if 0
 	long long llNow = m_Tools.CurrentTimestamp();
 #endif
 	//ALOG("aec sBufferSize = " + m_Tools.IntegertoStringConvert((int)sBufferSize));
@@ -166,7 +159,6 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		}*/
 #endif
 	}
-	processing = 0;
 	//return true;
 #if 0
 	if (memcmp(sInBuf, m_sTempBuf, sBufferSize * sizeof(short)) == 0)
@@ -193,15 +185,6 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool bLoudSpeakerEnabled)
 		ALOG("aec farend Invalid size");
 		return false;
 	}
-	iCounter2++;
-	/*if (iCounter2 ++ > 5)
-		return 0;*/
-	//Locker lock(*m_pEchoMutex);
-	/*while (processing)
-	{
-		m_Tools.SOSleep(5);
-	}*/
-	farending = 1;
 	for (int i = 0; i < sBufferSize; i += AECM_SAMPLES_IN_FRAME)
 	{
 		if (0 != WebRtcAecm_BufferFarend(AECM_instance, sBuffer + i, AECM_SAMPLES_IN_FRAME))
@@ -221,13 +204,6 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool bLoudSpeakerEnabled)
 	farending = 0;	
 #endif
 #if defined(USE_SPEEX_AECM)
-	/*if (bLoudSpeakerEnabled)
-	{
-		for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i++)
-		{
-			sBuffer[i] *= 1000;
-		}
-	}*/
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
 		speex_echo_playback(st, sBuffer + i);

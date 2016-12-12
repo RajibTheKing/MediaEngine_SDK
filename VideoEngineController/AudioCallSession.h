@@ -116,7 +116,6 @@ private:
 
     std::vector<int> m_vEncodedFrameLenght;
 	bool m_bUsingLoudSpeaker;
-	bool m_bNoDataFromFarendYet;
 #ifdef USE_AECM
 	CEcho *m_pEcho, *m_pEcho2;
 #endif
