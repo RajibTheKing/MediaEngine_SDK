@@ -58,6 +58,9 @@ public:
 	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
 	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
 	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
+
+	void InterruptOccured(const LongLong lFriendID);
+	void InterruptOver(const LongLong lFriendID);
     
      void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
      void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, int, int));

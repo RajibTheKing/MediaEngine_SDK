@@ -54,6 +54,9 @@ public:
     int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
     int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
+	void InterruptOccured(const LongLong lFriendID);
+	void InterruptOver(const LongLong lFriendID);
+
 	bool StopAudioCall(const LongLong& lFriendID);
 	bool StopVideoCall(const LongLong& lFriendID);
 	bool StopTestAudioCall(const LongLong& lFriendID);

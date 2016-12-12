@@ -26,6 +26,9 @@ public:
 	void SendingThreadProcedure();
 	static void *CreateVideoSendingThread(void* param);
 
+	void InterruptOccured();
+	void InterruptOver();
+
 private:
 	int GetSleepTime();
 
@@ -50,6 +53,9 @@ private:
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     
 	LongLong m_lfriendID;
+
+	bool m_bInterruptHappened;
+	bool m_bInterruptRunning;
 
 	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
