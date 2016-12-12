@@ -7,8 +7,6 @@
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
-//int g_iNextPacketType = 1;
-
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
@@ -21,7 +19,6 @@ FILE *FileInput;
 FILE *FileOutput;
 #endif
 
-//extern int g_StopVideoSending;
 
 #ifdef USE_ANS
 #define ANS_SAMPLE_SIZE 80
@@ -311,10 +308,9 @@ CAudioCallSession::~CAudioCallSession()
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 }
 
-void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID, int nServiceType)
+void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
-    m_nServiceType  = nServiceType;
 
 	//this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket);
 
@@ -515,9 +511,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else {
 			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
-
-//			m_saAudioEncodingFrame[0] = 1000;
-//			m_saAudioEncodingFrame[nEncodingFrameSize - 1] = 2000;
 
 			if (nEncodingFrameSize % AUDIO_FRAME_SIZE > 0) {
 				ALOG("#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " + Tools::IntegertoStringConvert(nEncodingFrameSize));
@@ -729,16 +722,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
             m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
 
-//            ALOG("#V# E: PacketNumber: "+m_Tools.IntegertoStringConvert(m_iPacketNumber)
-//                + " #V# E: SLOTNUMBER: "+m_Tools.IntegertoStringConvert(m_iSlotID)
-
-			//            if(m_iPacketNumber%100 ==0)
-			//                ALOG("#2AE#  ------------------------ Version: "+Tools::IntegertoStringConvert(m_iAudioVersionFriend) +" isVideo: "+Tools::IntegertoStringConvert(m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()));
-
 			++m_iPacketNumber;
-
-			//            ALOG("#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
-			//            CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "#DE#--->> QUEUE = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize + m_AudioHeadersize + 1));
 
 #ifdef  __AUDIO_SELF_CALL__
             if(m_bLiveAudioStreamRunning == false)
@@ -777,11 +761,8 @@ void CAudioCallSession::EncodingThreadProcedure()
                 }
                     
             }
-//			else
-//				DecodeAudioData(m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1);
 
 			toolsObject.SOSleep(0);
-
 		}
 	}
 
@@ -933,7 +914,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
 			{
 				//g_StopVideoSending = 1;*/
-				if(m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL)
+				if(false == m_bLiveAudioStreamRunning)
 					m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
 				bIsProcessablePacket = true;
 			}
@@ -964,15 +945,6 @@ void CAudioCallSession::DecodingThreadProcedure()
 					llNow = m_Tools.CurrentTimestamp();
 					llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 					llWaitingTime = iTimeStampOffset - llExpectedEncodingTimeStamp;
-
-//					if( iTimeStampOffset > 100 + llLastDecodedFrameEncodedTimeStamp)
-//					{
-//						TempOffset = iTimeStampOffset - 98 - llLastDecodedFrameEncodedTimeStamp;
-//					}
-//					else
-//						TempOffset = 0;
-
-//					iTimeStampOffset -= TempOffset;
 
 					if( llExpectedEncodingTimeStamp -  __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> iTimeStampOffset ) {
 						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
@@ -1009,7 +981,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				m_iReceivedPacketsInCurrentSlot = 0;
 
 #ifdef OPUS_ENABLE
-				if(m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL) {
+				if(false == m_bLiveAudioStreamRunning) {
 					m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 				}
 #endif
@@ -1018,7 +990,6 @@ void CAudioCallSession::DecodingThreadProcedure()
 			m_iLastDecodedPacketNumber = iPacketNumber;
 			m_iReceivedPacketsInCurrentSlot ++;
 
-			//continue;
 			nDecodingFrameSize -= m_AudioHeadersize;
 			//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
 
@@ -1085,7 +1056,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 						iRatio += m_saAudioDecodedFrameTemp[i] * 1.0 / m_saDecodedFrame[i];
 						k++;
 					}
-				}ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
+				}
+				ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
 
 				memcpy(m_saDecodedFrame, m_saAudioDecodedFrameTemp,
 					   AUDIO_CLIENT_SAMPLE_SIZE * sizeof(short));
@@ -1124,13 +1096,12 @@ void CAudioCallSession::DecodingThreadProcedure()
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
 
-            if(m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL)
+            if(!m_bLiveAudioStreamRunning)
             {
                 llNow = m_Tools.CurrentTimestamp();
-                //            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
+				//            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
                 if(llNow - llTimeStamp >= 1000)
                 {
-                    //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
                     iDataSentInCurrentSec = 0;
                     llTimeStamp = llNow;
                 }
@@ -1139,8 +1110,6 @@ void CAudioCallSession::DecodingThreadProcedure()
                 ++iFrameCounter;
                 nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
                 dbTotalTime += nDecodingTime;
-                //            if(iFrameCounter % 100 == 0)
-                //                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
             }
 
 

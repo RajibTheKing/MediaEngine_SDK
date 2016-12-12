@@ -147,7 +147,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType);
 
-		pAudioSession->InitializeAudioCallSession(lFriendID, nServiceType);
+		pAudioSession->InitializeAudioCallSession(lFriendID);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -207,7 +207,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
 
-		pAudioSession->InitializeAudioCallSession(lFriendID, 11);
+		pAudioSession->InitializeAudioCallSession(lFriendID);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
