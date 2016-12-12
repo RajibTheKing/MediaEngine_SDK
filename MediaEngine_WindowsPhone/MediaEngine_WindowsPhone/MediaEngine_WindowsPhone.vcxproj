@@ -139,6 +139,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
@@ -186,11 +187,13 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncoder.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoderListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -202,6 +205,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
@@ -238,10 +242,12 @@
     <ClCompile Include="..\..\VideoEngineController\VideoEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoderListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
