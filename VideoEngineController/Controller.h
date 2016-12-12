@@ -39,7 +39,7 @@ public:
 	bool SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder);
 	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
 	bool SetEchoCanceller(const LongLong& lFriendID, bool bOn);
-	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
+	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType);
 	bool StartTestAudioCall(const LongLong& lFriendID);
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);

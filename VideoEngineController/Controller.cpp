@@ -281,7 +281,7 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 	}
 }
 
-bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
 {
     if(iVideoHeight * iVideoWidth > 352 * 288)
     {
