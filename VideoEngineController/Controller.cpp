@@ -842,14 +842,14 @@ int CController::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int 
 	return m_pVideoMuxingAndEncodeSession->StartVideoMuxingAndEncodeSession(pBMP32Data, iLen, nVideoHeight, nVideoWidth);
 }
 
-int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData)
+int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth)
 {
 	if (NULL == m_pVideoMuxingAndEncodeSession)
 	{
 		return 0;
 	}
 	else
-		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth, pMergedData);
+		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth);
 }
 
 int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)

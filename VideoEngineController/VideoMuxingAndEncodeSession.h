@@ -26,7 +26,7 @@ public:
 	~CVideoMuxingAndEncodeSession();
 
 	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
-	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData);
+	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
 	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
 private:
@@ -42,7 +42,10 @@ private:
 	unsigned char m_ucaMergedYUVFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
 	unsigned char m_ucaRotateYUVFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
 	unsigned char m_ucaEncodedFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
+	unsigned char m_ucaMergedData[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
 	unsigned char m_ucaFinalEncodedFrameBuffer[FINAL_ENCODED_FRAME_BUFFER_LEN];
+
+
 
 	int m_YUV420ConvertedLen;
 	int m_iFinalEncodedFrameBufferIndx;

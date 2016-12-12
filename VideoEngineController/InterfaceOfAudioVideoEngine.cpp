@@ -539,14 +539,14 @@ int CInterfaceOfAudioVideoEngine::StartVideoMuxingAndEncodeSession(unsigned char
 
 }
 
-int CInterfaceOfAudioVideoEngine::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData)
+int CInterfaceOfAudioVideoEngine::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth)
 {
 
 	int nReturnedValue = 0;
 
 	if (NULL != m_pcController)
 	{
-		nReturnedValue = m_pcController->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth, pMergedData);
+		nReturnedValue = m_pcController->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth);
 	}
 
 	return nReturnedValue;

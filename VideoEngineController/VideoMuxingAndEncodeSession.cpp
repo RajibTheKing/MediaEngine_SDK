@@ -99,12 +99,12 @@ int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char
 
 	m_CMuxingVideoData->SetBMP32Frame(pBMP32Data+BMP_HEADER_SIZE, iLen - BMP_HEADER_SIZE,nVideoHeight, nVideoWidth);
 
-    return m_VideoEncoder->CreateVideoEncoder(nVideoHeight, nVideoWidth, FRAME_RATE_MUXING_ENCODE_SESSION, I_FRAME_INTERVAL_MUXING_ENCODE_SESSION,false);
+    return m_VideoEncoder->CreateVideoEncoder(nVideoHeight, nVideoWidth, FRAME_RATE_MUXING_ENCODE_SESSION, I_FRAME_INTERVAL_MUXING_ENCODE_SESSION,false, 11);
 
 
 }
 
-int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData)
+int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth)
 {
 	Locker lock(*m_pVideoMuxingEncodeSessionMutex);
 
@@ -115,16 +115,16 @@ int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, i
 	}
 
 	LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  processing");
-	//memcpy(pMergedData, pVideoYuv, (iHeight * iWidth * 3) / 2);
+
 	m_ColorConverter->mirrorRotateAndConvertNV21ToI420( pVideoYuv, m_ucaRotateYUVFrame );
 	int iMergedYUVLen = m_CMuxingVideoData->MergeFrameYUV_With_VideoYUV(m_ucaYUVMuxFrame, m_ucaRotateYUVFrame, iHeight, iWidth, m_ucaMergedYUVFrame);
 
 	//m_ColorConverter->ConvertI420ToNV21(m_ucaMergedYUVFrame, iHeight, iWidth);
-	int encodedSize = m_VideoEncoder->EncodeVideoFrame(m_ucaMergedYUVFrame, iMergedYUVLen, pMergedData);
+	int encodedSize = m_VideoEncoder->EncodeVideoFrame(m_ucaMergedYUVFrame, iMergedYUVLen, m_ucaMergedData);
 
 	if(m_iFinalEncodedFrameBufferIndx + encodedSize < FINAL_ENCODED_FRAME_BUFFER_LEN)
 	{
-		memcpy(m_ucaFinalEncodedFrameBuffer + m_iFinalEncodedFrameBufferIndx, pMergedData, encodedSize );
+		memcpy(m_ucaFinalEncodedFrameBuffer + m_iFinalEncodedFrameBufferIndx, m_ucaMergedData, encodedSize );
 		m_iFinalEncodedFrameBufferIndx += encodedSize;
 	}
 

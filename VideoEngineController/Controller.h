@@ -69,7 +69,7 @@ public:
 	int StopAudioEncodeDecodeSession();
 
 	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
-	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth, unsigned char *pMergedData);
+	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
 	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
