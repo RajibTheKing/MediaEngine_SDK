@@ -333,21 +333,14 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID, int nSer
 
 }
 
-long long iMS = -1;
-int iAudioDataCounter = 0;
-long long LastFrameTime = -1;
-int counter = 0;
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
-//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
 	long long llCurrentTime = Tools::CurrentTimestamp();
-	if(LastFrameTime !=-1)
-//		__LOG("@@@@@@@@@@@@@@  #WQ NO: %d  ----*--> DIFF : %lld  Length: %d", counter, Tools::CurrentTimestamp() - LastFrameTime, (int)unLength);
-	LastFrameTime = llCurrentTime;
+
 	int returnedValue = m_AudioEncodingBuffer.Queue(psaEncodingAudioData, unLength, llCurrentTime);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
-	counter ++;
+
 	return returnedValue;
 }
 
