@@ -1,7 +1,7 @@
 #include "VideoMuxingAndEncodeSession.h"
 
 
-#define __CVideoFileEncodeDecodeSession_DUMP_FILE__
+//#define __CVideoFileEncodeDecodeSession_DUMP_FILE__
 
 #ifdef __CVideoFileEncodeDecodeSession_DUMP_FILE__
 FILE *FileOutput;
@@ -20,7 +20,7 @@ CVideoMuxingAndEncodeSession::CVideoMuxingAndEncodeSession(CCommonElementsBucket
 //	Fileinput = fopen("/storage/emulated/0/FahadInputPCMN.pcm", "w");;
 #endif
 
-	LOGE("fahad -->> Inside CVideoMuxingAndEncodeSession");
+	//LOGE("fahad -->> Inside CVideoMuxingAndEncodeSession");
 	m_pCommonElementsBucket = pCommonElementsBucket;
 	m_CMuxingVideoData = NULL;
 	m_VideoEncoder = NULL;
@@ -66,7 +66,7 @@ CVideoMuxingAndEncodeSession::~CVideoMuxingAndEncodeSession()
 int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth)
 {
 	Locker lock(*m_pVideoMuxingEncodeSessionMutex);
-	LOGE("fahad -->> CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession  nVideoHeight = %d, int nVideoWidth = %d, bmpLen = %d", nVideoHeight, nVideoWidth, iLen);
+	//LOGE("fahad -->> CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession  nVideoHeight = %d, int nVideoWidth = %d, bmpLen = %d", nVideoHeight, nVideoWidth, iLen);
 	if(NULL == this->m_CMuxingVideoData)
 	{
 		this->m_CMuxingVideoData = new CMuxingVideoData();
@@ -82,18 +82,18 @@ int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char
 
 	if(NULL == this->m_ColorConverter)
 	{
-		LOGE("fahad -->> CColorConverter Is NOw NULLLLLLL");
+		//LOGE("fahad -->> CColorConverter Is NOw NULLLLLLL");
 		this->m_ColorConverter = new CColorConverter( nVideoHeight, nVideoWidth);
-		LOGE("fahad -->> CColorConverter constructor returned");
+		//LOGE("fahad -->> CColorConverter constructor returned");
 
 	}
 
 
-	LOGE("fahad -->> CColorConverter before ConvertRGB32ToRGB24 call");
+	//LOGE("fahad -->> CColorConverter before ConvertRGB32ToRGB24 call");
 
 	int iBMP24ConvertedLen =this->m_ColorConverter->ConvertRGB32ToRGB24(pBMP32Data+BMP_HEADER_SIZE,nVideoHeight, nVideoWidth, m_ucaBMP24Frame);
 
-	LOGE("fahad -->> CColorConverter after ConvertRGB32ToRGB24 call");
+	//LOGE("fahad -->> CColorConverter after ConvertRGB32ToRGB24 call");
 
 	m_YUV420ConvertedLen = m_ColorConverter->ConvertRGB24ToI420(m_ucaBMP24Frame, m_ucaYUVMuxFrame);
 
@@ -110,11 +110,11 @@ int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, i
 
 	if( NULL == this->m_VideoEncoder || NULL == m_ColorConverter || NULL == m_CMuxingVideoData)
 	{
-		LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  return 0");
+		//LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  return 0");
 		return 0;
 	}
 
-	LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  processing");
+	//LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  processing");
 
 	m_ColorConverter->mirrorRotateAndConvertNV21ToI420( pVideoYuv, m_ucaRotateYUVFrame );
 	int iMergedYUVLen = m_CMuxingVideoData->MergeFrameYUV_With_VideoYUV(m_ucaYUVMuxFrame, m_ucaRotateYUVFrame, iHeight, iWidth, m_ucaMergedYUVFrame);
@@ -128,7 +128,7 @@ int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, i
 		m_iFinalEncodedFrameBufferIndx += encodedSize;
 	}
 
-	LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  encodedSize = %d", encodedSize);
+	//LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  encodedSize = %d", encodedSize);
 
 
 	return encodedSize;

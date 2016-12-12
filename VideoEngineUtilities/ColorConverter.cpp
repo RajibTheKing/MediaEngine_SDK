@@ -32,14 +32,14 @@ m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 	m_pColorConverterMutex.reset(new CLockHandler);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CColorConverter::CColorConverter Prepared");
-	LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
+	//LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
 
 
 }
 
 CColorConverter::~CColorConverter()
 {
-	LOGE("fahad -->> CColorConverter Destructor Called");
+	//LOGE("fahad -->> CColorConverter Destructor Called");
 
 }
 
@@ -217,7 +217,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *pData)
 
 void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, unsigned char *pData)
 {
-	LOGE("fahad -->> avgValue= %d, addValue= %d, thresholdVal= %d, m_iVideoHeight=%d, m_iVideoWidth = %d", m_AverageValue, m_PrevAddValue, m_ThresholdValue,m_iVideoHeight, m_iVideoWidth);
+	//LOGE("fahad -->> avgValue= %d, addValue= %d, thresholdVal= %d, m_iVideoHeight=%d, m_iVideoWidth = %d", m_AverageValue, m_PrevAddValue, m_ThresholdValue,m_iVideoHeight, m_iVideoWidth);
 
 	Locker lock(*m_pColorConverterMutex);
 
