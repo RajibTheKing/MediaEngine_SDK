@@ -194,10 +194,12 @@
     <ClCompile Include="..\..\VideoEngineController\VideoEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoderListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
     <ClCompile Include="AudioDecoder.cpp" />
     <ClCompile Include="AudioEncoder.cpp" />
     <ClCompile Include="LiveStreamingHeader.cpp" />
@@ -261,12 +263,14 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncoder.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoderListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\webrtc\modules\audio_processing\aecm\include\echo_control_mobile.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="AudioDecoder.h" />
     <ClInclude Include="AudioEncoder.h" />
