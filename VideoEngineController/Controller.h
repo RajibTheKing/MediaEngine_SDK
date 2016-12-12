@@ -14,6 +14,7 @@
 #include "DeviceCapabilityCheckThread.h"
 #include "DeviceCapabilityCheckBuffer.h"
 #include "AudioFileEncodeDecodeSession.h"
+#include "VideoMuxingAndEncodeSession.h"
 
 using namespace std;
 
@@ -69,6 +70,10 @@ public:
 	int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
 	int StopAudioEncodeDecodeSession();
 
+	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
+	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
+	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
+
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
@@ -103,6 +108,8 @@ private:
 	Tools m_Tools;
 
 	CAudioFileEncodeDecodeSession *m_pAudioEncodeDecodeSession;
+
+	CVideoMuxingAndEncodeSession *m_pVideoMuxingAndEncodeSession;
 
 	
 	CDeviceCapabilityCheckThread *m_pDeviceCapabilityCheckThread;

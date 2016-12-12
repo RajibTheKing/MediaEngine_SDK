@@ -32,7 +32,7 @@ public:
 	bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
 	bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
 	bool SetEchoCanceller(const LongLong lFriendID, bool bOn);
-	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork, int nNetworkType);
+	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);
@@ -57,6 +57,10 @@ public:
 	int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
 	int StopAudioEncodeDecodeSession();
 
+	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
+	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
+	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
+    
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));

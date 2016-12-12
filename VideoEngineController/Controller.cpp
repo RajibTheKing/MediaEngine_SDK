@@ -15,6 +15,7 @@ m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL),
+m_pVideoMuxingAndEncodeSession(NULL),
 m_pDeviceCapabilityCheckBuffer(NULL),
 m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
@@ -48,6 +49,7 @@ m_nEDVideoSupportablity(STATUS_UNCHECKED),
 m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
 m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
 m_pAudioEncodeDecodeSession(NULL),
+m_pVideoMuxingAndEncodeSession(NULL),
 m_pDeviceCapabilityCheckBuffer(NULL),
 m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
@@ -112,6 +114,13 @@ CController::~CController()
 
 		m_pAudioEncodeDecodeSession = NULL;
 	}
+
+	if (NULL != m_pVideoMuxingAndEncodeSession)
+	{
+		delete m_pVideoMuxingAndEncodeSession;
+
+		m_pVideoMuxingAndEncodeSession = NULL;
+	}
     
     SHARED_PTR_DELETE(m_pVideoSendMutex);
     SHARED_PTR_DELETE(m_pVideoReceiveMutex);
@@ -147,7 +156,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType);
 
-		pAudioSession->InitializeAudioCallSession(lFriendID, nServiceType);
+		pAudioSession->InitializeAudioCallSession(lFriendID);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -223,7 +232,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
 
-		pAudioSession->InitializeAudioCallSession(lFriendID, 11);
+		pAudioSession->InitializeAudioCallSession(lFriendID);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -303,12 +312,11 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
         
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, 11);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel,nServiceType);
+
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,nServiceType,iNetworkType);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
-
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType);
-
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
         
@@ -855,6 +863,44 @@ int CController::StopAudioEncodeDecodeSession()
 		m_pAudioEncodeDecodeSession = NULL;
 
 		return 1;
+	}
+	else
+		return 0;
+}
+
+int CController::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth)
+{
+	LOGE("fahad -->> CController::StartVideoMuxingAndEncodeSession 0");
+	if (NULL == m_pVideoMuxingAndEncodeSession)
+	{
+		LOGE("fahad -->> CController::StartVideoMuxingAndEncodeSession null");
+		m_pVideoMuxingAndEncodeSession = new CVideoMuxingAndEncodeSession(m_pCommonElementsBucket);
+	}
+
+	return m_pVideoMuxingAndEncodeSession->StartVideoMuxingAndEncodeSession(pBMP32Data, iLen, nVideoHeight, nVideoWidth);
+}
+
+int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth)
+{
+	if (NULL == m_pVideoMuxingAndEncodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth);
+}
+
+int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
+{
+	if (NULL != m_pVideoMuxingAndEncodeSession)
+	{
+		int ret = m_pVideoMuxingAndEncodeSession->StopVideoMuxingAndEncodeSession(finalData);
+
+		delete m_pVideoMuxingAndEncodeSession;
+
+		m_pVideoMuxingAndEncodeSession = NULL;
+
+		return ret;
 	}
 	else
 		return 0;

@@ -175,7 +175,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 		toolsObject.SOSleep(10);
 	}*/
-	if(m_bIsCheckCall) {
+	if (m_bIsCheckCall && (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)) 
+	{
 		m_pBitRateController->SetInitialBitrate();
 		bIsBitrateInitialized = true;
 	}
@@ -230,7 +231,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() GOT packet for Encoding");
 			int timeDiff;
 
-			if(!bIsBitrateInitialized)
+			if (!bIsBitrateInitialized && (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_CALL))
 			{
 				m_pBitRateController->SetInitialBitrate();
 				bIsBitrateInitialized = true;
@@ -260,7 +261,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				continue;
 			}
 //			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG ," Client FPS: " + Tools::DoubleToString(m_pVideoCallSession->GetFPSController()->GetClientFPS()));
-			m_pBitRateController->UpdateBitrate();
+
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)
+			{
+				m_pBitRateController->UpdateBitrate();
+			}
 
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 

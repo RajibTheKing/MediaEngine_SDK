@@ -28,10 +28,15 @@ public:
 
 	void SOSleep(int nSleepTimeout);
 	static LongLong CurrentTimestamp();
-	static std::string DoubleToString(double dConvertingValue);
-	static int StringToIntegerConvert(std::string strConvertingString);
-	static std::string IntegertoStringConvert(int nConvertingNumber);
+    static std::string IntegertoStringConvert(int nConvertingNumber);
 	static std::string LongLongtoStringConvert(LongLong number);
+	static std::string DoubleToString(double dConvertingValue);
+	
+	static std::string getText(double dConvertingValue);
+	static std::string getText(int nConvertingNumber);
+	static std::string getText(LongLong number);
+    
+    static int StringToIntegerConvert(std::string strConvertingString);
 	static std::string LongLongToString(LongLong llConvertingValue);
 
 	void WriteToFile(short* saDataToWriteToFile, int nLength);

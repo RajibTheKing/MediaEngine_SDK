@@ -73,7 +73,7 @@ public:
 
     CAudioCodec* GetAudioCodec();
 
-    void InitializeAudioCallSession(LongLong llFriendID, int nServiceType);
+    void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
     int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
@@ -139,8 +139,7 @@ private:
     G729CodecNative *m_pG729CodecNative;
 #endif
 //    int m_iNextPacketType;
-    int m_iLastDecodedPacketNumber;
-    int m_nMaxAudioPacketNumber;
+    int m_iLastDecodedPacketNumber;    
     int m_iPacketNumber;
 	int m_iSlotID;
 	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;

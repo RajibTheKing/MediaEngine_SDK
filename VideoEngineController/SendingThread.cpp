@@ -173,13 +173,9 @@ void CSendingThread::SendingThreadProcedure()
             if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
             {
 
-
-			CVideoCallSession* pVideoSession;
-
-			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
-			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
+			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld", lFriendID);
 			
-			int iIntervalIFrame = pVideoSession->m_nCallFPS / IFRAME_INTERVAL;
+			int iIntervalIFrame = m_pVideoCallSession->m_nCallFPS / IFRAME_INTERVAL;
                 
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() session got");
 
@@ -288,7 +284,7 @@ void CSendingThread::SendingThreadProcedure()
     
 #else
 
-				m_pCommonElementsBucket->SendFunctionPointer(pVideoSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+				m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 
 #endif
 
@@ -305,13 +301,9 @@ void CSendingThread::SendingThreadProcedure()
                     g_LiveReceiver->PushVideoData(m_VideoDataToSend, m_iDataToSendIndex);
                 }*/
 
-				CVideoCallSession* pVideoSession;
-
-				bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(m_lfriendID, pVideoSession);
-
 				//LOGEF("fahad -->> m_pCommonElementsBucket 3 --> lFriendID = 200, bExist = %d", bExist);
 
-//				pVideoSession->m_pController->PushAudioForDecoding(m_lfriendID, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+//				m_pVideoCallSession->m_pController->PushAudioForDecoding(m_lfriendID, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 //				if(bExist)
                 
                 int missingFrames[1003];
@@ -336,11 +328,11 @@ void CSendingThread::SendingThreadProcedure()
 
 #ifdef NEW_HEADER_FORMAT
 
-					G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(pVideoSession->GetFriendID(), 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int, int> >());
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(m_pVideoCallSession->GetFriendID(), 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int, int> >());
 				
 #else
 
-					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(pVideoSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+					G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(m_pVideoCallSession->GetFriendID(),3,m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
 
 #endif
 				
@@ -478,11 +470,9 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 #if defined(SEND_VIDEO_TO_SELF)
 
-				CVideoCallSession* pVideoSession;
-                bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
                 unsigned char *pEncodedFrame = m_EncodedFrame;
                 LOGEF("TheKing--> Processing CALL!!!\n");
-                pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
+				m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 

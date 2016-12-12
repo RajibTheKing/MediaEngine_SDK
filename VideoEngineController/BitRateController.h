@@ -25,7 +25,7 @@ public:
     void SetSharedObject(CCommonElementsBucket* pcSharedObject);
 	void SetEncoder(CVideoEncoder* pcVideEnocder);
 
-    bool HandleBitrateMiniPacket(CPacketHeader &crTempHeader);
+	bool HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType);
 	bool HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader);
     bool UpdateBitrate();
     void NotifyEncodedFrame(int &nrFrameSize);

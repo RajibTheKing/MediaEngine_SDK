@@ -154,7 +154,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
 				packetHeaderObject.setPacketHeader(m_PacketizedFrame);
 
-				printf("#V## Queue: %d\n",nFrameLength);
+				//printf("#V## Queue: %d\n",nFrameLength);
 
 				currentTime = m_Tools.CurrentTimestamp();
 
@@ -329,7 +329,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-	printf("#V### Decoded Size -> %d +++E.Size:  %d\n",m_decodedFrameSize,(int)frameSize);
+	//printf("#V### Decoded Size -> %d +++E.Size:  %d\n",m_decodedFrameSize,(int)frameSize);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
     
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime) + ", CurrentCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth) + ", AverageDecodeTime --> " + m_Tools.DoubleToString(m_pCalculatorDecodeTime->GetAverage()) + ", Decoder returned = " + m_Tools.IntegertoStringConvert(m_decodedFrameSize) + ", FrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
