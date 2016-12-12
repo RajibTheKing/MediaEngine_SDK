@@ -138,7 +138,9 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/LiveVideoDecodingQueue.cpp \
 			../../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
 			../../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
-			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+			../../../videoengine/VideoEngineController/AudioHeader.cpp \
+			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp
+			
 
 
 include $(BUILD_STATIC_LIBRARY)

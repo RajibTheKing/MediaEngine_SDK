@@ -180,6 +180,9 @@
     <ClCompile Include="LiveStreamingHeader.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioHeader.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h">
@@ -381,6 +384,9 @@
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="LiveStreamingHeader.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioHeader.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>

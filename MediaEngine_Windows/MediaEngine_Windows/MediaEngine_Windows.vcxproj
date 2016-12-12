@@ -154,6 +154,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />

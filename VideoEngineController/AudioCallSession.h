@@ -12,6 +12,7 @@
 #include "LogPrinter.h"
 #include "LiveAudioDecodingQueue.h"
 #include "LiveReceiver.h"
+#include "AudioHeader.h"
 
 #include <stdio.h>
 #include <string>
@@ -27,6 +28,7 @@
 
 #define __AUDIO_CALL_VERSION__  1
 #define  __DUPLICATE_AUDIO__
+#define MULTIPLE_HEADER
 
 
 #ifdef __ANDROID__
@@ -98,6 +100,7 @@ public:
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
 	int m_iNextPacketType;
+	long long m_llMaxAudioPacketNumber;
     void getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector);
     int GetServiceType();
 
@@ -109,6 +112,16 @@ private:
 	long long m_llDecodingTimeStampOffset;
     CAudioPacketHeader *SendingHeader;
     CAudioPacketHeader *ReceivingHeader;
+
+	AudioHeader m_sendingHeaderOld;
+	AudioHeader m_receivingHeaderOld;
+
+	void BuildAndGetHeader(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* data);
+
+	void ParseAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* data);
+
     int m_AudioHeadersize;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
