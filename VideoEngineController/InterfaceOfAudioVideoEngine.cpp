@@ -566,6 +566,22 @@ int CInterfaceOfAudioVideoEngine::StopVideoMuxingAndEncodeSession(unsigned char 
 
 }
 
+void CInterfaceOfAudioVideoEngine::InterruptOccured(const LongLong lFriendID)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->InterruptOccured(lFriendID);
+	}
+}
+
+void CInterfaceOfAudioVideoEngine::InterruptOver(const LongLong lFriendID)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->InterruptOver(lFriendID);
+	}
+}
+
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
 	if (NULL != m_pcController)

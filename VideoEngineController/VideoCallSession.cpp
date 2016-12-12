@@ -930,14 +930,25 @@ int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int heig
 	{
 		m_nVideoCallHeight = height;
 		m_nVideoCallWidth = width;
+
 		this->m_pColorConverter->SetHeightWidth(height, width);
 		this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+
 		return 1;
 	}else
 	{
 		return -1;
 	}
+}
 
+void CVideoCallSession::InterruptOccured()
+{
+	m_pSendingThread->InterruptOccured();
+}
+
+void CVideoCallSession::InterruptOver()
+{
+	m_pSendingThread->InterruptOver();
 }
 
 void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
