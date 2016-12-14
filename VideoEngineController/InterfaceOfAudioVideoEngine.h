@@ -3,6 +3,7 @@
 #define _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 
 #include <string>
+
 #define MEDIA_TYPE_AUDIO 1
 #define MEDIA_TYPE_VIDEO 2
 #define MEDIA_TYPE_LIVE_STREAM 3
@@ -29,13 +30,13 @@ public:
 	bool InitializeLibrary(const IPVLongType& llUserID);
 	bool SetUserName(const IPVLongType llUserName);
 	bool StartAudioCall(const IPVLongType llFriendID, int nServiceType);
-	bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
-	bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
-	bool SetEchoCanceller(const LongLong lFriendID, bool bOn);
-	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
+	bool SetVolume(const IPVLongType llFriendID, int iVolume, bool bRecorder);
+	bool SetLoudSpeaker(const IPVLongType llFriendID, bool bOn);
+	bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
+	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nLivePacketLength = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
-	int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);
+	int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int nFrame = 0, int *pMissingFrames = NULL);
 	int PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames);
 	int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 	int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
@@ -45,6 +46,9 @@ public:
 
 	int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 	int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
+
+	void InterruptOccured(const LongLong lFriendID);
+	void InterruptOver(const LongLong lFriendID);
 
 	bool StopAudioCall(const IPVLongType llFriendID);
 	bool StopVideoCall(const IPVLongType llFriendID);
@@ -57,10 +61,10 @@ public:
 	int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
 	int StopAudioEncodeDecodeSession();
 
-	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
-	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
+	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data, int iLen, int nVideoHeight, int nVideoWidth);
+	int FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth);
 	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
-    
+
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));

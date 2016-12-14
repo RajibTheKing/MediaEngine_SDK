@@ -128,6 +128,14 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFrie
 	return -1;
 }
 
+void CInterfaceOfAudioVideoEngine::InterruptOccured(const IPVLongType llFriendID)
+{
+}
+
+void CInterfaceOfAudioVideoEngine::InterruptOver(const IPVLongType llFriendID)
+{
+}
+
 int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	int iReturnedValue = 0;
