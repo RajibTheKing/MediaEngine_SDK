@@ -31,12 +31,12 @@
 #define MULTIPLE_HEADER
 
 
-//#ifdef __ANDROID__
+#ifdef __ANDROID__
 #define USE_AECM
 // #define USE_ANS
 #define USE_AGC
 //#define USE_VAD
-//#endif
+#endif
 
 static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
@@ -151,7 +151,7 @@ private:
 #else
     G729CodecNative *m_pG729CodecNative;
 #endif
-//    int m_iNextPacketType;
+
     int m_iLastDecodedPacketNumber;    
     int m_iPacketNumber;
 	int m_iSlotID;
