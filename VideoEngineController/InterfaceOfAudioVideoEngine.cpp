@@ -4,6 +4,7 @@
 #include "LogPrinter.h"
 
 CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine = NULL;
+Tools m_Tools;
 
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 {

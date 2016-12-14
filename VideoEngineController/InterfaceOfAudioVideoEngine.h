@@ -3,6 +3,7 @@
 #define _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 
 #include <string>
+#include <vector>
 
 #define MEDIA_TYPE_AUDIO 1
 #define MEDIA_TYPE_VIDEO 2
@@ -76,10 +77,6 @@ public:
 	void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int));
 
 private:
-
-
-	Tools m_Tools;
-
 
 	CController* m_pcController;
 };
