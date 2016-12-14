@@ -922,7 +922,7 @@ int CAudioCallSession::GetServiceType()
 	return m_nServiceType;
 }
 
-void CAudioCallSession::BuildAndGetHeader(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 	int numPacketRecv, int channel, int version, long long timestamp, unsigned char* data)
 {
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
@@ -959,7 +959,7 @@ void CAudioCallSession::BuildAndGetHeader(int packetType, int networkType, int s
 	}
 }
 
-void CAudioCallSession::ParseAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* data)
 {
 	if (m_bLiveAudioStreamRunning)
