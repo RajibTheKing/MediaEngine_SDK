@@ -48,9 +48,6 @@ public:
 	int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 	int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
-	void InterruptOccured(const LongLong lFriendID);
-	void InterruptOver(const LongLong lFriendID);
-
 	bool StopAudioCall(const IPVLongType llFriendID);
 	bool StopVideoCall(const IPVLongType llFriendID);
 	void SetLoggerPath(std::string strLoggerPath);
@@ -66,6 +63,9 @@ public:
 	int FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth);
 	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
+	void InterruptOccured(const LongLong lFriendID);
+	void InterruptOver(const LongLong lFriendID);
+    
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, int, int));
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
@@ -75,7 +75,7 @@ public:
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
 
 	void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int));
-
+    
 private:
 
 	CController* m_pcController;

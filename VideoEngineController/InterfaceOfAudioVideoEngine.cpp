@@ -129,13 +129,6 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFrie
 	return -1;
 }
 
-void CInterfaceOfAudioVideoEngine::InterruptOccured(const IPVLongType llFriendID)
-{
-}
-
-void CInterfaceOfAudioVideoEngine::InterruptOver(const IPVLongType llFriendID)
-{
-}
 
 int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames)
 {
@@ -595,6 +588,22 @@ int CInterfaceOfAudioVideoEngine::StopVideoMuxingAndEncodeSession(unsigned char 
 
 	return nReturnedValue;
 
+}
+
+void CInterfaceOfAudioVideoEngine::InterruptOccured(const LongLong lFriendID)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->InterruptOccured(lFriendID);
+	}
+}
+
+void CInterfaceOfAudioVideoEngine::InterruptOver(const LongLong lFriendID)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->InterruptOver(lFriendID);
+	}
 }
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))

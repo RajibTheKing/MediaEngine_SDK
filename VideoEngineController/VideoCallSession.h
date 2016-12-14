@@ -104,6 +104,9 @@ public:
 
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
 
+	void InterruptOccured();
+	void InterruptOver();
+
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;

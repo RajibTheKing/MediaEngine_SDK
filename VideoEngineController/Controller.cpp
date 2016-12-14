@@ -707,6 +707,48 @@ int CController::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, 
     return 1;
 }
 
+void CController::InterruptOccured(const LongLong lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::InterruptOccured called");
+
+	Locker lock(*m_pVideoSendMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::InterruptOccured got session");
+
+		if (pVideoSession)
+		{
+			pVideoSession->InterruptOccured();
+		}
+	}
+}
+
+void CController::InterruptOver(const LongLong lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::InterruptOver called");
+
+	Locker lock(*m_pVideoSendMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::InterruptOver got session");
+
+		if (pVideoSession)
+		{
+			pVideoSession->InterruptOver();
+		}
+	}
+}
+
 void CController::initializeEventHandler()
 {
 	m_pCommonElementsBucket->m_pEventNotifier = &m_EventNotifier;

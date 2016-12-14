@@ -56,6 +56,8 @@
 		DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */; };
 		DA77B0F51CF45C8800719D7D /* VersionController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F31CF45C8800719D7D /* VersionController.cpp */; };
 		DA78E7AE1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */; };
+		DA8133421DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */; };
+		DA8133451DFECA9D008FE395 /* AudioHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA8133431DFECA9D008FE395 /* AudioHeader.cpp */; };
 		DA91E7AA1D682440006F50E2 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA91E7A91D682440006F50E2 /* libopus.a */; };
 		DA91E7AF1D6824AF006F50E2 /* AudioCodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA91E7AB1D6824AE006F50E2 /* AudioCodec.cpp */; };
 		DA91E7B01D6824AF006F50E2 /* AudioPacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */; };
@@ -186,6 +188,10 @@
 		DA77B0F41CF45C8800719D7D /* VersionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionController.h; path = VideoEngineController/VersionController.h; sourceTree = "<group>"; };
 		DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAudioDecodingQueue.cpp; path = VideoEngineController/LiveAudioDecodingQueue.cpp; sourceTree = "<group>"; };
 		DA78E7AD1DDAFEFE006A1798 /* LiveAudioDecodingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioDecodingQueue.h; path = VideoEngineController/LiveAudioDecodingQueue.h; sourceTree = "<group>"; };
+		DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoMuxingAndEncodeSession.cpp; path = VideoEngineController/VideoMuxingAndEncodeSession.cpp; sourceTree = "<group>"; };
+		DA8133411DFEC969008FE395 /* VideoMuxingAndEncodeSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoMuxingAndEncodeSession.h; path = VideoEngineController/VideoMuxingAndEncodeSession.h; sourceTree = "<group>"; };
+		DA8133431DFECA9D008FE395 /* AudioHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioHeader.cpp; path = VideoEngineController/AudioHeader.cpp; sourceTree = "<group>"; };
+		DA8133441DFECA9D008FE395 /* AudioHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioHeader.h; path = VideoEngineController/AudioHeader.h; sourceTree = "<group>"; };
 		DA91E7A91D682440006F50E2 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopus.a; sourceTree = "<group>"; };
 		DA91E7AB1D6824AE006F50E2 /* AudioCodec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioCodec.cpp; path = VideoEngineController/AudioCodec.cpp; sourceTree = "<group>"; };
 		DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioPacketHeader.cpp; path = VideoEngineController/AudioPacketHeader.cpp; sourceTree = "<group>"; };
@@ -273,6 +279,8 @@
 				DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */,
 				D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */,
 				D11DAA681CE1B829008D74C0 /* AudioFileEncodeDecodeSession.h */,
+				DA8133431DFECA9D008FE395 /* AudioHeader.cpp */,
+				DA8133441DFECA9D008FE395 /* AudioHeader.h */,
 				DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */,
 				DA91E7AE1D6824AF006F50E2 /* AudioPacketHeader.h */,
 				188587BF1C0AEEAC00B1F435 /* AudioVideoEngineDefinitions.h */,
@@ -360,6 +368,8 @@
 				188587E41C0AEEAC00B1F435 /* VideoEncoderListHandler.h */,
 				D18E5FC51C96D57F00E5EDAA /* VideoEncodingThread.cpp */,
 				D18E5FC61C96D57F00E5EDAA /* VideoEncodingThread.h */,
+				DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */,
+				DA8133411DFEC969008FE395 /* VideoMuxingAndEncodeSession.h */,
 				188587E51C0AEEAC00B1F435 /* VideoPacketBuffer.cpp */,
 				188587E61C0AEEAC00B1F435 /* VideoPacketBuffer.h */,
 				9D9910361C296914007BA91C /* VideoPacketQueue.cpp */,
@@ -477,6 +487,7 @@
 				9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */,
 				188587EA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp in Sources */,
 				188587FC1C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp in Sources */,
+				DA8133421DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp in Sources */,
 				D18E5FC81C96D57F00E5EDAA /* RenderingThread.cpp in Sources */,
 				DA78E7AE1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp in Sources */,
 				188587F81C0AEEAC00B1F435 /* VideoDecoder.cpp in Sources */,
@@ -500,6 +511,7 @@
 				DAA0F0E31C675A5F009E0F39 /* SynchronizedMap.cpp in Sources */,
 				188587F21C0AEEAC00B1F435 /* EventNotifier.cpp in Sources */,
 				D18E5FC91C96D57F00E5EDAA /* SendingThread.cpp in Sources */,
+				DA8133451DFECA9D008FE395 /* AudioHeader.cpp in Sources */,
 				188587ED1C0AEEAC00B1F435 /* CommonElementsBucket.cpp in Sources */,
 				DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */,
 				DA2A7B081C38ED4500E6AFF8 /* PairMap.cpp in Sources */,

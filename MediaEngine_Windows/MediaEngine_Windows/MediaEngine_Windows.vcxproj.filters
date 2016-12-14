@@ -186,6 +186,15 @@
     <ClCompile Include="LiveStreamingHeader.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioHeader.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h">
@@ -393,6 +402,15 @@
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="LiveStreamingHeader.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioHeader.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>
