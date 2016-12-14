@@ -116,10 +116,10 @@ private:
 	AudioHeader m_receivingHeaderOld;
 
 	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* data);
+		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 
 	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* data);
+		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
 
     int m_AudioHeadersize;
 

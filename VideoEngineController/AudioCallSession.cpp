@@ -923,7 +923,7 @@ int CAudioCallSession::GetServiceType()
 }
 
 void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-	int numPacketRecv, int channel, int version, long long timestamp, unsigned char* data)
+	int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header)
 {
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
@@ -941,7 +941,7 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType
 		SendingHeader->SetInformation(networkType, NETWORKTYPE);
 		SendingHeader->SetInformation(channel, CHANNELS);
 
-		SendingHeader->GetHeaderInByteArray(data);
+		SendingHeader->GetHeaderInByteArray(header);
 	}
 	else
 	{
@@ -955,16 +955,16 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType
 		m_sendingHeaderOld.SetInformation(networkType, NETWORKTYPE);
 		m_sendingHeaderOld.SetInformation(channel, CHANNELS);
 
-		m_sendingHeaderOld.GetHeaderInByteArray(data);
+		m_sendingHeaderOld.GetHeaderInByteArray(header);
 	}
 }
 
 void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* data)
+	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header)
 {
 	if (m_bLiveAudioStreamRunning)
 	{
-		ReceivingHeader->CopyHeaderToInformation(data);
+		ReceivingHeader->CopyHeaderToInformation(header);
 
 		packetType = ReceivingHeader->GetInformation(PACKETTYPE);
 		networkType = ReceivingHeader->GetInformation(NETWORKTYPE);
@@ -979,7 +979,7 @@ void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &networkTyp
 	}
 	else
 	{
-		m_receivingHeaderOld.CopyHeaderToInformation(data);
+		m_receivingHeaderOld.CopyHeaderToInformation(header);
 
 		packetType = m_receivingHeaderOld.GetInformation(PACKETTYPE);
 		networkType = m_receivingHeaderOld.GetInformation(NETWORKTYPE);
