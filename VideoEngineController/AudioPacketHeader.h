@@ -57,6 +57,8 @@ class CAudioPacketHeader {
 
 	unsigned char ma_uchHeader[MAXHEADERSIZE];
 	int nNumberOfHeaderElements;
+	int CopyInformationToHeader(unsigned int * Information);
+	void PutInformationToArray(int InfoType);
 
 public:
 	CAudioPacketHeader();
@@ -64,17 +66,16 @@ public:
 	CAudioPacketHeader(unsigned char *Header);
 	~CAudioPacketHeader();
 
-	int CopyInformationToHeader(unsigned int * Information);
 	void CopyHeaderToInformation(unsigned char *Header);
-
 	int GetHeaderInByteArray(unsigned char* data);
+
 	int GetHeaderSize();
 
-	void SetInformation(unsigned int Information, int InfoType);
-	void PutInformationToArray(int InfoType);
+	void SetInformation(unsigned int Information, int InfoType);	
 	unsigned int GetInformation(int InfoType);
 
 	unsigned int GetFieldCapacity(int InfoType);
+
 	bool IsPacketTypeSupported(unsigned int PacketType);
 	bool IsPacketTypeSupported();
 
