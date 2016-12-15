@@ -450,7 +450,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 		else
 		{
 			m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
-			if (m_iRole == PUBLISHER_IN_CALL)
+			if (m_bLiveAudioStreamRunning && m_iRole == PUBLISHER_IN_CALL)
 			{
 				int nLastDecodedFrameSize = 0;
 				if (m_AudioDecodedBuffer.GetQueueSize() != 0)
