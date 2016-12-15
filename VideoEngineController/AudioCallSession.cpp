@@ -428,7 +428,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
 #endif
 	Tools toolsObject;
-	int nEncodingFrameSize = 0, encodingTime = 0, nLastDecodedFrameSize = 0, nEncodingMuxedFrameSize = 0;
+	int encodingTime = 0;
 	long long timeStamp = 0, lastDecodedTimeStamp = 0;
 	double avgCountTimeStamp = 0;
 	int countFrame = 0;
@@ -443,35 +443,28 @@ void CAudioCallSession::EncodingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else
 		{
-			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
+			m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
 			if (m_iRole == PUBLISHER_IN_CALL)
 			{
-				if (m_AudioDecodedBuffer.GetQueueSize() == 0)
-				{
-					nLastDecodedFrameSize = 0;
-				}
-				else
-				{
+				int nLastDecodedFrameSize = 0;
+				if (m_AudioDecodedBuffer.GetQueueSize() != 0)
+				{				
 					nLastDecodedFrameSize = m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame, lastDecodedTimeStamp);
-					if (nLastDecodedFrameSize != nEncodingFrameSize) //Both must be 800
+					if (nLastDecodedFrameSize == AUDIO_CLIENT_SAMPLES_IN_FRAME) //Both must be 800
 					{
-						nLastDecodedFrameSize = 0;
+						MuxAudioData(m_saAudioEncodingFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize);
 					}
 					else
 					{
-						MuxAudioData(m_saAudioEncodingFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize);
+						nLastDecodedFrameSize = 0;
 					}
 				}
 				if(nLastDecodedFrameSize == 0)
 				{
-					memcpy(m_saAudioMUXEDFrame, m_saAudioEncodingFrame, nEncodingFrameSize * sizeof(short));
+					memcpy(m_saAudioMUXEDFrame, m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
 				}
 			}
 
-			if (nEncodingFrameSize % AUDIO_FRAME_SIZE > 0) 
-			{
-				ALOG("#EXP# Client Sample Size not multiple of AUDIO-FRAME-SIZE = " + Tools::IntegertoStringConvert(nEncodingFrameSize));
-			}
 #ifdef __DUMP_FILE__
 			fwrite(m_saAudioEncodingFrame, 2, nEncodingFrameSize, FileInput);
 #endif
@@ -522,7 +515,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 			if (m_bLiveAudioStreamRunning == false)
 			{
-				nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaCompressedFrame[1 + m_AudioHeadersize]);
+				nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_AudioHeadersize]);
 				ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 				encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 				m_pAudioCodec->DecideToChangeComplexity(encodingTime);
@@ -531,15 +524,15 @@ void CAudioCallSession::EncodingThreadProcedure()
 			{
 				if (m_iRole != PUBLISHER_IN_CALL)
 				{
-					nRawFrameSize = nEncodingFrameSize * sizeof(short);
+					nRawFrameSize = AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short);
 					memcpy(&m_ucaRawFrame[1 + m_AudioHeadersize], m_saAudioEncodingFrame, nRawFrameSize);
 				}
 				else
 				{
-					nRawFrameSize = nEncodingMuxedFrameSize * sizeof(short);
+					nRawFrameSize = AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short);
 					memcpy(&m_ucaRawFrame[1 + m_AudioHeadersize], m_saAudioMUXEDFrame, nRawFrameSize);
 
-					nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, nEncodingFrameSize, &m_ucaCompressedFrame[1 + m_AudioHeadersize]);
+					nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_AudioHeadersize]);
 					ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 					encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 					m_pAudioCodec->DecideToChangeComplexity(encodingTime);
