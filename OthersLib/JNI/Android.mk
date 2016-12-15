@@ -138,7 +138,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/VersionController.cpp \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckBuffer.cpp \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckThread.cpp \
-			../../../videoengine/VideoEngineController/AudioPacketHeader.cpp \
+			../../../videoengine/VideoEngineController/AudioLiveHeader.cpp \
 			../../../videoengine/VideoEngineController/AudioFileCodec.cpp \
 			../../../videoengine/VideoEngineController/Noise.cpp \
 			../../../videoengine/VideoEngineController/Voice.cpp \
@@ -148,7 +148,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/LiveVideoDecodingQueue.cpp \
 			../../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
 			../../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
-			../../../videoengine/VideoEngineController/AudioHeader.cpp \
+			../../../videoengine/VideoEngineController/AudioCallHeader.cpp \
 			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
 			
 

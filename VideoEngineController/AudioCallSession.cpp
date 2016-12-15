@@ -497,8 +497,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 
 #ifdef USE_AGC
-				m_pPlayerGain->AddFarEnd(m_saAudioEncodingFrame, nEncodingFrameSize);
-				m_pRecorderGain->AddGain(m_saAudioEncodingFrame, nEncodingFrameSize);
+				m_pPlayerGain->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+				m_pRecorderGain->AddGain(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
 #endif
 
 
@@ -614,7 +614,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			if (m_bLiveAudioStreamRunning == false)
 			{
 				ALOG("#A#EN#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
-				DecodeAudioData(0, m_ucaEncodedFrame + 1, nEncodedFrameSize + m_AudioHeadersize);
+				DecodeAudioData(0, m_ucaCompressedFrame + 1, nCompressedFrameSize + m_AudioHeadersize);
 				continue;
 			}
 #endif

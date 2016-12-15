@@ -670,3 +670,27 @@ void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunction
     }
 }
 
+bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->StartCallInLive(llFriendID, iRole);
+	return bReturnedValue;
+}
+
+bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->EndCallInLive(llFriendID);
+	return bReturnedValue;
+}
+
+
+

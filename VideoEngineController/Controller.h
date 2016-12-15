@@ -88,6 +88,9 @@ public:
 
     void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int));
 
+	bool StartCallInLive(const LongLong& lFriendID, int iRole);
+	bool EndCallInLive(const LongLong& lFriendID);
+
 	int m_nDeviceStrongness;
 	int m_nMemoryEnoughness;
 	int m_nEDVideoSupportablity;
