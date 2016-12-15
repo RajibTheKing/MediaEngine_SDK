@@ -20,10 +20,10 @@
 #endif
 
 
-#define PUBLISHER_CALLER 1
-#define CALLEE 2
-#define NONCALLEE 3
-#define CALLNOTRUNNING 4
+#define PUBLISHER_IN_CALL 1
+#define VIEWER_IN_CALL 2
+#define VIEWER_NOT_IN_CALL 3
+#define CALL_NOT_RUNNING 4
 
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -53,7 +53,7 @@ m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall),
 m_nServiceType(nServiceType)
 {
-	m_iRole = CALLNOTRUNNING;
+	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
@@ -236,7 +236,7 @@ void CAudioCallSession::StartCallInLive(int iRole)
 
 void CAudioCallSession::EndCallInLive()
 {
-	m_iRole = CALLNOTRUNNING;
+	m_iRole = CALL_NOT_RUNNING;
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
@@ -428,7 +428,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
 #endif
 	Tools toolsObject;
-	int nEncodingFrameSize = 0, nEncodedFrameSize = 0, encodingTime = 0, nLastDecodedFrameSize = 0, nEncodingMuxedFrameSize = 0;
+	int nEncodingFrameSize = 0, encodingTime = 0, nLastDecodedFrameSize = 0, nEncodingMuxedFrameSize = 0;
 	long long timeStamp = 0, lastDecodedTimeStamp = 0;
 	double avgCountTimeStamp = 0;
 	int countFrame = 0;
@@ -444,7 +444,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 		else
 		{
 			nEncodingFrameSize = m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
-			if (m_iRole == PUBLISHER_CALLER)
+			if (m_iRole == PUBLISHER_IN_CALL)
 			{
 				if (m_AudioDecodedBuffer.GetQueueSize() == 0)
 				{
@@ -529,9 +529,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 			}
 			else
 			{
-				if (m_iRole != PUBLISHER_CALLER)
+				if (m_iRole != PUBLISHER_IN_CALL)
 				{
-					nEncodedFrameSize = nEncodingFrameSize * sizeof(short);
+					nRawFrameSize = nEncodingFrameSize * sizeof(short);
 					memcpy(&m_ucaRawFrame[1 + m_AudioHeadersize], m_saAudioEncodingFrame, nRawFrameSize);
 				}
 				else
@@ -582,7 +582,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			}
 			else
 			{
-				if (m_iRole == PUBLISHER_CALLER)
+				if (m_iRole == PUBLISHER_IN_CALL)
 				{
 					BuildAndGetHeaderInArray(AUDIO_OPUS_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, nCompressedFrameSize,
 						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
@@ -624,7 +624,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 				//                ALOG("#H#Sent PacketType: "+m_Tools.IntegertoStringConvert(m_ucaEncodedFrame[0]));
 				if (m_bLiveAudioStreamRunning)
 				{
-					if (m_iRole == PUBLISHER_CALLER)
+					if (m_iRole == PUBLISHER_IN_CALL)
 					{
 						Locker lock(*m_pAudioCallSessionMutex);
 						if ((m_iRawDataSendIndex + nRawFrameSize + m_AudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
@@ -658,7 +658,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 				}
 				else
 				{
-					m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, nEncodedFrameSize + m_AudioHeadersize + 1, 0);
+					m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, nCompressedFrameSize + m_AudioHeadersize + 1, 0);
 
 #ifdef  __DUPLICATE_AUDIO__
 #ifndef MULTIPLE_HEADER
@@ -944,8 +944,21 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 			else
 			{
-				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
-				nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+				if (m_iRole != VIEWER_IN_CALL)
+				{
+					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
+					nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+				}
+				else
+				{
+#ifdef OPUS_ENABLE
+					nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+					ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+
+#else
+					nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+#endif
+				}				
 			}
 			/*
 			* Start call block end.
@@ -992,7 +1005,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				__LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d", iPacketNumber, llNow - llLastTime, nDecodedFrameSize);
 
 				llLastTime = llNow;
-				if (m_iRole == PUBLISHER_CALLER)
+				if (m_iRole == PUBLISHER_IN_CALL)
 				{
 					m_AudioDecodedBuffer.Queue(m_saDecodedFrame, nDecodedFrameSize, 0);
 				}
@@ -1002,8 +1015,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 					m_saDecodedFrame);
 			}
 			else
+			{
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_CALL, nDecodedFrameSize, m_saDecodedFrame);
-
+			}
+				
 			toolsObject.SOSleep(0);
 		}
 	}
