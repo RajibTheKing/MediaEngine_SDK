@@ -584,14 +584,14 @@ void CAudioCallSession::EncodingThreadProcedure()
 			{
 				if (m_iRole == PUBLISHER_CALLER)
 				{
-					BuildAndGetHeaderInArray(m_iNextPacketType, 0, m_iSlotID, m_iPacketNumber, nCompressedFrameSize,
+					BuildAndGetHeaderInArray(AUDIO_OPUS_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, nCompressedFrameSize,
 						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
-					BuildAndGetHeaderInArray(m_iNextPacketType, 0, m_iSlotID, m_iPacketNumber, nRawFrameSize,
+					BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, nRawFrameSize,
 						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
 				}
 				else
 				{
-					BuildAndGetHeaderInArray(m_iNextPacketType, 0, m_iSlotID, m_iPacketNumber, nRawFrameSize,
+					BuildAndGetHeaderInArray(AUDIO_NUNMUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, nRawFrameSize,
 						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
 				}
 			}
