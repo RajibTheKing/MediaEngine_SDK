@@ -9,9 +9,6 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 
-#define MAX_FRAME_HEIGHT 640
-#define MAX_FRAME_WIDTH 480
-
 #define BMP_HEADER_SIZE 54
 
 #define FINAL_ENCODED_FRAME_BUFFER_LEN 1024*1024*10

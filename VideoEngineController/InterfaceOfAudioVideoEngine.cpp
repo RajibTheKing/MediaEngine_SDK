@@ -88,7 +88,7 @@ bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool
     return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork, int nNetworkType)
+bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType)
 {
 	if (NULL == m_pcController)
 	{
@@ -97,7 +97,7 @@ bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, 
 
 	m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
 
-	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nNetworkType);	
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType);
 
 	return bReturnedValue;
 }

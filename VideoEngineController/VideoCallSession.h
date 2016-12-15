@@ -36,7 +36,7 @@ class CVideoCallSession
 
 public:
 
-    CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType);
+	CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -98,6 +98,7 @@ public:
 	int GetCurrentVideoCallQualityLevel();
 	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel);
     int GetServiceType();
+	int GetEntityType();
 
 	BitRateController* GetBitRateController();
     bool isLiveVideoStreamRunning();
@@ -134,6 +135,8 @@ private:
 	long long m_llFirstFrameCapturingTimeStamp;
 
 	unsigned int m_miniPacketBandCounter;
+
+	int m_nEntityType;
 
 	int m_nCapturedFrameCounter;
 

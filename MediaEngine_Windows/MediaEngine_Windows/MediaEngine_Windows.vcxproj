@@ -203,6 +203,7 @@
     <ClCompile Include="AudioDecoder.cpp" />
     <ClCompile Include="AudioEncoder.cpp" />
     <ClCompile Include="LiveStreamingHeader.cpp" />
+    <ClCompile Include="VideoBeautificationer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
@@ -275,6 +276,7 @@
     <ClInclude Include="AudioDecoder.h" />
     <ClInclude Include="AudioEncoder.h" />
     <ClInclude Include="LiveStreamingHeader.h" />
+    <ClInclude Include="VideoBeautificationer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\libopenh264.a" />

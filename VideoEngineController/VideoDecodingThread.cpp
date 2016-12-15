@@ -141,7 +141,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-		if(m_pVideoCallSession->isLiveVideoStreamRunning())
+		if (m_pVideoCallSession->isLiveVideoStreamRunning() && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
 		{
 			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
 				toolsObject.SOSleep(10);
