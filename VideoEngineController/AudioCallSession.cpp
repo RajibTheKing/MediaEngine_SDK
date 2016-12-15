@@ -22,7 +22,6 @@
 
 #define PUBLISHER_IN_CALL 1
 #define VIEWER_IN_CALL 2
-#define VIEWER_NOT_IN_CALL 3
 #define CALL_NOT_RUNNING 4
 
 
@@ -332,7 +331,6 @@ int CAudioCallSession::DecodeAudioDataVector(int nOffset, unsigned char *pucaDec
 	if (m_bLiveAudioStreamRunning)
 	{
 		m_pLiveReceiverAudio->ProcessAudioStreamVector(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
-
 		return 1;
 	}
 
@@ -592,7 +590,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 				}
 				else
 				{
-					BuildAndGetHeaderInArray(AUDIO_NUNMUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, nRawFrameSize,
+					BuildAndGetHeaderInArray(AUDIO_NONMUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, nRawFrameSize,
 						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
 				}
 			}
@@ -795,6 +793,18 @@ void CAudioCallSession::DecodingThreadProcedure()
 			int nSlotNumber, packetLength, recvdSlotNumber, nChannel, nVersion;
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, dummy, nSlotNumber, iPacketNumber, dummy, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, iTimeStampOffset, m_ucaDecodingFrame);
+
+			if (m_bLiveAudioStreamRunning)
+			{
+				if (m_iRole == VIEWER_IN_CALL && nCurrentAudioPacketType != AUDIO_OPUS_PACKET_TYPE)
+				{
+					continue;
+				}
+				else if (m_iRole != VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_OPUS_PACKET_TYPE)
+				{
+					continue;
+				}
+			}
 
 			//ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
 			//iTimeStampOffset = ReceivingHeader->GetInformation(TIMESTAMP);
@@ -1055,7 +1065,6 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToS
 	m_vRawFrameLength.clear();
 	memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSend, m_iRawDataSendIndex);
 	CombinedLength = m_iRawDataSendIndex;
-	m_iRawDataSendIndex = 0;
 
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
@@ -1068,6 +1077,7 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToS
 		CombinedLength += m_iCompressedDataSendIndex;
 		m_iCompressedDataSendIndex = 0;
 	}
+	m_iRawDataSendIndex = 0;
 }
 
 
