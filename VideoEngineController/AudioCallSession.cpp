@@ -1047,15 +1047,27 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSend, 
 	m_iCompressedDataSendIndex = 0;
 }
 
-void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector)
+void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector)
 {
 	Locker lock(*m_pAudioCallSessionMutex);
 
-	vRawDataLengthVector = m_vRawFrameLength;
+	vCombinedDataLengthVector = m_vRawFrameLength;
 	m_vRawFrameLength.clear();
-	memcpy(pAudioRawDataToSend, m_ucaRawDataToSend, m_iRawDataSendIndex);
-	RawLength = m_iRawDataSendIndex;
+	memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSend, m_iRawDataSendIndex);
+	CombinedLength = m_iRawDataSendIndex;
 	m_iRawDataSendIndex = 0;
+
+	if (m_iRole == PUBLISHER_IN_CALL)
+	{
+		for (int a : m_vCompressedFrameLength)
+		{
+			vCombinedDataLengthVector.push_back(a);
+		}
+		m_vCompressedFrameLength.clear();
+		memcpy(pAudioCombinedDataToSend + m_iRawDataSendIndex, m_ucaCompressedDataToSend, m_iCompressedDataSendIndex);
+		CombinedLength += m_iCompressedDataSendIndex;
+		m_iCompressedDataSendIndex = 0;
+	}
 }
 
 
