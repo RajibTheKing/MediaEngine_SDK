@@ -375,6 +375,14 @@ void CAudioCallSession::StopEncodingThread()
 	//pInternalThread.reset();
 }
 
+void CAudioCallSession::MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength)
+{
+	for (int i = 0; i < iDataLength; i++)
+	{
+		pMuxedData[i] = pData1[i] + pData2[i];
+	}
+}
+
 void CAudioCallSession::StartEncodingThread()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 1");
