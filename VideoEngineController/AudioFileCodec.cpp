@@ -56,7 +56,7 @@ int CAudioFileCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned 
         ++iFrameCounter;
         nProcessedDataSize += AUDIO_FRAME_SIZE;
     }
-    int nEncodedPacketLenght = nEncodedSize + 2 * iFrameCounter;
+    int nEncodedPacketLength = nEncodedSize + 2 * iFrameCounter;
 
     if (nEncodedSize < 0)
     {
@@ -68,7 +68,7 @@ int CAudioFileCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned 
     {
         AFLOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
     }
-    return nEncodedPacketLenght;
+    return nEncodedPacketLength;
 }
 
 int CAudioFileCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)

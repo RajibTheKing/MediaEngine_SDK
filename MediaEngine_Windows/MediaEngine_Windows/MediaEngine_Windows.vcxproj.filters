@@ -180,12 +180,6 @@
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioHeader.cpp">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\Echo.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
@@ -196,6 +190,12 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\Voice.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioCallHeader.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioLiveHeader.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -392,12 +392,6 @@
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioHeader.h">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\Echo.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
@@ -414,6 +408,12 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\G729CodecNative.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioCallHeader.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioLiveHeader.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>

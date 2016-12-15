@@ -129,7 +129,7 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
     return false;
 }
 
-void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) {
+void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) {
 
     Locker lock(*m_pLiveReceiverMutex);
 
@@ -284,7 +284,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 }
 
 
-void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
+void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
 
         Locker lock(*m_pLiveReceiverMutex);
 

@@ -44,9 +44,9 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         uchSendVersion = (unsigned char)m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
     }
 
-	int nPacketHeaderLenghtWithMediaType = nVersionWiseHeaderLength + 1;
+	int nPacketHeaderLengthWithMediaType = nVersionWiseHeaderLength + 1;
 
-	m_nPacketSize = MAX_VIDEO_PACKET_SIZE - nPacketHeaderLenghtWithMediaType;
+	m_nPacketSize = MAX_VIDEO_PACKET_SIZE - nPacketHeaderLengthWithMediaType;
 
 	int nNumberOfPackets = (unLength + m_nPacketSize - 1) / m_nPacketSize;
 
@@ -68,7 +68,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
         m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
         m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-        m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType, 0, 0);
+        m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType, 0, 0);
 
         return 1;
     }
@@ -98,11 +98,11 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
 //        m_cPacketHeader.ShowDetails("JUST");
 
-		memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData , unLength);
+		memcpy(m_ucaPacket + nPacketHeaderLengthWithMediaType, ucaEncodedVideoFrameData , unLength);
 
 
         {
-            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + unLength, iFrameNumber, nPacketNumber);
+            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType + unLength, iFrameNumber, nPacketNumber);
             
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
         }
@@ -130,21 +130,21 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
             //        m_cPacketHeader.ShowDetails("JUST");
             
-            memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
+            memcpy(m_ucaPacket + nPacketHeaderLengthWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
             
             
             if(m_pVideoCallSession->GetResolationCheck() == false)
             {
                 unsigned char *pEncodedFrame = m_ucaPacket;
-                int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
+                int PacketSize = nPacketHeaderLengthWithMediaType + m_nPacketSize;
                 //printf("Sending data for nFrameNumber--> %d\n", iFrameNumber);
                 m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize, true);
                 //            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
-                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
             }
             else
             {
-                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
                 
                 //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
             }

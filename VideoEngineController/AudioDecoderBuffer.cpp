@@ -6,7 +6,7 @@
 #include "LogPrinter.h"
 
 
-CAudioDecoderBuffer::CAudioDecoderBuffer() :
+CAudioByteBuffer::CAudioByteBuffer() :
 m_iPushIndex(0),
 m_iPopIndex(0),
 m_nQueueSize(0),
@@ -22,12 +22,12 @@ m_nQueueCapacity(MAX_AUDIO_DECODER_BUFFER_SIZE)
     
 }
 
-CAudioDecoderBuffer::~CAudioDecoderBuffer()
+CAudioByteBuffer::~CAudioByteBuffer()
 {
 
 }
 
-void CAudioDecoderBuffer::ResetBuffer()
+void CAudioByteBuffer::ResetBuffer()
 {
 	Locker lock(*m_pAudioDecodingBufferMutex);
 
@@ -36,7 +36,7 @@ void CAudioDecoderBuffer::ResetBuffer()
 	m_nQueueSize = 0;
 }
 
-int CAudioDecoderBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLength)
+int CAudioByteBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLength)
 {
 	Locker lock(*m_pAudioDecodingBufferMutex);
 
@@ -82,7 +82,7 @@ int CAudioDecoderBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLen
 	return 1;
 }
 
-int CAudioDecoderBuffer::DeQueue(unsigned char *saReceivedAudioFrameData)
+int CAudioByteBuffer::DeQueue(unsigned char *saReceivedAudioFrameData)
 {
 	Locker lock(*m_pAudioDecodingBufferMutex);
 
@@ -104,7 +104,7 @@ int CAudioDecoderBuffer::DeQueue(unsigned char *saReceivedAudioFrameData)
 	}
 }
 
-void CAudioDecoderBuffer::IncreamentIndex(int &irIndex)
+void CAudioByteBuffer::IncreamentIndex(int &irIndex)
 {
 	irIndex++;
 
@@ -112,7 +112,7 @@ void CAudioDecoderBuffer::IncreamentIndex(int &irIndex)
 		irIndex = 0;
 }
 
-int CAudioDecoderBuffer::GetQueueSize()
+int CAudioByteBuffer::GetQueueSize()
 {
 	Locker lock(*m_pAudioDecodingBufferMutex);
 

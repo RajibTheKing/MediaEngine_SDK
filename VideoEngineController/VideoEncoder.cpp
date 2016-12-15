@@ -365,7 +365,7 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
     return nReturnedValueFromEncoder;
 }
 
-int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData)
+int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLength, unsigned char *ucaEncodedVideoFrameData)
 {
 	Locker lock(*m_pVideoEncoderMutex);
 

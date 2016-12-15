@@ -465,11 +465,11 @@ int Tools::GetNextVideoFramePositionFromMediaChunck(int index, unsigned char dat
 }
 
 
-int Tools::GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLenght)
+int Tools::GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLength)
 {
 	int result = 0;
 	int interval = 8;
-	int startPoint = (nLenght - 1) << 3;
+	int startPoint = (nLength - 1) << 3;
 
 	for (int i = startPoint; i >= 0; i -= interval)
 	{
@@ -479,13 +479,13 @@ int Tools::GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int 
 	return result;
 }
 
-void Tools::SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value)
+void Tools::SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLength, int value)
 {
 	int interval = 8;
 
-	for (int i = 0; i < nLenght; i++)
+	for (int i = 0; i < nLength; i++)
 	{
-		packetData[index + i] = (value >> (interval*(nLenght - i - 1)) & 0xFF);
+		packetData[index + i] = (value >> (interval*(nLength - i - 1)) & 0xFF);
 	}
 }
 

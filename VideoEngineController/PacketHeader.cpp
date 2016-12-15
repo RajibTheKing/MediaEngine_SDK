@@ -251,11 +251,11 @@ unsigned int CPacketHeader::GetFrameNumberDirectly(unsigned char *packetData)
     
 }
 
-int CPacketHeader::GetIntFromChar(unsigned char *packetData, int index, int nLenght)
+int CPacketHeader::GetIntFromChar(unsigned char *packetData, int index, int nLength)
 {
     int result = 0;
     int interval = 8;
-    int startPoint = (nLenght - 1) << 3;
+    int startPoint = (nLength - 1) << 3;
     for(int i=startPoint; i >= 0 ; i-=interval)
     {
         result += (packetData[index++] & 0xFF) << i;

@@ -7,13 +7,13 @@
 #include "Tools.h"
 #include "Size.h"
 
-class CAudioDecoderBuffer
+class CAudioByteBuffer
 {
 
 public:
 
-	CAudioDecoderBuffer();
-	~CAudioDecoderBuffer();
+	CAudioByteBuffer();
+	~CAudioByteBuffer();
 
 	int Queue(unsigned char *saReceivedAudioFrameData, int nLength);
 	int DeQueue(unsigned char *saReceivedAudioFrameData);
