@@ -67,6 +67,9 @@ class CVoice;
 
 class CAudioCallSession
 {
+public:
+
+	int m_iNextPacketType;
 
 public:
 
@@ -85,11 +88,9 @@ public:
     
     int DecodeAudioDataVector(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
-    void EncodingThreadProcedure();
     void StopEncodingThread();
     void StartEncodingThread();
 
-    void DecodingThreadProcedure();
     void StopDecodingThread();
     void StartDecodingThread();
 
@@ -99,8 +100,7 @@ public:
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
-	int m_iNextPacketType;
-	long long m_llMaxAudioPacketNumber;
+	
     void GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector,
 		std::vector<int> &vCompressedDataLengthVector, int &CompressedLength, unsigned char * pAudioCompressedDataToSend);
 
@@ -131,28 +131,6 @@ private:
 
     std::vector<int> m_vRawFrameLength, m_vCompressedFrameLength;
 	bool m_bUsingLoudSpeaker;
-#ifdef USE_AECM
-	CEcho *m_pEcho, *m_pEcho2;
-#endif
-
-#ifdef USE_ANS
-	CNoise *m_pNoise;
-#endif
-
-#ifdef USE_AGC
-	CGain * m_pRecorderGain;
-	CGain * m_pPlayerGain;
-#endif
-
-#ifdef USE_VAD
-	CVoice *m_pVoice;
-#endif
-
-#ifdef OPUS_ENABLE
-    CAudioCodec *m_pAudioCodec;
-#else
-    G729CodecNative *m_pG729CodecNative;
-#endif
 
     int m_iLastDecodedPacketNumber;    
     int m_iPacketNumber;
@@ -195,12 +173,7 @@ private:
     unsigned char m_ucaRawDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	unsigned char m_ucaCompressedDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	int m_iRawDataSendIndex, m_iCompressedDataSendIndex;
-#ifdef USE_ANS
-	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
-#endif
-#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
-	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_Length];
-#endif
+	long long m_llMaxAudioPacketNumber;
 
     bool m_bAudioEncodingThreadRunning;
     bool m_bAudioEncodingThreadClosed;
@@ -220,9 +193,41 @@ private:
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
 
-	///////Methods///////
-	
-	///////Methods Directly Called From EncodingThreadProcedure/////
+#ifdef USE_ANS
+	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
+#endif
+
+#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
+	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_Length];
+#endif
+
+#ifdef USE_AECM
+	CEcho *m_pEcho, *m_pEcho2;
+#endif
+
+#ifdef USE_ANS
+	CNoise *m_pNoise;
+#endif
+
+#ifdef USE_AGC
+	CGain * m_pRecorderGain;
+	CGain * m_pPlayerGain;
+#endif
+
+#ifdef USE_VAD
+	CVoice *m_pVoice;
+#endif
+
+#ifdef OPUS_ENABLE
+	CAudioCodec *m_pAudioCodec;
+#else
+	G729CodecNative *m_pG729CodecNative;
+#endif
+
+private:
+
+	void EncodingThreadProcedure();
+	///////Methods Called From EncodingThreadProcedure/////
 	void MuxIfNeeded();
 	void DumpEncodingFrame();
 	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, int &nCurrentTimeStamp, long long &timeStamp);
@@ -231,9 +236,13 @@ private:
 	void AddHeader(int &version, int &nCurrentTimeStamp);
 	void SetAudioIdentifierAndNextPacketType();
 	void SendAudioData();
+	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
+	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 	///////End of Methods Directly Called From EncodingThreadProcedure/////
 
-	///////Methods Directly Called From DecodingThreadProcedure/////
+	void DecodingThreadProcedure();
+	///////Methods Called From DecodingThreadProcedure/////
 	bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 	bool IsPacketNumberProcessable(int &iPacketNumber);
 	bool IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
@@ -244,16 +253,9 @@ private:
 	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);
 	void SendToPlayer(long long &llNow, long long &llLastTime);
-	///////End Of Methods Directly Called From DecodingThreadProcedure/////
-
-	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
-	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-
 	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
-
-	
+	///////End Of Methods Called From DecodingThreadProcedure/////
 
 protected:
 
