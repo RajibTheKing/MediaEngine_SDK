@@ -77,7 +77,7 @@ int CAudioCodec::CreateAudioEncoder()
 
 
 	m_iComplexity = 10;
-	long long encodingTime;
+	long long encodingTime = 0;
 	while (m_iComplexity >= 2)
 	{
 		opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(m_iComplexity));
