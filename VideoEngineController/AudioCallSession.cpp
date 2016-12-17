@@ -231,11 +231,14 @@ void CAudioCallSession::SetEchoCanceller(bool bOn)
 void CAudioCallSession::StartCallInLive(int iRole)
 {
 	m_iRole = iRole;
+	m_llDecodingTimeStampOffset = -1;
 }
 
 void CAudioCallSession::EndCallInLive()
 {
 	m_iRole = CALL_NOT_RUNNING;
+	m_llDecodingTimeStampOffset = -1;
+	m_pLiveAudioDecodingQueue->ResetBuffer();
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
@@ -918,28 +921,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			if (m_bLiveAudioStreamRunning)
 			{
-				if (-1 == m_llDecodingTimeStampOffset)
+				if (false == PlayableBasedOnRelativeTime(iTimeStampOffset))
 				{
-					m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
-					m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - iTimeStampOffset;
-				}
-				else
-				{
-					llNow = m_Tools.CurrentTimestamp();
-					llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
-					llWaitingTime = iTimeStampOffset - llExpectedEncodingTimeStamp;
-
-					if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> iTimeStampOffset) {
-						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
-						continue;
-					}
-
-
-					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < iTimeStampOffset)
-					{
-						m_Tools.SOSleep(1);
-						llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
-					}
+					continue;
 				}
 			}
 
@@ -947,10 +931,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			llNow = m_Tools.CurrentTimestamp();
 
-			__LOG("#!@@@@@@@@@@@@@@@@@--> #W FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow - llLastDecodedTime);
+//			__LOG("#!@@@@@@@@@@@@@@@@@--> #W FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow - llLastDecodedTime);
 
-			llLastDecodedTime = llNow;
-			llLastDecodedFrameEncodedTimeStamp = iTimeStampOffset + TempOffset;
+
 
 			if (nSlotNumber != m_iCurrentRecvdSlotID)
 			{
@@ -1084,6 +1067,33 @@ void CAudioCallSession::DecodingThreadProcedure()
 	m_bAudioDecodingThreadClosed = true;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
+}
+
+bool CAudioCallSession::PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime)
+{
+	if (-1 == m_llDecodingTimeStampOffset)
+	{
+		m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
+		m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - llCurrentFrameRelativeTime;
+	}
+	else
+	{
+		long long llNow = m_Tools.CurrentTimestamp();
+		long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
+		long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
+
+		if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> llCurrentFrameRelativeTime) {
+			__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
+			return false;
+		}
+
+		while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
+		{
+			m_Tools.SOSleep(1);
+			llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
+		}
+	}
+	return true;
 }
 
 void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector,

@@ -131,6 +131,8 @@ private:
 	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
 
+	bool PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime);
+
     int m_AudioHeadersize;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
