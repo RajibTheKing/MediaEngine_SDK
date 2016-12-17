@@ -788,13 +788,44 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 	return NULL;
 }
 
+bool CAudioCallSession::IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
+{
+	bool bIsProcessablePacket;
+	if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
+	{
+		//ALOG("#V#TYPE# ############################################### SKIPPET");
+		toolsObject.SOSleep(0);
+		bIsProcessablePacket = false;
+	}
+	else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
+	{
+		//g_StopVideoSending = 1;*/
+		if (false == m_bLiveAudioStreamRunning)
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
+		bIsProcessablePacket = true;
+	}
+	else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType ||
+		AUDIO_OPUS_PACKET_TYPE == nCurrentAudioPacketType ||
+		AUDIO_NONMUXED_PACKET_TYPE == nCurrentAudioPacketType ||
+		AUDIO_MUXED_PACKET_TYPE == nCurrentAudioPacketType)
+	{
+		bIsProcessablePacket = true;
+#ifdef  __DUPLICATE_AUDIO__
+		if (false == m_bLiveAudioStreamRunning) {
+			m_iAudioVersionFriend = nVersion;
+		}
+#endif
+	}
+	return bIsProcessablePacket;
+}
+
 void CAudioCallSession::DecodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
 
 	Tools toolsObject;
 	bool bIsProcessablePacket;
-	int nDecodingFrameSize, nDecodedFrameSize, iFrameCounter = 0, nCurrentAudioPacketType, iPacketNumber;
+	int iFrameCounter = 0, nCurrentAudioPacketType, iPacketNumber;
 	long long timeStamp, nDecodingTime = 0;
 	double dbTotalTime = 0;
 
@@ -866,12 +897,6 @@ void CAudioCallSession::DecodingThreadProcedure()
 					continue;
 				}
 			}
-			LOGEF("after continue Role %d packettype %d", m_iRole, nCurrentAudioPacketType);
-			/*
-			for (int i = 0; i < 10; i++)
-			{
-			LOGEF("GETTING value %d", m_ucaDecodingFrame[m_AudioHeadersize + i]);
-			}*/
 
 			//ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
 			//iTimeStampOffset = ReceivingHeader->GetInformation(TIMESTAMP);
@@ -911,37 +936,11 @@ void CAudioCallSession::DecodingThreadProcedure()
 			{
 				continue;
 			}
-
-			if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
+		
+			if (!IsPacketTypeProcessable(nCurrentAudioPacketType, nVersion, toolsObject))
 			{
-				//                ALOG("#V#TYPE# ############################################### SKIPPET");
-				toolsObject.SOSleep(0);
 				continue;
 			}
-			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
-			{
-				//g_StopVideoSending = 1;*/
-				if (false == m_bLiveAudioStreamRunning)
-					m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
-				bIsProcessablePacket = true;
-			}
-			else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType ||
-				AUDIO_OPUS_PACKET_TYPE == nCurrentAudioPacketType ||
-				AUDIO_NONMUXED_PACKET_TYPE == nCurrentAudioPacketType ||
-				AUDIO_MUXED_PACKET_TYPE == nCurrentAudioPacketType)
-			{
-				bIsProcessablePacket = true;
-#ifdef  __DUPLICATE_AUDIO__
-				if (false == m_bLiveAudioStreamRunning) {
-					m_iAudioVersionFriend = nVersion;//ReceivingHeader->GetInformation(VERSIONCODE);
-					//                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
-				}
-#endif
-			}
-
-			if (!bIsProcessablePacket) continue;
-
-			//m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
 
 			if (m_bLiveAudioStreamRunning)
 			{

@@ -190,6 +190,7 @@ private:
 
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
+	int nDecodingFrameSize, nDecodedFrameSize;
 
     unsigned char m_ucaRawDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	unsigned char m_ucaCompressedDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
@@ -221,6 +222,7 @@ private:
 
 	///////Methods///////
 	
+	///////Methods Directly Called From EncodingThreadProcedure/////
 	void MuxIfNeeded();
 	void DumpEncodingFrame();
 	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, int &nCurrentTimeStamp, long long &timeStamp);
@@ -229,6 +231,12 @@ private:
 	void AddHeader(int &version, int &nCurrentTimeStamp);
 	void SetAudioIdentifierAndNextPacketType();
 	void SendAudioData();
+	///////End of Methods Directly Called From EncodingThreadProcedure/////
+
+	///////Methods Directly Called From DecodingThreadProcedure/////
+	bool IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
+	bool PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime);
+	///////End Of Methods Directly Called From DecodingThreadProcedure/////
 
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
@@ -237,7 +245,7 @@ private:
 	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
 
-	bool PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime);
+	
 
 protected:
 
