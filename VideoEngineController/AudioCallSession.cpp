@@ -646,6 +646,10 @@ void CAudioCallSession::SendAudioData()
 					m_vCompressedFrameLength.push_back(m_nCompressedFrameSize + m_AudioHeadersize + 1);
 				}
 			}
+			else if (m_iRole == VIEWER_IN_CALL)
+			{
+				m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, m_nCompressedFrameSize + m_AudioHeadersize + 1, 0);
+			}
 			else
 			{
 				Locker lock(*m_pAudioCallSessionMutex);
@@ -703,14 +707,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else
 		{
-
-			if (currentTime + 5 < (m_Tools.CurrentTimestamp() / 1000))
-			{
-				LOGEF("SETTING publisher in call");
-				StartCallInLive(PUBLISHER_IN_CALL);
-				currentTime = 2081804296761;
-			}
-
 			m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
 			MuxIfNeeded();
 			DumpEncodingFrame();
@@ -786,6 +782,45 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 	pThis->DecodingThreadProcedure();
 
 	return NULL;
+}
+
+bool CAudioCallSession::IsQueueEmpty(Tools &toolsObject)
+{
+	if (m_bLiveAudioStreamRunning && m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioDecodingQueue->GetQueueSize() == 0)
+	{
+		toolsObject.SOSleep(1);
+		return true;
+	}
+	else if (m_bLiveAudioStreamRunning && m_iRole == PUBLISHER_IN_CALL && m_AudioDecodingBuffer.GetQueueSize() == 0)
+	{
+		toolsObject.SOSleep(1);
+		return true;
+	}
+	else if (false == m_bLiveAudioStreamRunning && m_AudioDecodingBuffer.GetQueueSize() == 0)
+	{
+		toolsObject.SOSleep(10);
+		return true;
+	}
+	return false;
+}
+
+void CAudioCallSession::DequeueData(int &nDecodingFrameSize)
+{
+	if (m_bLiveAudioStreamRunning)
+	{
+		if (m_iRole != PUBLISHER_IN_CALL)
+		{
+			nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
+		}
+		else
+		{
+			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
+		}
+	}
+	else
+	{
+		nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
+	}
 }
 
 bool CAudioCallSession::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
@@ -981,34 +1016,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 	int TempOffset = 0;
 	long long currentTime = m_Tools.CurrentTimestamp() / 1000;
 	while (m_bAudioDecodingThreadRunning)
-	{
-		if (m_bLiveAudioStreamRunning && m_pLiveAudioDecodingQueue->GetQueueSize() == 0)
+	{		
+		if (!IsQueueEmpty(toolsObject))
 		{
-			toolsObject.SOSleep(1);
-		}
-		else if (false == m_bLiveAudioStreamRunning && m_AudioDecodingBuffer.GetQueueSize() == 0)
-		{
-			toolsObject.SOSleep(10);
-		}
-		else
-		{
-			if (currentTime + 5 < (m_Tools.CurrentTimestamp() / 1000))
-			{
-				LOGEF("SETTING viewer in call");
-				StartCallInLive(VIEWER_IN_CALL);
-				currentTime = 2081804296761;
-			}
-
-
-			if (m_bLiveAudioStreamRunning)
-			{
-				nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
-			}
-			else
-			{
-				nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
-			}
-
+			DequeueData(nDecodingFrameSize);
 			timeStamp = m_Tools.CurrentTimestamp();
 
 			int dummy;

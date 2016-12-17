@@ -243,6 +243,8 @@ private:
 
 	void DecodingThreadProcedure();
 	///////Methods Called From DecodingThreadProcedure/////
+	bool IsQueueEmpty(Tools &toolsObject);
+	void DequeueData(int &nDecodingFrameSize);
 	bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 	bool IsPacketNumberProcessable(int &iPacketNumber);
 	bool IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
