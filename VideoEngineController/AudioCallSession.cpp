@@ -241,6 +241,7 @@ void CAudioCallSession::EndCallInLive()
 	m_iRole = CALL_NOT_RUNNING;
 	m_llDecodingTimeStampOffset = -1;
 	m_pLiveAudioDecodingQueue->ResetBuffer();
+	m_AudioDecodingBuffer.ResetBuffer();
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
