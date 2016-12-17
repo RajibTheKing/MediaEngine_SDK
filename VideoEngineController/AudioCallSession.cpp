@@ -861,6 +861,29 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded()
 	}
 }
 
+void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
+	int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp)
+{
+	if (!m_bLiveAudioStreamRunning)
+	{
+		llNow = m_Tools.CurrentTimestamp();
+		//            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
+		if (llNow - llTimeStamp >= 1000)
+		{
+			//                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+			iDataSentInCurrentSec = 0;
+			llTimeStamp = llNow;
+		}
+		iDataSentInCurrentSec++;
+
+		++iFrameCounter;
+		nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+		dbTotalTime += nDecodingTime;
+		//            if(iFrameCounter % 100 == 0)
+		//                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
+	}
+}
+
 void CAudioCallSession::DecodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
@@ -1027,30 +1050,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
+			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, timeStamp);
 
-			if (!m_bLiveAudioStreamRunning)
-			{
-				llNow = m_Tools.CurrentTimestamp();
-				//            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(nDecodedFrameSize));
-				if (llNow - llTimeStamp >= 1000)
-				{
-					//                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
-					iDataSentInCurrentSec = 0;
-					llTimeStamp = llNow;
-				}
-				iDataSentInCurrentSec++;
-
-				++iFrameCounter;
-				nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
-				dbTotalTime += nDecodingTime;
-				//            if(iFrameCounter % 100 == 0)
-				//                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
-			}
-
-
-#if defined(DUMP_DECODED_AUDIO)
-			m_Tools.WriteToFile(m_saDecodedFrame, size);
-#endif
 			if (nDecodedFrameSize < 1)
 			{
 				ALOG("#EXP# Decoding Failed.");

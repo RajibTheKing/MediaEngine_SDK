@@ -237,6 +237,8 @@ private:
 	bool IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
 	bool PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime);
 	void DecodeAndPostProcessIfNeeded();
+	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
+		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);
 	///////End Of Methods Directly Called From DecodingThreadProcedure/////
 
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
