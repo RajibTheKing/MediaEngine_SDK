@@ -426,6 +426,8 @@ void *CAudioCallSession::CreateAudioEncodingThread(void* param)
 int encodingtimetimes = 0, cumulitiveenctime = 0;
 #endif
 
+int iCounter = 0;
+
 void CAudioCallSession::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -441,6 +443,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 	int version = 0;
 	int nCurrentTimeStamp;
 
+	long long currentTime = m_Tools.CurrentTimestamp() / 1000;
+	//StartCallInLive(PUBLISHER_IN_CALL);
+
 	long long llLasstTime = -1;
 	int cnt = 1;
 	while (m_bAudioEncodingThreadRunning)
@@ -449,6 +454,14 @@ void CAudioCallSession::EncodingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else
 		{
+
+			if (currentTime + 5 < (m_Tools.CurrentTimestamp() / 1000))
+			{
+				LOGEF("SETTING publisher in call");
+				StartCallInLive(PUBLISHER_IN_CALL);
+				currentTime = 2081804296761;
+			}
+
 			m_AudioEncodingBuffer.DeQueue(m_saAudioEncodingFrame, timeStamp);
 			if (m_bLiveAudioStreamRunning && m_iRole == PUBLISHER_IN_CALL)
 			{
@@ -522,6 +535,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			if (m_bLiveAudioStreamRunning == false)
 			{
 				nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_AudioHeadersize]);
+				
 				ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 				encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 				m_pAudioCodec->DecideToChangeComplexity(encodingTime);
@@ -539,6 +553,13 @@ void CAudioCallSession::EncodingThreadProcedure()
 					memcpy(&m_ucaRawFrame[1 + m_AudioHeadersize], m_saAudioMUXEDFrame, nRawFrameSize);
 
 					nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_AudioHeadersize]);
+
+/*
+					LOGEF("SETTING value for icounter");
+					for (int i = 0; i < 10; i++){
+						m_ucaCompressedFrame[1 + m_AudioHeadersize + i] = iCounter;
+					}*/
+					iCounter++;
 					ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 					encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 					m_pAudioCodec->DecideToChangeComplexity(encodingTime);
@@ -636,6 +657,10 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 						if ((m_iCompressedDataSendIndex + nCompressedFrameSize + m_AudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
 						{
+							LOGEF("SETTING value test for icounter");
+							for (int i = 0; i < 10; i++){
+								LOGEF("Value %d->%d ", i, m_ucaCompressedFrame[1 + m_AudioHeadersize + i]);
+							}
 
 							memcpy(m_ucaCompressedDataToSend + m_iCompressedDataSendIndex, m_ucaCompressedFrame, nCompressedFrameSize + m_AudioHeadersize + 1);
 							m_iCompressedDataSendIndex += (nCompressedFrameSize + m_AudioHeadersize + 1);
@@ -758,12 +783,13 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
 #endif
+	//StartCallInLive(VIEWER_IN_CALL);
 
 	//toolsObject.SOSleep(1000);
 	long long llLastTime = -1, llDiffTimeNow = -1;
 	long long iTimeStampOffset = 0;
 	int TempOffset = 0;
-
+	long long currentTime = m_Tools.CurrentTimestamp() / 1000;
 	while (m_bAudioDecodingThreadRunning)
 	{
 		if (m_bLiveAudioStreamRunning && m_pLiveAudioDecodingQueue->GetQueueSize() == 0)
@@ -776,6 +802,14 @@ void CAudioCallSession::DecodingThreadProcedure()
 		}
 		else
 		{
+			if (currentTime + 5 < (m_Tools.CurrentTimestamp() / 1000))
+			{
+				LOGEF("SETTING viewer in call");
+				StartCallInLive(VIEWER_IN_CALL);
+				currentTime = 2081804296761;
+			}
+
+
 			if (m_bLiveAudioStreamRunning)
 			{
 				nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
@@ -793,7 +827,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			int nSlotNumber, packetLength, recvdSlotNumber, nChannel, nVersion;
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, dummy, nSlotNumber, iPacketNumber, dummy, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, iTimeStampOffset, m_ucaDecodingFrame);
-
+			LOGEF("Role %d packettype %d", m_iRole, nCurrentAudioPacketType);
 			if (m_bLiveAudioStreamRunning)
 			{
 				if (m_iRole == VIEWER_IN_CALL && nCurrentAudioPacketType != AUDIO_OPUS_PACKET_TYPE)
@@ -805,6 +839,12 @@ void CAudioCallSession::DecodingThreadProcedure()
 					continue;
 				}
 			}
+			LOGEF("after continue Role %d packettype %d", m_iRole, nCurrentAudioPacketType);
+/*
+			for (int i = 0; i < 10; i++)
+			{
+				LOGEF("GETTING value %d", m_ucaDecodingFrame[m_AudioHeadersize + i]);
+			}*/
 
 			//ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
 			//iTimeStampOffset = ReceivingHeader->GetInformation(TIMESTAMP);
@@ -827,6 +867,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 #ifdef MULTIPLE_HEADER
 			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber == iPacketNumber) {
+				LOGEF("Role %d, pack=ipack", m_iRole);
 				continue;
 			}
 #else
@@ -857,7 +898,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 					m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
 				bIsProcessablePacket = true;
 			}
-			else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
+			else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType || 
+				AUDIO_OPUS_PACKET_TYPE == nCurrentAudioPacketType ||
+				AUDIO_NONMUXED_PACKET_TYPE == nCurrentAudioPacketType ||
+				AUDIO_MUXED_PACKET_TYPE == nCurrentAudioPacketType)
 			{
 				bIsProcessablePacket = true;
 #ifdef  __DUPLICATE_AUDIO__
@@ -936,12 +980,13 @@ void CAudioCallSession::DecodingThreadProcedure()
 			* Start call block.
 			*
 			*/
-
+			LOGEF("Role %d, Before decode", m_iRole);
 			if (!m_bLiveAudioStreamRunning)
 			{
 #ifdef OPUS_ENABLE
 				nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 				ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+				LOGEF("Role %d, done decode", m_iRole);
 
 #else
 				nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
@@ -955,17 +1000,19 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 			else
 			{
+
 				if (m_iRole != VIEWER_IN_CALL)
 				{
 					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
 					nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+					LOGEF("Role %d, no viewers in call", m_iRole);
 				}
 				else
 				{
 #ifdef OPUS_ENABLE
 					nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 					ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
-
+					LOGEF("Role %d, after decode", m_iRole);
 #else
 					nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
 #endif
@@ -1094,7 +1141,7 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType
 
 	if (m_bLiveAudioStreamRunning)
 	{
-		SendingHeader->SetInformation(AUDIO_NORMAL_PACKET_TYPE, PACKETTYPE);
+		SendingHeader->SetInformation(packetType, PACKETTYPE);
 		SendingHeader->SetInformation(packetNumber, PACKETNUMBER);
 		SendingHeader->SetInformation(slotNumber, SLOTNUMBER);
 		SendingHeader->SetInformation(packetLength, PACKETLENGTH);
