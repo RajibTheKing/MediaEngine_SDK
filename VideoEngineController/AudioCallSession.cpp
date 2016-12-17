@@ -1008,28 +1008,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 			}
 
-			//ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
-			//iTimeStampOffset = ReceivingHeader->GetInformation(TIMESTAMP);
-			//            ALOG("#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
-			//                    + " #V# SLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(SLOTNUMBER))
-			//                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
-			//                    + " #V# RECVDSLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(RECVDSLOTNUMBER))
-			//            );
-
-			//nCurrentAudioPacketType = ReceivingHeader->GetInformation(PACKETTYPE);
-			//iPacketNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
-
-			ALOG("#2A#RCV---> PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber)
-				+ "  Last: " + m_Tools.IntegertoStringConvert(m_iLastDecodedPacketNumber)
-				+ " m_iAudioVersionFriend = " + m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
-
-			//			__LOG("@@@@@@@@@@@@@@ PN: %d, Len: %d",iPacketNumber, ReceivingHeader->GetInformation(PACKETLENGTH));
-
 			if (!IsPacketNumberProcessable(iPacketNumber))
 			{
 				continue;
 			}
-
 
 			if (!ReceivingHeader->IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
@@ -1041,44 +1023,17 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (m_bLiveAudioStreamRunning)
+			if (!IsPlayableBasedOnRelativeTime(iTimeStampOffset))
 			{
-				if (false == PlayableBasedOnRelativeTime(iTimeStampOffset))
-				{
-					continue;
-				}
+				continue;
 			}
+		
 
 			llNow = m_Tools.CurrentTimestamp();
-			++iPlaiedFrameCounter;
 
-			//			__LOG("#!@@@@@@@@@@@@@@@@@--> #W FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow - llLastDecodedTime);
-
-
-
-			if (nSlotNumber != m_iCurrentRecvdSlotID)
-			{
-				m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
-				if (m_iPrevRecvdSlotID != -1)
-				{
-					m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
-				}
-
-				m_iCurrentRecvdSlotID = nSlotNumber;
-				m_iReceivedPacketsInCurrentSlot = 0;
-
-#ifdef OPUS_ENABLE
-				if (false == m_bLiveAudioStreamRunning) {
-					m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
-				}
-#endif
-			}
-
-			m_iLastDecodedPacketNumber = iPacketNumber;
-			m_iReceivedPacketsInCurrentSlot++;
+			SetSlotStatesAndDecideToChangeBitRate(iPacketNumber, nSlotNumber);
 
 			nDecodingFrameSize -= m_AudioHeadersize;
-			//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
 
 			DecodeAndPostProcessIfNeeded();
 #ifdef __DUMP_FILE__
@@ -1102,31 +1057,62 @@ void CAudioCallSession::DecodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 
-bool CAudioCallSession::PlayableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime)
+bool CAudioCallSession::IsPlayableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime)
 {
-	if (-1 == m_llDecodingTimeStampOffset)
+	if (m_bLiveAudioStreamRunning)
 	{
-		m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
-		m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - llCurrentFrameRelativeTime;
+		if (-1 == m_llDecodingTimeStampOffset)
+		{
+			m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
+			m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - llCurrentFrameRelativeTime;
+		}
+		else
+		{
+			long long llNow = m_Tools.CurrentTimestamp();
+			long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
+			long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
+
+			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime) {
+				__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
+				return false;
+			}
+
+			while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
+			{
+				m_Tools.SOSleep(1);
+				llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
+			}
+		}
+		return true;
 	}
 	else
 	{
-		long long llNow = m_Tools.CurrentTimestamp();
-		long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
-		long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
-
-		if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> llCurrentFrameRelativeTime) {
-			__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
-			return false;
-		}
-
-		while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
-		{
-			m_Tools.SOSleep(1);
-			llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
-		}
+		return true;
 	}
-	return true;
+}
+
+void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &iPacketNumber, int &nSlotNumber)
+{
+	if (nSlotNumber != m_iCurrentRecvdSlotID)
+	{
+		m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
+		if (m_iPrevRecvdSlotID != -1)
+		{
+			m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
+		}
+
+		m_iCurrentRecvdSlotID = nSlotNumber;
+		m_iReceivedPacketsInCurrentSlot = 0;
+
+#ifdef OPUS_ENABLE
+		if (false == m_bLiveAudioStreamRunning) {
+			m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+		}
+#endif
+	}
+
+	m_iLastDecodedPacketNumber = iPacketNumber;
+	m_iReceivedPacketsInCurrentSlot++;
 }
 
 void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector,
