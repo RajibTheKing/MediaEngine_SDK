@@ -239,7 +239,7 @@ private:
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-	///////End of Methods Directly Called From EncodingThreadProcedure/////
+	///////End of Methods Called From EncodingThreadProcedure/////
 
 	void DecodingThreadProcedure();
 	///////Methods Called From DecodingThreadProcedure/////
