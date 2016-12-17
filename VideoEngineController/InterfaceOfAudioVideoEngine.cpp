@@ -66,7 +66,7 @@ bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID ,
 	return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume)
+bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder)
 {
 	if (NULL == m_pcController)
 	{
@@ -86,6 +86,16 @@ bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool
 
 	bool bReturnedValue = m_pcController->SetLoudSpeaker(lFriendID, bOn);
     return bReturnedValue;
+}
+
+bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const IPVLongType llFriendID, bool bOn)
+{
+	return false;
+}
+
+int CInterfaceOfAudioVideoEngine::CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength)
+{
+	return 0;
 }
 
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork, int nNetworkType)
