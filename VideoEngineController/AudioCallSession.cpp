@@ -788,6 +788,25 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 	return NULL;
 }
 
+bool CAudioCallSession::IsPacketNumberProcessable(int &iPacketNumber)
+{
+#ifdef  __DUPLICATE_AUDIO__
+#ifdef MULTIPLE_HEADER
+	if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber == iPacketNumber) {
+		LOGEF("Role %d, pack=ipack", m_iRole);
+		return false;
+	}
+#else
+	//iPacketNumber rotates
+	if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {
+		return false;
+	}
+#endif
+	ALOG("#2A#RCV---------> Decoding = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+#endif
+	return true;
+}
+
 bool CAudioCallSession::IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
 {
 	bool bIsProcessablePacket;
@@ -1006,21 +1025,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			//			__LOG("@@@@@@@@@@@@@@ PN: %d, Len: %d",iPacketNumber, ReceivingHeader->GetInformation(PACKETLENGTH));
 
-#ifdef  __DUPLICATE_AUDIO__
-
-#ifdef MULTIPLE_HEADER
-			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber == iPacketNumber) {
-				LOGEF("Role %d, pack=ipack", m_iRole);
+			if (!IsPacketNumberProcessable(iPacketNumber))
+			{
 				continue;
 			}
-#else
-			//iPacketNumber rotates
-			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {
-				continue;
-			}
-#endif
-			ALOG("#2A#RCV---------> Decoding = " + m_Tools.IntegertoStringConvert(iPacketNumber));
-#endif
 
 
 			if (!ReceivingHeader->IsPacketTypeSupported(nCurrentAudioPacketType))
@@ -1094,7 +1102,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 
-bool CAudioCallSession::PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime)
+bool CAudioCallSession::PlayableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime)
 {
 	if (-1 == m_llDecodingTimeStampOffset)
 	{
