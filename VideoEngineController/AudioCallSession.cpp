@@ -720,7 +720,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			{
 				continue;
 			}
-			
+
 			EncodeIfNeeded(timeStamp, encodingTime, avgCountTimeStamp);
 			AddHeader(version, nCurrentTimeStamp);
 			SetAudioIdentifierAndNextPacketType();
@@ -1016,7 +1016,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, dummy, nSlotNumber, iPacketNumber, dummy, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, iTimeStampOffset, m_ucaDecodingFrame);
 			LOGEF("Role %d packettype %d", m_iRole, nCurrentAudioPacketType);
-			
+
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
 				continue;
@@ -1031,7 +1031,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			{
 				continue;
 			}
-		
+
 			if (!IsPacketTypeProcessable(nCurrentAudioPacketType, nVersion, toolsObject))
 			{
 				continue;
@@ -1041,7 +1041,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			{
 				continue;
 			}
-		
+
 
 			llNow = m_Tools.CurrentTimestamp();
 
