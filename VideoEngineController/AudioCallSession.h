@@ -124,6 +124,7 @@ private:
 	CAudioCallHeader m_receivingHeaderOld;
 
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
+	void MuxIfNeeded();
 
 	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
@@ -195,7 +196,7 @@ private:
 	*/
 	unsigned char m_ucaRawFrame[MAX_AUDIO_FRAME_Length];
 
-
+	int m_nCompressedFrameSize, m_nRawFrameSize;
 
 
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
