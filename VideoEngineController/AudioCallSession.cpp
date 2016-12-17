@@ -475,32 +475,33 @@ void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int 
 
 bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 {
-#ifdef USE_VAD			
-	if (!m_pVoice->HasVoice(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME))
+	if (!m_bLiveAudioStreamRunning)
 	{
-		return false;
-	}
+#ifdef USE_VAD			
+		if (!m_pVoice->HasVoice(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME))
+		{
+			return false;
+		}
 #endif
 
 
 #ifdef USE_AGC
-	m_pPlayerGain->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
-	m_pRecorderGain->AddGain(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+		m_pPlayerGain->AddFarEnd(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+		m_pRecorderGain->AddGain(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
 #endif
 
 
 #ifdef USE_ANS
-	memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
-	m_pNoise->Denoise(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, m_saAudioEncodingDenoisedFrame);
+		memcpy(m_saAudioEncodingTempFrame, m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
+		m_pNoise->Denoise(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, m_saAudioEncodingDenoisedFrame);
 #ifdef USE_AECM
 
-	memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+		memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
 #else
-	memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+		memcpy(m_saAudioEncodingFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
 #endif
-
-
 #endif
+	}
 	return true;
 }
 int iCounter = 0;
@@ -563,7 +564,32 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, int &encodingTime, 
 	//                     + " MaxFrameNumber: " + m_Tools.IntegertoStringConvert(m_nMaxAudioPacketNumber));
 }
 
+void CAudioCallSession::AddHeader(int &version, int &nCurrentTimeStamp)
+{
+	m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
+	m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
 
+	if (!m_bLiveAudioStreamRunning)
+	{
+		BuildAndGetHeaderInArray(m_iNextPacketType, 0, m_iSlotID, m_iPacketNumber, m_nCompressedFrameSize,
+			m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
+	}
+	else
+	{
+		if (m_iRole == PUBLISHER_IN_CALL)
+		{
+			BuildAndGetHeaderInArray(AUDIO_OPUS_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, m_nCompressedFrameSize,
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
+			BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
+		}
+		else
+		{
+			BuildAndGetHeaderInArray(AUDIO_NONMUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
+		}
+	}
+}
 
 void CAudioCallSession::EncodingThreadProcedure()
 {
@@ -604,38 +630,14 @@ void CAudioCallSession::EncodingThreadProcedure()
 			DumpEncodingFrame();
 			PrintRelativeTime(cnt, llLasstTime, countFrame, nCurrentTimeStamp, timeStamp);
 
-			if (!m_bLiveAudioStreamRunning)
+			
+			if (false == PreProcessAudioBeforeEncoding())
 			{
-				if (false == PreProcessAudioBeforeEncoding())
-				{
-					continue;
-				}
+				continue;
 			}
+			
 			EncodeIfNeeded(timeStamp, encodingTime, avgCountTimeStamp);
-
-			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
-			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
-
-			if (!m_bLiveAudioStreamRunning)
-			{
-				BuildAndGetHeaderInArray(m_iNextPacketType, 0, m_iSlotID, m_iPacketNumber, m_nCompressedFrameSize,
-					m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
-			}
-			else
-			{
-				if (m_iRole == PUBLISHER_IN_CALL)
-				{
-					BuildAndGetHeaderInArray(AUDIO_OPUS_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, m_nCompressedFrameSize,
-						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
-					BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
-				}
-				else
-				{
-					BuildAndGetHeaderInArray(AUDIO_NONMUXED_PACKET_TYPE, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-						m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
-				}
-			}
+			AddHeader(version, nCurrentTimeStamp);
 
 
 			m_ucaRawFrame[0] = 0;   //Setting Audio packet type( = 0).

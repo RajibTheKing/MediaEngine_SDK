@@ -226,6 +226,7 @@ private:
 	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, int &nCurrentTimeStamp, long long &timeStamp);
 	bool PreProcessAudioBeforeEncoding();
 	void EncodeIfNeeded(long long &timeStampm, int &encodingTime, double &avgCountTimeStamp);
+	void AddHeader(int &version, int &nCurrentTimeStamp);
 
 	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
