@@ -819,6 +819,48 @@ bool CAudioCallSession::IsPacketTypeProcessable(int &nCurrentAudioPacketType, in
 	return bIsProcessablePacket;
 }
 
+void CAudioCallSession::DecodeAndPostProcessIfNeeded()
+{
+	LOGEF("Role %d, Before decode", m_iRole);
+	if (!m_bLiveAudioStreamRunning)
+	{
+#ifdef OPUS_ENABLE
+		nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+		ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+		LOGEF("Role %d, done decode", m_iRole);
+
+#else
+		nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+#endif
+
+
+#ifdef USE_AGC
+		m_pRecorderGain->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
+		m_pPlayerGain->AddGain(m_saDecodedFrame, nDecodedFrameSize);
+#endif
+	}
+	else
+	{
+
+		if (m_iRole != VIEWER_IN_CALL)
+		{
+			memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
+			nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+			LOGEF("Role %d, no viewers in call", m_iRole);
+		}
+		else
+		{
+#ifdef OPUS_ENABLE
+			nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+			ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+			LOGEF("Role %d, after decode", m_iRole);
+#else
+			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+#endif
+		}
+	}
+}
+
 void CAudioCallSession::DecodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
@@ -950,9 +992,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 			}
 
-			++iPlaiedFrameCounter;
-
 			llNow = m_Tools.CurrentTimestamp();
+			++iPlaiedFrameCounter;
 
 			//			__LOG("#!@@@@@@@@@@@@@@@@@--> #W FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow - llLastDecodedTime);
 
@@ -982,52 +1023,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodingFrameSize -= m_AudioHeadersize;
 			//            ALOG("#ES Size: "+m_Tools.IntegertoStringConvert(nDecodingFrameSize));
 
-			/*
-			* Start call block.
-			*
-			*/
-			LOGEF("Role %d, Before decode", m_iRole);
-			if (!m_bLiveAudioStreamRunning)
-			{
-#ifdef OPUS_ENABLE
-				nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
-				ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
-				LOGEF("Role %d, done decode", m_iRole);
-
-#else
-				nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
-#endif
-
-
-#ifdef USE_AGC
-				m_pRecorderGain->AddFarEnd(m_saDecodedFrame, nDecodedFrameSize);
-				m_pPlayerGain->AddGain(m_saDecodedFrame, nDecodedFrameSize);
-#endif
-			}
-			else
-			{
-
-				if (m_iRole != VIEWER_IN_CALL)
-				{
-					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
-					nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
-					LOGEF("Role %d, no viewers in call", m_iRole);
-				}
-				else
-				{
-#ifdef OPUS_ENABLE
-					nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
-					ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
-					LOGEF("Role %d, after decode", m_iRole);
-#else
-					nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
-#endif
-				}
-			}
-			/*
-			* Start call block end.
-			*
-			*/
+			DecodeAndPostProcessIfNeeded();
 #ifdef __DUMP_FILE__
 			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
 #endif
