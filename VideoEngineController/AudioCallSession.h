@@ -234,11 +234,13 @@ private:
 	///////End of Methods Directly Called From EncodingThreadProcedure/////
 
 	///////Methods Directly Called From DecodingThreadProcedure/////
+	bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 	bool IsPacketNumberProcessable(int &iPacketNumber);
 	bool IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
-	bool IsPlayableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime);
+	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime);
 	void SetSlotStatesAndDecideToChangeBitRate(int &iPacketNumber, int &nSlotNumber);
 	void DecodeAndPostProcessIfNeeded();
+	void DumpDecodedFrame();
 	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);
 	void SendToPlayer(long long &llNow, long long &llLastTime);

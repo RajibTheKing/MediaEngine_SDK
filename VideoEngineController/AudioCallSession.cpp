@@ -788,6 +788,23 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 	return NULL;
 }
 
+bool CAudioCallSession::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
+{
+	if (m_bLiveAudioStreamRunning)
+	{
+		if (m_iRole == VIEWER_IN_CALL && nCurrentAudioPacketType != AUDIO_OPUS_PACKET_TYPE)
+		{
+			return false;
+		}
+		else if (m_iRole != VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_OPUS_PACKET_TYPE)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
 bool CAudioCallSession::IsPacketNumberProcessable(int &iPacketNumber)
 {
 #ifdef  __DUPLICATE_AUDIO__
@@ -880,6 +897,13 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded()
 	}
 }
 
+void CAudioCallSession::DumpDecodedFrame()
+{
+#ifdef __DUMP_FILE__
+	fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
+#endif
+}
+
 void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 	int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp)
 {
@@ -951,9 +975,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
 #endif
-	//StartCallInLive(VIEWER_IN_CALL);
 
-	//toolsObject.SOSleep(1000);
 	long long llLastTime = -1, llDiffTimeNow = -1;
 	long long iTimeStampOffset = 0;
 	int TempOffset = 0;
@@ -987,8 +1009,6 @@ void CAudioCallSession::DecodingThreadProcedure()
 				nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
 			}
 
-			bIsProcessablePacket = false;
-			//            ALOG( "#DE#--->> nDecodingFrameSize = " + m_Tools.IntegertoStringConvert(nDecodingFrameSize));
 			timeStamp = m_Tools.CurrentTimestamp();
 
 			int dummy;
@@ -996,16 +1016,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, dummy, nSlotNumber, iPacketNumber, dummy, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, iTimeStampOffset, m_ucaDecodingFrame);
 			LOGEF("Role %d packettype %d", m_iRole, nCurrentAudioPacketType);
-			if (m_bLiveAudioStreamRunning)
+			
+			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
-				if (m_iRole == VIEWER_IN_CALL && nCurrentAudioPacketType != AUDIO_OPUS_PACKET_TYPE)
-				{
-					continue;
-				}
-				else if (m_iRole != VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_OPUS_PACKET_TYPE)
-				{
-					continue;
-				}
+				continue;
 			}
 
 			if (!IsPacketNumberProcessable(iPacketNumber))
@@ -1023,7 +1037,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (!IsPlayableBasedOnRelativeTime(iTimeStampOffset))
+			if (!IsPacketProcessableBasedOnRelativeTime(iTimeStampOffset))
 			{
 				continue;
 			}
@@ -1036,9 +1050,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			nDecodingFrameSize -= m_AudioHeadersize;
 
 			DecodeAndPostProcessIfNeeded();
-#ifdef __DUMP_FILE__
-			fwrite(m_saDecodedFrame, 2, nDecodedFrameSize, FileOutput);
-#endif
+			DumpDecodedFrame();
 			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, timeStamp);
 
 			if (nDecodedFrameSize < 1)
@@ -1057,7 +1069,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 
-bool CAudioCallSession::IsPlayableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime)
+bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime)
 {
 	if (m_bLiveAudioStreamRunning)
 	{
