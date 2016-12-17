@@ -220,14 +220,17 @@ private:
     int m_iAudioVersionSelf;
 
 	///////Methods///////
-	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
+	
 	void MuxIfNeeded();
 	void DumpEncodingFrame();
 	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, int &nCurrentTimeStamp, long long &timeStamp);
 	bool PreProcessAudioBeforeEncoding();
 	void EncodeIfNeeded(long long &timeStampm, int &encodingTime, double &avgCountTimeStamp);
 	void AddHeader(int &version, int &nCurrentTimeStamp);
+	void SetAudioIdentifierAndNextPacketType();
+	void SendAudioData();
 
+	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 
