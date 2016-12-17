@@ -147,9 +147,6 @@
     <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClCompile>
     <ClCompile Include="LiveStreamingHeader.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
@@ -196,6 +193,9 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioLiveHeader.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -359,9 +359,6 @@
     <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClInclude>
     <ClInclude Include="LiveStreamingHeader.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
@@ -414,6 +411,9 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioLiveHeader.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
