@@ -123,17 +123,6 @@ private:
 	CAudioCallHeader m_sendingHeaderOld;
 	CAudioCallHeader m_receivingHeaderOld;
 
-	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
-	void MuxIfNeeded();
-
-	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-
-	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
-
-	bool PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime);
-
     int m_AudioHeadersize;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
@@ -229,6 +218,22 @@ private:
 
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
+
+	///////Methods///////
+	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
+	void MuxIfNeeded();
+	void DumpEncodingFrame();
+	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, int &nCurrentTimeStamp, long long &timeStamp);
+	bool PreProcessAudioBeforeEncoding();
+	void EncodeIfNeeded(long long &timeStampm, int &encodingTime, double &avgCountTimeStamp);
+
+	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
+
+	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
+
+	bool PlayableBasedOnRelativeTime(long long llCurrentFrameRelativeTime);
 
 protected:
 
