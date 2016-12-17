@@ -505,7 +505,7 @@ bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 	}
 	return true;
 }
-int iCounter = 0;
+
 void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, int &encodingTime, double &avgCountTimeStamp)
 {
 #ifdef OPUS_ENABLE
@@ -531,12 +531,6 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, int &encodingTime, 
 
 			m_nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioEncodingFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_AudioHeadersize]);
 
-			/*
-			LOGEF("SETTING value for icounter");
-			for (int i = 0; i < 10; i++){
-			m_ucaCompressedFrame[1 + m_AudioHeadersize + i] = iCounter;
-			}*/
-			iCounter++;
 			ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
