@@ -884,6 +884,32 @@ void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTi
 	}
 }
 
+void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime)
+{
+	if (m_bLiveAudioStreamRunning == true)
+	{
+
+		llNow = Tools::CurrentTimestamp();
+
+		__LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d", iPacketNumber, llNow - llLastTime, nDecodedFrameSize);
+
+		llLastTime = llNow;
+		if (m_iRole == PUBLISHER_IN_CALL)
+		{
+			m_AudioDecodedBuffer.Queue(m_saDecodedFrame, nDecodedFrameSize, 0);
+		}
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
+			SERVICE_TYPE_LIVE_STREAM,
+			nDecodedFrameSize,
+			m_saDecodedFrame);
+	}
+	else
+	{
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_CALL, nDecodedFrameSize, m_saDecodedFrame);
+	}
+
+}
+
 void CAudioCallSession::DecodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
@@ -1058,28 +1084,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (m_bLiveAudioStreamRunning == true)
-			{
-
-				llNow = Tools::CurrentTimestamp();
-
-				__LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d", iPacketNumber, llNow - llLastTime, nDecodedFrameSize);
-
-				llLastTime = llNow;
-				if (m_iRole == PUBLISHER_IN_CALL)
-				{
-					m_AudioDecodedBuffer.Queue(m_saDecodedFrame, nDecodedFrameSize, 0);
-				}
-				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
-					SERVICE_TYPE_LIVE_STREAM,
-					nDecodedFrameSize,
-					m_saDecodedFrame);
-			}
-			else
-			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_CALL, nDecodedFrameSize, m_saDecodedFrame);
-			}
-
+			SendToPlayer(llNow, llLastTime);
 			toolsObject.SOSleep(0);
 		}
 	}
