@@ -58,6 +58,12 @@ public:
 	void SetMediaUnitVersionInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetMediaUnitVersionFromMediaChunck(unsigned char convertedArray[]);
 
+	void SetMediaUnitHeaderLengthInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetMediaUnitHeaderLengthFromMediaChunck(unsigned char convertedArray[]);
+
+	void SetMediaUnitChunkDurationInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetMediaUnitChunkDurationFromMediaChunck(unsigned char convertedArray[]);
+
 	void SetMediaUnitTimestampInMediaChunck(int number, unsigned char data[]);
 	int GetMediaUnitTimestampInMediaChunck(unsigned char data[]);
 

@@ -380,6 +380,34 @@ int Tools::GetMediaUnitVersionFromMediaChunck(unsigned char data[])
 	return number;
 }
 
+void Tools::SetMediaUnitHeaderLengthInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_HEADER_LENGTH_BLOCK_POSITION, LIVE_MEDIA_UNIT_HEADER_LENGTH_BLOCK_SIZE, number);
+}
+
+int Tools::GetMediaUnitHeaderLengthFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_HEADER_LENGTH_BLOCK_POSITION, LIVE_MEDIA_UNIT_HEADER_LENGTH_BLOCK_SIZE);
+
+	return number;
+}
+
+void Tools::SetMediaUnitChunkDurationInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_CHUNK_DURATION_BLOCK_POSITION, LIVE_MEDIA_UNIT_CHUNK_DURATION_BLOCK_SIZE, number);
+}
+
+int Tools::GetMediaUnitChunkDurationFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_CHUNK_DURATION_BLOCK_POSITION, LIVE_MEDIA_UNIT_CHUNK_DURATION_BLOCK_SIZE);
+
+	return number;
+}
+
 void Tools::SetAudioBlockSizeInMediaChunck(int number, unsigned char data[])
 {
 	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_POSITION, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE, number);
