@@ -405,7 +405,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
 #endif
 	Tools toolsObject;
-	int nEncodingFrameSize, nEncodedFrameSize, encodingTime;
+	int nEncodingFrameSize, nEncodedFrameSize, encodingTime = 0;
 	long long timeStamp;
 	double avgCountTimeStamp = 0;
 	int countFrame = 0;

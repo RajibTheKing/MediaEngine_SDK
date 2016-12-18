@@ -82,7 +82,7 @@ bool CAudioPacketHeader::IsPacketTypeSupported()
 
 void CAudioPacketHeader::SetInformation(unsigned int Information, int InfoType)
 {
-    Information = (Information & ((1<<HeaderBitmap[InfoType]) - 1));
+    Information = (Information & ((1LL<<HeaderBitmap[InfoType]) - 1));
 	ma_nInformation[InfoType] = Information;
 
 	int infoStartBit = 0;

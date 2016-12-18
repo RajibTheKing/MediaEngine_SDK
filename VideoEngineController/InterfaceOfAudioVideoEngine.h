@@ -14,7 +14,7 @@
 #define SERVICE_TYPE_SELF_CALL 13
 #define SERVICE_TYPE_SELF_STREAM 14
 
-
+typedef long long IPVLongType;
 
 class CController;
 
@@ -75,6 +75,7 @@ public:
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
 
 	void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int));
+
     
 private:
 

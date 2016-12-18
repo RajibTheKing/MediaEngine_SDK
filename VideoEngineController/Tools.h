@@ -6,7 +6,11 @@
 
 #include "Size.h"
 
-#include "AudioVideoEngineDefinitions.h"
+#ifdef WIN32
+typedef __int64 LongLong;
+#else 
+typedef long long LongLong;
+#endif
 
 #if defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
 #include <windows.h>
