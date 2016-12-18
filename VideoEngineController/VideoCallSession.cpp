@@ -932,10 +932,15 @@ int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int heig
 		m_nVideoCallWidth = width;
 
 		this->m_pColorConverter->SetHeightWidth(height, width);
-		this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+
+		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
+		else
+			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
 
 		return 1;
-	}else
+	}
+	else
 	{
 		return -1;
 	}
