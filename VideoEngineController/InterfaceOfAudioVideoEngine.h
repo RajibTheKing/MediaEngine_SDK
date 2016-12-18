@@ -3,7 +3,8 @@
 #define _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 
 #include <string>
-#include <vector>
+
+#include "Tools.h"
 
 #define MEDIA_TYPE_AUDIO 1
 #define MEDIA_TYPE_VIDEO 2
@@ -31,16 +32,18 @@ public:
 	bool InitializeLibrary(const IPVLongType& llUserID);
 	bool SetUserName(const IPVLongType llUserName);
 	bool StartAudioCall(const IPVLongType llFriendID, int nServiceType);
-	bool SetVolume(const IPVLongType llFriendID, int iVolume, bool bRecorder);
-	bool SetLoudSpeaker(const IPVLongType llFriendID, bool bOn);
+
+	bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
+	bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
 	bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
-	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nLivePacketLength = 0, int nNetworkType = 0);
+	int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
+
+	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
-	int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int nFrame = 0, int *pMissingFrames = NULL);
+	int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);
 	int PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames);
 	int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
-	int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 	int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
 	int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
 	int SetBitRate(const IPVLongType llFriendID, int nBitRate);
@@ -59,25 +62,25 @@ public:
 	int DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
 	int StopAudioEncodeDecodeSession();
 
-	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data, int iLen, int nVideoHeight, int nVideoWidth);
-	int FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth);
-	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
-
-	void InterruptOccured(const LongLong lFriendID);
-	void InterruptOver(const LongLong lFriendID);
-    
-	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
-	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, int, int));
-	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
+	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
+	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int));
+	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
-	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(IPVLongType, int, short*, int));
+	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
 	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
-	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(IPVLongType, short*, int));
+	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
 
 	void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int));
 
-    
+	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data, int iLen, int nVideoHeight, int nVideoWidth);
+	int FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth);
+	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
+	void InterruptOccured(const LongLong lFriendID);
+	void InterruptOver(const LongLong lFriendID);
+
 private:
+
+	Tools m_Tools;
 
 	CController* m_pcController;
 };
