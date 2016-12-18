@@ -3,7 +3,8 @@
 #define _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 
 #include <string>
-#include <vector>
+
+#include "Tools.h"
 
 #define MEDIA_TYPE_AUDIO 1
 #define MEDIA_TYPE_VIDEO 2
@@ -14,7 +15,7 @@
 #define SERVICE_TYPE_SELF_CALL 13
 #define SERVICE_TYPE_SELF_STREAM 14
 
-
+typedef long long IPVLongType;
 
 class CController;
 
@@ -82,6 +83,8 @@ public:
 	void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int));
     
 private:
+
+	Tools m_Tools;
 
 	CController* m_pcController;
 };

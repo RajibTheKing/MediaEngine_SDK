@@ -203,6 +203,15 @@
     <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h">
       <Filter>VideoEngineUtilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveReceiver.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -354,6 +363,15 @@
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp">
       <Filter>VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp">
+      <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

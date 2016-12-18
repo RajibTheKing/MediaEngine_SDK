@@ -4,7 +4,7 @@
 #include "LogPrinter.h"
 
 CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine = NULL;
-Tools m_Tools;
+
 
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 {
@@ -75,6 +75,7 @@ bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolu
 	}
 
 	bool bReturnedValue = m_pcController->SetVolume(lFriendID, iVolume, bRecorder);
+    return bReturnedValue;
 }
 
 bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool bOn)
