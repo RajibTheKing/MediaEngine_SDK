@@ -127,7 +127,7 @@ private:
 
     CCommonElementsBucket* m_pCommonElementsBucket;
 	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
-	CAudioByteBuffer m_AudioDecodingBuffer;
+	CAudioByteBuffer m_AudioReceivedBuffer;
 
     std::vector<int> m_vRawFrameLength, m_vCompressedFrameLength;
 	bool m_bUsingLoudSpeaker;

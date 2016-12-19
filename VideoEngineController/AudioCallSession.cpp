@@ -243,7 +243,7 @@ void CAudioCallSession::EndCallInLive()
 	m_iRole = CALL_NOT_RUNNING;
 	m_llDecodingTimeStampOffset = -1;
 	m_pLiveAudioReceivedQueue->ResetBuffer();
-	m_AudioDecodingBuffer.ResetBuffer();
+	m_AudioReceivedBuffer.ResetBuffer();
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
@@ -342,7 +342,7 @@ int CAudioCallSession::DecodeAudioDataVector(int nOffset, unsigned char *pucaDec
 		return 1;
 	}
 
-	int returnedValue = m_AudioDecodingBuffer.EnQueue(pucaDecodingAudioData, unLength);
+	int returnedValue = m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
 
 	return returnedValue;
 }
@@ -358,7 +358,7 @@ int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingA
 		return 1;
 	}
 
-	int returnedValue = m_AudioDecodingBuffer.EnQueue(pucaDecodingAudioData, unLength);
+	int returnedValue = m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
 
 	return returnedValue;
 }
@@ -803,12 +803,12 @@ bool CAudioCallSession::IsQueueEmpty(Tools &toolsObject)
 		toolsObject.SOSleep(1);
 		return true;
 	}
-	else if (m_bLiveAudioStreamRunning && m_iRole == PUBLISHER_IN_CALL && m_AudioDecodingBuffer.GetQueueSize() == 0)
+	else if (m_bLiveAudioStreamRunning && m_iRole == PUBLISHER_IN_CALL && m_AudioReceivedBuffer.GetQueueSize() == 0)
 	{
 		toolsObject.SOSleep(1);
 		return true;
 	}
-	else if (false == m_bLiveAudioStreamRunning && m_AudioDecodingBuffer.GetQueueSize() == 0)
+	else if (false == m_bLiveAudioStreamRunning && m_AudioReceivedBuffer.GetQueueSize() == 0)
 	{
 		toolsObject.SOSleep(10);
 		return true;
@@ -826,12 +826,12 @@ void CAudioCallSession::DequeueData(int &nDecodingFrameSize)
 		}
 		else
 		{
-			nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
+			nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
 		}
 	}
 	else
 	{
-		nDecodingFrameSize = m_AudioDecodingBuffer.DeQueue(m_ucaDecodingFrame);
+		nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
 	}
 }
 
