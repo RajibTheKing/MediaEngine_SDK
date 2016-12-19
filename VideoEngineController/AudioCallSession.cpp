@@ -842,16 +842,20 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketT
 {
 	if (m_bLiveAudioStreamRunning)
 	{
-		if (m_iRole == VIEWER_IN_CALL && nCurrentAudioPacketType != AUDIO_OPUS_PACKET_TYPE)
+		if ((m_iRole == VIEWER_IN_CALL || m_iRole == PUBLISHER_IN_CALL) && nCurrentAudioPacketType == AUDIO_OPUS_PACKET_TYPE)
 		{
-			return false;
+			return true;;
 		}
-		else if (m_iRole != VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_OPUS_PACKET_TYPE)
+		else if (nCurrentAudioPacketType == AUDIO_NONMUXED_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE)
 		{
-			return false;
+			return true;
 		}
 	}
-	return true;
+	else
+	{
+		return true;
+	}
+	return false;
 }
 
 
