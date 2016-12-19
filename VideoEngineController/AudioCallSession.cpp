@@ -932,8 +932,9 @@ bool CAudioCallSession::IsPacketProcessableInNormalCall(int &nCurrentAudioPacket
 	}
 }
 
-void CAudioCallSession::DecodeAndPostProcessIfNeeded()
+void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber)
 {
+	m_iLastDecodedPacketNumber = iPacketNumber;
 	LOGEF("Role %d, Before decode", m_iRole);
 	if (!m_bLiveAudioStreamRunning)
 	{
@@ -1098,11 +1099,11 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			llNow = m_Tools.CurrentTimestamp();
 
-			SetSlotStatesAndDecideToChangeBitRate(iPacketNumber, nSlotNumber);
+			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
 
 			nDecodingFrameSize -= m_AudioHeadersize;
 
-			DecodeAndPostProcessIfNeeded();
+			DecodeAndPostProcessIfNeeded(iPacketNumber);
 			DumpDecodedFrame();
 			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, timeStamp);
 
@@ -1160,28 +1161,29 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 	}
 }
 
-void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &iPacketNumber, int &nSlotNumber)
+void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 {
-	if (nSlotNumber != m_iCurrentRecvdSlotID)
+	if (!m_bLiveAudioStreamRunning)
 	{
-		m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
-		if (m_iPrevRecvdSlotID != -1)
+		if (nSlotNumber != m_iCurrentRecvdSlotID)
 		{
-			m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
-		}
+			m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
+			if (m_iPrevRecvdSlotID != -1)
+			{
+				m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
+			}
 
-		m_iCurrentRecvdSlotID = nSlotNumber;
-		m_iReceivedPacketsInCurrentSlot = 0;
+			m_iCurrentRecvdSlotID = nSlotNumber;
+			m_iReceivedPacketsInCurrentSlot = 0;
 
 #ifdef OPUS_ENABLE
-		if (false == m_bLiveAudioStreamRunning) {
-			m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
-		}
+			if (false == m_bLiveAudioStreamRunning) {
+				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+			}
 #endif
-	}
-
-	m_iLastDecodedPacketNumber = iPacketNumber;
-	m_iReceivedPacketsInCurrentSlot++;
+		}
+		m_iReceivedPacketsInCurrentSlot++;
+	}	
 }
 
 void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector,
