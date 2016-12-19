@@ -248,6 +248,7 @@ private:
 	void DequeueData(int &nDecodingFrameSize);
 	bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 	bool IsPacketNumberProcessable(int &iPacketNumber);
+	bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 	bool IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
 	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime);
 	void SetSlotStatesAndDecideToChangeBitRate(int &iPacketNumber, int &nSlotNumber);

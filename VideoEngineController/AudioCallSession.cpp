@@ -878,6 +878,25 @@ bool CAudioCallSession::IsPacketNumberProcessable(int &iPacketNumber)
 	return true;
 }
 
+bool CAudioCallSession::IsPacketTypeSupported(int &nCurrentAudioPacketType)
+{
+	if (!m_bLiveAudioStreamRunning)
+	{
+		if (m_receivingHeaderOld.IsPacketTypeSupported(nCurrentAudioPacketType))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return true;
+	}	
+}
+
 bool CAudioCallSession::IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
 {
 	bool bIsProcessablePacket;
@@ -1057,7 +1076,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (!ReceivingHeader->IsPacketTypeSupported(nCurrentAudioPacketType))
+			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
 				continue;
 			}
