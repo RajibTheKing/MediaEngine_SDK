@@ -1126,6 +1126,10 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 {
 	if (m_bLiveAudioStreamRunning)
 	{
+		if (m_iRole == PUBLISHER_IN_CALL)
+		{
+			return true;
+		}
 		if (-1 == m_llDecodingTimeStampOffset)
 		{
 			m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
