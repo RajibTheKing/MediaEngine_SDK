@@ -183,6 +183,9 @@
     <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="VideoBeautificationer.cpp">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h">
       <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoBeautificationer.h">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

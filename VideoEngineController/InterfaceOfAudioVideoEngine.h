@@ -15,7 +15,13 @@
 #define SERVICE_TYPE_SELF_CALL 13
 #define SERVICE_TYPE_SELF_STREAM 14
 
+#define ENTITY_TYPE_PUBLISHER 31
+#define ENTITY_TYPE_VIEWER 32
+#define ENTITY_TYPE_VIEWER_CALLEE 33
+#define ENTITY_TYPE_PUBLISHER_CALLER 34
+
 typedef long long IPVLongType;
+
 
 class CController;
 
@@ -38,7 +44,7 @@ public:
 	bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 	int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 
-	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
+	 bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames);

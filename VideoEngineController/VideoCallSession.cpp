@@ -15,7 +15,7 @@
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(CController *pController,LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType) :
+CVideoCallSession::CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
@@ -48,7 +48,8 @@ m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false),
 m_nDeviceCheckFrameCounter(0),
 m_nCapturedFrameCounter(0),
-m_nServiceType(nServiceType)
+m_nServiceType(nServiceType),
+m_nEntityType(nEntityType)
 
 {
     m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
@@ -404,7 +405,10 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 {
 	if(m_bLiveVideoStreamRunning)
 	{		
+		if (m_nEntityType == ENTITY_TYPE_VIEWER)
 			m_pLiveReceiverVideo->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
+		else
+			m_pVideoPacketQueue->Queue(in_data, in_size);
 			
 		return true;
 	}
@@ -484,6 +488,9 @@ int g_CapturingFrameCounter = 0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
     CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
+
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM) && m_nEntityType == ENTITY_TYPE_VIEWER)
+		return 1;
     
     m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
     /*if(m_bIsCheckCall==true)
@@ -1033,6 +1040,10 @@ bool CVideoCallSession::isLiveVideoStreamRunning()
 }
 int CVideoCallSession::GetServiceType()
 {
-    return m_nServiceType;
-    
+    return m_nServiceType;  
+}
+
+int CVideoCallSession::GetEntityType()
+{
+	return m_nEntityType;
 }
