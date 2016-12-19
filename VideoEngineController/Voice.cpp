@@ -47,7 +47,7 @@ bool CVoice::HasVoice(short *sInBuf, int sBufferSize)
 			if (iVadRet != 1)
 			{
 				ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet));
-				//memset(m_saAudioEncodingFrame + i, 0, VAD_ANALYSIS_SAMPLES_IN_FRAME * sizeof(short));						
+				//memset(m_saAudioRecorderFrame + i, 0, VAD_ANALYSIS_SAMPLES_IN_FRAME * sizeof(short));						
 			}
 			else
 			{

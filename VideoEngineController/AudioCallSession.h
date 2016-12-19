@@ -143,7 +143,7 @@ private:
 	bool m_bIsCheckCall, m_bLoudSpeakerEnabled;
 
 	///////////Pre Encoding Data///////
-    short m_saAudioEncodingFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
+    short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
 	short m_saAudioMUXEDFrame[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
 
 	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
@@ -152,13 +152,13 @@ private:
 	///////////Post Encoding Data///////
 	/*
 	m_ucaCompressedFrame is an Encoded frame.
-	It comes from m_saAudioEncodingFrame after encoding, during non-live-call or live-call.
+	It comes from m_saAudioRecorderFrame after encoding, during non-live-call or live-call.
 	Must not be used during live-streaming.
 	*/
     unsigned char m_ucaCompressedFrame[MAX_AUDIO_FRAME_Length];
 	/*
 	m_ucaRawFrame is a Raw frame.
-	It comes from m_saAudioEncodingFrame without encoding during livestream.
+	It comes from m_saAudioRecorderFrame without encoding during livestream.
 	It comes from m_saAudioMUXEDFrame without encoding during live-call.
 	Must not be used during non-live-call.
 	*/
