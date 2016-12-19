@@ -798,17 +798,20 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 
 bool CAudioCallSession::IsQueueEmpty(Tools &toolsObject)
 {
-	if (m_bLiveAudioStreamRunning && m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)
+	if (m_bLiveAudioStreamRunning)
 	{
-		toolsObject.SOSleep(1);
-		return true;
+		if (m_iRole == PUBLISHER_IN_CALL && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
+		{
+			toolsObject.SOSleep(1);
+			return true;
+		}
+		else if (m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
+		{
+			toolsObject.SOSleep(1);
+			return true;
+		}
 	}
-	else if (m_bLiveAudioStreamRunning && m_iRole == PUBLISHER_IN_CALL && m_AudioReceivedBuffer.GetQueueSize() == 0)
-	{
-		toolsObject.SOSleep(1);
-		return true;
-	}
-	else if (false == m_bLiveAudioStreamRunning && m_AudioReceivedBuffer.GetQueueSize() == 0)
+	else if (m_AudioReceivedBuffer.GetQueueSize() == 0)	
 	{
 		toolsObject.SOSleep(10);
 		return true;
