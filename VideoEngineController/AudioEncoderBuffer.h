@@ -15,7 +15,7 @@ public:
 	CAudioShortBuffer();
 	~CAudioShortBuffer();
 
-	int Queue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump);
+	int EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump);
 	int DeQueue(short *saCapturedAudioFrameData, long long &receivedTime);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();

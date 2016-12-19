@@ -36,7 +36,7 @@ void CAudioByteBuffer::ResetBuffer()
 	m_nQueueSize = 0;
 }
 
-int CAudioByteBuffer::Queue(unsigned char *saReceivedAudioFrameData, int nLength)
+int CAudioByteBuffer::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength)
 {
 	Locker lock(*m_pAudioDecodingBufferMutex);
 

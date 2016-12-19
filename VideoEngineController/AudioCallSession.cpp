@@ -264,7 +264,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	}
 #endif
 
-	int returnedValue = m_AudioEncodingBuffer.Queue(psaEncodingAudioData, unLength, llCurrentTime);
+	int returnedValue = m_AudioEncodingBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
 
@@ -340,7 +340,7 @@ int CAudioCallSession::DecodeAudioDataVector(int nOffset, unsigned char *pucaDec
 		return 1;
 	}
 
-	int returnedValue = m_AudioDecodingBuffer.Queue(pucaDecodingAudioData, unLength);
+	int returnedValue = m_AudioDecodingBuffer.EnQueue(pucaDecodingAudioData, unLength);
 
 	return returnedValue;
 }
@@ -356,7 +356,7 @@ int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingA
 		return 1;
 	}
 
-	int returnedValue = m_AudioDecodingBuffer.Queue(pucaDecodingAudioData, unLength);
+	int returnedValue = m_AudioDecodingBuffer.EnQueue(pucaDecodingAudioData, unLength);
 
 	return returnedValue;
 }
@@ -969,7 +969,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime)
 		llLastTime = llNow;
 		if (m_iRole == PUBLISHER_IN_CALL)
 		{
-			m_AudioDecodedBuffer.Queue(m_saDecodedFrame, nDecodedFrameSize, 0);
+			m_AudioDecodedBuffer.EnQueue(m_saDecodedFrame, nDecodedFrameSize, 0);
 		}
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
 			SERVICE_TYPE_LIVE_STREAM,

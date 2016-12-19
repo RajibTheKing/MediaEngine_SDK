@@ -185,7 +185,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-        m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange + 1,
+        m_pLiveAudioDecodingQueue->EnQueue(uchAudioData + nFrameLeftRange + 1,
                                          nCurrentFrameLenWithMediaHeader - 1);
 
     }
@@ -334,7 +334,7 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 
             nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-            m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+            m_pLiveAudioDecodingQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
 
         }
 }

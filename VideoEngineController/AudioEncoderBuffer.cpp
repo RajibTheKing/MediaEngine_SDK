@@ -39,7 +39,7 @@ void CAudioShortBuffer::ResetBuffer()
 	mt_llSumOverFlowTime = 0;
 }
 
-int CAudioShortBuffer::Queue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump)
+int CAudioShortBuffer::EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump)
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 
