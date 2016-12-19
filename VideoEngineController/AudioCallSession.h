@@ -143,8 +143,9 @@ private:
 	bool m_bIsCheckCall, m_bLoudSpeakerEnabled;
 
 	///////////Pre Encoding Data///////
-    short m_saAudioEncodingFrame[MAX_AUDIO_FRAME_Length];
-	short m_saAudioMUXEDFrame[MAX_AUDIO_FRAME_Length];
+    short m_saAudioEncodingFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
+	short m_saAudioMUXEDFrame[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
+
 	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
 
 

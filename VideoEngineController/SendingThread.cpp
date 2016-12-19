@@ -284,10 +284,18 @@ void CSendingThread::SendingThreadProcedure()
 
 				if (m_bInterruptRunning == false)
 				{
-					if(m_bInterruptHappened == false)
+					if (m_bInterruptHappened == false)
+					{
+#ifndef LOCAL_SERVER_LIVE
 						m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+#else
+						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
+#endif
+					}
 					else
+					{
 						m_bInterruptHappened = false;
+					}
 				}
 				
 #else
