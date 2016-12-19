@@ -97,6 +97,8 @@ bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bo
 	}
 
 	bool bReturnedValue = m_pcController->SetEchoCanceller(lFriendID, bOn);
+    
+    return bReturnedValue;
 }
 
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork, int nNetworkType)
