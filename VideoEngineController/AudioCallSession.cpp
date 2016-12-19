@@ -519,7 +519,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, int &encodingTime, 
 		encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 		m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 	}
-	else 
+	else
 	{
 		if (m_iRole == PUBLISHER_IN_CALL)
 		{
@@ -531,7 +531,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, int &encodingTime, 
 			ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(AUDIO_CLIENT_SAMPLES_IN_FRAME) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
-			
+
 		}
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
@@ -544,7 +544,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, int &encodingTime, 
 		else //Should only work for PUBLISHER when CALL_NOT_RUNNING
 		{
 			m_nRawFrameSize = AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short);
-			memcpy(&m_ucaRawFrame[1 + m_AudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);			
+			memcpy(&m_ucaRawFrame[1 + m_AudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
 		}
 	}
 	avgCountTimeStamp += encodingTime;
@@ -690,7 +690,7 @@ void CAudioCallSession::SendAudioData()
 #endif
 #endif
 	}
-	
+
 }
 
 void CAudioCallSession::EncodingThreadProcedure()
@@ -811,7 +811,7 @@ bool CAudioCallSession::IsQueueEmpty(Tools &toolsObject)
 			return true;
 		}
 	}
-	else if (m_AudioReceivedBuffer.GetQueueSize() == 0)	
+	else if (m_AudioReceivedBuffer.GetQueueSize() == 0)
 	{
 		toolsObject.SOSleep(10);
 		return true;
@@ -894,7 +894,7 @@ bool CAudioCallSession::IsPacketTypeSupported(int &nCurrentAudioPacketType)
 	else
 	{
 		return true;
-	}	
+	}
 }
 
 bool CAudioCallSession::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
@@ -917,7 +917,7 @@ bool CAudioCallSession::IsPacketProcessableInNormalCall(int &nCurrentAudioPacket
 		else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
 		{
 #ifdef  __DUPLICATE_AUDIO__			
-			m_iAudioVersionFriend = nVersion;			
+			m_iAudioVersionFriend = nVersion;
 #endif
 			return true;
 		}
@@ -1059,7 +1059,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	int TempOffset = 0;
 	long long currentTime = m_Tools.CurrentTimestamp() / 1000;
 	while (m_bAudioDecodingThreadRunning)
-	{		
+	{
 		if (!IsQueueEmpty(toolsObject))
 		{
 			DequeueData(nDecodingFrameSize);
@@ -1143,7 +1143,8 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
 
 			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime) {
-				__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
+				__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld",
+					iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
 				return false;
 			}
 
@@ -1183,7 +1184,7 @@ void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 #endif
 		}
 		m_iReceivedPacketsInCurrentSlot++;
-	}	
+	}
 }
 
 void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector,
