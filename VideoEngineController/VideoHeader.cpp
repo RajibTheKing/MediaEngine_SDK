@@ -3,8 +3,8 @@
 //
 
 #include "VideoHeader.h"
-//#include "LogPrinter.h"
-
+#include "LogPrinter.h"
+#include "Size.h"
 
 #define PACKET_TYPE_INDEX 0
 #define VERSION_CODE_INDEX 1
@@ -33,6 +33,7 @@ CVideoHeader::CVideoHeader()
     m_iVersionCode = 0;    // 1 byte
     m_iHeaderLength = 0;    //1 byte
     
+	//FPS Byte
     m_iFPS = 0;             // 1 byte
         m_iOpponentFPS = 0;
         m_iFPSForceBit = 0;
@@ -40,6 +41,7 @@ CVideoHeader::CVideoHeader()
     
     m_llFrameNumber = 0;     // 4 byte
     
+	//Call Info Byte
     m_iCallInfo = 0;        //1 byte
         m_iNetworkType = 0;
         m_iVideoQualityLevel = 0;
@@ -87,14 +89,14 @@ void CVideoHeader::setPacketHeader(unsigned char *headerData)
 
 
 
-void CVideoHeader::setPacketHeader(unsigned char packetType,
+void CVideoHeader::setPacketHeader(	unsigned char packetType,
                                     unsigned char uchVersion,
                                     unsigned int iHeaderLength,
                                     unsigned int iFPSbyte,
                                     long long llFrameNumber,
-                                    int nNetworkType,
-                                    int deviceOrientation,
-                                    int nQualityLevel,
+                                    int iNetworkType,
+                                    int iDeviceOrientation,
+                                    int iQualityLevel,
                                     unsigned int NumberOfPacket,
                                     unsigned int PacketNumber,
                                     long long llTimeStamp,
@@ -104,18 +106,23 @@ void CVideoHeader::setPacketHeader(unsigned char packetType,
 {
     SetPacketType(packetType);
     setVersionCode(uchVersion);
-    m_llFrameNumber = FrameNumber;
-    setFrameNumber(FrameNumber);
-    setNumberOfPacket(NumberOfPacket);
-    setPacketNumber(PacketNumber);
-    setTimeStamp(TimeStamp);
-    setFPS(FPS);
-    setPacketDataLength(PacketLength);
+	setHeaderLength(iHeaderLength);
+	setFPS(iFPSbyte);
+	setFrameNumber(llFrameNumber);
 
-    //CallInfoByte
-    SetDeviceOrientation(deviceOrientation);
-    SetVideoQualityLevel(nQualityLevel);
-    SetNetworkType(nNetworkType);
+	//CallInfoByte
+	SetNetworkType(iNetworkType);
+	SetDeviceOrientation(iDeviceOrientation);
+	SetVideoQualityLevel(iQualityLevel);
+	
+	setNumberOfPacket(NumberOfPacket);
+    setPacketNumber(PacketNumber);
+
+	setTimeStamp(llTimeStamp);
+	setPacketStartingIndex(iPacketStartingIndex);
+	setPacketDataLength(PacketLength);
+
+
 }
 
 void CVideoHeader::ShowDetails(string sTag){
@@ -134,51 +141,72 @@ void CVideoHeader::ShowDetails(string sTag){
 int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
 {
     int index = 0;
-    data[index++] = m_ucPacketType;
-    data[index++] = m_iFPS;
+	//Packet Type
+    data[index++] = (unsigned char)m_iPacketType;
 
-    data[index++] = (m_iFrameNumber >> 16);
-    data[index++] = (m_iFrameNumber >> 8);
-    data[index++] = m_iFrameNumber;
+	//Version Code
+	data[index++] = (unsigned char)m_iVersionCode;
+
+	//Header Length
+	data[index++] = (unsigned char)m_iHeaderLength;
+
+	//FPS Byte
+    data[index++] = (unsigned char)m_iFPS;
+
+	//FrameNumber
+	data[index++] = (m_llFrameNumber >> 24);
+    data[index++] = (m_llFrameNumber >> 16);
+    data[index++] = (m_llFrameNumber >> 8);
+    data[index++] = (m_llFrameNumber >> 0);
 
     //CallInfoByte
     data[index] = 0;
-    data[index] |= (m_nNetworkType & 1);    //0th BIT
+    data[index] |= (m_iNetworkType & 1);    //0th BIT
     data[index] |= (m_iDeviceOrientation & ORIENTATION_BITSET) << 1;  //1,2 BITs
-    data[index] |= (m_nVideoQualityLevel & QUALITY_LEVEL_BITSET) << 3;  //3,4 BITs
-
+    data[index] |= (m_iVideoQualityLevel & QUALITY_LEVEL_BITSET) << 3;  //3,4 BITs
     index++;
 
-    data[index++] = m_cVersionCode;
-
+	//Number of Packets
     data[index++] = m_iNumberOfPacket;
+
+	//Packet Number
     data[index++] = m_iPacketNumber;
 
-    data[index++] = (m_iTimeStamp >> 24);
-    data[index++] = (m_iTimeStamp >> 16);
-    data[index++] = (m_iTimeStamp >> 8);
-    data[index++] = m_iTimeStamp;
+	//TimeStamp
+	data[index++] = (m_llTimeStamp >> 32);
+    data[index++] = (m_llTimeStamp >> 24);
+    data[index++] = (m_llTimeStamp >> 16);
+    data[index++] = (m_llTimeStamp >> 8);
+    data[index++] = (m_llTimeStamp >> 0);
 
-    data[index++] = (m_iPacketDataLength >> 8);
-    data[index++] = m_iPacketDataLength;
-    return PACKET_HEADER_LENGTH;
+	//Packet Starting Index
+	data[index++] = (m_iPacketStartingIndex >> 16);
+	data[index++] = (m_iPacketStartingIndex >> 8);
+	data[index++] = (m_iPacketStartingIndex >> 0);
+
+	//Packet Data Length
+	data[index++] = (m_iPacketDataLength >> 16);
+	data[index++] = (m_iPacketDataLength >> 8);
+	data[index++] = (m_iPacketDataLength >> 0);
+
+    return index;
 }
 
 void CVideoHeader::SetPacketType(unsigned char packetType)
 {
-    m_ucPacketType = packetType;
+    m_iPacketType = packetType;
 }
 
 unsigned char CVideoHeader::GetPacketType(){
-    return m_ucPacketType;
+    return m_iPacketType;
 }
 
 void CVideoHeader::setVersionCode(unsigned char cVersionCode) {
-    m_cVersionCode = cVersionCode;
+    m_iVersionCode = cVersionCode;
 }
 
-void CVideoHeader::setFrameNumber(unsigned int iFrameNumber) {
-    m_iFrameNumber = iFrameNumber;
+void CVideoHeader::setFrameNumber(long long llFrameNumber) {
+    m_llFrameNumber = llFrameNumber;
 }
 
 void CVideoHeader::setNumberOfPacket(unsigned int iNumberOfPacket) {
@@ -189,8 +217,8 @@ void CVideoHeader::setPacketNumber(unsigned int iPacketNumber) {
     m_iPacketNumber = iPacketNumber;
 }
 
-void CVideoHeader::setTimeStamp(unsigned int iTimeStamp) {
-    m_iTimeStamp = iTimeStamp;
+void CVideoHeader::setTimeStamp(long long llTimeStamp) {
+    m_llTimeStamp = llTimeStamp;
 }
 
 void CVideoHeader::setFPS(unsigned int iFPS) {
@@ -202,25 +230,25 @@ void CVideoHeader::setPacketDataLength(int iPacketDataLength) {
 }
 
 unsigned char CVideoHeader::getVersionCode() {
-    return m_cVersionCode;
+	return (unsigned char)m_iVersionCode;
 }
 
 void CVideoHeader::setVersionCode(unsigned char *VersionCodeByte) {
-    m_cVersionCode = VersionCodeByte[0];
+    m_iVersionCode = VersionCodeByte[0];
 }
 
-unsigned int CVideoHeader::getFrameNumber()
+long long CVideoHeader::getFrameNumber()
 {
-    return m_iFrameNumber;
+    return m_llFrameNumber;
 }
 void CVideoHeader::setPacketType(unsigned char *pData)
 {
-    m_ucPacketType = pData[0];
+    m_iPacketType = pData[0];
 }
 
-void CVideoHeader::setFrameNumber(unsigned char *FrameNumber)
+void CVideoHeader::setFrameNumber(unsigned char *pData)
 {
-    m_iFrameNumber = GetIntFromChar(FrameNumber, 0, 3);
+    m_llFrameNumber = GetLongLongFromChar(pData, 0, 4);
 }
 
 unsigned int CVideoHeader::getNumberOfPacket()
@@ -228,9 +256,9 @@ unsigned int CVideoHeader::getNumberOfPacket()
     return m_iNumberOfPacket;
 }
 
-void CVideoHeader::setNumberOfPacket(unsigned char *NumberOfPacket)
+void CVideoHeader::setNumberOfPacket(unsigned char *pData)
 {
-    m_iNumberOfPacket = GetIntFromChar(NumberOfPacket, 0, 1);
+	m_iNumberOfPacket = GetIntFromChar(pData, 0, 1);
 }
 
 unsigned int CVideoHeader::getPacketNumber()
@@ -238,24 +266,24 @@ unsigned int CVideoHeader::getPacketNumber()
     return m_iPacketNumber;
 }
 
-void CVideoHeader::setPacketNumber(unsigned char *PacketNumber)
+void CVideoHeader::setPacketNumber(unsigned char *pData)
 {
-    m_iPacketNumber = GetIntFromChar(PacketNumber, 0, 1);
+	m_iPacketNumber = GetIntFromChar(pData, 0, 1);
 }
 
-int CVideoHeader::getTimeStampDirectly(unsigned char *data)
+int CVideoHeader::getTimeStampDirectly(unsigned char *pData)
 {
-	return GetIntFromChar(data + TIMESTAMP_INDEX, 0, 4);
+	return GetIntFromChar(pData + TIMESTAMP_INDEX, 0, 4);
 }
 
-unsigned int CVideoHeader::getTimeStamp()
+long long CVideoHeader::getTimeStamp()
 {
-    return m_iTimeStamp;
+    return m_llTimeStamp;
 }
 
-void CVideoHeader::setTimeStamp(unsigned char *TimeStamp)
+void CVideoHeader::setTimeStamp(unsigned char *pData)
 {
-    m_iTimeStamp = GetIntFromChar(TimeStamp, 0, 4);
+    m_llTimeStamp = GetLongLongFromChar(pData, 0, 5);
 }
 
 unsigned int CVideoHeader::getFPS()
@@ -263,9 +291,9 @@ unsigned int CVideoHeader::getFPS()
     return m_iFPS;
 }
 
-void CVideoHeader::setFPS(unsigned char *FPS)
+void CVideoHeader::setFPS(unsigned char *pData)
 {
-    m_iFPS  = GetIntFromChar(FPS, 0, 1);
+	m_iFPS = GetIntFromChar(pData, 0, 1);
 }
 
 int CVideoHeader::getPacketLength()
@@ -273,14 +301,14 @@ int CVideoHeader::getPacketLength()
     return m_iPacketDataLength;
 }
 
-void CVideoHeader::setPacketDataLength(unsigned char *PacketDataLength)
+void CVideoHeader::setPacketDataLength(unsigned char *pData)
 {
-    m_iPacketDataLength = GetIntFromChar(PacketDataLength, 0, 3);
+	m_iPacketDataLength = GetIntFromChar(pData, 0, 3);
 }
 
-unsigned int CVideoHeader::GetFrameNumberDirectly(unsigned char *packetData)
+unsigned int CVideoHeader::GetFrameNumberDirectly(unsigned char *pData)
 {
-	return GetIntFromChar(packetData + FRAME_NUMBER_INDEX, 0, 3);
+	return GetIntFromChar(pData + FRAME_NUMBER_INDEX, 0, 3);
     
 }
 
@@ -297,13 +325,27 @@ int CVideoHeader::GetIntFromChar(unsigned char *packetData, int index, int nLeng
     return result;
 }
 
+
+long long CVideoHeader::GetLongLongFromChar(unsigned char *packetData, int index, int nLenght)
+{
+	long long result = 0;
+	int interval = 8;
+	int startPoint = (nLenght - 1) << 3;
+	for (int i = startPoint; i >= 0; i -= interval)
+	{
+		result += (packetData[index++] & 0xFF) << i;
+	}
+
+	return result;
+}
+
 int CVideoHeader::GetOpponentResolution(unsigned char *PacketHeader)
 {
     return PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
 }
 
 void CVideoHeader::SetNetworkType(unsigned char* data){
-    m_nNetworkType = (data[0] & 1);
+    m_iNetworkType = (data[0] & 1);
 }
 
 void CVideoHeader::SetDeviceOrientation(unsigned char *packetData)
@@ -312,15 +354,15 @@ void CVideoHeader::SetDeviceOrientation(unsigned char *packetData)
 }
 
 void CVideoHeader::SetVideoQualityLevel(unsigned char* data){
-    m_nVideoQualityLevel = (GetIntFromChar(data, 0, 1) >> 3 ) & QUALITY_LEVEL_BITSET;
+    m_iVideoQualityLevel = (GetIntFromChar(data, 0, 1) >> 3 ) & QUALITY_LEVEL_BITSET;
 }
 
 void CVideoHeader::SetNetworkType(int nNetworkType){
-    m_nNetworkType = nNetworkType;
+    m_iNetworkType = nNetworkType;
 }
 
 void CVideoHeader::SetVideoQualityLevel(int nQualityLevel){
-    m_nVideoQualityLevel = nQualityLevel;
+    m_iVideoQualityLevel = nQualityLevel;
 }
 
 void CVideoHeader::SetDeviceOrientation(int deviceOrientation)
@@ -333,11 +375,11 @@ int CVideoHeader::GetDeviceOrientation() {
 }
 
 int CVideoHeader::GetVideoQualityLevel(){
-    return m_nVideoQualityLevel;
+    return m_iVideoQualityLevel;
 }
 
 int CVideoHeader::GetNetworkType(){
-    return m_nNetworkType;
+    return m_iNetworkType;
 }
 
 

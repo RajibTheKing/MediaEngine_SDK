@@ -13,20 +13,20 @@ public:
 
     void setPacketHeader(unsigned char *headerData);
     
-    void setPacketHeader(unsigned char packetType,
-                         unsigned char uchVersion,
-                         unsigned int iHeaderLength,
-                         unsigned int iFPSbyte,
-                         long long llFrameNumber,
-                         int nNetworkType,
-                         int deviceOrientation,
-                         int nQualityLevel,
-                         unsigned int NumberOfPacket,
-                         unsigned int PacketNumber,
-                         long long llTimeStamp,
-                         unsigned int iPacketStartingIndex,
-                         unsigned int PacketLength
-                         );
+	void setPacketHeader(	unsigned char packetType,
+							unsigned char uchVersion,
+							unsigned int iHeaderLength,
+							unsigned int iFPSbyte,
+							long long llFrameNumber,
+							int iNetworkType,
+							int iDeviceOrientation,
+							int iQualityLevel,
+							unsigned int NumberOfPacket,
+							unsigned int PacketNumber,
+							long long llTimeStamp,
+							unsigned int iPacketStartingIndex,
+							unsigned int PacketLength
+							);
     
     void ShowDetails(string sTag);
     
@@ -39,7 +39,7 @@ public:
     //hello
     void setVersionCode(unsigned char VersionCode) ;
 
-    void setFrameNumber(unsigned int iFrameNumber);
+	void setFrameNumber(long long llFrameNumber);
 
     void setNumberOfPacket(unsigned int iNumberOfPacket);
 
@@ -47,7 +47,7 @@ public:
 
 	int getTimeStampDirectly(unsigned char *data);
 
-    void setTimeStamp(unsigned int iTimeStamp) ;
+	void setTimeStamp(long long llTimeStamp);
 
     void setFPS(unsigned int iFPS) ;
 
@@ -60,7 +60,7 @@ public:
 
     void setVersionCode(unsigned char * VersionCode) ;
 
-    unsigned int getFrameNumber() ;
+    long long getFrameNumber() ;
 
     void setFrameNumber(unsigned char * FrameNumber);
 
@@ -72,7 +72,7 @@ public:
 
     void setPacketNumber(unsigned char * PacketNumber);
 
-    unsigned int getTimeStamp();
+    long long getTimeStamp();
 
     void setTimeStamp(unsigned char * TimeStamp);
 
@@ -85,6 +85,7 @@ public:
     void setPacketDataLength(unsigned char * PacketDataLength) ;
 
     int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
+	long long GetLongLongFromChar(unsigned char *packetData, int index, int nLenght);
 
 	unsigned int GetFrameNumberDirectly(unsigned char *packetData);
 
