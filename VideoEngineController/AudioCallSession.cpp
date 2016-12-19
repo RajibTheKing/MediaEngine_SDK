@@ -916,7 +916,6 @@ bool CAudioCallSession::IsPacketProcessableInNormalCall(int &nCurrentAudioPacket
 		}
 		else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
 		{
-			bIsProcessablePacket = true;
 #ifdef  __DUPLICATE_AUDIO__			
 			m_iAudioVersionFriend = nVersion;			
 #endif
