@@ -956,13 +956,7 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber)
 	else
 	{
 
-		if (m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL)
-		{
-			memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
-			nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
-			LOGEF("Role %d, no viewers in call", m_iRole);
-		}
-		else
+		if (m_iRole == VIEWER_IN_CALL || m_iRole == PUBLISHER_IN_CALL)
 		{
 #ifdef OPUS_ENABLE
 			nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
@@ -970,7 +964,13 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber)
 			LOGEF("Role %d, after decode", m_iRole);
 #else
 			nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
-#endif
+#endif			
+		}
+		else
+		{
+			memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
+			nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+			LOGEF("Role %d, no viewers in call", m_iRole);
 		}
 	}
 }
