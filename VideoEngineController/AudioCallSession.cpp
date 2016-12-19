@@ -897,35 +897,40 @@ bool CAudioCallSession::IsPacketTypeSupported(int &nCurrentAudioPacketType)
 	}	
 }
 
-bool CAudioCallSession::IsPacketTypeProcessable(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
+bool CAudioCallSession::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
 {
-	bool bIsProcessablePacket;
-	if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
+	if (false == m_bLiveAudioStreamRunning)
 	{
-		//ALOG("#V#TYPE# ############################################### SKIPPET");
-		toolsObject.SOSleep(0);
-		bIsProcessablePacket = false;
-	}
-	else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
-	{
-		//g_StopVideoSending = 1;*/
-		if (false == m_bLiveAudioStreamRunning)
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
-		bIsProcessablePacket = true;
-	}
-	else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType ||
-		AUDIO_OPUS_PACKET_TYPE == nCurrentAudioPacketType ||
-		AUDIO_NONMUXED_PACKET_TYPE == nCurrentAudioPacketType ||
-		AUDIO_MUXED_PACKET_TYPE == nCurrentAudioPacketType)
-	{
-		bIsProcessablePacket = true;
-#ifdef  __DUPLICATE_AUDIO__
-		if (false == m_bLiveAudioStreamRunning) {
-			m_iAudioVersionFriend = nVersion;
+		if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
+		{
+			//ALOG("#V#TYPE# ############################################### SKIPPET");
+			toolsObject.SOSleep(0);
+			return false;
 		}
+		else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
+		{
+			//g_StopVideoSending = 1;*/
+			if (false == m_bLiveAudioStreamRunning)
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
+			return true;
+		}
+		else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
+		{
+			bIsProcessablePacket = true;
+#ifdef  __DUPLICATE_AUDIO__			
+			m_iAudioVersionFriend = nVersion;			
 #endif
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
-	return bIsProcessablePacket;
+	else
+	{
+		return true;
+	}
 }
 
 void CAudioCallSession::DecodeAndPostProcessIfNeeded()
@@ -1081,7 +1086,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (!IsPacketTypeProcessable(nCurrentAudioPacketType, nVersion, toolsObject))
+			if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion, toolsObject))
 			{
 				continue;
 			}
