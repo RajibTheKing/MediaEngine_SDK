@@ -47,9 +47,9 @@ int CAudioPacketHeader::CopyInformationToHeader(unsigned int * Information)
 	return m_nHeaderSizeInByte;
 }
 
-unsigned int CAudioPacketHeader::GetFieldCapacity(int InfoType)
+long long CAudioPacketHeader::GetFieldCapacity(int InfoType)
 {
-	return 1 << HeaderBitmap[InfoType];
+	return 1LL << HeaderBitmap[InfoType];
 }
 
 

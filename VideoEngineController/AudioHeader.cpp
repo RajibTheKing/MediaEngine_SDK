@@ -74,12 +74,6 @@ bool AudioHeader::IsPacketTypeSupported(unsigned int PacketType)
 	return false;
 }
 
-bool AudioHeader::IsPacketTypeSupported()
-{
-	unsigned int iPackeType = GetInformation(PACKETTYPE);
-	return IsPacketTypeSupported(iPackeType);
-}
-
 void AudioHeader::SetInformation(unsigned int Information, int InfoType)
 {
 	Information = (Information & ((1<<HeaderBitmapOld[InfoType]) - 1));

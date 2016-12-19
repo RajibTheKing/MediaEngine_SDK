@@ -1,15 +1,15 @@
 #include "Tools.h"
 #include "Size.h"
 
-#define PACKETTYPE 0
-#define NETWORKTYPE 1
-#define SLOTNUMBER 2
-#define PACKETNUMBER 3
-#define PACKETLENGTH 4
-#define RECVDSLOTNUMBER 5
-#define NUMPACKETRECVD 6
-#define CHANNELS 7
-#define SAMPLERATE 8
+#define PACKETTYPE_OLD 0
+#define NETWORKTYPE_OLD 1
+#define SLOTNUMBER_OLD 2
+#define PACKETNUMBER_OLD 3
+#define PACKETLENGTH_OLD 4
+#define RECVDSLOTNUMBER_OLD 5
+#define NUMPACKETRECVD_OLD 6
+#define CHANNELS_OLD 7
+#define VERSONCODE_OLD 8
 
 /////////PacketTypes//////
 #define AUDIO_SKIP_PACKET_TYPE 0
@@ -69,6 +69,4 @@ public:
 
 	unsigned int GetFieldCapacity(int InfoType);
 	bool IsPacketTypeSupported(unsigned int PacketType);
-	bool IsPacketTypeSupported();
-
 };
