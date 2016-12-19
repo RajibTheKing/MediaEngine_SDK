@@ -610,7 +610,7 @@ void CAudioCallSession::SendAudioData()
 	{
 		ALOG("#A#EN#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 		DecodeAudioData(0, m_ucaCompressedFrame + 1, m_nCompressedFrameSize + m_AudioHeadersize);
-		continue;
+		return;
 	}
 #endif
 	if (m_bIsCheckCall == LIVE_CALL_MOOD)
