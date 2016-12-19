@@ -182,7 +182,7 @@ private:
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
     
-    LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
+    LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue;
     LiveReceiver *m_pLiveReceiverAudio;
     
     bool m_bLiveAudioStreamRunning;

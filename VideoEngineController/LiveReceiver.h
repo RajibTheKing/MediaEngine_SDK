@@ -31,7 +31,7 @@ private:
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;
     CAudioByteBuffer *m_pAudioDecoderBuffer;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
-    LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
+    LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue;
 	CCommonElementsBucket* m_pCommonElementsBucket;
 };
 

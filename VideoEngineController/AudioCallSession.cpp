@@ -60,9 +60,9 @@ m_nServiceType(nServiceType)
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
 	{
 		m_bLiveAudioStreamRunning = true;
-		m_pLiveAudioDecodingQueue = new LiveAudioDecodingQueue();
+		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
 		m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket);
-		m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioDecodingQueue);
+		m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
 	}
 
 
@@ -183,11 +183,11 @@ CAudioCallSession::~CAudioCallSession()
 			m_pLiveReceiverAudio = NULL;
 		}
 
-		if (NULL != m_pLiveAudioDecodingQueue)
+		if (NULL != m_pLiveAudioReceivedQueue)
 		{
-			delete m_pLiveAudioDecodingQueue;
+			delete m_pLiveAudioReceivedQueue;
 
-			m_pLiveAudioDecodingQueue = NULL;
+			m_pLiveAudioReceivedQueue = NULL;
 		}
 	}
 
@@ -242,7 +242,7 @@ void CAudioCallSession::EndCallInLive()
 {
 	m_iRole = CALL_NOT_RUNNING;
 	m_llDecodingTimeStampOffset = -1;
-	m_pLiveAudioDecodingQueue->ResetBuffer();
+	m_pLiveAudioReceivedQueue->ResetBuffer();
 	m_AudioDecodingBuffer.ResetBuffer();
 }
 
@@ -798,7 +798,7 @@ void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 
 bool CAudioCallSession::IsQueueEmpty(Tools &toolsObject)
 {
-	if (m_bLiveAudioStreamRunning && m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioDecodingQueue->GetQueueSize() == 0)
+	if (m_bLiveAudioStreamRunning && m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)
 	{
 		toolsObject.SOSleep(1);
 		return true;
@@ -822,7 +822,7 @@ void CAudioCallSession::DequeueData(int &nDecodingFrameSize)
 	{
 		if (m_iRole != PUBLISHER_IN_CALL)
 		{
-			nDecodingFrameSize = m_pLiveAudioDecodingQueue->DeQueue(m_ucaDecodingFrame);
+			nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
 		}
 		else
 		{

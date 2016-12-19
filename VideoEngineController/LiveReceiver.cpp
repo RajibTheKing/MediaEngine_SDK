@@ -13,7 +13,7 @@ LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject)
 {
     //m_pAudioDecoderBuffer = pAudioDecoderBuffer;
-    m_pLiveAudioDecodingQueue = NULL;
+    m_pLiveAudioReceivedQueue = NULL;
     m_pLiveVideoDecodingQueue = NULL;
     m_pLiveReceiverMutex.reset(new CLockHandler);
 }
@@ -27,7 +27,7 @@ void LiveReceiver::SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue)
 }
 void LiveReceiver::SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue)
 {
-    m_pLiveAudioDecodingQueue = pQueue;
+    m_pLiveAudioReceivedQueue = pQueue;
 }
 
 
@@ -185,7 +185,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-        m_pLiveAudioDecodingQueue->EnQueue(uchAudioData + nFrameLeftRange + 1,
+        m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1,
                                          nCurrentFrameLenWithMediaHeader - 1);
 
     }
@@ -334,7 +334,7 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 
             nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-            m_pLiveAudioDecodingQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+            m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
 
         }
 }
