@@ -6,7 +6,7 @@
 #include "VideoCallSession.h"
 #include "HashGenerator.h"
 
-//#define USE_HASH_GENERATOR_TO_PACKETIZE
+#define USE_HASH_GENERATOR_TO_PACKETIZE
 
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 

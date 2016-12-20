@@ -321,6 +321,12 @@ long long CVideoHeader::GetFrameNumberDirectly(unsigned char *pData)
     
 }
 
+int CVideoHeader::GetFrameHeaderLengthDirectly(unsigned char *pData)
+{
+    return GetLongLongFromChar(pData + HEADER_LENGTH_INDEX, 0, 1);
+    
+}
+
 int CVideoHeader::GetIntFromChar(unsigned char *packetData, int index, int nLenght)
 {
     int result = 0;

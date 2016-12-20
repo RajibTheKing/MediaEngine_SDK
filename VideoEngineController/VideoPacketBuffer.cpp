@@ -3,7 +3,7 @@
 #include "HashGenerator.h"
 #include "VideoHeader.h"
 
-//#define USE_HASH_GENERATOR_TO_DEPACKETIZE
+#define USE_HASH_GENERATOR_TO_DEPACKETIZE
 
 CVideoPacketBuffer::CVideoPacketBuffer():
 m_nNumberOfGotPackets(0),

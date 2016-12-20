@@ -8,8 +8,8 @@
 #include "LockHandler.h"
 
 
-#define MAX_PACKET_SIZE 490
-#define MIN_PACKET_SIZE 390
+#define MAX_PACKET_SIZE 480
+#define MIN_PACKET_SIZE 380
 #define RANG_SIZE MAX_PACKET_SIZE - MIN_PACKET_SIZE
 
 #define DEFAULT_SEED 23232323

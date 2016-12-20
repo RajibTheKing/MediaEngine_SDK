@@ -92,6 +92,7 @@ public:
 	long long GetLongLongFromChar(unsigned char *packetData, int index, int nLenght);
 
 	long long GetFrameNumberDirectly(unsigned char *packetData);
+    int GetFrameHeaderLengthDirectly(unsigned char *pData);
 
     int GetOpponentResolution(unsigned char *PacketHeader);
     

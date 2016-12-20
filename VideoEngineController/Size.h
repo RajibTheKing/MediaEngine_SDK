@@ -36,7 +36,7 @@
 #define __MIN_PACKET_TYPE   1
 #define __MAX_PACKET_TYPE   4
 
-#define HIGH_QUALITY_FPS 25
+#define HIGH_QUALITY_FPS 30
 #define LOW_QUALITY_FPS 15
 
 #define LOW_FRAME_RATE 25

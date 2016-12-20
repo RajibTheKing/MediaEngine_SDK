@@ -428,10 +428,12 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         {
             OperationForResolutionControl(in_data,in_size);
         }*/
+        m_PacketHeader.setPacketHeader(in_data);
         
-		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.GetFrameNumberDirectly(in_data);
+		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.getFrameNumber();
+        
 //		VLOG("#DR# --------------------------> FrameNumber : "+Tools::IntegertoStringConvert(unFrameNumber));
-        //printf("PushPacketForMerging--> nFrameNumber = %d\n", unFrameNumber);
+        printf("PushPacketForMerging--> nFrameNumber = %d, m_nCallFPS = %d, m_PacketHeader.GetHeaderLength() = %d\n", unFrameNumber, m_nCallFPS, m_PacketHeader.GetHeaderLength());
         
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
@@ -672,16 +674,19 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 									uchVersion,									//VersionCode
 									VIDEO_HEADER_LENGTH,						//HeaderLength
 									0,											//FPSByte
-									m_miniPacketBandCounter,                    //FrameNumber
+									m_miniPacketBandCounter,                    //FrameNumber           //SlotID
 									0,											//NetworkType
 									0,											//Device Orientation
 									0,											//QualityLevel
 									0,											//NumberofPacket
 									nMiniPacketType,							//PacketNumber
-									nByteReceivedOrNetworkType,					//TimeStamp
+									nByteReceivedOrNetworkType,					//TimeStamp             //Sending Received Byte
 									0,											//PacketStartingIndex
 									0											//PacketDataLength
 									);
+        
+        printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
+        PacketHeader.ShowDetails("BtratePacket SendingSide: ");
 	}
 	else if (nMiniPacketType == __NETWORK_INFO_PACKET_TYPE)
 	{

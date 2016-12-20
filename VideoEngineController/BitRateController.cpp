@@ -118,7 +118,8 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader)
 
 
 bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType)
-{ 
+{
+    crTempHeader.ShowDetails("HandleBitrateMiniPacket: ");
 	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
     {
 //    double __ratio = 100.00 * crTempHeader.getTimeStamp() * 8.00 /  m_pVideoEncoder->GetBitrate();
@@ -160,7 +161,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
     {
         double dMegaRatio =  (m_nBytesReceivedInMegaSlotInterval *1.0) / (1.0 * m_nBytesSendInMegaSlotInverval) * 100.0;
 
-        printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
+        //printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
 
         long long llTimeStampForMiniPkt = m_TimeDiffMapHelper[iSlotNumber];
 
@@ -177,7 +178,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
                       +" SlotNo: " + Tools::IntegertoStringConvert(iSlotNumber) + " MiniPkt time delley: "+ m_Tools.IntegertoStringConvert(nTimeDifferenceBetweenMiniPackets);
 
         //CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, sMsg);
-        //LOGE( "%s", sMsg.c_str());
+        printf( "%s", sMsg.c_str());
 
         if(nNeedToChange == BITRATE_CHANGE_DOWN)
         {
@@ -302,7 +303,8 @@ void BitRateController::NotifyEncodedFrame(int &nrFrameSize)
             m_BandWidthRatioHelper.insert(iRatioHelperIndex,  m_nBytesSendInSlotInverval);
             
             
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval));
+            string sMsg = "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval);
+            printf("%s\n", sMsg.c_str());
 
             
             m_TimeDiffMapHelper[iRatioHelperIndex] =  m_Tools.CurrentTimestamp();
