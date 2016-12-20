@@ -1,10 +1,14 @@
-#ifndef ANDROIDTESTCLIENTVE_FTEST_PACKETHEADER_H
-#define ANDROIDTESTCLIENTVE_FTEST_PACKETHEADER_H
+#ifndef VIDEO_HEADER_H
+#define VIDEO_HEADER_H
 
 #define VLOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 #include <iostream>
 #include <string>
 using namespace std;
+
+
+#define VIDEO_HEADER_LENGTH 22
+
 
 class CVideoHeader {
 public:
@@ -87,7 +91,7 @@ public:
     int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
 	long long GetLongLongFromChar(unsigned char *packetData, int index, int nLenght);
 
-	unsigned int GetFrameNumberDirectly(unsigned char *packetData);
+	long long GetFrameNumberDirectly(unsigned char *packetData);
 
     int GetOpponentResolution(unsigned char *PacketHeader);
     
@@ -158,4 +162,4 @@ private:
 
 };
 
-#endif //ANDROIDTESTCLIENTVE_FTEST_PACKETHEADER_H
+#endif //VIDEO_HEADER_H

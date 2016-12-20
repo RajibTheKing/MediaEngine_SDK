@@ -5,6 +5,7 @@
 #include "VideoHeader.h"
 #include "LogPrinter.h"
 #include "Size.h"
+#include "Tools.h"
 
 #define PACKET_TYPE_INDEX 0
 #define VERSION_CODE_INDEX 1
@@ -125,18 +126,26 @@ void CVideoHeader::setPacketHeader(	unsigned char packetType,
 
 }
 
-void CVideoHeader::ShowDetails(string sTag){
-    VLOG("#PKT#  ->"+sTag+"#  PT: "+Tools::IntegertoStringConvert(m_ucPacketType)
-    +"  FN:"+Tools::IntegertoStringConvert(m_iFrameNumber)
-    +" NP:"+Tools::IntegertoStringConvert(m_iNumberOfPacket)
-    +" PN:"+Tools::IntegertoStringConvert(m_iPacketNumber)
-    +" PLen:"+Tools::IntegertoStringConvert(m_iPacketDataLength)
-    +" Ver:"+Tools::IntegertoStringConvert(m_cVersionCode)
-    +" TS:"+Tools::IntegertoStringConvert(m_iTimeStamp)
-    +" QL:"+Tools::IntegertoStringConvert(m_nVideoQualityLevel)
-    +" NT:"+Tools::IntegertoStringConvert(m_nNetworkType)
-    +" OR:"+Tools::IntegertoStringConvert(m_iDeviceOrientation)
-    );
+void CVideoHeader::ShowDetails(string sTag)
+{
+    string sLog = "#PKT#  -> "+sTag
+    +" PT: "+Tools::getText(m_iPacketType)
+    +" VC:"+Tools::getText(m_iVersionCode)
+    +" HL:"+Tools::getText(m_iHeaderLength)
+    +" Fps:"+Tools::getText(m_iFPS)
+    +" FN:"+Tools::getText(m_llFrameNumber)
+    +" NT:"+Tools::getText(m_iNetworkType)
+    +" DO:"+Tools::getText(m_iDeviceOrientation)
+    +" QL:"+Tools::getText(m_iVideoQualityLevel)
+    +" NP:"+Tools::getText(m_iNumberOfPacket)
+    +" PN:"+Tools::getText(m_iPacketNumber)
+    +" TM:"+Tools::getText(m_llTimeStamp)
+    +" SIndex:"+Tools::getText(m_iPacketStartingIndex)
+    +" Len:"+Tools::getText(m_iPacketDataLength)
+    ;
+    
+    printf("%s\n", sLog.c_str());
+    
 }
 int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
 {
@@ -306,9 +315,9 @@ void CVideoHeader::setPacketDataLength(unsigned char *pData)
 	m_iPacketDataLength = GetIntFromChar(pData, 0, 3);
 }
 
-unsigned int CVideoHeader::GetFrameNumberDirectly(unsigned char *pData)
+long long CVideoHeader::GetFrameNumberDirectly(unsigned char *pData)
 {
-	return GetIntFromChar(pData + FRAME_NUMBER_INDEX, 0, 3);
+	return GetLongLongFromChar(pData + FRAME_NUMBER_INDEX, 0, 4);
     
 }
 
@@ -319,7 +328,8 @@ int CVideoHeader::GetIntFromChar(unsigned char *packetData, int index, int nLeng
     int startPoint = (nLenght - 1) << 3;
     for(int i=startPoint; i >= 0 ; i-=interval)
     {
-        result += (packetData[index++] & 0xFF) << i;
+        int temp = (int)(packetData[index++] & 0xFF) << i;
+        result += temp;
     }
 
     return result;
@@ -333,7 +343,8 @@ long long CVideoHeader::GetLongLongFromChar(unsigned char *packetData, int index
 	int startPoint = (nLenght - 1) << 3;
 	for (int i = startPoint; i >= 0; i -= interval)
 	{
-		result += (packetData[index++] & 0xFF) << i;
+        long long temp = (long long)(packetData[index++] & 0xFF) << i;
+        result += temp;
 	}
 
 	return result;
