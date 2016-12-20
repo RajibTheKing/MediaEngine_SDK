@@ -33,7 +33,7 @@ void CVideoBeautificationer::MakeFrameBlurAndStore(unsigned char *convertingData
 
 bool CVideoBeautificationer::IsSkinPixel(unsigned char pixel)
 {
-
+	return false;
 }
 
 void CVideoBeautificationer::StartBrightening(int iVideoHeight, int iVideoWidth, int nPrecision)
