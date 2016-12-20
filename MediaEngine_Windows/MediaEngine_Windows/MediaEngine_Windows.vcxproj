@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="..\..\VideoEngineController\VideoEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoderListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
@@ -200,7 +202,6 @@
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
-    <ClCompile Include="LiveStreamingHeader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
@@ -236,6 +237,7 @@
     <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveReceiver.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveStreamingHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
@@ -261,6 +263,7 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncoder.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoderListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
@@ -270,7 +273,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />
-    <ClInclude Include="LiveStreamingHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />

@@ -150,7 +150,10 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
 			../../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
 			../../../videoengine/VideoEngineController/AudioHeader.cpp \
+			../../../videoengine/VideoEngineController/VideoHeader.cpp \
+			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
 			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+
 			
 
 
