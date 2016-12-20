@@ -19,11 +19,8 @@ m_nBrightnessPrecision(0)
 	m_nVideoHeight = iVideoHeight;
 	m_nVideoWidth = iVideoWidth;
 
-#if defined(__ANDROID__)
 	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
-#elif defined(TARGET_OS_IPHONE)
-	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
-#endif
+
 
 	boxesForGauss(1.5, 3);
 }
@@ -39,11 +36,8 @@ void CVideoBeautificationer::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 	m_nVideoHeight = iVideoHeight;
 	m_nVideoWidth = iVideoWidth;
 
-#if defined(__ANDROID__)
 	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
-#elif defined(TARGET_OS_IPHONE)
-	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
-#endif
+
 }
 
 void CVideoBeautificationer::GenerateUVIndex( int iVideoHeight, int iVideoWidth, int dataFormat )

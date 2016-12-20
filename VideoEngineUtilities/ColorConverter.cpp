@@ -23,6 +23,8 @@ m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 	m_AverageValue = 0;
 	m_ThresholdValue = 0;
 
+	m_TemparetureThresHold = 4;
+
 	for (int i = 0; i < 481; i++)
 		for (int j = 0; j < 641; j++)
 		{
@@ -254,8 +256,8 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 		for (int y = 0; y < halfHeight; ++y)
 		{
 			int ind = ( m_Multiplication[y][halfWidth] + x) * 2;
-			pData[vIndex++] = m_pFrame[dimention + ind] + 4;
-			pData[i++] = m_pFrame[dimention + ind + 1] - 4;
+			pData[vIndex++] = getMin(m_pFrame[dimention + ind] + m_TemparetureThresHold, 255);
+			pData[i++] = m_pFrame[dimention + ind + 1] - m_TemparetureThresHold;
 		}
 	}
 
@@ -300,12 +302,15 @@ void CColorConverter::NegativeRotateAndConvertNV12ToI420(unsigned char *m_pFrame
         {
             int ind = (x*halfWidth + y) << 1;
             
-            pData[temp2++] = m_pFrame[dimention + ind + 1];
-            pData[temp++] = m_pFrame[dimention + ind];
+            pData[temp2++] = getMin(m_pFrame[dimention + ind + 1] + m_TemparetureThresHold, 255);
+            pData[temp++] = m_pFrame[dimention + ind] - m_TemparetureThresHold;
         }
         i-=halfHeight;
         vIndex-=halfHeight;
     }
+
+	m_VideoBeautificationer->MakeFrameBlurAndStore(pData , iWidth, iHeight );
+	m_VideoBeautificationer->IsSkinPixel(pData);
     
     
 }
@@ -338,9 +343,13 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, 
 		for (int y = 0; y < halfHeight; ++y)
 		{
 			int ind = (m_Multiplication[y][halfWidth] + x) << 1 ;
-			pData[vIndex++] = m_pFrame[dimention + ind + 1];
-			pData[i++] = m_pFrame[dimention + ind];
+			pData[vIndex++] = getMin(m_pFrame[dimention + ind + 1] + m_TemparetureThresHold, 255);
+			pData[i++] = m_pFrame[dimention + ind] - m_TemparetureThresHold;
 		}
+
+
+	m_VideoBeautificationer->MakeFrameBlurAndStore(pData , iWidth, iHeight );
+	m_VideoBeautificationer->IsSkinPixel(pData);
 }
 
 void CColorConverter::mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData)
@@ -368,9 +377,12 @@ void CColorConverter::mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsign
 		for (int x = halfWidth - 1; x > -1; --x)
 		{
 			int ind = m_Multiplication[y][iWidth] + (x << 1);
-			pData[vIndex++] = m_pFrame[ind + 1];
-			pData[i++] = m_pFrame[ind];
+			pData[vIndex++] = getMin(m_pFrame[ind + 1] + m_TemparetureThresHold, 255);
+			pData[i++] = m_pFrame[ind] - m_TemparetureThresHold;
 		}
+
+	m_VideoBeautificationer->MakeFrameBlurAndStore(pData , iWidth, iHeight );
+	m_VideoBeautificationer->IsSkinPixel(pData);
 }
 
 void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData)
@@ -402,9 +414,13 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *
 		for (int y = halfHeight - 1; y > -1; --y)
 		{
 			int ind = ( m_Multiplication[y][halfWidth] + x) * 2;
-			pData[vIndex++] = m_pFrame[dimention + ind];
-			pData[i++] = m_pFrame[dimention + ind + 1];
+			pData[vIndex++] = getMin(m_pFrame[dimention + ind] + m_TemparetureThresHold, 255);
+			pData[i++] = m_pFrame[dimention + ind + 1] - m_TemparetureThresHold;
 		}
+
+
+	m_VideoBeautificationer->MakeFrameBlurAndStore(pData , iWidth, iHeight );
+	m_VideoBeautificationer->IsSkinPixel(pData);
 }
 
 void CColorConverter::mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData)
@@ -436,9 +452,13 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *
 		for (int y = halfHeight - 1; y > -1; --y)
 		{
 			int ind = (m_Multiplication[y][halfWidth] + x) * 2;
-			pData[vIndex++] = m_pFrame[dimention + ind + 1];
-			pData[i++] = m_pFrame[dimention + ind];
+			pData[vIndex++] = getMin(m_pFrame[dimention + ind + 1] + m_TemparetureThresHold, 255);
+			pData[i++] = m_pFrame[dimention + ind] - m_TemparetureThresHold;
 		}
+
+
+	m_VideoBeautificationer->MakeFrameBlurAndStore(pData , iWidth, iHeight );
+	m_VideoBeautificationer->IsSkinPixel(pData);
 }
 
 int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width)
@@ -543,13 +563,16 @@ int CColorConverter::ConvertRGB24ToI420(unsigned char* lpIndata, unsigned char* 
 			{
 				int scaled_y = (y1 + y2 - 32) * int(255.0 / 219.0 * 32768 + 0.5);
 				int b_y = ((rgb[0] + rgb[3]) << 15) - scaled_y;
-				unsigned char u = *pu++ = Clip((b_y >> 10) * int(1 / 2.018 * 1024 + 0.5) + 0x800000);  // u
+				unsigned char u = *pu++ = Clip((b_y >> 10) * int(1 / 2.018 * 1024 + 0.5) + 0x800000) - m_TemparetureThresHold;  // u
 				int r_y = ((rgb[2] + rgb[5]) << 15) - scaled_y;
-				unsigned char v = *pv++ = Clip((r_y >> 10) * int(1 / 1.596 * 1024 + 0.5) + 0x800000);  // v
+				unsigned char v = *pv++ = getMin( Clip((r_y >> 10) * int(1 / 1.596 * 1024 + 0.5) + 0x800000) + m_TemparetureThresHold, 255);  // v
 			}
 			rgb += 6;
 		}
 	}
+
+	m_VideoBeautificationer->MakeFrameBlurAndStore(lpOutdata , m_iVideoWidth, m_iVideoHeight );
+	m_VideoBeautificationer->IsSkinPixel(lpOutdata);
 
 	return m_iVideoHeight * m_iVideoWidth * 3 / 2;
 }

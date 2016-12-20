@@ -50,7 +50,7 @@ private:
 	int m_ThresholdValueForBrightness;
 	int m_nBrightnessPrecision;
 	int m_nBlurScale;
-	int m_nThresholdValue;
+	unsigned char m_nThresholdValue;
 
 	int m_nVideoHeight;
 	int m_nVideoWidth;
