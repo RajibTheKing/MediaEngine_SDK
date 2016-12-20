@@ -49,6 +49,7 @@
 		DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */; };
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
 		DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */; };
+		DA3B79211DED86D20061BEFC /* HashGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */; };
 		DA4D47401DBDDDCF00EB407D /* LiveReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4D473C1DBDDDCF00EB407D /* LiveReceiver.cpp */; };
 		DA4D47411DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4D473E1DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp */; };
 		DA550FE01D7557BA00638DA6 /* AudioFileCodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */; };
@@ -175,6 +176,8 @@
 		DA2A7B101C38ED8200E6AFF8 /* FPSController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FPSController.h; path = VideoEngineController/FPSController.h; sourceTree = "<group>"; };
 		DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PacketHeader.cpp; path = VideoEngineController/PacketHeader.cpp; sourceTree = "<group>"; };
 		DA3AF4BA1C55F67400E566BB /* PacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PacketHeader.h; path = VideoEngineController/PacketHeader.h; sourceTree = "<group>"; };
+		DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HashGenerator.cpp; path = VideoEngineUtilities/HashGenerator.cpp; sourceTree = "<group>"; };
+		DA3B79201DED86D20061BEFC /* HashGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HashGenerator.h; path = VideoEngineUtilities/HashGenerator.h; sourceTree = "<group>"; };
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
 		DA4D473C1DBDDDCF00EB407D /* LiveReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveReceiver.cpp; path = VideoEngineController/LiveReceiver.cpp; sourceTree = "<group>"; };
 		DA4D473D1DBDDDCF00EB407D /* LiveReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveReceiver.h; path = VideoEngineController/LiveReceiver.h; sourceTree = "<group>"; };
@@ -259,6 +262,8 @@
 				188587FD1C0AEEBC00B1F435 /* ColorConverter.cpp */,
 				188587FE1C0AEEBC00B1F435 /* ColorConverter.h */,
 				188587FF1C0AEEBC00B1F435 /* DefinedDataTypes.h */,
+				DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */,
+				DA3B79201DED86D20061BEFC /* HashGenerator.h */,
 				188588001C0AEEBC00B1F435 /* LockHandler.cpp */,
 				188588011C0AEEBC00B1F435 /* LockHandler.h */,
 				DA9CFEAA1DFBC7E2004112C4 /* MuxingVideoData.cpp */,
@@ -531,6 +536,7 @@
 				188587EF1C0AEEAC00B1F435 /* DecodingBuffer.cpp in Sources */,
 				DA91E7B01D6824AF006F50E2 /* AudioPacketHeader.cpp in Sources */,
 				188587EE1C0AEEAC00B1F435 /* Controller.cpp in Sources */,
+				DA3B79211DED86D20061BEFC /* HashGenerator.cpp in Sources */,
 				DA550FE01D7557BA00638DA6 /* AudioFileCodec.cpp in Sources */,
 				D11DAA691CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp in Sources */,
 				188587F61C0AEEAC00B1F435 /* VideoCallSession.cpp in Sources */,

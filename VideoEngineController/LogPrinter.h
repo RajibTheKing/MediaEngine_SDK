@@ -90,7 +90,7 @@ static FILE *logfp = NULL;
 #define printFile(...) if(!logfp) {logfp = fopen("log.txt", "wb");} fprintf(logfp, __VA_ARGS__);
 #define printfiledone() fclose(logfp);
 #endif
-#define printf(...)
+//#define printf(...)
 
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 

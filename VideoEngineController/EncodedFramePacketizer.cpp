@@ -4,6 +4,9 @@
 #include "LogPrinter.h"
 #include "Globals.h"
 #include "VideoCallSession.h"
+#include "HashGenerator.h"
+
+#define USE_HASH_GENERATOR_TO_PACKETIZE
 
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
@@ -150,9 +153,18 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	}
     else
     {
-		
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
+        CHashGenerator hashGenerator;
+        nNumberOfPackets = hashGenerator.CalculateNumberOfPackets(iFrameNumber, unLength);
+#endif
+        
+        
         for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
         {
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
+            m_nPacketSize = hashGenerator.GetHashedPacketSize(iFrameNumber, nPacketNumber);
+#endif
+            
             if (nPacketizedDataLength + m_nPacketSize > unLength)
                 m_nPacketSize = unLength - nPacketizedDataLength;
             
@@ -204,7 +216,9 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             }
             else
             {
+                m_cPacketHeader.ShowDetails("SendingSide: ");
                 m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                
                 
                 //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
             }
