@@ -46,10 +46,14 @@ unsigned long long CHashGenerator::HashSeedPair(unsigned int nSeed, unsigned int
 
 int CHashGenerator::GetHashedPacketSize(unsigned int nframeNumber, unsigned int nPacketNumber)
 {
+    
+//#define MAX_PACKET_SIZE 490
+//#define MIN_PACKET_SIZE 390
+    
     unsigned long long hashedValue = HashSeedPair(m_nSeed, nframeNumber, nPacketNumber);
     
     int newSize = hashedValue%MAX_PACKET_SIZE;
-    
+    newSize = MIN_PACKET_SIZE + hashedValue % (RANG_SIZE);
     
     /*
     while(newSize<MIN_PACKET_SIZE)
@@ -59,10 +63,10 @@ int CHashGenerator::GetHashedPacketSize(unsigned int nframeNumber, unsigned int 
     }
     */
     
-    if(newSize<MIN_PACKET_SIZE)
+    /*if(newSize<MIN_PACKET_SIZE)
     {
         newSize+=MIN_PACKET_SIZE;
-    }
+    }*/
     return newSize;
 }
 

@@ -6,7 +6,7 @@
 #include "VideoCallSession.h"
 #include "HashGenerator.h"
 
-#define USE_HASH_GENERATOR_TO_PACKETIZE
+//#define USE_HASH_GENERATOR_TO_PACKETIZE
 
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
@@ -153,9 +153,11 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	}
     else
     {
+        int iStartIndex;
 #ifdef USE_HASH_GENERATOR_TO_PACKETIZE
         CHashGenerator hashGenerator;
         nNumberOfPackets = hashGenerator.CalculateNumberOfPackets(iFrameNumber, unLength);
+        iStartIndex = 0;
 #endif
         
         
@@ -182,7 +184,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 											*/
 
 			m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
-				uchSendVersion,                   //VersionCode
+                                           uchSendVersion,                  //VersionCode
 											VIDEO_HEADER_LENGTH,             //HeaderLength
 											0,                               //FPSByte
 											iFrameNumber,                    //FrameNumber
@@ -192,10 +194,10 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 											nNumberOfPackets,                //NumberofPacket
 											nPacketNumber,                   //PacketNumber
 											unCaptureTimeDifference,         //TimeStamp
-											0,                               //PacketStartingIndex
-											m_nPacketSize                         //PacketDataLength
+											iStartIndex,                               //PacketStartingIndex
+											m_nPacketSize                    //PacketDataLength
 											);
-
+            iStartIndex += m_nPacketSize;
 
             m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
             //m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
@@ -216,7 +218,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             }
             else
             {
-                m_cPacketHeader.ShowDetails("SendingSide: ");
+                //m_cPacketHeader.ShowDetails("SendingSide: ");
                 m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
                 
                 

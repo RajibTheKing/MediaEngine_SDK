@@ -160,7 +160,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
     {
         double dMegaRatio =  (m_nBytesReceivedInMegaSlotInterval *1.0) / (1.0 * m_nBytesSendInMegaSlotInverval) * 100.0;
 
-       // printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
+        printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
 
         long long llTimeStampForMiniPkt = m_TimeDiffMapHelper[iSlotNumber];
 

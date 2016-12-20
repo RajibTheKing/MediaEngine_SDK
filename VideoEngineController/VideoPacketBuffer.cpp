@@ -1,8 +1,9 @@
 
 #include "VideoPacketBuffer.h"
 #include "HashGenerator.h"
+#include "VideoHeader.h"
 
-#define USE_HASH_GENERATOR_TO_DEPACKETIZE
+//#define USE_HASH_GENERATOR_TO_DEPACKETIZE
 
 CVideoPacketBuffer::CVideoPacketBuffer():
 m_nNumberOfGotPackets(0),
@@ -43,18 +44,24 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsi
         
         
 #ifdef USE_HASH_GENERATOR_TO_DEPACKETIZE
+        CVideoHeader packetHeader;
+        packetHeader.setPacketHeader(pucVideoPacketData);
+        packetHeader.ShowDetails("ReceivingSide: ");
         CHashGenerator hashGenerator;
+        
+        /*
         int sum = 0;
         for(int i=0;i<nPacketNumber;i++)
         {
             sum+=hashGenerator.GetHashedPacketSize(m_nFrameNumber, i);
         }
         printf("nPacketDataLength = %d\n", nPacketDataLength);
+        */
         
-		memcpy(m_ucaFrameData + sum, pucVideoPacketData + PACKET_HEADER_LENGTH, nPacketDataLength);
+		memcpy(m_ucaFrameData + packetHeader.GetPacketStartingIndex(), pucVideoPacketData + packetHeader.GetHeaderLength(), nPacketDataLength);
 #else
         
-        memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + PACKET_HEADER_LENGTH, nPacketDataLength);
+        memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + iHeaderLength, nPacketDataLength);
 #endif
         
 		m_nFrameSize += nPacketDataLength;
