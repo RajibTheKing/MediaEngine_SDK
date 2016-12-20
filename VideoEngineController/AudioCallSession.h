@@ -26,10 +26,8 @@
 #endif
 
 
-#define __AUDIO_CALL_VERSION__  1
-#define  __DUPLICATE_AUDIO__
-#define MULTIPLE_HEADER
-
+#define __AUDIO_CALL_VERSION__  0
+#define __AUDIO_LIVE_VERSION__  0
 
 #ifdef __ANDROID__
 #define USE_AECM

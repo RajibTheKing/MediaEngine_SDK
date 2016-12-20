@@ -116,8 +116,13 @@ m_nServiceType(nServiceType)
 
 
 	m_iAudioVersionFriend = -1;
-	m_iAudioVersionSelf = __AUDIO_CALL_VERSION__;
-
+	if(m_bLiveAudioStreamRunning)
+	{
+		m_iAudioVersionSelf = __AUDIO_LIVE_VERSION__;
+	}
+	else {
+		m_iAudioVersionSelf = __AUDIO_CALL_VERSION__;
+	}
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
@@ -542,16 +547,12 @@ void CAudioCallSession::EncodingThreadProcedure()
                 {
 					m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1, 0);
 
-#ifdef  __DUPLICATE_AUDIO__
-#ifndef MULTIPLE_HEADER
 					if (false == m_bLiveAudioStreamRunning && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
 					{
 						toolsObject.SOSleep(5);
 						m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1, 0);
 						//                    ALOG("#2AE# Sent Second Times");
 					}
-#endif
-#endif
                 }
                     
             }
@@ -694,21 +695,12 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			//			__LOG("@@@@@@@@@@@@@@ PN: %d, Len: %d",iPacketNumber, ReceivingHeader->GetInformation(PACKETLENGTH));
 
-#ifdef  __DUPLICATE_AUDIO__
 
-#ifdef MULTIPLE_HEADER
-			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber == iPacketNumber) {
-				continue;								
-			}
-#else
-			//iPacketNumber rotates
 			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {				
 				continue;								
 			}
-#endif
-			ALOG("#2A#RCV---------> Decoding = " + m_Tools.IntegertoStringConvert(iPacketNumber));
-#endif
 
+			ALOG("#2A#RCV---------> Decoding = " + m_Tools.IntegertoStringConvert(iPacketNumber));
 
 			if (!ReceivingHeader->IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
@@ -731,12 +723,12 @@ void CAudioCallSession::DecodingThreadProcedure()
 			else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
 			{
 				bIsProcessablePacket = true;
-#ifdef  __DUPLICATE_AUDIO__
+
 				if (false == m_bLiveAudioStreamRunning) {
 					m_iAudioVersionFriend = nVersion;//ReceivingHeader->GetInformation(VERSIONCODE);
 					//                ALOG("#2A   m_iAudioVersionFriend = "+ m_Tools.IntegertoStringConvert(m_iAudioVersionFriend));
 				}
-#endif
+
 			}
 
 			if (!bIsProcessablePacket) continue;
