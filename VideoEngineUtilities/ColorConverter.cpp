@@ -32,6 +32,9 @@ m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
 	m_pColorConverterMutex.reset(new CLockHandler);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CColorConverter::CColorConverter Prepared");
+
+	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
+
 	//LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
 
 
@@ -53,6 +56,8 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 	m_VPlaneLength = m_YPlaneLength >> 2;
 	m_UVPlaneMidPoint = m_YPlaneLength + m_VPlaneLength;
 	m_UVPlaneEnd = m_UVPlaneMidPoint + m_VPlaneLength;
+
+	m_VideoBeautificationer->SetHeightWidth(iVideoHeight, iVideoWidth);
 }
 
 int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
@@ -224,6 +229,8 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 	int iWidth = m_iVideoHeight;
 	int iHeight = m_iVideoWidth;
 
+	//m_VideoBeautificationer->MakeFrameBlurAndStore(m_pFrame , iHeight,  iWidth);
+
 	int i = 0;
 	int totalYValue = 0;
 	unsigned char yVal = 0;
@@ -231,58 +238,11 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 	{
 		for (int y = 0; y <iHeight; ++y)
 		{
-			yVal =  m_pFrame[m_Multiplication[y][iWidth] + x];
-			pData[i] = getMin(yVal + m_PrevAddValue, 255);
-			totalYValue += yVal;
+
+			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
 			i++;
 		}
 	}
-
-	m_AverageValue = totalYValue / (iHeight * iWidth);
-
-	if(m_AverageValue < 10)
-	{
-		m_ThresholdValue = 44;
-	}else if(m_AverageValue < 20)
-	{
-		m_ThresholdValue = 50;
-	}else if(m_AverageValue < 30)
-	{
-		m_ThresholdValue = 60;
-	}else if(m_AverageValue < 40)
-	{
-		m_ThresholdValue = 70;
-	}else if(m_AverageValue < 50)
-	{
-		m_ThresholdValue = 75;
-	}else if(m_AverageValue < 60)
-	{
-		m_ThresholdValue = 80;
-	}else if(m_AverageValue < 70)
-	{
-		m_ThresholdValue = 90;
-	}else if(m_AverageValue < 80)
-	{
-		m_ThresholdValue = 95;
-	}else if(m_AverageValue < 90)
-	{
-		m_ThresholdValue = 100;
-	}else if(m_AverageValue < 100)
-	{
-		m_ThresholdValue = 110;
-	}else if(m_AverageValue < 110){
-		m_ThresholdValue = 115;
-	}else if(m_AverageValue < 120){
-		m_ThresholdValue = 125;
-	}else{
-		m_ThresholdValue = 100;
-	}
-
-	m_PrevAddValue = (m_ThresholdValue - m_AverageValue);
-	m_PrevAddValue = m_PrevAddValue >> 1;
-	if (m_PrevAddValue < 0)
-		m_PrevAddValue = 0;
-
 
 	int halfWidth = iWidth >> 1;
 	int halfHeight = iHeight >> 1;
@@ -290,12 +250,17 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 	int vIndex = dimention + m_Multiplication[halfHeight][halfWidth];
 
 	for (int x = halfWidth - 1; x>-1; --x)
+	{
 		for (int y = 0; y < halfHeight; ++y)
 		{
 			int ind = ( m_Multiplication[y][halfWidth] + x) * 2;
-			pData[vIndex++] = m_pFrame[dimention + ind];
-			pData[i++] = m_pFrame[dimention + ind + 1];
+			pData[vIndex++] = m_pFrame[dimention + ind] + 4;
+			pData[i++] = m_pFrame[dimention + ind + 1] - 4;
 		}
+	}
+
+	m_VideoBeautificationer->MakeFrameBlurAndStore(pData , iWidth, iHeight );
+	m_VideoBeautificationer->IsSkinPixel(pData);
 }
 
 void CColorConverter::NegativeRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData)
