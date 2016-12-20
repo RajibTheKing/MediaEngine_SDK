@@ -236,6 +236,10 @@ void CAudioCallSession::StartCallInLive(int iRole)
 {
 	m_iRole = iRole;
 	m_llDecodingTimeStampOffset = -1;
+	if (m_iRole == VIEWER_IN_CALL)
+	{
+		m_pLiveAudioReceivedQueue->ResetBuffer();
+	}
 }
 
 void CAudioCallSession::EndCallInLive()
@@ -1128,6 +1132,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime)
 {
+	return true;//will be fixed in future
 	if (m_bLiveAudioStreamRunning)
 	{
 		if (m_iRole == PUBLISHER_IN_CALL)
