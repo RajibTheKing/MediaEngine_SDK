@@ -207,7 +207,7 @@ void CVideoHeader::SetPacketType(unsigned char packetType)
 }
 
 unsigned char CVideoHeader::GetPacketType(){
-    return m_iPacketType;
+    return (unsigned char)m_iPacketType;
 }
 
 void CVideoHeader::setVersionCode(unsigned char cVersionCode) {
@@ -280,9 +280,9 @@ void CVideoHeader::setPacketNumber(unsigned char *pData)
 	m_iPacketNumber = GetIntFromChar(pData, 0, 1);
 }
 
-int CVideoHeader::getTimeStampDirectly(unsigned char *pData)
+long long CVideoHeader::getTimeStampDirectly(unsigned char *pData)
 {
-	return GetIntFromChar(pData + TIMESTAMP_INDEX, 0, 4);
+	return GetIntFromChar(pData + TIMESTAMP_INDEX, 0, 5);
 }
 
 long long CVideoHeader::getTimeStamp()
@@ -352,7 +352,7 @@ long long CVideoHeader::GetLongLongFromChar(unsigned char *packetData, int index
 
 int CVideoHeader::GetOpponentResolution(unsigned char *PacketHeader)
 {
-    return PacketHeader[CALL_INFO_BYTE_INDEX_WITHOUT_MEDIA] & 0x06;
+    return PacketHeader[CALL_INFO_INDEX] & 0x06;
 }
 
 void CVideoHeader::SetNetworkType(unsigned char* data){

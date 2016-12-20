@@ -49,7 +49,7 @@ public:
 
     void setPacketNumber(unsigned int iPacketNumber);
 
-	int getTimeStampDirectly(unsigned char *data);
+	long long getTimeStampDirectly(unsigned char *data);
 
 	void setTimeStamp(long long llTimeStamp);
 
