@@ -199,8 +199,8 @@
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
     <ClCompile Include="LiveStreamingHeader.cpp" />
-    <ClCompile Include="VideoBeautificationer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
@@ -269,8 +269,8 @@
     <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />
     <ClInclude Include="LiveStreamingHeader.h" />
-    <ClInclude Include="VideoBeautificationer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />
