@@ -19,6 +19,8 @@
 
 #define NEW_HEADER_FORMAT
 
+#define MAX_FRAME_HEIGHT 640
+#define MAX_FRAME_WIDTH 480
 
 #define IFRAME_INTERVAL 5
 

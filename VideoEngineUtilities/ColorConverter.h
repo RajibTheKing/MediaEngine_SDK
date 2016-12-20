@@ -10,9 +10,6 @@
 #pragma once
 #endif
 
-#define MAX_FRAME_HEIGHT 640
-#define MAX_FRAME_WIDTH 480
-
 #include <string>
 
 class CColorConverter
