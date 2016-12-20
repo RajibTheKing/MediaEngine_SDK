@@ -68,15 +68,8 @@ m_nServiceType(nServiceType)
 	SendingHeader = new CAudioPacketHeader();
 	ReceivingHeader = new CAudioPacketHeader();
 
-	if (m_bLiveAudioStreamRunning)
-	{
-		m_AudioHeadersize = SendingHeader->GetHeaderSize();
-	}
-	else
-	{
-		m_AudioHeadersize = m_sendingHeaderOld.GetHeaderSize();
-	}
-	
+	m_AudioHeadersize = SendingHeader->GetHeaderSize();
+
 	m_llEncodingTimeStampOffset = m_Tools.CurrentTimestamp();
 	m_llDecodingTimeStampOffset = -1;
 	m_iPacketNumber = 0;
@@ -87,15 +80,9 @@ m_nServiceType(nServiceType)
 	m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
-	if (m_bLiveAudioStreamRunning)
-	{
-		m_llMaxAudioPacketNumber = ((1 << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
-	}
-	else
-	{
-		m_llMaxAudioPacketNumber = ((1 << HeaderBitmapOld[PACKETNUMBER_OLD]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
-	}
-    
+
+	m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+
     if(m_bLiveAudioStreamRunning)
 	{
 		m_iAudioDataSendIndex = 0;
@@ -927,70 +914,33 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
 
-	if (m_bLiveAudioStreamRunning)
-	{
-		SendingHeader->SetInformation(AUDIO_NORMAL_PACKET_TYPE, PACKETTYPE);
-		SendingHeader->SetInformation(packetNumber, PACKETNUMBER);
-		SendingHeader->SetInformation(slotNumber, SLOTNUMBER);
-		SendingHeader->SetInformation(packetLength, PACKETLENGTH);
-		SendingHeader->SetInformation(recvSlotNumber, RECVDSLOTNUMBER);
-		SendingHeader->SetInformation(numPacketRecv, NUMPACKETRECVD);
-		SendingHeader->SetInformation(version, VERSIONCODE);
-		SendingHeader->SetInformation(timestamp, TIMESTAMP);
-		SendingHeader->SetInformation(networkType, NETWORKTYPE);
-		SendingHeader->SetInformation(channel, CHANNELS);
+	SendingHeader->SetInformation(AUDIO_NORMAL_PACKET_TYPE, PACKETTYPE);
+	SendingHeader->SetInformation(packetNumber, PACKETNUMBER);
+	SendingHeader->SetInformation(slotNumber, SLOTNUMBER);
+	SendingHeader->SetInformation(packetLength, PACKETLENGTH);
+	SendingHeader->SetInformation(recvSlotNumber, RECVDSLOTNUMBER);
+	SendingHeader->SetInformation(numPacketRecv, NUMPACKETRECVD);
+	SendingHeader->SetInformation(version, VERSIONCODE);
+	SendingHeader->SetInformation(timestamp, TIMESTAMP);
+	SendingHeader->SetInformation(networkType, NETWORKTYPE);
+	SendingHeader->SetInformation(channel, CHANNELS);
 
-		SendingHeader->GetHeaderInByteArray(header);
-	}
-	else
-	{
-		m_sendingHeaderOld.SetInformation(packetType, PACKETTYPE_OLD);
-		m_sendingHeaderOld.SetInformation(packetNumber, PACKETNUMBER_OLD);
-		m_sendingHeaderOld.SetInformation(slotNumber, SLOTNUMBER_OLD);
-		m_sendingHeaderOld.SetInformation(packetLength, PACKETLENGTH_OLD);
-		m_sendingHeaderOld.SetInformation(recvSlotNumber, RECVDSLOTNUMBER_OLD);
-		m_sendingHeaderOld.SetInformation(numPacketRecv, NUMPACKETRECVD_OLD);
-		m_sendingHeaderOld.SetInformation(version, VERSONCODE_OLD);
-		m_sendingHeaderOld.SetInformation(networkType, NETWORKTYPE_OLD);
-		m_sendingHeaderOld.SetInformation(channel, CHANNELS_OLD);
-
-		m_sendingHeaderOld.GetHeaderInByteArray(header);
-	}
+	SendingHeader->GetHeaderInByteArray(header);
 }
 
 void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header)
 {
-	if (m_bLiveAudioStreamRunning)
-	{
-		ReceivingHeader->CopyHeaderToInformation(header);
+	ReceivingHeader->CopyHeaderToInformation(header);
 
-		packetType = ReceivingHeader->GetInformation(PACKETTYPE);
-		networkType = ReceivingHeader->GetInformation(NETWORKTYPE);
-		slotNumber = ReceivingHeader->GetInformation(SLOTNUMBER);
-		packetNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
-		packetLength = ReceivingHeader->GetInformation(PACKETLENGTH);
-		recvSlotNumber = ReceivingHeader->GetInformation(RECVDSLOTNUMBER);
-		numPacketRecv = ReceivingHeader->GetInformation(NUMPACKETRECVD);
-		channel = ReceivingHeader->GetInformation(CHANNELS);
-		version = ReceivingHeader->GetInformation(VERSIONCODE);
-		timestamp = ReceivingHeader->GetInformation(TIMESTAMP);
-	}
-	else
-	{
-		m_receivingHeaderOld.CopyHeaderToInformation(header);
-
-		packetType = m_receivingHeaderOld.GetInformation(PACKETTYPE_OLD);
-		networkType = m_receivingHeaderOld.GetInformation(NETWORKTYPE_OLD);
-		slotNumber = m_receivingHeaderOld.GetInformation(SLOTNUMBER_OLD);
-		packetNumber = m_receivingHeaderOld.GetInformation(PACKETNUMBER_OLD);
-		packetLength = m_receivingHeaderOld.GetInformation(PACKETLENGTH_OLD);
-		recvSlotNumber = m_receivingHeaderOld.GetInformation(RECVDSLOTNUMBER_OLD);
-		numPacketRecv = m_receivingHeaderOld.GetInformation(NUMPACKETRECVD_OLD);
-		channel = m_receivingHeaderOld.GetInformation(CHANNELS_OLD);
-		version = m_receivingHeaderOld.GetInformation(VERSONCODE_OLD);
-	}
-
-	//LOGEF("##DE### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
-	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
+	packetType = ReceivingHeader->GetInformation(PACKETTYPE);
+	networkType = ReceivingHeader->GetInformation(NETWORKTYPE);
+	slotNumber = ReceivingHeader->GetInformation(SLOTNUMBER);
+	packetNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
+	packetLength = ReceivingHeader->GetInformation(PACKETLENGTH);
+	recvSlotNumber = ReceivingHeader->GetInformation(RECVDSLOTNUMBER);
+	numPacketRecv = ReceivingHeader->GetInformation(NUMPACKETRECVD);
+	channel = ReceivingHeader->GetInformation(CHANNELS);
+	version = ReceivingHeader->GetInformation(VERSIONCODE);
+	timestamp = ReceivingHeader->GetInformation(TIMESTAMP);
 }

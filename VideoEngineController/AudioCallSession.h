@@ -12,7 +12,7 @@
 #include "LogPrinter.h"
 #include "LiveAudioDecodingQueue.h"
 #include "LiveReceiver.h"
-#include "AudioHeader.h"
+//#include "AudioHeader.h"
 
 #include <stdio.h>
 #include <string>
@@ -111,9 +111,6 @@ private:
 
     CAudioPacketHeader *SendingHeader;
     CAudioPacketHeader *ReceivingHeader;
-
-	AudioHeader m_sendingHeaderOld;
-	AudioHeader m_receivingHeaderOld;
 
 	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
