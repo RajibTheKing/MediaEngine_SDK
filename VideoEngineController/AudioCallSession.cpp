@@ -353,9 +353,11 @@ int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingA
 	//    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
 	if (m_bLiveAudioStreamRunning)
 	{
-		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, missingFrames, numberOfMissingFrames);
-
-		return 1;
+		if (m_iRole != PUBLISHER_IN_CALL)
+		{
+			m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, missingFrames, numberOfMissingFrames);
+			return 1;
+		}
 	}
 
 	int returnedValue = m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
@@ -715,6 +717,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	int cnt = 1;
 	while (m_bAudioEncodingThreadRunning)
 	{
+		LOGE("m_bAudioEncodingThreadRunning");
 		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
 		else
