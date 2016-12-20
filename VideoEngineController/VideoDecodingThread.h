@@ -12,6 +12,7 @@
 #include "FPSController.h"
 #include "AverageCalculator.h"
 #include "LiveVideoDecodingQueue.h"
+#include "VideoHeader.h"
 
 //#include "Helper_IOS.hpp"
 #include <thread>

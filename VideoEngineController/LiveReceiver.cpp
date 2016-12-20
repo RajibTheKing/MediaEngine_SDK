@@ -39,7 +39,7 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
 	int offset = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
 	int tillIndex = offset;
-    int frameCounter = 0;
+    //int frameCounter = 0;
 
 	if (packetSizeOfNetwork < 0)
 		return;
@@ -99,11 +99,12 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 		{
 //            LOGEF("THeKing--> ^^^^^^^^^^^^^^^^^^^ LiveReceiver::PushVideoData :: 3 - before access data");
 			int nCurrentFrameLen = ((int)uchVideoData[1 + iUsedLen + 13] << 8) + uchVideoData[1 + iUsedLen + 14];
+            
 			//LLG("#IV#    LiveReceiver::PushVideoData , nCurrentFrameLen = " + Tools::IntegertoStringConvert(nCurrentFrameLen));
 //            LOGEF("THeKing--> ^^^^^^^^^^^^^^^^^^^ LiveReceiver::PushVideoData :: 3 - get current frame");
 
             CPacketHeader packetHeader;
-            int frameNumber = packetHeader.GetFrameNumberDirectly(uchVideoData + (iUsedLen +1) );
+            //int frameNumber = packetHeader.GetFrameNumberDirectly(uchVideoData + (iUsedLen +1) );
 			//LOGEF("THeKing--> receive #####  [%d] Video FrameCounter = %d, FrameLength  = %d, UsedLen: %d iLen = %d\n",j, frameNumber, nCurrentFrameLen + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iUsedLen, iLen);
 
 			m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
@@ -200,9 +201,8 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 	int numberOfMissingFrames = vMissingFrames.size();
 
 	int iUsedLen = 0, nFrames = 0;
-	CPacketHeader packetHeaderObj;
 	int tillIndex = offset;
-	int frameCounter = 0;
+	//int frameCounter = 0;
 
 	for (int j = 0; iUsedLen < iLen; j++)
 	{
@@ -257,18 +257,14 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 		if (!bBroken)	//If the current frame is not broken.
 		{
-			//            LOGEF("THeKing--> ^^^^^^^^^^^^^^^^^^^ LiveReceiver::PushVideoData :: 3 - before access data");
-			int nCurrentFrameLen = ((int)uchVideoData[1 + iUsedLen + 13] << 8) + uchVideoData[1 + iUsedLen + 14];
-			//LLG("#IV#    LiveReceiver::PushVideoData , nCurrentFrameLen = " + Tools::IntegertoStringConvert(nCurrentFrameLen));
-			//            LOGEF("THeKing--> ^^^^^^^^^^^^^^^^^^^ LiveReceiver::PushVideoData :: 3 - get current frame");
+			//int nCurrentFrameLen = ((int)uchVideoData[1 + iUsedLen + 13] << 8) + uchVideoData[1 + iUsedLen + 14];
+            
+            CVideoHeader videoHeader;
+            videoHeader.setPacketHeader(uchVideoData + 1 + iUsedLen);
+            int nCurrentFrameLen = videoHeader.getPacketLength();
 
-			CPacketHeader packetHeader;
-			int frameNumber = packetHeader.GetFrameNumberDirectly(uchVideoData + (iUsedLen + 1));
-			//LOGEF("THeKing--> receive #####  [%d] Video FrameCounter = %d, FrameLength  = %d, UsedLen: %d iLen = %d\n",j, frameNumber, nCurrentFrameLen + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iUsedLen, iLen);
-
-			m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
-			//			iUsedLen += nCurrentFrameLen + PACKET_HEADER_LENGTH + 1;
-			//iUsedLen += LIVE_STREAMING_PACKETIZATION_PACKET_SIZE * ((nCurrentFrameLen + PACKET_HEADER_LENGTH + 1 + LIVE_STREAMING_PACKETIZATION_PACKET_SIZE - 1) / LIVE_STREAMING_PACKETIZATION_PACKET_SIZE);
+			//m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
+            m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
 		}
 		else
 		{

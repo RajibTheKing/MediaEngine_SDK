@@ -9,6 +9,8 @@
 #include "Size.h"
 #include "Tools.h"
 #include "PacketHeader.h"
+#include "VideoHeader.h"
+
 
 class CVideoCallSession;
 
@@ -32,6 +34,8 @@ private:
     CVideoCallSession *m_pVideoCallSession;
     
 	CPacketHeader m_cPacketHeader;
+    CVideoHeader m_cVideoHeader;
+    
 	CSendingBuffer *m_pcSendingBuffer;
 	CCommonElementsBucket* m_pcCommonElementsBucket;
 	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];

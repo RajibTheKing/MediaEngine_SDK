@@ -78,11 +78,28 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
     if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType()  == SERVICE_TYPE_SELF_STREAM)
 	{
 
-			int nPacketNumber = 0;
-            int nNumberOfPackets = 1;
+        int nPacketNumber = 0;
+        int nNumberOfPackets = 1;
+        
+        m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
+                                       uchOwnVersion,                   //VersionCode
+                                       VIDEO_HEADER_LENGTH,             //HeaderLength
+                                       0,                               //FPSByte
+                                       iFrameNumber,                    //FrameNumber
+                                       nNetworkType,                    //NetworkType
+                                       device_orientation,              //Device Orientation
+                                       nCurrentCallQualityLevel,        //QualityLevel
+                                       nNumberOfPackets,                //NumberofPacket
+                                       nPacketNumber,                   //PacketNumber
+                                       unCaptureTimeDifference,         //TimeStamp
+                                       0,                               //PacketStartingIndex
+                                       unLength                         //PacketDataLength
+                                       );
 
-
-            m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+        
+        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
+        
+        /* m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
                                             uchSendVersion,
                                             iFrameNumber,
                                             nNumberOfPackets,
@@ -92,12 +109,17 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                             unLength,
                                             nCurrentCallQualityLevel,
                                             device_orientation,
-                                            nNetworkType);
+                                            nNetworkType);*/
 
-        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
-		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-//        m_cPacketHeader.ShowDetails("JUST");
+        
+        
+		//m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+        //m_cPacketHeader.ShowDetails("JUST");
+        
+        m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+        m_cVideoHeader.ShowDetails("JUST");
 
+        nPacketHeaderLenghtWithMediaType = VIDEO_HEADER_LENGTH + 1;
 		memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData , unLength);
 
 
