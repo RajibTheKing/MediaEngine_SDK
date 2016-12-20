@@ -80,5 +80,6 @@ public:
 
 	bool IsPacketTypeSupported(unsigned int PacketType);
 	bool IsPacketTypeSupported();
+	void showDetails(string prefix="");
 
 };

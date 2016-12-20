@@ -175,3 +175,31 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 	}
 	m_arrllInformation[InfoType] = Information;
 }
+
+void CAudioPacketHeader::showDetails(string prefix)
+{
+	PRT("%s #-> "
+		"PT = %lld "
+		"HL = %lld "
+		"NT = %lld "
+		"VC = %lld "
+		"PN = %lld "
+		"PL = %lld "
+		"RECVDSN = %lld "
+		"NPRECVD = %lld "
+		"C = %lld "
+		"SN = %lld "
+		"TS = %lld",
+		prefix.c_str(),
+		m_arrllInformation[0],
+		m_arrllInformation[1],
+		m_arrllInformation[2],
+		m_arrllInformation[3],
+		m_arrllInformation[4],
+		m_arrllInformation[5],
+		m_arrllInformation[6],
+		m_arrllInformation[7],
+		m_arrllInformation[8],
+		m_arrllInformation[9],
+		m_arrllInformation[10]);
+}
