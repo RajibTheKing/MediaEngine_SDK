@@ -55,16 +55,16 @@ class CAudioPacketHeader {
 
 	unsigned int m_nHeaderSizeInBit;
 	unsigned int m_nHeaderSizeInByte;
-	unsigned int ma_nInformation[MAXFIELDSINHEADER];
+	long long m_arrllInformation[MAXFIELDSINHEADER];
 
 	unsigned char ma_uchHeader[MAXHEADERSIZE];
 	int nNumberOfHeaderElements;
-	int CopyInformationToHeader(unsigned int * Information);
+//	int CopyInformationToHeader(unsigned int * Information);
 	void PutInformationToArray(int InfoType);
 
 public:
 	CAudioPacketHeader();
-	CAudioPacketHeader(unsigned int * Information);
+//	CAudioPacketHeader(unsigned int * Information);
 	CAudioPacketHeader(unsigned char *Header);
 	~CAudioPacketHeader();
 
@@ -73,12 +73,13 @@ public:
 
 	int GetHeaderSize();
 
-	void SetInformation(unsigned int Information, int InfoType);	
-	unsigned int GetInformation(int InfoType);
+	void SetInformation(long long Information, int InfoType);
+	long long GetInformation(int InfoType);
 
 	long long GetFieldCapacity(int InfoType);
 
 	bool IsPacketTypeSupported(unsigned int PacketType);
 	bool IsPacketTypeSupported();
+	void showDetails(string prefix="");
 
 };

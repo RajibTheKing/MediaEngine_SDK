@@ -110,10 +110,10 @@ private:
     CAudioPacketHeader *SendingHeader;
     CAudioPacketHeader *ReceivingHeader;
 
-	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 
-	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
 
     int m_AudioHeadersize;

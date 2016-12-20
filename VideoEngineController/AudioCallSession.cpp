@@ -505,7 +505,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
 			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
 
-			BuildAndGetHeaderInArray(m_iNextPacketType, 0, m_iSlotID, m_iPacketNumber, nEncodedFrameSize,
+			BuildAndGetHeaderInArray(m_iNextPacketType, m_AudioHeadersize, 0, m_iSlotID, m_iPacketNumber, nEncodedFrameSize,
 				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaEncodedFrame[1]);
 
 			m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
@@ -638,6 +638,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	long long llLastDecodedFrameEncodedTimeStamp = -1;
 	long long llFirstSentTime = -1;
 	long long llFirstSentFrame = -1;
+	int nCurrentPacketHeaderLength = 0;
 
 #ifdef __DUMP_FILE__
 	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
@@ -674,8 +675,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 			timeStamp = m_Tools.CurrentTimestamp();
 
 			int dummy;
-			int nSlotNumber, packetLength, recvdSlotNumber, nChannel, nVersion;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, dummy, nSlotNumber, iPacketNumber, dummy, recvdSlotNumber, m_iOpponentReceivedPackets, 
+			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
+			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, iTimeStampOffset, m_ucaDecodingFrame);
 			
 			//ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
@@ -696,7 +697,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 			//			__LOG("@@@@@@@@@@@@@@ PN: %d, Len: %d",iPacketNumber, ReceivingHeader->GetInformation(PACKETLENGTH));
 
 
-			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {				
+			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {
+				PRT("@@@@@Skipped Packet: %d",iPacketNumber);
 				continue;								
 			}
 
@@ -803,7 +805,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			if (!m_bLiveAudioStreamRunning)
 			{
 #ifdef OPUS_ENABLE
-				nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize, m_saDecodedFrame);
+				nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nPacketDataLength, m_saDecodedFrame);
 				ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
 
 #else
@@ -900,13 +902,14 @@ int CAudioCallSession::GetServiceType()
 	return m_nServiceType;
 }
 
-void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 	int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header)
 {
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
 
 	SendingHeader->SetInformation(AUDIO_NORMAL_PACKET_TYPE, PACKETTYPE);
+	SendingHeader->SetInformation(nHeaderLength, HEADERLENGTH);
 	SendingHeader->SetInformation(packetNumber, PACKETNUMBER);
 	SendingHeader->SetInformation(slotNumber, SLOTNUMBER);
 	SendingHeader->SetInformation(packetLength, PACKETLENGTH);
@@ -917,15 +920,18 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int networkType
 	SendingHeader->SetInformation(networkType, NETWORKTYPE);
 	SendingHeader->SetInformation(channel, CHANNELS);
 
+	SendingHeader->showDetails("@#BUILD");
+
 	SendingHeader->GetHeaderInByteArray(header);
 }
 
-void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header)
 {
 	ReceivingHeader->CopyHeaderToInformation(header);
 
 	packetType = ReceivingHeader->GetInformation(PACKETTYPE);
+	nHeaderLength = ReceivingHeader->GetInformation(HEADERLENGTH);
 	networkType = ReceivingHeader->GetInformation(NETWORKTYPE);
 	slotNumber = ReceivingHeader->GetInformation(SLOTNUMBER);
 	packetNumber = ReceivingHeader->GetInformation(PACKETNUMBER);
@@ -935,4 +941,6 @@ void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &networkTyp
 	channel = ReceivingHeader->GetInformation(CHANNELS);
 	version = ReceivingHeader->GetInformation(VERSIONCODE);
 	timestamp = ReceivingHeader->GetInformation(TIMESTAMP);
+
+	ReceivingHeader->showDetails("@#PARSE");
 }
