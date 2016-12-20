@@ -380,11 +380,12 @@ void CVideoCallSession::SetFirstVideoPacketTime(long long llTimeStamp){
 	m_llTimeStampOfFirstPacketRcvd = llTimeStamp;
 }
 
-void CVideoCallSession::SetFirstFrameEncodingTime(int time){
+void CVideoCallSession::SetFirstFrameEncodingTime(long long time)
+{
 	m_nFirstFrameEncodingTimeDiff = time;
 }
 
-int CVideoCallSession::GetFirstFrameEncodingTime(){
+long long CVideoCallSession::GetFirstFrameEncodingTime(){
 	return m_nFirstFrameEncodingTimeDiff;
 }
 
@@ -428,14 +429,14 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
             OperationForResolutionControl(in_data,in_size);
         }*/
         
-		unsigned int unFrameNumber = m_PacketHeader.GetFrameNumberDirectly(in_data);
+		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.GetFrameNumberDirectly(in_data);
 //		VLOG("#DR# --------------------------> FrameNumber : "+Tools::IntegertoStringConvert(unFrameNumber));
         //printf("PushPacketForMerging--> nFrameNumber = %d\n", unFrameNumber);
         
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
 		{
-			m_ByteRcvInBandSlot += (in_size - PACKET_HEADER_LENGTH);
+			m_ByteRcvInBandSlot += (in_size - m_PacketHeader.GetHeaderLength());
 		}
 		else
 		{
@@ -457,7 +458,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
             
 			m_SlotResetRightRange = m_SlotResetLeftRange + m_nCallFPS;
 
-			m_ByteRcvInBandSlot = in_size - PACKET_HEADER_LENGTH;
+			m_ByteRcvInBandSlot = in_size - m_PacketHeader.GetHeaderLength();
 		}
 
 		m_pVideoPacketQueue->Queue(in_data, in_size);
@@ -661,22 +662,52 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
     
 	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
     
-	CPacketHeader PacketHeader;
+	CVideoHeader PacketHeader;
 
 	if (nMiniPacketType == __BITRATE_CONTROLL_PACKET_TYPE)
 	{
-		PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
+		//PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
+
+		PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE,			//packetType
+									uchVersion,									//VersionCode
+									VIDEO_HEADER_LENGTH,						//HeaderLength
+									0,											//FPSByte
+									m_miniPacketBandCounter,                    //FrameNumber
+									0,											//NetworkType
+									0,											//Device Orientation
+									0,											//QualityLevel
+									0,											//NumberofPacket
+									nMiniPacketType,							//PacketNumber
+									nByteReceivedOrNetworkType,					//TimeStamp
+									0,											//PacketStartingIndex
+									0											//PacketDataLength
+									);
 	}
 	else if (nMiniPacketType == __NETWORK_INFO_PACKET_TYPE)
 	{
-		PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
+		//PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
+
+		PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE,				//packetType
+										uchVersion,								//VersionCode
+										VIDEO_HEADER_LENGTH,					//HeaderLength
+										0,										//FPSByte
+										m_miniPacketBandCounter,                //FrameNumber
+										0,										//NetworkType
+										0,										//Device Orientation
+										0,										//QualityLevel
+										0,										//NumberofPacket
+										nMiniPacketType,						//PacketNumber
+										nByteReceivedOrNetworkType,				//TimeStamp
+										0,										//PacketStartingIndex
+										0										//PacketDataLength
+										);
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
-	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID,1, m_miniPacket,PACKET_HEADER_LENGTH + 1,0);
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID,1, m_miniPacket,VIDEO_HEADER_LENGTH + 1,0);
 }
 
 long long CVideoCallSession::GetShiftedTime()
@@ -778,7 +809,7 @@ bool CVideoCallSession::GetReinitializationStatus()
 void CVideoCallSession::OperationForResolutionControl(unsigned char* in_data, int in_size)
 {
     //Opponent resolution support checking
-    CPacketHeader RcvPakcetHeader;
+    CVideoHeader RcvPakcetHeader;
     int gotResSt = RcvPakcetHeader.GetOpponentResolution(in_data);
     
     if(gotResSt == 2)

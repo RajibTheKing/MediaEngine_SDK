@@ -3,7 +3,8 @@
 //
 
 #include "LiveReceiver.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 #include "Tools.h"
 #include "ThreadTools.h"
 #include "CommonElementsBucket.h"
@@ -35,7 +36,6 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 {
     Locker lock(*m_pLiveReceiverMutex);
     int iUsedLen = 0, nFrames = 0;
-    CPacketHeader packetHeaderObj;
 	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
 	int offset = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
 	int tillIndex = offset;
@@ -103,7 +103,6 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 			//LLG("#IV#    LiveReceiver::PushVideoData , nCurrentFrameLen = " + Tools::IntegertoStringConvert(nCurrentFrameLen));
 //            LOGEF("THeKing--> ^^^^^^^^^^^^^^^^^^^ LiveReceiver::PushVideoData :: 3 - get current frame");
 
-            CPacketHeader packetHeader;
             //int frameNumber = packetHeader.GetFrameNumberDirectly(uchVideoData + (iUsedLen +1) );
 			//LOGEF("THeKing--> receive #####  [%d] Video FrameCounter = %d, FrameLength  = %d, UsedLen: %d iLen = %d\n",j, frameNumber, nCurrentFrameLen + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE, iUsedLen, iLen);
 

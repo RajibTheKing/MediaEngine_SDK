@@ -13,7 +13,7 @@
 
 #define DEFAULT_FIRST_FRAME_RCVD  65000
 
-map<int,long long>g_ArribalTime;
+map<long long,long long>g_ArribalTime;
 long long g_llChangeSum;
 int g_iChangeCounter;
 
@@ -63,7 +63,7 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 	SHARED_PTR_DELETE(m_pEncodedFrameDepacketizerMutex);
 }
 
-int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader)
+int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader)
 {
     bool bIsMiniPacket = (PacketType == MINI_PACKET_TYPE);
     int firstByte = 0;
@@ -76,11 +76,11 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
     }
 #endif
 
-	int frameNumber = packetHeader.getFrameNumber();
+	long long frameNumber = packetHeader.getFrameNumber();
 	int numberOfPackets = packetHeader.getNumberOfPacket();
 	int packetNumber = packetHeader.getPacketNumber();
 	int packetLength = packetHeader.getPacketLength();
-    unsigned int timeStampDiff = packetHeader.getTimeStamp();
+    long long timeStampDiff = packetHeader.getTimeStamp();
 	int orientation = packetHeader.GetDeviceOrientation();
 
 //	if(g_ArribalTime.find(frameNumber) == g_ArribalTime.end()) {
@@ -88,7 +88,7 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 	if(0 == packetNumber) {
 		long long llCurTime = Tools::CurrentTimestamp();
 
-		CLogPrinter_WriteLog(CLogPrinter::DEBUGS,DEPACKETIZATION_LOG ,"#DP~ FN: " + m_Tools.IntegertoStringConvert(frameNumber) + " CurTime: "+ m_Tools.LongLongToString(llCurTime) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff)+" Sh: "+ m_Tools.LongLongToString(m_VideoCallSession->GetShiftedTime())
+		CLogPrinter_WriteLog(CLogPrinter::DEBUGS,DEPACKETIZATION_LOG ,"#DP~ FN: " + m_Tools.getText(frameNumber) + " CurTime: "+ m_Tools.LongLongToString(llCurTime) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff)+" Sh: "+ m_Tools.LongLongToString(m_VideoCallSession->GetShiftedTime())
 															 +"BUF SZ: "+Tools::IntegertoStringConvert(m_BackFrame - m_FrontFrame+1));
 		g_ArribalTime[frameNumber] = llCurTime;
 
@@ -116,13 +116,13 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 		m_VideoCallSession->SetFirstVideoPacketTime(Tools::CurrentTimestamp());
 	}
 
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "FN: " + m_Tools.IntegertoStringConvert(frameNumber) + " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
+//	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "FN: " + m_Tools.getText(frameNumber) + " NOP: "+ m_Tools.IntegertoStringConvert(numberOfPackets)+ " PN: "+ m_Tools.IntegertoStringConvert(packetNumber) + " timedif: "+ m_Tools.IntegertoStringConvert(timeStampDiff));
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Receiving frameNumber: "+ m_Tools.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ m_Tools.IntegertoStringConvert(packetNumber));
+	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Receiving frameNumber: "+ m_Tools.getText(frameNumber) + " :: PacketNo: "+ m_Tools.IntegertoStringConvert(packetNumber));
 
 	int index;
 
-	if(in_size > PACKET_HEADER_LENGTH && frameNumber > m_iMaxFrameNumRecvd)
+	if (in_size > packetHeader.GetHeaderLength() && frameNumber > m_iMaxFrameNumRecvd)
 	{
 		m_iMaxFrameNumRecvd = frameNumber;
 
@@ -226,7 +226,8 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 //							   m_Tools.IntegertoStringConvert(frameNumber)+" == "+m_Tools.IntegertoStringConvert(timeStampDiff));
 
 	m_CVideoPacketBuffer[index].SetNumberOfPackets(numberOfPackets);
-	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber);
+	int iHeaderLength = packetHeader.GetHeaderLength();
+	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber, iHeaderLength);
 
 	return 1;
 }

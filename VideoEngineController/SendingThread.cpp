@@ -1,7 +1,8 @@
 
 #include "SendingThread.h"
 #include "Size.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 #include "CommonElementsBucket.h"
 #include "VideoCallSession.h"
 #include "Controller.h"
@@ -107,7 +108,7 @@ void *CSendingThread::CreateVideoSendingThread(void* param)
 }
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
-int iPrevFrameNumer = 0;
+long long iPrevFrameNumer = 0;
 int iNumberOfPacketsInLastFrame = 0;
 int iNumberOfPacketsActuallySentFromLastFrame = 0;
 #endif
@@ -122,7 +123,8 @@ void CSendingThread::SendingThreadProcedure()
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
 	int fpsSignal, frameNumber, packetNumber;
-	CPacketHeader packetHeader;
+	//CPacketHeader packetHeader;
+	CVideoHeader packetHeader;
 	std::vector<int> vAudioDataLengthVector;
 	int videoPacketSizes[30];
 	int numberOfVideoPackets = 0;
@@ -181,10 +183,10 @@ void CSendingThread::SendingThreadProcedure()
                 
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() session got");
 
-			unsigned char *p = m_EncodedFrame + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
+			/*unsigned char *p = m_EncodedFrame + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
 
 			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
-			if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);
+			if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);*/
 
 			if (frameNumber%iIntervalIFrame == 0 && firstFrame == false)
 			{
@@ -272,7 +274,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 
-				int timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+				long long timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
 
 				int diff = timeNow - m_nTimeStampOfChunck;
 
@@ -377,11 +379,11 @@ void CSendingThread::SendingThreadProcedure()
 				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
 				m_iDataToSendIndex += (packetSize);
 
-				int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
+				long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
 				m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
 
-				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %d\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
+				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %lld\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
 
 				videoPacketSizes[numberOfVideoPackets++] = packetSize;
 			}
@@ -412,14 +414,16 @@ void CSendingThread::SendingThreadProcedure()
 				{  
 					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
 
-					CPacketHeader packetHeader;
-					int frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
+					//CPacketHeader packetHeader;
+					CVideoHeader packetHeader;
+					long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
-					//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d\n", frameNumber, frameNumberHeader, packetSize);
+					//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %lld\n", frameNumber, frameNumberHeader, packetSize);
                     
                     unsigned char *p = m_VideoDataToSend+m_iDataToSendIndex + 1;
                     int nCurrentFrameLen = ((int)p[13] << 8) + p[14];
-                    CPacketHeader   ccc;
+                    //CPacketHeader   ccc;
+					CVideoHeader ccc;
                     ccc.setPacketHeader(p);
                     int nTemp = ccc.getPacketLength();
                     //printf("SendingSide--> nCurrentFrameLen = %d, but packetSize = %d, iDataToSendIndex = %d, gotLengthFromHeader = %d\n", nCurrentFrameLen, packetSize, m_iDataToSendIndex, nTemp); 
@@ -445,7 +449,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 			iNumberOfPackets = packetHeader.getNumberOfPacket();
 
-			pair<int, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
+			pair<long long, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
 
 			if (FramePacketPair.first != iPrevFrameNumer)
 			{

@@ -3,7 +3,8 @@
 //
 
 #include "BitRateController.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 #include "Size.h"
 #include "LogPrinter.h"
 #include "CommonElementsBucket.h"
@@ -101,9 +102,9 @@ void BitRateController::SetEncoder(CVideoEncoder* pcVideEnocder)
 	m_pVideoEncoder = pcVideEnocder;
 }
 
-bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
+bool BitRateController::HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader)
 {
-	m_nOpponentNetworkType = crTempHeader.getTimeStamp();
+	m_nOpponentNetworkType = (int)crTempHeader.getTimeStamp();
 
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "m_iNetworkType = " + m_Tools.IntegertoStringConvert(m_nOpponentNetworkType));
 
@@ -116,7 +117,7 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 }
 
 
-bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType)
+bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType)
 { 
 	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
     {
@@ -131,15 +132,15 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
     //printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
-	m_nOppNotifiedByterate = crTempHeader.getTimeStamp();
+	m_nOppNotifiedByterate = (int)crTempHeader.getTimeStamp();
 
-	if (m_BandWidthRatioHelper.find(crTempHeader.getFrameNumber()) == -1)
+	if (m_BandWidthRatioHelper.find((int)crTempHeader.getFrameNumber()) == -1)
     {
-		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert(crTempHeader.getFrameNumber()));
+		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert((int)crTempHeader.getFrameNumber()));
         
         //printf("TheKing--> Bitrate MiniPacket slot not found\n");
 
-		if (m_nLastSendingSlot <= crTempHeader.getFrameNumber())
+		if (m_nLastSendingSlot <= (int)crTempHeader.getFrameNumber())
         {
             m_bMegSlotCounterShouldStop = false;
         }
@@ -147,11 +148,11 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
         return false;
     }
 
-	int iSlotNumber = crTempHeader.getFrameNumber();
+	int iSlotNumber = (int)crTempHeader.getFrameNumber();
 
     m_nMostRecentRespondedSlotNumber = iSlotNumber;
     m_nBytesSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(iSlotNumber);
-	m_nBytesReceivedInMegaSlotInterval += crTempHeader.getTimeStamp();
+	m_nBytesReceivedInMegaSlotInterval += (int)crTempHeader.getTimeStamp();
 
     NeedToNotifyClient(m_nOppNotifiedByterate);
 
@@ -223,11 +224,11 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
 
     //printf("TheKing--> g_OppNotifiedByteRate = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
 
-	double dRatio = (crTempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt(crTempHeader.getFrameNumber())) * 100.0;
+	double dRatio = ((int)crTempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt((int)crTempHeader.getFrameNumber())) * 100.0;
 
     //printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", dRatio);
 
-	m_BandWidthRatioHelper.eraseAllSmallerEqual(crTempHeader.getFrameNumber());
+	m_BandWidthRatioHelper.eraseAllSmallerEqual((int)crTempHeader.getFrameNumber());
 
     return true;
 }

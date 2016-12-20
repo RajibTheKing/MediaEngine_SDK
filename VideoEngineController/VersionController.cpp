@@ -9,7 +9,8 @@
 #include "VersionController.h"
 #include "Size.h"
 #include "Tools.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 
 CVersionController::CVersionController()
 {
@@ -54,7 +55,7 @@ int  CVersionController::GetCurrentCallVersion()
 
 void CVersionController::SetOpponentVersion(int iVersion)
 {
-    VLOG("#SOV# ########################################SetOpp : " + Tools::IntegertoStringConvert((int)iVersion));
+    //VLOG("#SOV# ########################################SetOpp : " + Tools::IntegertoStringConvert((int)iVersion));
     m_iOppVersion = iVersion;
 }
 

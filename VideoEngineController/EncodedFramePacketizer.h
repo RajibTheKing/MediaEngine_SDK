@@ -8,7 +8,7 @@
 #include "SendingBuffer.h"
 #include "Size.h"
 #include "Tools.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
 #include "VideoHeader.h"
 
 
@@ -33,7 +33,7 @@ private:
 	int m_nPacketSize;
     CVideoCallSession *m_pVideoCallSession;
     
-	CPacketHeader m_cPacketHeader;
+	//CPacketHeader m_cPacketHeader;
     CVideoHeader m_cVideoHeader;
     
 	CSendingBuffer *m_pcSendingBuffer;

@@ -137,7 +137,6 @@ void CVideoDecodingThread::DecodingThreadProcedure()
     long long llTargetTimeStampDiff = -1;
     long long llExpectedTimeOffset = -1;
 
-	CPacketHeader packetHeaderObject;
     CVideoHeader videoHeaderObject;
 
 	while (bDecodingThreadRunning)
