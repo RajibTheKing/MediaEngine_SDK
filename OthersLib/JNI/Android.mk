@@ -96,6 +96,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineUtilities/LockHandler.cpp \
             ../../../videoengine/VideoEngineUtilities/ColorConverter.cpp \
             ../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+            ../../../videoengine/VideoEngineUtilities/HashGenerator.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSession.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSessionListHandler.cpp \
             ../../../videoengine/VideoEngineController/AudioCodec.cpp \
