@@ -4,7 +4,7 @@
 #include "Size.h"
 #include "LogPrinter.h"
 
-#define VLOG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+#define VLOG(a)     //CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 class CPacketHeader {
 public:
