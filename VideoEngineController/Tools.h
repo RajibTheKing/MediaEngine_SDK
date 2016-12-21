@@ -53,19 +53,18 @@ public:
 	void IntToUnsignedCharConversion(int number, unsigned char convertedArray[], int index);
 	int UnsignedCharToIntConversion(unsigned char convertedArray[], int index);
 
-
-
 	void SetMediaUnitVersionInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetMediaUnitVersionFromMediaChunck(unsigned char convertedArray[]);
 
 	void SetMediaUnitHeaderLengthInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetMediaUnitHeaderLengthFromMediaChunck(unsigned char convertedArray[]);
 
+	
 	void SetMediaUnitChunkDurationInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetMediaUnitChunkDurationFromMediaChunck(unsigned char convertedArray[]);
-
-	void SetMediaUnitTimestampInMediaChunck(int number, unsigned char data[]);
-	int GetMediaUnitTimestampInMediaChunck(unsigned char data[]);
+	
+	void SetMediaUnitTimestampInMediaChunck(long long number, unsigned char data[]);
+	long long GetMediaUnitTimestampInMediaChunck(unsigned char data[]);
 
 	void SetAudioBlockSizeInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetAudioBlockSizeFromMediaChunck(unsigned char convertedArray[]);
@@ -91,6 +90,8 @@ public:
 	static int GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
 	static void SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value);
 
+	static long long GetLongLongFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
+	static void SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index, int nLenght, long long value);
 
 private:
 

@@ -357,16 +357,16 @@ void Tools::SetMediaUnitVersionInMediaChunck(int number, unsigned char data[])
 	data[LIVE_MEDIA_UNIT_VERSION_BLOCK_POSITION] = number & 0xFF;
 }
 
-void Tools::SetMediaUnitTimestampInMediaChunck(int number, unsigned char data[])
+void Tools::SetMediaUnitTimestampInMediaChunck(long long number, unsigned char data[])
 {
-	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE, number);
+	SetIntegerLongLongUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE, number);
 }
 
-int Tools::GetMediaUnitTimestampInMediaChunck(unsigned char data[])
+long long Tools::GetMediaUnitTimestampInMediaChunck(unsigned char data[])
 {
-	int number;
+	long long  number;
 
-	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE);
+	number = GetLongLongFromUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE);
 
 	return number;
 }
@@ -508,6 +508,31 @@ int Tools::GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int 
 }
 
 void Tools::SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value)
+{
+	int interval = 8;
+
+	for (int i = 0; i < nLenght; i++)
+	{
+		packetData[index + i] = (value >> (interval*(nLenght - i - 1)) & 0xFF);
+	}
+}
+
+long long Tools::GetLongLongFromUnsignedChar(unsigned char *packetData, int index, int nLenght)
+{
+	long long result = 0;
+	int interval = 8;
+	int startPoint = (nLenght - 1) << 3;
+
+	for (int i = startPoint; i >= 0; i -= interval)
+	{
+		long long tempValue = (packetData[index++] & 0xFF);
+		result +=  tempValue << i;
+	}
+
+	return result;
+}
+
+void Tools::SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index, int nLenght, long long value)
 {
 	int interval = 8;
 
