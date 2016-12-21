@@ -30,7 +30,9 @@ m_pCommonElementBucket(commonElementsBucket)
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
     m_pCalculateEncodingTimeDiff = new CAverageCalculator();
-    
+
+	m_VideoBeautificationer = new CVideoBeautificationer(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth());
+	//m_VideoBeautificationer->GenerateUVIndex(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), 11);
     
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
@@ -333,6 +335,19 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     
                 }
             }*/
+
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) {
+				int iWidth = m_pColorConverter->GetWidth();
+				int iHeight = m_pColorConverter->GetHeight();
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+                m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );
+                m_VideoBeautificationer->IsSkinPixel(m_ucaEncodingFrame);
+#else
+				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+				m_VideoBeautificationer->IsSkinPixel(m_ucaConvertedEncodingFrame);
+#endif
+			}
 
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
