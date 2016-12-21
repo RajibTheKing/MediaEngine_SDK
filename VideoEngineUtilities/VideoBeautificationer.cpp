@@ -42,7 +42,7 @@ void CVideoBeautificationer::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 
 void CVideoBeautificationer::GenerateUVIndex( int iVideoHeight, int iVideoWidth, int dataFormat )
 {
-	LOGE("fahad -->> ----------------- iHeight = %d, iWdith = %d", iVideoHeight, iVideoWidth);
+	//LOGE("fahad -->> ----------------- iHeight = %d, iWdith = %d", iVideoHeight, iVideoWidth);
 	int iHeight = iVideoHeight;
 	int iWidth = iVideoWidth;
 	int yLength = iHeight * iWidth;
@@ -55,7 +55,7 @@ void CVideoBeautificationer::GenerateUVIndex( int iVideoHeight, int iVideoWidth,
 	uIndex = yLength;
 
 
-	LOGE("fahad -->> ----------------- iHeight = %d, iWdith = %d , vIndex = %d, uIndex = %d, yLength = %d", iVideoHeight, iVideoWidth, vIndex, uIndex, yLength);
+	//LOGE("fahad -->> ----------------- iHeight = %d, iWdith = %d , vIndex = %d, uIndex = %d, yLength = %d", iVideoHeight, iVideoWidth, vIndex, uIndex, yLength);
 	int heightIndex = 1;
 	for(int i = 0;  ;)
 	{
@@ -106,7 +106,7 @@ bool CVideoBeautificationer::IsSkinPixel(unsigned char *pixel)
 {
 	int iTotLen = m_nVideoWidth * m_nVideoHeight;
 	int iLen =  m_nVideoWidth * m_nVideoHeight;//(int)(modifData.length / 1.5);
-	int totalYValue = 0;
+	//int totalYValue = 0;
 	for(int i=0; i<iLen; i++)
 	{
 		int yVal = pixel[i]  & 0xFF;
@@ -117,22 +117,18 @@ bool CVideoBeautificationer::IsSkinPixel(unsigned char *pixel)
 		{
 			pixel[i] = m_pBluredImage[i];
 		}
-		else
-		{
 
-		}
-
-		totalYValue += yVal;
-		MakePixelBright(&pixel[i]);
+		//totalYValue += yVal;
+		//MakePixelBright(&pixel[i]);
 	}
 
 
 
-	int m_AverageValue = totalYValue / iLen;
+	//int m_AverageValue = totalYValue / iLen;
 
-	SetBrighteningValue(m_AverageValue , 0/*int brightnessPrecision*/);
+	//SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
 
-	//IncreaseTemperatureOfFrame(pixel, m_nVideoWidth, m_nVideoHeight, 20);
+	IncreaseTemperatureOfFrame(pixel, m_nVideoHeight, m_nVideoWidth, 4);
 
 	return true;
 }
@@ -230,17 +226,18 @@ void CVideoBeautificationer::MakeFrameBright(unsigned char *convertingData, int 
 
 }
 
-void CVideoBeautificationer::IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, int nThreshold)
+void CVideoBeautificationer::IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth,
+														unsigned char nThreshold)
 {
 	int startUIndex = iVideoHeight * iVideoWidth;
-	int uvLen = (startUIndex / 4);
-	int startVIndex = startUIndex +  uvLen;
-	for(int i=startUIndex; i <uvLen; i++)
+	int uLen = startUIndex + (startUIndex / 4);
+	int vLen = startUIndex + (startUIndex / 2);
+	for(int i=startUIndex; i <uLen; i++)
 	{
 		convertingData[i] = convertingData[i] - nThreshold;
 	}
 
-	for(int i=startVIndex; i <uvLen; i++)
+	for(int i=uLen; i <vLen; i++)
 	{
 		convertingData[i] = convertingData[i] + nThreshold;
 	}

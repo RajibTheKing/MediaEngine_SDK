@@ -73,7 +73,6 @@ private:
 	int cyb, cyg, cyr;
 	
 	int m_Multiplication[481][641];
-	int m_TemparetureThresHold;
 
 	CVideoBeautificationer *m_VideoBeautificationer;
 

@@ -31,7 +31,7 @@ public:
 	void SetBrightnessPrecision(int nPrecision);
 	void SetBlurScale(int nScale);
 	void MakeFrameBright(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, int nPrecision);
-	void IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, int nThreshold);
+	void IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, unsigned char  nThreshold);
 
 	void boxesForGauss(float sigma, int n);
 	void GaussianBlur_4thApproach(unsigned char *scl , unsigned char *tcl, int h, int w, float r);
