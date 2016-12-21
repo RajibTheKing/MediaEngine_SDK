@@ -76,6 +76,8 @@ void CVideoEncodingThread::ResetVideoEncodingThread(BitRateController *pBitRateC
 
 void CVideoEncodingThread::StopEncodingThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::StopEncodingThread called");
+
 	//if (pInternalThread.get())
 	{
 
@@ -88,6 +90,8 @@ void CVideoEncodingThread::StopEncodingThread()
 	}
 
 	//pInternalThread.reset();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::StopEncodingThread Encoding Thread STOPPED");
 }
 
 void CVideoEncodingThread::StartEncodingThread()
@@ -208,12 +212,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
         {
 			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, /*SIZE*/ 0, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);
 
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::EncodingThreadProcedure() Negotiation uncomplete");
+
             toolsObject.SOSleep(20);
             continue;
         }
         
 		if (m_pEncodingBuffer->GetQueueSize() == 0)
 		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::EncodingThreadProcedure() got NOTHING for encoding");
+
 //			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time buffer size 0");
 			if( !m_pVideoCallSession->GetVersionController()->IsFirstVideoPacetReceived() && m_bIsCheckCall == false) {
 //			toolsObject.SOSleep(10000);
@@ -254,7 +262,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			if (! m_pVideoCallSession->GetFPSController()->IsProcessableFrame() && m_bIsCheckCall == false)
 			{
-				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() NOTHING for encoding method");
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() not processable for FPS");
 
 				toolsObject.SOSleep(10);
 
@@ -400,6 +408,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 }
                 m_FpsCounter = 0;
             }
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::EncodingThreadProcedure() Sending for packetization nENCODEDFrameSize " + m_Tools.getText(nENCODEDFrameSize));
             
 			//if (nENCODEDFrameSize > 0)
 			{

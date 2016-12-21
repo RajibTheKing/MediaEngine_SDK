@@ -55,6 +55,8 @@ CSendingThread::~CSendingThread()
 
 void CSendingThread::StopSendingThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::StopSendingThread() called");
+
 	//if (pInternalThread.get())
 	{
 		bSendingThreadRunning = false;
@@ -64,6 +66,8 @@ void CSendingThread::StopSendingThread()
 	}
 
 	//pInternalThread.reset();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::StopSendingThread() Sending Thread STOPPPED");
 }
 
 void CSendingThread::StartSendingThread()
@@ -442,7 +446,6 @@ void CSendingThread::SendingThreadProcedure()
         }
 else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
-        CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() came for CALL !!!!!!!");
 			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
 			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
 
@@ -508,7 +511,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 				m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
-
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() came for CALL !!!!!!!");
 				m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), 2, m_EncodedFrame, packetSize,0);
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
 #endif

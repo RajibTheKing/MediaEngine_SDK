@@ -52,6 +52,8 @@ void CVideoDecodingThread::InstructionToStop()
 
 void CVideoDecodingThread::StopDecodingThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::StopDecodingThread called");
+
 	//if (pDepacketizationThread.get())
 	{
 		bDecodingThreadRunning = false;
@@ -62,6 +64,8 @@ void CVideoDecodingThread::StopDecodingThread()
 		}
 	}
 	//pDepacketizationThread.reset();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::StopDecodingThread Decoding Thread STOPPED");
 }
 void CVideoDecodingThread::Reset()
 {
@@ -144,6 +148,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		if(m_pVideoCallSession->isLiveVideoStreamRunning())
 		{
 			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got NOTHING for decoding");
 				toolsObject.SOSleep(10);
 			}
 			else
@@ -199,6 +204,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 		if( -1 == m_pVideoCallSession->GetShiftedTime())
 		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Not started transmission");
 			toolsObject.SOSleep(10);
 			continue;
 		}
@@ -248,6 +254,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		}
 		else
 		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() GOT FRAME FOR DDDDDDDDDDDDDdecoding method");
+
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
             //printf("Decoding end--> fn = %d\n", nFrameNumber);
             
@@ -338,6 +346,9 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
+
 	printf("#V### Decoded Size -> %d +++E.Size:  %d, frameNumber = %d\n",m_decodedFrameSize,(int)frameSize, nFramNumber);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
     
