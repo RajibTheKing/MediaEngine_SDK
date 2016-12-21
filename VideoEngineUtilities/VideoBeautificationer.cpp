@@ -22,7 +22,7 @@ m_nBrightnessPrecision(0)
 	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
 
 
-	boxesForGauss(1.5, 3);
+	boxesForGauss(1, 3);
 }
 
 CVideoBeautificationer::~CVideoBeautificationer()
