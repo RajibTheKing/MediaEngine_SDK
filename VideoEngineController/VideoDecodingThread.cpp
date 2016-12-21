@@ -9,7 +9,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern map<int,long long>g_ArribalTime;
+extern map<long long,long long>g_ArribalTime;
 
 #define MINIMUM_DECODING_TIME_FOR_FORCE_FPS 35
 
