@@ -95,7 +95,6 @@ LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_D
 LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineUtilities/LockHandler.cpp \
             ../../../videoengine/VideoEngineUtilities/ColorConverter.cpp \
-            ../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
             ../../../videoengine/VideoEngineUtilities/HashGenerator.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSession.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSessionListHandler.cpp \
@@ -153,7 +152,10 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
 			../../../videoengine/VideoEngineController/AudioHeader.cpp \
 			../../../videoengine/VideoEngineController/VideoHeader.cpp \
+			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
+			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
 
+			
 
 
 include $(BUILD_STATIC_LIBRARY)

@@ -6,6 +6,7 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "../VideoEngineController/Size.h"
+#include "VideoBeautificationer.h"
 
 #if _MSC_VER > 1000
 #pragma once
@@ -72,6 +73,9 @@ private:
 	int cyb, cyg, cyr;
 	
 	int m_Multiplication[481][641];
+	int m_TemparetureThresHold;
+
+	CVideoBeautificationer *m_VideoBeautificationer;
 
 	SmartPointer<CLockHandler> m_pColorConverterMutex;
 };

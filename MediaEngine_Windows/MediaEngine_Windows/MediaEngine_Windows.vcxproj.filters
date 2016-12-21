@@ -183,10 +183,10 @@
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp">
+    <ClCompile Include="..\..\VideoEngineController\VideoHeader.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\VideoHeader.cpp">
+    <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
@@ -392,10 +392,10 @@
     <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\LiveStreamingHeader.h">
+    <ClInclude Include="..\..\VideoEngineController\VideoHeader.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\VideoHeader.h">
+    <ClInclude Include="..\..\VideoEngineController\LiveStreamingHeader.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>
