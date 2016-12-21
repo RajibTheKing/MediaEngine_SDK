@@ -4,7 +4,7 @@
 #include "LogPrinter.h"
 #include "Globals.h"
 #include "VideoCallSession.h"
-#include "HashGenerator.h"
+
 
 #define USE_HASH_GENERATOR_TO_PACKETIZE
 
@@ -22,11 +22,19 @@ m_pcCommonElementsBucket(pcSharedObject)
     
     m_pVideoCallSession = pVideoCallSession;
     llSendingquePrevTime = 0;
+    
+    m_pHashGenerator = new CHashGenerator();
+    m_pHashGenerator->SetSeedNumber(m_Tools.CurrentTimestamp() % SEED_MOD_VALUE);
+    
 }
 
 CEncodedFramePacketizer::~CEncodedFramePacketizer()
 {
-
+    if(m_pHashGenerator != NULL)
+    {
+        delete m_pHashGenerator;
+        m_pHashGenerator = NULL;
+    }
 }
 
 int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy)
@@ -155,8 +163,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
     {
         int iStartIndex;
 #ifdef USE_HASH_GENERATOR_TO_PACKETIZE
-        CHashGenerator hashGenerator;
-        nNumberOfPackets = hashGenerator.CalculateNumberOfPackets(iFrameNumber, unLength);
+        nNumberOfPackets = m_pHashGenerator->CalculateNumberOfPackets(iFrameNumber, unLength);
         iStartIndex = 0;
 #endif
         
@@ -164,7 +171,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
         {
 #ifdef USE_HASH_GENERATOR_TO_PACKETIZE
-            m_nPacketSize = hashGenerator.GetHashedPacketSize(iFrameNumber, nPacketNumber);
+            m_nPacketSize = m_pHashGenerator->GetHashedPacketSize(iFrameNumber, nPacketNumber);
 #endif
             
             if (nPacketizedDataLength + m_nPacketSize > unLength)

@@ -202,5 +202,4 @@ void CAudioPacketHeader::showDetails(string prefix)
 		m_arrllInformation[8],
 		m_arrllInformation[9],
 		m_arrllInformation[10]);*/
-    
 }

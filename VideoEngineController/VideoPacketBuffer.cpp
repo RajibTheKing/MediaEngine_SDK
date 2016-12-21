@@ -46,19 +46,9 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsi
 #ifdef USE_HASH_GENERATOR_TO_DEPACKETIZE
         CVideoHeader packetHeader;
         packetHeader.setPacketHeader(pucVideoPacketData);
-        packetHeader.ShowDetails("ReceivingSide: ");
-        CHashGenerator hashGenerator;
+        //packetHeader.ShowDetails("ReceivingSide: ");
         
-        /*
-        int sum = 0;
-        for(int i=0;i<nPacketNumber;i++)
-        {
-            sum+=hashGenerator.GetHashedPacketSize(m_nFrameNumber, i);
-        }
-        printf("nPacketDataLength = %d\n", nPacketDataLength);
-        */
-        
-		memcpy(m_ucaFrameData + packetHeader.GetPacketStartingIndex(), pucVideoPacketData + packetHeader.GetHeaderLength(), nPacketDataLength);
+		memcpy(m_ucaFrameData + packetHeader.GetPacketStartingIndex(), pucVideoPacketData + iHeaderLength, nPacketDataLength);
 #else
         
         memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + iHeaderLength, nPacketDataLength);

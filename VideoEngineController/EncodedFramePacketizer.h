@@ -10,7 +10,7 @@
 #include "Tools.h"
 //#include "PacketHeader.h"
 #include "VideoHeader.h"
-
+#include "HashGenerator.h"
 
 class CVideoCallSession;
 
@@ -40,6 +40,7 @@ private:
 	CCommonElementsBucket* m_pcCommonElementsBucket;
 	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     long long llSendingquePrevTime;
+    CHashGenerator *m_pHashGenerator;
 
 };
 
