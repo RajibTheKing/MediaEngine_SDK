@@ -504,7 +504,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 			m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
 			m_iSlotID %= SendingHeader->GetFieldCapacity(SLOTNUMBER);
-
+			PRT("@#BUILD -----------> %d",m_iPacketNumber);
 			BuildAndGetHeaderInArray(m_iNextPacketType, m_AudioHeadersize, 0, m_iSlotID, m_iPacketNumber, nEncodedFrameSize,
 				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaEncodedFrame[1]);
 
@@ -698,7 +698,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 
 			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {
-				//PRT("@@@@@Skipped Packet: %d",iPacketNumber);
+				PRT("@@@@########Skipped Packet: %d",iPacketNumber);
 				continue;								
 			}
 
@@ -923,6 +923,10 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLeng
 	SendingHeader->showDetails("@#BUILD");
 
 	SendingHeader->GetHeaderInByteArray(header);
+
+//	CAudioPacketHeader hi;
+//	hi.CopyHeaderToInformation(header);
+//	hi.showDetails("@#BUILD Two: ");
 }
 
 void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
