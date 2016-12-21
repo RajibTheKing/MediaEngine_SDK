@@ -698,7 +698,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 
 			if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {
-				PRT("@@@@@Skipped Packet: %d",iPacketNumber);
+				//PRT("@@@@@Skipped Packet: %d",iPacketNumber);
 				continue;								
 			}
 

@@ -178,7 +178,7 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 
 void CAudioPacketHeader::showDetails(string prefix)
 {
-	PRT("%s #-> "
+	/*PRT("%s #-> "
 		"PT = %lld "
 		"HL = %lld "
 		"NT = %lld "
@@ -201,5 +201,6 @@ void CAudioPacketHeader::showDetails(string prefix)
 		m_arrllInformation[7],
 		m_arrllInformation[8],
 		m_arrllInformation[9],
-		m_arrllInformation[10]);
+		m_arrllInformation[10]);*/
+    
 }
