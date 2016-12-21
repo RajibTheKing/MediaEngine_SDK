@@ -397,7 +397,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
 #endif
 	Tools toolsObject;
-	int nEncodingFrameSize, nEncodedFrameSize, encodingTime = 0;
+	int nEncodingFrameSize, nEncodedFrameSize;
+
+	long long encodingTime = 0;
 	long long timeStamp;
 	double avgCountTimeStamp = 0;
 	int countFrame = 0;
@@ -646,7 +648,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 	//toolsObject.SOSleep(1000);
 	long long llLastTime = -1, llDiffTimeNow = -1;
-	long long iTimeStampOffset = 0;
+	long long llTimeStampOffset = 0;
 	int TempOffset = 0;
 
 	while (m_bAudioDecodingThreadRunning)
@@ -677,10 +679,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 			int dummy;
 			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, iTimeStampOffset, m_ucaDecodingFrame);
+				nChannel, nVersion, llTimeStampOffset, m_ucaDecodingFrame);
 			
 			//ReceivingHeader->CopyHeaderToInformation(m_ucaDecodingFrame);
-			//iTimeStampOffset = ReceivingHeader->GetInformation(TIMESTAMP);
+			//llTimeStampOffset = ReceivingHeader->GetInformation(TIMESTAMP);
 			//            ALOG("#V# PacketNumber: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(PACKETNUMBER))
 			//                    + " #V# SLOTNUMBER: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(SLOTNUMBER))
 			//                    + " #V# NUMPACKETRECVD: "+ m_Tools.IntegertoStringConvert(ReceivingHeader->GetInformation(NUMPACKETRECVD))
@@ -742,21 +744,21 @@ void CAudioCallSession::DecodingThreadProcedure()
 				if (-1 == m_llDecodingTimeStampOffset)
 				{
 					m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
-					m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - iTimeStampOffset;
+					m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - llTimeStampOffset;
 				}
 				else
 				{
 					llNow = m_Tools.CurrentTimestamp();
 					llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
-					llWaitingTime = iTimeStampOffset - llExpectedEncodingTimeStamp;
+					llWaitingTime = llTimeStampOffset - llExpectedEncodingTimeStamp;
 
-					if( llExpectedEncodingTimeStamp -  __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> iTimeStampOffset ) {
-						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
+					if( llExpectedEncodingTimeStamp -  __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> llTimeStampOffset ) {
+						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, llTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
 						continue;
 					}
 
 
-					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < iTimeStampOffset)
+					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llTimeStampOffset)
 					{
 						m_Tools.SOSleep(1);
 						llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
@@ -768,10 +770,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			llNow = m_Tools.CurrentTimestamp();
 
-			__LOG("#!@@@@@@@@@@@@@@@@@--> #W FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__, iTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow - llLastDecodedTime);
+			__LOG("#!@@@@@@@@@@@@@@@@@--> #W FrameNumber: %d [%lld]\t\tAudio Waiting Time: %lld  Now: %lld  DIF: %lld[%lld]", iPacketNumber, llTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__, llTimeStampOffset - llLastDecodedFrameEncodedTimeStamp, llNow - llLastDecodedTime);
 
 			llLastDecodedTime = llNow;
-			llLastDecodedFrameEncodedTimeStamp = iTimeStampOffset + TempOffset;
+			llLastDecodedFrameEncodedTimeStamp = llTimeStampOffset + TempOffset;
 
 			if (nSlotNumber != m_iCurrentRecvdSlotID)
 			{
