@@ -234,12 +234,12 @@ void CVideoBeautificationer::IncreaseTemperatureOfFrame(unsigned char *convertin
 	int vLen = startUIndex + (startUIndex / 2);
 	for(int i=startUIndex; i <uLen; i++)
 	{
-		convertingData[i] = convertingData[i] - nThreshold;
+		convertingData[i] = getMax(convertingData[i] - nThreshold, 0);
 	}
 
 	for(int i=uLen; i <vLen; i++)
 	{
-		convertingData[i] = convertingData[i] + nThreshold;
+		convertingData[i] = getMin(convertingData[i] + nThreshold, 255);
 	}
 }
 
