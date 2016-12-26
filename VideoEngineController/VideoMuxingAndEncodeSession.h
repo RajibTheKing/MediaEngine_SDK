@@ -9,7 +9,6 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 
-
 #define BMP_HEADER_SIZE 54
 
 #define FINAL_ENCODED_FRAME_BUFFER_LEN 1024*1024*10

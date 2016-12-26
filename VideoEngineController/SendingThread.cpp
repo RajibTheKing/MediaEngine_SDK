@@ -182,7 +182,7 @@ void CSendingThread::SendingThreadProcedure()
             
             //printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
             
-            if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_VIEWER_CALLEE )
             {
 
 			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld", lFriendID);

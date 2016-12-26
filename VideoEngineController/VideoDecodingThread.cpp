@@ -145,7 +145,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-		if(m_pVideoCallSession->isLiveVideoStreamRunning())
+		if (m_pVideoCallSession->isLiveVideoStreamRunning() && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got NOTHING for decoding");
