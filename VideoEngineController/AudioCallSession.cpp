@@ -663,7 +663,7 @@ void CAudioCallSession::SendAudioData()
 		}
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
-#ifndef LOCAL_SERVER_LIVE
+#ifndef NO_CONNECTIVITY
 			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, m_nCompressedFrameSize + m_AudioHeadersize + 1, 0);	//Need to check send type.
 #else
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_AudioHeadersize + 1, m_ucaCompressedFrame);
@@ -683,7 +683,11 @@ void CAudioCallSession::SendAudioData()
 	}
 	else
 	{
+#ifndef NO_CONNECTIVITY
 		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, m_nCompressedFrameSize + m_AudioHeadersize + 1, 0);
+#else
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_AudioHeadersize + 1, m_ucaCompressedFrame);
+#endif
 
 #ifdef  __DUPLICATE_AUDIO__
 #ifndef MULTIPLE_HEADER

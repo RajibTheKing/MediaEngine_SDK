@@ -286,7 +286,7 @@ void CSendingThread::SendingThreadProcedure()
 				{
 					if (m_bInterruptHappened == false)
 					{
-#ifndef LOCAL_SERVER_LIVE
+#ifndef NO_CONNECTIVITY
 						m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 #else
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);

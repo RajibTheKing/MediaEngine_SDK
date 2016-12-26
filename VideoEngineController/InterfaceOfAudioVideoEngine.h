@@ -15,7 +15,7 @@
 #define SERVICE_TYPE_SELF_CALL 13
 #define SERVICE_TYPE_SELF_STREAM 14
 
-#define LOCAL_SERVER_LIVE
+#define NO_CONNECTIVITY
 
 typedef long long IPVLongType;
 
