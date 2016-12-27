@@ -1153,7 +1153,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 			long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
 
-			LOGE("llCurrentFrameRelativeTime = %lld, llWaitingTime = %lld, iPacketNumber = %d, nPacketType = %d m_iRole = %d\n", llCurrentFrameRelativeTime, llWaitingTime, iPacketNumber, nPacketType, m_iRole);
+			LOGE("llCurrentFrameRelativeTime = %lld, llWaitingTime = %lld, iPacketNumber = %d, nPacketType = %d m_iRole = %d Now: %lld\n", llCurrentFrameRelativeTime, llWaitingTime, iPacketNumber, nPacketType, m_iRole, llNow % __TIMESTUMP_MOD__);
 
 			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 			{
