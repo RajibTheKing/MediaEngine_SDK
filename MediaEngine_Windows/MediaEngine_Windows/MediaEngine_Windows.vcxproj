@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\VideoEngineController\Aac.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
@@ -205,6 +206,7 @@
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\VideoEngineController\Aac.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
