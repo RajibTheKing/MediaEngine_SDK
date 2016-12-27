@@ -21,7 +21,7 @@
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
-#define __LIVE_STREAMIN_SELF__
+//#define __LIVE_STREAMIN_SELF__
 
 //#define __RANDOM_MISSING_PACKET__
 
