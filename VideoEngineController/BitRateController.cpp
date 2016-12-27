@@ -3,7 +3,8 @@
 //
 
 #include "BitRateController.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 #include "Size.h"
 #include "LogPrinter.h"
 #include "CommonElementsBucket.h"
@@ -101,9 +102,9 @@ void BitRateController::SetEncoder(CVideoEncoder* pcVideEnocder)
 	m_pVideoEncoder = pcVideEnocder;
 }
 
-bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
+bool BitRateController::HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader)
 {
-	m_nOpponentNetworkType = crTempHeader.getTimeStamp();
+	m_nOpponentNetworkType = (int)crTempHeader.getTimeStamp();
 
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "m_iNetworkType = " + m_Tools.IntegertoStringConvert(m_nOpponentNetworkType));
 
@@ -116,8 +117,9 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader)
 }
 
 
-bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType)
-{ 
+bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType)
+{
+    crTempHeader.ShowDetails("HandleBitrateMiniPacket: ");
 	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
     {
 //    double __ratio = 100.00 * crTempHeader.getTimeStamp() * 8.00 /  m_pVideoEncoder->GetBitrate();
@@ -131,15 +133,15 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
     //printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
-	m_nOppNotifiedByterate = crTempHeader.getTimeStamp();
+	m_nOppNotifiedByterate = (int)crTempHeader.getTimeStamp();
 
-	if (m_BandWidthRatioHelper.find(crTempHeader.getFrameNumber()) == -1)
+	if (m_BandWidthRatioHelper.find((int)crTempHeader.getFrameNumber()) == -1)
     {
-		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert(crTempHeader.getFrameNumber()));
+		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert((int)crTempHeader.getFrameNumber()));
         
         //printf("TheKing--> Bitrate MiniPacket slot not found\n");
 
-		if (m_nLastSendingSlot <= crTempHeader.getFrameNumber())
+		if (m_nLastSendingSlot <= (int)crTempHeader.getFrameNumber())
         {
             m_bMegSlotCounterShouldStop = false;
         }
@@ -147,11 +149,11 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
         return false;
     }
 
-	int iSlotNumber = crTempHeader.getFrameNumber();
+	int iSlotNumber = (int)crTempHeader.getFrameNumber();
 
     m_nMostRecentRespondedSlotNumber = iSlotNumber;
     m_nBytesSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(iSlotNumber);
-	m_nBytesReceivedInMegaSlotInterval += crTempHeader.getTimeStamp();
+	m_nBytesReceivedInMegaSlotInterval += (int)crTempHeader.getTimeStamp();
 
     NeedToNotifyClient(m_nOppNotifiedByterate);
 
@@ -159,7 +161,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
     {
         double dMegaRatio =  (m_nBytesReceivedInMegaSlotInterval *1.0) / (1.0 * m_nBytesSendInMegaSlotInverval) * 100.0;
 
-       // printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
+        //printf("Theking--> &&&&&&&& Slot = %d, TotalSend = %d, TotalRecv = %d, MegaRatio = %lf\n", m_nSlotIntervalCounter, m_nBytesSendInMegaSlotInverval, m_nBytesReceivedInMegaSlotInterval,dMegaRatio);
 
         long long llTimeStampForMiniPkt = m_TimeDiffMapHelper[iSlotNumber];
 
@@ -176,7 +178,7 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
                       +" SlotNo: " + Tools::IntegertoStringConvert(iSlotNumber) + " MiniPkt time delley: "+ m_Tools.IntegertoStringConvert(nTimeDifferenceBetweenMiniPackets);
 
         //CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, sMsg);
-        //LOGE( "%s", sMsg.c_str());
+        printf( "%s", sMsg.c_str());
 
         if(nNeedToChange == BITRATE_CHANGE_DOWN)
         {
@@ -223,11 +225,11 @@ bool BitRateController::HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int
 
     //printf("TheKing--> g_OppNotifiedByteRate = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
 
-	double dRatio = (crTempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt(crTempHeader.getFrameNumber())) * 100.0;
+	double dRatio = ((int)crTempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt((int)crTempHeader.getFrameNumber())) * 100.0;
 
     //printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", dRatio);
 
-	m_BandWidthRatioHelper.eraseAllSmallerEqual(crTempHeader.getFrameNumber());
+	m_BandWidthRatioHelper.eraseAllSmallerEqual((int)crTempHeader.getFrameNumber());
 
     return true;
 }
@@ -301,7 +303,8 @@ void BitRateController::NotifyEncodedFrame(int &nrFrameSize)
             m_BandWidthRatioHelper.insert(iRatioHelperIndex,  m_nBytesSendInSlotInverval);
             
             
-            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval));
+            string sMsg = "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval);
+            printf("%s\n", sMsg.c_str());
 
             
             m_TimeDiffMapHelper[iRatioHelperIndex] =  m_Tools.CurrentTimestamp();

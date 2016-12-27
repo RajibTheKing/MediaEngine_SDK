@@ -37,6 +37,7 @@ CVideoDepacketizationThread::~CVideoDepacketizationThread()
 
 void CVideoDepacketizationThread::StopDepacketizationThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::StopDepacketizationThread() called");
 
 	//if (pDepacketizationThread.get())
 	{
@@ -48,6 +49,8 @@ void CVideoDepacketizationThread::StopDepacketizationThread()
 			m_Tools.SOSleep(5);
 		}
 	}
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::StopDepacketizationThread() Depacketization Thread STOPPED");
 
 	//pDepacketizationThread.reset();
 }
@@ -114,7 +117,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 		if (0 == queSize && 0 == miniPacketQueueSize)
 		{
-			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for DDDDepacketization method");
 
 			toolsObject.SOSleep(10);
 
@@ -123,9 +126,13 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 		if (miniPacketQueueSize != 0) {
 			frameSize = m_pMiniPacketQueue->DeQueue(m_PacketToBeMerged);
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOT MMMMinipacket");
 		}
 		else if (queSize > 0) {
 			frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT PACKET");
 		}
 
 //		VLOG("#VR# CallVersion: " + Tools::IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion())
@@ -145,11 +152,17 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		if (m_RcvdPacketHeader.GetPacketType() == __BITRATE_CONTROLL_PACKET_TYPE) {                    /* Opponent response of data receive. */
 //			VLOG("__BITRATE_CONTROLL_PACKET_TYPE");
 			m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader, m_pVideoCallSession->GetServiceType());
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT BITRATE PACKET");
+
 			toolsObject.SOSleep(1);
 			continue;
 		}
 		else if (m_RcvdPacketHeader.GetPacketType() == __NETWORK_INFO_PACKET_TYPE) {        /* Opponent Network type */
 			m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT NETWORKKKKK packet");
+
 			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,
 									   "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");
 			toolsObject.SOSleep(1);
@@ -159,6 +172,8 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
         if(m_RcvdPacketHeader.GetPacketType() == __NEGOTIATION_PACKET_TYPE)
         {
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT NEgotiationNNNNN packet");
+
 			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
 			int nOpponentVideoCallQualityLevel = m_RcvdPacketHeader.GetVideoQualityLevel();
 
@@ -211,6 +226,8 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 		if( !m_pVersionController->IsFirstVideoPacetReceived() &&  __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())
 			m_pVersionController->NotifyFirstVideoPacetReceived();
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT VVVVVVVVIDEO data packet");
         
         
 //        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,

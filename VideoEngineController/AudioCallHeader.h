@@ -1,3 +1,4 @@
+#if 0
 #include "Tools.h"
 #include "Size.h"
 
@@ -72,3 +73,4 @@ public:
 	bool IsPacketTypeSupported();
 
 };
+#endif

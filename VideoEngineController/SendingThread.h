@@ -32,7 +32,7 @@ public:
 private:
 	int GetSleepTime();
 
-	int m_nTimeStampOfChunck;
+	long long m_nTimeStampOfChunck;
 	int m_nTimeStampOfChunckSend;
 
 	CVideoCallSession* m_pVideoCallSession;

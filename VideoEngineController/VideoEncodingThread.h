@@ -10,6 +10,7 @@
 #include "EncodedFrameDepacketizer.h"
 #include "EncodedFramePacketizer.h"
 #include "AverageCalculator.h"
+#include "../VideoEngineUtilities/VideoBeautificationer.h"
 
 #include <thread>
 
@@ -78,6 +79,7 @@ private:
     
     CAverageCalculator *m_pCalculatorEncodeTime;
     CAverageCalculator *m_pCalculateEncodingTimeDiff;
+	CVideoBeautificationer *m_VideoBeautificationer;
     
     long long m_FPS_TimeDiff;
     int m_FpsCounter;

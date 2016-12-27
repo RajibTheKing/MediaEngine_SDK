@@ -95,6 +95,7 @@ LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_D
 LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineUtilities/LockHandler.cpp \
             ../../../videoengine/VideoEngineUtilities/ColorConverter.cpp \
+            ../../../videoengine/VideoEngineUtilities/HashGenerator.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSession.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSessionListHandler.cpp \
             ../../../videoengine/VideoEngineController/AudioCodec.cpp \
@@ -138,18 +139,21 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/VersionController.cpp \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckBuffer.cpp \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckThread.cpp \
-			../../../videoengine/VideoEngineController/AudioLiveHeader.cpp \
+			../../../videoengine/VideoEngineController/AudioPacketHeader.cpp \
 			../../../videoengine/VideoEngineController/AudioFileCodec.cpp \
 			../../../videoengine/VideoEngineController/Noise.cpp \
 			../../../videoengine/VideoEngineController/Voice.cpp \
 			../../../videoengine/VideoEngineController/Gain.cpp \
 			../../../videoengine/VideoEngineController/Echo.cpp \
+			../../../videoengine/VideoEngineUtilities/VideoBeautificationer.cpp \
 			../../../videoengine/VideoEngineController/LiveReceiver.cpp \
 			../../../videoengine/VideoEngineController/LiveVideoDecodingQueue.cpp \
 			../../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
 			../../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
-			../../../videoengine/VideoEngineController/AudioCallHeader.cpp \
+			../../../videoengine/VideoEngineController/VideoHeader.cpp \
+			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
 			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+
 			
 
 

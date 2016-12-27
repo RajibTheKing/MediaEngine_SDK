@@ -1,1 +1,1 @@
-copy "..\libs\armeabi-v7a\libRingIDSDK.so" "..\..\..\..\..\..\..\..\android-rudpclient3\app\src\main\jniLibs\armeabi-v7a\libRingIDSDK.so"
+copy "..\libs\armeabi-v7a\libRingIDSDK.so" "..\..\..\..\jniLibs\armeabi-v7a\libRingIDSDK.so"

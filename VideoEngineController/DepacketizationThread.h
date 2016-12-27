@@ -6,7 +6,8 @@
 #include "SmartPointer.h"
 #include "LogPrinter.h"
 #include "VideoPacketQueue.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 #include "BitRateController.h"
 #include "EncodedFrameDepacketizer.h"
 #include "VersionController.h"
@@ -41,7 +42,7 @@ private:
 	CVideoPacketQueue *m_pVideoPacketQueue;						
 	CVideoPacketQueue *m_pRetransVideoPacketQueue;				
 	CVideoPacketQueue *m_pMiniPacketQueue;						
-	CPacketHeader m_RcvdPacketHeader;							
+	CVideoHeader m_RcvdPacketHeader;							
 	BitRateController *m_BitRateController;						
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
 	CCommonElementsBucket* m_pCommonElementsBucket;				

@@ -10,7 +10,8 @@
 #include "Tools.h"
 #include "VideoEncoder.h"
 #include "SynchronizedMap.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 
 class CCommonElementsBucket;
 
@@ -25,8 +26,13 @@ public:
     void SetSharedObject(CCommonElementsBucket* pcSharedObject);
 	void SetEncoder(CVideoEncoder* pcVideEnocder);
 
-	bool HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType);
-	bool HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader);
+	//bool HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType);
+	//bool HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader);
+
+	bool HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType);
+	bool HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader);
+
+
     bool UpdateBitrate();
     void NotifyEncodedFrame(int &nrFrameSize);
 	void SetInitialBitrate();

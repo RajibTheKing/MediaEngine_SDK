@@ -8,7 +8,9 @@
 #include "SendingBuffer.h"
 #include "Size.h"
 #include "Tools.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
+#include "HashGenerator.h"
 
 class CVideoCallSession;
 
@@ -31,11 +33,14 @@ private:
 	int m_nPacketSize;
     CVideoCallSession *m_pVideoCallSession;
     
-	CPacketHeader m_cPacketHeader;
+	//CPacketHeader m_cPacketHeader;
+    CVideoHeader m_cVideoHeader;
+    
 	CSendingBuffer *m_pcSendingBuffer;
 	CCommonElementsBucket* m_pcCommonElementsBucket;
 	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     long long llSendingquePrevTime;
+    CHashGenerator *m_pHashGenerator;
 
 };
 

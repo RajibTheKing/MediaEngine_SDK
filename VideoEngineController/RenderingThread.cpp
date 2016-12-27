@@ -29,6 +29,8 @@ CVideoRenderingThread::~CVideoRenderingThread()
 
 void CVideoRenderingThread::StopRenderingThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoRenderingThread::StopRenderingThread() called");
+
 	//if (pInternalThread.get())
 	{
 
@@ -41,6 +43,8 @@ void CVideoRenderingThread::StopRenderingThread()
 	}
 
 	//pInternalThread.reset();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoRenderingThread::StopRenderingThread() Rendering Thread STOPPPP");
 }
 
 void CVideoRenderingThread::StartRenderingThread()
@@ -117,7 +121,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 		}
 		else
 		{
-
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoRenderingThread::RenderingThreadProcedure() GOT FRAME for Rendering method");
             
 			int timeDiffForQueue, orientation;
 

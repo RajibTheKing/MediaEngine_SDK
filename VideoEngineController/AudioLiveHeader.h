@@ -2,15 +2,16 @@
 #include "Size.h"
 
 #define PACKETTYPE 0
-#define NETWORKTYPE 1
-#define SLOTNUMBER 2
-#define PACKETNUMBER 3
-#define PACKETLENGTH 4
-#define RECVDSLOTNUMBER 5
-#define NUMPACKETRECVD 6
-#define CHANNELS 7
-#define VERSIONCODE 8
-#define TIMESTAMP 9
+#define HEADERLENGTH 1
+#define NETWORKTYPE 2
+#define VERSIONCODE 3
+#define PACKETNUMBER 4
+#define PACKETLENGTH 5
+#define RECVDSLOTNUMBER 6
+#define NUMPACKETRECVD 7
+#define CHANNELS 8
+#define SLOTNUMBER 9
+#define TIMESTAMP 10
 
 /////////PacketTypes//////
 #define AUDIO_SKIP_PACKET_TYPE 0
@@ -31,15 +32,16 @@
 static int HeaderBitmap[] =
 {
 	8 /*PACKETTYPE*/,
+	6 /*HEADERLENGTH*/,
 	2 /*NETWORKTYPE*/,
-	3 /*SLOTNUMBER*/,
-	21 /*PACKETNUMBER*/,
+	5 /*VERSIONCODE*/,
+	31 /*PACKETNUMBER*/,
 	12 /*PACKETLENGTH*/,
 	3 /*RECVDSLOTNUMBER*/,
 	8 /*NUMPACKETRECVD*/,
 	2 /*CHANNELS*/,
-	5 /*VERSIONCODE*/,
-	32  /*TIMESTAMP*/
+	3 /*SLOTNUMBER*/,
+	40  /*TIMESTAMP*/
 };
 
 static int SupportedPacketTypes[] =
@@ -59,28 +61,28 @@ class CAudioLiveHeader {
 
 	unsigned int m_nHeaderSizeInBit;
 	unsigned int m_nHeaderSizeInByte;
-	unsigned int ma_nInformation[MAXFIELDSINHEADER];
+	long long m_arrllInformation[MAXFIELDSINHEADER];
 
 	unsigned char ma_uchHeader[MAXHEADERSIZE];
 	int nNumberOfHeaderElements;
-	int CopyInformationToHeader(unsigned int * Information);
+//	int CopyInformationToHeader(unsigned int * Information);
 	void PutInformationToArray(int InfoType);
 
 public:
-	CAudioLiveHeader();
-	CAudioLiveHeader(unsigned int * Information);
-	CAudioLiveHeader(unsigned char *Header);
-	~CAudioLiveHeader();
+	CAudioPacketHeader();
+//	CAudioPacketHeader(unsigned int * Information);
+	CAudioPacketHeader(unsigned char *Header);
+	~CAudioPacketHeader();
 
 	void CopyHeaderToInformation(unsigned char *Header);
 	int GetHeaderInByteArray(unsigned char* data);
 
 	int GetHeaderSize();
 
-	void SetInformation(unsigned int Information, int InfoType);	
-	unsigned int GetInformation(int InfoType);
+	void SetInformation(long long Information, int InfoType);
+	long long GetInformation(int InfoType);
 
-	unsigned int GetFieldCapacity(int InfoType);
+	long long GetFieldCapacity(int InfoType);
 
 	bool IsPacketTypeSupported(unsigned int PacketType);
 	bool IsPacketTypeSupported();

@@ -5,6 +5,9 @@
 #include "Globals.h"
 #include "VideoCallSession.h"
 
+
+#define USE_HASH_GENERATOR_TO_PACKETIZE
+
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
 m_nPacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
@@ -19,11 +22,19 @@ m_pcCommonElementsBucket(pcSharedObject)
     
     m_pVideoCallSession = pVideoCallSession;
     llSendingquePrevTime = 0;
+    
+    m_pHashGenerator = new CHashGenerator();
+    m_pHashGenerator->SetSeedNumber(m_Tools.CurrentTimestamp() % SEED_MOD_VALUE);
+    
 }
 
 CEncodedFramePacketizer::~CEncodedFramePacketizer()
 {
-
+    if(m_pHashGenerator != NULL)
+    {
+        delete m_pHashGenerator;
+        m_pHashGenerator = NULL;
+    }
 }
 
 int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy)
@@ -33,7 +44,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	int nOpponentVersion = m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
     unsigned char uchSendVersion = 0;
 
-	int nVersionWiseHeaderLength = PACKET_HEADER_LENGTH;
+	int nVersionWiseHeaderLength = VIDEO_HEADER_LENGTH;
     
     if(nOpponentVersion == -1 || nOpponentVersion == 0 || bIsDummy == true)
     {
@@ -60,29 +71,66 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
     int nOwnQualityLevel = m_pVideoCallSession->GetOwnVideoCallQualityLevel();
     int nCurrentCallQualityLevel = m_pVideoCallSession->GetCurrentVideoCallQualityLevel();
 
-    if(bIsDummy) {
-        m_cPacketHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,
+    if(bIsDummy) 
+	{
+		/*m_cPacketHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,
                                         uchOwnVersion,
                                         0, 0, 0, unCaptureTimeDifference, 0, 0,
-                                        nOwnQualityLevel, 0, nNetworkType);
+                                        nOwnQualityLevel, 0, nNetworkType);*/
+
+		m_cVideoHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,				//packetType
+										uchOwnVersion,							//VersionCode
+										VIDEO_HEADER_LENGTH,					//HeaderLength
+										0,										//FPSByte
+										0,										//FrameNumber
+										nNetworkType,							//NetworkType
+										0,										//Device Orientation
+										nOwnQualityLevel,						//QualityLevel
+										0,										//NumberofPacket
+										0,										//PacketNumber
+										unCaptureTimeDifference,				//TimeStamp
+										0,										//PacketStartingIndex
+										0										//PacketDataLength
+										);
 
         m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
-        m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-        m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType, 0, 0);
+
+
+        //m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+		m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+		m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType, 0, 0);
 
         return 1;
     }
 
 //    string __show = "#VP FrameNumber: "+Tools::IntegertoStringConvert(iFrameNumber)+"  NP: "+Tools::IntegertoStringConvert(nNumberOfPackets)+"  Size: "+Tools::IntegertoStringConvert(unLength);
 //    LOGE("%s",__show.c_str());
-    if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType()  == SERVICE_TYPE_SELF_STREAM)
+    
+	if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType()  == SERVICE_TYPE_SELF_STREAM)
 	{
 
-			int nPacketNumber = 0;
-            int nNumberOfPackets = 1;
+        int nPacketNumber = 0;
+        int nNumberOfPackets = 1;
+        
+        m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
+                                       uchOwnVersion,                   //VersionCode
+                                       VIDEO_HEADER_LENGTH,             //HeaderLength
+                                       0,                               //FPSByte
+                                       iFrameNumber,                    //FrameNumber
+                                       nNetworkType,                    //NetworkType
+                                       device_orientation,              //Device Orientation
+                                       nCurrentCallQualityLevel,        //QualityLevel
+                                       nNumberOfPackets,                //NumberofPacket
+                                       nPacketNumber,                   //PacketNumber
+                                       unCaptureTimeDifference,         //TimeStamp
+                                       0,                               //PacketStartingIndex
+                                       unLength                         //PacketDataLength
+                                       );
 
-
-            m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+        
+        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
+        
+        /* m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
                                             uchSendVersion,
                                             iFrameNumber,
                                             nNumberOfPackets,
@@ -92,11 +140,15 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                             unLength,
                                             nCurrentCallQualityLevel,
                                             device_orientation,
-                                            nNetworkType);
+                                            nNetworkType);*/
 
-        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
-		m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-//        m_cPacketHeader.ShowDetails("JUST");
+        
+        
+		//m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+        //m_cPacketHeader.ShowDetails("JUST");
+        
+        m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+        m_cVideoHeader.ShowDetails("JUST");
 
 		memcpy(m_ucaPacket + nPacketHeaderLengthWithMediaType, ucaEncodedVideoFrameData , unLength);
 
@@ -109,12 +161,23 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	}
     else
     {
+        int iStartIndex;
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
+        nNumberOfPackets = m_pHashGenerator->CalculateNumberOfPackets(iFrameNumber, unLength);
+        iStartIndex = 0;
+#endif
+        
+        
         for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
         {
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
+            m_nPacketSize = m_pHashGenerator->GetHashedPacketSize(iFrameNumber, nPacketNumber);
+#endif
+            
             if (nPacketizedDataLength + m_nPacketSize > unLength)
                 m_nPacketSize = unLength - nPacketizedDataLength;
             
-            m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+            /*m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
                                             uchSendVersion,
                                             iFrameNumber,
                                             nNumberOfPackets,
@@ -125,9 +188,27 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                             nCurrentCallQualityLevel,
                                             device_orientation,
                                             nNetworkType);
-            
+											*/
+
+			m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
+                                           uchSendVersion,                  //VersionCode
+											VIDEO_HEADER_LENGTH,             //HeaderLength
+											0,                               //FPSByte
+											iFrameNumber,                    //FrameNumber
+											nNetworkType,                    //NetworkType
+											device_orientation,              //Device Orientation
+											nCurrentCallQualityLevel,        //QualityLevel
+											nNumberOfPackets,                //NumberofPacket
+											nPacketNumber,                   //PacketNumber
+											unCaptureTimeDifference,         //TimeStamp
+											iStartIndex,                               //PacketStartingIndex
+											m_nPacketSize                    //PacketDataLength
+											);
+            iStartIndex += m_nPacketSize;
+
             m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
-            m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+            //m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+			m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
             //        m_cPacketHeader.ShowDetails("JUST");
             
             memcpy(m_ucaPacket + nPacketHeaderLengthWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
@@ -144,7 +225,9 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             }
             else
             {
-                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                //m_cPacketHeader.ShowDetails("SendingSide: ");
+                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                
                 
                 //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
             }

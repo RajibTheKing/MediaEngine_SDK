@@ -1,4 +1,4 @@
-
+#if 0
 #include "AudioCallHeader.h"
 #include "LogPrinter.h"
 
@@ -173,3 +173,4 @@ void CAudioCallHeader::PutInformationToArray(int InfoType)
 	}
 	ma_nInformation[InfoType] = Information;
 }
+#endif

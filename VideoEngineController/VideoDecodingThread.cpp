@@ -9,7 +9,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-extern map<int,long long>g_ArribalTime;
+extern map<long long,long long>g_ArribalTime;
 
 #define MINIMUM_DECODING_TIME_FOR_FORCE_FPS 35
 
@@ -52,6 +52,8 @@ void CVideoDecodingThread::InstructionToStop()
 
 void CVideoDecodingThread::StopDecodingThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::StopDecodingThread called");
+
 	//if (pDepacketizationThread.get())
 	{
 		bDecodingThreadRunning = false;
@@ -62,6 +64,8 @@ void CVideoDecodingThread::StopDecodingThread()
 		}
 	}
 	//pDepacketizationThread.reset();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::StopDecodingThread Decoding Thread STOPPED");
 }
 void CVideoDecodingThread::Reset()
 {
@@ -137,13 +141,14 @@ void CVideoDecodingThread::DecodingThreadProcedure()
     long long llTargetTimeStampDiff = -1;
     long long llExpectedTimeOffset = -1;
 
-	CPacketHeader packetHeaderObject;
+    CVideoHeader videoHeaderObject;
 
 	while (bDecodingThreadRunning)
 	{
 		if(m_pVideoCallSession->isLiveVideoStreamRunning())
 		{
 			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got NOTHING for decoding");
 				toolsObject.SOSleep(10);
 			}
 			else
@@ -152,7 +157,10 @@ void CVideoDecodingThread::DecodingThreadProcedure()
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() Got packet for decoding");
 
 				nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
-				packetHeaderObject.setPacketHeader(m_PacketizedFrame);
+				//packetHeaderObject.setPacketHeader(m_PacketizedFrame);
+                videoHeaderObject.setPacketHeader(m_PacketizedFrame);
+                
+                videoHeaderObject.ShowDetails("##RCV : ");
 
 				//printf("#V## Queue: %d\n",nFrameLength);
 
@@ -163,24 +171,30 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					toolsObject.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
                     currentTime = m_Tools.CurrentTimestamp();
 					llFirstFrameTimeStamp = currentTime;
-					llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
+					//llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
+                    llExpectedTimeOffset = llFirstFrameTimeStamp - videoHeaderObject.getTimeStamp();
                     
 				}
 				else
 				{
-                    diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
-					int iCurrentFrame = packetHeaderObject.getFrameNumber();
-
+                    //diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
+                    //int iCurrentFrame = packetHeaderObject.getFrameNumber();
+                    
+                    diifTime = videoHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
+                    int iCurrentFrame = videoHeaderObject.getFrameNumber();
+                    
 					//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
 
-					while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
+					//while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
+                    while(videoHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
 					{
 						toolsObject.SOSleep(1);
 						currentTime = m_Tools.CurrentTimestamp();
 					}
 				}
 				
-				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
+				//nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
+                nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(),0,0,0);
 
 				toolsObject.SOSleep(1);
 			}
@@ -190,6 +204,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 		if( -1 == m_pVideoCallSession->GetShiftedTime())
 		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Not started transmission");
 			toolsObject.SOSleep(10);
 			continue;
 		}
@@ -239,6 +254,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 		}
 		else
 		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() GOT FRAME FOR DDDDDDDDDDDDDdecoding method");
+
 			nBeforeDecodingTime = toolsObject.CurrentTimestamp();
             //printf("Decoding end--> fn = %d\n", nFrameNumber);
             
@@ -329,6 +346,9 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     long long decTime = m_Tools.CurrentTimestamp();
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
+
 	//printf("#V### Decoded Size -> %d +++E.Size:  %d\n",m_decodedFrameSize,(int)frameSize);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
     

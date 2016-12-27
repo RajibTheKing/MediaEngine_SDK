@@ -8,11 +8,11 @@
 #include "AudioDecoderBuffer.h"
 #include "LockHandler.h"
 #include "Tools.h"
-#include "AudioLiveHeader.h"
+#include "AudioPacketHeader.h"
 #include "LogPrinter.h"
 #include "LiveAudioDecodingQueue.h"
 #include "LiveReceiver.h"
-#include "AudioCallHeader.h"
+//#include "AudioHeader.h"
 
 #include <stdio.h>
 #include <string>
@@ -26,10 +26,8 @@
 #endif
 
 
-#define __AUDIO_CALL_VERSION__  1
-#define  __DUPLICATE_AUDIO__
-#define MULTIPLE_HEADER
-
+#define __AUDIO_CALL_VERSION__  0
+#define __AUDIO_LIVE_VERSION__  0
 
 #ifdef __ANDROID__
 #define USE_AECM
@@ -67,9 +65,6 @@ class CVoice;
 
 class CAudioCallSession
 {
-public:
-
-	int m_iNextPacketType;
 
 public:
 
@@ -117,11 +112,8 @@ private:
 	long long m_llEncodingTimeStampOffset;
 	long long m_llDecodingTimeStampOffset;
 
-    CAudioLiveHeader *SendingHeader;
-    CAudioLiveHeader *ReceivingHeader;
-
-	CAudioCallHeader m_sendingHeaderOld;
-	CAudioCallHeader m_receivingHeaderOld;
+    CAudioPacketHeader *SendingHeader;
+    CAudioPacketHeader *ReceivingHeader;
 
     int m_AudioHeadersize;
 

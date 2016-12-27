@@ -64,8 +64,8 @@ public:
 	long long GetFirstVideoPacketTime();
 	void SetFirstVideoPacketTime(long long llTimeStamp);
 
-	void SetFirstFrameEncodingTime(int time);
-	int GetFirstFrameEncodingTime();
+	void SetFirstFrameEncodingTime(long long time);
+	long long GetFirstFrameEncodingTime();
 	void SetShiftedTime(long long llTime);
 	long long GetShiftedTime();	
 
@@ -129,7 +129,7 @@ private:
 
 	long long m_llShiftedTime;
 	long long m_llTimeStampOfFirstPacketRcvd;
-	int m_nFirstFrameEncodingTimeDiff;
+	long long m_nFirstFrameEncodingTimeDiff;
 	int m_ByteRcvInBandSlot;
 	long long m_llFirstFrameCapturingTimeStamp;
 
@@ -162,7 +162,7 @@ private:
 	LongLong m_lfriendID;
 	CVideoEncoderListHandler sessionMediaList;
 
-	CPacketHeader m_PacketHeader;
+	CVideoHeader m_PacketHeader;
 
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;
 	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
@@ -181,7 +181,7 @@ private:
 
 	CColorConverter *m_pColorConverter;
 
-	unsigned char m_miniPacket[PACKET_HEADER_LENGTH + 1];
+	unsigned char m_miniPacket[VIDEO_HEADER_LENGTH + 1];
     
     CVersionController *m_pVersionController;
     CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;

@@ -1,8 +1,11 @@
 
 #include "VideoPacketBuffer.h"
+#include "HashGenerator.h"
+#include "VideoHeader.h"
+
+#define USE_HASH_GENERATOR_TO_DEPACKETIZE
 
 CVideoPacketBuffer::CVideoPacketBuffer():
-
 m_nNumberOfGotPackets(0),
 m_nNumberOfPackets(MAX_NUMBER_OF_PACKETS),
 m_nFrameSize(0),
@@ -29,16 +32,28 @@ void CVideoPacketBuffer::Reset()
 	}
 }
 
-bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsigned int unLength, int nPacketNumber)
+bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsigned int unLength, int nPacketNumber, int iHeaderLength)
 {
+	
 	if (false == m_baPacketTracker[nPacketNumber])
 	{
 		int nPacketDataLength = unLength;
 
 		m_baPacketTracker[nPacketNumber] = true;
 		m_nNumberOfGotPackets++;
-
-		memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + PACKET_HEADER_LENGTH, nPacketDataLength);
+        
+        
+#ifdef USE_HASH_GENERATOR_TO_DEPACKETIZE
+        CVideoHeader packetHeader;
+        packetHeader.setPacketHeader(pucVideoPacketData);
+        //packetHeader.ShowDetails("ReceivingSide: ");
+        
+		memcpy(m_ucaFrameData + packetHeader.GetPacketStartingIndex(), pucVideoPacketData + iHeaderLength, nPacketDataLength);
+#else
+        
+        memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + iHeaderLength, nPacketDataLength);
+#endif
+        
 		m_nFrameSize += nPacketDataLength;
 
 		return (m_nNumberOfGotPackets == m_nNumberOfPackets);
@@ -65,6 +80,11 @@ void CVideoPacketBuffer::SetNumberOfPackets(int nNumberOfPackets)
 	m_nNumberOfPackets = nNumberOfPackets;
 }
 
+
+void CVideoPacketBuffer::SetFrameNumber(int nFrameNumber)
+{
+    m_nFrameNumber = nFrameNumber;
+}
 
 
 

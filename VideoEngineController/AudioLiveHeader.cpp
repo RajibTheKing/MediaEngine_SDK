@@ -1,8 +1,8 @@
 
-#include "AudioLiveHeader.h"
+#include "AudioPacketHeader.h"
 #include "LogPrinter.h"
 
-CAudioLiveHeader::CAudioLiveHeader()
+CAudioPacketHeader::CAudioPacketHeader()
 {
 	nNumberOfHeaderElements = sizeof(HeaderBitmap)/sizeof(int);
 
@@ -15,56 +15,56 @@ CAudioLiveHeader::CAudioLiveHeader()
 	m_nHeaderSizeInBit = headerSizeInBit;
 	m_nHeaderSizeInByte = (headerSizeInBit + 7) / 8;
 
-	memset(ma_nInformation, 0, sizeof(HeaderBitmap));
+	memset(m_arrllInformation, 0, sizeof(m_arrllInformation));
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
 
-CAudioLiveHeader::CAudioLiveHeader(unsigned int * Information)
-{
-	CAudioLiveHeader();
-	CopyInformationToHeader(Information);
-}
+//CAudioPacketHeader::CAudioPacketHeader(unsigned int * Information)
+//{
+//	CAudioPacketHeader();
+//	CopyInformationToHeader(Information);
+//}
 
-CAudioLiveHeader::CAudioLiveHeader(unsigned char *Header)
+CAudioPacketHeader::CAudioPacketHeader(unsigned char *Header)
 {
-	CAudioLiveHeader();
+	CAudioPacketHeader();
 	CopyHeaderToInformation(Header);
 }
 
-CAudioLiveHeader::~CAudioLiveHeader()
+CAudioPacketHeader::~CAudioPacketHeader()
 {
-	memset(ma_nInformation, 0, sizeof(HeaderBitmap));
+	memset(m_arrllInformation, 0, sizeof(m_arrllInformation));
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
 
-int CAudioLiveHeader::CopyInformationToHeader(unsigned int * Information)
+//int CAudioPacketHeader::CopyInformationToHeader(unsigned int * Information)
+//{
+//	memcpy(m_arrllInformation, Information, m_nHeaderSizeInByte);
+//	for (int i = 0; i < nNumberOfHeaderElements; i++)
+//	{
+//		SetInformation(Information[i], i);
+//	}
+//	return m_nHeaderSizeInByte;
+//}
+
+long long CAudioPacketHeader::GetFieldCapacity(int InfoType)
 {
-	memcpy(ma_nInformation, Information, m_nHeaderSizeInByte);
-	for (int i = 0; i < nNumberOfHeaderElements; i++)
-	{
-		SetInformation(Information[i], i);
-	}
-	return m_nHeaderSizeInByte;
+	return 1LL << HeaderBitmap[InfoType];
 }
 
-unsigned int CAudioLiveHeader::GetFieldCapacity(int InfoType)
-{
-	return 1 << HeaderBitmap[InfoType];
-}
 
-
-int CAudioLiveHeader::GetHeaderInByteArray(unsigned char* data)
+int CAudioPacketHeader::GetHeaderInByteArray(unsigned char* data)
 {
 	memcpy(data, ma_uchHeader, m_nHeaderSizeInByte);
 	return m_nHeaderSizeInByte;
 }
 
-int CAudioLiveHeader::GetHeaderSize()
+int CAudioPacketHeader::GetHeaderSize()
 {
 	return m_nHeaderSizeInByte;
 }
 
-bool CAudioLiveHeader::IsPacketTypeSupported(unsigned int PacketType)
+bool CAudioPacketHeader::IsPacketTypeSupported(unsigned int PacketType)
 {
 	int nPacketTypes = sizeof(SupportedPacketTypes) / sizeof(int);
 	for (int i = 0; i < nPacketTypes; i++)
@@ -74,16 +74,16 @@ bool CAudioLiveHeader::IsPacketTypeSupported(unsigned int PacketType)
 	return false;
 }
 
-bool CAudioLiveHeader::IsPacketTypeSupported()
+bool CAudioPacketHeader::IsPacketTypeSupported()
 {
 	unsigned int iPackeType = GetInformation(PACKETTYPE);
 	return IsPacketTypeSupported(iPackeType);
 }
 
-void CAudioLiveHeader::SetInformation(unsigned int Information, int InfoType)
+void CAudioPacketHeader::SetInformation(long long Information, int InfoType)
 {
-    Information = (Information & ((1LL<<HeaderBitmap[InfoType]) - 1));
-	ma_nInformation[InfoType] = Information;
+    Information = (Information & ((1LL << HeaderBitmap[InfoType]) - 1));
+	m_arrllInformation[InfoType] = Information;
 
 	int infoStartBit = 0;
 	for (int i = 0; i < InfoType; i++)
@@ -125,7 +125,7 @@ void CAudioLiveHeader::SetInformation(unsigned int Information, int InfoType)
 	}
 }
 
-void CAudioLiveHeader::CopyHeaderToInformation(unsigned char *Header)
+void CAudioPacketHeader::CopyHeaderToInformation(unsigned char *Header)
 {
 	memcpy(ma_uchHeader, Header, m_nHeaderSizeInByte);
 
@@ -136,12 +136,12 @@ void CAudioLiveHeader::CopyHeaderToInformation(unsigned char *Header)
 	}
 }
 
-unsigned int CAudioLiveHeader::GetInformation(int InfoType)
+long long CAudioPacketHeader::GetInformation(int InfoType)
 {
-	return ma_nInformation[InfoType];
+	return m_arrllInformation[InfoType];
 }
 
-void CAudioLiveHeader::PutInformationToArray(int InfoType)
+void CAudioPacketHeader::PutInformationToArray(int InfoType)
 {
 	unsigned long long Information = 0;
 	int infoStartBit = 0;
@@ -173,5 +173,5 @@ void CAudioLiveHeader::PutInformationToArray(int InfoType)
 			Information >>= 8 - shift;
 		Information &= (1LL << HeaderBitmap[InfoType]) - 1;
 	}
-	ma_nInformation[InfoType] = Information;
+	m_arrllInformation[InfoType] = Information;
 }

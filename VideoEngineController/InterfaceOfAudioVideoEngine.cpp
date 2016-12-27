@@ -97,6 +97,8 @@ bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bo
 	}
 
 	bool bReturnedValue = m_pcController->SetEchoCanceller(lFriendID, bOn);
+    
+    return bReturnedValue;
 }
 
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork, int nNetworkType)
@@ -184,6 +186,11 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			int nValidHeaderOffset = 0;
 
 			int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
+
+			int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
+			int chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
+
+			LOGEF("headerLength %d chunkDuration %d\n", headerLength, chunkDuration);
 
 			int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
 			int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);

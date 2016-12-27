@@ -25,10 +25,11 @@ int LiveStreamHeader::getHeaderSize()
 	return m_iStaticHeaderSize + ((m_vVideoFrameSizeList.size() + m_vAudioFrameSizeList.size()) * singleFrameSizeFieldLength);
 }
 
-
 void LiveStreamHeader::writeHeaderTo(unsigned char* destination)
 {
 	destination[versionFieldPosition] = (unsigned char)m_iVersion;
+	Tools::SetIntegerIntoUnsignedChar(destination, headerLengthPosition, headerLengthFieldLength, m_iHeaderLength);
+	Tools::SetIntegerIntoUnsignedChar(destination, chunkDurationPosition, chunkDurationFieldLength, m_iChunkDuration);
 	Tools::SetIntegerIntoUnsignedChar(destination, relativeTimestampFieldPosition, relativeTimestampFieldLength, m_iRelativeTimestamp);
 	Tools::SetIntegerIntoUnsignedChar(destination, audioSizeFieldPosition, audioSizeFieldLength, m_iAudioDataSize);
 	Tools::SetIntegerIntoUnsignedChar(destination, videoSizeFieldPosition, videoSizeFieldLength, m_iVideoDataSize);
@@ -56,6 +57,8 @@ void LiveStreamHeader::readHeaderFrom(unsigned char* source)
 	clear();
 
 	m_iVersion = source[versionFieldPosition];
+	m_iHeaderLength = Tools::GetIntegerFromUnsignedChar(source, headerLengthPosition, headerLengthFieldLength);
+	m_iChunkDuration = Tools::GetIntegerFromUnsignedChar(source, chunkDurationPosition, chunkDurationFieldLength);
 	m_iRelativeTimestamp = Tools::GetIntegerFromUnsignedChar(source, relativeTimestampFieldPosition, relativeTimestampFieldLength);
 	m_iAudioDataSize = Tools::GetIntegerFromUnsignedChar(source, audioSizeFieldPosition, audioSizeFieldLength);
 	m_iVideoDataSize = Tools::GetIntegerFromUnsignedChar(source, videoSizeFieldPosition, videoSizeFieldLength);
@@ -79,7 +82,7 @@ void LiveStreamHeader::readHeaderFrom(unsigned char* source)
 
 void LiveStreamHeader::clear()
 {
-	m_iVersion = m_iRelativeTimestamp = m_iAudioDataSize = m_iVideoDataSize = 0;
+	m_iVersion = m_iRelativeTimestamp = m_iAudioDataSize = m_iVideoDataSize = m_iChunkDuration = m_iHeaderLength = 0;
 	m_vVideoFrameSizeList.clear();
 	m_vAudioFrameSizeList.clear();
 }

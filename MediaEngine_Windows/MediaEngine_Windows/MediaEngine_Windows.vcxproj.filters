@@ -198,6 +198,18 @@
     <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoHeader.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\HashGenerator.cpp">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -415,6 +427,18 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h">
       <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoHeader.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveStreamingHeader.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\HashGenerator.h">
+      <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
