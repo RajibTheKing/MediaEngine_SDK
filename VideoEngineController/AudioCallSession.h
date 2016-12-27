@@ -3,6 +3,7 @@
 #define _AUDIO_CALL_SESSION_H_
 
 #define OPUS_ENABLE
+#define AAC_ENABLE
 
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
@@ -19,6 +20,11 @@
 #include <map>
 #include <stdlib.h>
 #include <vector>
+
+#ifdef AAC_ENABLE
+#include "Aac.h"
+#endif
+
 #ifdef OPUS_ENABLE
 #include "AudioCodec.h"
 #else
@@ -48,6 +54,7 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioPacketHeader;
 class CAudioCodec;
+class CAac;
 
 #ifdef USE_AECM
 class CEcho;
@@ -124,6 +131,11 @@ private:
 
     std::vector<int> m_vEncodedFrameLenght;
 	bool m_bUsingLoudSpeaker;
+
+#ifdef AAC_ENABLE
+	CAac *m_cAac;
+#endif
+
 #ifdef USE_AECM
 	CEcho *m_pEcho, *m_pEcho2;
 #endif
