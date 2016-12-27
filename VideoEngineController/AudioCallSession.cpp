@@ -725,7 +725,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 	int cnt = 1;
 	while (m_bAudioEncodingThreadRunning)
 	{
-		LOGE("m_bAudioEncodingThreadRunning");
 		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
 			toolsObject.SOSleep(10);
 		else
@@ -857,7 +856,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketT
 		{
 			return true;;
 		}
-		else if (nCurrentAudioPacketType == AUDIO_NONMUXED_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE)
+		else if ((m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL) && (nCurrentAudioPacketType == AUDIO_NONMUXED_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE))
 		{
 			return true;
 		}
@@ -1102,7 +1101,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (!IsPacketProcessableBasedOnRelativeTime(iTimeStampOffset))
+			if (!IsPacketProcessableBasedOnRelativeTime(iTimeStampOffset, iPacketNumber, nCurrentAudioPacketType))
 			{
 				continue;
 			}
@@ -1134,9 +1133,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 
-bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime)
+bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType)
 {
-	return true;//will be fixed in future
 	if (m_bLiveAudioStreamRunning)
 	{
 		if (m_iRole == PUBLISHER_IN_CALL)
@@ -1147,6 +1145,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 		{
 			m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
 			m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - llCurrentFrameRelativeTime;
+			LOGE("iPacketNumber resyncing");
 		}
 		else
 		{
@@ -1154,9 +1153,12 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 			long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
 
-			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime) {
-				__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld",
-					iPacketNumber, iTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
+			LOGE("llCurrentFrameRelativeTime = %lld, llWaitingTime = %lld, iPacketNumber = %d, nPacketType = %d m_iRole = %d\n", llCurrentFrameRelativeTime, llWaitingTime, iPacketNumber, nPacketType, m_iRole);
+
+			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
+			{
+				LOGE("@@@@@@@@@@@@@@@@@--> New***********************************************  [%lld]\t\tDELAY FRAME: %lld  Now: %lld, iPacketNumber = %d",
+					llCurrentFrameRelativeTime, llWaitingTime, llNow % __TIMESTUMP_MOD__, iPacketNumber);
 				return false;
 			}
 

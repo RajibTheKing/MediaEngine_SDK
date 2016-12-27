@@ -250,7 +250,7 @@ private:
 	bool IsPacketNumberProcessable(int &iPacketNumber);
 	bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 	bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
-	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime);
+	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 	void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
 	void DecodeAndPostProcessIfNeeded(int &iPacketNumber);
 	void DumpDecodedFrame();
