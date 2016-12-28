@@ -845,6 +845,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketT
 {
 	if (m_bLiveAudioStreamRunning)
 	{
+		LOGE("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_iRole, nCurrentAudioPacketType);
 		if ((m_iRole == VIEWER_IN_CALL || m_iRole == PUBLISHER_IN_CALL) && nCurrentAudioPacketType == AUDIO_OPUS_PACKET_TYPE)
 		{
 			return true;;
@@ -1126,6 +1127,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	{
 		if (!IsQueueEmpty(toolsObject))
 		{
+			LOGE("In DecodingThreadProcedure 1");
 			DequeueData(m_nDecodingFrameSize);
 			timeStamp = m_Tools.CurrentTimestamp();
 
@@ -1135,32 +1137,33 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, llTimeStampOffset, m_ucaDecodingFrame);
 
+			LOGE("In DecodingThreadProcedure 2");
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
 				continue;
 			}
-
+			LOGE("In DecodingThreadProcedure 3");
 			if (!IsPacketNumberProcessable(iPacketNumber))
 			{
 				continue;
 			}
-
+			LOGE("In DecodingThreadProcedure 4");
 			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
 				continue;
 			}
-
+			LOGE("In DecodingThreadProcedure 5");
 			if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion, toolsObject))
 			{
 				continue;
 			}
-
+			LOGE("In DecodingThreadProcedure 6");
 			if (!IsPacketProcessableBasedOnRelativeTime(iTimeStampOffset, iPacketNumber, nCurrentAudioPacketType))
 			{
 				continue;
 			}
-
-
+			LOGE("In DecodingThreadProcedure 7");
+			
 			llNow = m_Tools.CurrentTimestamp();
 
 			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
@@ -1240,7 +1243,7 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLeng
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
 
-	m_SendingHeader->SetInformation(AUDIO_NORMAL_PACKET_TYPE, PACKETTYPE);
+	m_SendingHeader->SetInformation(packetType, PACKETTYPE);
 	m_SendingHeader->SetInformation(nHeaderLength, HEADERLENGTH);
 	m_SendingHeader->SetInformation(packetNumber, PACKETNUMBER);
 	m_SendingHeader->SetInformation(slotNumber, SLOTNUMBER);
