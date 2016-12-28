@@ -520,7 +520,11 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() came for CALL !!!!!!!");
+#ifndef NO_CONNECTIVITY
 				m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), 2, m_EncodedFrame, packetSize,0);
+#else
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, packetSize, m_EncodedFrame);
+#endif
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
 #endif
 			}
