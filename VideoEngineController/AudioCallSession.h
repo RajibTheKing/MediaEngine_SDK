@@ -3,7 +3,7 @@
 #define _AUDIO_CALL_SESSION_H_
 
 #define OPUS_ENABLE
-#define AAC_ENABLE
+//#define AAC_ENABLE
 
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
