@@ -745,9 +745,16 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 
 			}
+
+#ifdef AAC_ENABLE
+
 			else if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType){
 				bIsProcessablePacket = true;
 			}
+
+#endif
+
+
 
 			if (!bIsProcessablePacket) continue;
 
@@ -836,6 +843,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 			else
 			{
+
+#ifdef AAC_ENABLE
+
 			    if(AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType){
 					llNow = m_Tools.CurrentTimestamp();
 			        m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nPacketDataLength, m_saDecodedFrame, nDecodedFrameSize);
@@ -847,6 +857,12 @@ void CAudioCallSession::DecodingThreadProcedure()
                     memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
                     nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
 				}
+
+#else
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
+				nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+
+#endif
 			}
 			/*
 			* Start call block end.
