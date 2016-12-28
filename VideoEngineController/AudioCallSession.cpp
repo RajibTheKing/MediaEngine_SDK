@@ -463,14 +463,14 @@ void CAudioCallSession::DumpEncodingFrame()
 #endif
 }
 
-void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & timeStamp)
+void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & llCapturedTime)
 {
 
-	__LOG("#WQ Relative Time Counter: %d-------------------------------- NO: %lld\n", cnt, timeStamp - llLasstTime);
+	__LOG("#WQ Relative Time Counter: %d-------------------------------- NO: %lld\n", cnt, llCapturedTime - llLasstTime);
 	cnt++;
-	llLasstTime = timeStamp;
+	llLasstTime = llCapturedTime;
 	countFrame++;
-	llRelativeTime = timeStamp - m_llEncodingTimeStampOffset;
+	llRelativeTime = llCapturedTime - m_llEncodingTimeStampOffset;
 }
 
 bool CAudioCallSession::PreProcessAudioBeforeEncoding()
@@ -505,7 +505,7 @@ bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 	return true;
 }
 
-void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, long long &encodingTime, double &avgCountTimeStamp)
+void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &encodingTime, double &avgCountTimeStamp)
 {
 #ifdef OPUS_ENABLE
 	if (m_bLiveAudioStreamRunning == false)
@@ -513,7 +513,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, long long &encoding
 		m_nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_MyAudioHeadersize]);
 
 		ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
-		encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+		encodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
 		m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 	}
 	else
@@ -526,7 +526,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, long long &encoding
 			m_nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_MyAudioHeadersize]);
 
 			ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(AUDIO_CLIENT_SAMPLES_IN_FRAME) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
-			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+			encodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 
 		}
@@ -535,7 +535,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, long long &encoding
 			m_nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_MyAudioHeadersize]);
 
 			ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(AUDIO_CLIENT_SAMPLES_IN_FRAME) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
-			encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+			encodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
 			m_pAudioCodec->DecideToChangeComplexity(encodingTime);
 		}
 		else //Should only work for PUBLISHER when CALL_NOT_RUNNING
@@ -556,7 +556,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, long long &encoding
 	}
 #else
 	nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioRecorderFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_AudioHeadersize]);
-	encodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+	encodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
 	avgCountTimeStamp += encodingTime;
 #endif
 	//            if (countFrame % 100 == 0)
@@ -705,11 +705,11 @@ void CAudioCallSession::EncodingThreadProcedure()
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
-	long long timeStamp = 0;
+	long long llCapturedTime = 0;
 	double avgCountTimeStamp = 0;
 	int countFrame = 0;
     int version = 0;
-	long long llRelativeTime;	
+	long long llRelativeTime = 0;	
 
 	long long llLasstTime = -1;
 	int cnt = 1;
@@ -719,17 +719,17 @@ void CAudioCallSession::EncodingThreadProcedure()
 			toolsObject.SOSleep(10);
 		else
 		{
-			m_AudioEncodingBuffer.DeQueue(m_saAudioRecorderFrame, timeStamp);
+			m_AudioEncodingBuffer.DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 			MuxIfNeeded();
 			DumpEncodingFrame();
-			PrintRelativeTime(cnt, llLasstTime, countFrame, llRelativeTime, timeStamp);
+			PrintRelativeTime(cnt, llLasstTime, countFrame, llRelativeTime, llCapturedTime);
 
 			if (false == PreProcessAudioBeforeEncoding())
 			{
 				continue;
 			}
-
-			EncodeIfNeeded(timeStamp, encodingTime, avgCountTimeStamp);
+			LOGE("Encoding side: llCapturedTime = %lld, llRelativeTime = %lld, m_iPacketNumber = %d", llCapturedTime, llRelativeTime, m_iPacketNumber);
+			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
 			AddHeader(version, llRelativeTime);
 			SetAudioIdentifierAndNextPacketType();
 			SendAudioData();
@@ -1043,7 +1043,7 @@ void CAudioCallSession::DumpDecodedFrame()
 }
 
 void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
-	int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp)
+	int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)
 {
 	if (!m_bLiveAudioStreamRunning)
 	{
@@ -1058,7 +1058,7 @@ void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTi
 		iDataSentInCurrentSec++;
 
 		++iFrameCounter;
-		nDecodingTime = m_Tools.CurrentTimestamp() - timeStamp;
+		nDecodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
 		dbTotalTime += nDecodingTime;
 		//            if(iFrameCounter % 100 == 0)
 		//                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(m_nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
@@ -1097,19 +1097,14 @@ void CAudioCallSession::DecodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
 
 	Tools toolsObject;
-	bool bIsProcessablePacket;
 	int iFrameCounter = 0, nCurrentAudioPacketType = 0, iPacketNumber = 0;
-	long long timeStamp, nDecodingTime = 0;
+	long long llCapturedTime, nDecodingTime = 0;
 	double dbTotalTime = 0;
 
-	int iDataSentInCurrentSec = 0, iPlaiedFrameCounter = 0;
+	int iDataSentInCurrentSec = 0;
 	long long llTimeStamp = 0;
 	long long llNow = 0;
-	long long llExpectedEncodingTimeStamp = 0, llWaitingTime = 0;
 	long long llLastDecodedTime = -1;
-	long long llLastDecodedFrameEncodedTimeStamp = -1;
-	long long llFirstSentTime = -1;
-	long long llFirstSentFrame = -1;
 	int nCurrentPacketHeaderLength = 0;
 
 #ifdef __DUMP_FILE__
@@ -1117,49 +1112,45 @@ void CAudioCallSession::DecodingThreadProcedure()
 #endif
 
 	long long llLastTime = -1, llDiffTimeNow = -1;
-	long long iTimeStampOffset = 0;
-	int TempOffset = 0;
-	long long currentTime = m_Tools.CurrentTimestamp() / 1000;
+	long long llRelativeTime = 0;
 	while (m_bAudioDecodingThreadRunning)
 	{
 		if (!IsQueueEmpty(toolsObject))
 		{
-			LOGE("In DecodingThreadProcedure 1");
 			DequeueData(m_nDecodingFrameSize);
-			timeStamp = m_Tools.CurrentTimestamp();
+			llCapturedTime = m_Tools.CurrentTimestamp();
 
 			int dummy;
 			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-			long long llTimeStampOffset;
+			
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, llTimeStampOffset, m_ucaDecodingFrame);
+				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame);
 
-			LOGE("In DecodingThreadProcedure 2");
+
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
 				continue;
 			}
-			LOGE("In DecodingThreadProcedure 3");
+
 			if (!IsPacketNumberProcessable(iPacketNumber))
 			{
 				continue;
 			}
-			LOGE("In DecodingThreadProcedure 4");
+
 			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
 				continue;
 			}
-			LOGE("In DecodingThreadProcedure 5");
+
 			if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion, toolsObject))
 			{
 				continue;
 			}
-			LOGE("In DecodingThreadProcedure 6");
-			if (!IsPacketProcessableBasedOnRelativeTime(iTimeStampOffset, iPacketNumber, nCurrentAudioPacketType))
+
+			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 			{
 				continue;
 			}
-			LOGE("In DecodingThreadProcedure 7");
 			
 			llNow = m_Tools.CurrentTimestamp();
 
@@ -1169,7 +1160,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength);
 			DumpDecodedFrame();
-			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, timeStamp);
+			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
 
 			if (m_nDecodedFrameSize < 1)
 			{

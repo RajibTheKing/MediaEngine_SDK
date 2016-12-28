@@ -178,7 +178,7 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 
 void CAudioPacketHeader::showDetails(string prefix)
 {
-	PRT("%s #-> "
+	LOGE("%s #-> "
 		"PT = %lld "
 		"HL = %lld "
 		"NT = %lld "
