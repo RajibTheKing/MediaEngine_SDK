@@ -284,7 +284,7 @@ int iExpectedPacketNumber = 0;
 void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
 
         Locker lock(*m_pLiveReceiverMutex);
-		CAudioLiveHeader g_LiveReceiverHeader;
+		CAudioPacketHeader g_LiveReceiverHeader;
         size_t nNumberOfMissingBlocks = vMissingBlocks.size();
         size_t iMissingIndex = 0;
 

@@ -98,7 +98,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
         //m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
 		m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-		m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType, 0, 0);
+		m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType, 0, 0);
 
         return 1;
     }
@@ -226,7 +226,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             else
             {
                 //m_cPacketHeader.ShowDetails("SendingSide: ");
-                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLengthWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
                 
                 
                 //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));

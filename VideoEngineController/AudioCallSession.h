@@ -65,9 +65,9 @@ class CVoice;
 
 class CAudioCallSession
 {
-
 public:
-
+	int m_iNextPacketType;
+public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
 
@@ -112,10 +112,10 @@ private:
 	long long m_llEncodingTimeStampOffset;
 	long long m_llDecodingTimeStampOffset;
 
-    CAudioPacketHeader *SendingHeader;
-    CAudioPacketHeader *ReceivingHeader;
+    CAudioPacketHeader *m_SendingHeader;
+    CAudioPacketHeader *m_ReceivingHeader;
 
-    int m_AudioHeadersize;
+    int m_MyAudioHeadersize;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
 	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
@@ -137,9 +137,7 @@ private:
 	///////////Pre Encoding Data///////
     short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
 	short m_saAudioMUXEDFrame[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
-
 	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
-
 
 	///////////Post Encoding Data///////
 	/*
@@ -161,7 +159,7 @@ private:
 
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
-	int nDecodingFrameSize, nDecodedFrameSize;
+	int m_nDecodingFrameSize, m_nDecodedFrameSize;
 
     unsigned char m_ucaRawDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	unsigned char m_ucaCompressedDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
@@ -180,7 +178,6 @@ private:
     bool m_bLiveAudioStreamRunning;
     int m_nServiceType;
     
-
 	int m_iVolume;
 
     int m_iAudioVersionFriend;
@@ -223,14 +220,14 @@ private:
 	///////Methods Called From EncodingThreadProcedure/////
 	void MuxIfNeeded();
 	void DumpEncodingFrame();
-	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, int &nCurrentTimeStamp, long long &timeStamp);
+	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long &nCurrentTimeStamp, long long &timeStamp);
 	bool PreProcessAudioBeforeEncoding();
-	void EncodeIfNeeded(long long &timeStampm, int &encodingTime, double &avgCountTimeStamp);
-	void AddHeader(int &version, int &nCurrentTimeStamp);
+	void EncodeIfNeeded(long long &timeStampm, long long &encodingTime, double &avgCountTimeStamp);
+	void AddHeader(int &version, long long &nCurrentTimeStamp);
 	void SetAudioIdentifierAndNextPacketType();
 	void SendAudioData();
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
-	void BuildAndGetHeaderInArray(int packetType, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 	///////End of Methods Called From EncodingThreadProcedure/////
 
@@ -244,12 +241,12 @@ private:
 	bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
 	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 	void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
-	void DecodeAndPostProcessIfNeeded(int &iPacketNumber);
+	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength);
 	void DumpDecodedFrame();
 	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);
 	void SendToPlayer(long long &llNow, long long &llLastTime);
-	void ParseHeaderAndGetValues(int &packetType, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
 	///////End Of Methods Called From DecodingThreadProcedure/////
 
