@@ -463,14 +463,14 @@ void CAudioCallSession::DumpEncodingFrame()
 #endif
 }
 
-void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & nCurrentTimeStamp, long long & timeStamp)
+void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & timeStamp)
 {
 
 	__LOG("#WQ Relative Time Counter: %d-------------------------------- NO: %lld\n", cnt, timeStamp - llLasstTime);
 	cnt++;
 	llLasstTime = timeStamp;
 	countFrame++;
-	nCurrentTimeStamp = timeStamp - m_llEncodingTimeStampOffset;
+	llRelativeTime = timeStamp - m_llEncodingTimeStampOffset;
 }
 
 bool CAudioCallSession::PreProcessAudioBeforeEncoding()
@@ -567,7 +567,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &timeStamp, long long &encoding
 	//                     + " MaxFrameNumber: " + m_Tools.IntegertoStringConvert(m_nMaxAudioPacketNumber));
 }
 
-void CAudioCallSession::AddHeader(int &version, long long &nCurrentTimeStamp)
+void CAudioCallSession::AddHeader(int &version, long long &llRelativeTime)
 {
 	m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
 	m_iSlotID %= m_SendingHeader->GetFieldCapacity(SLOTNUMBER);
@@ -575,26 +575,26 @@ void CAudioCallSession::AddHeader(int &version, long long &nCurrentTimeStamp)
 	if (!m_bLiveAudioStreamRunning)
 	{
 		BuildAndGetHeaderInArray(m_iNextPacketType, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nCompressedFrameSize,
-			m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
+			m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaCompressedFrame[1]);
 	}
 	else
 	{
 		if (m_iRole == PUBLISHER_IN_CALL)
 		{
 			BuildAndGetHeaderInArray(AUDIO_OPUS_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nCompressedFrameSize,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaCompressedFrame[1]);
 			BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrame[1]);
 		}
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
 			BuildAndGetHeaderInArray(AUDIO_OPUS_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nCompressedFrameSize,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaCompressedFrame[1]);
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaCompressedFrame[1]);
 		}
 		else
 		{
 			BuildAndGetHeaderInArray(AUDIO_NONMUXED_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, nCurrentTimeStamp, &m_ucaRawFrame[1]);
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrame[1]);
 		}
 	}
 }
@@ -622,7 +622,7 @@ void CAudioCallSession::SendAudioData()
 	if (m_bLiveAudioStreamRunning == false)
 	{
 		ALOG("#A#EN#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
-		DecodeAudioData(0, m_ucaCompressedFrame + 1, m_nCompressedFrameSize + m_AudioHeadersize);
+		DecodeAudioData(0, m_ucaCompressedFrame + 1, m_nCompressedFrameSize + m_MyAudioHeadersize);
 		return;
 	}
 #endif
@@ -709,10 +709,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	double avgCountTimeStamp = 0;
 	int countFrame = 0;
     int version = 0;
-	long long nCurrentTimeStamp;
-
-	long long currentTime = m_Tools.CurrentTimestamp() / 1000;
-	//StartCallInLive(PUBLISHER_IN_CALL);
+	long long llRelativeTime;	
 
 	long long llLasstTime = -1;
 	int cnt = 1;
@@ -725,7 +722,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			m_AudioEncodingBuffer.DeQueue(m_saAudioRecorderFrame, timeStamp);
 			MuxIfNeeded();
 			DumpEncodingFrame();
-			PrintRelativeTime(cnt, llLasstTime, countFrame, nCurrentTimeStamp, timeStamp);
+			PrintRelativeTime(cnt, llLasstTime, countFrame, llRelativeTime, timeStamp);
 
 			if (false == PreProcessAudioBeforeEncoding())
 			{
@@ -733,7 +730,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			}
 
 			EncodeIfNeeded(timeStamp, encodingTime, avgCountTimeStamp);
-			AddHeader(version, nCurrentTimeStamp);
+			AddHeader(version, llRelativeTime);
 			SetAudioIdentifierAndNextPacketType();
 			SendAudioData();
 			toolsObject.SOSleep(0);
