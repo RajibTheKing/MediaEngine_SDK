@@ -50,6 +50,10 @@ public:
 	int GetHeight();
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
+    
+    int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
+    int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
+    int Merge_Two_Video(unsigned char *pInData1/*BigData*/, int h1, int w1, unsigned char *pInData2/*SmallData*/, int h2, int w2, int iPosX, int iPosY, unsigned char *pOutData);
 
 private:
 
