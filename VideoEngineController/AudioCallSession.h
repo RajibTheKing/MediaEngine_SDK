@@ -225,7 +225,7 @@ private:
 	void EncodeIfNeeded(long long &timeStampm, long long &encodingTime, double &avgCountTimeStamp);
 	void AddHeader(int &version, long long &nCurrentTimeStamp);
 	void SetAudioIdentifierAndNextPacketType();
-	void SendAudioData();
+	void SendAudioData(Tools toolsObject);
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);

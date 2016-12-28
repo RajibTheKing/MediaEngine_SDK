@@ -7,6 +7,8 @@
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
 
+#define __DUPLICATE_AUDIO__
+
 #ifdef USE_AECM
 #include "Echo.h"
 #endif
@@ -616,7 +618,7 @@ void CAudioCallSession::SetAudioIdentifierAndNextPacketType()
 	}
 }
 
-void CAudioCallSession::SendAudioData()
+void CAudioCallSession::SendAudioData(Tools toolsObject)
 {
 #ifdef  __AUDIO_SELF_CALL__
 	if (m_bLiveAudioStreamRunning == false)
@@ -681,14 +683,15 @@ void CAudioCallSession::SendAudioData()
 #endif
 
 #ifdef  __DUPLICATE_AUDIO__
-#ifndef MULTIPLE_HEADER
 		if (false == m_bLiveAudioStreamRunning && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
 		{
 			toolsObject.SOSleep(5);
-			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaEncodedFrame, nEncodedFrameSize + m_AudioHeadersize + 1, 0);
-			//                    ALOG("#2AE# Sent Second Times");
-		}
+#ifndef NO_CONNECTIVITY
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, m_nCompressedFrameSize + m_AudioHeadersize + 1, 0);
+#else
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, m_ucaCompressedFrame);
 #endif
+		}
 #endif
 	}
 
@@ -732,7 +735,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
 			AddHeader(version, llRelativeTime);
 			SetAudioIdentifierAndNextPacketType();
-			SendAudioData();
+			SendAudioData(toolsObject);
 			toolsObject.SOSleep(0);
 		}
 	}
@@ -906,10 +909,8 @@ bool CAudioCallSession::IsPacketProcessableInNormalCall(int &nCurrentAudioPacket
 			return true;
 		}
 		else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
-		{
-#ifdef  __DUPLICATE_AUDIO__			
+		{		
 			m_iAudioVersionFriend = nVersion;
-#endif
 			return true;
 		}
 		else
