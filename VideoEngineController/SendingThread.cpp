@@ -21,6 +21,8 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define __RANDOM_MISSING_PACKET__
 
+#define NO_CONNECTIVITY
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
@@ -296,7 +298,11 @@ void CSendingThread::SendingThreadProcedure()
 				if (m_bInterruptRunning == false)
 				{
 					if(m_bInterruptHappened == false)
+#ifndef NO_CONNECTIVITY
 						m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+#else
+						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
+#endif
 					else
 						m_bInterruptHappened = false;
 				}

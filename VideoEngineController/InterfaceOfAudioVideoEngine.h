@@ -47,6 +47,9 @@ public:
 	bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 	int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 
+	bool StartCallInLive(const IPVLongType llFriendID, int iRole);
+	bool EndCallInLive(const IPVLongType llFriendID);
+
 	 bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);

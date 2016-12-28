@@ -127,8 +127,9 @@ int CInterfaceOfAudioVideoEngine::EncodeAndTransfer(const IPVLongType llFriendID
 }
 
 int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength)
-{   
-	return -1;
+{
+	std::vector< std::pair<int, int> > vMissingFrames;
+	return PushAudioForDecodingVector(llFriendID, MEDIA_TYPE_LIVE_STREAM, in_data, unLength, vMissingFrames);
 }
 
 int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames)
@@ -676,3 +677,12 @@ void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunction
     }
 }
 
+
+bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole)
+{
+	return true;
+}
+bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
+{
+	return true;
+}
