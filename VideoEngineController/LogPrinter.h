@@ -37,7 +37,7 @@
 //#define __THREAD_LOG__
 //#define __BITRATE_CHNANGE_LOG__
 
-//#define  __SPECIFIC_LOG6__
+#define  __SPECIFIC_LOG6__
 
 #define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 

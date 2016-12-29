@@ -127,9 +127,6 @@ void CSendingThread::SendDataFromFile()
 	CVideoCallSession* pVideoSession;
 
 	long long lFriendID = 200;
-	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
-	LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
-
 	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
 	ALOG("Sending File to AAC.");
 
@@ -139,10 +136,10 @@ void CSendingThread::SendDataFromFile()
 	long long lastSleepTime, curSleepTime;
 
 	lastSleepTime = m_Tools.CurrentTimestamp();
-	for (int i = 1; i <= 200; i++)
+	for (int i = 1; i <= 1000; i++)
 	{
 		int totFileSize = -1;
-		std::string filePath = inFilePath; // +m_Tools.IntegertoStringConvert(i);
+		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
 		AAC_LOG("==== FilePath: " + filePath);
 
 		FILE *fd = fopen(filePath.c_str(), "rb");
