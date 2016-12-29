@@ -341,16 +341,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
 
-				int ww = (iWidth / 2) + (iWidth / 8);
-				int hh = (iHeight / 2) + (iHeight / 8);
+				int iPosX = (iWidth / 2) + (iWidth / 8);
+				int iPosY = (iHeight / 2) + (iHeight / 8);
 
-				if (ww % 4)
-					ww += (4 - (ww % 4));
+				if (iPosX % 4)
+					iPosX += (4 - (iPosX % 4));
 
-				if (hh % 4)
-					hh += (4 - (hh % 4));
+				if (iPosY % 4)
+					iPosY += (4 - (iPosY % 4));
 
-				this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, ww, hh);
+				this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
                 m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );
