@@ -931,7 +931,9 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 {
 	Locker lock(*m_pColorConverterMutex);
 
-	DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
+	int iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
+	memcpy(smallFrame, m_pSmallFrame, iLen);
+	iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
 
 	//memcpy(m_pSmallFrame, smallFrame, nLength);
 }
@@ -960,8 +962,8 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 
 	int h1 = m_iVideoHeight;
 	int w1 = m_iVideoWidth;
-	int h2 = m_iVideoHeight >> 1;
-	int w2 = m_iVideoWidth >> 1;
+	int h2 = m_iVideoHeight >> 2;
+	int w2 = m_iVideoWidth >> 2;
 
     int iLen1 = h1 * w1 * 3 / 2;
     int iLen2 = h2 * w2 * 3 / 2;
