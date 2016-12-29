@@ -13,6 +13,7 @@
 class CVideoCallSession;
 class CCommonElementsBucket;
 class CFPSController;
+//class CVideoHeader;
 
 class CSendingThread
 {
@@ -57,7 +58,7 @@ private:
 	bool m_bInterruptHappened;
 	bool m_bInterruptRunning;
 
-	CVideoHeader m_cVH;
+//	CVideoHeader m_cVH;
 
 	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
