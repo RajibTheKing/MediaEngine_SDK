@@ -15,6 +15,8 @@ class CCommonElementsBucket;
 class CFPSController;
 //class CVideoHeader;
 
+//#define CHANNEL_FROM_FILE
+
 class CSendingThread
 {
 public:
@@ -32,7 +34,9 @@ public:
 
 private:
 	int GetSleepTime();
-
+#ifdef CHANNEL_FROM_FILE
+	void SendDataFromFile();
+#endif
 	long long m_nTimeStampOfChunck;
 	int m_nTimeStampOfChunckSend;
 

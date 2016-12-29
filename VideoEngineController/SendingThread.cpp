@@ -14,6 +14,10 @@
 #include "Globals.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
+#ifdef CHANNEL_FROM_FILE
+#include "Aac.h"
+#endif
+
 extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define SEND_VIDEO_TO_SELF 1
@@ -119,6 +123,62 @@ int iNumberOfPacketsInLastFrame = 0;
 int iNumberOfPacketsActuallySentFromLastFrame = 0;
 #endif
 
+#ifdef CHANNEL_FROM_FILE
+void CSendingThread::SendDataFromFile()
+{
+	CVideoCallSession* pVideoSession;
+
+	long long lFriendID = 200;
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+	LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
+
+	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
+	ALOG("Sending File to AAC.");
+
+	unsigned char data[100000];
+
+	long long curChunkTimeStamp = 0, PrevChunkTimeStamp = 0, chunkDuration;
+	long long lastSleepTime, curSleepTime;
+
+	lastSleepTime = m_Tools.CurrentTimestamp();
+	for (int i = 1; i <= 1040; i++)
+	{
+		int totFileSize = -1;
+		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
+		AAC_LOG("==== FilePath: " + filePath);
+
+		FILE *fd = fopen(filePath.c_str(), "rb");
+
+		if (!fd){
+			AAC_LOG("file open failed");
+			return;
+		}
+
+		if (!fseek(fd, 0, SEEK_END)) {
+			totFileSize = ftell(fd);
+			AAC_LOG("Reading from file: " + m_Tools.LongLongToString(totFileSize));
+		}
+
+		fseek(fd, 0, SEEK_SET);
+		fread(data, 1, totFileSize, fd);
+
+		curChunkTimeStamp = m_Tools.GetMediaUnitTimestampInMediaChunck(data);
+
+		G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(lFriendID, 3, data, totFileSize, std::vector< std::pair<int, int> >());
+		fclose(fd);
+
+		chunkDuration = curChunkTimeStamp - PrevChunkTimeStamp;
+		PrevChunkTimeStamp = curChunkTimeStamp;
+
+		AAC_LOG("chunk_duration: " + m_Tools.IntegertoStringConvert(chunkDuration));
+		curSleepTime = m_Tools.CurrentTimestamp();
+		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
+		lastSleepTime = m_Tools.CurrentTimestamp();
+//		m_Tools.SOSleep(200);
+	}
+}
+#endif
+
 void CSendingThread::SendingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() started Sending method");
@@ -160,8 +220,12 @@ void CSendingThread::SendingThreadProcedure()
 	while (bSendingThreadRunning)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
+#ifdef CHANNEL_FROM_FILE
+		m_Tools.SOSleep(5000);
+		SendDataFromFile();
+		m_Tools.SOSleep(500000);
+#endif
 
-		
 
 		if (m_SendingBuffer->GetQueueSize() == 0)
 		{

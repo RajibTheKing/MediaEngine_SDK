@@ -62,6 +62,11 @@ m_nServiceType(nServiceType)
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
 
+#ifdef AAC_ENABLE
+	m_cAac = new CAac();
+	m_cAac->SetParameters(44100, 2);
+#endif
+
 	StartEncodingThread();
 	StartDecodingThread();
 
@@ -132,6 +137,12 @@ CAudioCallSession::~CAudioCallSession()
 	StopDecodingThread();
 	StopEncodingThread();
 
+#ifdef AAC_ENABLE
+	if (m_cAac != nullptr){
+		delete m_cAac;
+		m_cAac = nullptr;
+	}
+#endif
 #ifdef OPUS_ENABLE
 	delete m_pAudioCodec;
 #else
@@ -735,6 +746,16 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			}
 
+#ifdef AAC_ENABLE
+
+			else if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType){
+				bIsProcessablePacket = true;
+			}
+
+#endif
+
+
+
 			if (!bIsProcessablePacket) continue;
 
 			//m_iOpponentReceivedPackets = ReceivingHeader->GetInformation(NUMPACKETRECVD);
@@ -822,8 +843,26 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 			else
 			{
+
+#ifdef AAC_ENABLE
+
+			    if(AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType){
+					llNow = m_Tools.CurrentTimestamp();
+			        m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nPacketDataLength, m_saDecodedFrame, nDecodedFrameSize);
+					long long llDecodingTimeNow = m_Tools.CurrentTimestamp() - llNow;
+					AAC_LOG("-----DecodingTime: " + m_Tools.LongLongToString(llDecodingTimeNow));
+			        //m_cAac->DecodeFrame(&m_ucaDecodingFrame[15], nDecodingFrameSize - 15, m_saDecodedFrame, nDecodedFrameSize);
+			    }
+			    else {
+                    memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
+                    nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+				}
+
+#else
 				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + m_AudioHeadersize, nDecodingFrameSize);
 				nDecodedFrameSize = nDecodingFrameSize / sizeof(short);
+
+#endif
 			}
 			/*
 			* Start call block end.
