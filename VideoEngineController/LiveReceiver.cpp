@@ -14,7 +14,7 @@ LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject)
 {
     //m_pAudioDecoderBuffer = pAudioDecoderBuffer;
-    m_pLiveAudioDecodingQueue = NULL;
+    m_pLiveAudioReceivedQueue = NULL;
     m_pLiveVideoDecodingQueue = NULL;
     m_pLiveReceiverMutex.reset(new CLockHandler);
 }
@@ -28,7 +28,7 @@ void LiveReceiver::SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue)
 }
 void LiveReceiver::SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue)
 {
-    m_pLiveAudioDecodingQueue = pQueue;
+    m_pLiveAudioReceivedQueue = pQueue;
 }
 
 
@@ -129,7 +129,7 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
     return false;
 }
 
-void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) {
+void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) {
 
     Locker lock(*m_pLiveReceiverMutex);
 
@@ -185,7 +185,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-        m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange + 1,
+        m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1,
                                          nCurrentFrameLenWithMediaHeader - 1);
 
     }
@@ -279,10 +279,12 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 }
 
 
-void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLenght, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
+int iExpectedPacketNumber = 0;
+
+void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
 
         Locker lock(*m_pLiveReceiverMutex);
-
+		CAudioPacketHeader g_LiveReceiverHeader;
         size_t nNumberOfMissingBlocks = vMissingBlocks.size();
         size_t iMissingIndex = 0;
 
@@ -291,7 +293,7 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
         int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
         int nCurrentFrameLenWithMediaHeader;
         nFrameLeftRange = nOffset;
-
+		bool done = true;
 
         while(iFrameNumber < nNumberOfAudioFrames)
         {
@@ -320,16 +322,36 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 
             ++ iFrameNumber;
 
+			g_LiveReceiverHeader.CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+			int iPacketNumber = g_LiveReceiverHeader.GetInformation(PACKETNUMBER);
+			if (iPacketNumber != iExpectedPacketNumber)
+			{
+				LOGE("live receiver unexpected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
+			}
+			else
+			{
+				LOGE("live receiver expected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
+			}
+			iExpectedPacketNumber = iPacketNumber + 1;
             if( !bCompleteFrame )
-            {
+            {				
+				LOGE("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
                 continue;
             }else{
                 //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
             }
-
+			if (done)
+			{
+				done = false;
+				LOGE("live receiver FIRST PACKETNUMBER = %d\n", iPacketNumber);
+			}
+			else
+			{
+				LOGE("live receiver PACKETNUMBER = %d\n", iPacketNumber);
+			}
             nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-            m_pLiveAudioDecodingQueue->Queue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+            m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
 
         }
 }

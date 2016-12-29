@@ -6,7 +6,7 @@
 #include "Tools.h"
 
 
-CAudioCodecBuffer::CAudioCodecBuffer() :
+CAudioShortBuffer::CAudioShortBuffer() :
 
 m_iPushIndex(0),
 m_iPopIndex(0),
@@ -21,12 +21,12 @@ mt_llSumOverFlowTime(0)
 	m_pAudioEnocdingBufferMutex.reset(new CLockHandler);
 }
 
-CAudioCodecBuffer::~CAudioCodecBuffer()
+CAudioShortBuffer::~CAudioShortBuffer()
 {
 
 }
 
-void CAudioCodecBuffer::ResetBuffer()
+void CAudioShortBuffer::ResetBuffer()
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 
@@ -39,7 +39,7 @@ void CAudioCodecBuffer::ResetBuffer()
 	mt_llSumOverFlowTime = 0;
 }
 
-int CAudioCodecBuffer::Queue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump)
+int CAudioShortBuffer::EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump)
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 
@@ -80,7 +80,7 @@ int CAudioCodecBuffer::Queue(short *saCapturedAudioFrameData, int nlength, long 
 	return 1;
 }
 
-int CAudioCodecBuffer::DeQueue(short *saCapturedAudioFrameData, long long &receivedTime)
+int CAudioShortBuffer::DeQueue(short *saCapturedAudioFrameData, long long &receivedTime)
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 
@@ -105,7 +105,7 @@ int CAudioCodecBuffer::DeQueue(short *saCapturedAudioFrameData, long long &recei
 	return 1;
 }
 
-void CAudioCodecBuffer::IncreamentIndex(int &irIndex)
+void CAudioShortBuffer::IncreamentIndex(int &irIndex)
 {
 	irIndex++;
 
@@ -113,7 +113,7 @@ void CAudioCodecBuffer::IncreamentIndex(int &irIndex)
 		irIndex = 0;
 }
 
-int CAudioCodecBuffer::GetQueueSize()
+int CAudioShortBuffer::GetQueueSize()
 {
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 

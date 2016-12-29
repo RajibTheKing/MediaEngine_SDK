@@ -3,7 +3,7 @@
 #define _AUDIO_CALL_SESSION_H_
 
 #define OPUS_ENABLE
-//#define AAC_ENABLE
+#define AAC_ENABLE
 
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
@@ -52,7 +52,7 @@ static string colon = "ALOG:";
 
 class CCommonElementsBucket;
 class CVideoEncoder;
-class CAudioPacketHeader;
+class CAudioLiveHeader;
 class CAudioCodec;
 class CAac;
 
@@ -72,11 +72,14 @@ class CVoice;
 
 class CAudioCallSession
 {
-
 public:
-
+	int m_iNextPacketType;
+public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
+
+	void StartCallInLive(int iRole);
+	void EndCallInLive();
 
     CAudioCodec* GetAudioCodec();
 
@@ -87,11 +90,9 @@ public:
     
     int DecodeAudioDataVector(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
-    void EncodingThreadProcedure();
     void StopEncodingThread();
     void StartEncodingThread();
 
-    void DecodingThreadProcedure();
     void StopDecodingThread();
     void StartDecodingThread();
 
@@ -101,39 +102,104 @@ public:
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
-	int m_iNextPacketType;
-	long long m_llMaxAudioPacketNumber;
-    void getAudioSendToData(unsigned char * pAudioDataToSend, int &length, std::vector<int> &vDataLengthVector);
+	
+    void GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector,
+		std::vector<int> &vCompressedDataLengthVector, int &CompressedLength, unsigned char * pAudioCompressedDataToSend);
+
+	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector);
+
     int GetServiceType();
 
 private:
 
+	int m_iRole;
     Tools m_Tools;
     LongLong m_FriendID;
 	bool m_bEchoCancellerEnabled;
 	long long m_llEncodingTimeStampOffset;
 	long long m_llDecodingTimeStampOffset;
 
-    CAudioPacketHeader *SendingHeader;
-    CAudioPacketHeader *ReceivingHeader;
+    CAudioPacketHeader *m_SendingHeader;
+    CAudioPacketHeader *m_ReceivingHeader;
 
-	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-
-	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
-
-    int m_AudioHeadersize;
+    int m_MyAudioHeadersize;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
-    CAudioCodecBuffer m_AudioEncodingBuffer;
-    CAudioDecoderBuffer m_AudioDecodingBuffer;
+	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
+	CAudioByteBuffer m_AudioReceivedBuffer;
 
-    std::vector<int> m_vEncodedFrameLenght;
+    std::vector<int> m_vRawFrameLength, m_vCompressedFrameLength;
 	bool m_bUsingLoudSpeaker;
+
+    int m_iLastDecodedPacketNumber;    
+    int m_iPacketNumber;
+	int m_iSlotID;
+	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;
+	int m_iReceivedPacketsInPrevSlot, m_iReceivedPacketsInCurrentSlot;
+	int m_iOpponentReceivedPackets;
+	
+
+	bool m_bIsCheckCall, m_bLoudSpeakerEnabled;
+
+	///////////Pre Encoding Data///////
+    short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
+	short m_saAudioMUXEDFrame[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
+	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
+
+	///////////Post Encoding Data///////
+	/*
+	m_ucaCompressedFrame is an Encoded frame.
+	It comes from m_saAudioRecorderFrame after encoding, during non-live-call or live-call.
+	Must not be used during live-streaming.
+	*/
+    unsigned char m_ucaCompressedFrame[MAX_AUDIO_FRAME_Length];
+	/*
+	m_ucaRawFrame is a Raw frame.
+	It comes from m_saAudioRecorderFrame without encoding during livestream.
+	It comes from m_saAudioMUXEDFrame without encoding during live-call.
+	Must not be used during non-live-call.
+	*/
+	unsigned char m_ucaRawFrame[MAX_AUDIO_FRAME_Length];
+
+	int m_nCompressedFrameSize, m_nRawFrameSize;
+
+
+    unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
+    short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
+	int m_nDecodingFrameSize, m_nDecodedFrameSize;
+
+    unsigned char m_ucaRawDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+	unsigned char m_ucaCompressedDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+	int m_iRawDataSendIndex, m_iCompressedDataSendIndex;
+	long long m_llMaxAudioPacketNumber;
+
+    bool m_bAudioEncodingThreadRunning;
+    bool m_bAudioEncodingThreadClosed;
+
+    bool m_bAudioDecodingThreadRunning;
+    bool m_bAudioDecodingThreadClosed;
+    
+    LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue;
+    LiveReceiver *m_pLiveReceiverAudio;
+    
+    bool m_bLiveAudioStreamRunning;
+    int m_nServiceType;
+    
+	int m_iVolume;
+
+    int m_iAudioVersionFriend;
+    int m_iAudioVersionSelf;
 
 #ifdef AAC_ENABLE
 	CAac *m_cAac;
+#endif
+
+#ifdef USE_ANS
+	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
+#endif
+
+#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
+	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_Length];
 #endif
 
 #ifdef USE_AECM
@@ -154,52 +220,46 @@ private:
 #endif
 
 #ifdef OPUS_ENABLE
-    CAudioCodec *m_pAudioCodec;
+	CAudioCodec *m_pAudioCodec;
 #else
-    G729CodecNative *m_pG729CodecNative;
+	G729CodecNative *m_pG729CodecNative;
 #endif
 
-    int m_iLastDecodedPacketNumber;    
-    int m_iPacketNumber;
-	int m_iSlotID;
-	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;
-	int m_iReceivedPacketsInPrevSlot, m_iReceivedPacketsInCurrentSlot;
-	int m_iOpponentReceivedPackets;
-	
+private:
 
-	bool m_bIsCheckCall, m_bLoudSpeakerEnabled;
+	void EncodingThreadProcedure();
+	///////Methods Called From EncodingThreadProcedure/////
+	void MuxIfNeeded();
+	void DumpEncodingFrame();
+	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long &nCurrentTimeStamp, long long &timeStamp);
+	bool PreProcessAudioBeforeEncoding();
+	void EncodeIfNeeded(long long &timeStampm, long long &encodingTime, double &avgCountTimeStamp);
+	void AddHeader(int &version, long long &nCurrentTimeStamp);
+	void SetAudioIdentifierAndNextPacketType();
+	void SendAudioData(Tools toolsObject);
+	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
+	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
+	///////End of Methods Called From EncodingThreadProcedure/////
 
-    short m_saAudioEncodingFrame[MAX_AUDIO_FRAME_LENGHT];
-    unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_LENGHT];
-    unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_LENGHT];
-    short m_saDecodedFrame[MAX_AUDIO_FRAME_LENGHT];
-
-    unsigned char m_ucaAudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
-	int m_iAudioDataSendIndex;
-#ifdef USE_ANS
-	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_LENGHT];
-#endif
-#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
-	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_LENGHT];
-#endif
-
-    bool m_bAudioEncodingThreadRunning;
-    bool m_bAudioEncodingThreadClosed;
-
-    bool m_bAudioDecodingThreadRunning;
-    bool m_bAudioDecodingThreadClosed;
-    
-    LiveAudioDecodingQueue *m_pLiveAudioDecodingQueue;
-    LiveReceiver *m_pLiveReceiverAudio;
-    
-    bool m_bLiveAudioStreamRunning;
-    int m_nServiceType;
-    
-
-	int m_iVolume;
-
-    int m_iAudioVersionFriend;
-    int m_iAudioVersionSelf;
+	void DecodingThreadProcedure();
+	///////Methods Called From DecodingThreadProcedure/////
+	bool IsQueueEmpty(Tools &toolsObject);
+	void DequeueData(int &nDecodingFrameSize);
+	bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
+	bool IsPacketNumberProcessable(int &iPacketNumber);
+	bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
+	bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
+	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
+	void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
+	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
+	void DumpDecodedFrame();
+	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
+		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);
+	void SendToPlayer(long long &llNow, long long &llLastTime);
+	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
+	///////End Of Methods Called From DecodingThreadProcedure/////
 
 protected:
 

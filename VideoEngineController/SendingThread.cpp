@@ -25,8 +25,6 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 
 //#define __RANDOM_MISSING_PACKET__
 
-#define NO_CONNECTIVITY
-
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
@@ -129,9 +127,6 @@ void CSendingThread::SendDataFromFile()
 	CVideoCallSession* pVideoSession;
 
 	long long lFriendID = 200;
-	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
-	LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
-
 	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
 	ALOG("Sending File to AAC.");
 
@@ -141,7 +136,7 @@ void CSendingThread::SendDataFromFile()
 	long long lastSleepTime, curSleepTime;
 
 	lastSleepTime = m_Tools.CurrentTimestamp();
-	for (int i = 1; i <= 1040; i++)
+	for (int i = 1; i <= 1000; i++)
 	{
 		int totFileSize = -1;
 		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
@@ -273,7 +268,7 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
 				if (bExist)
-					pAudioSession->getAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector);
+					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
@@ -362,13 +357,17 @@ void CSendingThread::SendingThreadProcedure()
 				if (m_bInterruptRunning == false)
 				{
 					if(m_bInterruptHappened == false)
+					{
 #ifndef NO_CONNECTIVITY
 						m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 #else
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 #endif
+					}
 					else
+					{
 						m_bInterruptHappened = false;
+					}
 				}
 				
 #else

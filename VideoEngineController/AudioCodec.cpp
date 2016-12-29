@@ -135,7 +135,7 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 		++iFrameCounter;
 		nProcessedDataSize += AUDIO_FRAME_SIZE;
 	}
-	int nEncodedPacketLenght = nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter;
+	int nEncodedPacketLength = nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter;
 //	nbBytes = opus_encode(encoder, in_data, FRAME_SIZE, out_buffer, MAX_PACKET_SIZE);
 
 	if (nEncodedSize < 0)
@@ -148,7 +148,7 @@ int CAudioCodec::encodeAudio(short *in_data, unsigned int in_size, unsigned char
 	{
 //		ALOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
 	}
-	return nEncodedPacketLenght;
+	return nEncodedPacketLength;
 }
 
 int CAudioCodec::decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)

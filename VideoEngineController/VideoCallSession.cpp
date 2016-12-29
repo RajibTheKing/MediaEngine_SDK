@@ -4,6 +4,7 @@
 #include "LogPrinter.h"
 #include "Globals.h"
 #include "Controller.h"
+#include "InterfaceOfAudioVideoEngine.h"
 
 
 //PairMap g_timeInt;
@@ -723,7 +724,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
+#ifndef NO_CONNECTIVITY
 	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID,1, m_miniPacket,VIDEO_HEADER_LENGTH + 1,0);
+#else
+	m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, VIDEO_HEADER_LENGTH + 1, m_miniPacket);
+#endif
 }
 
 long long CVideoCallSession::GetShiftedTime()

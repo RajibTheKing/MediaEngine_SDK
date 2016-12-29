@@ -156,7 +156,7 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 	{
 		if (sInBuf[i])
 		{
-			//ALOG("ratio = " + m_Tools.IntegertoStringConvert(m_saAudioDecodedFrameTemp[i] / m_saAudioEncodingFrame[i]));
+			//ALOG("ratio = " + m_Tools.IntegertoStringConvert(m_saAudioDecodedFrameTemp[i] / m_saAudioRecorderFrame[i]));
 			iRatio += m_sTempBuf[i] * 1.0 / sInBuf[i];
 			k++;
 		}

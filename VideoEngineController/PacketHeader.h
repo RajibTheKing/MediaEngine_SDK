@@ -66,7 +66,7 @@ public:
 
     void setPacketLength(unsigned char * PacketLength) ;
 
-    int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
+    int GetIntFromChar(unsigned char *packetData, int index,int nLength);
 
 	unsigned int GetFrameNumberDirectly(unsigned char *packetData);
 

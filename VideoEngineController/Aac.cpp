@@ -3,7 +3,6 @@
 #include <thread>
 
 
-
 CAac::CAac() :
 m_bIsClosedUDPDataSendingThread(true),
 m_hDecoder(nullptr)
@@ -175,10 +174,10 @@ bool CAac::SetParameters(int sampleRate, int numberOfChannels)
 	return true;
 }
 
-int i=0;
+
 bool CAac::DecodeFrame(unsigned char *inputDataBuffer, int inputDataSize, short *outputDataBuffer, int &dataSize)
 {
-	AAC_LOG(m_cTools.IntegertoStringConvert(i++) + ". CAcc::DecodeFrame(), inputDataSize: " + m_cTools.IntegertoStringConvert(inputDataSize));
+	AAC_LOG("CAcc::DecodeFrame(), inputDataSize: " + m_cTools.IntegertoStringConvert(inputDataSize));
 
 	m_nRC = aacDecoder_Fill(m_hDecoder, &inputDataBuffer, (const unsigned int *)&inputDataSize, (unsigned int *)&inputDataSize);
 	if (m_nRC != AAC_DEC_OK)

@@ -1002,3 +1002,35 @@ void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
 
+bool CController::StartCallInLive(const LongLong& lFriendID, int iRole)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->StartCallInLive(iRole);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::EndCallInLive(const LongLong& lFriendID)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->EndCallInLive();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+

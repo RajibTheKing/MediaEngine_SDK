@@ -16,7 +16,7 @@ static string acc_tag = "AAC_LOG:";
 #define AUDIO_PACKET_TYPE 7
 #define VIDEO_PACKET_TYPE 1
 
-#define MAX_NUM_OF_FRAMES 50000
+#define MAX_NUM_OF_FRAMES 20
 #define MAX_BUF_SIZE 10000
 
 //#define DUMP_OUTPUT

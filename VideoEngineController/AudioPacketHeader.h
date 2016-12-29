@@ -19,6 +19,9 @@
 #define AUDIO_NOVIDEO_PACKET_TYPE 2
 #define AUDIO_VERSION_PACKET_TYPE 3
 #define AUDIO_CHANNEL_PACKET_TYPE 7
+#define AUDIO_OPUS_PACKET_TYPE 9
+#define AUDIO_NONMUXED_PACKET_TYPE 10
+#define AUDIO_MUXED_PACKET_TYPE 11
 
 #define MAXFIELDSINHEADER 15
 #define MAXHEADERSIZE 100
@@ -47,9 +50,8 @@ static int SupportedPacketTypes[] =
 	AUDIO_SKIP_PACKET_TYPE,
 	AUDIO_NORMAL_PACKET_TYPE,
 	AUDIO_NOVIDEO_PACKET_TYPE,
-	AUDIO_VERSION_PACKET_TYPE,
-	AUDIO_CHANNEL_PACKET_TYPE
-};
+	AUDIO_VERSION_PACKET_TYPE
+}; //Only for Call
 
 
 class CAudioPacketHeader {
@@ -61,12 +63,12 @@ class CAudioPacketHeader {
 
 	unsigned char ma_uchHeader[MAXHEADERSIZE];
 	int nNumberOfHeaderElements;
-//	int CopyInformationToHeader(unsigned int * Information);
+	//int CopyInformationToHeader(unsigned int * Information);
 	void PutInformationToArray(int InfoType);
 
 public:
 	CAudioPacketHeader();
-//	CAudioPacketHeader(unsigned int * Information);
+	//CAudioPacketHeader(unsigned int * Information);
 	CAudioPacketHeader(unsigned char *Header);
 	~CAudioPacketHeader();
 
@@ -82,6 +84,7 @@ public:
 
 	bool IsPacketTypeSupported(unsigned int PacketType);
 	bool IsPacketTypeSupported();
-	void showDetails(string prefix="");
+
+	void showDetails(string prefix);
 
 };

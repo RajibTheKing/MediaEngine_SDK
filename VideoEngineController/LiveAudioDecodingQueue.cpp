@@ -29,7 +29,7 @@ void LiveAudioDecodingQueue::ResetBuffer()
     m_nQueueSize = 0;
 }
 
-int LiveAudioDecodingQueue::Queue(unsigned char *saReceivedAudioFrameData, int nLength)
+int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength)
 {
     Locker lock(*m_pLiveAudioDecodingQueueMutex);
 

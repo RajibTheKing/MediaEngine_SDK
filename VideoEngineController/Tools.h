@@ -87,8 +87,8 @@ public:
 
 
 
-	static int GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
-	static void SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLenght, int value);
+	static int GetIntegerFromUnsignedChar(unsigned char *packetData, int index, int nLength);
+	static void SetIntegerIntoUnsignedChar(unsigned char *packetData, int index, int nLength, int value);
 
 	static long long GetLongLongFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
 	static void SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index, int nLenght, long long value);
