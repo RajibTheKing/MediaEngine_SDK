@@ -404,6 +404,7 @@ bool CAac::DecodeFile()
 			m_qProcessedPcmData.push(decodedFrame);
 			totFileSize = totFileSize - (frameSize*2*2);
 		}
+        return true;
 	};
 
 	std::string inputFilePath = "D:\\AudioTeam\\AAC\\fdk-aac-master\\aacTest\\TestFile\\10Min Data\\chunks\\chunk.";
