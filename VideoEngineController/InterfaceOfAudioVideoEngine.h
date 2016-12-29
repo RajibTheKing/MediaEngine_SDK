@@ -15,6 +15,8 @@
 #define SERVICE_TYPE_SELF_CALL 13
 #define SERVICE_TYPE_SELF_STREAM 14
 
+#define __CHUNK_DELAY_TOLERANCE__ 100
+
 typedef long long IPVLongType;
 
 class CController;
@@ -83,6 +85,7 @@ private:
 	Tools m_Tools;
 
 	CController* m_pcController;
+	long long m_llTimeOffset;
 };
 
 #endif

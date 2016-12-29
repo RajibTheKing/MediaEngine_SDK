@@ -37,8 +37,8 @@ FILE *FileOutput;
 
 #define __TIMESTUMP_MOD__ 100000
 
-#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 0
-#define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 2
+#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 2
+#define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 25
 
 
 
@@ -655,7 +655,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	{
 		if (m_bLiveAudioStreamRunning && m_pLiveAudioDecodingQueue->GetQueueSize() == 0)
 		{
-			toolsObject.SOSleep(1);
+			toolsObject.SOSleep(5);
 		}
 		else if (false == m_bLiveAudioStreamRunning && m_AudioDecodingBuffer.GetQueueSize() == 0)
 		{
@@ -753,14 +753,13 @@ void CAudioCallSession::DecodingThreadProcedure()
 					llWaitingTime = llTimeStampOffset - llExpectedEncodingTimeStamp;
 
 					if( llExpectedEncodingTimeStamp -  __AUDIO_DELAY_TIMESTAMP_TOLERANCE__> llTimeStampOffset ) {
-						__LOG("@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, llTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
+						LOGE("##DE##@@@@@@@@@@@@@@@@@--> New*********************************************** FrameNumber: %d [%lld]\t\tDELAY FRAME: %lld  Now: %lld", iPacketNumber, llTimeStampOffset, llWaitingTime, llNow % __TIMESTUMP_MOD__);
 						continue;
 					}
 
-
 					while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llTimeStampOffset)
 					{
-						m_Tools.SOSleep(1);
+						m_Tools.SOSleep(5);
 						llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
 					}
 				}
