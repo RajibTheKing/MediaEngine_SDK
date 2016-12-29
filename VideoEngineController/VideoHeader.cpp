@@ -159,7 +159,7 @@ void CVideoHeader::ShowDetails(string sTag)
 
 	}
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sss);
+	//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sss);
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sLog);
     
