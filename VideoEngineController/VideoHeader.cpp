@@ -143,8 +143,25 @@ void CVideoHeader::ShowDetails(string sTag)
     +" SIndex:"+Tools::getText(m_iPacketStartingIndex)
     +" Len:"+Tools::getText(m_iPacketDataLength)
     ;
-    
-    printf("%s\n", sLog.c_str());
+
+	unsigned char pLocalData[30];
+	
+	GetHeaderInByteArray(pLocalData);
+	string sss = "#PKT#  -> " + sTag;
+
+	for (int i = 0; i < 22; i++)
+	{
+		int byteElement = (int)pLocalData[i];
+
+		sss += Tools::getText(byteElement);
+		sss += ", ";
+		
+
+	}
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sss);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sLog);
     
 }
 int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
