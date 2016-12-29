@@ -453,7 +453,7 @@ void CSendingThread::SendingThreadProcedure()
 else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
-			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
+			m_EncodedFrame[1 + 3] = signal;
 
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
