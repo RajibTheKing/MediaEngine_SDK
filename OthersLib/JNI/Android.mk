@@ -40,6 +40,12 @@ LOCAL_MODULE := IPVStunMessage
 LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libIPVStunMessage.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Prebuilt AAC
+include $(CLEAR_VARS)
+LOCAL_MODULE := AAC
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libFraunhoferAAC.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 # Prebuilt Opus
 include $(CLEAR_VARS)
 LOCAL_MODULE := Opus
@@ -153,6 +159,8 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/VideoHeader.cpp \
 			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
 			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+			../../../videoengine/VideoEngineController/Aac.cpp \
+
 
 			
 
@@ -227,6 +235,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)
