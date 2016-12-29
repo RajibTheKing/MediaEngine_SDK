@@ -9,6 +9,7 @@ CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 {
 	G_pInterfaceOfAudioVideoEngine = this;
 	m_pcController = new CController();
+	m_llTimeOffset = -1;
 
 	m_pcController->initializeEventHandler();
 }
@@ -16,6 +17,7 @@ CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 {
 	m_pcController = new CController(szLoggerPath, nLoggerPrintLevel);
+	m_llTimeOffset = -1;
 
 	m_pcController->initializeEventHandler();
 }
@@ -56,6 +58,8 @@ bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)
 
 bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID , int nServiceType)
 {
+	m_llTimeOffset = -1;
+
 	if (NULL == m_pcController)
 	{
 		return false;
@@ -102,6 +106,8 @@ bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bo
 
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType)
 {
+	m_llTimeOffset = -1;
+
 	if (NULL == m_pcController)
 	{
 		return false;
@@ -182,6 +188,26 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			return 6;*/
 
 			int nValidHeaderOffset = 0;
+
+			long long itIsNow = m_Tools.CurrentTimestamp();
+			long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
+
+			//LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
+
+			if (m_llTimeOffset == -1)
+			{
+				m_llTimeOffset = itIsNow - recvTimeOffset;
+				LOGE("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
+			}
+			else
+			{
+				long long expectedTime = itIsNow - m_llTimeOffset;
+				if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
+					LOGE("##DE#Interface## Discarding packet! | now:%lld peertimestamp:%lld expected:%lld", itIsNow, recvTimeOffset, expectedTime);
+					//LOGE("##Discarding packet! | expected:%lld", expectedTime);
+					return -10;
+				}
+			}
 
 			int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
 

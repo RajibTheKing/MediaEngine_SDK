@@ -23,6 +23,8 @@
 #define ENTITY_TYPE_VIEWER_CALLEE 33
 #define ENTITY_TYPE_PUBLISHER_CALLER 34
 
+#define __CHUNK_DELAY_TOLERANCE__ 100
+
 typedef long long IPVLongType;
 
 
@@ -95,6 +97,7 @@ private:
 	Tools m_Tools;
 
 	CController* m_pcController;
+	long long m_llTimeOffset;
 };
 
 #endif
