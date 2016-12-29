@@ -126,13 +126,13 @@ int CInterfaceOfAudioVideoEngine::EncodeAndTransfer(const IPVLongType llFriendID
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength)
+int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength)
 {
 	std::vector< std::pair<int, int> > vMissingFrames;
-	return PushAudioForDecodingVector(llFriendID, MEDIA_TYPE_LIVE_STREAM, in_data, unLength, vMissingFrames);
+	return PushAudioForDecodingVector(llFriendID, mediaType, nEntityType, in_data, unLength, vMissingFrames);
 }
 
-int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames)
+int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	int iReturnedValue = 0;
 
@@ -165,7 +165,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 		//		else
 		//			return 0;
 
-		if (mediaType == MEDIA_TYPE_LIVE_STREAM)
+		if (mediaType == MEDIA_TYPE_LIVE_STREAM && nEntityType != ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
 			//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
