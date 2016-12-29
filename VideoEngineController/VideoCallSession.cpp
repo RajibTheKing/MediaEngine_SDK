@@ -406,6 +406,10 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 {
 	if(m_bLiveVideoStreamRunning)
 	{		
+		m_cVH.setPacketHeader(in_data);
+
+		m_cVH.ShowDetails("After Receiving ");
+
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			m_pVideoPacketQueue->Queue(in_data, in_size);	
 		else

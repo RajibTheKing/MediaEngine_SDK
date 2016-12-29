@@ -136,6 +136,8 @@ private:
 
 	unsigned int m_miniPacketBandCounter;
 
+	CVideoHeader m_cVH;
+
 	int m_nEntityType;
 
 	int m_nCapturedFrameCounter;

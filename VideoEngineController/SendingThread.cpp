@@ -509,6 +509,9 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
 			{
+				m_cVH.setPacketHeader(m_EncodedFrame);
+
+				m_cVH.ShowDetails("Before Sending ");
 
 #if defined(SEND_VIDEO_TO_SELF)
 
