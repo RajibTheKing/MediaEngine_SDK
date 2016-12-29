@@ -852,6 +852,53 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageVersion2(byte* pData, int &
 }
 
 
+//This Function will return UIndex based on YUV_420 Data
+int CColorConverter::getUIndex(int h, int w, int yVertical, int xHorizontal, int& total)
+{
+    return (yVertical>>1) * (w>>1) + (xHorizontal>>1) + total; //total = h * w
+}
+
+//This Function will return VIndex based on YUV_420 Data
+int CColorConverter::getVIndex(int h, int w, int yVertical, int xHorizontal, int& total)
+{
+    return (yVertical>>1) * (w>>1) + (xHorizontal>>1) + total + (total>>2); //total = h * w
+}
+
+//Date: 28-December-2016
+//Constraits:
+// i) Receive Big YUV420 Data  and  Small YUV420 Data, Finally Output Merged YUV420 Data
+// ii) iPosX is Distance in Horizontal Direction. Value must be in Range iPosX >= 0 and iPosX < (BigDataWidth - SmallDataWidth)
+// ii) iPosY is Distance in Vertical Direction. Value must be in Range iPosY >= 0 and iPosY < (BigDataHeight - SmallDataHeight)
+
+int CColorConverter::Merge_Two_Video(byte *pInData1/*BigData*/, int h1, int w1, byte *pInData2/*SmallData*/, int h2, int w2, int iPosX, int iPosY, byte *pOutData)
+{
+    int iLen1 = h1 * w1 * 3 / 2;
+    int iLen2 = h2 * w2 * 3 / 2;
+    
+    memcpy(pOutData, pInData1, iLen1);
+    
+    int total1 = h1 * w1, total2 = h2 * w2;
+    
+    for(int i=iPosY;i<(iPosY+h2);i++)
+    {
+        for(int j=iPosX;j<(iPosX+w2);j++)
+        {
+            int ii = i-iPosY;
+            int jj = j-iPosX;
+            int now1 = i*w1 + j;
+            int now2 = ii*w2 + jj;
+            
+            pOutData[now1] = pInData2[now2];
+            pOutData[getUIndex(h1,w1, i,j, total1)] = pInData2[getUIndex(h2,w2, ii, jj, total2)];
+            pOutData[getVIndex(h1,w1, i,j, total1)] = pInData2[getVIndex(h2,w2, ii, jj, total2)];
+        }
+    }
+    
+    return iLen1;
+}
+
+
+
 
 int CColorConverter::GetWidth()
 {
