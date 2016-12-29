@@ -3,6 +3,7 @@
 #define _AUDIO_CALL_SESSION_H_
 
 #define OPUS_ENABLE
+#define AAC_ENABLE
 
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
@@ -19,6 +20,11 @@
 #include <map>
 #include <stdlib.h>
 #include <vector>
+
+#ifdef AAC_ENABLE
+#include "Aac.h"
+#endif
+
 #ifdef OPUS_ENABLE
 #include "AudioCodec.h"
 #else
@@ -48,6 +54,7 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioLiveHeader;
 class CAudioCodec;
+class CAac;
 
 #ifdef USE_AECM
 class CEcho;
@@ -183,6 +190,10 @@ private:
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
 
+#ifdef AAC_ENABLE
+	CAac *m_cAac;
+#endif
+
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
 #endif
@@ -241,7 +252,7 @@ private:
 	bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
 	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 	void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
-	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength);
+	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
 	void DumpDecodedFrame();
 	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);

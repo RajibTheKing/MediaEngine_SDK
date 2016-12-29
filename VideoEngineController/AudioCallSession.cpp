@@ -71,6 +71,11 @@ m_nServiceType(nServiceType)
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
 
+#ifdef AAC_ENABLE
+	m_cAac = new CAac();
+	m_cAac->SetParameters(44100, 2);
+#endif
+
 	StartEncodingThread();
 	StartDecodingThread();
 
@@ -142,6 +147,13 @@ CAudioCallSession::~CAudioCallSession()
 {
 	StopDecodingThread();
 	StopEncodingThread();
+
+#ifdef AAC_ENABLE
+	if (m_cAac != nullptr){
+		delete m_cAac;
+		m_cAac = nullptr;
+	}
+#endif
 
 #ifdef OPUS_ENABLE
 	delete m_pAudioCodec;
@@ -850,7 +862,9 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketT
 		{
 			return true;;
 		}
-		else if ((m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL) && (nCurrentAudioPacketType == AUDIO_NONMUXED_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE))
+		else if ((m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL) 
+			&& (nCurrentAudioPacketType == AUDIO_NONMUXED_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE  ||
+			nCurrentAudioPacketType == AUDIO_CHANNEL_PACKET_TYPE))
 		{
 			return true;
 		}
@@ -993,7 +1007,7 @@ void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 }
 
 
-void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength)
+void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType)
 {
 	m_iLastDecodedPacketNumber = iPacketNumber;
 	LOGEF("Role %d, Before decode", m_iRole);
@@ -1016,7 +1030,7 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 	}
 	else
 	{
-
+			
 		if (m_iRole == VIEWER_IN_CALL || m_iRole == PUBLISHER_IN_CALL)
 		{
 #ifdef OPUS_ENABLE
@@ -1027,11 +1041,26 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 			m_nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
 #endif			
 		}
-		else
+		else 
 		{
-			memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
-			m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
-			LOGEF("Role %d, no viewers in call", m_iRole);
+			if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)	//Only for channel
+			{
+				long long llNow = m_Tools.CurrentTimestamp();
+#ifdef AAC_ENABLE
+				LOGEF("@@@@@--> DecodeAudioData -> AAC!!!");
+				m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
+				long long llDecodingTimeNow = m_Tools.CurrentTimestamp() - llNow;
+				AAC_LOG("-----DecodingTime: " + m_Tools.LongLongToString(llDecodingTimeNow));
+#else
+				ALOG("Continue from decode frame!");
+#endif
+			}
+			else 
+			{
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
+				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
+				LOGEF("Role %d, no viewers in call", m_iRole);
+			}
 		}
 	}
 }
@@ -1159,7 +1188,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
 
-			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength);
+			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 			DumpDecodedFrame();
 			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
 
