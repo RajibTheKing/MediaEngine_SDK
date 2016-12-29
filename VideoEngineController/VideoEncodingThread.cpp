@@ -336,9 +336,21 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 }
             }*/
 
-			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) {
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
+			{
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
+
+				int ww = (iWidth / 2) + (iWidth / 8);
+				int hh = (iHeight / 2) + (iHeight / 8);
+
+				if (ww % 4)
+					ww += (4 - (ww % 4));
+
+				if (hh % 4)
+					hh += (4 - (hh % 4));
+
+				this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, ww, hh);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
                 m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );

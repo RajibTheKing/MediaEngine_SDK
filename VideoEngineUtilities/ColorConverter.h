@@ -46,14 +46,17 @@ public:
     int DownScaleYUVNV12_YUVNV21_AverageVersion1(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
     int DownScaleYUVNV12_YUVNV21_AverageVersion2(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
 
+	int DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+
 	int GetWidth();
 	int GetHeight();
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
     
+	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
-    int Merge_Two_Video(unsigned char *pInData1/*BigData*/, int h1, int w1, unsigned char *pInData2/*SmallData*/, int h2, int w2, int iPosX, int iPosY, unsigned char *pOutData);
+	int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY);
 
 private:
 
@@ -64,6 +67,8 @@ private:
 	int m_UVPlaneMidPoint;
 	int m_UVPlaneEnd;
 
+	bool m_bMergingSmallFrameEnabled;
+
 	int m_PrevAddValue;
 	int m_AverageValue;
 	int m_ThresholdValue;
@@ -71,6 +76,7 @@ private:
 	unsigned char m_pVPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
+	unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
 	
 	unsigned char m_pClip[900];
 	bool m_bClipInitialization;

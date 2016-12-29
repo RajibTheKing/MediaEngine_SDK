@@ -14,7 +14,8 @@ m_iVideoWidth(iVideoWidth),
 m_YPlaneLength(m_iVideoHeight*m_iVideoWidth),
 m_VPlaneLength(m_YPlaneLength >> 2),
 m_UVPlaneMidPoint(m_YPlaneLength + m_VPlaneLength),
-m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength)
+m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength),
+m_bMergingSmallFrameEnabled(false)
 
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
@@ -851,6 +852,89 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageVersion2(byte* pData, int &
     
 }
 
+int CColorConverter::DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
+{
+	//cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+	int YPlaneLength = iHeight*iWidth;
+	int UPlaneLength = YPlaneLength >> 2;
+
+
+	int indx = 0;
+
+	int iNewHeight = iHeight >> 1;
+	int iNewWidth = iWidth >> 1;
+
+	if (iNewHeight % 2 != 0) iNewHeight = iNewHeight - 1;
+	if (iNewWidth % 2 != 0) iNewWidth = iNewWidth - 1;
+
+	iNewHeight = iNewHeight * 2;
+	iNewWidth = iNewWidth * 2;
+
+	//cout<<"Now iHeight = "<<iHeight<<", now iWidth = "<<iWidth<<endl;
+
+	for (int i = 0; i<iNewHeight; i += 2)
+	{
+		for (int j = 0; j<iNewWidth; j += 2)
+		{
+			int w, x, y, z;
+			w = pData[i*iWidth + j];
+			x = pData[i*iWidth + j + 1];
+			y = pData[(i + 1)*iWidth + j];
+			z = pData[(i + 1)*iWidth + j + 1];
+			int avg = (w + x + y + z) / 4;
+			outputData[indx++] = (byte)avg;
+
+		}
+	}
+
+
+
+
+	byte *p = pData + YPlaneLength;
+	byte *q = pData + YPlaneLength + UPlaneLength;
+	int uIndex = indx;
+	int vIndex = indx + iNewHeight * iNewWidth;
+
+
+	for (int i = 0; i<iNewHeight / 2; i += 2)
+	{
+		for (int j = 0; j<iNewWidth; j += 2)
+		{
+			int w, x, y, z, J, avg;
+
+
+			w = p[i*iWidth + j];
+			x = p[i*iWidth + j + 1];
+			y = p[(i + 1)*iWidth + j];
+			z = p[(i + 1)*iWidth + j + 1];
+			avg = (w + x + y + z) / 4;
+			outputData[uIndex++] = (byte)avg;
+
+
+			w = q[i*iWidth + j];
+			x = q[i*iWidth + j + 1];
+			y = q[(i + 1)*iWidth + j];
+			z = q[(i + 1)*iWidth + j + 1];
+			avg = (w + x + y + z) / 4;
+			outputData[vIndex++] = (byte)avg;
+		}
+	}
+
+	iHeight = iNewHeight >> 1;
+	iWidth = iNewWidth >> 1;
+
+	return iHeight * iWidth * 3 / 2;
+
+}
+
+void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
+
+	//memcpy(m_pSmallFrame, smallFrame, nLength);
+}
 
 //This Function will return UIndex based on YUV_420 Data
 int CColorConverter::getUIndex(int h, int w, int yVertical, int xHorizontal, int& total)
@@ -870,12 +954,17 @@ int CColorConverter::getVIndex(int h, int w, int yVertical, int xHorizontal, int
 // ii) iPosX is Distance in Horizontal Direction. Value must be in Range iPosX >= 0 and iPosX < (BigDataWidth - SmallDataWidth)
 // ii) iPosY is Distance in Vertical Direction. Value must be in Range iPosY >= 0 and iPosY < (BigDataHeight - SmallDataHeight)
 
-int CColorConverter::Merge_Two_Video(byte *pInData1/*BigData*/, int h1, int w1, byte *pInData2/*SmallData*/, int h2, int w2, int iPosX, int iPosY, byte *pOutData)
+int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY)
 {
+	Locker lock(*m_pColorConverterMutex);
+
+	int h1 = m_iVideoHeight;
+	int w1 = m_iVideoWidth;
+	int h2 = m_iVideoHeight >> 1;
+	int w2 = m_iVideoWidth >> 1;
+
     int iLen1 = h1 * w1 * 3 / 2;
     int iLen2 = h2 * w2 * 3 / 2;
-    
-    memcpy(pOutData, pInData1, iLen1);
     
     int total1 = h1 * w1, total2 = h2 * w2;
     
@@ -888,9 +977,9 @@ int CColorConverter::Merge_Two_Video(byte *pInData1/*BigData*/, int h1, int w1, 
             int now1 = i*w1 + j;
             int now2 = ii*w2 + jj;
             
-            pOutData[now1] = pInData2[now2];
-            pOutData[getUIndex(h1,w1, i,j, total1)] = pInData2[getUIndex(h2,w2, ii, jj, total2)];
-            pOutData[getVIndex(h1,w1, i,j, total1)] = pInData2[getVIndex(h2,w2, ii, jj, total2)];
+			pInData1[now1] = m_pSmallFrame[now2];
+			pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+			pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
         }
     }
     

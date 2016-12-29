@@ -209,7 +209,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 					toolsObject.SOSleep(1);
 
-					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);					
+					if (m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
+						m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);					
 //
 //                    llPrevTimeStamp = m_Tools.CurrentTimestamp();
                 }
