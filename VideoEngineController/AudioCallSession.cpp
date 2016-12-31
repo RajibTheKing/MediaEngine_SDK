@@ -95,7 +95,7 @@ m_nServiceType(nServiceType)
 	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
-	m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+	m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[INF_PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 
     if(m_bLiveAudioStreamRunning)
 	{
@@ -592,7 +592,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &enc
 void CAudioCallSession::AddHeader(int &version, long long &llRelativeTime)
 {
 	m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
-	m_iSlotID %= m_SendingHeader->GetFieldCapacity(SLOTNUMBER);
+	m_iSlotID %= m_SendingHeader->GetFieldCapacity(INF_SLOTNUMBER);
 
 	if (!m_bLiveAudioStreamRunning)
 	{
@@ -1269,17 +1269,17 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLeng
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
 
-	m_SendingHeader->SetInformation(packetType, PACKETTYPE);
-	m_SendingHeader->SetInformation(nHeaderLength, HEADERLENGTH);
-	m_SendingHeader->SetInformation(packetNumber, PACKETNUMBER);
-	m_SendingHeader->SetInformation(slotNumber, SLOTNUMBER);
-	m_SendingHeader->SetInformation(packetLength, PACKETLENGTH);
-	m_SendingHeader->SetInformation(recvSlotNumber, RECVDSLOTNUMBER);
-	m_SendingHeader->SetInformation(numPacketRecv, NUMPACKETRECVD);
-	m_SendingHeader->SetInformation(version, VERSIONCODE);
-	m_SendingHeader->SetInformation(timestamp, TIMESTAMP);
-	m_SendingHeader->SetInformation(networkType, NETWORKTYPE);
-	m_SendingHeader->SetInformation(channel, CHANNELS);
+	m_SendingHeader->SetInformation(packetType, INF_PACKETTYPE);
+	m_SendingHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
+	m_SendingHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
+	m_SendingHeader->SetInformation(slotNumber, INF_SLOTNUMBER);
+	m_SendingHeader->SetInformation(packetLength, INF_PACKETLENGTH);
+	m_SendingHeader->SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
+	m_SendingHeader->SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
+	m_SendingHeader->SetInformation(version, INF_VERSIONCODE);
+	m_SendingHeader->SetInformation(timestamp, INF_TIMESTAMP);
+	m_SendingHeader->SetInformation(networkType, INF_NETWORKTYPE);
+	m_SendingHeader->SetInformation(channel, INF_CHANNELS);
 
 	m_SendingHeader->showDetails("@#BUILD");
 
@@ -1293,17 +1293,17 @@ void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLen
 {
 	m_ReceivingHeader->CopyHeaderToInformation(header);
 
-	packetType = m_ReceivingHeader->GetInformation(PACKETTYPE);
-	nHeaderLength = m_ReceivingHeader->GetInformation(HEADERLENGTH);
-	networkType = m_ReceivingHeader->GetInformation(NETWORKTYPE);
-	slotNumber = m_ReceivingHeader->GetInformation(SLOTNUMBER);
-	packetNumber = m_ReceivingHeader->GetInformation(PACKETNUMBER);
-	packetLength = m_ReceivingHeader->GetInformation(PACKETLENGTH);
-	recvSlotNumber = m_ReceivingHeader->GetInformation(RECVDSLOTNUMBER);
-	numPacketRecv = m_ReceivingHeader->GetInformation(NUMPACKETRECVD);
-	channel = m_ReceivingHeader->GetInformation(CHANNELS);
-	version = m_ReceivingHeader->GetInformation(VERSIONCODE);
-	timestamp = m_ReceivingHeader->GetInformation(TIMESTAMP);
+	packetType = m_ReceivingHeader->GetInformation(INF_PACKETTYPE);
+	nHeaderLength = m_ReceivingHeader->GetInformation(INF_HEADERLENGTH);
+	networkType = m_ReceivingHeader->GetInformation(INF_NETWORKTYPE);
+	slotNumber = m_ReceivingHeader->GetInformation(INF_SLOTNUMBER);
+	packetNumber = m_ReceivingHeader->GetInformation(INF_PACKETNUMBER);
+	packetLength = m_ReceivingHeader->GetInformation(INF_PACKETLENGTH);
+	recvSlotNumber = m_ReceivingHeader->GetInformation(INF_RECVDSLOTNUMBER);
+	numPacketRecv = m_ReceivingHeader->GetInformation(INF_NUMPACKETRECVD);
+	channel = m_ReceivingHeader->GetInformation(INF_CHANNELS);
+	version = m_ReceivingHeader->GetInformation(INF_VERSIONCODE);
+	timestamp = m_ReceivingHeader->GetInformation(INF_TIMESTAMP);
 
 	m_ReceivingHeader->showDetails("@#PARSE");
 }

@@ -76,7 +76,7 @@ bool CAudioPacketHeader::IsPacketTypeSupported(unsigned int PacketType)
 
 bool CAudioPacketHeader::IsPacketTypeSupported()
 {
-	unsigned int iPackeType = GetInformation(PACKETTYPE);
+	unsigned int iPackeType = GetInformation(INF_PACKETTYPE);
 	return IsPacketTypeSupported(iPackeType);
 }
 

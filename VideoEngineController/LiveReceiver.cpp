@@ -323,7 +323,7 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
             ++ iFrameNumber;
 
 			g_LiveReceiverHeader.CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-			int iPacketNumber = g_LiveReceiverHeader.GetInformation(PACKETNUMBER);
+			int iPacketNumber = g_LiveReceiverHeader.GetInformation(INF_PACKETNUMBER);
 			if (iPacketNumber != iExpectedPacketNumber)
 			{
 				LOGE("live receiver unexpected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
