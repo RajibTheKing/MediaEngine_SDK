@@ -239,6 +239,14 @@ void CAudioCallSession::SetEchoCanceller(bool bOn)
 
 void CAudioCallSession::StartCallInLive(int iRole)
 {
+	if (iRole != VIEWER_IN_CALL && iRole != PUBLISHER_IN_CALL)//Unsupported or inaccessible role
+	{
+		return;
+	}
+	if (m_iRole != CALL_NOT_RUNNING)//Call inside a call
+	{
+		return;
+	}
 	m_iRole = iRole;
 	m_llDecodingTimeStampOffset = -1;
 	if (m_iRole == VIEWER_IN_CALL)
