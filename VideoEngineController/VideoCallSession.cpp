@@ -50,7 +50,8 @@ m_bVideoCallStarted(false),
 m_nDeviceCheckFrameCounter(0),
 m_nCapturedFrameCounter(0),
 m_nServiceType(nServiceType),
-m_nEntityType(nEntityType)
+m_nEntityType(nEntityType),
+m_iRole(0)
 
 {
     m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
@@ -1091,4 +1092,34 @@ int CVideoCallSession::GetServiceType()
 int CVideoCallSession::GetEntityType()
 {
 	return m_nEntityType;
+}
+
+void CVideoCallSession::StartCallInLive()
+{
+	if (m_iRole != 0)
+		return;
+	else
+	{
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
+			m_nEntityType = ENTITY_TYPE_PUBLISHER_CALLER;
+		else if (m_nEntityType == ENTITY_TYPE_VIEWER)
+			m_nEntityType = ENTITY_TYPE_VIEWER_CALLEE;
+
+		m_iRole = 1;
+	}
+}
+
+void CVideoCallSession::EndCallInLive()
+{
+	if (m_iRole != 1)
+		return;
+	else
+	{
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+			m_nEntityType = ENTITY_TYPE_PUBLISHER;
+		else if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+			m_nEntityType = ENTITY_TYPE_VIEWER;
+
+		m_iRole = 0;
+	}
 }

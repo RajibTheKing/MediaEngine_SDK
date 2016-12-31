@@ -710,7 +710,9 @@ bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID,
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->StartCallInLive(llFriendID, iRole);
+	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole);
+	bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID);
+	
 	return bReturnedValue;
 }
 
@@ -721,7 +723,9 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->EndCallInLive(llFriendID);
+	bool bReturnedValue = m_pcController->EndAudioCallInLive(llFriendID);
+	bReturnedValue = m_pcController->EndVideoCallInLive(llFriendID);
+	
 	return bReturnedValue;
 }
 

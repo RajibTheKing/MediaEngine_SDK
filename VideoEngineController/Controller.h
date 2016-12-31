@@ -88,8 +88,10 @@ public:
 
     void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int));
 
-	bool StartCallInLive(const LongLong& lFriendID, int iRole);
-	bool EndCallInLive(const LongLong& lFriendID);
+	bool StartAudioCallInLive(const LongLong& lFriendID, int iRole);
+	bool EndAudioCallInLive(const LongLong& lFriendID);
+	bool StartVideoCallInLive(const LongLong& lFriendID);
+	bool EndVideoCallInLive(const LongLong& lFriendID);
 
 	int m_nDeviceStrongness;
 	int m_nMemoryEnoughness;

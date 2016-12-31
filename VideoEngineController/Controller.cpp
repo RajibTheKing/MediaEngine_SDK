@@ -1002,7 +1002,7 @@ void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
 
-bool CController::StartCallInLive(const LongLong& lFriendID, int iRole)
+bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -1018,7 +1018,7 @@ bool CController::StartCallInLive(const LongLong& lFriendID, int iRole)
 	}
 }
 
-bool CController::EndCallInLive(const LongLong& lFriendID)
+bool CController::EndAudioCallInLive(const LongLong& lFriendID)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -1033,4 +1033,41 @@ bool CController::EndCallInLive(const LongLong& lFriendID)
 		return false;
 	}
 }
+
+bool CController::StartVideoCallInLive(const LongLong& lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+	
+	if (bExist)
+	{
+		pVideoSession->StartCallInLive();
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::EndVideoCallInLive(const LongLong& lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		pVideoSession->EndCallInLive();
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 

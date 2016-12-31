@@ -55,6 +55,9 @@ public:
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
 	CFPSController* GetFPSController();
 
+	void StartCallInLive();
+	void EndCallInLive();
+
 	CSendingThread *m_pSendingThread;
 	CVideoEncodingThread *m_pVideoEncodingThread;
 
@@ -127,6 +130,8 @@ private:
 	int m_nOwnVideoCallQualityLevel;
 	int m_nOpponentVideoCallQualityLevel;
 	int m_nCurrentVideoCallQualityLevel;
+
+	int m_iRole;
 
 	long long m_llShiftedTime;
 	long long m_llTimeStampOfFirstPacketRcvd;
