@@ -414,7 +414,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			m_pVideoPacketQueue->Queue(in_data, in_size);	
-		else
+		else if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
 			m_pLiveReceiverVideo->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
 			
 		return true;
