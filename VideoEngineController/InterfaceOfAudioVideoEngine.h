@@ -3,6 +3,7 @@
 #define _INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H_
 
 #include <string>
+#include <vector>
 
 #include "Tools.h"
 
