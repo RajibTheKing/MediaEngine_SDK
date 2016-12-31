@@ -174,9 +174,6 @@
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioCallHeader.cpp">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
@@ -387,9 +384,6 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\G729CodecNative.h">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioCallHeader.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h">
