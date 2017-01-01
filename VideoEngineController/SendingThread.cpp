@@ -516,8 +516,15 @@ void CSendingThread::SendingThreadProcedure()
 else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
-			m_EncodedFrame[1 + 3] = signal;
 
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+			{
+				m_EncodedFrame[2 + 3] = signal;
+			}
+			else
+			{
+				m_EncodedFrame[1 + 3] = signal;
+			}
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
 
