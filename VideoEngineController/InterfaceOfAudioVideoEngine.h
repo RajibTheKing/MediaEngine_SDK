@@ -26,7 +26,7 @@
 
 typedef long long IPVLongType;
 
-#define NO_CONNECTIVITY
+//#define NO_CONNECTIVITY
 
 class CController;
 
