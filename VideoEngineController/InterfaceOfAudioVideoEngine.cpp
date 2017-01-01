@@ -254,7 +254,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 		}
 		else
 		{
-			if (mediaType == SERVICE_TYPE_LIVE_STREAM || mediaType == SERVICE_TYPE_SELF_STREAM)
+			if (mediaType == MEDIA_TYPE_LIVE_STREAM)
 			{
 				if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[1])
 				{
