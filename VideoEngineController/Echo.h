@@ -12,7 +12,7 @@
 #include "speex/speex_preprocess.h"
 #endif
 #include "Tools.h"
-#include "Size.h"
+#include "AudioMacros.h"
 
 
 #define AECM_SAMPLES_IN_FRAME 80

@@ -4,7 +4,7 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
-#include "Size.h"
+#include "AudioMacros.h"
 
 
 class CAudioShortBuffer

@@ -13,7 +13,7 @@
 
 #include "opus.h"
 #include "Tools.h"
-#include "size.h"
+#include "AudioMacros.h"
 #include "LogPrinter.h"
 
 //#define AUDIO_FIXED_BITRATE

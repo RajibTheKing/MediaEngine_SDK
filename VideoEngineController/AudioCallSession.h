@@ -13,7 +13,6 @@
 #include "LogPrinter.h"
 #include "LiveAudioDecodingQueue.h"
 #include "LiveReceiver.h"
-//#include "AudioHeader.h"
 
 #include <stdio.h>
 #include <string>
@@ -52,7 +51,6 @@ static string colon = "ALOG:";
 
 class CCommonElementsBucket;
 class CVideoEncoder;
-class CAudioLiveHeader;
 class CAudioCodec;
 class CAac;
 
