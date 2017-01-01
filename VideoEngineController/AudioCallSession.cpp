@@ -44,7 +44,7 @@ FILE *FileOutput;
 
 //#define USE_ECHO2
 
-#define __TIMESTUMP_MOD__ 100000
+#define __TIMESTAMP_MOD__ 100000
 
 #define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 0
 #define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 2
@@ -966,12 +966,12 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 			long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
 
-			LOGE("llCurrentFrameRelativeTime = %lld, llWaitingTime = %lld, iPacketNumber = %d, nPacketType = %d m_iRole = %d Now: %lld\n", llCurrentFrameRelativeTime, llWaitingTime, iPacketNumber, nPacketType, m_iRole, llNow % __TIMESTUMP_MOD__);
+			LOGE("llCurrentFrameRelativeTime = %lld, llWaitingTime = %lld, iPacketNumber = %d, nPacketType = %d m_iRole = %d Now: %lld\n", llCurrentFrameRelativeTime, llWaitingTime, iPacketNumber, nPacketType, m_iRole, llNow % __TIMESTAMP_MOD__);
 
 			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 			{
 				LOGE("@@@@@@@@@@@@@@@@@--> New***********************************************  [%lld]\t\tDELAY FRAME: %lld  Now: %lld, iPacketNumber = %d",
-					llCurrentFrameRelativeTime, llWaitingTime, llNow % __TIMESTUMP_MOD__, iPacketNumber);
+					llCurrentFrameRelativeTime, llWaitingTime, llNow % __TIMESTAMP_MOD__, iPacketNumber);
 				return false;
 			}
 
