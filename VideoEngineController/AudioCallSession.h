@@ -3,7 +3,7 @@
 #define _AUDIO_CALL_SESSION_H_
 
 #define OPUS_ENABLED
-#define AAC_ENABLE
+#define AAC_ENABLED
 
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <vector>
 
-#ifdef AAC_ENABLE
+#ifdef AAC_ENABLED
 #include "Aac.h"
 #endif
 
@@ -188,7 +188,7 @@ private:
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
 
-#ifdef AAC_ENABLE
+#ifdef AAC_ENABLED
 	CAac *m_cAac;
 #endif
 

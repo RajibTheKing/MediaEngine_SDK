@@ -71,7 +71,7 @@ m_nServiceType(nServiceType)
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
 
-#ifdef AAC_ENABLE
+#ifdef AAC_ENABLED
 	m_cAac = new CAac();
 	m_cAac->SetParameters(44100, 2);
 #endif
@@ -148,7 +148,7 @@ CAudioCallSession::~CAudioCallSession()
 	StopDecodingThread();
 	StopEncodingThread();
 
-#ifdef AAC_ENABLE
+#ifdef AAC_ENABLED
 	if (m_cAac != nullptr){
 		delete m_cAac;
 		m_cAac = nullptr;
@@ -1054,7 +1054,7 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 			if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)	//Only for channel
 			{
 				long long llNow = m_Tools.CurrentTimestamp();
-#ifdef AAC_ENABLE
+#ifdef AAC_ENABLED
 				LOGEF("@@@@@--> DecodeAudioData -> AAC!!!");
 				m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
 				long long llDecodingTimeNow = m_Tools.CurrentTimestamp() - llNow;
