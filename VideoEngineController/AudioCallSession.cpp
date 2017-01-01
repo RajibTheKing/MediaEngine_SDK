@@ -46,8 +46,8 @@ FILE *FileOutput;
 
 #define __TIMESTAMP_MOD__ 100000
 
-#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 0
-#define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 2
+#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 2
+#define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 25
 
 
 
@@ -825,12 +825,12 @@ bool CAudioCallSession::IsQueueEmpty(Tools &toolsObject)
 	{
 		if (m_iRole == PUBLISHER_IN_CALL && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
 		{
-			toolsObject.SOSleep(1);
+			toolsObject.SOSleep(5);
 			return true;
 		}
 		else if (m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
 		{
-			toolsObject.SOSleep(1);
+			toolsObject.SOSleep(5);
 			return true;
 		}
 	}
@@ -977,7 +977,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 
 			while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
 			{
-				m_Tools.SOSleep(1);
+				m_Tools.SOSleep(5);
 				llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
 			}
 		}
