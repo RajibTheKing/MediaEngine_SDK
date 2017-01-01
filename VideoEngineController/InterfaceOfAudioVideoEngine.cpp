@@ -377,20 +377,31 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
         }
         else
         {
-            
-            if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
-        	{
-            	iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data+1, unLength-1); //Skip First byte for Video Data
-        	}
-			else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
-        	{
-            	iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data+1, unLength-1); //Skip First byte for Audio Data
-        	}
-        	else
-            	return 0;
-            
+			if (mediaType == SERVICE_TYPE_LIVE_STREAM || mediaType == SERVICE_TYPE_SELF_STREAM)
+			{
+				if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[1])
+				{
+					iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 2, unLength - 2); //Skip First byte for Video Data
+				}
+				else 
+				{
+					iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data + 1, unLength - 1); //Skip First byte for Audio Data
+				}				
+			}
+			else
+			{
+				if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+				{
+					iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 1, unLength - 1); //Skip First byte for Video Data
+				}
+				else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
+				{
+					iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data + 1, unLength - 1); //Skip First byte for Audio Data
+				}
+				else
+					return 0;
+			}   
         }
-
     }
 
 	return iReturnedValue;

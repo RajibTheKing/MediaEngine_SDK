@@ -200,19 +200,30 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 											nNumberOfPackets,                //NumberofPacket
 											nPacketNumber,                   //PacketNumber
 											unCaptureTimeDifference,         //TimeStamp
-											iStartIndex,                               //PacketStartingIndex
+											iStartIndex,                     //PacketStartingIndex
 											m_nPacketSize                    //PacketDataLength
 											);
             iStartIndex += m_nPacketSize;
 
-            m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
-            //m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-			m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-            //        m_cPacketHeader.ShowDetails("JUST");
-            
-            memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
-            
-            
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+			{
+				m_ucaPacket[1] = VIDEO_PACKET_MEDIA_TYPE;
+				//m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+				m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 2);
+				//        m_cPacketHeader.ShowDetails("JUST");
+
+				memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType + 1, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
+			}
+			else
+			{
+				m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
+				//m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+				m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+				//        m_cPacketHeader.ShowDetails("JUST");
+
+				memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
+			}
+ 
             if(m_pVideoCallSession->GetResolationCheck() == false)
             {
                 unsigned char *pEncodedFrame = m_ucaPacket;
@@ -225,8 +236,14 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             else
             {
                 //m_cPacketHeader.ShowDetails("SendingSide: ");
-                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
-                
+                if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM))
+                {
+                    m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize + 1, iFrameNumber, nPacketNumber);
+                }
+                else
+                {
+                    m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                }
                 
                 //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
             }
