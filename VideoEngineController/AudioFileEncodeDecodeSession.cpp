@@ -17,7 +17,7 @@ CAudioFileEncodeDecodeSession::CAudioFileEncodeDecodeSession()
 //	Fileinput = fopen("/storage/emulated/0/FahadInputPCMN.pcm", "w");;
 #endif
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	m_pAudioCodec = NULL;
 #else
 	m_pG729CodecNative = NULL;
@@ -32,7 +32,7 @@ CAudioFileEncodeDecodeSession::~CAudioFileEncodeDecodeSession()
 	//fclose(Fileinput);
 #endif
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	if (NULL != this->m_pAudioCodec)
 	{
 		delete this->m_pAudioCodec;
@@ -53,7 +53,7 @@ int CAudioFileEncodeDecodeSession::StartAudioEncodeDecodeSession()
 {
 
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	if(NULL == this->m_pAudioCodec)
 	{
 		this->m_pAudioCodec = new CAudioFileCodec();
@@ -73,7 +73,7 @@ int CAudioFileEncodeDecodeSession::StartAudioEncodeDecodeSession()
 
 int CAudioFileEncodeDecodeSession::EncodeAudioFile(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer)
 {
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 #ifdef __CAudioFileEncodeDecodeSession_DUMP_FILE__
 	//fwrite(psaEncodingDataBuffer, 2, nAudioFrameSize, Fileinput);
 #endif
@@ -103,7 +103,7 @@ int CAudioFileEncodeDecodeSession::EncodeAudioFile(short *psaEncodingDataBuffer,
 
 int CAudioFileEncodeDecodeSession::DecodeAudioFile(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer)
 {
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 
 	if(NULL == this->m_pAudioCodec)
 	{
@@ -134,7 +134,7 @@ int CAudioFileEncodeDecodeSession::DecodeAudioFile(unsigned char *ucaDecodedData
 int CAudioFileEncodeDecodeSession::StopAudioEncodeDecodeSession()
 {
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	if (NULL != this->m_pAudioCodec)
 	{
 		delete this->m_pAudioCodec;

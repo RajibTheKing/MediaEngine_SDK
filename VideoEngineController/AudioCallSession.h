@@ -2,7 +2,7 @@
 #ifndef _AUDIO_CALL_SESSION_H_
 #define _AUDIO_CALL_SESSION_H_
 
-#define OPUS_ENABLE
+#define OPUS_ENABLED
 #define AAC_ENABLE
 
 #include "AudioEncoderBuffer.h"
@@ -24,7 +24,7 @@
 #include "Aac.h"
 #endif
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 #include "AudioCodec.h"
 #else
 #include "G729CodecNative.h"
@@ -217,7 +217,7 @@ private:
 	CVoice *m_pVoice;
 #endif
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	CAudioCodec *m_pAudioCodec;
 #else
 	G729CodecNative *m_pG729CodecNative;

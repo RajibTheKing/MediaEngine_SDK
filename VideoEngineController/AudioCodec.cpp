@@ -2,7 +2,7 @@
 #include "CommonElementsBucket.h"
 #include "DefinedDataTypes.h"
 #include "LogPrinter.h"
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 #include "AudioCodec.h"
 #else
 #include "G729CodecNative.h"

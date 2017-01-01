@@ -33,7 +33,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-#define OPUS_ENABLE
+#define OPUS_ENABLED
 //#define __DUMP_FILE__
 
 #ifdef __DUMP_FILE__
@@ -155,7 +155,7 @@ CAudioCallSession::~CAudioCallSession()
 	}
 #endif
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	delete m_pAudioCodec;
 #else
 	delete m_pG729CodecNative;
@@ -216,7 +216,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 	//m_pAudioCodec->CreateAudioEncoder();
 
 	//m_pAudioDecoder->CreateAudioDecoder();
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket, this, llFriendID);
 	m_pAudioCodec->CreateAudioEncoder();
 #else
@@ -529,7 +529,7 @@ bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 
 void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &encodingTime, double &avgCountTimeStamp)
 {
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 	if (m_bLiveAudioStreamRunning == false)
 	{
 		m_nCompressedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaCompressedFrame[1 + m_MyAudioHeadersize]);
@@ -1004,7 +1004,7 @@ void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 			m_iCurrentRecvdSlotID = nSlotNumber;
 			m_iReceivedPacketsInCurrentSlot = 0;
 
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 			if (false == m_bLiveAudioStreamRunning) {
 				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 			}
@@ -1021,7 +1021,7 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 	LOGEF("Role %d, Before decode", m_iRole);
 	if (!m_bLiveAudioStreamRunning)
 	{
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 		m_nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
 		ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
 		LOGEF("Role %d, done decode", m_iRole);
@@ -1041,7 +1041,7 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 			
 		if (m_iRole == VIEWER_IN_CALL || m_iRole == PUBLISHER_IN_CALL)
 		{
-#ifdef OPUS_ENABLE
+#ifdef OPUS_ENABLED
 			m_nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
 			ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
 			LOGEF("Role %d, after decode", m_iRole);
