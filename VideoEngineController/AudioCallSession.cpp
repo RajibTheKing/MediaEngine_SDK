@@ -966,12 +966,9 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 			long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
 
-			LOGE("llCurrentFrameRelativeTime = %lld, llWaitingTime = %lld, iPacketNumber = %d, nPacketType = %d m_iRole = %d Now: %lld\n", llCurrentFrameRelativeTime, llWaitingTime, iPacketNumber, nPacketType, m_iRole, llNow % __TIMESTAMP_MOD__);
-
+			LOGE("@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d",	llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
 			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 			{
-				LOGE("@@@@@@@@@@@@@@@@@--> New***********************************************  [%lld]\t\tDELAY FRAME: %lld  Now: %lld, iPacketNumber = %d",
-					llCurrentFrameRelativeTime, llWaitingTime, llNow % __TIMESTAMP_MOD__, iPacketNumber);
 				return false;
 			}
 
@@ -1055,10 +1052,8 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 			{
 				long long llNow = m_Tools.CurrentTimestamp();
 #ifdef AAC_ENABLED
-				LOGEF("@@@@@--> DecodeAudioData -> AAC!!!");
 				m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
-				long long llDecodingTimeNow = m_Tools.CurrentTimestamp() - llNow;
-				AAC_LOG("-----DecodingTime: " + m_Tools.LongLongToString(llDecodingTimeNow));
+				LOGE("$@@@@@@@@@--> AAC_DecodedFrameSize: %d", m_nDecodedFrameSize);
 #else
 				ALOG("Continue from decode frame!");
 #endif
@@ -1121,6 +1116,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime)
 			SERVICE_TYPE_LIVE_STREAM,
 			m_nDecodedFrameSize,
 			m_saDecodedFrame);
+		LOGE("@@@@@@@@@--> fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
 	}
 	else
 	{

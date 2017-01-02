@@ -129,7 +129,9 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
     return false;
 }
 
-void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) {
+void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) 
+{
+	LOGE("#@@@@@@@@@--> LiveReceiver::ProcessAudioStream(), GotNumberOfAudioFrames: %d", nNumberOfAudioFrames);
 
     Locker lock(*m_pLiveReceiverMutex);
 
@@ -140,6 +142,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
     int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
     int nCurrentFrameLenWithMediaHeader;
     nFrameLeftRange = nOffset;
+	int numOfMissingFrames = 0;
 
 	if (nCallSDKPacketLength < 0)
 		return;
@@ -176,7 +179,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
         ++iFrameNumber;
 
         if (!bCompleteFrame) {
-
+			numOfMissingFrames++;
             continue;
         } else {
 
@@ -189,6 +192,8 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
                                          nCurrentFrameLenWithMediaHeader - 1);
 
     }
+
+	LOGE("#@@@@@@@@@--> numberOfMissingFramesToEnqueue: %d", numOfMissingFrames);
 }
 
 

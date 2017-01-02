@@ -246,6 +246,8 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 				index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 			}
 
+			LOGE("#@@@@@@@@@--> GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d", numberOfAudioFrames, numberOfVideoFrames);
+
 			iReturnedValue = m_pcController->PushAudioForDecodingVector(llFriendID, lengthOfVideoData + index, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
 			//m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE

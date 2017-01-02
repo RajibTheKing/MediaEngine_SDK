@@ -128,7 +128,7 @@ void CSendingThread::SendDataFromFile()
 
 	long long lFriendID = 200;
 	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
-	ALOG("Sending File to AAC.");
+	LOGE("=@@@@@@@@@--> Sending File to AAC.");
 
 	unsigned char data[100000];
 
@@ -140,18 +140,18 @@ void CSendingThread::SendDataFromFile()
 	{
 		int totFileSize = -1;
 		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
-		AAC_LOG("==== FilePath: " + filePath);
+		LOGE("=@@@@@@@@@--> FilePath: %s", filePath.c_str());
 
 		FILE *fd = fopen(filePath.c_str(), "rb");
 
 		if (!fd){
-			AAC_LOG("file open failed");
+			LOGE("=@@@@@@@@@--> file open failed");
 			return;
 		}
 
 		if (!fseek(fd, 0, SEEK_END)) {
 			totFileSize = ftell(fd);
-			AAC_LOG("Reading from file: " + m_Tools.LongLongToString(totFileSize));
+			LOGE("=@@@@@@@@@--> Reading from file: %lld", totFileSize);
 		}
 
 		fseek(fd, 0, SEEK_SET);
@@ -159,17 +159,16 @@ void CSendingThread::SendDataFromFile()
 
 		curChunkTimeStamp = m_Tools.GetMediaUnitTimestampInMediaChunck(data);
 
-		G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(lFriendID, 3, data, totFileSize, std::vector< std::pair<int, int> >());
+		G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(lFriendID, 3, ENTITY_TYPE_VIEWER, data, totFileSize, std::vector< std::pair<int, int> >());
 		fclose(fd);
 
 		chunkDuration = curChunkTimeStamp - PrevChunkTimeStamp;
 		PrevChunkTimeStamp = curChunkTimeStamp;
 
-		AAC_LOG("chunk_duration: " + m_Tools.IntegertoStringConvert(chunkDuration));
+		LOGE("=@@@@@@@@@--> chunk_duration: %d", chunkDuration);
 		curSleepTime = m_Tools.CurrentTimestamp();
 		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
 		lastSleepTime = m_Tools.CurrentTimestamp();
-//		m_Tools.SOSleep(200);
 	}
 }
 #endif
