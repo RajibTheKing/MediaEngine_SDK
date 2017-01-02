@@ -15,7 +15,7 @@ class CCommonElementsBucket;
 class CFPSController;
 //class CVideoHeader;
 
-//#define CHANNEL_FROM_FILE
+#define CHANNEL_FROM_FILE
 
 class CSendingThread
 {

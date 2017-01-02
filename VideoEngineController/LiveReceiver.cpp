@@ -131,7 +131,7 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
 
 void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) 
 {
-	LOGE("#@@@@@@@@@--> LiveReceiver::ProcessAudioStream(), GotNumberOfAudioFrames: %d", nNumberOfAudioFrames);
+	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStream(), GotNumberOfAudioFrames: %d", nNumberOfAudioFrames);
 
     Locker lock(*m_pLiveReceiverMutex);
 
@@ -193,7 +193,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
     }
 
-	LOGE("#@@@@@@@@@--> numberOfMissingFramesToEnqueue: %d", numOfMissingFrames);
+	LOG_AAC("#@@@@@@@@@--> numberOfMissingFramesToEnqueue: %d", numOfMissingFrames);
 }
 
 

@@ -1053,9 +1053,9 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 				long long llNow = m_Tools.CurrentTimestamp();
 #ifdef AAC_ENABLED
 				m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
-				LOGE("$@@@@@@@@@--> AAC_DecodedFrameSize: %d", m_nDecodedFrameSize);
+				LOG_AAC("$@@@@@@@@@--> AAC_DecodedFrameSize: %d", m_nDecodedFrameSize);
 #else
-				ALOG("Continue from decode frame!");
+				LOG_AAC("Continue for AudioChannelPacket!");
 #endif
 			}
 			else 
@@ -1116,7 +1116,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime)
 			SERVICE_TYPE_LIVE_STREAM,
 			m_nDecodedFrameSize,
 			m_saDecodedFrame);
-		LOGE("@@@@@@@@@--> fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
+		LOG_AAC("@@@@@@@@@--> fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
 	}
 	else
 	{
