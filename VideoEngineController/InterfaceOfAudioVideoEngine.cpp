@@ -286,6 +286,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 	return iReturnedValue;
 }
 
+/*
 int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, int numberOfMissingFrames, int *missingFrames)
 { 
     int iReturnedValue = 0;
@@ -422,6 +423,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecoding(const IPVLongType llFrien
 
 	return iReturnedValue;
 }
+*/
 
 int CInterfaceOfAudioVideoEngine::SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength)
 {

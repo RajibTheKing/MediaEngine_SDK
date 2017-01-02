@@ -697,7 +697,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 	else
 	{
 #ifndef NO_CONNECTIVITY
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, 0);
+		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, 0);
 #else
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, m_ucaCompressedFrame);
 #endif
@@ -707,7 +707,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 		{
 			toolsObject.SOSleep(5);
 #ifndef NO_CONNECTIVITY
-			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 1, m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, 0);
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, 0);
 #else
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, m_ucaCompressedFrame);
 #endif

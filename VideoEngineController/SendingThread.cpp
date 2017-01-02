@@ -159,7 +159,7 @@ void CSendingThread::SendDataFromFile()
 
 		curChunkTimeStamp = m_Tools.GetMediaUnitTimestampInMediaChunck(data);
 
-		G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(lFriendID, 3, ENTITY_TYPE_VIEWER, data, totFileSize, std::vector< std::pair<int, int> >());
+		G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(lFriendID, MEDIA_TYPE_LIVE_STREAM, ENTITY_TYPE_VIEWER, data, totFileSize, std::vector< std::pair<int, int> >());
 		fclose(fd);
 
 		chunkDuration = curChunkTimeStamp - PrevChunkTimeStamp;
@@ -358,7 +358,7 @@ void CSendingThread::SendingThreadProcedure()
 					if(m_bInterruptHappened == false)
 					{
 #ifndef NO_CONNECTIVITY
-						m_pCommonElementsBucket->SendFunctionPointer(index, 3, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 #else
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 #endif
@@ -373,7 +373,7 @@ void CSendingThread::SendingThreadProcedure()
 				if (m_bInterruptRunning == false)
 				{
 					if (m_bInterruptHappened == false)
-						m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+						m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 					else
 						m_bInterruptHappened = false;
 				}
@@ -423,7 +423,7 @@ void CSendingThread::SendingThreadProcedure()
 				if (m_bInterruptRunning == false)
 				{
 					if (m_bInterruptHappened == false)
-						G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(m_pVideoCallSession->GetFriendID(), 3,  m_pVideoCallSession->GetEntityType(),  m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int, int> >());
+						G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM,  m_pVideoCallSession->GetEntityType(),  m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int, int> >());
 					else
 						m_bInterruptHappened = false;
 				}
@@ -432,7 +432,7 @@ void CSendingThread::SendingThreadProcedure()
 				if (m_bInterruptRunning == false)
 				{
 					if (m_bInterruptHappened == false)
-						G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(m_pVideoCallSession->GetFriendID(), 3, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+						G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
 					else
 						m_bInterruptHappened = false;
 				}
@@ -592,7 +592,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() came for CALL !!!!!!!");
 
 #ifndef NO_CONNECTIVITY
-				m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), 2, m_EncodedFrame, packetSize,0);
+				m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_VIDEO, m_EncodedFrame, packetSize, 0);
 #else
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(m_pVideoCallSession->GetFriendID(), packetSize, m_EncodedFrame);
 #endif
