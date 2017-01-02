@@ -10,6 +10,8 @@
 #define MEDIA_TYPE_AUDIO 1
 #define MEDIA_TYPE_VIDEO 2
 #define MEDIA_TYPE_LIVE_STREAM 3
+#define MEDIA_TYPE_LIVE_CALL_AUDIO 4
+#define MEDIA_TYPE_LIVE_CALL_VIDEO 5
 
 #define SERVICE_TYPE_CALL 11
 #define SERVICE_TYPE_SELF_CALL 13
@@ -52,10 +54,10 @@ public:
 	bool StartCallInLive(const IPVLongType llFriendID, int iRole);
 	bool EndCallInLive(const IPVLongType llFriendID);
 
-	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
+	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
-	int PushPacketForDecoding(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength);
-	int PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames);
+	int PushPacketForDecoding(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength);
+	int PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames);
 	int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 	int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
 	int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
