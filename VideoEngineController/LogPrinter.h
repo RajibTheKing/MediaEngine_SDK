@@ -15,6 +15,7 @@
 #define __LOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define PRT(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOG_AAC(...) // __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGENEW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 #else
 #define LOG_AAC(...)  
@@ -23,6 +24,7 @@
 #define LOGEF(...)
 #define __LOG(...)
 #define PRT(...)
+#define LOGENEW(...)
 #endif
 
 //#define __PRINT_LOG__

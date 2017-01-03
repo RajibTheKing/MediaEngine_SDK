@@ -331,16 +331,16 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 			int iPacketNumber = g_LiveReceiverHeader.GetInformation(INF_PACKETNUMBER);
 			if (iPacketNumber != iExpectedPacketNumber)
 			{
-				LOGE("live receiver unexpected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
+				LOGENEW("live receiver unexpected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
 			}
 			else
 			{
-				LOGE("live receiver expected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
+				LOGENEW("live receiver expected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
 			}
 			iExpectedPacketNumber = iPacketNumber + 1;
             if( !bCompleteFrame )
             {				
-				LOGE("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
+				LOGENEW("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
                 continue;
             }else{
                 //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
@@ -348,11 +348,11 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 			if (done)
 			{
 				done = false;
-				LOGE("live receiver FIRST PACKETNUMBER = %d\n", iPacketNumber);
+				LOGENEW("live receiver FIRST PACKETNUMBER = %d\n", iPacketNumber);
 			}
 			else
 			{
-				LOGE("live receiver PACKETNUMBER = %d\n", iPacketNumber);
+				LOGENEW("live receiver PACKETNUMBER = %d\n", iPacketNumber);
 			}
             nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 

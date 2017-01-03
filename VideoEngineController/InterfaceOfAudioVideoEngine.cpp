@@ -222,13 +222,13 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			if (m_llTimeOffset == -1)
 			{
 				m_llTimeOffset = itIsNow - recvTimeOffset;
-				LOGE("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
+				LOGENEW("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
 			}
 			else
 			{
 				long long expectedTime = itIsNow - m_llTimeOffset;
 				if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
-					LOGE("##DE#Interface## Discarding packet! | now:%lld peertimestamp:%lld expected:%lld", itIsNow, recvTimeOffset, expectedTime);
+					LOGENEW("##DE#Interface## Discarding packet! | now:%lld peertimestamp:%lld expected:%lld", itIsNow, recvTimeOffset, expectedTime);
 					//LOGE("##Discarding packet! | expected:%lld", expectedTime);
 					return -10;
 				}

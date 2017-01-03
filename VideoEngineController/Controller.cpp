@@ -912,10 +912,10 @@ int CController::StopAudioEncodeDecodeSession()
 
 int CController::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth)
 {
-	LOGE("fahad -->> CController::StartVideoMuxingAndEncodeSession 0");
+	LOGENEW("fahad -->> CController::StartVideoMuxingAndEncodeSession 0");
 	if (NULL == m_pVideoMuxingAndEncodeSession)
 	{
-		LOGE("fahad -->> CController::StartVideoMuxingAndEncodeSession null");
+		LOGENEW("fahad -->> CController::StartVideoMuxingAndEncodeSession null");
 		m_pVideoMuxingAndEncodeSession = new CVideoMuxingAndEncodeSession(m_pCommonElementsBucket);
 	}
 
