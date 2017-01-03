@@ -1,6 +1,5 @@
 #include "Aac.h"
 #include <queue>
-#include <thread>
 
 
 CAac::CAac() :

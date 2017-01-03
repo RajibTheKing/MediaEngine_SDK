@@ -1,12 +1,16 @@
 #ifndef ACC_H
 #define ACC_H
 
+#if defined(TARGET_OS_WINDOWS_PHONE)
+#include <windows.h>
+#endif
+
 #include <string>
 #include <queue>
 #include <thread>
-#include "aacdecoder_lib.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "aacdecoder_lib.h"
 //#include "CommonElementsBucket.h"
 
 static string acc_tag = "AAC_LOG:";
