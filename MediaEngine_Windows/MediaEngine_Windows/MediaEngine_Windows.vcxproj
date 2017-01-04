@@ -165,6 +165,7 @@
     <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Echo.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFrameDepacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodingBuffer.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h" />
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\Echo.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFrameDepacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFramePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodingBuffer.h" />

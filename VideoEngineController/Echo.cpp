@@ -1,5 +1,6 @@
 #include "Echo.h"
 #include "AudioCallSession.h"
+#include "Filt.h"
 
 CEcho::CEcho(int id)
 {
@@ -62,6 +63,16 @@ CEcho::CEcho(int id)
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS, &db);
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS_ACTIVE, &db);
 
+
+	/*int value = 80; 
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_INCREMENT, &value);*/
+
+	int iArg = 1; 
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC, &iArg); 
+	int agc_inc = 12;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_INCREMENT, &agc_inc);
+	
+	
 	int i;
 	float f;
 	//i = 1;
@@ -91,7 +102,39 @@ CEcho::~CEcho()
 }
 
 
-int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
+
+int CEcho::DeAmplitude(short *sInBuf, int sBufferSize)
+{
+	int iAmplitudeThreshold = 50;
+	int iAmplitudeSum = 0;
+
+	for (int i = 0; i < sBufferSize; i++)
+	{
+		iAmplitudeSum += abs(sInBuf[i]);
+	}
+	short iAvgAmplitude = iAmplitudeSum / sBufferSize;
+
+	if (iAvgAmplitude <= iAmplitudeThreshold)
+	{
+		for (int i = 0; i < sBufferSize; i++)
+		{
+			sInBuf[i] = 0;
+		}
+	}
+	return true;
+}
+
+int CEcho::LowPass(short *sInBuf, int sBufferSize)
+{
+	Filter *my_filter = new Filter(LPF, 51, 8, 2.0);
+	for (int i = 0; i < sBufferSize; i++)
+	{
+		sInBuf[i] = (short)(my_filter->do_sample((double)sInBuf[i]));
+	}
+	return true;
+}
+
+int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 {
 
 	if (sBufferSize != AUDIO_CLIENT_SAMPLES_IN_FRAME)
@@ -99,18 +142,16 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 		ALOG("aec nearend Invalid size");
 		return false;
 	}
-
-
 #if defined(USE_SPEEX_AECM)
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
 		speex_echo_capture(st, sInBuf + i, sInBuf + i);
 		speex_preprocess_run(den, sInBuf + i);
-	}	
+	}
 #endif
-
-
-#ifdef USE_WEBRTC_AECM
+	//if (!isLoudspeaker)
+	{
+		#ifdef USE_WEBRTC_AECM
 	iCounter++;
 #if 0
 	long long llNow = m_Tools.CurrentTimestamp();
@@ -173,7 +214,22 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize)
 	}
 
 #endif
-#endif
+		#endif
+	}
+
+	if (isLoudspeaker)
+	{
+		LowPass(sInBuf, sBufferSize);
+		//DeAmplitude(sInBuf, sBufferSize);
+		for (int i = 0; i < sBufferSize; i++)
+		{
+			if (sInBuf[i] > 10922)
+			{
+				LOGE("###CE### %d", (int)sInBuf[i]);
+			}
+			sInBuf[i] *= 2;
+		}
+	}
 	return true;
 }
 

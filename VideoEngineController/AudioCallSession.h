@@ -137,7 +137,7 @@ private:
 	int m_iOpponentReceivedPackets;
 	
 
-	bool m_bIsCheckCall, m_bLoudSpeakerEnabled;
+	bool m_bIsCheckCall;
 
 	///////////Pre Encoding Data///////
     short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data

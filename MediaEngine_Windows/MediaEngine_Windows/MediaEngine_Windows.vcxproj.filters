@@ -195,6 +195,9 @@
     <ClCompile Include="..\..\VideoEngineController\Aac.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\Echo.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -408,6 +411,9 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioMacros.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\Echo.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>

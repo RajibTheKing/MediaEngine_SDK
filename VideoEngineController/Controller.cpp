@@ -206,6 +206,7 @@ bool CController::SetLoudSpeaker(const LongLong& lFriendID, bool bOn)
 bool CController::SetEchoCanceller(const LongLong& lFriendID, bool bOn)
 {
 	CAudioCallSession* pAudioSession;
+	//return false;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)

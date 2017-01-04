@@ -22,7 +22,6 @@
 #include "Voice.h"
 #endif
 
-
 #define PUBLISHER_IN_CALL 1
 #define VIEWER_IN_CALL 2
 #define VIEWER_NOT_IN_CALL 3 //never used so far
@@ -39,6 +38,7 @@
 #ifdef __DUMP_FILE__
 FILE *FileInput;
 FILE *FileOutput;
+FILE *echoOutputFile;
 #endif
 
 
@@ -107,8 +107,6 @@ m_nServiceType(nServiceType)
 
 	m_bUsingLoudSpeaker = false;
 	m_bEchoCancellerEnabled = false;
-
-	m_bLoudSpeakerEnabled = false;
 
 #ifdef USE_AECM
 	m_pEcho = new CEcho(66);
@@ -299,7 +297,11 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 #ifdef USE_ECHO2
 		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength);
 #endif
-		m_pEcho->CancelEcho(psaEncodingAudioData, unLength);
+		m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker);
+#ifdef __DUMP_FILE__
+		fwrite(psaEncodingAudioData, 2, unLength, echoOutputFile);
+#endif // __DUMP_FILE__
+
 	}
 #endif
 
@@ -316,9 +318,9 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 	if (!m_bLiveAudioStreamRunning && m_bEchoCancellerEnabled)
 	{
 #ifdef USE_ECHO2
-		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength);
+		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, TODO);
 #endif
-		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, m_bLoudSpeakerEnabled);
+		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker);
 	}
 #endif
 	return true;
@@ -438,7 +440,7 @@ void CAudioCallSession::StartEncodingThread()
 
 		return;
 	}
-
+	LOGE("##EN### im running");
 	m_bAudioEncodingThreadRunning = true;
 	m_bAudioEncodingThreadClosed = false;
 
@@ -745,6 +747,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef __DUMP_FILE__
 	FileInput = fopen("/storage/emulated/0/InputPCMN.pcm", "w");
 	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
+	echoOutputFile = fopen("/storage/emulated/0/InputPCMN_ECHO.pcm", "w");
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
