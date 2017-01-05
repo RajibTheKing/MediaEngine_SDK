@@ -131,7 +131,7 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
 
 void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) 
 {
-	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStream(), GotNumberOfAudioFrames: %d", nNumberOfAudioFrames);
+	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStream(), GotNumberOfAudioFrames: %d\n", nNumberOfAudioFrames);
 
     Locker lock(*m_pLiveReceiverMutex);
 
@@ -193,7 +193,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,i
 
     }
 
-	LOG_AAC("#@@@@@@@@@--> numberOfMissingFramesToEnqueue: %d", numOfMissingFrames);
+	LOG_AAC("#@@@@@@@@@--> numberOfMissingFramesToEnqueue: %d\n", numOfMissingFrames);
 }
 
 
@@ -286,7 +286,9 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 int iExpectedPacketNumber = 0;
 
-void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks){
+void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks)
+{
+	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStreamVector(), numberOfAudioFrames: %d\n", nNumberOfAudioFrames);
 
         Locker lock(*m_pLiveReceiverMutex);
 		CAudioPacketHeader g_LiveReceiverHeader;
@@ -357,7 +359,6 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
             nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
             m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
-
         }
 }
 

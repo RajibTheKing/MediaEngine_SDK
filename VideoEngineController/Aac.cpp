@@ -185,7 +185,7 @@ bool CAac::DecodeFrame(unsigned char *inputDataBuffer, int inputDataSize, short 
 		return false;
 	}
 
-	m_nRC = aacDecoder_DecodeFrame(m_hDecoder, m_nOutBuffer, MAX_BUF_SIZE, 0);
+	m_nRC = aacDecoder_DecodeFrame(m_hDecoder, m_nOutBuffer, MAX_AUDIO_FRAME_Length, 0);
 	if (m_nRC != AAC_DEC_OK)
 	{
 		AAC_LOG("aacDecoder_GetStreamInfo with error code: " + m_cTools.IntegertoStringConvert(m_nRC));

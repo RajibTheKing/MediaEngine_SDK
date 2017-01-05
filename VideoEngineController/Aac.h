@@ -21,7 +21,6 @@ static string acc_tag = "AAC_LOG:";
 #define VIDEO_PACKET_TYPE 1
 
 #define MAX_NUM_OF_FRAMES 20
-#define MAX_BUF_SIZE 10000
 
 //#define DUMP_OUTPUT
 
@@ -46,12 +45,12 @@ private:
 	bool m_bIsClosedUDPDataSendingThread;
 
 	unsigned char m_sBuffer[1024];
-	unsigned char m_sFrames[MAX_NUM_OF_FRAMES][MAX_BUF_SIZE];
+	unsigned char m_sFrames[MAX_NUM_OF_FRAMES][MAX_AUDIO_FRAME_Length];
 	int m_nAudioFrameSizes[MAX_NUM_OF_FRAMES];
 	int m_nVideoFrameSizes[MAX_NUM_OF_FRAMES];
 
 	int m_nRC;
-	short m_nOutBuffer[MAX_BUF_SIZE];
+	short m_nOutBuffer[MAX_AUDIO_FRAME_Length];
 
 	struct DecodedFrame m_stDecodeFrameIn;
 	struct DecodedFrame m_stDecodedFrameOut;
