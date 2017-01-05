@@ -677,7 +677,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
 #ifndef NO_CONNECTIVITY
-			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_STREAM, m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, 0);	//Need to check send type.
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, 0);	//Need to check send type.
 #else
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, m_ucaCompressedFrame);
 #endif
