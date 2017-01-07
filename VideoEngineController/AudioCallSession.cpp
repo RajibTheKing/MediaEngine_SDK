@@ -631,13 +631,13 @@ void CAudioCallSession::AddHeader(int &version, long long &llRelativeTime)
 				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrame[1]);
 		}
 	}
+
+	m_ucaRawFrame[0] = 0;   //Setting Audio packet type( = 0).
+	m_ucaCompressedFrame[0] = 0;   //Setting Audio packet type( = 0).
 }
 
 void CAudioCallSession::SetAudioIdentifierAndNextPacketType()
 {
-	m_ucaRawFrame[0] = 0;   //Setting Audio packet type( = 0).
-	m_ucaCompressedFrame[0] = 0;   //Setting Audio packet type( = 0).
-
 	++m_iPacketNumber;
 	if (m_iPacketNumber == m_llMaxAudioPacketNumber)
 	{
