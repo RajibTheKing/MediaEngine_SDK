@@ -442,9 +442,24 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			{
 				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
 
-			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
-				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, nEncodingFrameSize, m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)) {
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+				this->m_pColorConverter->ConvertI420ToNV12(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+#elif defined(_DESKTOP_C_SHARP_)
+				//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
+	m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaConvertedEncodingFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+				this->m_pColorConverter->ConvertI420ToYV12(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+#else
+
+				this->m_pColorConverter->ConvertI420ToNV21(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+#endif
+
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2) , m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(),
+																		 m_pColorConverter->GetWidth(), nDevice_orientation);
+			}
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
 
 				++m_iFrameNumber;
