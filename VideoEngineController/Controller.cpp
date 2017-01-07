@@ -21,6 +21,7 @@ m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
 m_bDeviceCapabilityRunning(false),
 m_bLiveCallRunning(false),
+m_bCallInLiveEnabled(false),
 m_EventNotifier(this)
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
@@ -1072,6 +1073,17 @@ bool CController::EndVideoCallInLive(const LongLong& lFriendID)
 	{
 		return false;
 	}
+}
+
+
+bool CController::IsCallInLiveEnabled()
+{
+	return this->m_bCallInLiveEnabled;
+}
+
+void CController::SetCallInLiveEnabled(bool value)
+{
+	this->m_bCallInLiveEnabled = value;
 }
 
 

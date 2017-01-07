@@ -190,23 +190,26 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 
 			int nValidHeaderOffset = 0;
 
-			long long itIsNow = m_Tools.CurrentTimestamp();
-			long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
-
-			//LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
-
-			if (m_llTimeOffset == -1)
+			if (!m_pcController->IsCallInLiveEnabled())
 			{
-				m_llTimeOffset = itIsNow - recvTimeOffset;
-				LOGENEW("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
-			}
-			else
-			{
-				long long expectedTime = itIsNow - m_llTimeOffset;
-				if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
-					LOGENEW("##DE#Interface## Discarding packet! | now:%lld peertimestamp:%lld expected:%lld", itIsNow, recvTimeOffset, expectedTime);
-					//LOGE("##Discarding packet! | expected:%lld", expectedTime);
-					return -10;
+				long long itIsNow = m_Tools.CurrentTimestamp();
+				long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
+
+				//LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
+
+				if (m_llTimeOffset == -1)
+				{
+					m_llTimeOffset = itIsNow - recvTimeOffset;
+					LOGENEW("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
+				}
+				else
+				{
+					long long expectedTime = itIsNow - m_llTimeOffset;
+					if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
+						LOGENEW("##DE#Interface## Discarding packet! | now:%lld peertimestamp:%lld expected:%lld", itIsNow, recvTimeOffset, expectedTime);
+						//LOGE("##Discarding packet! | expected:%lld", expectedTime);
+						return -10;
+					}
 				}
 			}
 
@@ -600,6 +603,7 @@ bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID,
 
 	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole);
 	
+	m_pcController->SetCallInLiveEnabled(true);
 
 	if (bReturnedValue)
 	{
@@ -617,6 +621,9 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
 	}
 
 	bool bReturnedValue = m_pcController->EndAudioCallInLive(llFriendID);
+
+	m_pcController->SetCallInLiveEnabled(false);
+	m_llTimeOffset = -1;
 
 	if (bReturnedValue)
 	{

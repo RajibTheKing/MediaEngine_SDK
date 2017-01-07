@@ -92,6 +92,8 @@ public:
 	bool EndAudioCallInLive(const LongLong& lFriendID);
 	bool StartVideoCallInLive(const LongLong& lFriendID);
 	bool EndVideoCallInLive(const LongLong& lFriendID);
+	bool IsCallInLiveEnabled();
+	void SetCallInLiveEnabled(bool value);
 
 	int m_nDeviceStrongness;
 	int m_nMemoryEnoughness;
@@ -124,7 +126,7 @@ private:
 	CDeviceCapabilityCheckBuffer *m_pDeviceCapabilityCheckBuffer;
     
     bool m_bDeviceCapabilityRunning;
-    
+	bool m_bCallInLiveEnabled;
     
 
 	int m_nDeviceSupportedCallFPS;
