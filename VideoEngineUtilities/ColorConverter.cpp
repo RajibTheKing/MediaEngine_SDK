@@ -23,7 +23,13 @@ m_bMergingSmallFrameEnabled(false)
 	m_PrevAddValue = 0;
 	m_AverageValue = 0;
 	m_ThresholdValue = 0;
-
+    
+    m_iSmallFrameHeight = iVideoHeight/3;
+    m_iSmallFrameWidth = iVideoWidth/3;
+    if(m_iSmallFrameHeight%2) m_iSmallFrameHeight--;
+    if(m_iSmallFrameWidth%2) m_iSmallFrameWidth--;
+    
+    
 	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
 
 	for (int i = 0; i < 481; i++)
@@ -1035,9 +1041,13 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 {
 	Locker lock(*m_pColorConverterMutex);
 
-	int iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
-	memcpy(smallFrame, m_pSmallFrame, iLen);
-	iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
+	//int iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
+	//memcpy(smallFrame, m_pSmallFrame, iLen);
+	//iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
+    
+    int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
+    m_iSmallFrameHeight = iHeight;
+    m_iSmallFrameWidth = iWidth;
 
 	//memcpy(m_pSmallFrame, smallFrame, nLength);
 }
@@ -1066,8 +1076,8 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 
 	int h1 = m_iVideoHeight;
 	int w1 = m_iVideoWidth;
-	int h2 = m_iVideoHeight >> 2;
-	int w2 = m_iVideoWidth >> 2;
+	int h2 = /* m_iVideoHeight >> 2 */ m_iSmallFrameHeight;
+	int w2 = /* m_iVideoWidth >> 2 */ m_iSmallFrameWidth;
 
     int iLen1 = h1 * w1 * 3 / 2;
     int iLen2 = h2 * w2 * 3 / 2;

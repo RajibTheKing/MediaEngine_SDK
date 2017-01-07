@@ -67,7 +67,10 @@ private:
 	int m_VPlaneLength;
 	int m_UVPlaneMidPoint;
 	int m_UVPlaneEnd;
-
+    
+    int m_iSmallFrameHeight;
+    int m_iSmallFrameWidth;
+    
 	bool m_bMergingSmallFrameEnabled;
 
 	int m_PrevAddValue;
