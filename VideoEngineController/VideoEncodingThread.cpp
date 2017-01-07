@@ -449,7 +449,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				this->m_pColorConverter->ConvertI420ToNV12(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #elif defined(_DESKTOP_C_SHARP_)
 				//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
-	m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaConvertedEncodingFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+				int m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaConvertedEncodingFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 				this->m_pColorConverter->ConvertI420ToYV12(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #else
@@ -457,8 +457,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				this->m_pColorConverter->ConvertI420ToNV21(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #endif
 
-				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2) , m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(),
+#if defined(_DESKTOP_C_SHARP_)
+
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(),
 																		 m_pColorConverter->GetWidth(), nDevice_orientation);
+#else
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(),
+																		m_pColorConverter->GetWidth(), nDevice_orientation);
+#endif
 			}
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
 
