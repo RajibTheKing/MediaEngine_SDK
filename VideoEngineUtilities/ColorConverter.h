@@ -47,6 +47,7 @@ public:
     int DownScaleYUVNV12_YUVNV21_AverageVersion2(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
 
 	int DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+    int DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff);
 
 	int GetWidth();
 	int GetHeight();

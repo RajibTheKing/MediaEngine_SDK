@@ -927,6 +927,110 @@ int CColorConverter::DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHei
 
 }
 
+//Date: 07-January-2017
+//Receive YUV420 Data, and address of Height and Width, and Diff. Example: Diff = 3 means video will become 1/3 of original video.
+
+int CColorConverter::DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    int YPlaneLength = iHeight*iWidth;
+    int UPlaneLength = YPlaneLength >> 2;
+    
+    
+    int indx = 0;
+    int H, W;
+    
+    int iNewHeight = iHeight/diff;
+    int iNewWidth = iWidth/diff;
+    
+    H =  iHeight - iHeight%diff;
+    W = iWidth - iWidth % diff;
+    
+    if(iNewHeight%2!=0)
+    {
+        iNewHeight--;
+        H = iNewHeight * diff;
+    }
+    
+    if(iNewWidth%2!=0)
+    {
+        iNewWidth--;
+        W = iNewWidth * diff;
+    }
+    
+    
+    
+   // printf("iNewHeight, iNewWidth --> %d, %d\n", iNewHeight, iNewWidth);
+    
+    int avg;
+    
+    for(int i=0; i<H; i+=diff)
+    {
+        for(int j=0; j<W; j+=diff)
+        {
+            int sum = 0;
+            for(int k=i; k<(i+diff); k++)
+            {
+                for(int l=j; l<(j+diff); l++)
+                {
+                    sum+=pData[k*iWidth + l];
+                }
+            }
+            avg = sum/(diff*diff);
+            outputData[indx++] = (byte)avg;
+            
+        }
+    }
+    
+    //printf("index = %d\n", indx);
+    
+    
+    
+    
+    byte *p = pData + YPlaneLength;
+    byte *q = pData + YPlaneLength + UPlaneLength;
+    int uIndex = indx;
+    int vIndex = indx + (iNewHeight * iNewWidth)/4;
+    
+    int halfH = H>>1, halfW = W>>1;
+    int www = iWidth>>1;
+    
+    for(int i=0;i<halfH;i+=diff)
+    {
+        for(int j=0;j<halfW;j+=diff)
+        {
+            int sum1 = 0, sum2 = 0;
+            
+            for(int k=i; k<(i+diff); k++)
+            {
+                for(int l=j; l<(j+diff); l++)
+                {
+                    sum1+=p[k*www + l];
+                    sum2+=q[k*www + l];
+                }
+            }
+            
+            avg = sum1/(diff*diff);
+            outputData[uIndex++] = (byte)avg;
+            
+            avg = sum2/(diff*diff);
+            outputData[vIndex++] = (byte)avg;
+        }
+    }
+    
+    //printf("uIndex, vIndex = %d, %d\n", uIndex, vIndex);
+    
+    //cout<<"CurrentLen = "<<indx<<endl;
+    
+    iHeight = iNewHeight;
+    iWidth = iNewWidth;
+    
+    return iHeight * iWidth * 3 / 2;
+    
+}
+
+
+
 void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength)
 {
 	Locker lock(*m_pColorConverterMutex);
