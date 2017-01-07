@@ -249,14 +249,26 @@ void CAudioCallSession::StartCallInLive(int iRole)
 	}
 	m_iRole = iRole;
 	m_llDecodingTimeStampOffset = -1;
-	if (m_iRole == VIEWER_IN_CALL)
+	if (m_iRole == PUBLISHER_IN_CALL)
 	{
-		m_pLiveAudioReceivedQueue->ResetBuffer();
+		m_AudioDecodedBuffer.ResetBuffer(); //Contains Data From Last Call
+		m_AudioReceivedBuffer.ResetBuffer(); //Contains Data From Last Call
+		m_iCompressedDataSendIndex = 0; //Contains Data From Last Call
+	}
+	else if (m_iRole == VIEWER_IN_CALL)
+	{
+		m_pLiveAudioReceivedQueue->ResetBuffer(); //Contains Data From Live Stream
+		m_AudioReceivedBuffer.ResetBuffer(); //Contains Data From Last Call
+		m_iRawDataSendIndex = 0; //Contains Data From Last Call
 	}
 }
 
 void CAudioCallSession::EndCallInLive()
 {
+	if (m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL)//Call Not Running
+	{
+		return;
+	}
 	m_iRole = CALL_NOT_RUNNING;
 	m_llDecodingTimeStampOffset = -1;
 	m_pLiveAudioReceivedQueue->ResetBuffer();
