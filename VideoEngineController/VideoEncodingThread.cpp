@@ -61,8 +61,23 @@ m_pCommonElementBucket(commonElementsBucket)
 
 CVideoEncodingThread::~CVideoEncodingThread()
 {
-    delete m_pCalculatorEncodeTime;
-    delete m_pCalculateEncodingTimeDiff;
+	if (NULL != m_pCalculatorEncodeTime)
+	{
+		delete m_pCalculatorEncodeTime;
+		m_pCalculatorEncodeTime = NULL;
+	}
+
+	if (NULL != m_pCalculateEncodingTimeDiff)
+	{
+		delete m_pCalculateEncodingTimeDiff;
+		m_pCalculateEncodingTimeDiff = NULL;
+	}
+
+	if (NULL != m_VideoBeautificationer)
+	{
+		delete m_VideoBeautificationer;
+		m_VideoBeautificationer = NULL;
+	}
 }
 
 void CVideoEncodingThread::SetCallFPS(int nFPS)

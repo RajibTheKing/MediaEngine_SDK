@@ -50,8 +50,11 @@ m_bMergingSmallFrameEnabled(false)
 
 CColorConverter::~CColorConverter()
 {
-	//LOGE("fahad -->> CColorConverter Destructor Called");
-
+	if (NULL != m_VideoBeautificationer)
+	{
+		delete m_VideoBeautificationer;
+		m_VideoBeautificationer = NULL;
+	}
 }
 
 void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
