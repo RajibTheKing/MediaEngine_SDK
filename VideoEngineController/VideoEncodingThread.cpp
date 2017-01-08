@@ -345,8 +345,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
                 
                 int iPosX, iPosY;
-				/*iPosX = (iWidth / 2) + (iWidth / 8);
-				int iPosY = (iHeight / 2) + (iHeight / 8);
+				/*
+                iPosX = (iWidth / 2) + (iWidth / 8);
+				iPosY = (iHeight / 2) + (iHeight / 8);
 
 				if (iPosX % 4)
 					iPosX += (4 - (iPosX % 4));
@@ -354,10 +355,15 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				if (iPosY % 4)
 					iPosY += (4 - (iPosY % 4));
                  */
+                
                 iPosX = iWidth - iSmallWidth;
                 iPosY = iHeight - iSmallHeight - 20;
-
-				this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
+                
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+                this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, iPosX, iPosY);
+#else
+                this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
+#endif
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
                 m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );
@@ -453,7 +459,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				this->m_pColorConverter->ConvertI420ToNV12(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+				this->m_pColorConverter->ConvertI420ToNV12(m_ucaEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #elif defined(_DESKTOP_C_SHARP_)
 				//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
 				int m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaConvertedEncodingFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
@@ -467,7 +473,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #if defined(_DESKTOP_C_SHARP_)
 
 				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(),
-																		 m_pColorConverter->GetWidth(), nDevice_orientation);
+                                                                        m_pColorConverter->GetWidth(), nDevice_orientation);
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+                m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaEncodingFrame, m_pColorConverter->GetHeight(),
+                                                                         m_pColorConverter->GetWidth(), nDevice_orientation);
 #else
 				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(),
 																		m_pColorConverter->GetWidth(), nDevice_orientation);
