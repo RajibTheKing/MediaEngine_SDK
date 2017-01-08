@@ -51,6 +51,10 @@ public:
 
 	int GetWidth();
 	int GetHeight();
+    
+    int GetSmallFrameWidth();
+    int GetSmallFrameHeight();
+
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
     

@@ -340,8 +340,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			{
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
-
-				int iPosX = (iWidth / 2) + (iWidth / 8);
+                
+                int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
+                int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+                
+                int iPosX, iPosY;
+				/*iPosX = (iWidth / 2) + (iWidth / 8);
 				int iPosY = (iHeight / 2) + (iHeight / 8);
 
 				if (iPosX % 4)
@@ -349,6 +353,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				if (iPosY % 4)
 					iPosY += (4 - (iPosY % 4));
+                 */
+                iPosX = iWidth - iSmallWidth;
+                iPosY = iHeight - iSmallHeight - 20;
 
 				this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
 

@@ -1166,3 +1166,18 @@ int CColorConverter::GetHeight()
 
 	return m_iVideoHeight;
 }
+
+int CColorConverter::GetSmallFrameWidth()
+{
+    Locker lock(*m_pColorConverterMutex);
+    
+    return m_iSmallFrameWidth;
+}
+int CColorConverter::GetSmallFrameHeight()
+{
+    Locker lock(*m_pColorConverterMutex);
+    
+    return m_iSmallFrameHeight;
+}
+
+
