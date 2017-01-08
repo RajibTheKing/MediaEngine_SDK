@@ -134,7 +134,7 @@ void CSendingThread::SendDataFromFile()
 
 	unsigned char data[200000];
 
-	long long curChunkTimeStamp = 0, PrevChunkTimeStamp = 0, chunkDuration;
+	long long chunkDuration;
 	long long lastSleepTime, curSleepTime;
 
 	lastSleepTime = m_Tools.CurrentTimestamp();
@@ -159,20 +159,15 @@ void CSendingThread::SendDataFromFile()
 		fseek(fd, 0, SEEK_SET);
 		fread(data, 1, totFileSize, fd);
 
-		curChunkTimeStamp = m_Tools.GetMediaUnitTimestampInMediaChunck(data);
-
 		G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(lFriendID, MEDIA_TYPE_LIVE_STREAM, ENTITY_TYPE_VIEWER, data, totFileSize, std::vector< std::pair<int, int> >());
 		fclose(fd);
 
-		chunkDuration = curChunkTimeStamp - PrevChunkTimeStamp;
-		PrevChunkTimeStamp = curChunkTimeStamp;
-
-		LOG_AAC("=@@@@@@@@@--> chunk_duration: %d", chunkDuration);
+		chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(data);
+		LOG_AAC("=@@@@@@@@@--> chunk_duration: %lld", chunkDuration);
 		curSleepTime = m_Tools.CurrentTimestamp();
-//		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
+		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
 		lastSleepTime = m_Tools.CurrentTimestamp();
-		m_Tools.SOSleep(2000);
-
+//		m_Tools.SOSleep(2000);
 	}
 }
 #endif
