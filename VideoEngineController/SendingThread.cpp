@@ -127,16 +127,18 @@ void CSendingThread::SendDataFromFile()
 	CVideoCallSession* pVideoSession;
 
 	long long lFriendID = 200;
-	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
+//	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
+	std::string inFilePath = "sdcard/naac_file/chunks_2s/chunk.";
+
 	LOG_AAC("=@@@@@@@@@--> Sending File to AAC.");
 
-	unsigned char data[100000];
+	unsigned char data[200000];
 
 	long long curChunkTimeStamp = 0, PrevChunkTimeStamp = 0, chunkDuration;
 	long long lastSleepTime, curSleepTime;
 
 	lastSleepTime = m_Tools.CurrentTimestamp();
-	for (int i = 1; i <= 1000; i++)
+	for (int i = 0; i <= 100; i++)
 	{
 		int totFileSize = -1;
 		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
@@ -167,8 +169,10 @@ void CSendingThread::SendDataFromFile()
 
 		LOG_AAC("=@@@@@@@@@--> chunk_duration: %d", chunkDuration);
 		curSleepTime = m_Tools.CurrentTimestamp();
-		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
+//		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
 		lastSleepTime = m_Tools.CurrentTimestamp();
+		m_Tools.SOSleep(2000);
+
 	}
 }
 #endif

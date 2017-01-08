@@ -9,8 +9,8 @@
 #include "LockHandler.h"
 #include "Tools.h"
 
-#define LIVE_VIDEO_DECODING_QUEUE_SIZE 20
-#define MAX_VIDEO_ENCODED_FRAME_SIZE 100000
+#define LIVE_VIDEO_DECODING_QUEUE_SIZE 75
+#define MAX_VIDEO_ENCODED_FRAME_SIZE 25000
 
 
 class LiveVideoDecodingQueue {
