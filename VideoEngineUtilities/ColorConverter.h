@@ -54,6 +54,7 @@ public:
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
     
+    int CreateFrameBorder(unsigned char* pData, int iHeight, int iWidth, int Y, int U, int V);
 	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
