@@ -513,6 +513,54 @@ int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char
 	return width * height * 3;
 }
 
+void CColorConverter::mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	int yLen = m_Multiplication[iHeight][iWidth];;
+	int uvLen = yLen >> 2;
+	int vStartIndex = yLen + uvLen;
+	int vEndIndex = (yLen * 3) >> 1;
+
+	for(int i=0; i<iHeight;i++)
+	{
+		int k = iWidth-1;
+		for(int j=0; j <iWidth; j++)
+		{
+			pData[i*iWidth +k] = pFrame[i*iWidth+j];
+			k--;
+		}
+
+	}
+
+
+	int uIndex = vStartIndex-1;
+	int smallHeight = iHeight >> 1;
+	int smallWidth = iWidth >> 1;
+
+	for(int i=0; i<smallHeight;i++)
+	{
+		int k = smallWidth -1;
+		for(int j=0; j <smallWidth; j++)
+		{
+			pData[yLen + i*smallWidth +k] = pFrame[yLen + i*smallWidth+j];
+			k--;
+		}
+
+	}
+
+	for(int i=0; i<smallHeight;i++)
+	{
+		int k = smallWidth - 1;
+		for(int j=0; j <smallWidth; j++)
+		{
+			pData[vStartIndex+i*smallWidth +k] = pFrame[vStartIndex+i*smallWidth+j];
+			k--;
+		}
+
+	}
+}
+
 
 static unsigned char clip[896];
 

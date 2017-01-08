@@ -49,6 +49,8 @@ public:
 	int DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
     int DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff);
 
+	void mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth);
+
 	int GetWidth();
 	int GetHeight();
     

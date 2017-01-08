@@ -358,10 +358,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 
                 iPosX = iWidth - iSmallWidth;
                 iPosY = iHeight - iSmallHeight - 20;
-                
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+				this->m_pColorConverter->mirrorYUVI420(m_ucaEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
+
                 this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, iPosX, iPosY);
 #else
+				this->m_pColorConverter->mirrorYUVI420(m_ucaConvertedEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
+
                 this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
 #endif
 
@@ -455,30 +459,41 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			{
 				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
 
-			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)) {
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
+			{
+
+				int iWidth = m_pColorConverter->GetWidth();
+				int iHeight = m_pColorConverter->GetHeight();
+
+				int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
+				int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+
+				int iPosX, iPosY;
+
+				iPosX = iWidth - iSmallWidth;
+				iPosY = iHeight - iSmallHeight - 20;
+
+                this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				this->m_pColorConverter->ConvertI420ToNV12(m_ucaEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+				this->m_pColorConverter->ConvertI420ToNV12(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #elif defined(_DESKTOP_C_SHARP_)
 				//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
-				int m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaConvertedEncodingFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+				int m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaMirroredFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #elif defined(TARGET_OS_WINDOWS_PHONE)
-				this->m_pColorConverter->ConvertI420ToYV12(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+				this->m_pColorConverter->ConvertI420ToYV12(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #else
 
-				this->m_pColorConverter->ConvertI420ToNV21(m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+				this->m_pColorConverter->ConvertI420ToNV21(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #endif
 
 #if defined(_DESKTOP_C_SHARP_)
 
 				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(),
                                                                         m_pColorConverter->GetWidth(), nDevice_orientation);
-#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-                m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaEncodingFrame, m_pColorConverter->GetHeight(),
-                                                                         m_pColorConverter->GetWidth(), nDevice_orientation);
 #else
-				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaConvertedEncodingFrame, m_pColorConverter->GetHeight(),
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(),
 																		m_pColorConverter->GetWidth(), nDevice_orientation);
 #endif
 			}
