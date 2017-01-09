@@ -69,8 +69,8 @@ CEcho::CEcho(int id)
 
 	int iArg = 1; 
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC, &iArg); 
-	int agc_inc = 12;
-	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_INCREMENT, &agc_inc);
+	int agc_max_gain = 60;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &agc_max_gain);
 	
 	
 	int i;
