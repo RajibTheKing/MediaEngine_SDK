@@ -106,7 +106,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	long long m_ll1stDecodedFrameTimeStamp = 0;
     long long lRenderingTimeDiff = 0;
     long long llPrevTimeStamp = 0;
-	CAverageCalculator *pRenderingFps = new CAverageCalculator();
+	//CAverageCalculator *pRenderingFps = new CAverageCalculator();
     long long llFirePrevTime = 0;
     long long llDequeuePrevTime = 0;
 	while (bRenderingThreadRunning)

@@ -25,6 +25,12 @@ CCommonElementsBucket::~CCommonElementsBucket()
 		m_pVideoCallSessionList = NULL;
 	}
 
+	if (NULL != m_pAudioCallSessionList)
+	{
+		delete m_pAudioCallSessionList;
+		m_pAudioCallSessionList = NULL;
+	}
+
 	if (NULL != m_pVideoEncoderList)
 	{
 		delete m_pVideoEncoderList;

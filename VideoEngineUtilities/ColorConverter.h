@@ -49,11 +49,18 @@ public:
 	int DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
     int DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff);
 
+	void mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth);
+
 	int GetWidth();
 	int GetHeight();
+    
+    int GetSmallFrameWidth();
+    int GetSmallFrameHeight();
+
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
     
+    int CreateFrameBorder(unsigned char* pData, int iHeight, int iWidth, int Y, int U, int V);
 	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
@@ -67,7 +74,10 @@ private:
 	int m_VPlaneLength;
 	int m_UVPlaneMidPoint;
 	int m_UVPlaneEnd;
-
+    
+    int m_iSmallFrameHeight;
+    int m_iSmallFrameWidth;
+    
 	bool m_bMergingSmallFrameEnabled;
 
 	int m_PrevAddValue;

@@ -36,8 +36,11 @@ m_nCallFPS(nFPS)
 
 CVideoDecodingThread::~CVideoDecodingThread()
 {
-    delete m_pCalculatorDecodeTime;
-    
+	if (NULL != m_pCalculatorDecodeTime)
+	{
+		delete m_pCalculatorDecodeTime;
+		m_pCalculatorDecodeTime = NULL;
+	}
 }
 
 void CVideoDecodingThread::SetCallFPS(int nFPS)
