@@ -351,48 +351,39 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 }
             }*/
 
-			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 			{
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
-                
-                int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
-                int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
-                
-                int iPosX, iPosY;
-				/*
-                iPosX = (iWidth / 2) + (iWidth / 8);
-				iPosY = (iHeight / 2) + (iHeight / 8);
-
-				if (iPosX % 4)
-					iPosX += (4 - (iPosX % 4));
-
-				if (iPosY % 4)
-					iPosY += (4 - (iPosY % 4));
-                 */
-                
-                iPosX = iWidth - iSmallWidth;
-                iPosY = iHeight - iSmallHeight - 20;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 				this->m_pColorConverter->mirrorYUVI420(m_ucaEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
-
-                this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, iPosX, iPosY);
-#else
-				this->m_pColorConverter->mirrorYUVI420(m_ucaConvertedEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
-
-                this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
-#endif
-
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-                m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );
+				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );
                 m_VideoBeautificationer->IsSkinPixel(m_ucaEncodingFrame);
 #else
+				this->m_pColorConverter->mirrorYUVI420(m_ucaConvertedEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
 				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 				m_VideoBeautificationer->IsSkinPixel(m_ucaConvertedEncodingFrame);
 #endif
-			}
 
+				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
+				{
+					int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
+					int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+
+					int iPosX = iWidth - iSmallWidth;
+					int iPosY = iHeight - iSmallHeight - 20;
+
+					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY);
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+					this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, iPosX, iPosY);
+#else
+					this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
+#endif
+				}
+			}
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
 
@@ -476,19 +467,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
 			{
-
-				int iWidth = m_pColorConverter->GetWidth();
-				int iHeight = m_pColorConverter->GetHeight();
-
-				int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
-				int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
-
-				int iPosX, iPosY;
-
-				iPosX = iWidth - iSmallWidth;
-				iPosY = iHeight - iSmallHeight - 20;
-
-                this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
