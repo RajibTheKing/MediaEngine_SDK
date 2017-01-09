@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EventNotifier.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Filt.cpp" />
     <ClCompile Include="..\..\VideoEngineController\FPSController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="..\..\VideoEngineController\EncodedFramePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodingBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\EventNotifier.h" />
+    <ClInclude Include="..\..\VideoEngineController\Filt.h" />
     <ClInclude Include="..\..\VideoEngineController\FPSController.h" />
     <ClInclude Include="..\..\VideoEngineController\G729CodecNative.h" />
     <ClInclude Include="..\..\VideoEngineController\Globals.h" />

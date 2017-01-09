@@ -221,14 +221,14 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 	{
 		LowPass(sInBuf, sBufferSize);
 		//DeAmplitude(sInBuf, sBufferSize);
-		for (int i = 0; i < sBufferSize; i++)
+		/*for (int i = 0; i < sBufferSize; i++)
 		{
 			if (sInBuf[i] > 10922)
 			{
 				LOGE("###CE### %d", (int)sInBuf[i]);
 			}
 			sInBuf[i] *= 2;
-		}
+		}*/
 	}
 	return true;
 }
