@@ -196,7 +196,15 @@ CAudioCallSession::~CAudioCallSession()
 		}
 	}
 
+	if (NULL != m_SendingHeader)
+	{
+		delete m_SendingHeader;
+	}
 
+	if(NULL != m_ReceivingHeader)
+	{
+		delete m_ReceivingHeader;
+	}
 
 	m_FriendID = -1;
 #ifdef __DUMP_FILE__
