@@ -64,6 +64,7 @@ public:
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
 	CVideoDepacketizationThread *m_pVideoDepacketizationThread;
+
 	long long GetFirstVideoPacketTime();
 	void SetFirstVideoPacketTime(long long llTimeStamp);
 

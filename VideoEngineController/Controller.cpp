@@ -1041,6 +1041,7 @@ bool CController::StartVideoCallInLive(const LongLong& lFriendID)
 	CVideoCallSession* pVideoSession;
 
 	Locker lock(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 	
@@ -1061,6 +1062,7 @@ bool CController::EndVideoCallInLive(const LongLong& lFriendID)
 	CVideoCallSession* pVideoSession;
 
 	Locker lock(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 

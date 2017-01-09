@@ -63,6 +63,31 @@ CEncodedFrameDepacketizer::~CEncodedFrameDepacketizer()
 	SHARED_PTR_DELETE(m_pEncodedFrameDepacketizerMutex);
 }
 
+void CEncodedFrameDepacketizer::ResetEncodedFrameDepacketizer()
+{
+	m_FrontFrame = 0;
+	m_Counter = 0;
+	m_BufferSize = DEPACKETIZATION_BUFFER_SIZE;
+	m_iMaxFrameNumRecvd = -1;
+
+	g_ArribalTime.clear();
+	g_llChangeSum = g_iChangeCounter = 0;
+	m_iFirstFrameReceived = DEFAULT_FIRST_FRAME_RCVD;
+	m_bIsDpkgBufferFilledUp = false;
+
+	for (int i = 0; i <= m_BufferSize; i++)
+	{
+		m_AvailableIndexes.insert(i);
+	}
+
+	m_BackFrame = m_FrontFrame + m_BufferSize;
+
+	for (int frame = m_FrontFrame; frame <= m_BackFrame; frame++)
+	{
+		CreateNewIndex(frame);
+	}
+}
+
 int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader)
 {
     bool bIsMiniPacket = (PacketType == MINI_PACKET_TYPE);

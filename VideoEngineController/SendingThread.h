@@ -29,6 +29,8 @@ public:
 	void SendingThreadProcedure();
 	static void *CreateVideoSendingThread(void* param);
 
+	void ResetForViewerCallerCallEnd();
+
 	void InterruptOccured();
 	void InterruptOver();
 
@@ -58,6 +60,8 @@ private:
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     
 	LongLong m_lfriendID;
+
+	bool m_bResetForViewerCallerCallEnd;
 
 	bool m_bInterruptHappened;
 	bool m_bInterruptRunning;

@@ -30,6 +30,8 @@ public:
 	void EncodingThreadProcedure();
 	static void *CreateVideoEncodingThread(void* param);
 
+	void ResetForViewerCallerCallEnd();
+
 	void SetOrientationType(int nOrientationType);
     void ResetVideoEncodingThread(BitRateController *pBitRateController);
 
@@ -51,6 +53,8 @@ private:
 	CColorConverter *m_pColorConverter;
 	CVideoEncoder *m_pVideoEncoder;
 	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
+
+	bool m_bResetForViewerCallerCallEnd;
 
 	unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_ucaConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];

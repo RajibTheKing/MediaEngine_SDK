@@ -38,7 +38,8 @@ m_nTimeStampOfChunck(-1),
 m_nTimeStampOfChunckSend(0),
 m_lfriendID(llfriendID),
 m_bInterruptHappened(false),
-m_bInterruptRunning(false)
+m_bInterruptRunning(false),
+m_bResetForViewerCallerCallEnd(false)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
@@ -113,6 +114,16 @@ void *CSendingThread::CreateVideoSendingThread(void* param)
 	pThis->SendingThreadProcedure();
 
 	return NULL;
+}
+
+void CSendingThread::ResetForViewerCallerCallEnd()
+{
+	m_bResetForViewerCallerCallEnd = true;
+
+	while (m_bResetForViewerCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
 }
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
@@ -220,6 +231,12 @@ void CSendingThread::SendingThreadProcedure()
 		m_Tools.SOSleep(500000);
 #endif
 
+		if (m_bResetForViewerCallerCallEnd == true)
+		{
+			m_SendingBuffer->ResetBuffer();
+
+			m_bResetForViewerCallerCallEnd = false;
+		}
 
 		if (m_SendingBuffer->GetQueueSize() == 0)
 		{

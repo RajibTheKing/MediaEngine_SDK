@@ -19,7 +19,8 @@ m_BitRateController(BitRateController),
 m_pEncodedFrameDepacketizer(EncodedFrameDepacketizer),
 m_pCommonElementsBucket(CommonElementsBucket),
 m_miniPacketBandCounter(miniPacketBandCounter),
-m_pVideoCallSession(pVideoCallSession)
+m_pVideoCallSession(pVideoCallSession),
+m_bResetForPublisherCallerCallEnd(false)
 {
 	ExpectedFramePacketPair.first = 0;
 	ExpectedFramePacketPair.second = 0;
@@ -96,6 +97,16 @@ void *CVideoDepacketizationThread::CreateVideoDepacketizationThread(void* param)
 	return NULL;
 }
 
+void CVideoDepacketizationThread::ResetForPublisherCallerCallEnd()
+{
+	m_bResetForPublisherCallerCallEnd = true;
+
+	while (m_bResetForPublisherCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
 void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Thread
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method");
@@ -106,6 +117,13 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 	while (bDepacketizationThreadRunning)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
+
+		if (m_bResetForPublisherCallerCallEnd == true)
+		{
+			m_pVideoPacketQueue->ResetBuffer();
+
+			m_bResetForPublisherCallerCallEnd = false;
+		}
 
 		queSize = m_pVideoPacketQueue->GetQueueSize();
 

@@ -26,7 +26,9 @@ m_FpsCounter(0),
 m_FPS_TimeDiff(0),
 m_Counter(0),
 m_bIsCheckCall(bIsCheckCall),
-m_nCallFPS(nFPS)
+m_nCallFPS(nFPS),
+m_bResetForPublisherCallerCallEnd(false),
+m_bResetForViewerCallerCallStart(false)
 
 {
     m_pCalculatorDecodeTime = new CAverageCalculator();
@@ -120,6 +122,26 @@ void *CVideoDecodingThread::CreateDecodingThread(void* param)
 	return NULL;
 }
 
+void CVideoDecodingThread::ResetForPublisherCallerCallEnd()
+{
+	m_bResetForPublisherCallerCallEnd = true;
+
+	while (m_bResetForPublisherCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
+void CVideoDecodingThread::ResetForViewerCallerCallStartEnd()
+{
+	m_bResetForViewerCallerCallStartEnd = true;
+
+	while (m_bResetForViewerCallerCallStartEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
 void CVideoDecodingThread::DecodingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() started DecodingThreadProcedure method");
@@ -150,6 +172,15 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	{
 		if (m_pVideoCallSession->isLiveVideoStreamRunning() && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
 		{
+			if (m_bResetForViewerCallerCallStartEnd == true)
+			{
+				m_pLiveVideoDecodingQueue->ResetBuffer();
+
+				llFirstFrameTimeStamp = -1;
+
+				m_bResetForViewerCallerCallStartEnd = false;
+			}
+
 			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got NOTHING for decoding");
 				toolsObject.SOSleep(10);
@@ -203,7 +234,13 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			}
 			continue;
 		}
-		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() RUNNING DecodingThreadProcedure method");
+
+		if (m_bResetForPublisherCallerCallEnd == true)
+		{
+			m_pEncodedFrameDepacketizer->ResetEncodedFrameDepacketizer();
+
+			m_bResetForPublisherCallerCallEnd = false;
+		}
 
 		if( -1 == m_pVideoCallSession->GetShiftedTime())
 		{

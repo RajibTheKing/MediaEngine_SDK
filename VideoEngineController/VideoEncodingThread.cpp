@@ -25,7 +25,8 @@ m_FPS_TimeDiff(0),
 m_FpsCounter(0),
 m_nCallFPS(nFPS),
 m_bNotifyToClientVideoQuality(false),
-m_pCommonElementBucket(commonElementsBucket)
+m_pCommonElementBucket(commonElementsBucket),
+m_bResetForViewerCallerCallEnd(false)
 
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
@@ -152,6 +153,16 @@ void *CVideoEncodingThread::CreateVideoEncodingThread(void* param)
 	return NULL;
 }
 
+void CVideoEncodingThread::ResetForViewerCallerCallEnd()
+{
+	m_bResetForViewerCallerCallEnd = true;
+
+	while (m_bResetForViewerCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
 void CVideoEncodingThread::SetOrientationType(int nOrientationType)
 {
 	m_nOrientationType = nOrientationType;
@@ -205,6 +216,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	while (bEncodingThreadRunning)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
+
+		if (m_bResetForViewerCallerCallEnd == true)
+		{
+			m_pEncodingBuffer->ResetBuffer();
+
+			m_bResetForViewerCallerCallEnd = false;
+		}
 
 		m_bIsThisThreadStarted = true;
 

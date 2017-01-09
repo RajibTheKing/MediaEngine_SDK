@@ -36,6 +36,8 @@ public:
 	CEncodedFrameDepacketizer(CCommonElementsBucket* sharedObject, CVideoCallSession *pVideoCallSession);
 	~CEncodedFrameDepacketizer();
 
+	void ResetEncodedFrameDepacketizer();
+
 	//int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader);
 	int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader);
 	void MoveForward(int frame);

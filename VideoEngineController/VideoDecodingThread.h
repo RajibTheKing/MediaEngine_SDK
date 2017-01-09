@@ -41,6 +41,9 @@ public:
 	void DecodingThreadProcedure();
 	static void *CreateDecodingThread(void* param);
 
+	void ResetForPublisherCallerCallEnd();
+	void ResetForViewerCallerCallStartEnd();
+
 	void InstructionToStop();
 
 	void SetCallFPS(int nFPS);
@@ -65,6 +68,9 @@ private:
 	CRenderingBuffer *m_RenderingBuffer;						
 	CVideoDecoder *m_pVideoDecoder;								
 	CColorConverter *m_pColorConverter;
+
+	bool m_bResetForPublisherCallerCallEnd;
+	bool m_bResetForViewerCallerCallStartEnd;
 
 	bool m_bIsCheckCall;
 

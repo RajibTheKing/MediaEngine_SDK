@@ -30,6 +30,8 @@ public:
 	void DepacketizationThreadProcedure();
 	static void *CreateVideoDepacketizationThread(void* param);
 
+	void ResetForPublisherCallerCallEnd();
+
 private:
 
 	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
@@ -45,7 +47,9 @@ private:
 	CVideoHeader m_RcvdPacketHeader;							
 	BitRateController *m_BitRateController;						
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
-	CCommonElementsBucket* m_pCommonElementsBucket;				
+	CCommonElementsBucket* m_pCommonElementsBucket;			
+
+	bool m_bResetForPublisherCallerCallEnd;
 
 	pair<int, int> ExpectedFramePacketPair;						
 	int iNumberOfPacketsInCurrentFrame;

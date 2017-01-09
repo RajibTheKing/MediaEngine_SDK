@@ -1101,9 +1101,18 @@ void CVideoCallSession::StartCallInLive()
 	else
 	{
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
+		{
+			//SetFirstVideoPacketTime(-1);
+			//SetShiftedTime(-1);
+
 			m_nEntityType = ENTITY_TYPE_PUBLISHER_CALLER;
+		}
 		else if (m_nEntityType == ENTITY_TYPE_VIEWER)
+		{
+			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
+
 			m_nEntityType = ENTITY_TYPE_VIEWER_CALLEE;
+		}
 
 		m_iRole = 1;
 	}
@@ -1116,9 +1125,23 @@ void CVideoCallSession::EndCallInLive()
 	else
 	{
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		{
+			m_pVideoDepacketizationThread->ResetForPublisherCallerCallEnd();
+
+			SetFirstVideoPacketTime(-1);
+			SetShiftedTime(-1);
+
+			m_pVideoDecodingThread->ResetForPublisherCallerCallEnd();
+
 			m_nEntityType = ENTITY_TYPE_PUBLISHER;
+		}
 		else if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+		{
+			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
+			m_pVideoEncodingThread->ResetForViewerCallerCallEnd();
+
 			m_nEntityType = ENTITY_TYPE_VIEWER;
+		}
 
 		m_iRole = 0;
 	}
