@@ -49,6 +49,7 @@ public:
 	void SetCallFPS(int nFPS);
 
 	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation);
+	int DecodeAndSendToClient2();
 
 private:
 
@@ -59,6 +60,14 @@ private:
 	int m_decodingHeight;
 	int m_decodingWidth;
 	int m_decodedFrameSize;
+
+	int m_previousDecodedFrameSize;
+	int m_PreviousDecodingHeight;
+	int m_PreviousDecodingWidth;
+	int m_PreviousFrameNumber;
+	int m_PreviousOrientation;
+
+	bool m_HasPreviousValues;
     
     int m_Counter;
 
@@ -73,6 +82,8 @@ private:
 	bool m_bResetForViewerCallerCallStartEnd;
 
 	bool m_bIsCheckCall;
+
+	unsigned char m_PreviousDecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];

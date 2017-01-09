@@ -28,7 +28,8 @@ m_Counter(0),
 m_bIsCheckCall(bIsCheckCall),
 m_nCallFPS(nFPS),
 m_bResetForPublisherCallerCallEnd(false),
-m_bResetForViewerCallerCallStartEnd(false)
+m_bResetForViewerCallerCallStartEnd(false),
+m_HasPreviousValues(false)
 
 {
     m_pCalculatorDecodeTime = new CAverageCalculator();
@@ -166,6 +167,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
     long long llTargetTimeStampDiff = -1;
     long long llExpectedTimeOffset = -1;
 
+	long long llCountMiss = 0;
+
     CVideoHeader videoHeaderObject;
 
 	while (bDecodingThreadRunning)
@@ -177,13 +180,24 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 				m_pLiveVideoDecodingQueue->ResetBuffer();
 
 				llFirstFrameTimeStamp = -1;
+				llCountMiss = 0;
+				m_HasPreviousValues = false;
 
 				m_bResetForViewerCallerCallStartEnd = false;
 			}
 
-			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) {
+			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) 
+			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got NOTHING for decoding");
 				toolsObject.SOSleep(10);
+			}
+			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && llCountMiss != 0 && llCountMiss % 3 == 0 && m_HasPreviousValues == true)
+			{
+				llCountMiss++;
+
+				nDecodingStatus = DecodeAndSendToClient2();
+
+				toolsObject.SOSleep(5);
 			}
 			else
 			{
@@ -380,6 +394,77 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThread::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
+int CVideoDecodingThread::DecodeAndSendToClient2()
+{
+	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
+
+	long long decTime = m_Tools.CurrentTimestamp();
+
+	m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
+
+	int iWidth = m_pColorConverter->GetWidth();
+	int iHeight = m_pColorConverter->GetHeight();
+
+	int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
+	int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+
+	int iPosX = iWidth - iSmallWidth;
+	int iPosY = iHeight - iSmallHeight - 20;
+
+	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrame, iPosX, iPosY);
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	this->m_pColorConverter->ConvertI420ToNV12(m_PreviousDecodedFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+#elif defined(_DESKTOP_C_SHARP_)
+	m_previousDecodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_PreviousDecodedFrame, m_RenderingRGBFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+	this->m_pColorConverter->ConvertI420ToYV12(m_PreviousDecodedFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+#else
+
+	this->m_pColorConverter->ConvertI420ToNV21(m_PreviousDecodedFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+#endif
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
+
+
+	if (m_FPS_TimeDiff == 0) m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+
+	if (m_Tools.CurrentTimestamp() - m_FPS_TimeDiff < 1000)
+	{
+		m_FpsCounter++;
+	}
+	else
+	{
+		m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+
+		//printf("Current Decoding FPS = %d\n", m_FpsCounter);
+		if (m_FpsCounter >(m_nCallFPS - FPS_TOLERANCE_FOR_FPS))
+		{
+			//kaj korte hobe
+		}
+
+		//if(m_FpsCounter<FPS_MAXIMUM)
+		//g_FPSController->SetMaxOwnProcessableFPS(m_FpsCounter);
+		m_FpsCounter = 0;
+	}
+
+#if defined(_DESKTOP_C_SHARP_)
+
+	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_RenderingRGBFrame, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation);
+
+	return m_previousDecodedFrameSize;
+
+#else
+
+	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_PreviousDecodedFrame, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation);
+
+	return m_previousDecodedFrameSize;
+
+#endif
+
+}
+
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
@@ -405,6 +490,14 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize);
 	else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 	{
+		memcpy(m_PreviousDecodedFrame, m_DecodedFrame, m_decodedFrameSize);
+		m_previousDecodedFrameSize = m_decodedFrameSize;
+		m_PreviousDecodingHeight = m_decodingHeight;
+		m_PreviousDecodingWidth = m_decodingWidth;
+		m_PreviousFrameNumber = nFramNumber;
+		m_PreviousOrientation = nOrientation;
+		m_HasPreviousValues = true;
+
 		int iWidth = m_pColorConverter->GetWidth();
 		int iHeight = m_pColorConverter->GetHeight();
 
