@@ -189,30 +189,32 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			return 6;*/
 
 			int nValidHeaderOffset = 0;
+						
+			long long itIsNow = m_Tools.CurrentTimestamp();
+			long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
 
-			if (!m_pcController->IsCallInLiveEnabled())
+			//LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
+
+			if (m_llTimeOffset == -1)
 			{
-				long long itIsNow = m_Tools.CurrentTimestamp();
-				long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
-
-				//LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
-
-				if (m_llTimeOffset == -1)
-				{
-					m_llTimeOffset = itIsNow - recvTimeOffset;
-					LOGENEW("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
-				}
-				else
-				{
-					long long expectedTime = itIsNow - m_llTimeOffset;
-					if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
-						LOGENEW("##DE#Interface## Discarding packet! | now:%lld peertimestamp:%lld expected:%lld", itIsNow, recvTimeOffset, expectedTime);
-						//LOGE("##Discarding packet! | expected:%lld", expectedTime);
+				m_llTimeOffset = itIsNow - recvTimeOffset;
+				HITLER("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
+			}
+			else
+			{
+				long long expectedTime = itIsNow - m_llTimeOffset;
+				int tmp_headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
+				int tmp_chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
+				HITLER("@#DE#Interface##now:%lld peertimestamp:%lld expected:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d ", itIsNow, recvTimeOffset, expectedTime, recvTimeOffset - expectedTime, tmp_chunkDuration , tmp_headerLength);
+				if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
+					if (!m_pcController->IsCallInLiveEnabled())
+					{
+						//HITLER("##Discarding packet! | expected:%lld", expectedTime);
 						return -10;
 					}
 				}
 			}
-
+			
 			int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
 
 			int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
@@ -600,11 +602,11 @@ bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID,
 	{
 		return false;
 	}
-
+	m_llTimeOffset = -1;
 	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole);
 	
 	m_pcController->SetCallInLiveEnabled(true);
-
+	
 	if (bReturnedValue)
 	{
 		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID);
@@ -620,10 +622,11 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->EndAudioCallInLive(llFriendID);
-
-	m_pcController->SetCallInLiveEnabled(false);
 	m_llTimeOffset = -1;
+	bool bReturnedValue = m_pcController->EndAudioCallInLive(llFriendID);
+	
+	m_pcController->SetCallInLiveEnabled(false);
+	
 
 	if (bReturnedValue)
 	{
