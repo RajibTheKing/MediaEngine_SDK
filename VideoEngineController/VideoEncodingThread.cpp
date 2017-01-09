@@ -375,11 +375,28 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				int iHeight = m_pColorConverter->GetHeight();
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
 				this->m_pColorConverter->mirrorYUVI420(m_ucaEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
+#else
+				this->m_pColorConverter->mirrorYUVI420(m_ucaConvertedEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
+#endif
+
+				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
+				{
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaEncodingFrame, iHeight, iWidth, nEncodingFrameSize);
+#else
+					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaConvertedEncodingFrame, iHeight, iWidth, nEncodingFrameSize);
+#endif
+				}
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
 				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );
                 m_VideoBeautificationer->IsSkinPixel(m_ucaEncodingFrame);
 #else
-				this->m_pColorConverter->mirrorYUVI420(m_ucaConvertedEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
 				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 				m_VideoBeautificationer->IsSkinPixel(m_ucaConvertedEncodingFrame);
 #endif

@@ -403,6 +403,19 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 		m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize);
+	else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
+	{
+		int iWidth = m_pColorConverter->GetWidth();
+		int iHeight = m_pColorConverter->GetHeight();
+
+		int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
+		int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+
+		int iPosX = iWidth - iSmallWidth;
+		int iPosY = iHeight - iSmallHeight - 20;
+
+		this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY);
+	}
 
 	currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
