@@ -28,7 +28,7 @@ m_Counter(0),
 m_bIsCheckCall(bIsCheckCall),
 m_nCallFPS(nFPS),
 m_bResetForPublisherCallerCallEnd(false),
-m_bResetForViewerCallerCallStart(false)
+m_bResetForViewerCallerCallStartEnd(false)
 
 {
     m_pCalculatorDecodeTime = new CAverageCalculator();

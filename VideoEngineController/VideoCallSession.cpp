@@ -1102,8 +1102,8 @@ void CVideoCallSession::StartCallInLive()
 	{
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
 		{
-			//SetFirstVideoPacketTime(-1);
-			//SetShiftedTime(-1);
+			SetFirstVideoPacketTime(-1);
+			SetShiftedTime(-1);
 
 			m_nEntityType = ENTITY_TYPE_PUBLISHER_CALLER;
 		}
