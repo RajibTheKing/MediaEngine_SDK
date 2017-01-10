@@ -189,15 +189,13 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			if(m_pLiveVideoDecodingQueue->GetQueueSize() == 0) 
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got NOTHING for decoding");
-				toolsObject.SOSleep(10);
-			}
-			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && llCountMiss != 0 && llCountMiss % 3 == 0 && m_HasPreviousValues == true)
-			{
+
 				llCountMiss++;
 
-				nDecodingStatus = DecodeAndSendToClient2();
+				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && llCountMiss % 2 == 0 && m_HasPreviousValues == true)
+					nDecodingStatus = DecodeAndSendToClient2();
 
-				toolsObject.SOSleep(5);
+				toolsObject.SOSleep(10);
 			}
 			else
 			{
