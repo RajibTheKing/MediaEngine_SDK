@@ -1095,19 +1095,19 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
     {
         int rowIndx = i*iWidth;
         pData[rowIndx + 0] = Y;
-        pData[rowIndx + 1] = Y;
+        //pData[rowIndx + 1] = Y;
         pData[rowIndx + iWidth-1] = Y;
-        pData[rowIndx + iWidth-2] = Y;
+       // pData[rowIndx + iWidth-2] = Y;
         
         pData[getUIndex(iHeight, iWidth, i, 0, iTotal)] = U;
-        pData[getUIndex(iHeight, iWidth, i, 1, iTotal)] = U;
+        //pData[getUIndex(iHeight, iWidth, i, 1, iTotal)] = U;
         pData[getUIndex(iHeight, iWidth, i, iWidth-1, iTotal)] = U;
-        pData[getUIndex(iHeight, iWidth, i, iWidth-2, iTotal)] = U;
+        //pData[getUIndex(iHeight, iWidth, i, iWidth-2, iTotal)] = U;
         
         pData[getVIndex(iHeight, iWidth, i, 0, iTotal)] = V;
-        pData[getVIndex(iHeight, iWidth, i, 1, iTotal)] = V;
+        //pData[getVIndex(iHeight, iWidth, i, 1, iTotal)] = V;
         pData[getVIndex(iHeight, iWidth, i, iWidth -1, iTotal)] = V;
-        pData[getVIndex(iHeight, iWidth, i, iWidth-2, iTotal)] = V;
+        //pData[getVIndex(iHeight, iWidth, i, iWidth-2, iTotal)] = V;
         
     }
     
@@ -1115,19 +1115,19 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
     {
         int colIndx = j;
         pData[0 + colIndx] = Y;
-        pData[iWidth + colIndx] = Y;
+        //pData[iWidth + colIndx] = Y;
         pData[(iHeight-1)*iWidth + colIndx] = Y;
-        pData[(iHeight-2)*iWidth + colIndx] = Y;
+        //pData[(iHeight-2)*iWidth + colIndx] = Y;
         
         pData[getUIndex(iHeight, iWidth,  0, colIndx, iTotal)] = U;
-        pData[getUIndex(iHeight, iWidth,  1, colIndx, iTotal)] = U;
+        //pData[getUIndex(iHeight, iWidth,  1, colIndx, iTotal)] = U;
         pData[getUIndex(iHeight, iWidth,  (iHeight-1), colIndx, iTotal)] = U;
-        pData[getUIndex(iHeight, iWidth,  (iHeight-2), colIndx, iTotal)] = U;
+        //pData[getUIndex(iHeight, iWidth,  (iHeight-2), colIndx, iTotal)] = U;
         
         pData[getVIndex(iHeight, iWidth,  0, colIndx, iTotal)] = V;
-        pData[getVIndex(iHeight, iWidth,  1, colIndx, iTotal)] = V;
+        //pData[getVIndex(iHeight, iWidth,  1, colIndx, iTotal)] = V;
         pData[getVIndex(iHeight, iWidth,  (iHeight-1), colIndx, iTotal)] = V;
-        pData[getVIndex(iHeight, iWidth,  (iHeight-2), colIndx, iTotal)] = V;
+        //pData[getVIndex(iHeight, iWidth,  (iHeight-2), colIndx, iTotal)] = V;
         
         
     }
