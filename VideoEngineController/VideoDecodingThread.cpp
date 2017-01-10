@@ -192,8 +192,12 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 				llCountMiss++;
 
-				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && llCountMiss % 2 == 0 && m_HasPreviousValues == true)
-					nDecodingStatus = DecodeAndSendToClient2();
+				if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+				{
+					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE &&
+						llCountMiss % 2 == 0 && m_HasPreviousValues == true)
+						nDecodingStatus = DecodeAndSendToClient2();
+				}
 
 				toolsObject.SOSleep(10);
 			}
@@ -485,28 +489,31 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	if (1 > m_decodedFrameSize)
 		return -1;
 
-	if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
-		m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize);
-	else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
+	if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 	{
-		memcpy(m_PreviousDecodedFrame, m_DecodedFrame, m_decodedFrameSize);
-		m_previousDecodedFrameSize = m_decodedFrameSize;
-		m_PreviousDecodingHeight = m_decodingHeight;
-		m_PreviousDecodingWidth = m_decodingWidth;
-		m_PreviousFrameNumber = nFramNumber;
-		m_PreviousOrientation = nOrientation;
-		m_HasPreviousValues = true;
+		if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
+			m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize);
+		else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
+		{
+			memcpy(m_PreviousDecodedFrame, m_DecodedFrame, m_decodedFrameSize);
+			m_previousDecodedFrameSize = m_decodedFrameSize;
+			m_PreviousDecodingHeight = m_decodingHeight;
+			m_PreviousDecodingWidth = m_decodingWidth;
+			m_PreviousFrameNumber = nFramNumber;
+			m_PreviousOrientation = nOrientation;
+			m_HasPreviousValues = true;
 
-		int iWidth = m_pColorConverter->GetWidth();
-		int iHeight = m_pColorConverter->GetHeight();
+			int iWidth = m_pColorConverter->GetWidth();
+			int iHeight = m_pColorConverter->GetHeight();
 
-		int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
-		int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+			int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
+			int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
-		int iPosX = iWidth - iSmallWidth;
-		int iPosY = iHeight - iSmallHeight - 20;
+			int iPosX = iWidth - iSmallWidth;
+			int iPosY = iHeight - iSmallHeight - 20;
 
-		this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY);
+			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY);
+		}
 	}
 
 	currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ");
