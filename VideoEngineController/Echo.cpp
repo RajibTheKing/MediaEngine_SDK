@@ -67,10 +67,12 @@ CEcho::CEcho(int id)
 	/*int value = 80; 
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_INCREMENT, &value);*/
 
+
+/*
 	int iArg = 1; 
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC, &iArg); 
 	int agc_max_gain = 60;
-	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &agc_max_gain);
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &agc_max_gain);*/
 	
 	
 	int i;
@@ -217,19 +219,20 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 		#endif
 	}
 
+/*
 	if (isLoudspeaker)
 	{
 		LowPass(sInBuf, sBufferSize);
 		//DeAmplitude(sInBuf, sBufferSize);
-		/*for (int i = 0; i < sBufferSize; i++)
+		/ *for (int i = 0; i < sBufferSize; i++)
 		{
 			if (sInBuf[i] > 10922)
 			{
 				LOGE("###CE### %d", (int)sInBuf[i]);
 			}
 			sInBuf[i] *= 2;
-		}*/
-	}
+		}* /
+	}*/
 	return true;
 }
 
