@@ -84,6 +84,7 @@ private:
 	bool m_bIsCheckCall;
 
 	unsigned char m_PreviousDecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+	unsigned char m_PreviousDecodedFrameConvertedData[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];

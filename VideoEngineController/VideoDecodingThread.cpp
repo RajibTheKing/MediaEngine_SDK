@@ -409,18 +409,19 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 	int iPosX = iWidth - iSmallWidth;
 	int iPosY = iHeight - iSmallHeight - 20;
 
-	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrame, iPosX, iPosY);
+	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
+	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	this->m_pColorConverter->ConvertI420ToNV12(m_PreviousDecodedFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+	this->m_pColorConverter->ConvertI420ToNV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #elif defined(_DESKTOP_C_SHARP_)
-	m_previousDecodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_PreviousDecodedFrame, m_RenderingRGBFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+	m_previousDecodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_PreviousDecodedFrameConvertedData, m_RenderingRGBFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #elif defined(TARGET_OS_WINDOWS_PHONE)
-	this->m_pColorConverter->ConvertI420ToYV12(m_PreviousDecodedFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+	this->m_pColorConverter->ConvertI420ToYV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #else
 
-	this->m_pColorConverter->ConvertI420ToNV21(m_PreviousDecodedFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+	this->m_pColorConverter->ConvertI420ToNV21(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #endif
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
@@ -455,7 +456,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 #else
 
-	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_PreviousDecodedFrame, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation);
+	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_PreviousDecodedFrameConvertedData, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation);
 
 	return m_previousDecodedFrameSize;
 
