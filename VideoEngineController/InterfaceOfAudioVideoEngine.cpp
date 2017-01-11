@@ -210,7 +210,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 					if (!m_pcController->IsCallInLiveEnabled())
 					{
 						//HITLER("##Discarding packet! | expected:%lld", expectedTime);
-						return -10;
+						//return -10;
 					}
 				}
 			}
