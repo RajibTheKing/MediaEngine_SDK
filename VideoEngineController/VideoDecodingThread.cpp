@@ -414,7 +414,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 	int iPosY = iHeight - iSmallHeight - 20;
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
-	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY);
+	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -503,8 +503,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			m_PreviousOrientation = nOrientation;
 			m_HasPreviousValues = true;
 
-			int iWidth = m_pColorConverter->GetWidth();
-			int iHeight = m_pColorConverter->GetHeight();
+            int iWidth = m_decodingWidth;
+            int iHeight = m_decodingHeight;
 
 			int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 			int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
@@ -512,7 +512,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			int iPosX = iWidth - iSmallWidth;
 			int iPosY = iHeight - iSmallHeight - 20;
 
-			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY);
+			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 		}
 	}
 

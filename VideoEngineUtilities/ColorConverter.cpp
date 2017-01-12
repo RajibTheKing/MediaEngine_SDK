@@ -1170,12 +1170,12 @@ int CColorConverter::getVIndex(int h, int w, int yVertical, int xHorizontal, int
 // ii) iPosX is Distance in Horizontal Direction. Value must be in Range iPosX >= 0 and iPosX < (BigDataWidth - SmallDataWidth)
 // ii) iPosY is Distance in Vertical Direction. Value must be in Range iPosY >= 0 and iPosY < (BigDataHeight - SmallDataHeight)
 
-int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY)
+int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);
 
-	int h1 = m_iVideoHeight;
-	int w1 = m_iVideoWidth;
+	int h1 = iVideoHeight;
+	int w1 = iVideoWidth;
 	int h2 = /* m_iVideoHeight >> 2 */ m_iSmallFrameHeight;
 	int w2 = /* m_iVideoWidth >> 2 */ m_iSmallFrameWidth;
 

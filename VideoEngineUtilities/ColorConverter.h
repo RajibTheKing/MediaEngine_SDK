@@ -64,7 +64,7 @@ public:
 	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
-	int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY);
+	int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 
 private:
 

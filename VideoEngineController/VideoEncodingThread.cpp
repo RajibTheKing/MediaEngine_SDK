@@ -401,13 +401,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					int iPosX = iWidth - iSmallWidth;
 					int iPosY = iHeight - iSmallHeight - 20;
 
-					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY);
+					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY, iHeight, iWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-					this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, iPosX, iPosY);
+					this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, iPosX, iPosY, iHeight, iWidth);
 #else
-					this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY);
+					this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY, iHeight, iWidth);
 #endif
 				}
 			}
