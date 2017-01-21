@@ -87,6 +87,43 @@ void CLogPrinter::Stop()
 	}
 }
 
+void CLogPrinter::Argument_to_String(string &dst, const char *format, va_list ap)
+{
+    int length;
+    va_list apDuplicate;
+    va_copy(apDuplicate, ap);
+    length = vsnprintf(NULL, 0, format, apDuplicate);
+    va_end(apDuplicate);
+    
+    if (length > 0)
+    {
+        dst.resize(length);
+        vsnprintf((char *)dst.data(), dst.size() + 1, format, ap);
+    }
+    else
+    {
+        dst = "Format error! format: ";
+        dst.append(format);
+    }
+}
+
+void CLogPrinter::Log(const char *format, ...)
+{
+    std::string str;
+    va_list vargs;
+    va_start(vargs, format);
+    Argument_to_String(str, format, vargs);
+    va_end(vargs);
+
+    
+#if defined(__ANDROID__)
+    LOGE("%s", str.c_str());
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_IPHONE)
+    printf("%s\n", str.c_str());
+#endif
+
+}
+
 void CLogPrinter::SetPriority(Priority maxPriority)
 {
 	instance.maxPriority = maxPriority;

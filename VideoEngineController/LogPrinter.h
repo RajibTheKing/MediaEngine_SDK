@@ -125,6 +125,10 @@ public:
 	static void SetPriority(Priority maxPriority);
 	static void SetExactness(bool exact);
 	static std::string GetDateTime();
+    
+    static void Log(const char *format, ...);
+    static void Argument_to_String(string &dst, const char *format, va_list ap);
+    
 	static void Write(Priority priority, const std::string message);
 	static void SetLoggerPath(std::string location);
     static void WriteSpecific(Priority priority, const std::string message);
