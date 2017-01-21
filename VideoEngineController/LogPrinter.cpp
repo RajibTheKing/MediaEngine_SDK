@@ -38,6 +38,7 @@ CLogPrinter::CLogPrinter()
 	}
 	else
 		instance.maxPriority = CLogPrinter::NONE;
+	 */
 }
 
 void CLogPrinter::Start(Priority maxPriority, const char* logFile)
