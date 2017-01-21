@@ -64,8 +64,12 @@
 #define DEPACKETIZATION_LOG		OFF
 #define VIDEO_NOTIFICATION_LOG  OFF
 
-
+#ifdef __ANDROID__
+#define FILE_NAME "/sdcard/VideoEngineTrack.txt"
+#else
 #define FILE_NAME "VideoEngineTrack.log"
+#endif
+
 #define PRIORITY CLogPrinter::DEBUGS
 
 #ifdef TARGET_OS_WINDOWS_PHONE
@@ -139,6 +143,7 @@ public:
 	static void WriteForPacketLossInfo(Priority priority, const std::string message);
 
 	static long long WriteLog(Priority priority, int isLogEnabled, const std::string message = "", bool calculatedTime = false, long long prevTime = 0);
+	static void WriteFileLog(Priority priority, int isLogEnabled, const std::string message = "");
 
 	static long long GetTimeDifference(long long prevTime);
 

@@ -18,7 +18,7 @@ bool CLogPrinter::isLogEnable;
 CLogPrinter::CLogPrinter()
 {
 	Priority maxPriority = CLogPrinter::NONE;
-	std::string logFile = "";
+	std::string logFile = "/sdcard/DefaultMediaEnfineLog.txt";
     
     isLogEnable = false;
     
@@ -30,14 +30,14 @@ CLogPrinter::CLogPrinter()
 	logFile = FILE_NAME;
 #endif 
 
-	//if (logFile != "")
-	//{
-	//	instance.maxPriority = maxPriority;
-	//	instance.logFile = logFile;
-	//	instance.fileStream.open(logFile.c_str());
-	//}
-	//else
-	//	instance.maxPriority = CLogPrinter::NONE;
+	/*if (logFile != "")
+	{
+		instance.maxPriority = maxPriority;
+		instance.logFile = logFile;
+		instance.fileStream.open(logFile.c_str());
+	}
+	else
+		instance.maxPriority = CLogPrinter::NONE;
 }
 
 void CLogPrinter::Start(Priority maxPriority, const char* logFile)
@@ -56,7 +56,7 @@ void CLogPrinter::Start(Priority maxPriority, const char* logFile)
 	{
 		instance.maxPriority = maxPriority;
 		instance.logFile = tempLogFile;
-		instance.fileStream.open(tempLogFile);
+		instance.fileStream.open(tempLogFile, ofstream::out);
 	}
 	else
 		instance.maxPriority = CLogPrinter::NONE;
@@ -69,7 +69,7 @@ void CLogPrinter::SetLoggerPath(std::string loc)
 	if (instance.fileStream.is_open())
 		instance.fileStream.close();
 
-	instance.fileStream.open(loc.c_str());
+	instance.fileStream.open(loc.c_str(), ofstream::out);
 }
 
 bool CLogPrinter::SetLoggingState(bool loggingState, int logLevel)
@@ -319,6 +319,14 @@ long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::
 	}
 
 	return -1;
+}
+
+void CLogPrinter::WriteFileLog(Priority priority, int isLogEnabled, const std::string message)
+{
+#ifdef __ANDROID__
+	ostream& stream = instance.fileStream.is_open() ? instance.fileStream : std::cout;
+	stream << GetDateTime() << PRIORITY_NAMES[priority] << ": " << message << endl;
+#endif
 }
 
 void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)
