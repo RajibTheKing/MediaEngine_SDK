@@ -318,7 +318,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 	if (!m_bLiveAudioStreamRunning && m_bEchoCancellerEnabled)
 	{
 #ifdef USE_ECHO2
-		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, TODO);
+		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker);
 #endif
 		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker);
 	}
