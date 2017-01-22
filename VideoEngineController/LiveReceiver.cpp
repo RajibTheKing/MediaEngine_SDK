@@ -236,7 +236,11 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 		//        LOGEF("THeKing--> ^^^^^^^^^^^^^^^^^^^ LiveReceiver::PushVideoData :: 2");
 
 		if (bBroken && j == 0)	//If I frame is missing.
+		{
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken");
+
 			return;
+		}
 
 
 		/*
@@ -341,7 +345,9 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 			}
 			iExpectedPacketNumber = iPacketNumber + 1;
             if( !bCompleteFrame )
-            {				
+            {	
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
+
 				LOGENEW("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
                 continue;
             }else{
