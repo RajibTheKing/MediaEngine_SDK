@@ -336,7 +336,7 @@ void CLogPrinter::WriteFileLog(Priority priority, int isLogEnabled, const std::s
 
 #ifdef __ANDROID__
 
-	if(isLogEnable)
+	if(isLogEnabled)
 	{
 
 		ostream& stream = instance.fileStream.is_open() ? instance.fileStream : std::cout;
