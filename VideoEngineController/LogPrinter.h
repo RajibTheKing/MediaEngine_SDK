@@ -51,6 +51,8 @@
 
 #define LOG_ENABLED
 
+#define WRITE_TO_LOG_FILE		ON
+
 #define PACKET_DETAILS_LOG		OFF
 #define INSTENT_TEST_LOG_2		OFF
 #define INSTENT_TEST_LOG		OFF
@@ -167,8 +169,11 @@ private:
 #define CLogPrinter_WriteLog(...) 0
 #endif
 
-
-
+#ifdef LOG_ENABLED
+#define CLogPrinter_WriteFileLog(...) CLogPrinter::WriteFileLog(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteFileLog(...) 0
+#endif
 
 #ifdef __PRINT_LOG__
 #define CLogPrinter_Write(...) CLogPrinter::Write(__VA_ARGS__)

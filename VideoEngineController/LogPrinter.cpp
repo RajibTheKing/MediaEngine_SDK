@@ -324,10 +324,19 @@ long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::
 
 void CLogPrinter::WriteFileLog(Priority priority, int isLogEnabled, const std::string message)
 {
+
 #ifdef __ANDROID__
-	ostream& stream = instance.fileStream.is_open() ? instance.fileStream : std::cout;
-	stream << GetDateTime() << PRIORITY_NAMES[priority] << ": " << message << endl;
+
+	if(isLogEnable)
+	{
+
+		ostream& stream = instance.fileStream.is_open() ? instance.fileStream : std::cout;
+		stream << GetDateTime() << PRIORITY_NAMES[priority] << ": " << message << endl;
+
+	}
+
 #endif
+
 }
 
 void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)
