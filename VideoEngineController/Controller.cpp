@@ -122,6 +122,8 @@ CController::~CController()
 
 		m_pVideoMuxingAndEncodeSession = NULL;
 	}
+
+	CLogPrinter::Stop();
     
     SHARED_PTR_DELETE(m_pVideoSendMutex);
     SHARED_PTR_DELETE(m_pVideoReceiveMutex);
