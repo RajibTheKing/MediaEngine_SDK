@@ -80,6 +80,8 @@ typedef __int64 IPVLongType;
 typedef long long IPVLongType;
 #endif
 
+#include "../VideoEngineUtilities/SmartPointer.h"
+
 #include <stdio.h>
 
 #include <string>
@@ -125,6 +127,7 @@ public:
 	};
 
 	CLogPrinter();
+	~CLogPrinter();
 
 	static void Start(Priority maxPriority, const char* logFile);
 	static void Stop();
@@ -158,6 +161,8 @@ private:
 	static const std::string PRIORITY_NAMES[];
 	static CLogPrinter instance;
     static bool isLogEnable;
+
+	static SmartPointer<CLockHandler> m_pLogPrinterMutex;
 
 };
 

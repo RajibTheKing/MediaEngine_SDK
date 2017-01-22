@@ -1,5 +1,6 @@
 #include "LogPrinter.h"
-
+#include "../VideoEngineUtilities/LockHandler.h"
+#include "ThreadTools.h"
 
 const std::string CLogPrinter::PRIORITY_NAMES[] =
 {
@@ -29,6 +30,8 @@ CLogPrinter::CLogPrinter()
 #ifdef FILE_NAME
 	logFile = FILE_NAME;
 #endif 
+
+	m_pLogPrinterMutex.reset(new CLockHandler);
 
 	/*if (logFile != "")
 	{
@@ -61,6 +64,11 @@ void CLogPrinter::Start(Priority maxPriority, const char* logFile)
 	}
 	else
 		instance.maxPriority = CLogPrinter::NONE;
+}
+
+CLogPrinter::~CLogPrinter()
+{
+	SHARED_PTR_DELETE(m_pLogPrinterMutex);
 }
 
 void CLogPrinter::SetLoggerPath(std::string loc)
@@ -324,6 +332,7 @@ long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::
 
 void CLogPrinter::WriteFileLog(Priority priority, int isLogEnabled, const std::string message)
 {
+	Locker lock(*m_pLogPrinterMutex);
 
 #ifdef __ANDROID__
 
