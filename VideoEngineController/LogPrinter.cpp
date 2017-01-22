@@ -31,7 +31,7 @@ CLogPrinter::CLogPrinter()
 	logFile = FILE_NAME;
 #endif 
 
-	m_pLogPrinterMutex.reset(new CLockHandler);
+	//m_pLogPrinterMutex.reset(new CLockHandler);
 
 	/*if (logFile != "")
 	{
@@ -68,7 +68,7 @@ void CLogPrinter::Start(Priority maxPriority, const char* logFile)
 
 CLogPrinter::~CLogPrinter()
 {
-	SHARED_PTR_DELETE(m_pLogPrinterMutex);
+	//SHARED_PTR_DELETE(m_pLogPrinterMutex);
 }
 
 void CLogPrinter::SetLoggerPath(std::string loc)
@@ -332,7 +332,7 @@ long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::
 
 void CLogPrinter::WriteFileLog(Priority priority, int isLogEnabled, const std::string message)
 {
-	Locker lock(*m_pLogPrinterMutex);
+	//Locker lock(*m_pLogPrinterMutex);
 
 #ifdef __ANDROID__
 

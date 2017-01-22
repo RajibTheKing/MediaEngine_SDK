@@ -151,7 +151,7 @@ public:
 	static void WriteForPacketLossInfo(Priority priority, const std::string message);
 
 	static long long WriteLog(Priority priority, int isLogEnabled, const std::string message = "", bool calculatedTime = false, long long prevTime = 0);
-	static void WriteFileLog(Priority priority, int isLogEnabled, const std::string message = "");
+	static void WriteFileLog(Priority priority, int isLogEnabled, const std::string message);
 
 	static long long GetTimeDifference(long long prevTime);
 
@@ -165,7 +165,7 @@ private:
 	static CLogPrinter instance;
     static bool isLogEnable;
 
-	static SmartPointer<CLockHandler> m_pLogPrinterMutex;
+	//static SmartPointer<CLockHandler> m_pLogPrinterMutex;
 
 };
 
@@ -180,7 +180,7 @@ private:
 #ifdef LOG_ENABLED
 #define CLogPrinter_WriteFileLog(...) CLogPrinter::WriteFileLog(__VA_ARGS__)
 #else
-#define CLogPrinter_WriteFileLog(...) 0
+#define CLogPrinter_WriteFileLog(...) 
 #endif
 
 #ifdef __PRINT_LOG__
