@@ -237,7 +237,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 		if (bBroken && j == 0)	//If I frame is missing.
 		{
-			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken");
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frome broken");
 
 			return;
 		}
@@ -276,6 +276,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 		}
 		else
 		{
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken");
 			//LOGEF("THeKing--> receive #####  [%d] Broken## UsedLen: %d iLen = %d\n",j, iUsedLen, iLen);
 		}
 
