@@ -314,8 +314,11 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 	if(!m_bIsDpkgBufferFilledUp) {
 		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 		if (m_iFirstFrameReceived != DEFAULT_FIRST_FRAME_RCVD && TIME_DELAY_FOR_RETRANSMISSION_IN_MS <= llCurrentTimeStamp - m_VideoCallSession->GetFirstVideoPacketTime()) {
-			for(int frame = m_FrontFrame; frame < m_iFirstFrameReceived; ++frame)
+			for (int frame = m_FrontFrame; frame < m_iFirstFrameReceived; ++frame)
+			{
 				MoveForward(frame);
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CEncodedFrameDepacketizer::GetReceivedFrame 1");
+			}
 			m_bIsDpkgBufferFilledUp = true;
 			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
 									   " GetReceivedFrame# : ####################################################### FirstFrame "+m_Tools.IntegertoStringConvert(m_iFirstFrameReceived)
@@ -336,6 +339,7 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG,"Incomplete Frame Dropped-----> "+m_Tools.IntegertoStringConvert(m_FrontFrame)+"  ExpTime: "+m_Tools.IntegertoStringConvert(nExpectedTime));
 //		g_FPSController.NotifyFrameDropped(m_FrontFrame);
 		MoveForward(m_FrontFrame);
+		CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CEncodedFrameDepacketizer::GetReceivedFrame 2");
 		return -1;
 	}
 	return -1;
