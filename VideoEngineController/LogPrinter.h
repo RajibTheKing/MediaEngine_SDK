@@ -92,6 +92,7 @@ typedef long long IPVLongType;
 #include <windows.h>
 #include <stdarg.h>
 
+
 #else
 #include <sys/time.h>
 #endif 
@@ -110,6 +111,8 @@ static FILE *logfp = NULL;
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 using namespace std;
+
+class CLockHandler;
 
 class CLogPrinter
 {
