@@ -203,7 +203,6 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 {
 	Locker lock(*m_pLiveReceiverMutex);
 	int numberOfMissingFrames = vMissingFrames.size();
-	int numOfMissingFrames = 0;
 
 	int iUsedLen = 0, nFrames = 0;
 	int tillIndex = offset;
@@ -238,7 +237,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 		if (bBroken && j == 0)	//If I frame is missing.
 		{
-			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frome broken");
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frome broken j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
 
 			return;
 		}
@@ -277,17 +276,16 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
 			
 			if (nalType == 7) 
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome");
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
 			else
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame");
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
 
 			//m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
             m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
 		}
 		else
 		{
-			numOfMissingFrames++;
-			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken");
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
 			//LOGEF("THeKing--> receive #####  [%d] Broken## UsedLen: %d iLen = %d\n",j, iUsedLen, iLen);
 		}
 
@@ -295,8 +293,6 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 		iUsedLen += frameSizes[j];
 		tillIndex = endOfThisFrame + 1;
 	}
-
-	LOG_AAC("#@@@@@@@@@--> LiveReceiver::PushVideoDataVector(), numberOfVideoFrames: %d, numberOfEnqueuedFrames: %d, numberOfMissingFrames: %d\n", numberOfFrames, (numberOfFrames - numOfMissingFrames), numOfMissingFrames);
 
 	//    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
 }
@@ -306,7 +302,7 @@ int iExpectedPacketNumber = 0;
 
 void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks)
 {
-//	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStreamVector(), numberOfAudioFrames: %d\n", nNumberOfAudioFrames);
+	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStreamVector(), numberOfAudioFrames: %d\n", nNumberOfAudioFrames);
 
         Locker lock(*m_pLiveReceiverMutex);
 		CAudioPacketHeader g_LiveReceiverHeader;
@@ -319,7 +315,6 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
         int nCurrentFrameLenWithMediaHeader;
         nFrameLeftRange = nOffset;
 		bool done = true;
-		int numberOfMissingFrames = 0;
 
         while(iFrameNumber < nNumberOfAudioFrames)
         {
@@ -364,7 +359,6 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
 
 				LOGENEW("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
-				numberOfMissingFrames++;
                 continue;
             }else{
                 //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
@@ -382,7 +376,5 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 
             m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
         }
-
-		LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStreamVector(), numberOfAudioFrames: %d, numberOfEnqueuedFrames: %d, numberOfMissingFrames: %d\n", nNumberOfAudioFrames, (nNumberOfAudioFrames - numberOfMissingFrames), numberOfMissingFrames);
 }
 
