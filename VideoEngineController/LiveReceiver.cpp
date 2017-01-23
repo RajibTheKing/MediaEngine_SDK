@@ -271,6 +271,15 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
             videoHeader.setPacketHeader(uchVideoData + 1 + iUsedLen);
             int nCurrentFrameLen = videoHeader.getPacketLength();
 
+			unsigned char *p = uchVideoData + iUsedLen + 1 + videoHeader.GetHeaderLength();
+
+			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
+			
+			if (nalType == 7) 
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome");
+			else
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame");
+
 			//m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
             m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
 		}
