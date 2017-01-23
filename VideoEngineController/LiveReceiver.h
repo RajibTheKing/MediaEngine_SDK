@@ -28,6 +28,9 @@ public:
 	void ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks);
 
 private:
+
+	Tools m_Tools;
+
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;
     CAudioByteBuffer *m_pAudioDecoderBuffer;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
