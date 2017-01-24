@@ -252,7 +252,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 				index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 			}
 
-			LOG_AAC("#@@@@@@@@@--> GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size());
+			LOG_AAC("#@@@@@@@@@--> GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
 
 			iReturnedValue = m_pcController->PushAudioForDecodingVector(llFriendID, lengthOfVideoData + index, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
