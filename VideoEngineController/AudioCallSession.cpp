@@ -253,8 +253,13 @@ void CAudioCallSession::StartCallInLive(int iRole)
 	{
 		return;
 	}
+	m_pLiveReceiverAudio->m_bIsRoleChanging = true;
+	while (m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
+	{
+		m_Tools.SOSleep(1);
+	}
+	//LOGE("### Start call in live");
 	m_iRole = iRole;
-	m_llDecodingTimeStampOffset = -1;
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
 		m_AudioDecodedBuffer.ResetBuffer(); //Contains Data From Last Call
@@ -267,6 +272,11 @@ void CAudioCallSession::StartCallInLive(int iRole)
 		m_AudioReceivedBuffer.ResetBuffer(); //Contains Data From Last Call
 		m_iRawDataSendIndex = 0; //Contains Data From Last Call
 	}
+
+	m_Tools.SOSleep(20);
+
+	m_llDecodingTimeStampOffset = -1;
+	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
 
 void CAudioCallSession::EndCallInLive()
@@ -275,10 +285,23 @@ void CAudioCallSession::EndCallInLive()
 	{
 		return;
 	}
+	m_pLiveReceiverAudio->m_bIsRoleChanging = true;
+	while (m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
+	{
+		m_Tools.SOSleep(1);
+	}
+	//LOGE("### stop call in live");
+
 	m_iRole = CALL_NOT_RUNNING;
-	m_llDecodingTimeStampOffset = -1;
+
 	m_pLiveAudioReceivedQueue->ResetBuffer();
 	m_AudioReceivedBuffer.ResetBuffer();
+
+	m_Tools.SOSleep(20);
+
+	m_llDecodingTimeStampOffset = -1;
+
+	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
@@ -440,7 +463,7 @@ void CAudioCallSession::StartEncodingThread()
 
 		return;
 	}
-	LOGE("##EN### im running");
+	//LOGE("##EN### im running");
 	m_bAudioEncodingThreadRunning = true;
 	m_bAudioEncodingThreadClosed = false;
 
@@ -973,6 +996,10 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 {
 	if (m_bLiveAudioStreamRunning)
 	{
+		if (m_pLiveReceiverAudio->m_bIsRoleChanging == true)
+		{
+			return false;
+		}
 		if (m_iRole == PUBLISHER_IN_CALL)
 		{
 			return true;
@@ -994,7 +1021,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 			{
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = " + m_Tools.getText(llCurrentFrameRelativeTime) + " DELAY = " + m_Tools.getText(llWaitingTime) + " currentTime = " + m_Tools.getText(llNow) + " iPacketNumber = " + m_Tools.getText(iPacketNumber));
-
+				//LOGE("##################################################################### dropping");
 				return false;
 			}
 
@@ -1178,6 +1205,12 @@ void CAudioCallSession::DecodingThreadProcedure()
 		if (!IsQueueEmpty(toolsObject))
 		{
 			DequeueData(m_nDecodingFrameSize);
+
+			if (m_nDecodingFrameSize < 1)
+			{
+				//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
+				continue;
+			}
 			llCapturedTime = m_Tools.CurrentTimestamp();
 
 			int dummy;
