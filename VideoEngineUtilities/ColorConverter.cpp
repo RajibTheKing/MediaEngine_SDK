@@ -354,6 +354,23 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, 
 
 }
 
+
+int CColorConverter::mirrorI420_XDirection(unsigned char *inData, unsigned char *outData, int iHeight, int iWidth)
+{
+    int halfHeight = iHeight>>1;
+    int iTotalHeight = iHeight + halfHeight;
+    int indx = 0;
+    for (int y = 0; y < iTotalHeight; ++y)
+    {
+        for (int x = iWidth - 1; x > -1; --x)
+        {
+            outData[indx++] = inData[y*iWidth + x];
+            
+        }
+    }
+    return indx;
+}
+
 void CColorConverter::mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData)
 {
 	int iWidth = m_iVideoWidth;

@@ -39,6 +39,7 @@ public:
 	void mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
+    int mirrorI420_XDirection(unsigned char *inData, unsigned char *outData, int iHeight, int iWidth);
 
 	int ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width);
     
