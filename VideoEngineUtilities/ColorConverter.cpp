@@ -1165,6 +1165,8 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     m_iSmallFrameWidth = iWidth;
     
     iLen = CreateFrameBorder(m_pSmallFrame, iHeight, iWidth, 0, 128, 128); // [Y:0, U:128, V:128] = Black
+
+	m_bMergingSmallFrameEnabled = true;
  
 	//memcpy(m_pSmallFrame, smallFrame, nLength);
 }
@@ -1190,6 +1192,9 @@ int CColorConverter::getVIndex(int h, int w, int yVertical, int xHorizontal, int
 int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);
+
+	if (m_bMergingSmallFrameEnabled == false)
+		return 0;
 
 	int h1 = iVideoHeight;
 	int w1 = iVideoWidth;
@@ -1246,6 +1251,13 @@ int CColorConverter::GetSmallFrameHeight()
     Locker lock(*m_pColorConverterMutex);
     
     return m_iSmallFrameHeight;
+}
+
+void CColorConverter::ClearSmallScreen()
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	m_bMergingSmallFrameEnabled = false;
 }
 
 

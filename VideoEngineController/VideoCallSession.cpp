@@ -1133,12 +1133,16 @@ void CVideoCallSession::EndCallInLive()
 
 			m_pVideoDecodingThread->ResetForPublisherCallerCallEnd();
 
+			m_pColorConverter->ClearSmallScreen();
+
 			m_nEntityType = ENTITY_TYPE_PUBLISHER;
 		}
 		else if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 		{
 			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
 			m_pVideoEncodingThread->ResetForViewerCallerCallEnd();
+
+			m_pColorConverter->ClearSmallScreen();
 
 			m_nEntityType = ENTITY_TYPE_VIEWER;
 		}

@@ -58,6 +58,7 @@ public:
     int GetSmallFrameWidth();
     int GetSmallFrameHeight();
 
+	void ClearSmallScreen();
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
     
