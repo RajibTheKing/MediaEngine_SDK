@@ -404,8 +404,8 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 	m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
 
-	int iWidth = m_pColorConverter->GetWidth();
-	int iHeight = m_pColorConverter->GetHeight();
+	int iWidth = m_PreviousDecodingWidth;
+	int iHeight = m_PreviousDecodingHeight;
 
 	int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 	int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
