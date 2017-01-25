@@ -216,10 +216,9 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 					}
 				}
 				if (m_pcController->m_llLastTimeStamp >= recvTimeOffset) {
-					LOGE("##Interface discarding duplicate packet.");
+					//LOGE("##Interface discarding duplicate packet.");
 					return -10;
 				}
-				else LOGE("##------------------------------------------------------- %lld %lld", m_pcController->m_llLastTimeStamp, recvTimeOffset);
 
 				m_pcController->m_llLastTimeStamp = max(m_pcController->m_llLastTimeStamp, recvTimeOffset);
 			}
