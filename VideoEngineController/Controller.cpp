@@ -22,7 +22,8 @@ m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
 m_bDeviceCapabilityRunning(false),
 m_bLiveCallRunning(false),
 m_bCallInLiveEnabled(false),
-m_EventNotifier(this)
+m_EventNotifier(this),
+m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
@@ -54,7 +55,8 @@ m_pVideoMuxingAndEncodeSession(NULL),
 m_pDeviceCapabilityCheckBuffer(NULL),
 m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
-m_EventNotifier(this)
+m_EventNotifier(this),
+m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");

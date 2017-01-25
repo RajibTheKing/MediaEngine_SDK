@@ -108,7 +108,7 @@ public:
 	bool m_bLiveCallRunning;
 
 	CCommonElementsBucket *m_pCommonElementsBucket;
-	
+	long long m_llLastTimeStamp;
 private:
 
 	CEventNotifier m_EventNotifier;

@@ -17,6 +17,8 @@ m_pCommonElementsBucket(sharedObject)
     m_pLiveAudioReceivedQueue = NULL;
     m_pLiveVideoDecodingQueue = NULL;
     m_pLiveReceiverMutex.reset(new CLockHandler);
+	m_bIsCurrentlyParsingAudioData = false;
+	m_bIsRoleChanging = false;
 }
 
 LiveReceiver::~LiveReceiver(){
@@ -129,75 +131,72 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
     return false;
 }
 
-void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks) 
+void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks)
 {
 	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStream(), GotNumberOfAudioFrames: %d\n", nNumberOfAudioFrames);
 
-    Locker lock(*m_pLiveReceiverMutex);
+	Locker lock(*m_pLiveReceiverMutex);
 
-    int nCallSDKPacketLength = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
-    bool bCompleteFrame = false;
-    int iMissingIndex = 0;
-    int iFrameNumber = 0, nUsedLength = 0;
-    int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
-    int nCurrentFrameLenWithMediaHeader;
-    nFrameLeftRange = nOffset;
+	int nCallSDKPacketLength = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+	bool bCompleteFrame = false;
+	int iMissingIndex = 0;
+	int iFrameNumber = 0, nUsedLength = 0;
+	int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
+	int nCurrentFrameLenWithMediaHeader;
+	nFrameLeftRange = nOffset;
 	int numOfMissingFrames = 0;
 
 	if (nCallSDKPacketLength < 0)
 		return;
 
 
-    while (iFrameNumber < nNumberOfAudioFrames) {
-        if (pMissingBlocks == NULL) {
-//            LLG("#IV#    LiveReceiver::ProcessAudioStream pMissingBlocks is NULLLLLLL");
-        }
+	while (iFrameNumber < nNumberOfAudioFrames) {
+		if (pMissingBlocks == NULL) {
+			//            LLG("#IV#    LiveReceiver::ProcessAudioStream pMissingBlocks is NULLLLLLL");
+		}
 
-        bCompleteFrame = true;
-//        nFrameLeftRange = pAudioFramsStartingByte[iFrameNumber];
+		bCompleteFrame = true;
+		//        nFrameLeftRange = pAudioFramsStartingByte[iFrameNumber];
 
-        nFrameLeftRange = nUsedLength + nOffset;
-        nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[iFrameNumber] - 1;
-        nUsedLength += pAudioFramsStartingByte[iFrameNumber];
+		nFrameLeftRange = nUsedLength + nOffset;
+		nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[iFrameNumber] - 1;
+		nUsedLength += pAudioFramsStartingByte[iFrameNumber];
 
-        //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
+		//LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
 
-        while (iMissingIndex < nNumberOfMissingBlocks &&
-               (pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength <= nFrameLeftRange)
-            ++iMissingIndex;
+		while (iMissingIndex < nNumberOfMissingBlocks &&
+			(pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength <= nFrameLeftRange)
+			++iMissingIndex;
 
-        if (iMissingIndex < nNumberOfMissingBlocks) {
-            iLeftRange = pMissingBlocks[iMissingIndex] * nCallSDKPacketLength;
-            iRightRange = iLeftRange + nCallSDKPacketLength - 1;
+		if (iMissingIndex < nNumberOfMissingBlocks) {
+			iLeftRange = pMissingBlocks[iMissingIndex] * nCallSDKPacketLength;
+			iRightRange = iLeftRange + nCallSDKPacketLength - 1;
 
-            iLeftRange = max(nFrameLeftRange, iLeftRange);
-            iRightRange = min(nFrameRightRange, iRightRange);
-            if (iLeftRange <= iRightRange)
-                bCompleteFrame = false;
-        }
+			iLeftRange = max(nFrameLeftRange, iLeftRange);
+			iRightRange = min(nFrameRightRange, iRightRange);
+			if (iLeftRange <= iRightRange)
+				bCompleteFrame = false;
+		}
 
-        ++iFrameNumber;
+		++iFrameNumber;
 
-        if (!bCompleteFrame) {
+		if (!bCompleteFrame) {
 			numOfMissingFrames++;
             continue;
         } else {
 
-            //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
-        }
+			//LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
+		}
 
-        nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
+		nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
-        m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1,
-                                         nCurrentFrameLenWithMediaHeader - 1);
+		m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1,
+			nCurrentFrameLenWithMediaHeader - 1);
 
-    }
+	}
 
 	LOG_AAC("#@@@@@@@@@--> numberOfMissingFramesToEnqueue: %d\n", numOfMissingFrames);
 }
-
-
-
 
 void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
@@ -308,81 +307,91 @@ void LiveReceiver::ProcessAudioStreamVector(int nOffset, unsigned char* uchAudio
 {
 //	LOG_AAC("#@@@@@@@@@--> LiveReceiver::ProcessAudioStreamVector(), numberOfAudioFrames: %d\n", nNumberOfAudioFrames);
 
-        Locker lock(*m_pLiveReceiverMutex);
-		CAudioPacketHeader g_LiveReceiverHeader;
-        size_t nNumberOfMissingBlocks = vMissingBlocks.size();
-        size_t iMissingIndex = 0;
+	if (m_bIsRoleChanging)
+	{
+		//LOGE("###DE### role changin lr....");
+		return;
+	}
 
-        bool bCompleteFrame = false;
-        int iFrameNumber = 0, nUsedLength = 0;
-        int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
-        int nCurrentFrameLenWithMediaHeader;
-        nFrameLeftRange = nOffset;
-		bool done = true;
-		int numOfMissingFrames = 0;
 
-        while(iFrameNumber < nNumberOfAudioFrames)
-        {
-            bCompleteFrame = true;
+	m_bIsCurrentlyParsingAudioData = true;
 
-            nFrameLeftRange = nUsedLength + nOffset;
-            nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
-            nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
 
-            //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
+    Locker lock(*m_pLiveReceiverMutex);
+	CAudioPacketHeader g_LiveReceiverHeader;
+    size_t nNumberOfMissingBlocks = vMissingBlocks.size();
+    size_t iMissingIndex = 0;
+
+    bool bCompleteFrame = false;
+    int iFrameNumber = 0, nUsedLength = 0;
+    int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
+    int nCurrentFrameLenWithMediaHeader;
+    nFrameLeftRange = nOffset;
+	bool done = true;
+	int numOfMissingFrames = 0;
+
+    while(iFrameNumber < nNumberOfAudioFrames)
+    {
+        bCompleteFrame = true;
+
+        nFrameLeftRange = nUsedLength + nOffset;
+        nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
+        nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
+
+        //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
 
 //            while(iMissingIndex < nNumberOfMissingBlocks &&  (pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength  <= nFrameLeftRange)
-            while(iMissingIndex < nNumberOfMissingBlocks &&  vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange)
-                ++ iMissingIndex;
+        while(iMissingIndex < nNumberOfMissingBlocks &&  vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange)
+            ++ iMissingIndex;
 
-            if(iMissingIndex < nNumberOfMissingBlocks)
-            {
-                iLeftRange = vMissingBlocks[iMissingIndex].first;
-                iRightRange = vMissingBlocks[iMissingIndex].second;
+        if(iMissingIndex < nNumberOfMissingBlocks)
+        {
+            iLeftRange = vMissingBlocks[iMissingIndex].first;
+            iRightRange = vMissingBlocks[iMissingIndex].second;
 
-                iLeftRange =  max(nFrameLeftRange, iLeftRange);
-                iRightRange = min(nFrameRightRange,iRightRange);
-                if(iLeftRange <= iRightRange)
-                    bCompleteFrame = false;
-            }
-
-            ++ iFrameNumber;
-
-			g_LiveReceiverHeader.CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-			int iPacketNumber = g_LiveReceiverHeader.GetInformation(INF_PACKETNUMBER);
-			if (iPacketNumber != iExpectedPacketNumber)
-			{
-				LOGENEW("live receiver unexpected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
-			}
-			else
-			{
-				LOGENEW("live receiver expected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
-			}
-			iExpectedPacketNumber = iPacketNumber + 1;
-            if( !bCompleteFrame )
-            {	
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
-
-				numOfMissingFrames++;
-				LOGENEW("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
-                continue;
-            }else{
-                //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
-            }
-			if (done)
-			{
-				done = false;
-				LOGENEW("live receiver FIRST PACKETNUMBER = %d\n", iPacketNumber);
-			}
-			else
-			{
-				LOGENEW("live receiver PACKETNUMBER = %d\n", iPacketNumber);
-			}
-            nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
-
-            m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+            iLeftRange =  max(nFrameLeftRange, iLeftRange);
+            iRightRange = min(nFrameRightRange,iRightRange);
+            if(iLeftRange <= iRightRange)
+                bCompleteFrame = false;
         }
 
+        ++ iFrameNumber;
+
+		g_LiveReceiverHeader.CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+		int iPacketNumber = g_LiveReceiverHeader.GetInformation(INF_PACKETNUMBER);
+		if (iPacketNumber != iExpectedPacketNumber)
+		{
+			LOGENEW("live receiver unexpected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
+		}
+		else
+		{
+			LOGENEW("live receiver expected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
+		}
+		iExpectedPacketNumber = iPacketNumber + 1;
+        if( !bCompleteFrame )
+        {	
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
+
+			numOfMissingFrames++;
+			LOGENEW("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
+            continue;
+        }else{
+            //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
+        }
+		if (done)
+		{
+			done = false;
+			LOGENEW("live receiver FIRST PACKETNUMBER = %d\n", iPacketNumber);
+		}
+		else
+		{
+			LOGENEW("live receiver PACKETNUMBER = %d\n", iPacketNumber);
+		}
+        nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
+
+        m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+    }
+	m_bIsCurrentlyParsingAudioData = false;
 		LOG_AAC("#@@@@@@@@@--> TotalAudioFrames: %d, PushedAudioFrames: %d, NumOfMissingAudioFrames: %d", nNumberOfAudioFrames, (nNumberOfAudioFrames - numOfMissingFrames), numOfMissingFrames);
 }
 

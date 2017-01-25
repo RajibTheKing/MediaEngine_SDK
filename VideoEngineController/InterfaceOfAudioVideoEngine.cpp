@@ -198,6 +198,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			if (m_llTimeOffset == -1)
 			{
 				m_llTimeOffset = itIsNow - recvTimeOffset;
+				m_pcController->m_llLastTimeStamp = recvTimeOffset;
 				HITLER("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
 			}
 			else
@@ -206,6 +207,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 				int tmp_headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
 				int tmp_chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
 				HITLER("@#DE#Interface##now:%lld peertimestamp:%lld expected:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d ", itIsNow, recvTimeOffset, expectedTime, recvTimeOffset - expectedTime, tmp_chunkDuration , tmp_headerLength);
+				
 				if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
 					if (!m_pcController->IsCallInLiveEnabled())
 					{
@@ -213,6 +215,12 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 						//return -10;
 					}
 				}
+				if (m_pcController->m_llLastTimeStamp >= recvTimeOffset) {
+					//LOGE("##Interface discarding duplicate packet.");
+					return -10;
+				}
+
+				m_pcController->m_llLastTimeStamp = max(m_pcController->m_llLastTimeStamp, recvTimeOffset);
 			}
 			
 			int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);

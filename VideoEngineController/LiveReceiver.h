@@ -27,6 +27,8 @@ public:
     void ProcessAudioStream(int nOffset, unsigned char* uchAudioData,int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, int *pMissingBlocks, int nNumberOfMissingBlocks);
 	void ProcessAudioStreamVector(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks);
 
+	bool m_bIsCurrentlyParsingAudioData;
+	bool m_bIsRoleChanging;
 private:
 
 	Tools m_Tools;
