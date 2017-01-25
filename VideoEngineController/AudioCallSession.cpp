@@ -320,10 +320,11 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 #ifdef USE_ECHO2
 		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength);
 #endif
-		m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker);
 #ifdef __DUMP_FILE__
 		fwrite(psaEncodingAudioData, 2, unLength, echoOutputFile);
 #endif // __DUMP_FILE__
+
+		m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker);
 
 	}
 #endif
@@ -770,7 +771,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef __DUMP_FILE__
 	FileInput = fopen("/storage/emulated/0/InputPCMN.pcm", "w");
 	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
-	echoOutputFile = fopen("/storage/emulated/0/InputPCMN_ECHO.pcm", "w");
+	echoOutputFile = fopen("/storage/emulated/0/InputPCMN_WITH_ECHO.pcm", "w");
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
