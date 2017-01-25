@@ -54,7 +54,7 @@
 #define WRITE_TO_LOG_FILE		ON
 
 #define PACKET_DETAILS_LOG		OFF
-#define INSTENT_TEST_LOG_2		OFF
+#define INSTENT_TEST_LOG_2		ON
 #define INSTENT_TEST_LOG		OFF
 #define CHECK_CAPABILITY_LOG	OFF
 #define QUEUE_OVERFLOW_LOG		OFF
@@ -102,11 +102,11 @@ static FILE *logfp = NULL;
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
 #define printf(...) printg(__VA_ARGS__,"")
 #define printk(...) printg(__VA_ARGS__,"")
-#define printf(...)
+//#define printf(...)
 #define printFile(...) if(!logfp) {logfp = fopen("log.txt", "wb");} fprintf(logfp, __VA_ARGS__);
 #define printfiledone() fclose(logfp);
 #endif
-#define printf(...)
+//#define printf(...)
 
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 

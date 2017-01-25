@@ -376,6 +376,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 				{
+					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure 1");
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -387,12 +388,18 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				}
 				else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
 				{
+					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure 2");
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 					memcpy(m_ucaMirroredFrame, m_ucaEncodingFrame, (iWidth*iHeight*3) /2);
 #else
 					memcpy(m_ucaMirroredFrame, m_ucaConvertedEncodingFrame, (iWidth*iHeight*3) /2);
 #endif
+				}
+				else
+				{
+					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure 3");
 				}
 
 
