@@ -374,6 +374,15 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
+				m_VideoBeautificationer->IsSkinPixel(m_ucaEncodingFrame);
+#else
+				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+				m_VideoBeautificationer->IsSkinPixel(m_ucaConvertedEncodingFrame);
+#endif
+
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 				{
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure 1");
@@ -384,9 +393,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 					this->m_pColorConverter->mirrorYUVI420(m_ucaConvertedEncodingFrame, m_ucaMirroredFrame, iHeight, iWidth);
 #endif
-
 				}
-				else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
+				else
 				{
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure 2");
 
@@ -397,23 +405,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					memcpy(m_ucaMirroredFrame, m_ucaConvertedEncodingFrame, (iWidth*iHeight*3) /2);
 #endif
 				}
-				else
-				{
-					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure 3");
-				}
-
 
 				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize);
-
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
-				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame , iHeight, iWidth );
-                m_VideoBeautificationer->IsSkinPixel(m_ucaEncodingFrame);
-#else
-				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
-				m_VideoBeautificationer->IsSkinPixel(m_ucaConvertedEncodingFrame);
-#endif
 
 				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 				{
