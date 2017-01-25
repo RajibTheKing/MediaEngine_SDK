@@ -415,7 +415,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
 					int iPosX = iWidth - iSmallWidth;
-					int iPosY = iHeight - iSmallHeight - 20;
+					int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
 
 					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY, iHeight, iWidth);
 

@@ -411,7 +411,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 	int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
 	int iPosX = iWidth - iSmallWidth;
-	int iPosY = iHeight - iSmallHeight - 20;
+	int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
 	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
@@ -511,7 +511,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
 			int iPosX = iWidth - iSmallWidth;
-			int iPosY = iHeight - iSmallHeight - 20;
+			int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
 
 			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 		}
