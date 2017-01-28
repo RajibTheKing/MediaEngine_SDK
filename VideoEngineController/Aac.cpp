@@ -164,7 +164,7 @@ bool CAac::SetParameters(int sampleRate, int numberOfChannels)
 
 	if (aacDecoder_ConfigRaw(m_hDecoder, &conf2, &confSize))
 	{
-		AAC_LOG("Couldn't set aacDecoder_ConfigRaw.");
+		LOG_AAC("#@@@@@@@@@--> Couldn't set aacDecoder_ConfigRaw.");
 		return false;
 	}
 
@@ -181,14 +181,14 @@ bool CAac::DecodeFrame(unsigned char *inputDataBuffer, int inputDataSize, short 
 	m_nRC = aacDecoder_Fill(m_hDecoder, &inputDataBuffer, (const unsigned int *)&inputDataSize, (unsigned int *)&inputDataSize);
 	if (m_nRC != AAC_DEC_OK)
 	{
-		AAC_LOG("aacDecoder_Fill error code: " + m_cTools.IntegertoStringConvert(m_nRC));
+		LOG_AAC("#@@@@@@@@@--> aacDecoder_Fill error code: %02x", m_nRC);
 		return false;
 	}
 
 	m_nRC = aacDecoder_DecodeFrame(m_hDecoder, m_nOutBuffer, MAX_AUDIO_FRAME_Length, 0);
 	if (m_nRC != AAC_DEC_OK)
 	{
-		AAC_LOG("aacDecoder_GetStreamInfo with error code: " + m_cTools.IntegertoStringConvert(m_nRC));
+		LOG_AAC("#@@@@@@@@@--> aacDecoder_GetStreamInfo with error code: %02x", m_nRC);
 		return false;
 	}
 
@@ -203,7 +203,7 @@ bool CAac::DecodeFrame(unsigned char *inputDataBuffer, int inputDataSize, short 
 
 //	m_qProcessedPcmData.push(m_stDecodeFrameIn);
 
-	AAC_LOG("SampleRate: " + m_cTools.IntegertoStringConvert(m_stDecodeFrameIn.sampleRate));
+	LOG_AAC("SampleRate: %d",m_stDecodeFrameIn.sampleRate);
 	dataSize = m_stDecodeFrameIn.frameSize * m_stDecodeFrameIn.numOfChannels;
 	memcpy(outputDataBuffer, m_nOutBuffer, (dataSize * 2));
 
