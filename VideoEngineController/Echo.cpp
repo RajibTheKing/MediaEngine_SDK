@@ -3,6 +3,7 @@
 #include "Filt.h"
 
 //#define USE_LOW_PASS
+//#define USE_SPEEX_GAIN
 
 CEcho::CEcho(int id)
 {
@@ -76,6 +77,18 @@ CEcho::CEcho(int id)
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
 	f = 0.9;
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
+
+#ifdef USE_SPEEX_GAIN
+	i = 1;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC, &i);
+	i = 500;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_INCREMENT, &i);
+	f = 64000;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_LEVEL, &f);
+	i = 500;
+	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &i);
+#endif
+
 #endif
 }
 
