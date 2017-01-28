@@ -3,7 +3,7 @@
 #include "Filt.h"
 
 //#define USE_LOW_PASS
-//#define USE_SPEEX_GAIN
+#define USE_SPEEX_GAIN
 
 CEcho::CEcho(int id)
 {
