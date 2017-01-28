@@ -2,6 +2,8 @@
 #include "AudioCallSession.h"
 #include "Filt.h"
 
+//#define USE_LOW_PASS
+
 CEcho::CEcho(int id)
 {
 #ifdef USE_WEBRTC_AECM
@@ -62,23 +64,10 @@ CEcho::CEcho(int id)
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS, &db);
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_SUPPRESS_ACTIVE, &db);
-
-
-	/*int value = 80; 
-	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_INCREMENT, &value);*/
-
-
-/*
-	int iArg = 1; 
-	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC, &iArg); 
-	int agc_max_gain = 60;
-	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_AGC_MAX_GAIN, &agc_max_gain);*/
 	
 	
 	int i;
 	float f;
-	//i = 1;
-	//speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_VAD, &i);
 	i = 1;
 	speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_DENOISE, &i);
 	i = 1;
@@ -219,7 +208,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 		#endif
 	}
 
-/*
+#ifdef USE_LOW_PASS
 	if (isLoudspeaker)
 	{
 		LowPass(sInBuf, sBufferSize);
@@ -232,7 +221,8 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 			}
 			sInBuf[i] *= 2;
 		}* /
-	}*/
+	}
+#endif
 	return true;
 }
 
