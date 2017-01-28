@@ -6,7 +6,7 @@ CAac::CAac() :
 m_bIsClosedUDPDataSendingThread(true),
 m_hDecoder(nullptr)
 {
-	AAC_LOG("Initialize ACC decoder.");
+	LOG_AAC("Initialize ACC decoder.");
 
 #ifdef DUMP_OUTPUT
 	std::string outFilePath = "/sdcard/naac_file/output_20s.pcm";
@@ -21,7 +21,7 @@ m_hDecoder(nullptr)
 	m_hDecoder = aacDecoder_Open(transportType, 1);
 
 	if (m_hDecoder == nullptr) {
-		AAC_LOG("Unable to open decoder.");
+		LOG_AAC("Unable to open decoder.");
 	}
 
 //	std::thread udpDataRecvThread = StartDataSendingThread();
@@ -31,7 +31,7 @@ m_hDecoder(nullptr)
 
 CAac::~CAac()
 {
-	AAC_LOG("De-allocate AAC decoder.");
+	LOG_AAC("De-allocate AAC decoder.");
 
 	if (m_hDecoder != nullptr) {
 		aacDecoder_Close(m_hDecoder);
@@ -107,7 +107,7 @@ void CAac::CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf)
 		break;
 
 	default:
-		AAC_LOG("sampleRate not matched!!!");
+		LOG_AAC("sampleRate not matched!!!");
 		break;
 	}
 
@@ -121,7 +121,7 @@ void CAac::CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf)
 	config |= sampleMode << (sizeof(short) * 8 - 5 - 4);                              // 4 bits frequency type
 	config |= channelMode << (sizeof(short) * 8 - 5 - 4 - 4);                         // 4 bits channel configuration
 
-	AAC_LOG("sampleMode: " + m_cTools.IntegertoStringConvert(sampleMode) + ", channelMode: " + m_cTools.IntegertoStringConvert(channelMode) + ", config: " + m_cTools.IntegertoStringConvert(config));
+	LOG_AAC("sampleMode: %d, channelMode: %d, config: %d", sampleMode, channelMode, config);
 
 	conf[0] = config >> 8;
 	conf[1] = config;
@@ -130,29 +130,29 @@ void CAac::CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf)
 
 bool CAac::SetParameters(int sampleRate, int numberOfChannels)
 {
-	AAC_LOG("CAcc::SetParameters(), sampleRate: " + m_cTools.IntegertoStringConvert(sampleRate) + ", numberOfChannels: " + m_cTools.IntegertoStringConvert(numberOfChannels));
+	LOG_AAC("CAcc::SetParameters(), sampleRate: %d, numberOfChannels: %d", sampleRate, numberOfChannels);
 
 	if (aacDecoder_SetParam(m_hDecoder, AAC_PCM_OUTPUT_INTERLEAVED, 1))
 	{
-		AAC_LOG("Couldn't set AAC_PCM_OUTPUT_INTERLEAVED");
+		LOG_AAC("Couldn't set AAC_PCM_OUTPUT_INTERLEAVED");
 		return false;
 	}
 
 	if (aacDecoder_SetParam(m_hDecoder, AAC_PCM_MIN_OUTPUT_CHANNELS, numberOfChannels))
 	{
-		AAC_LOG("Couldn't set AAC_PCM_MIN_OUTPUT_CHANNELS");
+		LOG_AAC("Couldn't set AAC_PCM_MIN_OUTPUT_CHANNELS");
 		return false;
 	}
 
 	if (aacDecoder_SetParam(m_hDecoder, AAC_PCM_MAX_OUTPUT_CHANNELS, numberOfChannels))
 	{
-		AAC_LOG("Couldn't set AAC_PCM_MAX_OUTPUT_CHANNELS");
+		LOG_AAC("Couldn't set AAC_PCM_MAX_OUTPUT_CHANNELS");
 		return false;
 	}
 
 	if (aacDecoder_SetParam(m_hDecoder, AAC_PCM_OUTPUT_CHANNEL_MAPPING, 1))
 	{
-		AAC_LOG("Couldn't set AAC_PCM_OUTPUT_CHANNEL_MAPPING");
+		LOG_AAC("Couldn't set AAC_PCM_OUTPUT_CHANNEL_MAPPING");
 		return false;
 	}
 
@@ -168,7 +168,7 @@ bool CAac::SetParameters(int sampleRate, int numberOfChannels)
 		return false;
 	}
 
-	AAC_LOG("Set all settings successfully.");
+	LOG_AAC("Set all settings successfully.");
 
 	return true;
 }
@@ -176,7 +176,7 @@ bool CAac::SetParameters(int sampleRate, int numberOfChannels)
 
 bool CAac::DecodeFrame(unsigned char *inputDataBuffer, int inputDataSize, short *outputDataBuffer, int &dataSize)
 {
-	AAC_LOG("CAcc::DecodeFrame(), inputDataSize: " + m_cTools.IntegertoStringConvert(inputDataSize));
+	LOG_AAC("CAcc::DecodeFrame(), inputDataSize: %d", inputDataSize);
 
 	m_nRC = aacDecoder_Fill(m_hDecoder, &inputDataBuffer, (const unsigned int *)&inputDataSize, (unsigned int *)&inputDataSize);
 	if (m_nRC != AAC_DEC_OK)
@@ -213,7 +213,7 @@ bool CAac::DecodeFrame(unsigned char *inputDataBuffer, int inputDataSize, short 
 
 void CAac::SendProcessedData()
 {
-	AAC_LOG("CAac::SendProcessedData()");
+	LOG_AAC("CAac::SendProcessedData()");
 
 	int i = 0;
 
@@ -228,7 +228,7 @@ void CAac::SendProcessedData()
 		{
 			m_stDecodedFrameOut = m_qProcessedPcmData.front();
 
-			AAC_LOG(m_cTools.IntegertoStringConvert(i++) + ".SampleRate: " + m_cTools.IntegertoStringConvert(m_stDecodedFrameOut.sampleRate) + " frameSize: " + m_cTools.IntegertoStringConvert(m_stDecodedFrameOut.frameSize) + " numOfChannels: " + m_cTools.IntegertoStringConvert(m_stDecodedFrameOut.numOfChannels));
+//			AAC_LOG(m_cTools.IntegertoStringConvert(i++) + ".SampleRate: " + m_cTools.IntegertoStringConvert(m_stDecodedFrameOut.sampleRate) + " frameSize: " + m_cTools.IntegertoStringConvert(m_stDecodedFrameOut.frameSize) + " numOfChannels: " + m_cTools.IntegertoStringConvert(m_stDecodedFrameOut.numOfChannels));
 			//m_cCommonElementsBucket->m_pEventNotifier->fireAudioEvent(5, SERVICE_TYPE_CALL, (m_stDecodedFrameOut.frameSize * m_stDecodedFrameOut.numOfChannels), m_stDecodedFrameOut.frame);
 
 #ifdef DUMP_OUTPUT
@@ -260,7 +260,7 @@ std::thread CAac::StartDataSendingThread()
 
 void CAac::StopDataSendingThread()
 {
-	AAC_LOG("CAac::StopDataSendingThread()");
+	LOG_AAC("CAac::StopDataSendingThread()");
 
 	m_bIsRunningUDPDataSendingThread = false;
 	while (!m_bIsClosedUDPDataSendingThread){
@@ -292,7 +292,7 @@ int CAac::ReadFileIntoFrames(std::string fileName)
 	FILE *fd = fopen(fileName.c_str(), "rb");
 
 	if (!fd){
-		AAC_LOG("file open failed");
+		LOG_AAC("file open failed");
 		return false;
 	}
 
@@ -308,7 +308,7 @@ int CAac::ReadFileIntoFrames(std::string fileName)
 	int audioDataSize = ThreeBytesIntoIntBE(&m_sBuffer[5]);
 	int videoDataSize = ThreeBytesIntoIntBE(&m_sBuffer[8]);
 	int numOfAudioFrames = int(m_sBuffer[11]);
-	AAC_LOG("NumberOfAudioFrames: " + m_cTools.IntegertoStringConvert(numOfAudioFrames));
+	LOG_AAC("NumberOfAudioFrames: %d", numOfAudioFrames);
 
 	fread(m_sBuffer, 1, (3 * numOfAudioFrames) + 1, fd);
 	for (int i = 0; i < numOfAudioFrames; i++) 
@@ -360,7 +360,7 @@ bool CAac::DecodeFile()
 {
 	auto decodeAndPlay = [&](std::string inputFilePath)
 	{
-		AAC_LOG("DecodingFile: " + inputFilePath);
+//		AAC_LOG("DecodingFile: " + inputFilePath);
 		int len;
 		int numberOfFrames = ReadFileIntoFrames(inputFilePath.c_str());                   // outputaudio_h264_2.naac ;   input_file.naac
 
@@ -377,7 +377,7 @@ bool CAac::DecodeFile()
 		short outBuffer[10000];
 
 		if (!m_fd){
-			AAC_LOG("file open failed");
+			LOG_AAC("file open failed");
 			return false;
 		}
 

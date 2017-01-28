@@ -13,8 +13,6 @@
 #include "aacdecoder_lib.h"
 //#include "CommonElementsBucket.h"
 
-static string acc_tag = "AAC_LOG:";
-#define AAC_LOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, acc_tag + a);
 
 #define HEADER_SIZE 512
 #define AUDIO_PACKET_TYPE 7
