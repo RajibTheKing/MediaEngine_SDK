@@ -407,7 +407,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				}
 
 				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
+				{
+
+#if defined(_DESKTOP_C_SHARP_)
+
+#else
 					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize);
+#endif		
+				}
 
 				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 				{
@@ -517,8 +524,22 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #elif defined(_DESKTOP_C_SHARP_)
 
-					int m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaMirroredFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					int m_decodedFrameSize;
 
+					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
+					{
+						if (this->m_pColorConverter->GetSmallFrameStatus())
+						{
+							this->m_pColorConverter->GetSmallFrame(m_pSmallFrame);
+
+							m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_pSmallFrame, m_RenderingRGBFrame, m_pColorConverter->GetSmallFrameHeight(), m_pColorConverter->GetSmallFrameWidth());
+						}
+					}
+					else
+					{
+						m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaMirroredFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					}
+					 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 
 					this->m_pColorConverter->ConvertI420ToYV12(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
@@ -528,7 +549,17 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(_DESKTOP_C_SHARP_)
 
-					m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
+					{
+						if (this->m_pColorConverter->GetSmallFrameStatus())
+						{
+							m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetSmallFrameHeight(), m_pColorConverter->GetSmallFrameWidth(), nDevice_orientation);
+						}
+					}
+					else
+					{
+						m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+					}
 #else
 					m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
 #endif

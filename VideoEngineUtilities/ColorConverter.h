@@ -52,6 +52,9 @@ public:
 
 	void mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth);
 
+	bool GetSmallFrameStatus();
+	void GetSmallFrame(unsigned char *pSmallFrame);
+
 	int GetWidth();
 	int GetHeight();
     
@@ -79,6 +82,8 @@ private:
     
     int m_iSmallFrameHeight;
     int m_iSmallFrameWidth;
+
+	int m_iSmallFrameSize;
     
 	bool m_bMergingSmallFrameEnabled;
 

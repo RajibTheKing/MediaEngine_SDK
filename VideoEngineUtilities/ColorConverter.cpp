@@ -1163,6 +1163,8 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
     m_iSmallFrameHeight = iHeight;
     m_iSmallFrameWidth = iWidth;
+
+	m_iSmallFrameSize = iHeight * iWidth * 3 / 2;
     
     iLen = CreateFrameBorder(m_pSmallFrame, iHeight, iWidth, 0, 128, 128); // [Y:0, U:128, V:128] = Black
 
@@ -1260,4 +1262,17 @@ void CColorConverter::ClearSmallScreen()
 	m_bMergingSmallFrameEnabled = false;
 }
 
+bool CColorConverter::GetSmallFrameStatus()
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	return m_bMergingSmallFrameEnabled;
+}
+
+void CColorConverter::GetSmallFrame(unsigned char *pSmallFrame)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	memcpy(pSmallFrame, m_pSmallFrame, m_iSmallFrameSize);
+}
 
