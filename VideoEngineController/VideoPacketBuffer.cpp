@@ -32,7 +32,7 @@ void CVideoPacketBuffer::Reset()
 	}
 }
 
-bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsigned int unLength, int nPacketNumber, int iHeaderLength)
+bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsigned int unLength, int nPacketNumber, int iHeaderLength, int nPacketStartingIndex)
 {
 	
 	if (false == m_baPacketTracker[nPacketNumber])
@@ -44,11 +44,8 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsi
         
         
 #ifdef USE_HASH_GENERATOR_TO_DEPACKETIZE
-        CVideoHeader packetHeader;
-        packetHeader.setPacketHeader(pucVideoPacketData);
-        //packetHeader.ShowDetails("ReceivingSide: ");
-        
-		memcpy(m_ucaFrameData + packetHeader.GetPacketStartingIndex(), pucVideoPacketData + iHeaderLength, nPacketDataLength);
+
+		memcpy(m_ucaFrameData + nPacketStartingIndex, pucVideoPacketData + iHeaderLength, nPacketDataLength);
 #else
         
         memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + iHeaderLength, nPacketDataLength);

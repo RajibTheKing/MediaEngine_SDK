@@ -17,7 +17,7 @@ public:
 	~CVideoPacketBuffer();
 
 	void Reset();
-	bool PushVideoPacket(unsigned char *pucVideoPacketData, unsigned int unLength, int nPacketNumber, int iHeaderLength);
+	bool PushVideoPacket(unsigned char *pucVideoPacketData, unsigned int unLength, int nPacketNumber, int iHeaderLength, int nPacketStartingIndex);
 	int IsComplete();
 	void SetNumberOfPackets(int nNumberOfPackets);
     void SetFrameNumber(int nFrameNumber);

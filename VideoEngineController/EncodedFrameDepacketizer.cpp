@@ -251,8 +251,11 @@ int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int 
 //							   m_Tools.IntegertoStringConvert(frameNumber)+" == "+m_Tools.IntegertoStringConvert(timeStampDiff));
 
 	m_CVideoPacketBuffer[index].SetNumberOfPackets(numberOfPackets);
+
 	int iHeaderLength = packetHeader.GetHeaderLength();
-	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber, iHeaderLength);
+	int nPacketStartingIndex = packetHeader.GetPacketStartingIndex();
+
+	int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber, iHeaderLength, nPacketStartingIndex);
 
 	return 1;
 }
