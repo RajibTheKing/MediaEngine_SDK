@@ -434,7 +434,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID,unsigned char *
 	}
 }
 
-int CController::PushAudioForDecodingVector(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+int CController::PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -458,7 +458,7 @@ int CController::PushAudioForDecodingVector(const LongLong& lFriendID, int nOffs
 
 		{
 			CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
-			return pAudioSession->DecodeAudioDataVector(nOffset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+			return pAudioSession->DecodeAudioData(nOffset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
 		}
 
 		/*else
@@ -466,45 +466,6 @@ int CController::PushAudioForDecodingVector(const LongLong& lFriendID, int nOffs
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder doesnt exist");
 		return -1;
 		}*/
-	}
-	else
-	{
-		return -1;
-	}
-}
-
-int CController::PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
-{
-	CAudioCallSession* pAudioSession;
-
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called");
-
-	//	LOGE("CController::PushPacketForDecoding");
-    
-    Locker lock(*m_pAudioReceiveMutex);
-
-	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
-
-	//	LOGE("CController::PushPacketForDecoding Audio session exists");
-
-	if (bExist)
-	{
-				//LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
-        
-        CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
-
-		//if (pCAudioDecoder)
-        
-        {
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
-            return pAudioSession->DecodeAudioData(nOffset,in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
-        }
-			
-		/*else
-        {
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder doesnt exist");
-			return -1;
-        }*/
 	}
 	else
 	{
