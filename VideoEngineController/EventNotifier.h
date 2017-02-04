@@ -45,6 +45,7 @@ public:
 
 	static const int SET_CAMERA_RESOLUTION_352x288 = 210;
 	static const int SET_CAMERA_RESOLUTION_640x480 = 211;
+    static const int SET_CAMERA_RESOLUTION_FAILED= 221;
 
 private:
 	CController *m_pController;

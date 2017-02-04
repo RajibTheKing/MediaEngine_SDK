@@ -629,6 +629,18 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
         m_Quality[0].iWidth = iWidthLow;
         m_Quality[1].iHeight = iHeightHigh;
         m_Quality[1].iWidth = iWidthHigh;
+    long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
+    
+    while(m_bLiveCallRunning==true || m_bDeviceCapabilityRunning == true)
+    {
+        m_Tools.SOSleep(10);
+        if(m_Tools.CurrentTimestamp() - llCheckDeviceCapabilityStartTime > 500)
+        {
+            int notification = m_EventNotifier.SET_CAMERA_RESOLUTION_FAILED;
+            m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
+            break;
+        }
+    }
 
     if(m_bLiveCallRunning == true) return -1;
 
