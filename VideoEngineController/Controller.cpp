@@ -616,6 +616,22 @@ int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, in
 	}
 }
 
+int CController::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)
+{
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		return pVideoSession->SetDeviceHeightWidth(lFriendID, height, width);
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 {
 	return -1;

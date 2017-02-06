@@ -64,6 +64,7 @@ public:
 	void ClearSmallScreen();
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
+	void SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth);
     
     int CreateFrameBorder(unsigned char* pData, int iHeight, int iWidth, int Y, int U, int V);
 	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
@@ -75,6 +76,10 @@ private:
 
 	int m_iVideoHeight;
 	int m_iVideoWidth;
+
+	int m_iDeviceHeight;
+	int m_iDeviceWidth;
+
 	int m_YPlaneLength;
 	int m_VPlaneLength;
 	int m_UVPlaneMidPoint;

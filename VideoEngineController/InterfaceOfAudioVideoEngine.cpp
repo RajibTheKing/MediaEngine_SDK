@@ -346,6 +346,18 @@ int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFrie
 	return iReturnedValue;
 }
 
+int CInterfaceOfAudioVideoEngine::SetDeviceHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	int iReturnedValue = m_pcController->SetDeviceHeightWidth(llFriendID, nVideoHeight, nVideoWidth);
+
+	return iReturnedValue;
+}
+
 int CInterfaceOfAudioVideoEngine::SetBitRate(const IPVLongType llFriendID, int nBitRate)
 {
 	if (NULL == m_pcController)

@@ -15,6 +15,7 @@ public:
 	~CVideoBeautificationer();
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
+	void SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth);
 	void GenerateUVIndex( int iVideoHeight, int iVideoWidth, int iDataFormat );
 	void MakeFrameBeautiful(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, unsigned char *convertedData);
 	void MakeFrameBlur(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
@@ -38,8 +39,6 @@ public:
 	void boxBlur_4 (unsigned char *scl, unsigned char *tcl , int h, int w, int r);
 	void boxBlurH_4 (unsigned char *scl, unsigned char *tcl, int h, int w, int r);
 
-
-
 	unsigned char m_pBluredImage[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH << 2];
 
 private:
@@ -51,6 +50,9 @@ private:
 	int m_nBrightnessPrecision;
 	int m_nBlurScale;
 	unsigned char m_nThresholdValue;
+
+	int m_iDeviceHeight;
+	int m_iDeviceWidth;
 
 	int m_nVideoHeight;
 	int m_nVideoWidth;

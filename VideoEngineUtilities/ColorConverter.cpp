@@ -70,6 +70,16 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 
 }
 
+void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	m_iDeviceHeight = iVideoHeight;
+	m_iDeviceWidth = iVideoWidth;
+
+	m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
+}
+
 int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);

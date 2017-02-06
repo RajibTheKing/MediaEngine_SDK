@@ -108,6 +108,7 @@ public:
     bool isLiveVideoStreamRunning();
 
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
+	int SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width);
 
 	void InterruptOccured();
 	void InterruptOver();
@@ -150,6 +151,9 @@ private:
 
 	int m_nVideoCallHeight;
 	int m_nVideoCallWidth;
+
+	int m_nDeviceHeight;
+	int m_nDeviceWidth;
 
 	int m_SlotResetLeftRange;
 	int m_SlotResetRightRange;

@@ -999,6 +999,16 @@ int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int heig
 	}
 }
 
+int CVideoCallSession::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)
+{
+	m_nDeviceHeight = height;
+	m_nDeviceWidth = width;
+
+	this->m_pColorConverter->SetDeviceHeightWidth(height, width);
+
+	return 1;
+}
+
 void CVideoCallSession::InterruptOccured()
 {
 	m_pSendingThread->InterruptOccured();

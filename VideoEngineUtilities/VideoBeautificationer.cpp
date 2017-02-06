@@ -37,7 +37,12 @@ void CVideoBeautificationer::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 	m_nVideoWidth = iVideoWidth;
 
 	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
+}
 
+void CVideoBeautificationer::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
+{
+	m_iDeviceHeight = iVideoHeight;
+	m_iDeviceWidth = iVideoWidth;
 }
 
 void CVideoBeautificationer::GenerateUVIndex( int iVideoHeight, int iVideoWidth, int dataFormat )
