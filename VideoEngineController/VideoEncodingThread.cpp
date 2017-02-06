@@ -408,16 +408,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 				{
-
-#if defined(_DESKTOP_C_SHARP_)
-
-					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() my Called");
-
-#else
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() SetSmallFrame iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
-					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize);
-#endif		
+					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize);	
 				}
 
 				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)

@@ -194,8 +194,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 				if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 				{
-					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE &&
-						llCountMiss % 2 == 0 && m_HasPreviousValues == true)
+					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && llCountMiss % 2 == 0 && m_HasPreviousValues == true)
 						nDecodingStatus = DecodeAndSendToClient2();
 				}
 
