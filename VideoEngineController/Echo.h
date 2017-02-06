@@ -35,6 +35,9 @@ class CEcho
 	int farending, processing;
 	short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
 	short m_sTempBuf[AUDIO_CLIENT_SAMPLES_IN_FRAME];
+	short m_sSpeexFarendBuf[AUDIO_CLIENT_SAMPLES_IN_FRAME];
+	bool m_bFarendArrived;
+	bool m_bReadingFarend, m_bWritingFarend;
 	
 	//SmartPointer<CLockHandler> m_pEchoMutex;
 	

@@ -57,6 +57,8 @@ CEcho::CEcho(int id)
 	processing = 0;
 #endif
 #if defined(USE_SPEEX_AECM)
+	m_bFarendArrived = false;
+	m_bReadingFarend = m_bWritingFarend = false;
 	int sampleRate = AUDIO_SAMPLE_RATE;
 	st = speex_echo_state_init(AECM_SAMPLES_IN_FRAME, 1024);
 	int db = -60;
@@ -147,15 +149,23 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 		return false;
 	}
 #if defined(USE_SPEEX_AECM)
+	while (m_bWritingFarend)
+	{
+		m_Tools.SOSleep(1);
+	}
+	m_bReadingFarend = true;
 	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
 	{
+		speex_echo_playback(st, m_sSpeexFarendBuf + i);
 		speex_echo_capture(st, sInBuf + i, sInBuf + i);
 		speex_preprocess_run(den, sInBuf + i);
 	}
+	m_bReadingFarend = false;
+	m_bFarendArrived = false;
 #endif
 	//if (!isLoudspeaker)
 	{
-		#ifdef USE_WEBRTC_AECM
+#ifdef USE_WEBRTC_AECM
 	iCounter++;
 #if 0
 	long long llNow = m_Tools.CurrentTimestamp();
@@ -266,10 +276,13 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool bLoudSpeakerEnabled)
 	farending = 0;	
 #endif
 #if defined(USE_SPEEX_AECM)
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
+	while (m_bReadingFarend)
 	{
-		speex_echo_playback(st, sBuffer + i);
-	}	
+		m_Tools.SOSleep(1);
+	}
+	m_bWritingFarend = true;
+	memcpy(m_sSpeexFarendBuf, sBuffer, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
+	m_bWritingFarend = false;
 #endif
 	return true;
 }
