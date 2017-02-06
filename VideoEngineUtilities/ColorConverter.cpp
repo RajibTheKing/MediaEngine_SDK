@@ -1,7 +1,7 @@
 
 #include "ColorConverter.h"
 #include "../VideoEngineController/LogPrinter.h"
-
+#include <math.h>
 
 #if defined(__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_WINDOWS_PHONE)
 typedef unsigned char byte;
@@ -1236,7 +1236,112 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
     return iLen1;
 }
 
-
+int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    int YPlaneLength = inHeight*inWidth;
+    int UPlaneLength = YPlaneLength >> 2;
+    
+    float aspectRatio_Screen, aspectRatio_VideoData;
+    int indx = 0;
+    int newHeight, newWidth, diff;
+    
+    aspectRatio_Screen = screenHeight * 1.0 / screenWidth;
+    aspectRatio_VideoData = inHeight * 1.0 / inWidth;
+    
+    
+    //cout<<"Screen_Ratio = "<<aspectRatio_Screen<<", Video_Ratio = "<<aspectRatio_VideoData<<endl;
+    
+    if(fabs(aspectRatio_Screen - aspectRatio_VideoData) < 0.00001)
+    {
+        //Do Nothing
+        newHeight = inHeight;
+        newWidth = inWidth;
+        
+    }
+    else if(aspectRatio_Screen > aspectRatio_VideoData)
+    {
+        //We have to delete columns [reduce Width]
+        newWidth = floor(inHeight / aspectRatio_Screen);
+        newWidth = newWidth - newWidth%2;
+        newHeight = inHeight;
+        
+        diff = inWidth - newWidth;
+        for(int i=0;i<inHeight;i++)
+        {
+            for(int j=diff;j<inWidth;j++)
+            {
+                outputData[indx++] = pData[i*inWidth + j];
+            }
+        }
+        
+        
+        byte *p = pData + YPlaneLength;
+        
+        int uIndex = indx;
+        int vIndex = indx + 1;
+        
+        int halfH = inHeight>>1, halfW = inWidth>>1;
+        
+        for(int i=0;i<halfH;i++)
+        {
+            for(int j=diff;j<inWidth;j+=2)
+            {
+                outputData[uIndex] = p[i*inWidth + j];
+                outputData[vIndex] = p[i*inWidth + j + 1];
+                uIndex+=2;
+                vIndex+=2;
+            }
+        }
+        
+        //printf("Now, First Block, Indx = %d, uIndex = %d, vIndex = %d\n", indx, uIndex, vIndex);
+        
+    }
+    else
+    {
+        //We have to delete rows [Reduce Height]
+        
+        newHeight = floor(inWidth * aspectRatio_Screen);
+        newHeight = newHeight - newHeight%2;
+        newWidth = inWidth;
+        diff = inHeight - newHeight;
+        
+        for(int i=diff;i<inHeight;i++)
+        {
+            for(int j=0;j<inWidth;j++)
+            {
+                outputData[indx++] = pData[i*inWidth + j];
+            }
+        }
+        
+        byte *p = pData + YPlaneLength;
+        int uIndex = indx;
+        int vIndex = indx + 1;
+        
+        int halfH = inHeight>>1, halfW = inWidth>>1;
+        
+        for(int i=diff/2;i<halfH;i++)
+        {
+            for(int j=0;j<inWidth;j+=2)
+            {
+                outputData[uIndex] = p[i*inWidth + j];
+                outputData[vIndex] = p[i*inWidth + j + 1];
+                uIndex+=2;
+                vIndex+=2;
+            }
+        }
+        //printf("Now, Second Block, Indx = %d, uIndex = %d, vIndex = %d\n", indx, uIndex, vIndex);
+        
+    }
+    
+    
+    
+    outHeight = newHeight;
+    outWidth = newWidth;
+    
+    return outHeight*outWidth*3/2;
+    
+}
 
 
 int CColorConverter::GetWidth()
@@ -1263,6 +1368,18 @@ int CColorConverter::GetSmallFrameHeight()
     Locker lock(*m_pColorConverterMutex);
     
     return m_iSmallFrameHeight;
+}
+
+int CColorConverter::GetScreenHeight()
+{
+    Locker lock(*m_pColorConverterMutex);
+    return m_iDeviceHeight;
+}
+
+int CColorConverter::GetScreenWidth()
+{
+    Locker lock(*m_pColorConverterMutex);
+    return m_iDeviceWidth;
 }
 
 void CColorConverter::ClearSmallScreen()
