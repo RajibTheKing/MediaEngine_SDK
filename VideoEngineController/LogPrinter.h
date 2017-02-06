@@ -49,12 +49,12 @@
 #define ON 1
 #define OFF 0
 
-#define LOG_ENABLED
+//#define LOG_ENABLED
 
-#define WRITE_TO_LOG_FILE		ON
+#define WRITE_TO_LOG_FILE		OFF
 
 #define PACKET_DETAILS_LOG		OFF
-#define INSTENT_TEST_LOG_2		ON
+#define INSTENT_TEST_LOG_2		OFF
 #define INSTENT_TEST_LOG		OFF
 #define CHECK_CAPABILITY_LOG	OFF
 #define QUEUE_OVERFLOW_LOG		OFF
