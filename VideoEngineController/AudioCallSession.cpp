@@ -672,7 +672,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 	if (m_bLiveAudioStreamRunning == false)
 	{
 		ALOG("#A#EN#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
-		DecodeAudioData(0, m_ucaCompressedFrame + 1, m_nCompressedFrameSize + m_MyAudioHeadersize);
+		m_AudioReceivedBuffer.EnQueue(m_ucaCompressedFrame + 1, m_nCompressedFrameSize + m_MyAudioHeadersize);
 		return;
 	}
 #endif
