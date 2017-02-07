@@ -106,7 +106,7 @@ m_nServiceType(nServiceType)
 	}
 
 	m_bUsingLoudSpeaker = false;
-	m_bEchoCancellerEnabled = false;
+	m_bEchoCancellerEnabled = true;
 
 #ifdef USE_AECM
 	m_pEcho = new CEcho(66);
@@ -315,7 +315,9 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	long long llCurrentTime = Tools::CurrentTimestamp();
 
 #ifdef USE_AECM
-	if (!m_bLiveAudioStreamRunning && m_bEchoCancellerEnabled)
+	if (m_bEchoCancellerEnabled && 
+		(!m_bLiveAudioStreamRunning || 
+		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 #ifdef USE_ECHO2
 		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength);
@@ -339,7 +341,9 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 {
 #ifdef USE_AECM
-	if (!m_bLiveAudioStreamRunning && m_bEchoCancellerEnabled)
+	if (m_bEchoCancellerEnabled && 
+		(!m_bLiveAudioStreamRunning || 
+		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 #ifdef USE_ECHO2
 		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker);
