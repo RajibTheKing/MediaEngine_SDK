@@ -99,9 +99,10 @@ public:
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);
-	
-    void GetAudioSendToData(unsigned char * pAudioRawDataToSend, int &RawLength, std::vector<int> &vRawDataLengthVector,
-		std::vector<int> &vCompressedDataLengthVector, int &CompressedLength, unsigned char * pAudioCompressedDataToSend);
+#if 0	
+	void GetAudioSendToData(unsigned char * pAudioRawDataToSendMuxed, int &RawLengthMuxed, std::vector<int> &vRawDataLengthVectorMuxed,
+		std::vector<int> &vRawDataLengthVectorNonMuxed, int &RawLengthNonMuxed, unsigned char * pAudioNonMuxedDataToSend);
+#endif
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector);
 
@@ -125,7 +126,7 @@ private:
 	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
 	CAudioByteBuffer m_AudioReceivedBuffer;
 
-    std::vector<int> m_vRawFrameLength, m_vCompressedFrameLength;
+	std::vector<int> m_vRawFrameLengthViewer, m_vRawFrameLengthCallee;
 	bool m_bUsingLoudSpeaker;
 
     int m_iLastDecodedPacketNumber;    
@@ -145,29 +146,29 @@ private:
 
 	///////////Post Encoding Data///////
 	/*
-	m_ucaCompressedFrame is an Encoded frame.
-	It comes from m_saAudioRecorderFrame after encoding, during non-live-call or live-call.
+	m_ucaEncodedFrame is an Encoded frame.
+	It comes from m_saAudioRecorderFrame after encoding, during non-live-call.
 	Must not be used during live-streaming.
 	*/
-    unsigned char m_ucaCompressedFrame[MAX_AUDIO_FRAME_Length];
+    unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
 	/*
 	m_ucaRawFrame is a Raw frame.
 	It comes from m_saAudioRecorderFrame without encoding during livestream.
-	It comes from m_saAudioMUXEDFrame without encoding during live-call.
 	Must not be used during non-live-call.
 	*/
-	unsigned char m_ucaRawFrame[MAX_AUDIO_FRAME_Length];
+	unsigned char m_ucaRawFrameMuxed[MAX_AUDIO_FRAME_Length], m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
 
-	int m_nCompressedFrameSize, m_nRawFrameSize;
+
+	int m_nEncodedFrameSize, m_nRawFrameSize;
 
 
     unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
     short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
 	int m_nDecodingFrameSize, m_nDecodedFrameSize;
 
-    unsigned char m_ucaRawDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
-	unsigned char m_ucaCompressedDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
-	int m_iRawDataSendIndex, m_iCompressedDataSendIndex;
+    unsigned char m_ucaRawDataToSendCallee[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+	unsigned char m_ucaRawDataToSendViewer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+	int m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee;
 	long long m_llMaxAudioPacketNumber;
 
     bool m_bAudioEncodingThreadRunning;
