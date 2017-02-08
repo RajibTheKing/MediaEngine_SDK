@@ -60,7 +60,13 @@ void CLogPrinter::Start(Priority maxPriority, const char* logFile)
 	{
 		instance.maxPriority = maxPriority;
 		instance.logFile = tempLogFile;
+
+#ifdef	WRITE_TO_LOG_FILE
+
 		instance.fileStream.open(tempLogFile, ofstream::out);
+
+#endif
+
 	}
 	else
 		instance.maxPriority = CLogPrinter::NONE;
