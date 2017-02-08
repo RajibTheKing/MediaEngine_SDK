@@ -4,6 +4,8 @@
 
 #include <string>
 
+class CAverageCalculator;
+
 class CVideoEffects
 {
 
@@ -15,6 +17,8 @@ public:
     int NegetiveColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 
 private:
+    
+    CAverageCalculator *m_pAverageCalculator;
 
 };
 
