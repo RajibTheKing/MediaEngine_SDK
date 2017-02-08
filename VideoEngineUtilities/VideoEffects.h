@@ -15,6 +15,8 @@ public:
     ~CVideoEffects();
     
     int NegetiveColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
+    int BlackAndWhiteColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
+    int SapiaColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 
 private:
     
