@@ -706,7 +706,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 #ifndef NO_CONNECTIVITY
 			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1, 0);	//Need to check send type.
 #else
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, m_ucaCompressedFrame);
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nRawFrameSize + m_MyAudioHeadersize + 1, m_ucaRawFrameNonMuxed);
 #endif
 		}
 		else
@@ -726,7 +726,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 #ifndef NO_CONNECTIVITY
 		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0);
 #else
-		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, m_ucaCompressedFrame);
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
 
 #ifdef  __DUPLICATE_AUDIO__
@@ -736,7 +736,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 #ifndef NO_CONNECTIVITY
 			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0);
 #else
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nCompressedFrameSize + m_MyAudioHeadersize + 1, m_ucaCompressedFrame);
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
 		}
 #endif
