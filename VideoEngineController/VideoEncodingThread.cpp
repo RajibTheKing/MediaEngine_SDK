@@ -574,8 +574,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     
                     int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth);
                     
-                    //m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
-                    m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nDevice_orientation);
+                    if(iScreenWidth == -1 || iScreenHeight == -1)
+                        m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+                    else
+                        m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nDevice_orientation);
                     
 #else
 					m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);

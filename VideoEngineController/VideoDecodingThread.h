@@ -14,6 +14,8 @@
 #include "LiveVideoDecodingQueue.h"
 #include "VideoHeader.h"
 
+#include "../VideoEngineUtilities/VideoEffects.h"
+
 //#include "Helper_IOS.hpp"
 #include <thread>
 
@@ -107,6 +109,12 @@ private:
     long long m_FPS_TimeDiff;
     long long llQueuePrevTime;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+    CVideoEffects *m_pVideoEffect;
+    int m_iEffectSelection;
+    int m_iNumberOfEffect;
+    int m_iNumberOfEffectedFrame;
+    
+    
     
 };
 
