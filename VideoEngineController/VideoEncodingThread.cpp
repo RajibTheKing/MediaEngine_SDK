@@ -376,11 +376,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
-				m_VideoBeautificationer->IsSkinPixel(m_ucaEncodingFrame);
+				//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
+				//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaEncodingFrame);
+				m_VideoBeautificationer->Bilateral_Blur_Filter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #else
-				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
-				m_VideoBeautificationer->IsSkinPixel(m_ucaConvertedEncodingFrame);
+				//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+				//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+				m_VideoBeautificationer->Bilateral_Blur_Filter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #endif
 
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)
@@ -452,13 +454,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 			long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-
 			if (m_bIsCheckCall)
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
 			else
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
 			//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
+
+
 
 			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
 			sumOfEncodingTimediff += timeDiff;

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../VideoEngineController/Size.h"
+#include "../videoEngineController/Tools.h"
 
 class CVideoBeautificationer
 {
@@ -17,10 +18,10 @@ public:
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
 	void SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth);
 	void GenerateUVIndex( int iVideoHeight, int iVideoWidth, int iDataFormat );
-	void MakeFrameBeautiful(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, unsigned char *convertedData);
+	void MakeFrameBeautiful(unsigned char *pixel);
 	void MakeFrameBlur(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	void MakeFrameBlurAndStore(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
-	bool IsSkinPixel(unsigned char *pixel);
+	bool IsSkinPixel(unsigned char YPixel, unsigned char UPixel, unsigned char VPixel);
 	void StartBrightening(int iVideoHeight, int iVideoWidth, int nPrecision);
 
 	void SetBrighteningValue(int m_AverageValue, int brightnessPrecision);
@@ -41,6 +42,10 @@ public:
 
 	unsigned char m_pBluredImage[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH << 2];
 
+	Tools m_Tools;
+
+	int Bilateral_Blur_Filter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
+
 private:
 
 	int m_nPreviousAddValueForBrightening;
@@ -60,6 +65,15 @@ private:
 
 	int m_pUIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH + 1];
 	int m_pVIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH  + 1];
+
+	float modifYUV[266];
+
+	int m_mean[MAX_FRAME_HEIGHT+1][MAX_FRAME_HEIGHT+1];
+	int m_variance[MAX_FRAME_HEIGHT+1][MAX_FRAME_HEIGHT+1];
+
+	int m_square[256];
+
+
 };
 
 #endif 
