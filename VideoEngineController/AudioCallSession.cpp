@@ -238,7 +238,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
 #ifdef USE_AECM
-	m_bEchoCancellerEnabled = bOn;
+	m_bEchoCancellerEnabled = /*bOn*/ true;
 #endif
 }
 
