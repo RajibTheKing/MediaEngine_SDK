@@ -29,6 +29,8 @@ m_bMergingSmallFrameEnabled(false)
     if(m_iSmallFrameHeight%2) m_iSmallFrameHeight--;
     if(m_iSmallFrameWidth%2) m_iSmallFrameWidth--;
     
+    m_iDeviceHeight = -1;
+    m_iDeviceWidth = -1;
     
 	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
 
@@ -1257,6 +1259,7 @@ int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHei
         //Do Nothing
         newHeight = inHeight;
         newWidth = inWidth;
+        memcpy(outputData, pData, inHeight*inWidth*3/2);
         
     }
     else if(aspectRatio_Screen > aspectRatio_VideoData)
@@ -1265,36 +1268,10 @@ int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHei
         newWidth = floor(inHeight / aspectRatio_Screen);
         newWidth = newWidth - newWidth%2;
         newHeight = inHeight;
-        
         diff = inWidth - newWidth;
-        for(int i=0;i<inHeight;i++)
-        {
-            for(int j=diff;j<inWidth;j++)
-            {
-                outputData[indx++] = pData[i*inWidth + j];
-            }
-        }
         
-        
-        byte *p = pData + YPlaneLength;
-        
-        int uIndex = indx;
-        int vIndex = indx + 1;
-        
-        int halfH = inHeight>>1, halfW = inWidth>>1;
-        
-        for(int i=0;i<halfH;i++)
-        {
-            for(int j=diff;j<inWidth;j+=2)
-            {
-                outputData[uIndex] = p[i*inWidth + j];
-                outputData[vIndex] = p[i*inWidth + j + 1];
-                uIndex+=2;
-                vIndex+=2;
-            }
-        }
-        
-        //printf("Now, First Block, Indx = %d, uIndex = %d, vIndex = %d\n", indx, uIndex, vIndex);
+        Crop_YUVNV12(pData, inHeight, inWidth, diff,0,0,0, outputData, newHeight, newWidth);
+        cout<<"First Block, Deleting Columns"<<endl;
         
     }
     else
@@ -1306,32 +1283,8 @@ int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHei
         newWidth = inWidth;
         diff = inHeight - newHeight;
         
-        for(int i=diff;i<inHeight;i++)
-        {
-            for(int j=0;j<inWidth;j++)
-            {
-                outputData[indx++] = pData[i*inWidth + j];
-            }
-        }
-        
-        byte *p = pData + YPlaneLength;
-        int uIndex = indx;
-        int vIndex = indx + 1;
-        
-        int halfH = inHeight>>1, halfW = inWidth>>1;
-        
-        for(int i=diff/2;i<halfH;i++)
-        {
-            for(int j=0;j<inWidth;j+=2)
-            {
-                outputData[uIndex] = p[i*inWidth + j];
-                outputData[vIndex] = p[i*inWidth + j + 1];
-                uIndex+=2;
-                vIndex+=2;
-            }
-        }
-        //printf("Now, Second Block, Indx = %d, uIndex = %d, vIndex = %d\n", indx, uIndex, vIndex);
-        
+        Crop_YUVNV12(pData, inHeight, inWidth, 0,0,diff,0, outputData, newHeight, newWidth);
+        cout<<"Second Block, Deleting Rows working"<<endl;
     }
     
     
@@ -1339,6 +1292,47 @@ int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHei
     outHeight = newHeight;
     outWidth = newWidth;
     
+    return outHeight*outWidth*3/2;
+    
+}
+
+int CColorConverter::Crop_YUVNV12(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    int YPlaneLength = inHeight*inWidth;
+    int UPlaneLength = YPlaneLength >> 2;
+    int indx = 0;
+    
+    for(int i=startYDiff; i<(inHeight-endYDiff); i++)
+    {
+        for(int j=startXDiff; j<(inWidth-endXDiff); j++)
+        {
+            outputData[indx++] = pData[i*inWidth + j];
+        }
+    }
+    
+    
+    byte *p = pData + YPlaneLength;
+    int uIndex = indx;
+    int vIndex = indx + 1;
+    
+    
+    int halfH = inHeight>>1, halfW = inWidth>>1;
+    
+    for(int i=startYDiff/2; i<(halfH-endYDiff/2); i++)
+    {
+        for(int j=startXDiff; j<(inWidth-endXDiff); j+=2)
+        {
+            outputData[uIndex] = p[i*inWidth + j];
+            outputData[vIndex] = p[i*inWidth + j + 1];
+            uIndex+=2;
+            vIndex+=2;
+        }
+    }
+    
+    outHeight = inHeight - startYDiff - endYDiff;
+    outWidth = inWidth - startXDiff - endXDiff;
+    printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
     return outHeight*outWidth*3/2;
     
 }
