@@ -74,3 +74,65 @@ int CVideoEffects::SapiaColorEffect(unsigned char *pConvertingData, int inHeight
     
     return inHeight * inWidth * 3 / 2;
 }
+
+int CVideoEffects::WarmColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+{
+    int YPlaneLength = inHeight * inWidth;
+    int UPlaneLength = YPlaneLength>>2;
+    int VPlaneLength = UPlaneLength;
+    int UVPlaneLength = YPlaneLength>>1;
+    
+    long long startTime = Tools::CurrentTimestamp();
+    
+    /*unsigned char u = 100;
+    unsigned char v = 160;
+    
+    memset(pConvertingData + YPlaneLength,u,UPlaneLength);
+    memset(pConvertingData + YPlaneLength + UPlaneLength, v, VPlaneLength);
+    */
+    unsigned char diff = 15;
+    pConvertingData = pConvertingData + YPlaneLength;
+    
+    for(int i=0; i<UPlaneLength; i++)
+    {
+        pConvertingData[i] = pConvertingData[i]-diff;
+    }
+    
+    pConvertingData = pConvertingData + UPlaneLength;
+    
+    for(int i=0; i<VPlaneLength; i++)
+    {
+        pConvertingData[i] = pConvertingData[i] + diff;
+    }
+    
+    
+    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    
+    printf("TheKing--> WarmColorEffect timeDiff = %d\n", timeDiff);
+    
+    return inHeight * inWidth * 3 / 2;
+}
+
+int CVideoEffects::TintColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+{
+    int YPlaneLength = inHeight * inWidth;
+    int UPlaneLength = YPlaneLength>>2;
+    int VPlaneLength = UPlaneLength;
+    int UVPlaneLength = YPlaneLength>>1;
+    
+    long long startTime = Tools::CurrentTimestamp();
+    
+    unsigned char u = 160;
+     unsigned char v = 100;
+     
+     memset(pConvertingData + YPlaneLength,u,UPlaneLength);
+     memset(pConvertingData + YPlaneLength + UPlaneLength, v, VPlaneLength);
+    
+    
+    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    
+    printf("TheKing--> TintColorEffect timeDiff = %d\n", timeDiff);
+    
+    return inHeight * inWidth * 3 / 2;
+}
+
