@@ -1013,6 +1013,7 @@ int CVideoCallSession::SetVideoEffect(int nEffectStatus)
 		m_bVideoEffectEnabled = false;
 
 	this->m_pVideoEncodingThread->SetVideoEffect(nEffectStatus);
+	return 1;
 }
 
 int CVideoCallSession::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)

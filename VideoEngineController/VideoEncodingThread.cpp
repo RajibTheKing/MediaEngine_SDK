@@ -190,6 +190,7 @@ int CVideoEncodingThread::SetVideoEffect(int nEffectStatus)
 		m_bVideoEffectEnabled = true;
 	else if (nEffectStatus == 0)
 		m_bVideoEffectEnabled = false;
+	return 1;
 }
 
 long long g_PrevEncodeTime = 0;

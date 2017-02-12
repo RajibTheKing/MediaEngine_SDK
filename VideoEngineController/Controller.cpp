@@ -640,6 +640,7 @@ int CController::SetDeviceDisplayHeightWidth(int height, int width)
 
 	m_nDeviceDisplayHeight = height;
 	m_nDeviceDisplayWidth = width;
+	return 1;
 }
 
 int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
