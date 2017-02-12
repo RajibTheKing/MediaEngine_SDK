@@ -755,9 +755,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 #ifdef __DUMP_FILE__
-	FileInput = fopen("/storage/emulated/0/InputPCMN.pcm", "w");
-	//    FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
-	echoOutputFile = fopen("/storage/emulated/0/InputPCMN_WITH_ECHO.pcm", "w");
+	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
+	echoOutputFile = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
@@ -1183,7 +1182,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	int nCurrentPacketHeaderLength = 0;
 
 #ifdef __DUMP_FILE__
-	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
+	FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
 #endif
 
 	long long llLastTime = -1, llDiffTimeNow = -1;
