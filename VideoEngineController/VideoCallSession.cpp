@@ -56,6 +56,9 @@ m_iRole(0)
 {
     m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
     m_nCurrentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
+
+	m_nDeviceHeight = pController->GetDeviceDisplayHeight();
+	m_nDeviceWidth = pController->GetDeviceDisplayWidth();
     
     m_VideoFpsCalculator = new CAverageCalculator();
     m_bLiveVideoStreamRunning = false;
@@ -326,6 +329,8 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_pVideoDecoder->CreateVideoDecoder();
 
 	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
+
+	this->m_pColorConverter->SetDeviceHeightWidth(m_nDeviceHeight, m_nDeviceWidth);
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 262");
 

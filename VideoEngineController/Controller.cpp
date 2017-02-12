@@ -616,20 +616,13 @@ int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, in
 	}
 }
 
-int CController::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)
+int CController::SetDeviceDisplayHeightWidth(int height, int width)
 {
-	CVideoCallSession* pVideoSession;
+	Locker lock(*m_pVideoSendMutex);
+	Locker lock(*m_pVideoReceiveMutex);
 
-	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
-
-	if (bExist)
-	{
-		return pVideoSession->SetDeviceHeightWidth(lFriendID, height, width);
-	}
-	else
-	{
-		return -1;
-	}
+	m_nDeviceDisplayHeight = height;
+	m_nDeviceDisplayWidth = width;
 }
 
 int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
@@ -1080,6 +1073,16 @@ bool CController::IsCallInLiveEnabled()
 void CController::SetCallInLiveEnabled(bool value)
 {
 	this->m_bCallInLiveEnabled = value;
+}
+
+int CController::GetDeviceDisplayHeight()
+{
+	return m_nDeviceDisplayHeight;
+}
+
+int CController::GetDeviceDisplayWidth()
+{
+	return m_nDeviceDisplayWidth;
 }
 
 
