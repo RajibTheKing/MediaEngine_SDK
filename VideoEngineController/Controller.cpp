@@ -636,7 +636,7 @@ int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 int CController::SetDeviceDisplayHeightWidth(int height, int width)
 {
 	Locker lock(*m_pVideoSendMutex);
-	Locker lock(*m_pVideoReceiveMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
 
 	m_nDeviceDisplayHeight = height;
 	m_nDeviceDisplayWidth = width;
