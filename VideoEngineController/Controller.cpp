@@ -616,6 +616,23 @@ int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, in
 	}
 }
 
+int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
+{
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		return pVideoSession->SetVideoEffect(nEffectStatus);
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+
 int CController::SetDeviceDisplayHeightWidth(int height, int width)
 {
 	Locker lock(*m_pVideoSendMutex);

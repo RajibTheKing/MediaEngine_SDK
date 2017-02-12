@@ -358,6 +358,18 @@ int CInterfaceOfAudioVideoEngine::SetDeviceDisplayHeightWidth(int nVideoHeight, 
 	return iReturnedValue;
 }
 
+int CInterfaceOfAudioVideoEngine::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	int iReturnedValue = m_pcController->SetVideoEffect(llFriendID, nEffectStatus);
+
+	return iReturnedValue;
+}
+
 int CInterfaceOfAudioVideoEngine::SetBitRate(const IPVLongType llFriendID, int nBitRate)
 {
 	if (NULL == m_pcController)

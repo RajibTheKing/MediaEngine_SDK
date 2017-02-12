@@ -62,6 +62,9 @@ public:
 	int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
 	int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
 	int SetDeviceDisplayHeightWidth(int nVideoHeight, int nVideoWidth);
+
+	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
+
 	int SetBitRate(const IPVLongType llFriendID, int nBitRate);
 
 	int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);

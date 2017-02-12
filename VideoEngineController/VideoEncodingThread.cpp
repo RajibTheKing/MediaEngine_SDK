@@ -26,7 +26,8 @@ m_FpsCounter(0),
 m_nCallFPS(nFPS),
 m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket),
-m_bResetForViewerCallerCallEnd(false)
+m_bResetForViewerCallerCallEnd(false),
+m_bVideoEffectEnabled(true)
 
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
@@ -181,6 +182,14 @@ void CVideoEncodingThread::SetNotifierFlag(bool flag)
 void CVideoEncodingThread::SetFrameNumber(int nFrameNumber)
 {
     m_iFrameNumber = nFrameNumber;
+}
+
+int CVideoEncodingThread::SetVideoEffect(int nEffectStatus)
+{
+	if (nEffectStatus == 1)
+		m_bVideoEffectEnabled = true;
+	else if (nEffectStatus == 0)
+		m_bVideoEffectEnabled = false;
 }
 
 long long g_PrevEncodeTime = 0;

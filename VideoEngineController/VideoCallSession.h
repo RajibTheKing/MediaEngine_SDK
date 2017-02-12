@@ -110,6 +110,8 @@ public:
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
 	int SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width);
 
+	int SetVideoEffect(int nEffectStatus);
+
 	void InterruptOccured();
 	void InterruptOver();
 
@@ -128,6 +130,8 @@ private:
 	double m_ClientFPS;
 	int m_EncodingFrameCounter;
 	bool m_bSkipFirstByteCalculation;
+
+	bool m_bVideoEffectEnabled;
 
 	int m_nOwnVideoCallQualityLevel;
 	int m_nOpponentVideoCallQualityLevel;

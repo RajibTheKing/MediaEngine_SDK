@@ -51,7 +51,8 @@ m_nDeviceCheckFrameCounter(0),
 m_nCapturedFrameCounter(0),
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
-m_iRole(0)
+m_iRole(0),
+m_bVideoEffectEnabled(true)
 
 {
     m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
@@ -1002,6 +1003,16 @@ int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int heig
 	{
 		return -1;
 	}
+}
+
+int CVideoCallSession::SetVideoEffect(int nEffectStatus)
+{
+	if (nEffectStatus == 1)
+		m_bVideoEffectEnabled = true;
+	else if (nEffectStatus == 0)
+		m_bVideoEffectEnabled = false;
+
+	this->m_pVideoEncodingThread->SetVideoEffect(nEffectStatus);
 }
 
 int CVideoCallSession::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)

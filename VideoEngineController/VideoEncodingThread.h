@@ -43,6 +43,8 @@ public:
     
     void SetFrameNumber(int nFrameNumber);
 
+	int SetVideoEffect(int nEffectStatus);
+
 	CEncodingBuffer *m_pEncodingBuffer;
 
 private:
@@ -53,6 +55,8 @@ private:
 	CColorConverter *m_pColorConverter;
 	CVideoEncoder *m_pVideoEncoder;
 	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
+
+	bool m_bVideoEffectEnabled;
 
 	bool m_bResetForViewerCallerCallEnd;
 

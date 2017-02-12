@@ -56,6 +56,8 @@ public:
     int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
     int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
+	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
+
 	void InterruptOccured(const LongLong lFriendID);
 	void InterruptOver(const LongLong lFriendID);
 
