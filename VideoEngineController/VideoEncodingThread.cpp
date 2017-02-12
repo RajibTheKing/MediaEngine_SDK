@@ -383,16 +383,20 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
 
+				if (m_bVideoEffectEnabled == true)
+				{
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
-				//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaEncodingFrame);
-				m_VideoBeautificationer->Bilateral_Blur_Filter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
+					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaEncodingFrame);
+					m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #else
-				//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
-				//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
-				m_VideoBeautificationer->Bilateral_Blur_Filter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+					m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #endif
+				}
 
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 				{

@@ -382,8 +382,7 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 	//return tcl;
 }
 
-
-int CVideoBeautificationer::Bilateral_Blur_Filter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
+int CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
 {
 	for (int i = 0; i <= iHeight; i++) {
 		m_mean[i][0] = 0;
@@ -418,9 +417,9 @@ int CVideoBeautificationer::Bilateral_Blur_Filter(unsigned char *pBlurConverting
 	int niWidth = iWidth - m_rr;
 	int iw = m_radius * iWidth + m_radius;
 
-	m_sigma = 255 - m_mean[iHeight][iWidth]/(iHeight * iWidth);
+	m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2 ,"sigma value " + m_Tools.getText(m_sigma));
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "sigma value " + m_Tools.getText(m_sigma));
 
 	for (int hl = 0, hr = m_rr; hl < niHeight; hl++, hr++)
 	{
@@ -441,4 +440,6 @@ int CVideoBeautificationer::Bilateral_Blur_Filter(unsigned char *pBlurConverting
 
 	return iLen;
 }
+
+
 
