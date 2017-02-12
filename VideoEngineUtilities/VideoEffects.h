@@ -18,7 +18,8 @@ public:
     int BlackAndWhiteColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
     int SapiaColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
     int WarmColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
-    int TintColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
+    int TintColorBlueEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
+    int TintColorPinkEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 
 private:
     
