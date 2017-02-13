@@ -579,7 +579,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					}
 
                     
-#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
+
                     int iHeight = this->m_pColorConverter->GetHeight();
                     int iWidth = this->m_pColorConverter->GetWidth();
                     
@@ -592,7 +593,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth);
                     
                     if(iScreenWidth == -1 || iScreenHeight == -1)
-                        m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+					    m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
                     else
                         m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nDevice_orientation);
                     

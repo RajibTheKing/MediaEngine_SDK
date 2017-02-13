@@ -1241,6 +1241,10 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
 {
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+
+	if (screenHeight == -1 || screenWidth == -1)
+		return 0;
+
     int YPlaneLength = inHeight*inWidth;
     int UPlaneLength = YPlaneLength >> 2;
     

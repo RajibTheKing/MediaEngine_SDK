@@ -36,9 +36,9 @@ m_HasPreviousValues(false)
     m_pLiveVideoDecodingQueue  = pLiveVideoDecodingQueue;
     llQueuePrevTime = 0;
     m_pVideoEffect = new CVideoEffects();
-    m_iEffectSelection = 0;
-    m_iNumberOfEffect = 6;
-    m_iNumberOfEffectedFrame = 0;
+    //m_iEffectSelection = 0;
+    //m_iNumberOfEffect = 6;
+    //m_iNumberOfEffectedFrame = 0;
 }
 
 CVideoDecodingThread::~CVideoDecodingThread()
@@ -47,6 +47,12 @@ CVideoDecodingThread::~CVideoDecodingThread()
 	{
 		delete m_pCalculatorDecodeTime;
 		m_pCalculatorDecodeTime = NULL;
+	}
+
+	if (NULL != m_pVideoEffect)
+	{
+		delete m_pVideoEffect;
+		m_pVideoEffect = NULL;
 	}
 }
 
@@ -525,61 +531,13 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 		}
         //TheKing-->Here
-        
+   
 	}
 
 	currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    /*
-    m_iNumberOfEffectedFrame++;
-    
-    if(m_iNumberOfEffectedFrame % 100 == 0)
-    {
-        m_iEffectSelection++;
-        m_iEffectSelection%=m_iNumberOfEffect;
-    }
-    
-    if(m_iEffectSelection == 0)
-        m_pVideoEffect->NegetiveColorEffect(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    else if(m_iEffectSelection == 1)
-        m_pVideoEffect->BlackAndWhiteColorEffect(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    else if(m_iEffectSelection == 2)
-        m_pVideoEffect->SapiaColorEffect(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    else if(m_iEffectSelection == 3)
-        m_pVideoEffect->WarmColorEffect(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    else if(m_iEffectSelection == 4)
-        m_pVideoEffect->TintColorBlueEffect(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    else if(m_iEffectSelection == 5)
-        m_pVideoEffect->TintColorPinkEffect(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    else
-    {
-        //Do Nothing
-    }
-    */
+
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
-    
-    int iHeight = this->m_pColorConverter->GetHeight();
-    int iWidth = this->m_pColorConverter->GetWidth();
-    
-    int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
-    int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
-    
-    int iCropedHeight = 0;
-    int iCropedWidth = 0;
-    
-    if(iScreenWidth == -1 || iScreenHeight == -1)
-    {
-        //Do Nothing
-    }
-    else
-    {
-        int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth);
-        memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
-        m_decodingHeight = iCropedHeight;
-        m_decodingWidth = iCropedWidth;
-        m_decodedFrameSize = iCroppedDataLen;
-    }
-    
     
 #elif defined(_DESKTOP_C_SHARP_)
 	//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
@@ -592,10 +550,38 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
     
-    
-    
-    
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)
 
+	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+	{
+		int iHeight = this->m_pColorConverter->GetHeight();
+		int iWidth = this->m_pColorConverter->GetWidth();
+
+		int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
+		int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
+
+		int iCropedHeight = 0;
+		int iCropedWidth = 0;
+
+		if (iScreenWidth == -1 || iScreenHeight == -1)
+		{
+			//Do Nothing
+		}
+		else
+		{
+			int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth);
+			memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
+			memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
+			m_decodingHeight = iCropedHeight;
+			m_decodingWidth = iCropedWidth;
+			m_decodedFrameSize = iCroppedDataLen;
+			m_previousDecodedFrameSize = iCroppedDataLen;
+			m_PreviousDecodingHeight = iCropedHeight;
+			m_PreviousDecodingWidth = iCropedWidth;
+		}
+	}
+
+#endif
      
     if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {

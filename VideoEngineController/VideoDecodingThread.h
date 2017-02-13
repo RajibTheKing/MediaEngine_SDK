@@ -110,9 +110,9 @@ private:
     long long llQueuePrevTime;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     CVideoEffects *m_pVideoEffect;
-    int m_iEffectSelection;
-    int m_iNumberOfEffect;
-    int m_iNumberOfEffectedFrame;
+    //int m_iEffectSelection;
+    //int m_iNumberOfEffect;
+    //int m_iNumberOfEffectedFrame;
     
     
     
