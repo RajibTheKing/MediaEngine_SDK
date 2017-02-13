@@ -7,7 +7,7 @@
 #define NV21 21
 #define NV12 12
 
-int m_sigma = 75;
+int m_sigma = 50;
 int m_radius = 5;
 int m_rr = (m_radius << 1) + 1;
 double m_pixels = m_rr * m_rr;
@@ -31,42 +31,10 @@ m_nBrightnessPrecision(0)
 	for(int y=1; y<= 255; y++)
 	{
 		double gray = y;
-		LOGE("fahad ----<><><> 1....  %d, %lf", y, gray);
-		//gray = gray + (gray - 128.0)*cv + 0.5;
 		double sqrt_value = sqrt(gray);
-		//double sqrt_vale
-
-		LOGE("fahad ----<><><> 1. sqrt_value... %d, %.15lf", y, sqrt_value);
-
-		double a = 0.89686516089772L;
-
-		LOGE("fahad ----<><><> 1 double a... %d, %.15lf", y, a);
-
-		double b = 0.003202159061032L*gray;
-
-		LOGE("fahad ----<><><> 1 double b ... %d, %.15lf", y, b);
-
-		double c = 0.044292372843353L*sqrt_value;
-
-		LOGE("fahad ----<><><> 1 double c... %d, %.15lf", y, c);
-
-		double d = (0.89686516089772L + 0.003202159061032L*gray - 0.044292372843353L*sqrt_value);
-
-		LOGE("fahad ----<><><> 1 double d ... %d, %.15lf", y, d);
-
 		gray = gray / (0.89686516089772L + 0.003202159061032L*gray - 0.044292372843353L*sqrt_value);
-
-
-
-		LOGE("fahad ----<><><> 2... %d, %.15lf", y, gray);
 		gray = gray<256.0L? gray:255.0L;
-
-		LOGE("fahad ----<><><> 3... %d, %.15lf", y, gray);
 		modifYUV[y] = gray;
-
-		LOGE("fahad ----<><><> 4... %d, %.15lf", y, modifYUV[y]);
-
-		//modifYUV[y];
 
 	}
 
@@ -221,25 +189,8 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 	}else if(m_AverageValue < 80)
 	{
 		m_nThresholdValue = 95;
-	}else if(m_AverageValue < 90)
-	{
+	}else{
 		m_nThresholdValue = 100;
-	}else if(m_AverageValue < 100)
-	{
-		m_nThresholdValue = 110;
-	}else if(m_AverageValue < 110){
-		m_nThresholdValue = 120;
-	}else if(m_AverageValue < 120){
-		m_nThresholdValue = 130;
-	}else if(m_AverageValue < 130){
-		m_nThresholdValue = 140;
-	}else if(m_AverageValue < 140){
-		m_nThresholdValue = 150;
-	}else if(m_AverageValue < 150){
-		m_nThresholdValue = 160;
-	}
-	else{
-		m_nThresholdValue = 150;
 	}
 
 	m_nPreviousAddValueForBrightening = (m_nThresholdValue - m_AverageValue);
