@@ -7,7 +7,7 @@
 #define NV21 21
 #define NV12 12
 
-int m_sigma = 100;
+int m_sigma = 75;
 int m_radius = 5;
 int m_rr = (m_radius << 1) + 1;
 double m_pixels = m_rr * m_rr;
@@ -160,22 +160,18 @@ void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *pixel)
 {
 	int iTotLen = m_nVideoWidth * m_nVideoHeight;
 	int iLen =  m_nVideoWidth * m_nVideoHeight;//(int)(modifData.length / 1.5);
-	//int totalYValue = 0;
+	int totalYValue = 0;
 	for(int i=0; i<iLen; i++)
 	{
-		/*if(IsSkinPixel( pixel[i], pixel[m_pUIndex[i]], pixel[m_pVIndex[i]] ))
-		{
-			pixel[i] = m_pBluredImage[i];
-		}*/
-		//totalYValue += yVal;
+		totalYValue += pixel[i];
 		MakePixelBright(&pixel[i]);
 	}
 
 
 
-	//int m_AverageValue = totalYValue / iLen;
+	int m_AverageValue = totalYValue / iLen;
 
-	//SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+	SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
 
 	//IncreaseTemperatureOfFrame(pixel, m_nVideoHeight, m_nVideoWidth, 4);
 
@@ -256,10 +252,13 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 
 void CVideoBeautificationer::MakePixelBright(unsigned char *pixel)
 {
-	*pixel = modifYUV[*pixel] - 20;//& 0xFF;
-	//int iPixelValue = *pixel + m_nPreviousAddValueForBrightening + m_nBrightnessPrecision;
-	//*pixel = getMin(iPixelValue, 255);
+	int iPixelValue = *pixel + m_nPreviousAddValueForBrightening + m_nBrightnessPrecision;
+	*pixel = getMin(iPixelValue, 255);
+}
 
+void CVideoBeautificationer::MakePixelBrightNew(unsigned char *pixel)
+{
+	*pixel = modifYUV[*pixel];//& 0xFF;
 }
 
 void CVideoBeautificationer::SetTemperatureThreshold(int nThreshold)

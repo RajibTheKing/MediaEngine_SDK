@@ -27,6 +27,7 @@ public:
 	void SetBrighteningValue(int m_AverageValue, int brightnessPrecision);
 
 	void MakePixelBright(unsigned char *pixel);
+	void MakePixelBrightNew(unsigned char *pixel);
 	void SetTemperatureThreshold(int nThreshold);
 	void IncreaseTemperatureOfPixel(unsigned char *pixel);
 	void StopBrightening();
