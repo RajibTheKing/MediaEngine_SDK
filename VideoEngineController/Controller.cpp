@@ -27,6 +27,9 @@ m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
+
+	m_nDeviceDisplayHeight = -1;
+	m_nDeviceDisplayWidth = -1;
 	
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
@@ -60,6 +63,9 @@ m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
+
+	m_nDeviceDisplayHeight = -1;
+	m_nDeviceDisplayWidth = -1;
 
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
