@@ -60,6 +60,9 @@ public:
     
     int GetSmallFrameWidth();
     int GetSmallFrameHeight();
+    
+    int GetScreenHeight();
+    int GetScreenWidth();
 
 	void ClearSmallScreen();
 
@@ -71,6 +74,8 @@ public:
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
 	int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
+    int CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth);
+    int Crop_YUVNV12(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth);
 
 private:
 
