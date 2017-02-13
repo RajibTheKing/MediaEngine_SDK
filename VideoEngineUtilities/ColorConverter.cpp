@@ -1238,7 +1238,7 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
     return iLen1;
 }
 
-int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
+int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
 {
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
 
@@ -1274,7 +1274,7 @@ int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHei
         newHeight = inHeight;
         diff = inWidth - newWidth;
         
-        Crop_YUVNV12(pData, inHeight, inWidth, diff,0,0,0, outputData, newHeight, newWidth);
+        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff,0,0,0, outputData, newHeight, newWidth);
         cout<<"First Block, Deleting Columns"<<endl;
         
     }
@@ -1287,7 +1287,7 @@ int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHei
         newWidth = inWidth;
         diff = inHeight - newHeight;
         
-        Crop_YUVNV12(pData, inHeight, inWidth, 0,0,diff,0, outputData, newHeight, newWidth);
+        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, 0,0,diff,0, outputData, newHeight, newWidth);
         cout<<"Second Block, Deleting Rows working"<<endl;
     }
     
@@ -1300,7 +1300,7 @@ int CColorConverter::CropWithAspectRatio_YUVNV12(unsigned char* pData, int inHei
     
 }
 
-int CColorConverter::Crop_YUVNV12(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
+int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
 {
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
     int YPlaneLength = inHeight*inWidth;
