@@ -1270,11 +1270,20 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, i
     {
         //We have to delete columns [reduce Width]
         newWidth = floor(inHeight / aspectRatio_Screen);
-        newWidth = newWidth - newWidth%2;
+        
+        int target = floor(inWidth * 0.85);
+        
+        if(newWidth < target)
+        {
+            newWidth = target;
+        }
+        
+        newWidth = newWidth - newWidth % 16;
         newHeight = inHeight;
         diff = inWidth - newWidth;
         
-        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff,0,0,0, outputData, newHeight, newWidth);
+        
+        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff/2,diff/2,0,0, outputData, newHeight, newWidth);
         cout<<"First Block, Deleting Columns"<<endl;
         
     }
