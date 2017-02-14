@@ -76,8 +76,8 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);
 
-	m_iDeviceHeight = iVideoHeight;
-	m_iDeviceWidth = iVideoWidth;
+    m_iDeviceHeight = 1920; //iVideoHeight;
+    m_iDeviceWidth = 1080; //iVideoWidth;
 
 	m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
@@ -1237,33 +1237,18 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
     
     return iLen1;
 }
-
-int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
+void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth)
 {
-    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
-
-	if (screenHeight == -1 || screenWidth == -1)
-		return 0;
-
-    int YPlaneLength = inHeight*inWidth;
-    int UPlaneLength = YPlaneLength >> 2;
-    
     float aspectRatio_Screen, aspectRatio_VideoData;
-    int indx = 0;
-    int newHeight, newWidth, diff;
     
-    aspectRatio_Screen = screenHeight * 1.0 / screenWidth;
+    aspectRatio_Screen = iScreenHeight * 1.0 / iScreenWidth;
     aspectRatio_VideoData = inHeight * 1.0 / inWidth;
-    
-    
-    //cout<<"Screen_Ratio = "<<aspectRatio_Screen<<", Video_Ratio = "<<aspectRatio_VideoData<<endl;
     
     if(fabs(aspectRatio_Screen - aspectRatio_VideoData) < 0.00001)
     {
         //Do Nothing
         newHeight = inHeight;
         newWidth = inWidth;
-        memcpy(outputData, pData, inHeight*inWidth*3/2);
         
     }
     else if(aspectRatio_Screen > aspectRatio_VideoData)
@@ -1280,27 +1265,57 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, i
         
         newWidth = newWidth - newWidth % 16;
         newHeight = inHeight;
-        diff = inWidth - newWidth;
-        
-        
-        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff/2,diff/2,0,0, outputData, newHeight, newWidth);
-        cout<<"First Block, Deleting Columns"<<endl;
-        
     }
     else
     {
         //We have to delete rows [Reduce Height]
-        
         newHeight = floor(inWidth * aspectRatio_Screen);
-        newHeight = newHeight - newHeight%2;
+        newHeight = newHeight - newHeight%4;
         newWidth = inWidth;
-        diff = inHeight - newHeight;
-        
-        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, 0,0,diff,0, outputData, newHeight, newWidth);
-        cout<<"Second Block, Deleting Rows working"<<endl;
     }
     
+}
+int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY)
+{
+    int newHeight, newWidth, diff_Height, diff_Width;
     
+    CalculateAspectRatioWithScreenAndModifyHeightWidth(inHeight, inWidth, m_iDeviceHeight, m_iDeviceWidth, newHeight, newWidth);
+    
+    diff_Width = inWidth - newWidth;
+    diff_Height = inHeight - newHeight;
+    
+    iPosX = inWidth - m_iSmallFrameWidth - diff_Width/2;
+    iPosY = inHeight - m_iSmallFrameHeight - CALL_IN_LIVE_INSET_LOWER_PADDING - diff_Height/2;
+
+    
+    //printf("TheKing--> H:W = %d:%d, nH:nW = %d:%d, iPosY:iPosX = %d:%d\n", inHeight, inWidth, newHeight, newWidth, iPosY, iPosX);
+    
+    return 1;
+}
+
+int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+
+	if (screenHeight == -1 || screenWidth == -1)
+		return 0;
+    
+    int newHeight, newWidth, diff_width, diff_height;
+    
+    CalculateAspectRatioWithScreenAndModifyHeightWidth(inHeight, inWidth, screenHeight, screenWidth, newHeight, newWidth);
+    
+    if(inHeight == newHeight && inWidth == newWidth)
+    {
+        //Do Nothing
+        memcpy(outputData, pData, inHeight*inWidth*3/2);
+    }
+    else
+    {
+        diff_width = inWidth - newWidth;
+        diff_height = inHeight - newHeight;
+        
+        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
+    }
     
     outHeight = newHeight;
     outWidth = newWidth;
@@ -1345,7 +1360,7 @@ int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, in
     
     outHeight = inHeight - startYDiff - endYDiff;
     outWidth = inWidth - startXDiff - endXDiff;
-    printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
+    //printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
     return outHeight*outWidth*3/2;
     
 }
