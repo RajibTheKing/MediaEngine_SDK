@@ -1256,7 +1256,7 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
         //We have to delete columns [reduce Width]
         newWidth = floor(inHeight / aspectRatio_Screen);
         
-        int target = floor(inWidth * 0.85);
+        int target = floor(inWidth * 0.82);
         
         if(newWidth < target)
         {

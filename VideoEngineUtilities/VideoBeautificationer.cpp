@@ -9,6 +9,7 @@
 
 int m_sigma = 50;
 int m_radius = 5;
+
 int m_rr = (m_radius << 1) + 1;
 double m_pixels = m_rr * m_rr;
 
@@ -34,8 +35,16 @@ m_nBrightnessPrecision(0)
 		double sqrt_value = sqrt(gray);
 		gray = gray / (0.89686516089772L + 0.003202159061032L*gray - 0.044292372843353L*sqrt_value);
 		gray = gray<256.0L? gray:255.0L;
-		modifYUV[y] = gray;
-
+        
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+        
+		modifYUV[y] = getMin(((unsigned char)1.1643*(gray-24)), 255);
+#else
+        
+        modifYUV[y] = gray;
+        
+#endif
+        
 	}
 
 
@@ -349,7 +358,7 @@ int CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingD
 
 		for (int j = 1; j <= iWidth; j++)
 		{
-			//MakePixelBright(&pBlurConvertingData[iw + j - 1]);
+			MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
 			cur_pixel = pBlurConvertingData[iw + j - 1];
 
 			tmp += cur_pixel;
@@ -367,7 +376,7 @@ int CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingD
 	int niWidth = iWidth - m_rr;
 	int iw = m_radius * iWidth + m_radius;
 
-	m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
+	//m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "sigma value " + m_Tools.getText(m_sigma));
 
