@@ -120,7 +120,7 @@ bool BitRateController::HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader)
 bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType)
 {
     crTempHeader.ShowDetails("HandleBitrateMiniPacket: ");
-	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
     {
 //    double __ratio = 100.00 * crTempHeader.getTimeStamp() * 8.00 /  m_pVideoEncoder->GetBitrate();
 //    string __Message = "------------------------> Video BitRate: "+Tools::IntegertoStringConvert(m_pVideoEncoder->GetBitrate())

@@ -59,7 +59,7 @@ m_nServiceType(nServiceType)
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
 
-	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 	{
 		m_bLiveAudioStreamRunning = true;
 		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
