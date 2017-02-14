@@ -304,7 +304,7 @@ void BitRateController::NotifyEncodedFrame(int &nrFrameSize)
             
             
             string sMsg = "SendingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(iRatioHelperIndex) + ", SendBytes = " + m_Tools.IntegertoStringConvert(m_nBytesSendInSlotInverval);
-            printf("%s\n", sMsg.c_str());
+            //printf("%s\n", sMsg.c_str());
 
             
             m_TimeDiffMapHelper[iRatioHelperIndex] =  m_Tools.CurrentTimestamp();
