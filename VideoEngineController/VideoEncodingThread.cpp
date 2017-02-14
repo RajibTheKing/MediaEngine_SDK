@@ -391,11 +391,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
 					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaEncodingFrame);
-					m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					pair<int,int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #else
 					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
-					m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					pair<int,int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
 				}
 

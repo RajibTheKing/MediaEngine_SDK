@@ -7,7 +7,7 @@
 #define NV21 21
 #define NV12 12
 
-int m_sigma = 50;
+int m_sigma = 30;
 int m_radius = 5;
 
 int m_rr = (m_radius << 1) + 1;
@@ -176,30 +176,33 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 {
 	if(m_AverageValue < 10)
 	{
-		m_nThresholdValue = 44;
+		m_nThresholdValue = 60;
+	}else if(m_AverageValue < 15)
+	{
+		m_nThresholdValue = 65;
 	}else if(m_AverageValue < 20)
 	{
-		m_nThresholdValue = 50;
+		m_nThresholdValue = 70;
 	}else if(m_AverageValue < 30)
 	{
-		m_nThresholdValue = 60;
+		m_nThresholdValue = 85;
 	}else if(m_AverageValue < 40)
 	{
-		m_nThresholdValue = 70;
+		m_nThresholdValue = 90;
 	}else if(m_AverageValue < 50)
 	{
-		m_nThresholdValue = 75;
+		m_nThresholdValue = 95;
 	}else if(m_AverageValue < 60)
 	{
-		m_nThresholdValue = 80;
+		m_nThresholdValue = 100;
 	}else if(m_AverageValue < 70)
 	{
-		m_nThresholdValue = 90;
+		m_nThresholdValue = 110;
 	}else if(m_AverageValue < 80)
 	{
-		m_nThresholdValue = 95;
+		m_nThresholdValue = 115;
 	}else{
-		m_nThresholdValue = 100;
+		m_nThresholdValue = 115;
 	}
 
 	m_nPreviousAddValueForBrightening = (m_nThresholdValue - m_AverageValue);
@@ -341,7 +344,7 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 	//return tcl;
 }
 
-int CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
+pair<int,int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
 {
 	for (int i = 0; i <= iHeight; i++) {
 		m_mean[i][0] = 0;
@@ -358,7 +361,12 @@ int CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingD
 
 		for (int j = 1; j <= iWidth; j++)
 		{
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
 			MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+
+#endif
 			cur_pixel = pBlurConvertingData[iw + j - 1];
 
 			tmp += cur_pixel;
@@ -397,7 +405,9 @@ int CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingD
 		iw += iWidth;
 	}
 
-	return iLen;
+
+	pair<int, int> result = {m_mean[iHeight][iWidth]/(iHeight*iWidth), m_variance[iHeight][iWidth]/(iHeight*iWidth)};
+	return result;
 }
 
 
