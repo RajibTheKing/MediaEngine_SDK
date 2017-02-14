@@ -17,6 +17,7 @@
 #include "VideoMuxingAndEncodeSession.h"
 
 using namespace std;
+//#define DISABLE_VIDEO_FOR_LIVE
 
 typedef struct 
 {
