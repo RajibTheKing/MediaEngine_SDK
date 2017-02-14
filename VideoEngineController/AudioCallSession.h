@@ -13,6 +13,7 @@
 #include "LogPrinter.h"
 #include "LiveAudioDecodingQueue.h"
 #include "LiveReceiver.h"
+#include "VideoSockets.h"
 
 #include <stdio.h>
 #include <string>
@@ -72,6 +73,7 @@ class CAudioCallSession
 {
 public:
 	int m_iNextPacketType;
+	CAudioByteBuffer m_AudioReceivedBuffer;
 public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
@@ -109,6 +111,7 @@ public:
 
 private:
 
+	VideoSockets *m_clientSocket;
 	int m_iRole;
     Tools m_Tools;
     LongLong m_FriendID;
@@ -123,7 +126,7 @@ private:
 
     CCommonElementsBucket* m_pCommonElementsBucket;
 	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
-	CAudioByteBuffer m_AudioReceivedBuffer;
+	
 
     std::vector<int> m_vRawFrameLength, m_vCompressedFrameLength;
 	bool m_bUsingLoudSpeaker;
@@ -186,6 +189,7 @@ private:
 
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
+	long long m_llTmpPreviousPacketRelativeTime;
 
 #ifdef AAC_ENABLED
 	CAac *m_cAac;
