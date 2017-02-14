@@ -7,7 +7,16 @@
 #define NV21 21
 #define NV12 12
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+int m_sigma = 50;
+
+#else
+
 int m_sigma = 30;
+
+#endif
+
 int m_radius = 5;
 
 int m_rr = (m_radius << 1) + 1;
