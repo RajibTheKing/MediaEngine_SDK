@@ -423,6 +423,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 	int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
+    m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -528,6 +529,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
+            m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 		}
         //TheKing-->Here

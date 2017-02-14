@@ -439,6 +439,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
+                    m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+
 					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY, iHeight, iWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
