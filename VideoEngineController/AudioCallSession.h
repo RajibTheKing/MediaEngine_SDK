@@ -261,7 +261,7 @@ private:
 	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
 	///////End Of Methods Called From DecodingThreadProcedure/////
-	void ReadFromFile(short &data, int length);
+	void ReadFromFile(short *data, int length);
 protected:
 
     SmartPointer<CLockHandler> m_pAudioCallSessionMutex;

@@ -1168,7 +1168,7 @@ void CAudioCallSession::DumpDecodedFrame()
 #endif
 }
 
-void CAudioCallSession::ReadFromFile(unsigned char *data, int length) {
+void CAudioCallSession::ReadFromFile(short *data, int length) {
 #ifdef __DUMP_FILE__
 	fread(data, 2, length, sourceAudioFileToSendToPlayer);
 #endif
@@ -1322,7 +1322,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
 
 			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-			// DumpDecodedFrame();
+			DumpDecodedFrame();
 			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
 
 			if (m_nDecodedFrameSize < 1)
