@@ -42,6 +42,7 @@ int iNDataInViewerQ = 0;
 FILE *FileInput;
 FILE *FileOutput;
 FILE *echoOutputFile;
+FILE *sourceAudioFileToSendToPlayer;
 #endif
 
 
@@ -143,6 +144,10 @@ m_llTmpPreviousPacketRelativeTime(-1)
 	m_clientSocket = VideoSockets::GetInstance();
 	m_clientSocket->SetAudioCallSession(this);
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
+
+#ifdef __DUMP_FILE__
+	sourceAudioFileToSendToPlayer = fopen("/sdcard/sourceAudio.pcm", "rb");
+#endif
 }
 
 CAudioCallSession::~CAudioCallSession()
@@ -212,6 +217,7 @@ CAudioCallSession::~CAudioCallSession()
 #ifdef __DUMP_FILE__
 	fclose(FileOutput);
 	fclose(FileInput);
+	fclose(sourceAudioFileToSendToPlayer);
 #endif
 
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
@@ -1162,6 +1168,12 @@ void CAudioCallSession::DumpDecodedFrame()
 #endif
 }
 
+void CAudioCallSession::ReadFromFile(unsigned char *data, int length) {
+#ifdef __DUMP_FILE__
+	fread(data, 2, length, sourceAudioFileToSendToPlayer);
+#endif
+}
+
 void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 	int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)
 {
@@ -1310,7 +1322,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
 
 			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-			DumpDecodedFrame();
+			// DumpDecodedFrame();
 			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
 
 			if (m_nDecodedFrameSize < 1)
