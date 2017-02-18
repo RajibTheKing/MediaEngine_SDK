@@ -357,7 +357,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 {
 #ifdef USE_AGC
-	if (!m_bLiveAudioStreamRunning)
+	//if (!m_bLiveAudioStreamRunning)
 	{
 		if (bRecorder)
 		{
@@ -529,7 +529,7 @@ void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int 
 
 bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 {
-	if (!m_bLiveAudioStreamRunning)
+	//if (!m_bLiveAudioStreamRunning)
 	{
 #ifdef USE_VAD			
 		if (!m_pVoice->HasVoice(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME))
@@ -1084,7 +1084,11 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 			LOGEF("Role %d, after decode", m_iRole);
 #else
 			m_nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
-#endif			
+#endif
+#ifdef USE_AGC
+			m_pRecorderGain->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize);
+			m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize);
+#endif
 		}
 		else 
 		{
@@ -1104,6 +1108,9 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
 				LOGEF("Role %d, no viewers in call", m_iRole);
 			}
+#ifdef USE_AGC
+			m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize);
+#endif
 		}
 	}
 }
