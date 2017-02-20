@@ -139,9 +139,9 @@ void CSendingThread::SendDataFromFile()
 
 	long long lFriendID = 200;
 //	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
-	std::string inFilePath = "sdcard/naac_file/chunks_2s/chunk.";
+	std::string inFilePath = "sdcard/test_files/chunks/chunk.";
 
-	LOG_AAC("=@@@@@@@@@--> Sending File to AAC.");
+	LOG_AAC("#aac#file# Sending File to AAC.");
 
 	unsigned char data[200000];
 
@@ -153,18 +153,19 @@ void CSendingThread::SendDataFromFile()
 	{
 		int totFileSize = -1;
 		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
-		LOG_AAC("=@@@@@@@@@--> FilePath: %s", filePath.c_str());
+		LOG_AAC("#aac#file# FilePath: %s", filePath.c_str());
 
 		FILE *fd = fopen(filePath.c_str(), "rb");
 
 		if (!fd){
-			LOG_AAC("=@@@@@@@@@--> file open failed");
+			LOG_AAC("#aac#file# file open failed");
 			return;
 		}
 
-		if (!fseek(fd, 0, SEEK_END)) {
+		if (!fseek(fd, 0, SEEK_END)) 
+		{
 			totFileSize = ftell(fd);
-			LOG_AAC("=@@@@@@@@@--> Reading from file: %lld", totFileSize);
+			LOG_AAC("#aac#file# Reading from file: %lld", totFileSize);
 		}
 
 		fseek(fd, 0, SEEK_SET);
@@ -174,7 +175,7 @@ void CSendingThread::SendDataFromFile()
 		fclose(fd);
 
 		chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(data);
-		LOG_AAC("=@@@@@@@@@--> chunk_duration: %lld", chunkDuration);
+		LOG_AAC("#aac#file# chunk_duration: %lld", chunkDuration);
 		curSleepTime = m_Tools.CurrentTimestamp();
 		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
 		lastSleepTime = m_Tools.CurrentTimestamp();

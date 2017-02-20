@@ -1008,7 +1008,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			{
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = " + m_Tools.getText(llCurrentFrameRelativeTime) + " DELAY = " + m_Tools.getText(llWaitingTime) + " currentTime = " + m_Tools.getText(llNow) + " iPacketNumber = " + m_Tools.getText(iPacketNumber));
 				//LOGE("##################################################################### dropping");
-				LOG_AAC("#@@@@@@@@@--> Frame not received timely: %d", llWaitingTime);
+				LOG_AAC("#aac# Frame not received timely: %d", llWaitingTime);
 				return false;
 			}
 
@@ -1097,9 +1097,9 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 				long long llNow = m_Tools.CurrentTimestamp();
 #ifdef AAC_ENABLED
 				m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
-				LOG_AAC("$@@@@@@@@@--> AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
+				LOG_AAC("#aac# AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
 #else
-				LOG_AAC("Continue for AudioChannelPacket!");
+				LOG_AAC("#aac# Continue for AudioChannelPacket!");
 #endif
 			}
 			else 
@@ -1163,7 +1163,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime)
 			SERVICE_TYPE_LIVE_STREAM,
 			m_nDecodedFrameSize,
 			m_saDecodedFrame);
-		LOG_AAC("@@@@@@@@@--> fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
+		LOG_AAC("#aac# fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
 	}
 	else
 	{
