@@ -51,6 +51,7 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int n
     if (m_nQueueSize == m_nQueueCapacity)
     {
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "checked time");
+		LOG_AAC("#aac#b4q# LiveVideoDecodingQueueOverflow, Couldn't push!!!");
 
         IncreamentIndex(m_iPopIndex);
     }

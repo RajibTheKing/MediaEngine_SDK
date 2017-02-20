@@ -170,7 +170,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 		if (bBroken && j == 0)	//If I frame is missing.
 		{
-			LOG_AAC("#aac# Missing iFrames: %d", frameSizes[0]);
+			LOG_AAC("#aac#b4q# Missing iFrames: %d", frameSizes[0]);
 			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frome broken j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
 
 			return;
@@ -229,7 +229,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 		tillIndex = endOfThisFrame + 1;
 	}
 
-	LOG_AAC("#aac# TotalVideoFrames: %d, PushedVideoFrames: %d, NumOfMissingVideoFrames: %d", numberOfFrames, (numberOfFrames-numOfMissingFrames), numOfMissingFrames);
+	LOG_AAC("#aac#b4q# TotalVideoFrames: %d, PushedVideoFrames: %d, NumOfMissingVideoFrames: %d", numberOfFrames, (numberOfFrames-numOfMissingFrames), numOfMissingFrames);
 	//    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
 }
 
@@ -238,7 +238,6 @@ int iExpectedPacketNumber = 0;
 
 void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks)
 {
-//	LOG_AAC("#aac# LiveReceiver::ProcessAudioStreamVector(), numberOfAudioFrames: %d\n", nNumberOfAudioFrames);
 
 	if (m_bIsRoleChanging)
 	{
@@ -325,6 +324,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
         m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
     }
 	m_bIsCurrentlyParsingAudioData = false;
-		LOG_AAC("#aac# TotalAudioFrames: %d, PushedAudioFrames: %d, NumOfMissingAudioFrames: %d", nNumberOfAudioFrames, (nNumberOfAudioFrames - numOfMissingFrames), numOfMissingFrames);
+	
+	LOG_AAC("#aac#b4q# TotalAudioFrames: %d, PushedAudioFrames: %d, NumOfMissingAudioFrames: %d", nNumberOfAudioFrames, (nNumberOfAudioFrames - numOfMissingFrames), numOfMissingFrames);
 }
 

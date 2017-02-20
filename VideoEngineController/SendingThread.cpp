@@ -143,7 +143,7 @@ void CSendingThread::SendDataFromFile()
 
 	LOG_AAC("#aac#file# Sending File to AAC.");
 
-	unsigned char data[200000];
+	unsigned char data[300000];
 
 	long long chunkDuration;
 	long long lastSleepTime, curSleepTime;
