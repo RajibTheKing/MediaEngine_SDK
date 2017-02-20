@@ -250,7 +250,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 	int iHeight = m_iVideoWidth;
 
 	int i = 0;
-	int totalYValue = 0;
+	//int totalYValue = 0;
 
 	for (int x = iWidth - 1; x >-1; --x)
 	{
@@ -259,15 +259,15 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 
 			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
 
-			totalYValue += (pData[i] & 0xFF);
-			m_VideoBeautificationer->MakePixelBright(&pData[i]);
+			//totalYValue += (pData[i] & 0xFF);
+			//m_VideoBeautificationer->MakePixelBright(&pData[i]);
 			i++;
 		}
 	}
 
-	int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
+	//int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
 
-	m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+	//m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
 
 	int halfWidth = iWidth >> 1;
 	int halfHeight = iHeight >> 1;
@@ -423,7 +423,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *
 
 	int i = 0;
 
-	int totalYValue = 0;
+	//int totalYValue = 0;
 
 	for (int x = 0; x < iWidth; x++)
 	{
@@ -431,16 +431,16 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *
 		{
 			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
 
-			totalYValue += (pData[i] & 0xFF);
-			m_VideoBeautificationer->MakePixelBright(&pData[i]);
+			//totalYValue += (pData[i] & 0xFF);
+			//m_VideoBeautificationer->MakePixelBright(&pData[i]);
 
 			i++;
 		}
 	}
 
-	int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
+	//int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
 
-	m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+	//m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
 
 	int halfWidth = iWidth / 2;
 	int halfHeight = iHeight / 2;
