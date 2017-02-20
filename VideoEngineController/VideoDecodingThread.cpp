@@ -249,6 +249,11 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
 
 					//while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
+
+					if (videoHeaderObject.getTimeStamp() < (currentTime - llExpectedTimeOffset)){
+						LOG_AAC("#aac#aqv# VideoFrameReceivedAfterTime: %lld", videoHeaderObject.getTimeStamp() - (currentTime - llExpectedTimeOffset));
+					}
+
                     while(videoHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
 					{
 						toolsObject.SOSleep(1);

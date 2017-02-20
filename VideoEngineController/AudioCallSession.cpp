@@ -1096,8 +1096,12 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 			{
 				long long llNow = m_Tools.CurrentTimestamp();
 #ifdef AAC_ENABLED
-				m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
-				LOG_AAC("#aac#aqa# AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
+				if (m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize) == false)	{
+					LOG_AAC("#aac#aqa# Couldn't Decode!!!");
+				}
+				else{
+//					LOG_AAC("#aac#aqa# AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
+				}
 #else
 				LOG_AAC("#aac#aqa# Continue for AudioChannelPacket!");
 #endif
