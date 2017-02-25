@@ -196,7 +196,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 			if (m_bIsCheckCall == LIVE_CALL_MOOD)
             {
-                if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
                 {
 //                    pRenderingFps->CalculateFPS("RenderingFPS--> ");
 //                    long long nowCurrentTimeStampDiff = m_Tools.CurrentTimestamp() - llPrevTimeStamp;

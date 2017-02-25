@@ -27,6 +27,9 @@ m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
+
+	m_nDeviceDisplayHeight = -1;
+	m_nDeviceDisplayWidth = -1;
 	
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
@@ -60,6 +63,9 @@ m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
+
+	m_nDeviceDisplayHeight = -1;
+	m_nDeviceDisplayWidth = -1;
 
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
@@ -616,20 +622,31 @@ int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, in
 	}
 }
 
-int CController::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)
+int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 {
 	CVideoCallSession* pVideoSession;
 
-	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
 
 	if (bExist)
 	{
-		return pVideoSession->SetDeviceHeightWidth(lFriendID, height, width);
+		return pVideoSession->SetVideoEffect(nEffectStatus);
 	}
 	else
 	{
 		return -1;
 	}
+}
+
+
+int CController::SetDeviceDisplayHeightWidth(int height, int width)
+{
+	Locker lock(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
+
+	m_nDeviceDisplayHeight = height;
+	m_nDeviceDisplayWidth = width;
+	return 1;
 }
 
 int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
@@ -1080,6 +1097,16 @@ bool CController::IsCallInLiveEnabled()
 void CController::SetCallInLiveEnabled(bool value)
 {
 	this->m_bCallInLiveEnabled = value;
+}
+
+int CController::GetDeviceDisplayHeight()
+{
+	return m_nDeviceDisplayHeight;
+}
+
+int CController::GetDeviceDisplayWidth()
+{
+	return m_nDeviceDisplayWidth;
 }
 
 

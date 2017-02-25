@@ -59,7 +59,7 @@ m_nServiceType(nServiceType)
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
 
-	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 	{
 		m_bLiveAudioStreamRunning = true;
 		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
@@ -238,7 +238,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
 #ifdef USE_AECM
-	m_bEchoCancellerEnabled = bOn;
+	m_bEchoCancellerEnabled = /*bOn*/ true;
 #endif
 }
 
@@ -359,7 +359,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 {
 #ifdef USE_AGC
-	if (!m_bLiveAudioStreamRunning)
+	//if (!m_bLiveAudioStreamRunning)
 	{
 		if (bRecorder)
 		{
@@ -531,7 +531,7 @@ void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int 
 
 bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 {
-	if (!m_bLiveAudioStreamRunning)
+	//if (!m_bLiveAudioStreamRunning)
 	{
 #ifdef USE_VAD			
 		if (!m_pVoice->HasVoice(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME))
@@ -750,9 +750,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 #ifdef __DUMP_FILE__
-	FileInput = fopen("/storage/emulated/0/InputPCMN.pcm", "w");
-	//FileInput = fopen("/stcard/emulated/0/InputPCM.pcm", "w");
-	echoOutputFile = fopen("/storage/emulated/0/InputPCMN_WITH_ECHO.pcm", "w");
+	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
+	echoOutputFile = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
@@ -1004,7 +1003,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			{
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = " + m_Tools.getText(llCurrentFrameRelativeTime) + " DELAY = " + m_Tools.getText(llWaitingTime) + " currentTime = " + m_Tools.getText(llNow) + " iPacketNumber = " + m_Tools.getText(iPacketNumber));
 				//LOGE("##################################################################### dropping");
-				LOG_AAC("#@@@@@@@@@--> Frame not received timely: %d", llWaitingTime);
+				LOG_AAC("#aac#aqa# Frame not received timely: %d", llWaitingTime);
 				return false;
 			}
 
@@ -1138,7 +1137,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime)
 			SERVICE_TYPE_LIVE_STREAM,
 			m_nDecodedFrameSize,
 			m_saDecodedFrame);
-		LOG_AAC("@@@@@@@@@--> fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
+//		LOG_AAC("#aac#aqa# fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
 	}
 	else
 	{
@@ -1164,7 +1163,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 	int nCurrentPacketHeaderLength = 0;
 
 #ifdef __DUMP_FILE__
-	FileOutput = fopen("/storage/emulated/0/OutputPCMN.pcm", "w");
+	FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
 #endif
 
 	long long llLastTime = -1, llDiffTimeNow = -1;

@@ -161,6 +161,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/Aac.cpp \
 			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
 			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+			../../../videoengine/VideoEngineUtilities/VideoEffects.cpp \
 
 			
 

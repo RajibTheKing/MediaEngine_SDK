@@ -44,7 +44,7 @@ m_bResetForViewerCallerCallEnd(false)
 {
 	m_pVideoCallSession = pVideoCallSession;
     
-    if(pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+	if (pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
     {
         llPrevTime = -1;
         m_iDataToSendIndex = 0;
@@ -139,11 +139,11 @@ void CSendingThread::SendDataFromFile()
 
 	long long lFriendID = 200;
 //	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
-	std::string inFilePath = "sdcard/naac_file/chunks_2s/chunk.";
+	std::string inFilePath = "sdcard/test_files/chunks/chunk.";
 
-	LOG_AAC("=@@@@@@@@@--> Sending File to AAC.");
+	LOG_AAC("#aac#file# Sending File to AAC.");
 
-	unsigned char data[200000];
+	unsigned char data[300000];
 
 	long long chunkDuration;
 	long long lastSleepTime, curSleepTime;
@@ -153,18 +153,19 @@ void CSendingThread::SendDataFromFile()
 	{
 		int totFileSize = -1;
 		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
-		LOG_AAC("=@@@@@@@@@--> FilePath: %s", filePath.c_str());
+		LOG_AAC("#aac#file# FilePath: %s", filePath.c_str());
 
 		FILE *fd = fopen(filePath.c_str(), "rb");
 
 		if (!fd){
-			LOG_AAC("=@@@@@@@@@--> file open failed");
+			LOG_AAC("#aac#file# file open failed");
 			return;
 		}
 
-		if (!fseek(fd, 0, SEEK_END)) {
+		if (!fseek(fd, 0, SEEK_END)) 
+		{
 			totFileSize = ftell(fd);
-			LOG_AAC("=@@@@@@@@@--> Reading from file: %lld", totFileSize);
+			LOG_AAC("#aac#file# Reading from file: %lld", totFileSize);
 		}
 
 		fseek(fd, 0, SEEK_SET);
@@ -174,7 +175,7 @@ void CSendingThread::SendDataFromFile()
 		fclose(fd);
 
 		chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(data);
-		LOG_AAC("=@@@@@@@@@--> chunk_duration: %lld", chunkDuration);
+		LOG_AAC("#aac#file# chunk_duration: %lld", chunkDuration);
 		curSleepTime = m_Tools.CurrentTimestamp();
 		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
 		lastSleepTime = m_Tools.CurrentTimestamp();
@@ -258,7 +259,7 @@ void CSendingThread::SendingThreadProcedure()
             
             //printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
             
-			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_VIEWER_CALLEE )
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_VIEWER_CALLEE)
             {
 
 			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld", lFriendID);
@@ -310,6 +311,11 @@ void CSendingThread::SendingThreadProcedure()
 				m_Tools.SetMediaUnitVersionInMediaChunck(0, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
+				
+#ifdef DISABLE_VIDEO_FOR_LIVE
+				m_iDataToSendIndex = 0;
+#endif
+
 				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
 
 				int tempILen = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
@@ -328,17 +334,21 @@ void CSendingThread::SendingThreadProcedure()
 //					LLG("#IV#S#     AudiData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(vAudioDataLengthVector[i]));
 					index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
 				}
-
+#ifdef DISABLE_VIDEO_FOR_LIVE
+				numberOfVideoPackets = 0;
+#endif
 				m_Tools.SetNumberOfVideoFramesInMediaChunck(index, numberOfVideoPackets, m_AudioVideoDataToSend);
 
 				index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
-
+				
+#ifndef DISABLE_VIDEO_FOR_LIVE
 				for (int i = 0; i < numberOfVideoPackets; i++)
 				{
 					m_Tools.SetNextAudioFramePositionInMediaChunck(index, videoPacketSizes[i], m_AudioVideoDataToSend);
 //					LLG("#IV#S#     VideoData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(videoPacketSizes[i]));
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
+#endif
 
 #ifndef NEW_HEADER_FORMAT
 
@@ -349,7 +359,9 @@ void CSendingThread::SendingThreadProcedure()
 
 #endif
 
+#ifndef DISABLE_VIDEO_FOR_LIVE
 				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
+#endif
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
 
 				int tempILen2 = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
@@ -532,7 +544,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
 
-			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 			{
 				m_EncodedFrame[2 + 3] = signal;
 			}
@@ -609,7 +621,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 
 #ifndef NO_CONNECTIVITY
 
-				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 				{
 					m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_CALL_VIDEO, m_EncodedFrame, packetSize, 0);
 				}

@@ -21,6 +21,8 @@
 #define SERVICE_TYPE_LIVE_STREAM 12
 #define SERVICE_TYPE_SELF_STREAM 14
 
+#define SERVICE_TYPE_CHANNEL 16
+
 #define ENTITY_TYPE_PUBLISHER 31
 #define ENTITY_TYPE_VIEWER 32
 #define ENTITY_TYPE_VIEWER_CALLEE 2
@@ -61,7 +63,10 @@ public:
 	int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 	int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType = 0, int device_orientation = 0);
 	int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
-	int SetDeviceHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
+	int SetDeviceDisplayHeightWidth(int nVideoHeight, int nVideoWidth);
+
+	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
+
 	int SetBitRate(const IPVLongType llFriendID, int nBitRate);
 
 	int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);

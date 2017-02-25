@@ -7,6 +7,21 @@
 #define NV21 21
 #define NV12 12
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+int m_sigma = 50;
+
+#else
+
+int m_sigma = 30;
+
+#endif
+
+int m_radius = 5;
+
+int m_rr = (m_radius << 1) + 1;
+double m_pixels = m_rr * m_rr;
+
 #define getMin(a,b) a<b?a:b
 #define getMax(a,b) a>b?a:b
 
@@ -21,8 +36,33 @@ m_nBrightnessPrecision(0)
 
 	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
 
+	string str = "";
+
+	for(int y=1; y<= 255; y++)
+	{
+		double gray = y;
+		double sqrt_value = sqrt(gray);
+		gray = gray / (0.89686516089772L + 0.003202159061032L*gray - 0.044292372843353L*sqrt_value);
+		gray = gray<256.0L? gray:255.0L;
+        
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+        
+		modifYUV[y] = getMin(((unsigned char)1.1643*(gray-24)), 255);
+#else
+        
+        modifYUV[y] = gray;
+        
+#endif
+        
+	}
+
 
 	boxesForGauss(1, 3);
+
+	for (int i = 0; i < 256; i++)
+	{
+		m_square[i] = i*i;
+	}
 }
 
 CVideoBeautificationer::~CVideoBeautificationer()
@@ -91,11 +131,6 @@ void CVideoBeautificationer::GenerateUVIndex( int iVideoHeight, int iVideoWidth,
 	}
 }
 
-void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, unsigned char *convertedData)
-{
-
-}
-
 void CVideoBeautificationer::MakeFrameBlur(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
 
@@ -107,35 +142,35 @@ void CVideoBeautificationer::MakeFrameBlurAndStore(unsigned char *convertingData
 	//memcpy(convertingData,  m_pBluredImage, iVideoHeight*iVideoWidth );
 }
 
-bool CVideoBeautificationer::IsSkinPixel(unsigned char *pixel)
+void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *pixel)
 {
 	int iTotLen = m_nVideoWidth * m_nVideoHeight;
 	int iLen =  m_nVideoWidth * m_nVideoHeight;//(int)(modifData.length / 1.5);
-	//int totalYValue = 0;
+	int totalYValue = 0;
 	for(int i=0; i<iLen; i++)
 	{
-		int yVal = pixel[i]  & 0xFF;
-		int uVal = pixel[m_pUIndex[i]] & 0xFF;
-		int vVal = pixel[m_pVIndex[i]] & 0xFF;
-
-		if( (uVal > 94 && uVal < 126) && (vVal > 134 && vVal < 176)  )
-		{
-			pixel[i] = m_pBluredImage[i];
-		}
-
-		//totalYValue += yVal;
-		//MakePixelBright(&pixel[i]);
+		totalYValue += pixel[i];
+		MakePixelBright(&pixel[i]);
 	}
 
 
 
-	//int m_AverageValue = totalYValue / iLen;
+	int m_AverageValue = totalYValue / iLen;
 
-	//SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+	SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
 
-	IncreaseTemperatureOfFrame(pixel, m_nVideoHeight, m_nVideoWidth, 4);
+	//IncreaseTemperatureOfFrame(pixel, m_nVideoHeight, m_nVideoWidth, 4);
 
-	return true;
+}
+
+bool CVideoBeautificationer::IsSkinPixel(unsigned char YPixel, unsigned char UPixel, unsigned char VPixel)
+{
+	if( (UPixel > 94 && UPixel < 126) && (VPixel > 134 && VPixel < 176)  )
+	{
+			return true;
+	}
+
+	return false;
 }
 
 void CVideoBeautificationer::StartBrightening(int iVideoHeight, int iVideoWidth, int nPrecision)
@@ -150,40 +185,33 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 {
 	if(m_AverageValue < 10)
 	{
-		m_nThresholdValue = 44;
+		m_nThresholdValue = 60;
+	}else if(m_AverageValue < 15)
+	{
+		m_nThresholdValue = 65;
 	}else if(m_AverageValue < 20)
 	{
-		m_nThresholdValue = 50;
+		m_nThresholdValue = 70;
 	}else if(m_AverageValue < 30)
 	{
-		m_nThresholdValue = 60;
+		m_nThresholdValue = 85;
 	}else if(m_AverageValue < 40)
 	{
-		m_nThresholdValue = 70;
+		m_nThresholdValue = 90;
 	}else if(m_AverageValue < 50)
 	{
-		m_nThresholdValue = 75;
+		m_nThresholdValue = 95;
 	}else if(m_AverageValue < 60)
 	{
-		m_nThresholdValue = 80;
+		m_nThresholdValue = 100;
 	}else if(m_AverageValue < 70)
 	{
-		m_nThresholdValue = 90;
+		m_nThresholdValue = 110;
 	}else if(m_AverageValue < 80)
 	{
-		m_nThresholdValue = 95;
-	}else if(m_AverageValue < 90)
-	{
-		m_nThresholdValue = 100;
-	}else if(m_AverageValue < 100)
-	{
-		m_nThresholdValue = 110;
-	}else if(m_AverageValue < 110){
 		m_nThresholdValue = 115;
-	}else if(m_AverageValue < 120){
-		m_nThresholdValue = 125;
 	}else{
-		m_nThresholdValue = 100;
+		m_nThresholdValue = 115;
 	}
 
 	m_nPreviousAddValueForBrightening = (m_nThresholdValue - m_AverageValue);
@@ -198,7 +226,11 @@ void CVideoBeautificationer::MakePixelBright(unsigned char *pixel)
 {
 	int iPixelValue = *pixel + m_nPreviousAddValueForBrightening + m_nBrightnessPrecision;
 	*pixel = getMin(iPixelValue, 255);
+}
 
+void CVideoBeautificationer::MakePixelBrightNew(unsigned char *pixel)
+{
+	*pixel = modifYUV[*pixel];//& 0xFF;
 }
 
 void CVideoBeautificationer::SetTemperatureThreshold(int nThreshold)
@@ -320,3 +352,87 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 	}
 	//return tcl;
 }
+
+pair<int,int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
+{
+	for (int i = 0; i <= iHeight; i++) {
+		m_mean[i][0] = 0;
+		m_variance[i][0] = 0;
+	}
+	memset(m_mean, iWidth, 0);
+	memset(m_variance, iWidth, 0);
+
+	int cur_pixel, tmp, tmp2;
+
+#if defined(__ANDROID__)
+	int totalYValue = 0;
+	int yLen =  iWidth * iHeight;
+#endif
+
+	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+	{
+		tmp = 0, tmp2 = 0;
+		m_mean[i][0] = 0;
+
+		for (int j = 1; j <= iWidth; j++)
+		{
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+			MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+
+#elif defined(__ANDROID__)
+
+			totalYValue += pBlurConvertingData[iw + j - 1];
+			MakePixelBright(&pBlurConvertingData[iw + j - 1]);
+
+#endif
+			cur_pixel = pBlurConvertingData[iw + j - 1];
+
+			tmp += cur_pixel;
+			m_mean[i][j] = tmp + m_mean[i - 1][j];
+
+			tmp2 += m_square[cur_pixel];
+			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
+
+			//pBlurConvertingData[m_pUIndex[iw + j - 1]] += 1;
+			//pBlurConvertingData[m_pVIndex[iw + j - 1]] -= 1;
+		}
+	}
+#if defined(__ANDROID__)
+	int m_AverageValue = totalYValue / yLen;
+	SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+#endif
+
+	int niHeight = iHeight - m_rr;
+	int niWidth = iWidth - m_rr;
+	int iw = m_radius * iWidth + m_radius;
+
+	//m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "sigma value " + m_Tools.getText(m_sigma));
+
+	for (int hl = 0, hr = m_rr; hl < niHeight; hl++, hr++)
+	{
+		for (int wl = 0, wr = m_rr; wl < niWidth; wl++, wr++)
+		{
+			int miu = m_mean[hl][wl] + m_mean[hr][wr] - m_mean[hl][wr] - m_mean[hr][wl];
+			int viu = m_variance[hl][wl] + m_variance[hr][wr] - m_variance[hl][wr] - m_variance[hr][wl];
+
+			double men = miu / m_pixels;
+			double var = (viu - (miu * men)) / m_pixels;
+
+			pBlurConvertingData[iw + wl] = (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma);
+
+		}
+
+		iw += iWidth;
+	}
+
+
+	pair<int, int> result = {m_mean[iHeight][iWidth]/(iHeight*iWidth), m_variance[iHeight][iWidth]/(iHeight*iWidth)};
+	return result;
+}
+
+
+

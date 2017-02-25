@@ -18,6 +18,11 @@ typedef long long LongLong;
 #include <unistd.h>
 #endif
 
+#define NON_IDR_SLICE 1
+#define IDR_SLICE 5
+#define SPS_DATA 7
+#define PPS_DATA 8
+
 class Tools;
 
 using namespace std;
@@ -42,6 +47,7 @@ public:
     
     static int StringToIntegerConvert(std::string strConvertingString);
 	static std::string LongLongToString(LongLong llConvertingValue);
+    static int GetEncodedFrameType(unsigned char *pFrame);
 
 	void WriteToFile(short* saDataToWriteToFile, int nLength);
 	void WriteToFile(unsigned char* ucaDataToWriteToFile, int nLength);

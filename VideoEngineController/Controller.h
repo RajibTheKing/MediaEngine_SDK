@@ -17,6 +17,7 @@
 #include "VideoMuxingAndEncodeSession.h"
 
 using namespace std;
+//#define DISABLE_VIDEO_FOR_LIVE
 
 typedef struct 
 {
@@ -50,11 +51,13 @@ public:
 	int CancelAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
 	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
-	int SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width);
+	int SetDeviceDisplayHeightWidth(int height, int width);
 	int SetBitRate(const LongLong& lFriendID, int bitRate);
 
     int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
     int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
+
+	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
 
 	void InterruptOccured(const LongLong lFriendID);
 	void InterruptOver(const LongLong lFriendID);
@@ -95,6 +98,9 @@ public:
 	bool IsCallInLiveEnabled();
 	void SetCallInLiveEnabled(bool value);
 
+	int GetDeviceDisplayHeight();
+	int GetDeviceDisplayWidth();
+
 	int m_nDeviceStrongness;
 	int m_nMemoryEnoughness;
 	int m_nEDVideoSupportablity;
@@ -109,9 +115,13 @@ public:
 
 	CCommonElementsBucket *m_pCommonElementsBucket;
 	long long m_llLastTimeStamp;
+
 private:
 
 	CEventNotifier m_EventNotifier;
+
+	int m_nDeviceDisplayHeight;
+	int m_nDeviceDisplayWidth;
 
 	int iLoggerPrintLevel;
 	std::string logFilePath;

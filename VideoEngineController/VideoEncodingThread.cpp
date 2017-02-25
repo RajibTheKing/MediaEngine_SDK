@@ -26,7 +26,8 @@ m_FpsCounter(0),
 m_nCallFPS(nFPS),
 m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket),
-m_bResetForViewerCallerCallEnd(false)
+m_bResetForViewerCallerCallEnd(false),
+m_bVideoEffectEnabled(true)
 
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
@@ -181,6 +182,15 @@ void CVideoEncodingThread::SetNotifierFlag(bool flag)
 void CVideoEncodingThread::SetFrameNumber(int nFrameNumber)
 {
     m_iFrameNumber = nFrameNumber;
+}
+
+int CVideoEncodingThread::SetVideoEffect(int nEffectStatus)
+{
+	if (nEffectStatus == 1)
+		m_bVideoEffectEnabled = true;
+	else if (nEffectStatus == 0)
+		m_bVideoEffectEnabled = false;
+	return 1;
 }
 
 long long g_PrevEncodeTime = 0;
@@ -369,19 +379,26 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 }
             }*/
 
-			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 			{
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
 
+				if (m_bVideoEffectEnabled == true)
+				{
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
-				m_VideoBeautificationer->IsSkinPixel(m_ucaEncodingFrame);
+					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
+					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaEncodingFrame);
+					pair<int,int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #else
-				m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
-				m_VideoBeautificationer->IsSkinPixel(m_ucaConvertedEncodingFrame);
+					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+					pair<int,int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
+				}
 
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 				{
@@ -423,6 +440,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
+                    m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+
 					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY, iHeight, iWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -432,6 +451,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					this->m_pColorConverter->Merge_Two_Video(m_ucaConvertedEncodingFrame, iPosX, iPosY, iHeight, iWidth);
 #endif
 				}
+                
 			}
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
@@ -452,13 +472,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 			long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-
 			if (m_bIsCheckCall)
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
 			else
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
 			//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
+
+
 
 			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
 			sumOfEncodingTimediff += timeDiff;
@@ -514,7 +535,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			{
 				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
 
-				if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
+				if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
 				{
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -559,6 +580,27 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
 						m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
 					}
+
+                    
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
+
+                    int iHeight = this->m_pColorConverter->GetHeight();
+                    int iWidth = this->m_pColorConverter->GetWidth();
+                    
+                    int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
+                    int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
+                    
+                    int iCropedHeight = 0;
+                    int iCropedWidth = 0;
+                    
+                    int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth);
+                    //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
+                    
+                    if(iScreenWidth == -1 || iScreenHeight == -1)
+					    m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+                    else
+                        m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nDevice_orientation);
+                    
 #else
 					m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
 #endif

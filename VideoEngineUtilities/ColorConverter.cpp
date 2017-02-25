@@ -1,7 +1,7 @@
 
 #include "ColorConverter.h"
 #include "../VideoEngineController/LogPrinter.h"
-
+#include <math.h>
 
 #if defined(__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_WINDOWS_PHONE)
 typedef unsigned char byte;
@@ -29,6 +29,8 @@ m_bMergingSmallFrameEnabled(false)
     if(m_iSmallFrameHeight%2) m_iSmallFrameHeight--;
     if(m_iSmallFrameWidth%2) m_iSmallFrameWidth--;
     
+    m_iDeviceHeight = -1;
+    m_iDeviceWidth = -1;
     
 	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
 
@@ -74,8 +76,8 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);
 
-	m_iDeviceHeight = iVideoHeight;
-	m_iDeviceWidth = iVideoWidth;
+    m_iDeviceHeight = 1920; //iVideoHeight;
+    m_iDeviceWidth = 1080; //iVideoWidth;
 
 	m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
@@ -248,7 +250,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 	int iHeight = m_iVideoWidth;
 
 	int i = 0;
-	int totalYValue = 0;
+	//int totalYValue = 0;
 
 	for (int x = iWidth - 1; x >-1; --x)
 	{
@@ -257,15 +259,15 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 
 			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
 
-			totalYValue += (pData[i] & 0xFF);
-			m_VideoBeautificationer->MakePixelBright(&pData[i]);
+			//totalYValue += (pData[i] & 0xFF);
+			//m_VideoBeautificationer->MakePixelBright(&pData[i]);
 			i++;
 		}
 	}
 
-	int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
+	//int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
 
-	m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+	//m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
 
 	int halfWidth = iWidth >> 1;
 	int halfHeight = iHeight >> 1;
@@ -421,7 +423,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *
 
 	int i = 0;
 
-	int totalYValue = 0;
+	//int totalYValue = 0;
 
 	for (int x = 0; x < iWidth; x++)
 	{
@@ -429,16 +431,16 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *
 		{
 			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
 
-			totalYValue += (pData[i] & 0xFF);
-			m_VideoBeautificationer->MakePixelBright(&pData[i]);
+			//totalYValue += (pData[i] & 0xFF);
+			//m_VideoBeautificationer->MakePixelBright(&pData[i]);
 
 			i++;
 		}
 	}
 
-	int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
+	//int m_AverageValue = totalYValue / m_Multiplication[iHeight][iWidth];
 
-	m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+	//m_VideoBeautificationer->SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
 
 	int halfWidth = iWidth / 2;
 	int halfHeight = iHeight / 2;
@@ -1165,12 +1167,31 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
 void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength)
 {
 	Locker lock(*m_pColorConverterMutex);
-
 	//int iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
 	//memcpy(smallFrame, m_pSmallFrame, iLen);
 	//iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
     
     int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
+    int iNewHeight, iNewWidth, diff_width, diff_height;
+    
+    CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, m_iDeviceHeight, m_iDeviceWidth, iNewHeight, iNewWidth);
+    
+    if(iHeight == iNewHeight && iWidth == iNewWidth)
+    {
+        //Do Nothing
+    }
+    else
+    {
+        memcpy(smallFrame, m_pSmallFrame, iHeight * iWidth * 3 / 2);
+        
+        diff_width = iWidth - iNewWidth;
+        diff_height = iHeight - iNewHeight;
+        Crop_YUV420(smallFrame, iHeight, iWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, m_pSmallFrame, iNewHeight, iNewWidth);
+    }
+    
+    iHeight = iNewHeight;
+    iWidth = iNewWidth;
+    
     m_iSmallFrameHeight = iHeight;
     m_iSmallFrameWidth = iWidth;
 
@@ -1235,8 +1256,178 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
     
     return iLen1;
 }
+void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth)
+{
+    float aspectRatio_Screen, aspectRatio_VideoData;
+    
+    aspectRatio_Screen = iScreenHeight * 1.0 / iScreenWidth;
+    aspectRatio_VideoData = inHeight * 1.0 / inWidth;
+    
+    if(fabs(aspectRatio_Screen - aspectRatio_VideoData) < 0.00001)
+    {
+        //Do Nothing
+        newHeight = inHeight;
+        newWidth = inWidth;
+        
+    }
+    else if(aspectRatio_Screen > aspectRatio_VideoData)
+    {
+        //We have to delete columns [reduce Width]
+        newWidth = floor(inHeight / aspectRatio_Screen);
+        
+        int target = floor(inWidth * 0.82);
+        
+        if(newWidth < target)
+        {
+            newWidth = target;
+        }
+        
+        newWidth = newWidth - newWidth % 4;
+        newHeight = inHeight;
+    }
+    else
+    {
+        //We have to delete rows [Reduce Height]
+        newHeight = floor(inWidth * aspectRatio_Screen);
+        newHeight = newHeight - newHeight%4;
+        newWidth = inWidth;
+    }
+    
+}
+int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY)
+{
+    int newHeight, newWidth, diff_Height, diff_Width;
+    
+    CalculateAspectRatioWithScreenAndModifyHeightWidth(inHeight, inWidth, m_iDeviceHeight, m_iDeviceWidth, newHeight, newWidth);
+    
+    diff_Width = inWidth - newWidth;
+    diff_Height = inHeight - newHeight;
+    
+    iPosX = inWidth - m_iSmallFrameWidth - diff_Width/2;
+    iPosY = inHeight - m_iSmallFrameHeight - CALL_IN_LIVE_INSET_LOWER_PADDING - diff_Height/2;
 
+    
+    //printf("TheKing--> H:W = %d:%d, nH:nW = %d:%d, iPosY:iPosX = %d:%d\n", inHeight, inWidth, newHeight, newWidth, iPosY, iPosX);
+    
+    return 1;
+}
 
+int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+
+	if (screenHeight == -1 || screenWidth == -1)
+		return 0;
+    
+    int newHeight, newWidth, diff_width, diff_height;
+    
+    CalculateAspectRatioWithScreenAndModifyHeightWidth(inHeight, inWidth, screenHeight, screenWidth, newHeight, newWidth);
+    
+    if(inHeight == newHeight && inWidth == newWidth)
+    {
+        //Do Nothing
+        memcpy(outputData, pData, inHeight*inWidth*3/2);
+    }
+    else
+    {
+        diff_width = inWidth - newWidth;
+        diff_height = inHeight - newHeight;
+        
+        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
+    }
+    
+    outHeight = newHeight;
+    outWidth = newWidth;
+    
+    return outHeight*outWidth*3/2;
+    
+}
+int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    int YPlaneLength = inHeight*inWidth;
+    int UPlaneLength = YPlaneLength >> 2;
+    int indx = 0;
+    outHeight = inHeight - startYDiff - endYDiff;
+    outWidth = inWidth - startXDiff - endXDiff;
+    
+    
+    for(int i=startYDiff; i<(inHeight-endYDiff); i++)
+    {
+        for(int j=startXDiff; j<(inWidth-endXDiff); j++)
+        {
+            outputData[indx++] = pData[i*inWidth + j];
+        }
+    }
+    
+    
+    byte *p = pData + YPlaneLength;
+    byte *q = pData + YPlaneLength + UPlaneLength;
+    
+    int uIndex = indx;
+    int vIndex = indx + (outHeight * outWidth)/4;
+    
+    int halfH = inHeight>>1, halfW = inWidth>>1;
+    
+    for(int i=startYDiff/2; i<(halfH-endYDiff/2); i++)
+    {
+        for(int j=startXDiff/2; j<(halfW-endXDiff/2); j++)
+        {
+            outputData[uIndex] = p[i*halfW + j];
+            outputData[vIndex] = q[i*halfW + j];
+            uIndex++;
+            vIndex++;
+        }
+    }
+    
+    
+    
+    //printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
+    
+    return outHeight*outWidth*3/2;
+    
+}
+
+int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    int YPlaneLength = inHeight*inWidth;
+    int UPlaneLength = YPlaneLength >> 2;
+    int indx = 0;
+    
+    for(int i=startYDiff; i<(inHeight-endYDiff); i++)
+    {
+        for(int j=startXDiff; j<(inWidth-endXDiff); j++)
+        {
+            outputData[indx++] = pData[i*inWidth + j];
+        }
+    }
+    
+    
+    byte *p = pData + YPlaneLength;
+    int uIndex = indx;
+    int vIndex = indx + 1;
+    
+    
+    int halfH = inHeight>>1, halfW = inWidth>>1;
+    
+    for(int i=startYDiff/2; i<(halfH-endYDiff/2); i++)
+    {
+        for(int j=startXDiff; j<(inWidth-endXDiff); j+=2)
+        {
+            outputData[uIndex] = p[i*inWidth + j];
+            outputData[vIndex] = p[i*inWidth + j + 1];
+            uIndex+=2;
+            vIndex+=2;
+        }
+    }
+    
+    outHeight = inHeight - startYDiff - endYDiff;
+    outWidth = inWidth - startXDiff - endXDiff;
+    //printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
+    return outHeight*outWidth*3/2;
+    
+}
 
 
 int CColorConverter::GetWidth()
@@ -1263,6 +1454,18 @@ int CColorConverter::GetSmallFrameHeight()
     Locker lock(*m_pColorConverterMutex);
     
     return m_iSmallFrameHeight;
+}
+
+int CColorConverter::GetScreenHeight()
+{
+    Locker lock(*m_pColorConverterMutex);
+    return m_iDeviceHeight;
+}
+
+int CColorConverter::GetScreenWidth()
+{
+    Locker lock(*m_pColorConverterMutex);
+    return m_iDeviceWidth;
 }
 
 void CColorConverter::ClearSmallScreen()

@@ -43,6 +43,8 @@ public:
     
     void SetFrameNumber(int nFrameNumber);
 
+	int SetVideoEffect(int nEffectStatus);
+
 	CEncodingBuffer *m_pEncodingBuffer;
 
 private:
@@ -54,6 +56,8 @@ private:
 	CVideoEncoder *m_pVideoEncoder;
 	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
 
+	bool m_bVideoEffectEnabled;
+
 	bool m_bResetForViewerCallerCallEnd;
 
 	unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
@@ -61,6 +65,7 @@ private:
 	unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 	unsigned char m_ucaMirroredFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+    unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
     unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
 

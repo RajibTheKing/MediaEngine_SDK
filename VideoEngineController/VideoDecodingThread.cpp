@@ -2,7 +2,7 @@
 #include "VideoDecodingThread.h"
 #include "VideoCallSession.h"
 #include "Globals.h"
-
+#include "CommonElementsBucket.h"
 #include "LiveVideoDecodingQueue.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -13,7 +13,7 @@ extern map<long long,long long>g_ArribalTime;
 
 #define MINIMUM_DECODING_TIME_FOR_FORCE_FPS 35
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer,
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, LongLong llFriendID, CCommonElementsBucket *pCommonElementBucket, CRenderingBuffer *renderingBuffer,
                                            LiveVideoDecodingQueue *pLiveVideoDecodingQueue,CVideoDecoder *videoDecoder, CColorConverter *colorConverter,
                                            CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
 
@@ -29,12 +29,20 @@ m_bIsCheckCall(bIsCheckCall),
 m_nCallFPS(nFPS),
 m_bResetForPublisherCallerCallEnd(false),
 m_bResetForViewerCallerCallStartEnd(false),
-m_HasPreviousValues(false)
+m_HasPreviousValues(false),
+m_llFriendID(llFriendID)
 
 {
     m_pCalculatorDecodeTime = new CAverageCalculator();
+
+	m_pCommonElementBucket = pCommonElementBucket;
+
     m_pLiveVideoDecodingQueue  = pLiveVideoDecodingQueue;
     llQueuePrevTime = 0;
+    m_pVideoEffect = new CVideoEffects();
+    //m_iEffectSelection = 0;
+    //m_iNumberOfEffect = 6;
+    //m_iNumberOfEffectedFrame = 0;
 }
 
 CVideoDecodingThread::~CVideoDecodingThread()
@@ -43,6 +51,12 @@ CVideoDecodingThread::~CVideoDecodingThread()
 	{
 		delete m_pCalculatorDecodeTime;
 		m_pCalculatorDecodeTime = NULL;
+	}
+
+	if (NULL != m_pVideoEffect)
+	{
+		delete m_pVideoEffect;
+		m_pVideoEffect = NULL;
 	}
 }
 
@@ -192,7 +206,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 				llCountMiss++;
 
-				if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 				{
 					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && llCountMiss % 2 == 0 && m_HasPreviousValues == true)
 						nDecodingStatus = DecodeAndSendToClient2();
@@ -235,6 +249,11 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
 
 					//while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
+
+					if (videoHeaderObject.getTimeStamp() < (currentTime - llExpectedTimeOffset)){
+						LOG_AAC("#aac#aqv# VideoFrameReceivedAfterTime: %lld", videoHeaderObject.getTimeStamp() - (currentTime - llExpectedTimeOffset));
+					}
+
                     while(videoHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
 					{
 						toolsObject.SOSleep(1);
@@ -413,6 +432,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 	int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
+    
 	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -479,6 +499,13 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	//printf("#V### Decoded Size -> %d +++E.Size:  %d\n",m_decodedFrameSize,(int)frameSize);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
+
+	if (m_decodingHeight > MAX_FRAME_HEIGHT || m_decodingWidth > MAX_FRAME_WIDTH)
+	{
+		m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_llFriendID, m_pCommonElementBucket->m_pEventNotifier->RESOLUTION_NOT_SUPPORTED);
+
+		return -1;
+	}
     
    // CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime) + ", CurrentCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth) + ", AverageDecodeTime --> " + m_Tools.DoubleToString(m_pCalculatorDecodeTime->GetAverage()) + ", Decoder returned = " + m_Tools.IntegertoStringConvert(m_decodedFrameSize) + ", FrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
     
@@ -489,7 +516,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	if (1 > m_decodedFrameSize)
 		return -1;
 
-	if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 	{
 		if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
@@ -518,14 +545,18 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
+            m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 		}
+        //TheKing-->Here
+   
 	}
 
 	currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
+    
 #elif defined(_DESKTOP_C_SHARP_)
 	//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
 	m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_DecodedFrame, m_RenderingRGBFrame, m_decodingHeight, m_decodingWidth);
@@ -537,10 +568,38 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
     
-    
-    
-    
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)
 
+	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+	{
+		int iHeight = this->m_pColorConverter->GetHeight();
+		int iWidth = this->m_pColorConverter->GetWidth();
+
+		int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
+		int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
+
+		int iCropedHeight = 0;
+		int iCropedWidth = 0;
+
+		if (iScreenWidth == -1 || iScreenHeight == -1)
+		{
+			//Do Nothing
+		}
+		else
+		{
+			int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth);
+			memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
+			memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
+			m_decodingHeight = iCropedHeight;
+			m_decodingWidth = iCropedWidth;
+			m_decodedFrameSize = iCroppedDataLen;
+			m_previousDecodedFrameSize = iCroppedDataLen;
+			m_PreviousDecodingHeight = iCropedHeight;
+			m_PreviousDecodingWidth = iCropedWidth;
+		}
+	}
+
+#endif
      
     if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {

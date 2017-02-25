@@ -260,13 +260,15 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 				index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 			}
 
-			LOG_AAC("#@@@@@@@@@--> GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
+			LOG_AAC("#aac#b4q# GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
 
 			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + index, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
 			//m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
-
+#ifndef DISABLE_VIDEO_FOR_LIVE
 			iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, index, in_data + index, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames);
+#endif
+			
 		}
 		else if (mediaType == MEDIA_TYPE_AUDIO || mediaType == MEDIA_TYPE_VIDEO)
 		{
@@ -346,14 +348,26 @@ int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFrie
 	return iReturnedValue;
 }
 
-int CInterfaceOfAudioVideoEngine::SetDeviceHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth)
+int CInterfaceOfAudioVideoEngine::SetDeviceDisplayHeightWidth(int nVideoHeight, int nVideoWidth)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->SetDeviceHeightWidth(llFriendID, nVideoHeight, nVideoWidth);
+	int iReturnedValue = m_pcController->SetDeviceDisplayHeightWidth(nVideoHeight, nVideoWidth);
+
+	return iReturnedValue;
+}
+
+int CInterfaceOfAudioVideoEngine::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
+{
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	int iReturnedValue = m_pcController->SetVideoEffect(llFriendID, nEffectStatus);
 
 	return iReturnedValue;
 }

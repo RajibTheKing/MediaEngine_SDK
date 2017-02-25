@@ -67,7 +67,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
     
     if(!bCheckDeviceCapability)
     {        
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			encoderParemeters.iRCMode = RC_BITRATE_MODE;
 			encoderParemeters.iMinQp = 0;
@@ -111,7 +111,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
     if(!bCheckDeviceCapability)
     {
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
@@ -188,7 +188,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
     
     if(!bCheckDeviceCapability)
     { 
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			encoderParemeters.iRCMode = RC_BITRATE_MODE;
 			encoderParemeters.iMinQp = 0;
@@ -230,7 +230,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
     if(!bCheckDeviceCapability)
     {
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;

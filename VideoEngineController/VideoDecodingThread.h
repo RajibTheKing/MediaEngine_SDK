@@ -14,17 +14,22 @@
 #include "LiveVideoDecodingQueue.h"
 #include "VideoHeader.h"
 
+#include "../VideoEngineUtilities/VideoEffects.h"
+
 //#include "Helper_IOS.hpp"
 #include <thread>
 
 class CVideoCallSession;
+class CCommonElementsBucket;
 
 class CVideoDecodingThread
 {
 
 public:
 
-	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer,
+	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, 
+						 LongLong llFriendID,
+						 CCommonElementsBucket *pCommonElementBucket,
                          CRenderingBuffer *renderingBuffer,
                          LiveVideoDecodingQueue *pLiveVideoDecodingQueue,
                          CVideoDecoder *videoDecoder,
@@ -57,6 +62,9 @@ private:
 	bool bDecodingThreadRunning;
 	bool bDecodingThreadClosed;
 
+	CCommonElementsBucket *m_pCommonElementBucket;
+	LongLong m_llFriendID;
+
 	int m_decodingHeight;
 	int m_decodingWidth;
 	int m_decodedFrameSize;
@@ -87,6 +95,7 @@ private:
 	unsigned char m_PreviousDecodedFrameConvertedData[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+    unsigned char m_CropedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
@@ -106,6 +115,12 @@ private:
     long long m_FPS_TimeDiff;
     long long llQueuePrevTime;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+    CVideoEffects *m_pVideoEffect;
+    //int m_iEffectSelection;
+    //int m_iNumberOfEffect;
+    //int m_iNumberOfEffectedFrame;
+    
+    
     
 };
 
