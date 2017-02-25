@@ -363,6 +363,12 @@ pair<int,int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurC
 	memset(m_variance, iWidth, 0);
 
 	int cur_pixel, tmp, tmp2;
+
+#if defined(__ANDROID__)
+	int totalYValue = 0;
+	int yLen =  iWidth * iHeight;
+#endif
+
 	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
 		tmp = 0, tmp2 = 0;
@@ -374,6 +380,11 @@ pair<int,int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurC
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 			MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+
+#elif defined(__ANDROID__)
+
+			totalYValue += pBlurConvertingData[iw + j - 1];
+			MakePixelBright(&pBlurConvertingData[iw + j - 1]);
 
 #endif
 			cur_pixel = pBlurConvertingData[iw + j - 1];
@@ -388,6 +399,10 @@ pair<int,int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurC
 			//pBlurConvertingData[m_pVIndex[iw + j - 1]] -= 1;
 		}
 	}
+#if defined(__ANDROID__)
+	int m_AverageValue = totalYValue / yLen;
+	SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+#endif
 
 	int niHeight = iHeight - m_rr;
 	int niWidth = iWidth - m_rr;
