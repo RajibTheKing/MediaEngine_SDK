@@ -61,7 +61,7 @@ void CLogPrinter::Start(Priority maxPriority, const char* logFile)
 		instance.maxPriority = maxPriority;
 		instance.logFile = tempLogFile;
 
-#ifdef	WRITE_TO_LOG_FILE
+#ifdef	LOG_ENABLED
 
 		instance.fileStream.open(tempLogFile, ofstream::out);
 
@@ -84,7 +84,12 @@ void CLogPrinter::SetLoggerPath(std::string loc)
 	if (instance.fileStream.is_open())
 		instance.fileStream.close();
 
+#ifdef	LOG_ENABLED
+
 	instance.fileStream.open(loc.c_str(), ofstream::out);
+
+#endif
+
 }
 
 bool CLogPrinter::SetLoggingState(bool loggingState, int logLevel)
