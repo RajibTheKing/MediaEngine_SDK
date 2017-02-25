@@ -205,6 +205,7 @@
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\Aac.h" />
@@ -280,6 +281,7 @@
     <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />

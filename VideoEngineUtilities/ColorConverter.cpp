@@ -1167,12 +1167,31 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
 void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength)
 {
 	Locker lock(*m_pColorConverterMutex);
-
 	//int iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
 	//memcpy(smallFrame, m_pSmallFrame, iLen);
 	//iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
     
     int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
+    int iNewHeight, iNewWidth, diff_width, diff_height;
+    
+    CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, m_iDeviceHeight, m_iDeviceWidth, iNewHeight, iNewWidth);
+    
+    if(iHeight == iNewHeight && iWidth == iNewWidth)
+    {
+        //Do Nothing
+    }
+    else
+    {
+        memcpy(smallFrame, m_pSmallFrame, iHeight * iWidth * 3 / 2);
+        
+        diff_width = iWidth - iNewWidth;
+        diff_height = iHeight - iNewHeight;
+        Crop_YUV420(smallFrame, iHeight, iWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, m_pSmallFrame, iNewHeight, iNewWidth);
+    }
+    
+    iHeight = iNewHeight;
+    iWidth = iNewWidth;
+    
     m_iSmallFrameHeight = iHeight;
     m_iSmallFrameWidth = iWidth;
 
@@ -1263,7 +1282,7 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
             newWidth = target;
         }
         
-        newWidth = newWidth - newWidth % 16;
+        newWidth = newWidth - newWidth % 4;
         newHeight = inHeight;
     }
     else
@@ -1319,6 +1338,51 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, i
     
     outHeight = newHeight;
     outWidth = newWidth;
+    
+    return outHeight*outWidth*3/2;
+    
+}
+int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    int YPlaneLength = inHeight*inWidth;
+    int UPlaneLength = YPlaneLength >> 2;
+    int indx = 0;
+    outHeight = inHeight - startYDiff - endYDiff;
+    outWidth = inWidth - startXDiff - endXDiff;
+    
+    
+    for(int i=startYDiff; i<(inHeight-endYDiff); i++)
+    {
+        for(int j=startXDiff; j<(inWidth-endXDiff); j++)
+        {
+            outputData[indx++] = pData[i*inWidth + j];
+        }
+    }
+    
+    
+    byte *p = pData + YPlaneLength;
+    byte *q = pData + YPlaneLength + UPlaneLength;
+    
+    int uIndex = indx;
+    int vIndex = indx + (outHeight * outWidth)/4;
+    
+    int halfH = inHeight>>1, halfW = inWidth>>1;
+    
+    for(int i=startYDiff/2; i<(halfH-endYDiff/2); i++)
+    {
+        for(int j=startXDiff/2; j<(halfW-endXDiff/2); j++)
+        {
+            outputData[uIndex] = p[i*halfW + j];
+            outputData[vIndex] = q[i*halfW + j];
+            uIndex++;
+            vIndex++;
+        }
+    }
+    
+    
+    
+    //printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
     
     return outHeight*outWidth*3/2;
     
