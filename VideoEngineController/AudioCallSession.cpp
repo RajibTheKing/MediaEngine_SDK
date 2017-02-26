@@ -1035,7 +1035,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 		{
 			return false;
 		}
-		if (m_iRole == PUBLISHER_IN_CALL)
+		if (m_iRole != VIEWER_NOT_IN_CALL)
 		{
 			return true;
 		}
