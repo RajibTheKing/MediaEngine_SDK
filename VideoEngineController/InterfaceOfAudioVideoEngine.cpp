@@ -134,6 +134,7 @@ int CInterfaceOfAudioVideoEngine::EncodeAndTransfer(const IPVLongType llFriendID
 
 int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength)
 {
+	HITLER("#@#@26022017# RECEIVING DATA FOR BOKKOR %u", unLength);
 	std::vector< std::pair<int, int> > vMissingFrames;
 
 	return PushAudioForDecodingVector(llFriendID, mediaType, nEntityType, in_data, unLength, vMissingFrames);
@@ -141,6 +142,7 @@ int CInterfaceOfAudioVideoEngine::PushPacketForDecoding(const IPVLongType llFrie
 
 int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames)
 {
+	HITLER("#@#@26022017# RECEIVING DATA FOR BOKKOR %u", unLength);
 	int iReturnedValue = 0;
 
 	if (NULL == m_pcController)
@@ -216,7 +218,8 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 					}
 				}
 				if (m_pcController->m_llLastTimeStamp >= recvTimeOffset) {
-					//LOGE("##Interface discarding duplicate packet.");
+					// HITLER("#@#@26022017# RECEIVING DATA FOR BOKKOR %u", unLength);
+					HITLER("#@#@26022017# ##Interface discarding duplicate packet.");
 					return -10;
 				}
 

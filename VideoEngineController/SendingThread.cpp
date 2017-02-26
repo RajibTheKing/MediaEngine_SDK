@@ -388,6 +388,7 @@ void CSendingThread::SendingThreadProcedure()
 #ifndef NO_CONNECTIVITY
 						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 #else
+						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 #endif
 					}
@@ -631,6 +632,7 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 				}
 				
 #else
+				HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", packetSize);
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(m_pVideoCallSession->GetFriendID(), packetSize, m_EncodedFrame);
 #endif
 
