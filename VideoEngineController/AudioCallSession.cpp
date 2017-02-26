@@ -28,7 +28,7 @@
 
 #define PUBLISHER_IN_CALL 1
 #define VIEWER_IN_CALL 2
-#define VIEWER_NOT_IN_CALL 3 //never used so far
+//#define VIEWER_NOT_IN_CALL 3 //never used so far
 #define CALL_NOT_RUNNING 4
 
 
@@ -1035,7 +1035,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 		{
 			return false;
 		}
-		if (m_iRole != VIEWER_NOT_IN_CALL)
+		if ((m_iRole == PUBLISHER_IN_CALL) || (m_iRole == VIEWER_IN_CALL))
 		{
 			return true;
 		}
