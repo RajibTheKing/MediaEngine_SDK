@@ -9,13 +9,14 @@
 
 //extern unsigned char g_uchSendPacketVersion;						// bring check
 
-CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession) :
+CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, IDRFrameIntervalController *pIdrFrameController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession) :
 
 m_FriendID(friendID),
 m_pVideoPacketQueue(VideoPacketQueue),
 m_pRetransVideoPacketQueue(RetransVideoPacketQueue),
 m_pMiniPacketQueue(MiniPacketQueue),
 m_BitRateController(BitRateController),
+m_pIdrFrameIntervalController(pIdrFrameController),
 m_pEncodedFrameDepacketizer(EncodedFrameDepacketizer),
 m_pCommonElementsBucket(CommonElementsBucket),
 m_miniPacketBandCounter(miniPacketBandCounter),
@@ -186,6 +187,11 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			toolsObject.SOSleep(1);
 			continue;
 		}
+        else if (m_RcvdPacketHeader.GetPacketType() == __IDR_FRAME_CONTROL_INFO_TYPE)
+        {
+            m_pIdrFrameIntervalController->Handle_IDRFrame_Control_Packet(m_RcvdPacketHeader, m_pVideoCallSession->GetServiceType());
+            
+        }
 
 
         if(m_RcvdPacketHeader.GetPacketType() == __NEGOTIATION_PACKET_TYPE)

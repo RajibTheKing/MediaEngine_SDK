@@ -365,7 +365,7 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
     return nReturnedValueFromEncoder;
 }
 
-int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData)
+int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData, bool isForceIFrame)
 {
 	Locker lock(*m_pVideoEncoderMutex);
 
@@ -392,6 +392,11 @@ int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, un
 	sourcePicture.pData[0] = (unsigned char *)ucaEncodingVideoFrameData;
 	sourcePicture.pData[1] = sourcePicture.pData[0] + (m_nVideoWidth * m_nVideoHeight);
 	sourcePicture.pData[2] = sourcePicture.pData[1] + (m_nVideoWidth * m_nVideoHeight >> 2);
+    
+    if(isForceIFrame)
+    {
+        m_pSVCVideoEncoder->ForceIntraFrame(true);
+    }
 
 	int nReturnedValueFromEncoder = m_pSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
 

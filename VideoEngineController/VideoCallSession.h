@@ -23,6 +23,8 @@
 #include "FPSController.h"
 #include "LiveReceiver.h"
 #include "LiveVideoDecodingQueue.h"
+#include "IDRFrameIntervalController.h"
+
 
 
 using namespace std;
@@ -53,6 +55,8 @@ public:
 	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
 
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
+    void CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFrameNumber);
+    
 	CFPSController* GetFPSController();
 
 	void StartCallInLive();
@@ -190,6 +194,8 @@ private:
 	CVideoDecoder *m_pVideoDecoder;
 
 	BitRateController *m_BitRateController;
+    IDRFrameIntervalController *m_pIdrFrameIntervalController;
+    
 
 	CEncodingBuffer *m_EncodingBuffer;
 	CVideoPacketQueue *m_pVideoPacketQueue;
