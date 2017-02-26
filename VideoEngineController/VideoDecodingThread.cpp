@@ -515,8 +515,26 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	if (1 > m_decodedFrameSize)
 		return -1;
-
-	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
+    
+    if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
+    {
+        int iNewHeight = m_decodingHeight - m_decodingHeight % 4;
+        int iNewWidth = m_decodingWidth - m_decodingWidth % 4;
+        
+        if(iNewWidth != m_decodingWidth || iNewHeight != m_decodingHeight)
+        {
+            int iNewLen = this->m_pColorConverter->Crop_YUV420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodingWidth - iNewWidth, 0, m_decodingHeight-iNewHeight, 0, m_CropedFrame, iNewHeight, iNewWidth);
+            
+            memcpy(m_DecodedFrame, m_CropedFrame, iNewLen);
+            
+            m_decodedFrameSize = iNewLen;
+            m_decodingHeight = iNewHeight;
+            m_decodingWidth = iNewWidth;
+        }
+        
+    }
+    
+	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM )
 	{
 		if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
