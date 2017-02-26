@@ -96,6 +96,7 @@ public:
 	void SetVolume(int iVolume, bool bRecorder);
 	void SetLoudSpeaker(bool bOn);
 	void SetEchoCanceller(bool bOn);
+	bool getIsAudioLiveStreamRunning();
 
     static void *CreateAudioEncodingThread(void* param);
     static void *CreateAudioDecodingThread(void* param);

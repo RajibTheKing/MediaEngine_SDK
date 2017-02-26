@@ -234,6 +234,9 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 
 }
 
+bool CAudioCallSession::getIsAudioLiveStreamRunning(){
+	return this->m_bLiveAudioStreamRunning;
+}
 
 void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
@@ -308,7 +311,7 @@ void CAudioCallSession::EndCallInLive()
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
-	if (AUDIO_CLIENT_SAMPLES_IN_FRAME != unLength)
+	if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
 	{
 		ALOG("Invalid Audio Frame Length");
 		return -1;
@@ -496,7 +499,7 @@ void CAudioCallSession::MuxIfNeeded()
 		if (m_AudioDecodedBuffer.GetQueueSize() != 0)
 		{
 			nLastDecodedFrameSize = m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame, lastDecodedTimeStamp);
-			if (nLastDecodedFrameSize == AUDIO_CLIENT_SAMPLES_IN_FRAME) //Both must be 800
+			if (nLastDecodedFrameSize == CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning)) //Both must be 800
 			{
 				MuxAudioData(m_saAudioRecorderFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize);
 			}
@@ -507,7 +510,7 @@ void CAudioCallSession::MuxIfNeeded()
 		}
 		if (nLastDecodedFrameSize == 0)
 		{
-			memcpy(m_saAudioMUXEDFrame, m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
+			memcpy(m_saAudioMUXEDFrame, m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short));
 		}
 	}
 }
@@ -515,7 +518,7 @@ void CAudioCallSession::MuxIfNeeded()
 void CAudioCallSession::DumpEncodingFrame()
 {
 #ifdef __DUMP_FILE__
-	fwrite(m_saAudioRecorderFrame, 2, AUDIO_CLIENT_SAMPLES_IN_FRAME, FileInput);
+	fwrite(m_saAudioRecorderFrame, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInput);
 #endif
 }
 
@@ -534,7 +537,7 @@ bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 	//if (!m_bLiveAudioStreamRunning)
 	{
 #ifdef USE_VAD			
-		if (!m_pVoice->HasVoice(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME))
+		if (!m_pVoice->HasVoice(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning)))
 		{
 			return false;
 		}
@@ -542,19 +545,19 @@ bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 
 
 #ifdef USE_AGC
-		m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
-		m_pRecorderGain->AddGain(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+		m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
+		m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
 #endif
 
 
 #ifdef USE_ANS
-		memcpy(m_saAudioEncodingTempFrame, m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
-		m_pNoise->Denoise(m_saAudioEncodingTempFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, m_saAudioEncodingDenoisedFrame);
+		memcpy(m_saAudioEncodingTempFrame, m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short));
+		m_pNoise->Denoise(m_saAudioEncodingTempFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), m_saAudioEncodingDenoisedFrame);
 #ifdef USE_AECM
 
-		memcpy(m_saAudioRecorderFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+		memcpy(m_saAudioRecorderFrame, m_saAudioEncodingDenoisedFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
 #else
-		memcpy(m_saAudioRecorderFrame, m_saAudioEncodingDenoisedFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME);
+		memcpy(m_saAudioRecorderFrame, m_saAudioEncodingDenoisedFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
 #endif
 #endif
 	}
@@ -566,7 +569,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &enc
 #ifdef OPUS_ENABLED
 	if (m_bLiveAudioStreamRunning == false)
 	{
-		m_nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, AUDIO_CLIENT_SAMPLES_IN_FRAME, &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
+		m_nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
 		
 		//ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 		encodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
@@ -576,19 +579,19 @@ void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &enc
 	{
 		if (m_iRole == PUBLISHER_IN_CALL)
 		{
-			m_nRawFrameSize = AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short);
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short);
 			memcpy(&m_ucaRawFrameMuxed[1 + m_MyAudioHeadersize], m_saAudioMUXEDFrame, m_nRawFrameSize);
 
 			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
 		}
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
-			m_nRawFrameSize = AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short);
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short);
 			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
 		}
 		else //Should only work for PUBLISHER when CALL_NOT_RUNNING
 		{
-			m_nRawFrameSize = AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short);
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short);
 			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
 		}
 	}
