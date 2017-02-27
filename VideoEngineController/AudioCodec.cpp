@@ -41,7 +41,7 @@ int CAudioCodec::CreateAudioEncoder()
 
 	int error = 0;
 	int sampling_rate = AUDIO_SAMPLE_RATE;
-	int dummyDataSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_pAudioCallSession->getIsAudioLiveStreamRunning());
+	int dummyDataSize = MAX_AUDIO_FRAME_SAMPLE_SIZE;
 
 	for (int i = 0; i < dummyDataSize; i++)
 	{

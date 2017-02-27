@@ -47,6 +47,6 @@ public:
 	int CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker, bool isLiveStreamRunning = false);
 	int DeAmplitude(short *sInBuf, int sBufferSize);
 	int LowPass(short *sInBuf, int sBufferSize);
-	int AddFarEnd(short *sInBuf, int sBufferSize, bool isLiveStreamRunning = false, bool bLoudSpeakerEnabled = false);
+	int AddFarEnd(short *sInBuf, int sBufferSize, bool isLiveStreamRunning, bool bLoudSpeakerEnabled = false);
 };
 

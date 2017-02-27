@@ -235,7 +235,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 }
 
 bool CAudioCallSession::getIsAudioLiveStreamRunning(){
-	return this->m_bLiveAudioStreamRunning;
+	return m_bLiveAudioStreamRunning;
 }
 
 void CAudioCallSession::SetEchoCanceller(bool bOn)
