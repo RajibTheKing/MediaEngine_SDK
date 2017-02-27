@@ -311,6 +311,7 @@ void CAudioCallSession::EndCallInLive()
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
+	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
 	if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
 	{
 		ALOG("Invalid Audio Frame Length");
@@ -325,13 +326,13 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 #ifdef USE_ECHO2
-		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength);
+		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
 #endif
 #ifdef __DUMP_FILE__
 		fwrite(psaEncodingAudioData, 2, unLength, echoOutputFile);
 #endif // __DUMP_FILE__
 
-		m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker);
+		m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
 
 	}
 #endif
@@ -351,9 +352,9 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 #ifdef USE_ECHO2
-		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker);
+		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
 #endif
-		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker);
+		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning(), m_bUsingLoudSpeaker);
 	}
 #endif
 	return true;
@@ -408,6 +409,7 @@ void CAudioCallSession::SetLoudSpeaker(bool bOn)
 int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	//    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
+	HITLER("#@#@26022017## DECODE DATA SMAPLE LENGTH %u", unLength);
 	if (m_bLiveAudioStreamRunning && (m_iRole != PUBLISHER_IN_CALL))
 	{
 		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
@@ -546,13 +548,13 @@ bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 
 #ifdef USE_AGC
 		m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
-		m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
+		m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), getIsAudioLiveStreamRunning());
 #endif
 
 
 #ifdef USE_ANS
 		memcpy(m_saAudioEncodingTempFrame, m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short));
-		m_pNoise->Denoise(m_saAudioEncodingTempFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), m_saAudioEncodingDenoisedFrame);
+		m_pNoise->Denoise(m_saAudioEncodingTempFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), m_saAudioEncodingDenoisedFrame, getIsAudioLiveStreamRunning());
 #ifdef USE_AECM
 
 		memcpy(m_saAudioRecorderFrame, m_saAudioEncodingDenoisedFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
@@ -1068,7 +1070,7 @@ void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nC
 
 #ifdef USE_AGC
 		m_pRecorderGain->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize);
-		m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize);
+		m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, getIsAudioLiveStreamRunning());
 #endif
 	}
 	else

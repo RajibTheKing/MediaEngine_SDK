@@ -34,8 +34,8 @@ class CEcho
 	int iCounter, iCounter2;
 	int farending, processing;
 	short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
-	short m_sTempBuf[AUDIO_CLIENT_SAMPLES_IN_FRAME];
-	short m_sSpeexFarendBuf[AUDIO_CLIENT_SAMPLES_IN_FRAME];
+	short m_sTempBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+	short m_sSpeexFarendBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 	bool m_bFarendArrived;
 	bool m_bReadingFarend, m_bWritingFarend;
 	
@@ -44,9 +44,9 @@ class CEcho
 public:
 	CEcho(int id);
 	~CEcho();
-	int CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker);
+	int CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker, bool isLiveStreamRunning = false);
 	int DeAmplitude(short *sInBuf, int sBufferSize);
 	int LowPass(short *sInBuf, int sBufferSize);
-	int AddFarEnd(short *sInBuf, int sBufferSize, bool bLoudSpeakerEnabled = false);
+	int AddFarEnd(short *sInBuf, int sBufferSize, bool isLiveStreamRunning = false, bool bLoudSpeakerEnabled = false);
 };
 

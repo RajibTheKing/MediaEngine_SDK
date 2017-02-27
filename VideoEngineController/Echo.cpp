@@ -46,7 +46,7 @@ CEcho::CEcho(int id)
 		ALOG("WebRtcAecm_set_config successful id = " + m_Tools.IntegertoStringConvert(id));
 	}
 	memset(m_sZeroBuf, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
-	memset(m_sZeroBuf, 0, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
+	memset(m_sZeroBuf, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 	m_llLastFarendTime = 0;
 	m_ID = id;
 	//m_Tools.SOSleep(100);
@@ -140,10 +140,10 @@ int CEcho::LowPass(short *sInBuf, int sBufferSize)
 	return true;
 }
 
-int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
+int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker, bool isLiveStreamRunning)
 {
 
-	if (sBufferSize != AUDIO_CLIENT_SAMPLES_IN_FRAME)
+	if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 	{	
 		ALOG("aec nearend Invalid size");
 		return false;
@@ -154,7 +154,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 		m_Tools.SOSleep(1);
 	}
 	m_bReadingFarend = true;
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
+	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
 	{
 		speex_echo_playback(st, m_sSpeexFarendBuf + i);
 		speex_echo_capture(st, sInBuf + i, sInBuf + i);
@@ -172,7 +172,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 #endif
 	//ALOG("aec sBufferSize = " + m_Tools.IntegertoStringConvert((int)sBufferSize));
 	memcpy(m_sTempBuf, sInBuf, sBufferSize * sizeof(short));
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AECM_SAMPLES_IN_FRAME)
+	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
 	{
 		bool bFailed = false, bZeroed = false;
 		int delay = m_Tools.CurrentTimestamp() - m_llLastFarendTime/*10*/;
@@ -249,10 +249,10 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker)
 	return true;
 }
 
-int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool bLoudSpeakerEnabled)
+int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool isLiveStreamRunning, bool bLoudSpeakerEnabled)
 {
 #ifdef USE_WEBRTC_AECM
-	if (sBufferSize != AUDIO_CLIENT_SAMPLES_IN_FRAME)
+	if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 	{
 		ALOG("aec farend Invalid size");
 		return false;
@@ -281,7 +281,7 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool bLoudSpeakerEnabled)
 		m_Tools.SOSleep(1);
 	}
 	m_bWritingFarend = true;
-	memcpy(m_sSpeexFarendBuf, sBuffer, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
+	memcpy(m_sSpeexFarendBuf, sBuffer, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
 	m_bWritingFarend = false;
 #endif
 	return true;

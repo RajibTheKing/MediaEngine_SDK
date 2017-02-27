@@ -24,7 +24,7 @@ CGain::CGain()
 	m_bGainEnabled = false;
 
 #ifdef USE_WEBRTC_AGC
-	m_sTempBuf = new short[AUDIO_CLIENT_SAMPLES_IN_FRAME];
+	m_sTempBuf = new short[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 	int agcret = -1;
 	if ((agcret = WebRtcAgc_Create(&AGC_instance)))
 	{
@@ -107,7 +107,7 @@ int CGain::SetGain(int iGain)
 }
 
 
-int CGain::AddGain(short *sInBuf, int nBufferSize)
+int CGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 {
 	if (!m_bGainEnabled)
 	{
@@ -118,7 +118,7 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 	int32_t inMicLevel = 1;
 	int32_t outMicLevel;
 	bool bSucceeded = true;
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
+	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
 	{
 		if (0 != WebRtcAgc_AddMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME))
 		{
@@ -152,7 +152,7 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 
 	int k = 1;
 	double iRatio = 0;
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i++)
+	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i++)
 	{
 		if (sInBuf[i])
 		{
@@ -163,11 +163,11 @@ int CGain::AddGain(short *sInBuf, int nBufferSize)
 	}
 	ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
 #endif
-	memcpy(sInBuf, m_sTempBuf, AUDIO_CLIENT_SAMPLES_IN_FRAME * sizeof(short));
+	memcpy(sInBuf, m_sTempBuf, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
 	return bSucceeded;;
 #elif defined(USE_NAIVE_AGC)
 
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i++)
+	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i++)
 	{
 		int temp = (int)sInBuf[i] * m_iVolume;
 		if (temp > SHRT_MAX)

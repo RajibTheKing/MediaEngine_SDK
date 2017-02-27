@@ -43,10 +43,10 @@ CNoise::~CNoise()
 }
 
 
-int CNoise::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf)
+int CNoise::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning)
 {
 	long long llNow = m_Tools.CurrentTimestamp();
-	for (int i = 0; i < AUDIO_CLIENT_SAMPLES_IN_FRAME; i += ANS_SAMPLES_IN_FRAME)
+	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += ANS_SAMPLES_IN_FRAME)
 	{
 		if (0 != WebRtcNs_Process(NS_instance, sInBuf + i, NULL, sOutBuf + i, NULL))
 		{
