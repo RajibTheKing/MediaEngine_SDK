@@ -28,8 +28,8 @@ double m_pixels = m_rr * m_rr;
 CVideoBeautificationer::CVideoBeautificationer(int iVideoHeight, int iVideoWidth) :
 
 m_nPreviousAddValueForBrightening(0),
-m_nBrightnessPrecision(0)
-
+m_nBrightnessPrecision(0),
+m_EffectValue(10)
 {
 	m_nVideoHeight = iVideoHeight;
 	m_nVideoWidth = iVideoWidth;
@@ -353,8 +353,12 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 	//return tcl;
 }
 
-pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int nEffectValue)
+pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam)
 {
+	if(effectParam[0] != 0 )m_sigma = effectParam[0];
+	if(effectParam[1] != 0 )m_radius = effectParam[1];
+	if(effectParam[2] != 0 )m_EffectValue = effectParam[2];
+
 	for (int i = 1; i <= iHeight; i++)
 	{
 		for (int j = 1; j <= iWidth; j++)
@@ -363,8 +367,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 		}
 	}
 
-	if (nEffectValue == 0)
-		nEffectValue = 1;
+	if (m_EffectValue == 0)
+		m_EffectValue = 1;
 
 	for (int i = 2; i < iHeight; i++)
 	{
@@ -381,7 +385,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 				- m_mean[i][j + 1]
 				- m_mean[i + 1][j - 1]
 				- m_mean[i + 1][j]
-				- m_mean[i + 1][j + 1]) / (nEffectValue * 1.0)));
+				- m_mean[i + 1][j + 1]) / (m_EffectValue * 1.0)));
 
 		}
 	}

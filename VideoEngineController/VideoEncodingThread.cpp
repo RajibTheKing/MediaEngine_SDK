@@ -198,7 +198,7 @@ int CVideoEncodingThread::TestVideoEffect(int *param, int size)
 {
 	memcpy(m_VideoEffectParam, param, size * sizeof(int));
 
-	LOGE("setVideoEffect -------------->>             m_VideoEffectParam[0] = %d, m_VideoEffectParam[1] = %d", m_VideoEffectParam[0], m_VideoEffectParam[1]);
+
 	return 1;
 }
 
@@ -405,7 +405,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
-					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), 10);
+					//LOGE("setVideoEffect -------------->>             m_VideoEffectParam[0] = %d, m_VideoEffectParam[1] = %d,  m_VideoEffectParam[2] = %d", m_VideoEffectParam[0], m_VideoEffectParam[1], m_VideoEffectParam[2]);
+					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
 				}
