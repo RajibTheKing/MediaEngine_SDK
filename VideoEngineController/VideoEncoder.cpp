@@ -156,6 +156,8 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 {
+    nIFrameInterval = 60; //পরে এইটা ঠিক করতে হবে 
+    
 	Locker lock(*m_pVideoEncoderMutex);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
@@ -274,6 +276,8 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 int CVideoEncoder::SetBitrate(int nBitRate)
 {
+    
+    
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
     
 	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN) 
@@ -395,6 +399,7 @@ int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, un
     
     if(isForceIFrame)
     {
+        printf("TheKing--> Forcing IDR Frame\n");
         m_pSVCVideoEncoder->ForceIntraFrame(true);
     }
 

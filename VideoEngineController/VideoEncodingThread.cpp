@@ -465,7 +465,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             llCalculatingTime = m_Tools.CurrentTimestamp();
             
             if(m_bIsCheckCall)
-                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame, false);
             else
                 nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
             

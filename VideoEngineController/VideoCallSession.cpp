@@ -450,7 +450,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.getFrameNumber();
         
 //		VLOG("#DR# --------------------------> FrameNumber : "+Tools::IntegertoStringConvert(unFrameNumber));
-        printf("PushPacketForMerging--> nFrameNumber = %d, m_nCallFPS = %d, m_PacketHeader.GetHeaderLength() = %d\n", unFrameNumber, m_nCallFPS, m_PacketHeader.GetHeaderLength());
+        //printf("PushPacketForMerging--> nFrameNumber = %d, m_nCallFPS = %d, m_PacketHeader.GetHeaderLength() = %d\n", unFrameNumber, m_nCallFPS, m_PacketHeader.GetHeaderLength());
         
 
 		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
@@ -758,6 +758,18 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
                                  0,										//PacketStartingIndex
                                  0										//PacketDataLength
                                  );
+    
+    m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
+    
+    PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
+    
+#ifndef NO_CONNECTIVITY
+    printf("TheKing--> Trying.... CreateAndSend_IDR_Frame_Info_Packet\n");
+    m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, VIDEO_HEADER_LENGTH + 1, 0);
+#else
+    m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, VIDEO_HEADER_LENGTH + 1, m_miniPacket);
+#endif
+    
 }
 
 long long CVideoCallSession::GetShiftedTime()
