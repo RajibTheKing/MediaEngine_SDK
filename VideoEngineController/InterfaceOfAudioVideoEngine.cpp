@@ -382,7 +382,7 @@ int CInterfaceOfAudioVideoEngine::TestVideoEffect(const IPVLongType llFriendID, 
 		return false;
 	}
 
-	int iReturnedValue = m_pcController->SetVideoEffect(llFriendID, param, size);
+	int iReturnedValue = m_pcController->TestVideoEffect(llFriendID, param, size);
 
 	return iReturnedValue;
 }
