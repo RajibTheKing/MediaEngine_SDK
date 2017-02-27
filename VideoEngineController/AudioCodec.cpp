@@ -41,7 +41,7 @@ int CAudioCodec::CreateAudioEncoder()
 
 	int error = 0;
 	int sampling_rate = AUDIO_SAMPLE_RATE;
-	int dummyDataSize = AUDIO_CLIENT_SAMPLES_IN_FRAME;
+	int dummyDataSize = MAX_AUDIO_FRAME_SAMPLE_SIZE;
 
 	for (int i = 0; i < dummyDataSize; i++)
 	{

@@ -22,7 +22,7 @@ class CGain
 public:
 	CGain();
 	~CGain();
-	int AddGain(short *sInBuf, int sBufferSize);
+	int AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning);
 	int AddFarEnd(short *sInBuf, int sBufferSize);
 	int SetGain(int iGain);
 };

@@ -9,6 +9,6 @@ class CNoise
 public:
 	CNoise();
 	~CNoise();
-	int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf);
+	int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning);
 };
 
