@@ -448,10 +448,6 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 		}
 	}
-#if defined(__ANDROID__)
-	int m_AverageValue = totalYValue / yLen;
-	SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
-#endif
 
 	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
