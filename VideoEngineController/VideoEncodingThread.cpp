@@ -28,7 +28,6 @@ m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket),
 m_bResetForViewerCallerCallEnd(false),
 m_bVideoEffectEnabled(true)
-
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
     m_pCalculateEncodingTimeDiff = new CAverageCalculator();
@@ -57,6 +56,8 @@ m_bVideoEffectEnabled(true)
          }
          
      }
+
+	memset(m_VideoEffectParam, 0, 100 * sizeof(int));
     
     
 }
@@ -192,6 +193,15 @@ int CVideoEncodingThread::SetVideoEffect(int nEffectStatus)
 		m_bVideoEffectEnabled = false;
 	return 1;
 }
+
+int CVideoEncodingThread::TestVideoEffect(int *param, int size)
+{
+	memcpy(m_VideoEffectParam, param, size * sizeof(int));
+
+	LOGE("setVideoEffect -------------->>             m_VideoEffectParam[0] = %d, m_VideoEffectParam[1] = %d", m_VideoEffectParam[0], m_VideoEffectParam[1]);
+	return 1;
+}
+
 
 long long g_PrevEncodeTime = 0;
 

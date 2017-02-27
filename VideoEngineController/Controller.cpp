@@ -639,6 +639,23 @@ int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 }
 
 
+int CController::TestVideoEffect(const IPVLongType llFriendID, int *param, int size)
+{
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		return pVideoSession->TestVideoEffect(param, size);
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+
 int CController::SetDeviceDisplayHeightWidth(int height, int width)
 {
 	Locker lock(*m_pVideoSendMutex);

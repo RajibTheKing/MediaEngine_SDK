@@ -111,6 +111,7 @@ public:
 	int SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width);
 
 	int SetVideoEffect(int nEffectStatus);
+	int TestVideoEffect(int *param, int size);
 
 	void InterruptOccured();
 	void InterruptOver();

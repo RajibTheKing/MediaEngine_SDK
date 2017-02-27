@@ -45,6 +45,8 @@ public:
 
 	int SetVideoEffect(int nEffectStatus);
 
+	int TestVideoEffect(int *param, int size);
+
 	CEncodingBuffer *m_pEncodingBuffer;
 
 private:
@@ -100,6 +102,8 @@ private:
     long long m_FPS_TimeDiff;
     int m_FpsCounter;
     bool m_bIsCheckCall;
+
+	int m_VideoEffectParam[100];
     
 	SmartPointer<std::thread> pEncodingThread;
 };

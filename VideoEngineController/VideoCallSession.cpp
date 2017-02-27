@@ -1016,6 +1016,12 @@ int CVideoCallSession::SetVideoEffect(int nEffectStatus)
 	return 1;
 }
 
+int CVideoCallSession::TestVideoEffect( int *param, int size)
+{
+	this->m_pVideoEncodingThread->TestVideoEffect(param, size);
+	return 1;
+}
+
 int CVideoCallSession::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)
 {
 	m_nDeviceHeight = height;

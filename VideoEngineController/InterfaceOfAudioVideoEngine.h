@@ -66,6 +66,7 @@ public:
 	int SetDeviceDisplayHeightWidth(int nVideoHeight, int nVideoWidth);
 
 	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
+	int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
 
 	int SetBitRate(const IPVLongType llFriendID, int nBitRate);
 

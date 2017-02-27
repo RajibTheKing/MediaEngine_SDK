@@ -59,6 +59,8 @@ public:
 
 	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
 
+	int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
+
 	void InterruptOccured(const LongLong lFriendID);
 	void InterruptOver(const LongLong lFriendID);
 
