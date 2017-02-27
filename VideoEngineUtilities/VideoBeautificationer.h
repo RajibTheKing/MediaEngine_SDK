@@ -41,7 +41,7 @@ public:
 	void boxBlur_4 (unsigned char *scl, unsigned char *tcl , int h, int w, int r);
 	void boxBlurH_4 (unsigned char *scl, unsigned char *tcl, int h, int w, int r);
 
-	pair<int,int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
+	pair<int,int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int nEffectValue);
 
 	unsigned char m_pBluredImage[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH << 2];
 
