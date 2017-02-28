@@ -47,7 +47,7 @@ m_EffectValue(10)
 
 		//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-		modifYUV[y] = getMin(((unsigned char)1.1643*(gray - 24)), 255);
+		modifYUV[y] = getMax(getMin(((unsigned char)1.1643*(gray - 24)), 255),0);
 		//#else
 
 		//       modifYUV[y] = gray;
