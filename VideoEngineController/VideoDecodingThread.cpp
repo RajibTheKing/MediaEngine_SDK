@@ -33,6 +33,8 @@ m_HasPreviousValues(false),
 m_llFriendID(llFriendID)
 
 {
+    m_iMaxLen = MAX_FRAME_WIDTH * MAX_FRAME_HEIGHT * 3 / 2;
+    
     m_pCalculatorDecodeTime = new CAverageCalculator();
 
 	m_pCommonElementBucket = pCommonElementBucket;
@@ -500,7 +502,9 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	//printf("#V### Decoded Size -> %d +++E.Size:  %d\n",m_decodedFrameSize,(int)frameSize);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
 
-	if (m_decodingHeight > MAX_FRAME_HEIGHT || m_decodingWidth > MAX_FRAME_WIDTH)
+	//if (m_decodingHeight > MAX_FRAME_HEIGHT || m_decodingWidth > MAX_FRAME_WIDTH)
+    
+    if(m_decodedFrameSize > m_iMaxLen)
 	{
 		m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_llFriendID, m_pCommonElementBucket->m_pEventNotifier->RESOLUTION_NOT_SUPPORTED);
 
