@@ -54,7 +54,7 @@ void IDRFrameIntervalController::NotifyEncodedFrame(unsigned char *ucaEncodedFra
     }
     
     int type = m_Tools.GetEncodedFrameType(ucaEncodedFrame);
-    if(type == IDR_SLICE)
+    if(type == SPS_DATA)
     {
         m_llLastSentIDRFrameNumber = nFrameNumber;
         m_llFirstMissedFrameNumber = -1;
