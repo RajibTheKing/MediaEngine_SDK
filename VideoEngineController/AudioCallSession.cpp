@@ -110,7 +110,12 @@ m_nServiceType(nServiceType)
 	}
 
 	m_bUsingLoudSpeaker = false;
-	m_bEchoCancellerEnabled = false;
+	m_bEchoCancellerEnabled = true;
+
+	if(m_bLiveAudioStreamRunning)
+	{
+		m_bEchoCancellerEnabled = false;
+	}
 
 #ifdef USE_AECM
 	m_pEcho = new CEcho(66);
