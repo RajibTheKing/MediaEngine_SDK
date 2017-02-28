@@ -75,6 +75,7 @@ private:
 	int m_square[256];
 	int m_EffectValue;
 
+	int m_precSharpness[256][2300];
 
 };
 

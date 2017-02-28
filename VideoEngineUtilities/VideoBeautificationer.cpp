@@ -34,26 +34,26 @@ m_EffectValue(10)
 	m_nVideoHeight = iVideoHeight;
 	m_nVideoWidth = iVideoWidth;
 
-	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
+	GenerateUVIndex(m_nVideoHeight, m_nVideoWidth, NV12);
 
 	string str = "";
 
-	for(int y=1; y<= 255; y++)
+	for (int y = 1; y <= 255; y++)
 	{
 		double gray = y;
 		double sqrt_value = sqrt(gray);
 		gray = gray / (0.89686516089772L + 0.003202159061032L*gray - 0.044292372843353L*sqrt_value);
-		gray = gray<256.0L? gray:255.0L;
-        
-//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-        
-		modifYUV[y] = getMin(((unsigned char)1.1643*(gray-24)), 255);
-//#else
-        
- //       modifYUV[y] = gray;
-        
-//#endif
-        
+		gray = gray<256.0L ? gray : 255.0L;
+
+		//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+		modifYUV[y] = getMin(((unsigned char)1.1643*(gray - 24)), 255);
+		//#else
+
+		//       modifYUV[y] = gray;
+
+		//#endif
+
 	}
 
 
@@ -63,6 +63,15 @@ m_EffectValue(10)
 	{
 		m_square[i] = i*i;
 	}
+
+	for (int i = 0; i < 256; i++)
+	{
+		for (int j = 0; j < 2300; j++)
+		{
+			m_precSharpness[i][j] = min(255., max(0., i + (10. * i - j)/8.));
+		}
+	}
+
 }
 
 CVideoBeautificationer::~CVideoBeautificationer()
@@ -76,7 +85,7 @@ void CVideoBeautificationer::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 	m_nVideoHeight = iVideoHeight;
 	m_nVideoWidth = iVideoWidth;
 
-	GenerateUVIndex(m_nVideoHeight,m_nVideoWidth, NV12 );
+	GenerateUVIndex(m_nVideoHeight, m_nVideoWidth, NV12);
 }
 
 void CVideoBeautificationer::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
@@ -85,30 +94,30 @@ void CVideoBeautificationer::SetDeviceHeightWidth(int iVideoHeight, int iVideoWi
 	m_iDeviceWidth = iVideoWidth;
 }
 
-void CVideoBeautificationer::GenerateUVIndex( int iVideoHeight, int iVideoWidth, int dataFormat )
+void CVideoBeautificationer::GenerateUVIndex(int iVideoHeight, int iVideoWidth, int dataFormat)
 {
 	//LOGE("fahad -->> ----------------- iHeight = %d, iWdith = %d", iVideoHeight, iVideoWidth);
 	int iHeight = iVideoHeight;
 	int iWidth = iVideoWidth;
 	int yLength = iHeight * iWidth;
-	int uLength = yLength/2;
+	int uLength = yLength / 2;
 
 	int yConIndex = 0;
-	int vIndex ;
-	int uIndex ;
-	vIndex = yLength+(yLength/4);
+	int vIndex;
+	int uIndex;
+	vIndex = yLength + (yLength / 4);
 	uIndex = yLength;
 
 
 	//LOGE("fahad -->> ----------------- iHeight = %d, iWdith = %d , vIndex = %d, uIndex = %d, yLength = %d", iVideoHeight, iVideoWidth, vIndex, uIndex, yLength);
 	int heightIndex = 1;
-	for(int i = 0;  ;)
+	for (int i = 0;;)
 	{
-		if(i == iWidth*heightIndex) {
-			i+=iWidth;
-			heightIndex+=2;
+		if (i == iWidth*heightIndex) {
+			i += iWidth;
+			heightIndex += 2;
 		}
-		if(i>=yLength) break;
+		if (i >= yLength) break;
 		yConIndex = i;
 
 
@@ -127,7 +136,7 @@ void CVideoBeautificationer::GenerateUVIndex( int iVideoHeight, int iVideoWidth,
 
 		uIndex += 1;
 		vIndex += 1;
-		i+=2;
+		i += 2;
 	}
 }
 
@@ -138,16 +147,16 @@ void CVideoBeautificationer::MakeFrameBlur(unsigned char *convertingData, int iV
 
 void CVideoBeautificationer::MakeFrameBlurAndStore(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
-	GaussianBlur_4thApproach(convertingData, m_pBluredImage, iVideoHeight, iVideoWidth, 2 );
+	GaussianBlur_4thApproach(convertingData, m_pBluredImage, iVideoHeight, iVideoWidth, 2);
 	//memcpy(convertingData,  m_pBluredImage, iVideoHeight*iVideoWidth );
 }
 
 void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *pixel)
 {
 	int iTotLen = m_nVideoWidth * m_nVideoHeight;
-	int iLen =  m_nVideoWidth * m_nVideoHeight;//(int)(modifData.length / 1.5);
+	int iLen = m_nVideoWidth * m_nVideoHeight;//(int)(modifData.length / 1.5);
 	int totalYValue = 0;
-	for(int i=0; i<iLen; i++)
+	for (int i = 0; i<iLen; i++)
 	{
 		totalYValue += pixel[i];
 		MakePixelBright(&pixel[i]);
@@ -157,7 +166,7 @@ void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *pixel)
 
 	int m_AverageValue = totalYValue / iLen;
 
-	SetBrighteningValue(m_AverageValue , 10/*int brightnessPrecision*/);
+	SetBrighteningValue(m_AverageValue, 10/*int brightnessPrecision*/);
 
 	//IncreaseTemperatureOfFrame(pixel, m_nVideoHeight, m_nVideoWidth, 4);
 
@@ -165,9 +174,9 @@ void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *pixel)
 
 bool CVideoBeautificationer::IsSkinPixel(unsigned char YPixel, unsigned char UPixel, unsigned char VPixel)
 {
-	if( (UPixel > 94 && UPixel < 126) && (VPixel > 134 && VPixel < 176)  )
+	if ((UPixel > 94 && UPixel < 126) && (VPixel > 134 && VPixel < 176))
 	{
-			return true;
+		return true;
 	}
 
 	return false;
@@ -183,34 +192,43 @@ void CVideoBeautificationer::StartBrightening(int iVideoHeight, int iVideoWidth,
 
 void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightnessPrecision)
 {
-	if(m_AverageValue < 10)
+	if (m_AverageValue < 10)
 	{
 		m_nThresholdValue = 60;
-	}else if(m_AverageValue < 15)
+	}
+	else if (m_AverageValue < 15)
 	{
 		m_nThresholdValue = 65;
-	}else if(m_AverageValue < 20)
+	}
+	else if (m_AverageValue < 20)
 	{
 		m_nThresholdValue = 70;
-	}else if(m_AverageValue < 30)
+	}
+	else if (m_AverageValue < 30)
 	{
 		m_nThresholdValue = 85;
-	}else if(m_AverageValue < 40)
+	}
+	else if (m_AverageValue < 40)
 	{
 		m_nThresholdValue = 90;
-	}else if(m_AverageValue < 50)
+	}
+	else if (m_AverageValue < 50)
 	{
 		m_nThresholdValue = 95;
-	}else if(m_AverageValue < 60)
+	}
+	else if (m_AverageValue < 60)
 	{
 		m_nThresholdValue = 100;
-	}else if(m_AverageValue < 70)
+	}
+	else if (m_AverageValue < 70)
 	{
 		m_nThresholdValue = 110;
-	}else if(m_AverageValue < 80)
+	}
+	else if (m_AverageValue < 80)
 	{
 		m_nThresholdValue = 115;
-	}else{
+	}
+	else{
 		m_nThresholdValue = 115;
 	}
 
@@ -264,17 +282,17 @@ void CVideoBeautificationer::MakeFrameBright(unsigned char *convertingData, int 
 }
 
 void CVideoBeautificationer::IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth,
-														unsigned char nThreshold)
+	unsigned char nThreshold)
 {
 	int startUIndex = iVideoHeight * iVideoWidth;
 	int uLen = startUIndex + (startUIndex / 4);
 	int vLen = startUIndex + (startUIndex / 2);
-	for(int i=startUIndex; i <uLen; i++)
+	for (int i = startUIndex; i <uLen; i++)
 	{
 		convertingData[i] = getMax(convertingData[i] - nThreshold, 0);
 	}
 
-	for(int i=uLen; i <vLen; i++)
+	for (int i = uLen; i <vLen; i++)
 	{
 		convertingData[i] = getMin(convertingData[i] + nThreshold, 255);
 	}
@@ -282,72 +300,72 @@ void CVideoBeautificationer::IncreaseTemperatureOfFrame(unsigned char *convertin
 
 void CVideoBeautificationer::boxesForGauss(float sigma, int n)  // standard deviation, number of boxes
 {
-	float wIdeal = (float)sqrt((12*sigma*sigma/n)+1);  // Ideal averaging filter width
+	float wIdeal = (float)sqrt((12 * sigma*sigma / n) + 1);  // Ideal averaging filter width
 	int wl = (int)floor(wIdeal);
-	if(wl%2==0) wl--;
-	int wu = wl+2;
+	if (wl % 2 == 0) wl--;
+	int wu = wl + 2;
 
-	float mIdeal = (12*sigma*sigma - n*wl*wl - 4*n*wl - 3*n)/(-4*wl - 4);
-	int m = (int) floor(mIdeal + 0.5);
+	float mIdeal = (12 * sigma*sigma - n*wl*wl - 4 * n*wl - 3 * n) / (-4 * wl - 4);
+	int m = (int)floor(mIdeal + 0.5);
 
 	// var sigmaActual = sqrt( (m*wl*wl + (n-m)*wu*wu - n)/12 );
 
-	for(int i=0; i<n; i++)
+	for (int i = 0; i<n; i++)
 	{
-		m_Sizes[i]=i<m?wl:wu;
+		m_Sizes[i] = i<m ? wl : wu;
 	}
 
 	return;
 }
 
-void CVideoBeautificationer::GaussianBlur_4thApproach(unsigned char *scl , unsigned char *tcl, int h, int w, float r)
+void CVideoBeautificationer::GaussianBlur_4thApproach(unsigned char *scl, unsigned char *tcl, int h, int w, float r)
 {
-	boxBlur_4 (scl,tcl, h, w, (m_Sizes[2]-1)/2);
+	boxBlur_4(scl, tcl, h, w, (m_Sizes[2] - 1) / 2);
 
 }
 
 
-void CVideoBeautificationer::boxBlur_4 (unsigned char *scl, unsigned char *tcl , int h, int w, int r)
+void CVideoBeautificationer::boxBlur_4(unsigned char *scl, unsigned char *tcl, int h, int w, int r)
 {
-	boxBlurH_4( scl, tcl, h, w, r);
+	boxBlurH_4(scl, tcl, h, w, r);
 }
 
 /*void CVideoBeautificationer::boxBlurH_4 (unsigned char *scl, unsigned char *tcl, int h, int w, int r)
 {
-	int iarr = (r+r+1);
-	for(int i=0; i<h; i++)
-	{
-		int ti = i*w, li = ti, ri = ti+r;
-		int fv = scl[ti], lv = scl[ti+w-1], val = (r+1)*fv;
+int iarr = (r+r+1);
+for(int i=0; i<h; i++)
+{
+int ti = i*w, li = ti, ri = ti+r;
+int fv = scl[ti], lv = scl[ti+w-1], val = (r+1)*fv;
 
-		for(int j=0; j<r; j++) val += scl[ti+j] ;
-		for(int j=0  ; j<=r ; j++) {
-			val += scl[ri++]  - fv;
-			tcl[ti++] = ( unsigned char)(val/iarr) & 0xFF;
-		}
-		for(int j=r+1; j<w-r; j++) {
-			val += scl[ri++]  - scl[li++] ;
-			tcl[ti++] = (unsigned char)(val/iarr) & 0xFF;;
-		}
-	//for(int j=w-r; j<w  ; j++) { val += lv        - scl[li++];   tcl[ti++] = (unsigned char)floor(val*iarr + 0.5); }
-	}
+for(int j=0; j<r; j++) val += scl[ti+j] ;
+for(int j=0  ; j<=r ; j++) {
+val += scl[ri++]  - fv;
+tcl[ti++] = ( unsigned char)(val/iarr) & 0xFF;
+}
+for(int j=r+1; j<w-r; j++) {
+val += scl[ri++]  - scl[li++] ;
+tcl[ti++] = (unsigned char)(val/iarr) & 0xFF;;
+}
+//for(int j=w-r; j<w  ; j++) { val += lv        - scl[li++];   tcl[ti++] = (unsigned char)floor(val*iarr + 0.5); }
+}
 }*/
 
 void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, int h, int w, int r)
 {
-	int iarr = (r+r+1);
-	for(int i=0; i<h; i++)
+	int iarr = (r + r + 1);
+	for (int i = 0; i<h; i++)
 	{
-		int ti = i*w, li = ti, ri = ti+r;
-		int fv = (scl[ti] & 0xFF), lv = (scl[ti+w-1] & 0xFF), val = (r+1)*fv;
+		int ti = i*w, li = ti, ri = ti + r;
+		int fv = (scl[ti] & 0xFF), lv = (scl[ti + w - 1] & 0xFF), val = (r + 1)*fv;
 
-		for(int j=0; j<r; j++) val += (scl[ti+j] & 0xFF);
-		for(int j=0  ; j<=r ; j++) { val += (scl[ri++] & 0xFF) - fv       ;   tcl[ti++] = (unsigned char)((unsigned char)(val/iarr) & 0xFF); }
-		for(int j=r+1; j<w-r; j++) {
-			val += (scl[ri++] & 0xFF) - (scl[li++] & 0xFF);   tcl[ti++] = (unsigned char)( (unsigned char)(val/iarr)  & 0xFF);
+		for (int j = 0; j<r; j++) val += (scl[ti + j] & 0xFF);
+		for (int j = 0; j <= r; j++) { val += (scl[ri++] & 0xFF) - fv;   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF); }
+		for (int j = r + 1; j<w - r; j++) {
+			val += (scl[ri++] & 0xFF) - (scl[li++] & 0xFF);   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF);
 		}
-		for(int j=w-r; j<w  ; j++) {
-			val += (scl[ri++] & 0xFF) - (scl[li++] & 0xFF);   tcl[ti++] = (unsigned char)( (unsigned char)(val/iarr)  & 0xFF);
+		for (int j = w - r; j<w; j++) {
+			val += (scl[ri++] & 0xFF) - (scl[li++] & 0xFF);   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF);
 		}//(unsigned char)floor(val*iarr + 0.5); }
 	}
 	//return tcl;
@@ -355,15 +373,25 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 
 pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam)
 {
-	if(effectParam[0] != 0 )m_sigma = effectParam[0];
-	if(effectParam[1] != 0 )m_radius = effectParam[1];
-	if(effectParam[2] != 0 )m_EffectValue = effectParam[2];
+	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
+	if (effectParam[1] != 0)m_radius = effectParam[1];
+	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
+
+	long long startSharpingTime = m_Tools.CurrentTimestamp();
+
+	for (int i = 0; i <= iHeight; i++) {
+		m_mean[i][0] = 0;
+	}
+	memset(m_mean, iWidth, 0);
+
 
 	for (int i = 1; i <= iHeight; i++)
 	{
+		int tmp = 0;
 		for (int j = 1; j <= iWidth; j++)
 		{
-			m_mean[i][j] = pBlurConvertingData[i * iWidth + j - 1];
+			tmp += pBlurConvertingData[i * iWidth + j - 1];
+			m_mean[i][j] = tmp + m_mean[i-1][j];
 		}
 	}
 
@@ -374,21 +402,27 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	{
 		for (int j = 2; j < iWidth; j++)
 		{
-			pBlurConvertingData[i * iWidth + j - 1] = min(255., max(0.,
-				0.+pBlurConvertingData[i * iWidth + j - 1]
-				+(9. * m_mean[i][j]
-				- m_mean[i - 1][j - 1]
-				- m_mean[i - 1][j]
-				- m_mean[i - 1][j + 1]
-				- m_mean[i][j - 1]
-				- m_mean[i][j]
-				- m_mean[i][j + 1]
-				- m_mean[i + 1][j - 1]
-				- m_mean[i + 1][j]
-				- m_mean[i + 1][j + 1]) / (m_EffectValue * 1.0)));
+			//pBlurConvertingData[i * iWidth + j - 1] = min(255., max(0.,
+			//	0. + pBlurConvertingData[i * iWidth + j - 1]
+			//	+ (9. * m_mean[i][j]
+			//	- m_mean[i - 1][j - 1]
+			//	- m_mean[i - 1][j]
+			//	- m_mean[i - 1][j + 1]
+			//	- m_mean[i][j - 1]
+			//	- m_mean[i][j]
+			//	- m_mean[i][j + 1]
+			//	- m_mean[i + 1][j - 1]
+			//	- m_mean[i + 1][j]
+			//	- m_mean[i + 1][j + 1]) / (m_EffectValue * 1.0)));
+			int indx = m_mean[i + 1][j + 1] - m_mean[i - 2][j + 1] - m_mean[i + 1][j - 2] + m_mean[i - 2][j - 2];
+
+			pBlurConvertingData[i * iWidth + j - 1] = m_precSharpness[pBlurConvertingData[i * iWidth + j - 1]][indx];
+			//pBlurConvertingData[i * iWidth + j - 1] = min(255., max(0., pBlurConvertingData[i * iWidth + j - 1]+ (m_precSharpness[pBlurConvertingData[i * iWidth + j - 1]][indx] / (m_EffectValue * 1.0))));
 
 		}
 	}
+
+	long long endSharpingTime = m_Tools.CurrentTimestamp();
 
 	for (int i = 0; i <= iHeight; i++) {
 		m_mean[i][0] = 0;
@@ -401,7 +435,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 #if defined(__ANDROID__)
 	int totalYValue = 0;
-	int yLen =  iWidth * iHeight;
+	int yLen = iWidth * iHeight;
 #endif
 
 	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
@@ -438,35 +472,35 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	//Sharpening Starts
 	/*int radius = 5;
 	for (int i = radius + 1; i < iHeight - radius - 1; i++) {
-		for (int j = radius + 1; j < iWidth - radius - 1; j++) {
-			double contrast = (m_mean[i + radius][j + radius] + m_mean[i - radius - 1][j - radius - 1]
-				- m_mean[i - radius - 1][j + radius] - m_mean[i + radius][j - radius - 1])
-				/ (radius << 1 | 1) / (radius << 1 | 1) / 1.;
-			double factor = (259.0 * (contrast/10. + 255.0)) / (255.0 * (259.0 - contrast/10.));
-			/*int u = pBlurConvertingData[m_pUIndex[i*iWidth + j - 1]];
-			int v = pBlurConvertingData[m_pVIndex[i*iWidth + j - 1]];
-			if ((u>94) && (u < 126) && (v>134) && (v < 176));
-			else*/
-			/*pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 5.+pBlurConvertingData[i * iWidth + j - 1] + (pBlurConvertingData[i * iWidth + j - 1] - contrast) * .8));
-			pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 5.+factor * (pBlurConvertingData[i * iWidth + j - 1] - 220) + 220));
+	for (int j = radius + 1; j < iWidth - radius - 1; j++) {
+	double contrast = (m_mean[i + radius][j + radius] + m_mean[i - radius - 1][j - radius - 1]
+	- m_mean[i - radius - 1][j + radius] - m_mean[i + radius][j - radius - 1])
+	/ (radius << 1 | 1) / (radius << 1 | 1) / 1.;
+	double factor = (259.0 * (contrast/10. + 255.0)) / (255.0 * (259.0 - contrast/10.));
+	/*int u = pBlurConvertingData[m_pUIndex[i*iWidth + j - 1]];
+	int v = pBlurConvertingData[m_pVIndex[i*iWidth + j - 1]];
+	if ((u>94) && (u < 126) && (v>134) && (v < 176));
+	else*/
+	/*pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 5.+pBlurConvertingData[i * iWidth + j - 1] + (pBlurConvertingData[i * iWidth + j - 1] - contrast) * .8));
+	pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 5.+factor * (pBlurConvertingData[i * iWidth + j - 1] - 220) + 220));
 
-		}
+	}
 	}
 
 	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
-		tmp = 0, tmp2 = 0;
-		m_mean[i][0] = 0;
-		for (int j = 1; j <= iWidth; j++)
-		{
-			cur_pixel = pBlurConvertingData[iw + j - 1];
+	tmp = 0, tmp2 = 0;
+	m_mean[i][0] = 0;
+	for (int j = 1; j <= iWidth; j++)
+	{
+	cur_pixel = pBlurConvertingData[iw + j - 1];
 
-			tmp += cur_pixel;
-			m_mean[i][j] = tmp + m_mean[i - 1][j];
+	tmp += cur_pixel;
+	m_mean[i][j] = tmp + m_mean[i - 1][j];
 
-			tmp2 += cur_pixel * cur_pixel;
-			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
-		}
+	tmp2 += cur_pixel * cur_pixel;
+	m_variance[i][j] = tmp2 + m_variance[i - 1][j];
+	}
 	}*/
 	//Sharpening Ends
 
@@ -486,13 +520,17 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			int miu = m_mean[hl][wl] + m_mean[hr][wr] - m_mean[hl][wr] - m_mean[hr][wl];
 			int viu = m_variance[hl][wl] + m_variance[hr][wr] - m_variance[hl][wr] - m_variance[hr][wl];
 
+			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_3, "viu " + m_Tools.getText(viu) + " alter " + m_Tools.getText(miu * miu / 121));
+
+			//LOGE("viu %d miu %d\n",viu,miu/121*miu);
+
+
 			double men = miu / m_pixels;
 			double var = (viu - (miu * men)) / m_pixels;
 
-			pBlurConvertingData[iw + wl] = (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma);
+			pBlurConvertingData[iw + wl] = min(255., max(0., (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma)));
 
 		}
-
 		iw += iWidth;
 	}
 
@@ -500,61 +538,64 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	/*for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
-		tmp = 0, tmp2 = 0;
-		m_mean[i][0] = 0;
-		for (int j = 1; j <= iWidth; j++)
-		{
-			cur_pixel = pBlurConvertingData[iw + j - 1];
+	tmp = 0, tmp2 = 0;
+	m_mean[i][0] = 0;
+	for (int j = 1; j <= iWidth; j++)
+	{
+	cur_pixel = pBlurConvertingData[iw + j - 1];
 
-			tmp += cur_pixel;
-			m_mean[i][j] = tmp + m_mean[i - 1][j];
+	tmp += cur_pixel;
+	m_mean[i][j] = tmp + m_mean[i - 1][j];
 
-			tmp2 += cur_pixel * cur_pixel;
-			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
-		}
+	tmp2 += cur_pixel * cur_pixel;
+	m_variance[i][j] = tmp2 + m_variance[i - 1][j];
+	}
 	}
 
 	int radius = 5;
 	for (int i = radius + 1; i < iHeight - radius - 1; i++) {
-		for (int j = radius + 1; j < iWidth - radius - 1; j++) {
-			double contrast = (m_mean[i + radius][j + radius] + m_mean[i - radius - 1][j - radius - 1]
-				- m_mean[i - radius - 1][j + radius] - m_mean[i + radius][j - radius - 1])
-				/ (radius << 1 | 1) / (radius << 1 | 1) / 1.;
-			double factor = (259.0 * (contrast / 15. + 255.0)) / (255.0 * (259.0 - contrast / 15.));
-			pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 2. + pBlurConvertingData[i * iWidth + j - 1] + (pBlurConvertingData[i * iWidth + j - 1] - contrast) * .2));
-			pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 2. + factor * (pBlurConvertingData[i * iWidth + j - 1] - 220) + 220));
+	for (int j = radius + 1; j < iWidth - radius - 1; j++) {
+	double contrast = (m_mean[i + radius][j + radius] + m_mean[i - radius - 1][j - radius - 1]
+	- m_mean[i - radius - 1][j + radius] - m_mean[i + radius][j - radius - 1])
+	/ (radius << 1 | 1) / (radius << 1 | 1) / 1.;
+	double factor = (259.0 * (contrast / 15. + 255.0)) / (255.0 * (259.0 - contrast / 15.));
+	pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 2. + pBlurConvertingData[i * iWidth + j - 1] + (pBlurConvertingData[i * iWidth + j - 1] - contrast) * .2));
+	pBlurConvertingData[i * iWidth + j - 1] = min(205., max(50., 2. + factor * (pBlurConvertingData[i * iWidth + j - 1] - 220) + 220));
 
-		}
+	}
 	}*/
 	/*for (int i = 1; i <= iHeight; i++)
 	{
-		for (int j = 1; j <= iWidth; j++)
-		{
-			m_mean[i][j] = pBlurConvertingData[i * iWidth + j - 1];
-		}
+	for (int j = 1; j <= iWidth; j++)
+	{
+	m_mean[i][j] = pBlurConvertingData[i * iWidth + j - 1];
+	}
 	}
 	for (int i = 2; i < iHeight; i++)
 	{
-		for (int j = 2; j < iWidth; j++)
-		{
-			pBlurConvertingData[i * iWidth + j - 1] = min(255., max(0.,
-				//pBlurConvertingData[i * iWidth + j - 1]
-				+10. * m_mean[i][j]
-				- m_mean[i - 1][j - 1]
-				- m_mean[i - 1][j]
-				- m_mean[i - 1][j + 1]
-				- m_mean[i][j - 1]
-				- m_mean[i][j]
-				- m_mean[i][j + 1]
-				- m_mean[i + 1][j - 1]
-				- m_mean[i + 1][j]
-				- m_mean[i + 1][j + 1]));
+	for (int j = 2; j < iWidth; j++)
+	{
+	pBlurConvertingData[i * iWidth + j - 1] = min(255., max(0.,
+	//pBlurConvertingData[i * iWidth + j - 1]
+	+10. * m_mean[i][j]
+	- m_mean[i - 1][j - 1]
+	- m_mean[i - 1][j]
+	- m_mean[i - 1][j + 1]
+	- m_mean[i][j - 1]
+	- m_mean[i][j]
+	- m_mean[i][j + 1]
+	- m_mean[i + 1][j - 1]
+	- m_mean[i + 1][j]
+	- m_mean[i + 1][j + 1]));
 
-		}
+	}
 	}*/
 	//Sharpening Ends
 
-	pair<int, int> result = {m_mean[iHeight][iWidth]/(iHeight*iWidth), m_variance[iHeight][iWidth]/(iHeight*iWidth)};
+	long long endFilterTime = m_Tools.CurrentTimestamp();
+
+	//LOGE("VideoBeautificcationer -->> sharpingTimeDiff = %lld, filterTimeDiff = %lld, totalTimeDiff =% lld", -(startSharpingTime - endSharpingTime), -(endSharpingTime - endFilterTime), -(startSharpingTime - endFilterTime));
+	pair<int, int> result = { m_mean[iHeight][iWidth] / (iHeight*iWidth), m_variance[iHeight][iWidth] / (iHeight*iWidth) };
 	return result;
 }
 
