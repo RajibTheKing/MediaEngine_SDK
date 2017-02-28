@@ -227,6 +227,9 @@
     <ClInclude Include="..\..\VideoEngineController\Aac.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -402,6 +405,9 @@
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\Aac.cpp">
       <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp">
+      <Filter>VideoEngineUtilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
