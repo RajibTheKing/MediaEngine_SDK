@@ -110,7 +110,7 @@ m_nServiceType(nServiceType)
 	}
 
 	m_bUsingLoudSpeaker = false;
-	m_bEchoCancellerEnabled = true;
+	m_bEchoCancellerEnabled = false;
 
 #ifdef USE_AECM
 	m_pEcho = new CEcho(66);
@@ -247,6 +247,7 @@ bool CAudioCallSession::getIsAudioLiveStreamRunning(){
 
 void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
+	return;
 #ifdef USE_AECM
 	m_bEchoCancellerEnabled = /*bOn*/ true;
 #endif
