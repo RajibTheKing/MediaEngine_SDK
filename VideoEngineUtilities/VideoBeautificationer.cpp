@@ -9,7 +9,7 @@
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigma = 50;
+int m_sigma = 100;
 
 #else
 
