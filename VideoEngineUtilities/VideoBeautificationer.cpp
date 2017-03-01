@@ -382,7 +382,11 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
 
 	long long startSharpingTime = m_Tools.CurrentTimestamp();
-
+    
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+    //Do nothing
+    //Not Needed Yet...
+#else
 	for (int i = 0; i <= iHeight; i++) {
 		m_mean[i][0] = 0;
 	}
@@ -425,7 +429,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 		}
 	}
-
+#endif
 	long long endSharpingTime = m_Tools.CurrentTimestamp();
 
 	for (int i = 0; i <= iHeight; i++) {
