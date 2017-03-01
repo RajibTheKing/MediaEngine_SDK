@@ -78,7 +78,8 @@ bool IDRFrameIntervalController::NeedToGenerateIFrame(int nServiceType)
     }
     long long nextFrameNumber = m_llLastFrameNumber + 1;
     
-    if(nextFrameNumber % 15 == 0)
+    //if(nextFrameNumber % 15 == 0)
+    if( (nextFrameNumber - m_llLastSentIDRFrameNumber) >= 15)
     {
         if(m_llFirstMissedFrameNumber > m_llLastSentIDRFrameNumber && m_llFirstMissedFrameNumber < nextFrameNumber)
         {
@@ -90,6 +91,7 @@ bool IDRFrameIntervalController::NeedToGenerateIFrame(int nServiceType)
             return true;
         }
     }
+    
     
     return false;
 }
