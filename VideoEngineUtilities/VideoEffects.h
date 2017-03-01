@@ -20,6 +20,8 @@ public:
     int WarmColorEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
     int TintColorBlueEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
     int TintColorPinkEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
+	void SaturationChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double scale);
+	void ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast);
 
 private:
     

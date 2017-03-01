@@ -160,3 +160,23 @@ int CVideoEffects::TintColorPinkEffect(unsigned char *pConvertingData, int inHei
 }
 
 
+void SaturationChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double scale = .80)
+{
+	int frameLen = inHeight * inWidth * 3 / 2;
+	for (int i = inHeight * inWidth; i < frameLen; i++) 
+	{
+		pConvertingData[i] = max(0., min(255., (pConvertingData[i] - 128) * scale + 128));
+	}
+	return;
+}
+
+void ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast = 100)
+{
+	double factor = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast));
+	int lim = inHeight * inWidth;
+	for (int i = 0; i < lim; i++) 
+	{
+		pConvertingData[i] = min(255., max(0., factor * (pConvertingData[i] - 128) + 128));
+	}
+	return;
+}
