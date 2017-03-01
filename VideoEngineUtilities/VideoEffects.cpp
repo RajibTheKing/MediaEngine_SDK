@@ -160,7 +160,7 @@ int CVideoEffects::TintColorPinkEffect(unsigned char *pConvertingData, int inHei
 }
 
 
-void SaturationChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double scale = .80)
+void CVideoEffects::SaturationChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double scale = .80)
 {
 	int frameLen = inHeight * inWidth * 3 / 2;
 	for (int i = inHeight * inWidth; i < frameLen; i++) 
@@ -170,7 +170,7 @@ void SaturationChangeEffect(unsigned char *pConvertingData, int inHeight, int in
 	return;
 }
 
-void ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast = 100)
+void CVideoEffects::ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast = 100)
 {
 	double factor = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast));
 	int lim = inHeight * inWidth;
