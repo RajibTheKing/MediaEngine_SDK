@@ -37,6 +37,8 @@ CVideoEncoder::~CVideoEncoder()
 
 int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 {
+    nIFrameInterval = 60; //এইটা পরে ঠিক করব 
+    
 	Locker lock(*m_pVideoEncoderMutex);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
