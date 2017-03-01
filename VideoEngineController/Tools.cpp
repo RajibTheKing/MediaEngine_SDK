@@ -546,8 +546,7 @@ void Tools::SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index,
 int Tools::GetEncodedFrameType(unsigned char *pFrame)
 {
     int nalType = pFrame[2] == 1 ? (pFrame[3] & 0x1f) : (pFrame[4] & 0x1f);
-    CLogPrinter::Log("nalType = %d", nalType);
-    
+    //CLogPrinter::Log("nalType = %d", nalType);
     //nalType = 7 [SPS Found]
     //nalType = 8 [PPS Found]
     //nalType = 5 [IDR Slice Found]

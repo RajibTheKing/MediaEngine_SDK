@@ -487,11 +487,20 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 }
 
+int nIDR_Frame_Gap = -1;
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
     
     long long decTime = m_Tools.CurrentTimestamp();
+    
+    int nalType = m_Tools.GetEncodedFrameType(in_data);
+    if(nalType == SPS_DATA)
+    {
+        printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %d, IDR_FRAME_GAP = %d\n", nFramNumber, nFramNumber - nIDR_Frame_Gap);
+        nIDR_Frame_Gap = nFramNumber;
+    }
+    
 	m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 	CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
 
