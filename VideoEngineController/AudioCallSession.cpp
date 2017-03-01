@@ -43,6 +43,7 @@
 FILE *FileInput;
 FILE *FileOutput;
 FILE *FileInputWithEcho;
+FILE *FileInputMuxed;
 #endif
 
 
@@ -220,6 +221,7 @@ CAudioCallSession::~CAudioCallSession()
 #ifdef __DUMP_FILE__
 	fclose(FileOutput);
 	fclose(FileInput);
+	fclose(FileInputWithEcho);
 #endif
 
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
@@ -300,6 +302,12 @@ void CAudioCallSession::StartCallInLive(int iRole)
 	m_Tools.SOSleep(20);
 
 	m_llDecodingTimeStampOffset = -1;
+#ifdef __DUMP_FILE__
+	if (m_iRole == PUBLISHER_IN_CALL)
+	{
+		FileInputMuxed= fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
+	}
+#endif
 	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
 
@@ -314,8 +322,13 @@ void CAudioCallSession::EndCallInLive()
 	{
 		m_Tools.SOSleep(1);
 	}
-	//LOGE("### stop call in live");
 
+#ifdef __DUMP_FILE__
+	if (m_iRole == PUBLISHER_IN_CALL)
+	{
+		fclose(FileInputMuxed);
+	}
+#endif
 	m_iRole = CALL_NOT_RUNNING;
 
 	m_pLiveAudioReceivedQueue->ResetBuffer();
@@ -324,6 +337,8 @@ void CAudioCallSession::EndCallInLive()
 	m_Tools.SOSleep(20);
 
 	m_llDecodingTimeStampOffset = -1;
+
+
 
 	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
@@ -533,6 +548,9 @@ void CAudioCallSession::MuxIfNeeded()
 		{
 			memcpy(m_saAudioMUXEDFrame, m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short));
 		}
+#ifdef __DUMP_FILE__
+		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputMuxed);
+#endif
 	}
 }
 
