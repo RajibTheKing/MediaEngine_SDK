@@ -42,7 +42,7 @@
 #ifdef __DUMP_FILE__
 FILE *FileInput;
 FILE *FileOutput;
-FILE *echoOutputFile;
+FILE *FileInputWithEcho;
 #endif
 
 
@@ -348,7 +348,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
 #endif
 #ifdef __DUMP_FILE__
-		fwrite(psaEncodingAudioData, 2, unLength, echoOutputFile);
+		fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
 #endif // __DUMP_FILE__
 
 		m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
@@ -782,7 +782,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 #ifdef __DUMP_FILE__
 	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
-	echoOutputFile = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
+	FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
