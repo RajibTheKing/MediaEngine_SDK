@@ -5,10 +5,10 @@
 //#define USE_LOW_PASS
 #define USE_SPEEX_GAIN
 
-//#define ECHO_ANALYSIS
+//#define DUMP_ECHO_ANALYSIS
 
-#ifdef ECHO_ANALYSIS
-FILE *EchoFile;
+#ifdef DUMP_ECHO_ANALYSIS
+FILE *FileEchoAnalysis;
 #define HEADER_SIZE 1
 #define WEBRTC_FAREND 1
 #define SPEEX_FAREND 2
@@ -18,8 +18,8 @@ FILE *EchoFile;
 CEcho::CEcho(int id)
 {
 
-#ifdef ECHO_ANALYSIS
-	EchoFile = fopen("/sdcard/endSignal.pcma", "wb");
+#ifdef DUMP_ECHO_ANALYSIS
+	FileEchoAnalysis = fopen("/sdcard/endSignal.pcma", "wb");
 #endif
 
 #ifdef USE_WEBRTC_AECM
@@ -121,8 +121,8 @@ CEcho::~CEcho()
 	speex_preprocess_state_destroy(den);
 #endif
 
-#ifdef ECHO_ANALYSIS
-	fclose(EchoFile);
+#ifdef DUMP_ECHO_ANALYSIS
+	fclose(FileEchoAnalysis);
 #endif
 
 }
@@ -173,10 +173,10 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker, bool i
 	{
 		m_Tools.SOSleep(1);
 	}
-#ifdef ECHO_ANALYSIS
+#ifdef DUMP_ECHO_ANALYSIS
 	short temp = SPEEX_FAREND;
-	fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
-	fwrite(sInBuf, sizeof(short), sBufferSize, EchoFile);
+	fwrite(&temp, sizeof(short), HEADER_SIZE, FileEchoAnalysis);
+	fwrite(sInBuf, sizeof(short), sBufferSize, FileEchoAnalysis);
 #endif
 
 	m_bReadingFarend = true;
@@ -198,14 +198,14 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker, bool i
 #endif
 		//ALOG("aec sBufferSize = " + m_Tools.IntegertoStringConvert((int)sBufferSize));
 
-#ifdef ECHO_ANALYSIS
+#ifdef DUMP_ECHO_ANALYSIS
 		while (m_bWritingFarend)
 		{
 			m_Tools.SOSleep(1);
 		}
 		short temp = NEAREND;
-		fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
-		fwrite(sInBuf, sizeof(short), sBufferSize, EchoFile);
+		fwrite(&temp, sizeof(short), HEADER_SIZE, FileEchoAnalysis);
+		fwrite(sInBuf, sizeof(short), sBufferSize, FileEchoAnalysis);
 #endif
 
 		memcpy(m_sTempBuf, sInBuf, sBufferSize * sizeof(short));
@@ -295,14 +295,14 @@ int CEcho::AddFarEnd(short *sBuffer, int sBufferSize, bool isLiveStreamRunning, 
 		return false;
 	}
 
-#ifdef ECHO_ANALYSIS
+#ifdef DUMP_ECHO_ANALYSIS
 	while (m_bWritingFarend)
 	{
 		m_Tools.SOSleep(1);
 	}
 	short temp = WEBRTC_FAREND;
-	fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
-	fwrite(sBuffer, sizeof(short), sBufferSize, EchoFile);
+	fwrite(&temp, sizeof(short), HEADER_SIZE, FileEchoAnalysis);
+	fwrite(sBuffer, sizeof(short), sBufferSize, FileEchoAnalysis);
 #endif
 
 	for (int i = 0; i < sBufferSize; i += AECM_SAMPLES_IN_FRAME)
