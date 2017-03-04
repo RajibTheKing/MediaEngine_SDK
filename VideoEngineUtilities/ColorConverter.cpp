@@ -1216,6 +1216,30 @@ int CColorConverter::getVIndex(int h, int w, int yVertical, int xHorizontal, int
     return (yVertical>>1) * (w>>1) + (xHorizontal>>1) + total + (total>>2); //total = h * w
 }
 
+//This Function will return UIndex based on NV12 Data
+int CColorConverter::getUIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total)
+{
+	return (((yVertical >> 1) * (w >> 1) + (xHorizontal >> 1)) << 1) + total; //total = h * w
+}
+
+//This Function will return VIndex based on NV12 Data
+int CColorConverter::getVIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total)
+{
+	return ((((yVertical >> 1) * (w >> 1) + (xHorizontal >> 1)) << 1) | 1) + total; //total = h * w
+}
+
+//This Function will return UIndex based on NV21 Data
+int CColorConverter::getUIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total)
+{
+	return ((((yVertical >> 1) * (w >> 1) + (xHorizontal >> 1)) << 1) | 1) + total; //total = h * w
+}
+
+//This Function will return VIndex based on NV21 Data
+int CColorConverter::getVIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total)
+{
+	return (((yVertical >> 1) * (w >> 1) + (xHorizontal >> 1)) << 1) + total; //total = h * w
+}
+
 //Date: 28-December-2016
 //Constraits:
 // i) Receive Big YUV420 Data  and  Small YUV420 Data, Finally Output Merged YUV420 Data
