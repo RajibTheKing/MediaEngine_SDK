@@ -180,3 +180,160 @@ void CVideoEffects::ContrastChangeEffect(unsigned char *pConvertingData, int inH
 	}
 	return;
 }
+
+void CVideoEffects::PencilSketchGrayEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+{
+
+	int frameLen = inHeight * inWidth * 3 / 2;
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i-1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = 255 - min(255., max(0.,
+				+ (9. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) * 4.));
+			//if (bufferr[i *iWidth + j - 1] >= 230)
+			{
+				pConvertingData[(i - 1)*inWidth + j - 1] /= 3;
+				pConvertingData[(i - 1)*inWidth + j - 1] *= 2;
+			}
+
+		}
+	}
+
+	for (int i = inHeight*inWidth; i < frameLen; i++)
+	{
+		pConvertingData[i] = 128;
+	}
+	return;
+}
+
+void CVideoEffects::PencilSketchWhiteEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+{
+
+	int frameLen = inHeight * inWidth * 3 / 2;
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = 255 - min(255., max(0.,
+				+(9. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) * 4.));
+
+		}
+	}
+
+	for (int i = inHeight*inWidth; i < frameLen; i++)
+	{
+		pConvertingData[i] = 128;
+	}
+	return;
+}
+
+void CVideoEffects::ColorSketchEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+{
+
+	int frameLen = inHeight * inWidth * 3 / 2;
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = 255 - min(255., max(0.,
+				+(9. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) * 2.));
+			//if (bufferr[i *iWidth + j - 1] >= 230)
+			{
+				pConvertingData[(i - 1)*inWidth + j - 1] /= 3;
+				pConvertingData[(i - 1)*inWidth + j - 1] *= 2;
+			}
+
+		}
+	}
+
+	return;
+}
+
+void CVideoEffects::CartoonEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+{
+
+	int frameLen = inHeight * inWidth * 3 / 2;
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1)*inWidth + j - 1] = 255 - (((m_mat[i - 1][j + 1] + m_mat[i + 1][j - 1] - m_mat[i - 1][j - 1] - m_mat[i + 1][j + 1]) / 4.0)) / 2.;
+			//if (bufferr[i *iWidth + j - 1] >= 230)
+			{
+				pConvertingData[(i - 1)*inWidth + j - 1] /= 3;
+				pConvertingData[(i - 1)*inWidth + j - 1] *= 2;
+			}
+
+		}
+	}
+
+	return;
+}
