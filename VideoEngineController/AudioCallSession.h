@@ -156,6 +156,8 @@ private:
     short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
 	short m_saAudioMUXEDFrame[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
 	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
+	short m_saEvenPacketStorage[MAX_AUDIO_FRAME_Length];
+	int m_iLastEvenStoredPacket;
 
 	///////////Post Encoding Data///////
 	/*
@@ -267,7 +269,7 @@ private:
 	void DumpDecodedFrame();
 	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);
-	void SendToPlayer(long long &llNow, long long &llLastTime);
+	void SendToPlayer(long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
 	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
 	///////End Of Methods Called From DecodingThreadProcedure/////
