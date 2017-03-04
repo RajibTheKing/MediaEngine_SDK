@@ -185,6 +185,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	long long llCountMiss = 0;
 
+	long long llSlotTimeStamp = 0;
+
     CVideoHeader videoHeaderObject;
 
 	while (bDecodingThreadRunning)
@@ -210,11 +212,15 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 				{
-					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && llCountMiss % 2 == 0 && m_HasPreviousValues == true)
+					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && (m_Tools.CurrentTimestamp()-llSlotTimeStamp)>=29 && m_HasPreviousValues == true)
+					{
 						nDecodingStatus = DecodeAndSendToClient2();
+
+						llSlotTimeStamp = m_Tools.CurrentTimestamp();
+					}
 				}
 
-				toolsObject.SOSleep(10);
+				toolsObject.SOSleep(1);
 			}
 			else
 			{
@@ -260,12 +266,19 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					{
 						toolsObject.SOSleep(1);
 						currentTime = m_Tools.CurrentTimestamp();
+
+						if(m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && (currentTime-llSlotTimeStamp)>=29 && m_HasPreviousValues == true)
+						{
+							nDecodingStatus = DecodeAndSendToClient2();
+							llSlotTimeStamp = m_Tools.CurrentTimestamp();
+						}
 					}
 				}
 				
 				//nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
                 nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(),0,0,0);
 
+				llSlotTimeStamp = m_Tools.CurrentTimestamp();
 				toolsObject.SOSleep(1);
 			}
 			continue;
