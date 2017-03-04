@@ -46,6 +46,8 @@ bool IDRFrameIntervalController::Handle_IDRFrame_Control_Packet(CVideoHeader &cr
     return true;
 }
 
+long long JustForCheck = -1;
+
 void IDRFrameIntervalController::NotifyEncodedFrame(unsigned char *ucaEncodedFrame, int nEncodedFrameSize, long long nFrameNumber)
 {
     if(nEncodedFrameSize <= 0)
@@ -60,6 +62,8 @@ void IDRFrameIntervalController::NotifyEncodedFrame(unsigned char *ucaEncodedFra
         m_llFirstMissedFrameNumber = -1;
         m_llLastMissedFrameNumber = -1;
         m_nRelativePframeCounter = 0;
+        printf("TheKing--> Sending IDR FRAME = %lld, IDR_GAP = %lld\n", nFrameNumber, nFrameNumber - JustForCheck);
+        JustForCheck = nFrameNumber;
     }
     else
     {
