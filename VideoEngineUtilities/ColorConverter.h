@@ -73,6 +73,10 @@ public:
 	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
+	int getUIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total);
+	int getVIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total);
+	int getUIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
+	int getVIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 	int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
     int CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth);
     int Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth);
