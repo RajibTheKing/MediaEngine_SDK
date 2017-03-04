@@ -37,7 +37,7 @@ class CEcho
 	short m_sTempBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 	short m_sSpeexFarendBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 	bool m_bFarendArrived;
-	bool m_bReadingFarend, m_bWritingFarend;
+	bool m_bReadingFarend, m_bWritingFarend, m_bWritingDump;
 	
 	//SmartPointer<CLockHandler> m_pEchoMutex;
 	

@@ -115,7 +115,7 @@ m_nServiceType(nServiceType)
 
 	if(m_bLiveAudioStreamRunning)
 	{
-		m_bEchoCancellerEnabled = false;
+		//m_bEchoCancellerEnabled = false;
 	}
 
 #ifdef USE_AECM
