@@ -448,17 +448,17 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
     
-	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
-
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
+	this->m_pColorConverter->Merge_Two_VideoNV12(m_PreviousDecodedFrameConvertedData, iPosX, iPosY, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 	//this->m_pColorConverter->ConvertI420ToNV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #elif defined(_DESKTOP_C_SHARP_)
+	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 	m_previousDecodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_PreviousDecodedFrameConvertedData, m_RenderingRGBFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #elif defined(TARGET_OS_WINDOWS_PHONE)
+	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 	this->m_pColorConverter->ConvertI420ToYV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #else
-
+	this->m_pColorConverter->Merge_Two_VideoNV21(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 	//this->m_pColorConverter->ConvertI420ToNV21(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #endif
 
