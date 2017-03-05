@@ -53,6 +53,7 @@ FILE *FileInputMuxed;
 
 #define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 2
 #define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 10
+#define CONSECUTIVE_AUDIO_PACKET_DELY 25
 
 
 
@@ -837,6 +838,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 			if (VIEWER_IN_CALL == m_iRole)
 			{
+				toolsObject.SOSleep(CONSECUTIVE_AUDIO_PACKET_DELY);
 				int n50MsFrameSizeInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING / 2;
 				memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame + n50MsFrameSizeInShort, n50MsFrameSizeInShort * 2);
 				long long llRelativeTimeForThisPacket = llRelativeTime + HALF_FRAME_DURATION_IN_MS;
@@ -1237,7 +1239,8 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 
 				if (iCurrentPacketNumber - 1 != m_iLastEvenStoredPacket)				
 				{
-					memset(m_saEvenPacketStorage, 0, m_nDecodedFrameSize * 2);
+					//memset(m_saEvenPacketStorage, 0, m_nDecodedFrameSize * 2);
+					return;
 				}
 			}
 			else
@@ -1247,7 +1250,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 				m_iLastEvenStoredPacket = iCurrentPacketNumber;
 				return;
 			}
-
+			LOG_50MS("###RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d", iCurrentPacketNumber);
 			m_AudioDecodedBuffer.EnQueue(m_saEvenPacketStorage, m_nDecodedFrameSize * 2, 0);
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
