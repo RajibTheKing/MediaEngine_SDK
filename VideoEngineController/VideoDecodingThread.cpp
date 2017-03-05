@@ -450,7 +450,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	this->m_pColorConverter-ConvertNV12ToI420(m_PreviousDecodedFrameConvertedData, iHeight, iWidth);
+	this->m_pColorConverter->ConvertNV12ToI420(m_PreviousDecodedFrameConvertedData, iHeight, iWidth);
 
 #elif defined(__ANDROID__)
 
