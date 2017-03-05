@@ -121,6 +121,28 @@ int CColorConverter::ConvertNV21ToI420(unsigned char *convertingData)
 	return m_UVPlaneEnd;
 }
 
+int CColorConverter::ConvertNV21ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	int i, j, k;
+
+	int YPlaneLength = iVideoHeight*iVideoWidth;
+	int VPlaneLength = YPlaneLength >> 2;
+	int UVPlaneMidPoint = YPlaneLength + VPlaneLength;
+	int UVPlaneEnd = UVPlaneMidPoint + VPlaneLength;
+
+	for (i = YPlaneLength, j = 0, k = i; i < UVPlaneEnd; i += 2, j++, k++)
+	{
+		m_pVPlane[j] = convertingData[i];
+		convertingData[k] = convertingData[i + 1];
+	}
+
+	memcpy(convertingData + UVPlaneMidPoint, m_pVPlane, VPlaneLength);
+
+	return m_UVPlaneEnd;
+}
+
 int CColorConverter::ConvertYUY2ToI420( unsigned char * input, unsigned char * output )
 {
 	Locker lock(*m_pColorConverterMutex);
@@ -201,6 +223,28 @@ int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData)
 	}
 
 	memcpy(convertingData + m_UVPlaneMidPoint, m_pVPlane, m_VPlaneLength);
+
+	return m_UVPlaneEnd;
+}
+
+int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	int i, j, k;
+
+	int YPlaneLength = iVideoHeight*iVideoWidth;
+	int VPlaneLength = YPlaneLength >> 2;
+	int UVPlaneMidPoint = YPlaneLength + VPlaneLength;
+	int UVPlaneEnd = UVPlaneMidPoint + VPlaneLength;
+
+	for (i = YPlaneLength, j = 0, k = i; i < UVPlaneEnd; i += 2, j++, k++)
+	{
+		m_pVPlane[j] = convertingData[i + 1];
+		convertingData[k] = convertingData[i];
+	}
+
+	memcpy(convertingData + UVPlaneMidPoint, m_pVPlane, VPlaneLength);
 
 	return m_UVPlaneEnd;
 }
