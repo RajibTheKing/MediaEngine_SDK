@@ -182,7 +182,7 @@ int CEcho::CancelEcho(short *sInBuf, int sBufferSize, bool isLoudspeaker, bool i
 	m_bWritingDump = true;
 	short temp = SPEEX_FAREND;
 	fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
-	fwrite(sInBuf, sizeof(short), sBufferSize, EchoFile);
+	fwrite(m_sSpeexFarendBuf, sizeof(short), sBufferSize, EchoFile);
 	m_bWritingDump = false;
 #endif
 
