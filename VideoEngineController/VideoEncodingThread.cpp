@@ -406,7 +406,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
 					//LOGE("setVideoEffect -------------->>             m_VideoEffectParam[0] = %d, m_VideoEffectParam[1] = %d,  m_VideoEffectParam[2] = %d", m_VideoEffectParam[0], m_VideoEffectParam[1], m_VideoEffectParam[2]);
+
+#ifndef TARGET_OS_WINDOWS_PHONE
+
 					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+#endif
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
 				}
