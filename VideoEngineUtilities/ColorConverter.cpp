@@ -1258,6 +1258,76 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 	int h2 = /* m_iVideoHeight >> 2 */ m_iSmallFrameHeight;
 	int w2 = /* m_iVideoWidth >> 2 */ m_iSmallFrameWidth;
 
+	int iLen1 = h1 * w1 * 3 / 2;
+	int iLen2 = h2 * w2 * 3 / 2;
+
+	int total1 = h1 * w1, total2 = h2 * w2;
+
+	for (int i = iPosY; i<(iPosY + h2); i++)
+	{
+		for (int j = iPosX; j<(iPosX + w2); j++)
+		{
+			int ii = i - iPosY;
+			int jj = j - iPosX;
+			int now1 = i*w1 + j;
+			int now2 = ii*w2 + jj;
+
+			pInData1[now1] = m_pSmallFrame[now2];
+			pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+			pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+		}
+	}
+
+	return iLen1;
+}
+
+int CColorConverter::Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	if (m_bMergingSmallFrameEnabled == false)
+		return 0;
+
+	int h1 = iVideoHeight;
+	int w1 = iVideoWidth;
+	int h2 = /* m_iVideoHeight >> 2 */ m_iSmallFrameHeight;
+	int w2 = /* m_iVideoWidth >> 2 */ m_iSmallFrameWidth;
+
+	int iLen1 = h1 * w1 * 3 / 2;
+	int iLen2 = h2 * w2 * 3 / 2;
+
+	int total1 = h1 * w1, total2 = h2 * w2;
+
+	for (int i = iPosY; i<(iPosY + h2); i++)
+	{
+		for (int j = iPosX; j<(iPosX + w2); j++)
+		{
+			int ii = i - iPosY;
+			int jj = j - iPosX;
+			int now1 = i*w1 + j;
+			int now2 = ii*w2 + jj;
+
+			pInData1[now1] = m_pSmallFrame[now2];
+			pInData1[getUIndexforNV12(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndexforNV12(h2, w2, ii, jj, total2)];
+			pInData1[getVIndexforNV12(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndexforNV12(h2, w2, ii, jj, total2)];
+		}
+	}
+
+	return iLen1;
+}
+
+int CColorConverter::Merge_Two_VideoNV21(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	if (m_bMergingSmallFrameEnabled == false)
+		return 0;
+
+	int h1 = iVideoHeight;
+	int w1 = iVideoWidth;
+	int h2 = /* m_iVideoHeight >> 2 */ m_iSmallFrameHeight;
+	int w2 = /* m_iVideoWidth >> 2 */ m_iSmallFrameWidth;
+
     int iLen1 = h1 * w1 * 3 / 2;
     int iLen2 = h2 * w2 * 3 / 2;
     
@@ -1273,13 +1343,14 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
             int now2 = ii*w2 + jj;
             
 			pInData1[now1] = m_pSmallFrame[now2];
-			pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
-			pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+			pInData1[getUIndexforNV21(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndexforNV21(h2, w2, ii, jj, total2)];
+			pInData1[getVIndexforNV21(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndexforNV21(h2, w2, ii, jj, total2)];
         }
     }
     
     return iLen1;
 }
+
 void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth)
 {
     float aspectRatio_Screen, aspectRatio_VideoData;
