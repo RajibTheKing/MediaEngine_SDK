@@ -447,19 +447,29 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 	int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
-    
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-	this->m_pColorConverter->Merge_Two_VideoNV12(m_PreviousDecodedFrameConvertedData, iPosX, iPosY, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
-	//this->m_pColorConverter->ConvertI420ToNV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
-#elif defined(_DESKTOP_C_SHARP_)
+
+	this->m_pColorConverter-ConvertNV12ToI420(m_PreviousDecodedFrameConvertedData, iHeight, iWidth);
+
+#elif defined(__ANDROID__)
+
+	this->m_pColorConverter->ConvertNV21ToI420(m_PreviousDecodedFrameConvertedData, iHeight, iWidth);
+
+#endif
+    
 	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	this->m_pColorConverter->ConvertI420ToNV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+#elif defined(_DESKTOP_C_SHARP_)
 	m_previousDecodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_PreviousDecodedFrameConvertedData, m_RenderingRGBFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #elif defined(TARGET_OS_WINDOWS_PHONE)
-	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 	this->m_pColorConverter->ConvertI420ToYV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #else
-	this->m_pColorConverter->Merge_Two_VideoNV21(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
-	//this->m_pColorConverter->ConvertI420ToNV21(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+
+	this->m_pColorConverter->ConvertI420ToNV21(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #endif
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
