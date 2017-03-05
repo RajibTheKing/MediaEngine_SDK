@@ -5,8 +5,6 @@
 //#define USE_LOW_PASS
 #define USE_SPEEX_GAIN
 
-//#define DUMP_ECHO_ANALYSIS
-
 #ifdef ECHO_ANALYSIS
 FILE *EchoFile;
 #define HEADER_SIZE 1
