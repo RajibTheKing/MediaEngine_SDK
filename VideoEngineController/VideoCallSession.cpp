@@ -321,7 +321,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, nServiceType);
 	else
-		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, nServiceType);
+		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, nServiceType);
 
 	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
@@ -1006,7 +1006,7 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
     else
-		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
 
 
 
@@ -1029,7 +1029,7 @@ int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int heig
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
 		else
-			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
 
 		return 1;
 	}
@@ -1092,7 +1092,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
     else
-		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
 
 
 
