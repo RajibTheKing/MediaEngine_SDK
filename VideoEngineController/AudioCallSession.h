@@ -77,6 +77,10 @@ class CVoice;
 
 class CAudioCallSession
 {
+private:
+
+	long long m_llLastPlayTime;
+
 public:
 	int m_iNextPacketType;
 	CAudioByteBuffer m_AudioReceivedBuffer;
