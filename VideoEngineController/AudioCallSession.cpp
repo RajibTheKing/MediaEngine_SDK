@@ -37,7 +37,7 @@
 #endif
 
 #define OPUS_ENABLED
-//#define __DUMP_FILE__
+#define __DUMP_FILE__
 
 #ifdef __DUMP_FILE__
 FILE *FileInput;
@@ -1253,6 +1253,16 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 			}
 			//LOG_50MS("###RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d", iCurrentPacketNumber);
 			m_AudioDecodedBuffer.EnQueue(m_saEvenPacketStorage, m_nDecodedFrameSize * 2, 0);
+
+#ifdef __ANDROID__
+			while ((m_Tools.CurrentTimestamp() - m_llLastPlayTime) < 100)
+			{
+				m_Tools.SOSleep(1);
+			}
+			LOG_50MS("#echo#ST# PublisherInCallTimeStamp = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
+
+			m_llLastPlayTime = m_Tools.CurrentTimestamp();
+#endif
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
 				SERVICE_TYPE_LIVE_STREAM,
