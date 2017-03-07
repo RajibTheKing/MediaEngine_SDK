@@ -113,6 +113,12 @@ public:
 	int SetVideoEffect(int nEffectStatus);
 	int TestVideoEffect(int *param, int size);
 
+	void SetOwnDeviceType(int deviceType);
+	int GetOwnDeviceType();
+
+	void SetOponentDeviceType(int deviceType);
+	int GetOponentDeviceType();
+
 	void InterruptOccured();
 	void InterruptOver();
 
@@ -147,6 +153,9 @@ private:
 	long long m_llFirstFrameCapturingTimeStamp;
 
 	unsigned int m_miniPacketBandCounter;
+
+	int m_nOwnDeviceType;
+	int m_nOponentDeviceType;
 
 	CVideoHeader m_cVH;
 

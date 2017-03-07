@@ -52,9 +52,30 @@ m_nCapturedFrameCounter(0),
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
 m_iRole(0),
-m_bVideoEffectEnabled(true)
+m_bVideoEffectEnabled(true),
+m_nOponentDeviceType(DEVICE_TYPE_UNKNOWN)
 
 {
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	m_nOwnDeviceType = DEVICE_TYPE_IOS;
+
+#elif defined(_DESKTOP_C_SHARP_)
+
+	m_nOwnDeviceType = DEVICE_TYPE_DESKTOP;
+
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+
+	m_nOwnDeviceType = DEVICE_TYPE_WINDOWS_PHONE;
+
+#else
+
+	m_nOwnDeviceType = DEVICE_TYPE_ANDROID;
+
+#endif
+
+
     m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
     m_nCurrentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
 
@@ -701,7 +722,8 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 									nMiniPacketType,							//PacketNumber
 									nByteReceivedOrNetworkType,					//TimeStamp             //Sending Received Byte
 									0,											//PacketStartingIndex
-									0											//PacketDataLength
+									0,											//PacketDataLength
+									0											//SenderDeviceType
 									);
         
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
@@ -723,7 +745,8 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 										nMiniPacketType,						//PacketNumber
 										nByteReceivedOrNetworkType,				//TimeStamp
 										0,										//PacketStartingIndex
-										0										//PacketDataLength
+										0,										//PacketDataLength
+										0										//SenderDeviceType
 										);
 	}
 
@@ -1020,6 +1043,26 @@ int CVideoCallSession::TestVideoEffect( int *param, int size)
 {
 	this->m_pVideoEncodingThread->TestVideoEffect(param, size);
 	return 1;
+}
+
+void CVideoCallSession::SetOwnDeviceType(int deviceType)
+{
+	m_nOwnDeviceType = deviceType;
+}
+
+int CVideoCallSession::GetOwnDeviceType()
+{
+	return m_nOwnDeviceType;
+}
+
+void CVideoCallSession::SetOponentDeviceType(int deviceType)
+{
+	m_nOponentDeviceType = deviceType;
+}
+
+int CVideoCallSession::GetOponentDeviceType()
+{
+	return m_nOponentDeviceType;
 }
 
 int CVideoCallSession::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)

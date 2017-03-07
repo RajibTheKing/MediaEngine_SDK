@@ -22,6 +22,8 @@ m_pcCommonElementsBucket(pcSharedObject)
     
     m_pVideoCallSession = pVideoCallSession;
     llSendingquePrevTime = 0;
+
+	m_nOwnDeviceType = pVideoCallSession->GetOwnDeviceType();
     
     m_pHashGenerator = new CHashGenerator();
     m_pHashGenerator->SetSeedNumber(m_Tools.CurrentTimestamp() % SEED_MOD_VALUE);
@@ -90,7 +92,8 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 										0,										//PacketNumber
 										unCaptureTimeDifference,				//TimeStamp
 										0,										//PacketStartingIndex
-										0										//PacketDataLength
+										0,										//PacketDataLength
+										m_nOwnDeviceType						//SenderDeviceType
 										);
 
         m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
@@ -123,7 +126,8 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                        nPacketNumber,                   //PacketNumber
                                        unCaptureTimeDifference,         //TimeStamp
                                        0,                               //PacketStartingIndex
-                                       unLength                         //PacketDataLength
+                                       unLength,                         //PacketDataLength
+									   m_nOwnDeviceType					//SenderDeviceType
                                        );
 
         
@@ -201,7 +205,8 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 											nPacketNumber,                   //PacketNumber
 											unCaptureTimeDifference,         //TimeStamp
 											iStartIndex,                     //PacketStartingIndex
-											m_nPacketSize                    //PacketDataLength
+											m_nPacketSize,                    //PacketDataLength
+											m_nOwnDeviceType				//SenderDeviceType
 											);
             iStartIndex += m_nPacketSize;
 

@@ -18,7 +18,7 @@
 #define TIMESTAMP_INDEX 11
 #define PACKET_STARTING_INDEX 16
 #define PACKET_DATA_LENGTH_INDEX 19
-
+#define SENDER_DEVICE_TYPE_INDEX 22
 
 
 #define QUALITY_BITS_N      3
@@ -56,10 +56,10 @@ CVideoHeader::CVideoHeader()
 
     m_iPacketStartingIndex = 0; //3 byte
     m_iPacketDataLength = 0;    //3 byte
-    
-    
-    
+
+	m_nSenderDeviceType = 0; // 1 byte   
 }
+
 CVideoHeader::~CVideoHeader()
 {
 
@@ -85,7 +85,7 @@ void CVideoHeader::setPacketHeader(unsigned char *headerData)
     setPacketStartingIndex(headerData + PACKET_STARTING_INDEX);
     setPacketDataLength(headerData + PACKET_DATA_LENGTH_INDEX);
 
-    
+	setSenderDeviceType(headerData + SENDER_DEVICE_TYPE_INDEX);
 }
 
 
@@ -102,7 +102,8 @@ void CVideoHeader::setPacketHeader(	unsigned char packetType,
                                     unsigned int PacketNumber,
                                     long long llTimeStamp,
                                     unsigned int iPacketStartingIndex,
-                                    unsigned int PacketLength
+                                    unsigned int PacketLength,
+									int senderDeviceType
                                     )
 {
     SetPacketType(packetType);
@@ -122,7 +123,7 @@ void CVideoHeader::setPacketHeader(	unsigned char packetType,
 	setTimeStamp(llTimeStamp);
 	setPacketStartingIndex(iPacketStartingIndex);
 	setPacketDataLength(PacketLength);
-
+	setSenderDeviceType(senderDeviceType);
 
 }
 
@@ -142,6 +143,7 @@ void CVideoHeader::ShowDetails(string sTag)
     +" TM:"+Tools::getText(m_llTimeStamp)
     +" SIndex:"+Tools::getText(m_iPacketStartingIndex)
     +" Len:"+Tools::getText(m_iPacketDataLength)
+	+ " SDT:" + Tools::getText(m_nSenderDeviceType)
     ;
 
 	unsigned char pLocalData[30];
@@ -215,6 +217,9 @@ int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
 	data[index++] = (m_iPacketDataLength >> 8);
 	data[index++] = (m_iPacketDataLength >> 0);
 
+	//Sender Device Type
+	data[index++] = m_nSenderDeviceType;
+
     return index;
 }
 
@@ -253,6 +258,11 @@ void CVideoHeader::setFPS(unsigned int iFPS) {
 
 void CVideoHeader::setPacketDataLength(int iPacketDataLength) {
     m_iPacketDataLength = iPacketDataLength;
+}
+
+void CVideoHeader::setSenderDeviceType(int senderDeviceType)
+{
+	m_nSenderDeviceType = senderDeviceType;
 }
 
 unsigned char CVideoHeader::getVersionCode() {
@@ -330,6 +340,16 @@ int CVideoHeader::getPacketLength()
 void CVideoHeader::setPacketDataLength(unsigned char *pData)
 {
 	m_iPacketDataLength = GetIntFromChar(pData, 0, 3);
+}
+
+void CVideoHeader::setSenderDeviceType(unsigned char * pData)
+{
+	m_nSenderDeviceType = (int)pData[0];
+}
+
+int CVideoHeader::getSenderDeviceType()
+{
+	return m_nSenderDeviceType;
 }
 
 long long CVideoHeader::GetFrameNumberDirectly(unsigned char *pData)

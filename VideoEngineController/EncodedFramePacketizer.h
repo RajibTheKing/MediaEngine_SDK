@@ -30,6 +30,8 @@ private:
 
 	Tools m_Tools;
 
+	int m_nOwnDeviceType;
+
 	int m_nPacketSize;
     CVideoCallSession *m_pVideoCallSession;
     
