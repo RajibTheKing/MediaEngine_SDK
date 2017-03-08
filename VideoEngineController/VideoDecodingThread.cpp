@@ -543,6 +543,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	if (1 > m_decodedFrameSize)
 		return -1;
     
+    m_pVideoCallSession->SetOpponentVideoHeightWidth(m_decodingHeight, m_decodingWidth);
+    
     if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
     {
         int iNewHeight = m_decodingHeight - m_decodingHeight % 4;
@@ -566,8 +568,10 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
-
-			m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize);
+            
+            int iHeight = m_pColorConverter->GetHeight();
+            int iWidth = m_pColorConverter->GetWidth();
+			this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 		}
 		else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 		{
@@ -590,7 +594,11 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
-            m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+            if(m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
+            {
+                m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+            }
+            
 			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 		}
         //TheKing-->Here

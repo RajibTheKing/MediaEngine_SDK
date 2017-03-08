@@ -441,8 +441,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 				{
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() SetSmallFrame iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
-
-					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize);	
+                    int iOpponentVideoHeight = m_pVideoCallSession->GetOpponentVideoHeight();
+                    int iOpponentVideoWidth = m_pVideoCallSession->GetOpponentVideoWidth();
+                    
+                    if(iOpponentVideoHeight !=-1 && iOpponentVideoWidth !=  -1)
+                    {
+                        m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+                    }
 				}
 
 				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
@@ -454,8 +459,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
-
-                    m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+                    
+                    if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
+                    {
+                        m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+                    }
 
 					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY, iHeight, iWidth);
 
@@ -597,7 +605,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					}
 
                     
-#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__) || defined (TARGET_OS_WINDOWS_PHONE)
 
                     int iHeight = this->m_pColorConverter->GetHeight();
                     int iWidth = this->m_pColorConverter->GetWidth();
