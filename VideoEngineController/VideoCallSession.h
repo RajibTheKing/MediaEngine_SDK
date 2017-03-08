@@ -118,6 +118,10 @@ public:
 
 	void SetOponentDeviceType(int deviceType);
 	int GetOponentDeviceType();
+    
+    void SetOpponentVideoHeightWidth(int iHight, int iWidth);
+    int GetOpponentVideoHeight();
+    int GetOpponentVideoWidth();
 
 	void InterruptOccured();
 	void InterruptOver();
@@ -221,6 +225,9 @@ private:
     
     LiveReceiver *m_pLiveReceiverVideo;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+    
+    int m_nOpponentVideoHeight;
+    int m_nOpponentVideoWidth;
     
     
 

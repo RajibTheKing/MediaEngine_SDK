@@ -53,7 +53,9 @@ m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
 m_iRole(0),
 m_bVideoEffectEnabled(true),
-m_nOponentDeviceType(DEVICE_TYPE_UNKNOWN)
+m_nOponentDeviceType(DEVICE_TYPE_UNKNOWN),
+m_nOpponentVideoHeight(-1),
+m_nOpponentVideoWidth(-1)
 
 {
 
@@ -1225,4 +1227,20 @@ void CVideoCallSession::EndCallInLive()
 
 		m_iRole = 0;
 	}
+}
+
+void CVideoCallSession::SetOpponentVideoHeightWidth(int iHeight, int iWidth)
+{
+    m_nOpponentVideoHeight = iHeight;
+    m_nOpponentVideoWidth = iWidth;
+}
+
+int CVideoCallSession::GetOpponentVideoHeight()
+{
+    return m_nOpponentVideoHeight;
+}
+
+int CVideoCallSession::GetOpponentVideoWidth()
+{
+    return m_nOpponentVideoWidth;
 }
