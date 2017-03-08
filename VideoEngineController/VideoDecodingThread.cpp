@@ -562,7 +562,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #if defined(TARGET_OS_WINDOWS_PHONE)
 
 	if(m_decodedFrameSize > MAX_VIDEO_DECODER_FRAME_SIZE )
-		m_decodedFrameSize = DownScaleYUV420_Dynamic(m_TempDecodedFrame, m_decodingHeight, m_decodingWidth, m_DecodedFrame, 2);
+		m_decodedFrameSize = this->m_pColorConverter->DownScaleYUV420_Dynamic(m_TempDecodedFrame, m_decodingHeight, m_decodingWidth, m_DecodedFrame, 2);
 	else 
 		memcpy(m_DecodedFrame, m_TempDecodedFrame, m_decodedFrameSize);
 
