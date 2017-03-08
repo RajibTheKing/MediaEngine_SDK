@@ -60,7 +60,8 @@ FILE *FileInputMuxed;
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
 m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall),
-m_nServiceType(nServiceType)
+m_nServiceType(nServiceType),
+m_llLastPlayTime(0)
 {
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
@@ -117,7 +118,7 @@ m_nServiceType(nServiceType)
 
 	if(m_bLiveAudioStreamRunning)
 	{
-		m_bEchoCancellerEnabled = false;
+		//m_bEchoCancellerEnabled = false;
 	}
 
 #ifdef USE_AECM
@@ -845,7 +846,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 				AddHeader(version, llRelativeTimeForThisPacket);
 				SetAudioIdentifierAndNextPacketType();
 				SendAudioData(toolsObject);
-				LOG_50MS("###SENDING_ME_TO_CALLSDK_CALLEE  m_iPacketNumber = %d  n50MsFrameSizeInShort = %d", m_iPacketNumber, n50MsFrameSizeInShort);
+				//LOG_50MS("###SENDING_ME_TO_CALLSDK_CALLEE  m_iPacketNumber = %d  n50MsFrameSizeInShort = %d", m_iPacketNumber, n50MsFrameSizeInShort);
 			}
 
 			toolsObject.SOSleep(0);
@@ -1234,7 +1235,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 		{
 			if (iCurrentPacketNumber&1)
 			{
-				LOG_50MS("###ODD_RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d  m_nDecodedFrameSize = %d", iCurrentPacketNumber, m_nDecodedFrameSize);
+				//LOG_50MS("###ODD_RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d  m_nDecodedFrameSize = %d", iCurrentPacketNumber, m_nDecodedFrameSize);
 				memcpy(m_saEvenPacketStorage + m_nDecodedFrameSize, m_saDecodedFrame, m_nDecodedFrameSize * 2);
 
 				if (iCurrentPacketNumber - 1 != m_iLastEvenStoredPacket)				
@@ -1245,13 +1246,23 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 			}
 			else
 			{
-				LOG_50MS("###EVEN_RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d  m_nDecodedFrameSize = %d", iCurrentPacketNumber, m_nDecodedFrameSize);
+				//LOG_50MS("###EVEN_RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d  m_nDecodedFrameSize = %d", iCurrentPacketNumber, m_nDecodedFrameSize);
 				memcpy(m_saEvenPacketStorage, m_saDecodedFrame, m_nDecodedFrameSize * 2);
 				m_iLastEvenStoredPacket = iCurrentPacketNumber;
 				return;
 			}
-			LOG_50MS("###RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d", iCurrentPacketNumber);
+			//LOG_50MS("###RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d", iCurrentPacketNumber);
 			m_AudioDecodedBuffer.EnQueue(m_saEvenPacketStorage, m_nDecodedFrameSize * 2, 0);
+
+#ifdef __ANDROID__
+			while ((m_Tools.CurrentTimestamp() - m_llLastPlayTime) < 100)
+			{
+				m_Tools.SOSleep(1);
+			}
+			LOG_50MS("#echo#ST# PublisherInCallTimeStamp = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
+
+			m_llLastPlayTime = m_Tools.CurrentTimestamp();
+#endif
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
 				SERVICE_TYPE_LIVE_STREAM,
@@ -1260,6 +1271,18 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 
 			return;
 		}
+#ifdef __ANDROID__
+		else if (VIEWER_IN_CALL == m_iRole)
+		{
+			while ((m_Tools.CurrentTimestamp() - m_llLastPlayTime) < 100)
+			{
+				m_Tools.SOSleep(1);
+			}
+			LOG_50MS("#echo#ST# Sent To Player Diff = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
+
+			m_llLastPlayTime = m_Tools.CurrentTimestamp();
+		}
+#endif
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
 			SERVICE_TYPE_LIVE_STREAM,
 			m_nDecodedFrameSize,
