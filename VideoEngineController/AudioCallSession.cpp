@@ -356,7 +356,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	}
 	//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
 	long long llCurrentTime = Tools::CurrentTimestamp();
-
+	LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 #ifdef USE_AECM
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
@@ -383,6 +383,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 
 int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 {
+	LOG_50MS("_+_+ FarEnd Time= %lld", Tools::CurrentTimestamp());
 #ifdef USE_AECM
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
@@ -478,9 +479,21 @@ void CAudioCallSession::StopEncodingThread()
 
 void CAudioCallSession::MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength)
 {
+	int nSum = 0;
 	for (int i = 0; i < iDataLength; i++)
 	{
 		pMuxedData[i] = pData1[i] + pData2[i];
+
+		nSum = (int)pData1[i] + pData2[i];
+
+		if(nSum > SHRT_MAX) {
+			pMuxedData[i] = SHRT_MAX;
+			LOG_50MS("_+_+ Over = %d",nSum);
+		}
+		else if(nSum < SHRT_MIN) {
+			pMuxedData[i] = SHRT_MIN;
+			LOG_50MS("_+_+ Under = %d",nSum);
+		}
 	}
 }
 
@@ -1259,7 +1272,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 			{
 				m_Tools.SOSleep(1);
 			}
-			LOG_50MS("#echo#ST# PublisherInCallTimeStamp = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
+//			LOG_50MS("#echo#ST# PublisherInCallTimeStamp = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
 
 			m_llLastPlayTime = m_Tools.CurrentTimestamp();
 #endif
@@ -1278,7 +1291,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 			{
 				m_Tools.SOSleep(1);
 			}
-			LOG_50MS("#echo#ST# Sent To Player Diff = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
+//			LOG_50MS("#echo#ST# Sent To Player Diff = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
 
 			m_llLastPlayTime = m_Tools.CurrentTimestamp();
 		}
