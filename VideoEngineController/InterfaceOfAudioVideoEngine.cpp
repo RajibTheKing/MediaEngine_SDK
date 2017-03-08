@@ -265,11 +265,11 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 
 			LOG_AAC("#aac#b4q# GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
 
-			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + index, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
+			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + headerLength, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
 			//m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
 #ifndef DISABLE_VIDEO_FOR_LIVE
-			iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, index, in_data + index, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames);
+			iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, headerLength, in_data + headerLength, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames);
 #endif
 			
 		}
