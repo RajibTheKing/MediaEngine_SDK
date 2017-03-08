@@ -1208,45 +1208,254 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
     return iHeight * iWidth * 3 / 2;
 }
 
-void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength)
+void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped)
 {
 	Locker lock(*m_pColorConverterMutex);
-	//int iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
-	//memcpy(smallFrame, m_pSmallFrame, iLen);
-	//iLen = DownScaleYUV420_EvenVersion(smallFrame, iHeight, iWidth, m_pSmallFrame);
     
-    int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
+    //int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
+    int iOutputHeight, iOutputWidth;
+    iOutputHeight = iTargetHeight/3;
+    float ratio = (iHeight*1.0)/(iOutputHeight*1.0);
+    iOutputWidth = (int)(iOutputWidth*1.0/ratio);
+    iOutputHeight = iOutputHeight - iOutputHeight%4;
+    iOutputWidth = iOutputWidth - iOutputWidth%4;
+    
+    int iLen = DownScaleYUV420_Dynamic_Version2(smallFrame, iHeight, iWidth, m_pSmallFrame, iOutputHeight, iOutputWidth);
+    iHeight = iOutputHeight;
+    iWidth = iOutputWidth;
     int iNewHeight, iNewWidth, diff_width, diff_height;
     
-    CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, m_iDeviceHeight, m_iDeviceWidth, iNewHeight, iNewWidth);
+    if(bShouldBeCropped)
+    {
+        CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, m_iDeviceHeight, m_iDeviceWidth, iNewHeight, iNewWidth);
     
-    if(iHeight == iNewHeight && iWidth == iNewWidth)
-    {
-        //Do Nothing
-    }
-    else
-    {
-        memcpy(smallFrame, m_pSmallFrame, iHeight * iWidth * 3 / 2);
+        if(iHeight == iNewHeight && iWidth == iNewWidth)
+        {
+            //Do Nothing
+        }
+        else
+        {
+            memcpy(smallFrame, m_pSmallFrame, iHeight * iWidth * 3 / 2);
         
-        diff_width = iWidth - iNewWidth;
-        diff_height = iHeight - iNewHeight;
-        Crop_YUV420(smallFrame, iHeight, iWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, m_pSmallFrame, iNewHeight, iNewWidth);
-    }
+            diff_width = iWidth - iNewWidth;
+            diff_height = iHeight - iNewHeight;
+            Crop_YUV420(smallFrame, iHeight, iWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, m_pSmallFrame, iNewHeight, iNewWidth);
+        }
     
-    iHeight = iNewHeight;
-    iWidth = iNewWidth;
+        iHeight = iNewHeight;
+        iWidth = iNewWidth;
+    }
     
     m_iSmallFrameHeight = iHeight;
     m_iSmallFrameWidth = iWidth;
-
 	m_iSmallFrameSize = iHeight * iWidth * 3 / 2;
-    
     iLen = CreateFrameBorder(m_pSmallFrame, iHeight, iWidth, 0, 128, 128); // [Y:0, U:128, V:128] = Black
-
+    
 	m_bMergingSmallFrameEnabled = true;
- 
 	//memcpy(m_pSmallFrame, smallFrame, nLength);
 }
+
+
+
+int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    float ratioHeight, ratioWidth;
+    
+    int YPlaneLength = inHeight*inWidth;
+    int UPlaneLength = YPlaneLength >> 2;
+    int halfH = inHeight>>1, halfW = inWidth>>1;
+    
+    ratioHeight = inHeight * (1.0) / outHeight;
+    ratioWidth = inWidth * (1.0) / outWidth;
+    int MaximumFraction = 10000;
+    int factorH = floor(ratioHeight);
+    int factorW = floor(ratioWidth);
+    int fractionH = (ratioHeight - factorH) * MaximumFraction;
+    int fractionW = (ratioWidth - factorW) * MaximumFraction;
+    
+    cout<<"rH:rW = "<<ratioHeight<<":"<<ratioWidth<<endl;
+    
+    int indx = 0;
+    
+    int avg, sum, sum1, sum2, Valuecounter;
+    int ii, iiFraction,jj, jjFraction;
+    
+    int iHeightCounter = 0, iWidthCounter = 0;
+    
+    
+    CumulativeSum[0][0] = (int)pData[0];
+    
+    for(int i=1, iw = inWidth;i<inHeight; i++, iw += inWidth)
+    {
+        CumulativeSum[i][0] = (int)(CumulativeSum[i-1][0] + pData[iw]);
+    }
+    for(int j=1;j<inWidth;j++)
+    {
+        CumulativeSum[0][j] = (int)(CumulativeSum[0][j-1] + (int)pData[j]);
+    }
+    
+    for(int i=1, iw = inWidth;i<inHeight;i++, iw += inWidth)
+    {
+        for(int j=1;j<inWidth;j++)
+        {
+            CumulativeSum[i][j] = (int)(CumulativeSum[i][j-1]  + CumulativeSum[i-1][j] - CumulativeSum[i-1][j-1] + pData[iw+j]);
+        }
+    }
+    
+    for(ii=0, iiFraction = 0; ii<inHeight ; ii+=factorH, iiFraction+=fractionH)
+    {
+        if(iiFraction>=MaximumFraction)
+        {
+            ii++;
+            iiFraction-=MaximumFraction;
+        }
+        iHeightCounter++;
+        
+        if(iHeightCounter>outHeight) break;
+        iWidthCounter = 0;
+        
+        for(jj=0, jjFraction = 0; jj<inWidth ; jj+=factorW, jjFraction+=fractionW)
+        {
+            if(jjFraction>=MaximumFraction)
+            {
+                jj++;
+                jjFraction-=MaximumFraction;
+            }
+            
+            iWidthCounter++;
+            if(iWidthCounter>outWidth) break;
+            
+            sum = 0;
+            Valuecounter = 0;
+            
+            int startY = ii;
+            int endY = ii+factorH-1;
+            if(iiFraction + fractionH >= MaximumFraction) endY++;
+            
+            int startX = jj;
+            int endX = jj+factorW-1;
+            if(jjFraction + fractionW >= MaximumFraction) endX++;
+            
+            
+            Valuecounter = (endY - startY + 1) * (endX - startX + 1);
+            int now, corner, up, left;
+            
+            corner = (startX-1) < 0 ? 0: (startY-1) < 0 ? 0 : CumulativeSum[startY-1][startX-1];
+            left = (startX-1) < 0 ? 0: endY >= inHeight ? 0 : CumulativeSum[endY][startX-1];
+            up = endX >= inWidth ? 0: (startY-1) < 0 ? 0 : CumulativeSum[startY-1][endX];
+            now = endX >= inWidth ? 0: (endY) >= inHeight ? 0 : CumulativeSum[endY][endX];
+            
+            sum = now - up - left + corner;
+            avg = sum/Valuecounter;
+            outputData[indx++] = (byte)avg;
+            
+            //printf("RajibTheKing--> sum = %d values = %d ,now = %d ,up = %d, left = %d, corner = %d\n", sum, Valuecounter,now,up,left,corner);
+            
+        }
+    }
+    
+    printf("index = %d\n", indx);
+    
+    byte *p = pData + YPlaneLength;
+    byte *q = pData + YPlaneLength + UPlaneLength;
+    int uIndex = indx;
+    int vIndex = indx + (outHeight * outWidth)/4;
+    iHeightCounter = 0;
+    
+    
+    CumulativeSum_U[0][0] = (int)p[0];
+    CumulativeSum_V[0][0] = (int)q[0];
+    
+    for(int i=1, iw = halfW;i<halfH; i++, iw += halfW)
+    {
+        CumulativeSum_U[i][0] = (int)(CumulativeSum_U[i-1][0] + p[iw]);
+        CumulativeSum_V[i][0] = (int)(CumulativeSum_V[i-1][0] + q[iw]);
+    }
+    for(int j=1;j<halfW;j++)
+    {
+        CumulativeSum_U[0][j] = (int)(CumulativeSum_U[0][j-1] + (int)p[j]);
+        CumulativeSum_V[0][j] = (int)(CumulativeSum_V[0][j-1] + (int)q[j]);
+    }
+    
+    for(int i=1, iw = halfW;i<halfH;i++, iw += halfW)
+    {
+        for(int j=1;j<halfW;j++)
+        {
+            CumulativeSum_U[i][j] = (int)(CumulativeSum_U[i][j-1] + p[iw+j] + CumulativeSum_U[i-1][j] - CumulativeSum_U[i-1][j-1]);
+            CumulativeSum_V[i][j] = (int)(CumulativeSum_V[i][j-1] + q[iw+j] + CumulativeSum_V[i-1][j] - CumulativeSum_V[i-1][j-1]);
+        }
+    }
+    
+    for(ii=0, iiFraction = 0; ii<halfH ; ii+=factorH, iiFraction+=fractionH)
+    {
+        if(iiFraction>=MaximumFraction)
+        {
+            ii++;
+            iiFraction-=MaximumFraction;
+        }
+        iHeightCounter++;
+        
+        if(iHeightCounter > (outHeight>>1) ) break;
+        iWidthCounter = 0;
+        
+        for(jj=0, jjFraction = 0; jj<halfW ; jj+=factorW, jjFraction+=fractionW)
+        {
+            if(jjFraction>=MaximumFraction)
+            {
+                jj++;
+                jjFraction-=MaximumFraction;
+            }
+            iWidthCounter++;
+            if(iWidthCounter> (outWidth>>1) )  break;
+            
+            sum1 = 0;
+            sum2 = 0;
+            Valuecounter = 0;
+            
+            int startY = ii;
+            int endY = ii+factorH-1;
+            if(iiFraction + fractionH >= MaximumFraction) endY++;
+            
+            int startX = jj;
+            int endX = jj+factorW-1;
+            if(jjFraction + fractionW >= MaximumFraction) endX++;
+            
+            
+            Valuecounter = (endY - startY + 1) * (endX - startX + 1);
+            //printf("Valuecounter = %d\n", Valuecounter);
+            int now, corner, up, left;
+            
+            corner = (startX-1) < 0 ? 0: (startY-1) < 0 ? 0 : CumulativeSum_U[startY-1][startX-1];
+            left = (startX-1) < 0 ? 0: endY >= halfH ? 0 : CumulativeSum_U[endY][startX-1];
+            up = endX >= halfW ? 0: (startY-1) < 0 ? 0 : CumulativeSum_U[startY-1][endX];
+            now = endX >= halfW ? 0: (endY) >= halfH ? 0 : CumulativeSum_U[endY][endX];
+            
+            sum = now - up - left + corner;
+            avg = sum/Valuecounter;
+            outputData[uIndex++] = (byte)avg;
+            
+            
+            corner = (startX-1) < 0 ? 0: (startY-1) < 0 ? 0 : CumulativeSum_V[startY-1][startX-1];
+            left = (startX-1) < 0 ? 0: endY >= halfH ? 0 : CumulativeSum_V[endY][startX-1];
+            up = endX >= halfW ? 0: (startY-1) < 0 ? 0 : CumulativeSum_V[startY-1][endX];
+            now = endX >= halfW ? 0: (endY) >= halfH ? 0 : CumulativeSum_V[endY][endX];
+            
+            sum = now - up - left + corner;
+            avg = sum/Valuecounter;
+            outputData[vIndex++] = (byte)avg;
+            
+        }
+    }
+    
+    
+    printf("uIndex, vIndex = %d, %d\n", uIndex, vIndex);
+    cout<<"CurrentLen = "<<indx<<endl;
+    
+    return outHeight * outWidth * 3 / 2;
+    
+}
+
 
 //This Function will return UIndex based on YUV_420 Data
 int CColorConverter::getUIndex(int h, int w, int yVertical, int xHorizontal, int& total)

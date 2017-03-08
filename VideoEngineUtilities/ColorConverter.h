@@ -51,6 +51,7 @@ public:
 
 	int DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
     int DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff);
+    int DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth);
 
 	void mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth);
 
@@ -72,7 +73,7 @@ public:
 	void SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth);
     
     int CreateFrameBorder(unsigned char* pData, int iHeight, int iWidth, int Y, int U, int V);
-	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
+    void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped);
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
 	int getUIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total);
@@ -117,6 +118,10 @@ private:
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
+    
+    int CumulativeSum[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
+    int CumulativeSum_U[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
+    int CumulativeSum_V[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
 	
 	unsigned char m_pClip[900];
 	bool m_bClipInitialization;
