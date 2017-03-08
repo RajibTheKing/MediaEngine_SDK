@@ -7,7 +7,7 @@
 using namespace std;
 
 
-#define VIDEO_HEADER_LENGTH 22
+#define VIDEO_HEADER_LENGTH 23
 
 
 class CVideoHeader {
@@ -29,7 +29,8 @@ public:
 							unsigned int PacketNumber,
 							long long llTimeStamp,
 							unsigned int iPacketStartingIndex,
-							unsigned int PacketLength
+							unsigned int PacketLength,
+							int senderDeviceType
 							);
     
     void ShowDetails(string sTag);
@@ -57,6 +58,7 @@ public:
 
     void setPacketDataLength(int iPacketDataLength) ;
     
+	void setSenderDeviceType(int temp);
 
     //hello1
 
@@ -87,6 +89,10 @@ public:
     int getPacketLength() ;
 
     void setPacketDataLength(unsigned char * PacketDataLength) ;
+
+	void setSenderDeviceType(unsigned char * PacketDataLength);
+
+	int getSenderDeviceType();
 
     int GetIntFromChar(unsigned char *packetData, int index,int nLenght);
 	long long GetLongLongFromChar(unsigned char *packetData, int index, int nLenght);
@@ -160,6 +166,9 @@ private:
     int m_iPacketDataLength = 0;    //3 byte
     //Total: 22 byte
     
+	int m_nSenderDeviceType = 0;	// 1 byte
+
+	//Total: 23 byte
 
 };
 
