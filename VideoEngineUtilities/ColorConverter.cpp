@@ -1,13 +1,14 @@
 
 #include "ColorConverter.h"
 #include "../VideoEngineController/LogPrinter.h"
+#include "../VideoEngineController/CommonElementsBucket.h"
 #include <math.h>
 
 #if defined(__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_WINDOWS_PHONE)
 typedef unsigned char byte;
 #endif
 
-CColorConverter::CColorConverter(int iVideoHeight, int iVideoWidth) :
+CColorConverter::CColorConverter(int iVideoHeight, int iVideoWidth, CCommonElementsBucket* commonElementsBucket, LongLong lfriendID) :
 
 m_iVideoHeight(iVideoHeight),
 m_iVideoWidth(iVideoWidth),
@@ -15,7 +16,9 @@ m_YPlaneLength(m_iVideoHeight*m_iVideoWidth),
 m_VPlaneLength(m_YPlaneLength >> 2),
 m_UVPlaneMidPoint(m_YPlaneLength + m_VPlaneLength),
 m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength),
-m_bMergingSmallFrameEnabled(false)
+m_bMergingSmallFrameEnabled(false),
+m_pCommonElementsBucket(commonElementsBucket),
+m_lfriendID(lfriendID)
 
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
@@ -1243,7 +1246,13 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     
     iLen = CreateFrameBorder(m_pSmallFrame, iHeight, iWidth, 0, 128, 128); // [Y:0, U:128, V:128] = Black
 
-	m_bMergingSmallFrameEnabled = true;
+	if (m_bMergingSmallFrameEnabled == false)
+	{
+		m_bMergingSmallFrameEnabled = true;
+
+		m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->LIVE_CALL_INSET_ON);
+	}
+	
  
 	//memcpy(m_pSmallFrame, smallFrame, nLength);
 }

@@ -83,7 +83,7 @@ int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char
 	if(NULL == this->m_ColorConverter)
 	{
 		//LOGE("fahad -->> CColorConverter Is NOw NULLLLLLL");
-		this->m_ColorConverter = new CColorConverter( nVideoHeight, nVideoWidth);
+		this->m_ColorConverter = new CColorConverter(nVideoHeight, nVideoWidth, m_pCommonElementsBucket, 200);
 		//LOGE("fahad -->> CColorConverter constructor returned");
 
 	}

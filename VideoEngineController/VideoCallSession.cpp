@@ -329,7 +329,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	m_pVideoDecoder->CreateVideoDecoder();
 
-	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth);
+	this->m_pColorConverter = new CColorConverter(iVideoHeight, iVideoWidth, m_pCommonElementsBucket, m_lfriendID);
 
 	this->m_pColorConverter->SetDeviceHeightWidth(m_nDeviceHeight, m_nDeviceWidth);
 
@@ -1168,6 +1168,8 @@ void CVideoCallSession::EndCallInLive()
 
 			m_pColorConverter->ClearSmallScreen();
 
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->LIVE_CALL_INSET_OFF);
+
 			m_nEntityType = ENTITY_TYPE_PUBLISHER;
 		}
 		else if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
@@ -1176,6 +1178,8 @@ void CVideoCallSession::EndCallInLive()
 			m_pVideoEncodingThread->ResetForViewerCallerCallEnd();
 
 			m_pColorConverter->ClearSmallScreen();
+
+			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->LIVE_CALL_INSET_OFF);
 
 			m_nEntityType = ENTITY_TYPE_VIEWER;
 		}

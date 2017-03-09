@@ -14,12 +14,14 @@
 
 #include <string>
 
+class CCommonElementsBucket;
+
 class CColorConverter
 {
 
 public:
 
-	CColorConverter(int iVideoHeight, int iVideoWidth);
+	CColorConverter(int iVideoHeight, int iVideoWidth, CCommonElementsBucket* commonElementsBucket, LongLong lfriendID);
 	~CColorConverter();
 
 	int ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
@@ -112,6 +114,9 @@ private:
 	int m_PrevAddValue;
 	int m_AverageValue;
 	int m_ThresholdValue;
+
+	CCommonElementsBucket* m_pCommonElementsBucket;
+	LongLong m_lfriendID;
 
 	unsigned char m_pVPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
