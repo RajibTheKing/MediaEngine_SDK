@@ -77,7 +77,7 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 	Locker lock(*m_pColorConverterMutex);
 
     m_iDeviceHeight = 1920; //iVideoHeight;
-    m_iDeviceWidth = 1080; //iVideoWidth;
+    m_iDeviceWidth = 1280; //iVideoWidth;
 
 	m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
@@ -1216,7 +1216,7 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     int iOutputHeight, iOutputWidth;
     iOutputHeight = iTargetHeight/3;
     float ratio = (iHeight*1.0)/(iOutputHeight*1.0);
-    iOutputWidth = (int)(iOutputWidth*1.0/ratio);
+    iOutputWidth = (int)(iOutputHeight*1.0/ratio);
     iOutputHeight = iOutputHeight - iOutputHeight%4;
     iOutputWidth = iOutputWidth - iOutputWidth%4;
     
@@ -1623,12 +1623,14 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
         //We have to delete columns [reduce Width]
         newWidth = floor(inHeight / aspectRatio_Screen);
         
-        int target = floor(inWidth * 0.82);
-        
-        if(newWidth < target)
-        {
-            newWidth = target;
-        }
+        //
+        //int target = floor(inWidth * 0.82);
+        //
+        //if(newWidth < target)
+        //{
+        //    newWidth = target;
+        //}
+        //
         
         newWidth = newWidth - newWidth % 4;
         newHeight = inHeight;
