@@ -1615,7 +1615,7 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
     aspectRatio_Screen = iScreenHeight * 1.0 / iScreenWidth;
     aspectRatio_VideoData = inHeight * 1.0 / inWidth;
     
-    if(fabs(aspectRatio_Screen - aspectRatio_VideoData) < 0.00001)
+    if(fabs(aspectRatio_Screen - aspectRatio_VideoData) < 0.1)
     {
         //Do Nothing
         newHeight = inHeight;
@@ -1646,7 +1646,7 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
         newHeight = newHeight - newHeight%4;
         newWidth = inWidth;
     }
-    
+    printf("ratio_screen = %f, ratio_VideoData = %f, diff = %f, inH:inW = %d:%d --> newH:newW = %d:%d\n", aspectRatio_Screen, aspectRatio_VideoData, fabs(aspectRatio_Screen-aspectRatio_VideoData), inHeight, inWidth, newHeight, newWidth);
 }
 int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY)
 {
