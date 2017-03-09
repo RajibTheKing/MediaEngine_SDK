@@ -16,6 +16,12 @@
 
 class CCommonElementsBucket;
 
+#define RGB24   1001
+#define RGB32   1002
+#define YUV420  1003
+#define YUVNV12 1004
+#define YUVNV21 1005
+
 class CColorConverter
 {
 
@@ -53,6 +59,7 @@ public:
 
 	int DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
     int DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff);
+    int DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth);
 
 	void mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth);
 
@@ -74,7 +81,7 @@ public:
 	void SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth);
     
     int CreateFrameBorder(unsigned char* pData, int iHeight, int iWidth, int Y, int U, int V);
-	void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength);
+    void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped);
     int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
     int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
 	int getUIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total);
@@ -84,7 +91,8 @@ public:
 	int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 	int Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 	int Merge_Two_VideoNV21(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
-    int CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth);
+    int CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth, int pColorFormat);
+    int Crop_RGB24(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth);
     int Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth);
     int Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth);
 
@@ -122,6 +130,10 @@ private:
 	unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 	unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
+    
+    int CumulativeSum[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
+    int CumulativeSum_U[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
+    int CumulativeSum_V[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
 	
 	unsigned char m_pClip[900];
 	bool m_bClipInitialization;

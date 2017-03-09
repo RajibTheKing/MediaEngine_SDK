@@ -217,6 +217,9 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 				//printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
 
 				m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+
+				if (m_pVersionController->GetCurrentCallVersion() >= DEVICE_TYPE_CHECK_START_VERSION)
+					m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.getSenderDeviceType());
 			}
 
             continue;
@@ -239,15 +242,21 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 			m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());		//VIDEO PACKET CONTAINS CURRENT CALL VERSION.
 
-			m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
+			//m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
+
+			m_pVersionController->SetCurrentCallVersion(min((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+
+			if (m_pVersionController->GetCurrentCallVersion() >= DEVICE_TYPE_CHECK_START_VERSION)
+				m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.getSenderDeviceType());
         }
 
 		if( !m_pVersionController->IsFirstVideoPacetReceived() &&  __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())
 			m_pVersionController->NotifyFirstVideoPacetReceived();
 
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT VVVVVVVVIDEO data packet");
-        
-        
+
+		CLogPrinter::Log("%d %d %d %d\n", (int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion(), m_pVersionController->GetCurrentCallVersion(), m_pVideoCallSession->GetOponentDeviceType());
+
 //        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
 //                             "TheKing--> Finally, CurrentCallVersion = "+ m_Tools.IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion()) +
 //                             ", CurrentVideoQuality = "+ m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetCurrentVideoCallQualityLevel()) +
@@ -261,8 +270,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 													   + " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
 #endif
 
-		m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize,
-												 NORMAL_PACKET_TYPE, m_RcvdPacketHeader);
+		m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, NORMAL_PACKET_TYPE, m_RcvdPacketHeader);
 		toolsObject.SOSleep(0);
 	}
 

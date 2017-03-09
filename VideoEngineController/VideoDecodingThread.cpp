@@ -445,14 +445,16 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 	m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
 
+    int iInsetLowerPadding = (int)((m_pVideoCallSession->GetOpponentVideoHeight()*10)/100);
+    
 	int iWidth = m_PreviousDecodingWidth;
 	int iHeight = m_PreviousDecodingHeight;
 
 	int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 	int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
-
+    
 	int iPosX = iWidth - iSmallWidth;
-	int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
+	int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
 
@@ -466,6 +468,11 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 #endif
     
+    if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
+    {
+        m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+    }
+
 	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -568,6 +575,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 #endif
     
+    m_pVideoCallSession->SetOpponentVideoHeightWidth(m_decodingHeight, m_decodingWidth);
+    
     if(m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
     {
         int iNewHeight = m_decodingHeight - m_decodingHeight % 4;
@@ -591,8 +600,10 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
-
-			m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize);
+            
+            int iHeight = m_pColorConverter->GetHeight();
+            int iWidth = m_pColorConverter->GetWidth();
+			this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 		}
 		else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 		{
@@ -604,18 +615,24 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			m_PreviousOrientation = nOrientation;
 			m_HasPreviousValues = true;
 
+            int iInsetLowerPadding = (int)((m_pVideoCallSession->GetOpponentVideoHeight()*10)/100);
+            
             int iWidth = m_decodingWidth;
             int iHeight = m_decodingHeight;
-
+            
 			int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 			int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
 			int iPosX = iWidth - iSmallWidth;
-			int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
+			int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
-            m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+            if(m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
+            {
+                m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+            }
+            
 			this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 		}
         //TheKing-->Here
@@ -637,8 +654,6 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
-    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__) || defined(TARGET_OS_WINDOWS_PHONE)
 
 	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 	{
@@ -657,7 +672,15 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		}
 		else
 		{
-			int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth);
+            int iCroppedDataLen;
+            if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+            {
+                iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, RGB24);
+            }
+            else
+            {
+                iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
+            }
 			memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
 			memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
 			m_decodingHeight = iCropedHeight;
@@ -668,8 +691,6 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			m_PreviousDecodingWidth = iCropedWidth;
 		}
 	}
-
-#endif
      
     if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {

@@ -441,21 +441,32 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 				{
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() SetSmallFrame iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
-
-					m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize);	
+                    int iOpponentVideoHeight = m_pVideoCallSession->GetOpponentVideoHeight();
+                    int iOpponentVideoWidth = m_pVideoCallSession->GetOpponentVideoWidth();
+                    
+                    if(iOpponentVideoHeight !=-1 && iOpponentVideoWidth !=  -1)
+                    {
+                        m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+                    }
 				}
 
 				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 				{
+                    
+                    int iInsetLowerPadding = (int)((m_pColorConverter->GetHeight()*10)/100);
+                    
 					int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 					int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
 					int iPosX = iWidth - iSmallWidth;
-					int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
+					int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
-
-                    m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+                    
+                    if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
+                    {
+                        m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+                    }
 
 					this->m_pColorConverter->Merge_Two_Video(m_ucaMirroredFrame, iPosX, iPosY, iHeight, iWidth);
 
@@ -581,6 +592,17 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 					this->m_pColorConverter->ConvertI420ToNV21(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 #endif
+                    
+                    int iHeight = this->m_pColorConverter->GetHeight();
+                    int iWidth = this->m_pColorConverter->GetWidth();
+                    
+                    int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
+                    int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
+                    
+                    int iCropedHeight = 0;
+                    int iCropedWidth = 0;
+                    
+                    int iCroppedDataLen;
 
 #if defined(_DESKTOP_C_SHARP_)
 
@@ -593,22 +615,18 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					}
 					else
 					{
-						m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
-					}
+                        iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_RenderingRGBFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, RGB24);
+                        
+                        if(iScreenWidth == -1 || iScreenHeight == -1)
+                            m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+                        else
+                            m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nDevice_orientation);
+                    }
+                    
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__) || defined (TARGET_OS_WINDOWS_PHONE)
 
-                    
-#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
-
-                    int iHeight = this->m_pColorConverter->GetHeight();
-                    int iWidth = this->m_pColorConverter->GetWidth();
-                    
-                    int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
-                    int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
-                    
-                    int iCropedHeight = 0;
-                    int iCropedWidth = 0;
-                    
-                    int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth);
+                    iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
+                        
                     //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
                     
                     if(iScreenWidth == -1 || iScreenHeight == -1)

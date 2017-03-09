@@ -113,6 +113,16 @@ public:
 	int SetVideoEffect(int nEffectStatus);
 	int TestVideoEffect(int *param, int size);
 
+	void SetOwnDeviceType(int deviceType);
+	int GetOwnDeviceType();
+
+	void SetOponentDeviceType(int deviceType);
+	int GetOponentDeviceType();
+    
+    void SetOpponentVideoHeightWidth(int iHight, int iWidth);
+    int GetOpponentVideoHeight();
+    int GetOpponentVideoWidth();
+
 	void InterruptOccured();
 	void InterruptOver();
 
@@ -147,6 +157,9 @@ private:
 	long long m_llFirstFrameCapturingTimeStamp;
 
 	unsigned int m_miniPacketBandCounter;
+
+	int m_nOwnDeviceType;
+	int m_nOponentDeviceType;
 
 	CVideoHeader m_cVH;
 
@@ -212,6 +225,9 @@ private:
     
     LiveReceiver *m_pLiveReceiverVideo;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+    
+    int m_nOpponentVideoHeight;
+    int m_nOpponentVideoWidth;
     
     
 
