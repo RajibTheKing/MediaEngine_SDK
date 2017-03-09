@@ -444,7 +444,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-			MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+			//MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
 
 #elif defined(__ANDROID__)
 
