@@ -1215,10 +1215,14 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     //int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
     int iOutputHeight, iOutputWidth;
     iOutputHeight = iTargetHeight/3;
-    float ratio = (iHeight*1.0)/(iOutputHeight*1.0);
+    float ratio = (iHeight*1.0)/(iWidth*1.0);
+    
     iOutputWidth = (int)(iOutputHeight*1.0/ratio);
+    
     iOutputHeight = iOutputHeight - iOutputHeight%4;
     iOutputWidth = iOutputWidth - iOutputWidth%4;
+    
+    CLogPrinter::Log("TheKing--> iHeight, iWidth, iTargetHeight, iTargetWidth, outputHeight, outputWidth = %d:%d, %d:%d, %d:%d\n", iHeight, iWidth, iTargetHeight, iTargetWidth, iOutputHeight, iOutputWidth);
     
     int iLen = DownScaleYUV420_Dynamic_Version2(smallFrame, iHeight, iWidth, m_pSmallFrame, iOutputHeight, iOutputWidth);
     iHeight = iOutputHeight;
