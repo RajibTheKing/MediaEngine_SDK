@@ -681,6 +681,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             {
                 iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
             }
+
 			memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
 			memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
 			m_decodingHeight = iCropedHeight;
