@@ -808,7 +808,7 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageNotApplied(byte* pData, int
         }
     }
     
-    //cout<<"CurrentLen = "<<indx<<endl;
+    
     
     iHeight = iHeight>>1;
     iWidth = iWidth>>1;
@@ -881,7 +881,7 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageVersion1(byte* pData, int &
         }
     }
     
-    cout<<"CurrentLen = "<<indx<<endl;
+    
     
     iHeight = iHeight>>1;
     iWidth = iWidth>>1;
@@ -975,7 +975,7 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_AverageVersion2(byte* pData, int &
         }
     }
     
-    //cout<<"CurrentLen = "<<indx<<endl;
+    
     
     iHeight = iHeight>>1;
     iWidth = iWidth>>1;
@@ -1003,7 +1003,7 @@ int CColorConverter::DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHei
 	iNewHeight = iNewHeight * 2;
 	iNewWidth = iNewWidth * 2;
 
-	//cout<<"Now iHeight = "<<iHeight<<", now iWidth = "<<iWidth<<endl;
+	
 
 	for (int i = 0; i<iNewHeight; i += 2)
 	{
@@ -1288,7 +1288,7 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
     int fractionH = (ratioHeight - factorH) * MaximumFraction;
     int fractionW = (ratioWidth - factorW) * MaximumFraction;
     
-    cout<<"rH:rW = "<<ratioHeight<<":"<<ratioWidth<<endl;
+    
     
     int indx = 0;
     
@@ -1464,7 +1464,7 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
     
     
     printf("uIndex, vIndex = %d, %d\n", uIndex, vIndex);
-    cout<<"CurrentLen = "<<indx<<endl;
+    
     
     return outHeight * outWidth * 3 / 2;
     
