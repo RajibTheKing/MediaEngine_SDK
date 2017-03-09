@@ -625,8 +625,6 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	this->m_pColorConverter->ConvertI420ToNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
-    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__) || defined(TARGET_OS_WINDOWS_PHONE)
 
 	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 	{
@@ -664,8 +662,6 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			m_PreviousDecodingWidth = iCropedWidth;
 		}
 	}
-
-#endif
      
     if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {
