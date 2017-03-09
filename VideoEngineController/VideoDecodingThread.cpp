@@ -252,6 +252,8 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 					llFirstFrameTimeStamp = currentTime;
 					//llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
                     llExpectedTimeOffset = llFirstFrameTimeStamp - videoHeaderObject.getTimeStamp();
+
+					m_pVideoCallSession->SetOponentDeviceType(videoHeaderObject.getSenderDeviceType());
                     
 				}
 				else
@@ -639,6 +641,49 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
    
 	}
 
+	//QuickFix
+	
+	printf("service type = %d, ownDeviceType = %d, OpponentDevice type = %d\n", m_pVideoCallSession->GetServiceType(), m_pVideoCallSession->GetOwnDeviceType(), m_pVideoCallSession->GetOponentDeviceType());
+
+	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
+	{
+		int iHeight = this->m_pColorConverter->GetHeight();
+		int iWidth = this->m_pColorConverter->GetWidth();
+
+		int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
+		int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
+
+		int iCropedHeight = 0;
+		int iCropedWidth = 0;
+
+		if (iScreenWidth == -1 || iScreenHeight == -1)
+		{
+			//Do Nothing
+		}
+		else
+		{
+			int iCroppedDataLen;
+			this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
+			iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
+			
+			this->m_pColorConverter->ConvertNV12ToI420(m_CropedFrame, iCropedHeight, iCropedWidth);
+
+
+			memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
+			memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
+
+			m_decodingHeight = iCropedHeight;
+			m_decodingWidth = iCropedWidth;
+			m_decodedFrameSize = iCroppedDataLen;
+
+			m_previousDecodedFrameSize = iCroppedDataLen;
+			m_PreviousDecodingHeight = iCropedHeight;
+			m_PreviousDecodingWidth = iCropedWidth;
+		}
+	}
+	
+
+
 	currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -655,7 +700,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #endif
 	CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
 
-	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP))
 	{
 		int iHeight = this->m_pColorConverter->GetHeight();
 		int iWidth = this->m_pColorConverter->GetWidth();

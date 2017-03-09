@@ -1692,7 +1692,11 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pD
     if(inHeight == newHeight && inWidth == newWidth)
     {
         //Do Nothing
-        memcpy(outputData, pData, inHeight*inWidth*3/2);
+		if (pColorFormat == RGB24)
+			memcpy(outputData, pData, inHeight*inWidth * 3);
+		else
+			memcpy(outputData, pData, inHeight*inWidth * 3 / 2);
+
     }
     else
     {
@@ -1706,12 +1710,16 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pD
         {
             Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
         }
+		
     }
     
     outHeight = newHeight;
     outWidth = newWidth;
-    
-    return outHeight*outWidth*3/2;
+	
+	if (pColorFormat == RGB24)
+		return outHeight*outWidth*3;
+	else
+		return outHeight*outWidth * 3 / 2;
     
 }
 int CColorConverter::Crop_RGB24(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
