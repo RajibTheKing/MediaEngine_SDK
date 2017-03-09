@@ -645,7 +645,15 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		}
 		else
 		{
-			int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth);
+            int iCroppedDataLen;
+            if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+            {
+                iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, RGB24);
+            }
+            else
+            {
+                iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
+            }
 			memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
 			memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
 			m_decodingHeight = iCropedHeight;

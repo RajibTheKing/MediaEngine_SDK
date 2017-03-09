@@ -616,7 +616,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     int iCropedHeight = 0;
                     int iCropedWidth = 0;
                     
-                    int iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth);
+                    int iCroppedDataLen;
+                    if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+                        iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, RGB24);
+                    else
+                        iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
+                        
                     //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
                     
                     if(iScreenWidth == -1 || iScreenHeight == -1)
