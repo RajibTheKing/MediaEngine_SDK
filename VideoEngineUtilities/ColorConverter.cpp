@@ -1666,7 +1666,7 @@ int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int
     return 1;
 }
 
-int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth)
+int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth, int pColorFormat)
 {
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
 
@@ -1686,8 +1686,14 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, i
     {
         diff_width = inWidth - newWidth;
         diff_height = inHeight - newHeight;
-        
-        Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
+        if(pColorFormat == RGB24)
+        {
+            Crop_RGB24(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
+        }
+        else
+        {
+            Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
+        }
     }
     
     outHeight = newHeight;
@@ -1696,6 +1702,27 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21(unsigned char* pData, i
     return outHeight*outWidth*3/2;
     
 }
+int CColorConverter::Crop_RGB24(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
+{
+    //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    int indx = 0;
+    outHeight = inHeight - startYDiff - endYDiff;
+    outWidth = inWidth - startXDiff - endXDiff;
+    
+    
+    for(int i=startYDiff; i<(inHeight-endYDiff); i++)
+    {
+        for(int j=startXDiff*3; j<(inWidth-endXDiff)*3; j++)
+       	{
+            outputData[indx++] = pData[i*(inWidth*3) + j];
+            
+        }
+    }
+    //cout<<"indx = "<<indx<<endl;
+    
+    return outWidth * outHeight * 3;
+}
+
 int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
 {
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
