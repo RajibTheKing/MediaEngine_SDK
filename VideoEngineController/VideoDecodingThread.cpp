@@ -458,6 +458,11 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 #endif
     
+    if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
+    {
+        m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
+    }
+
 	this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY,m_PreviousDecodingHeight,m_PreviousDecodingWidth);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
