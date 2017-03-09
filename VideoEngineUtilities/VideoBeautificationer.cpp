@@ -9,11 +9,11 @@
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigma = 100;
+int m_sigma = 75;
 
 #else
 
-int m_sigma = 100;
+int m_sigma = 75;
 
 #endif
 
