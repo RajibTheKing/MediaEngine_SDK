@@ -437,14 +437,16 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 	m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
 
+    int iInsetLowerPadding = (int)((m_pVideoCallSession->GetOpponentVideoHeight()*10)/100);
+    
 	int iWidth = m_PreviousDecodingWidth;
 	int iHeight = m_PreviousDecodingHeight;
 
 	int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 	int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
-
+    
 	int iPosX = iWidth - iSmallWidth;
-	int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
+	int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
 	memcpy(m_PreviousDecodedFrameConvertedData, m_PreviousDecodedFrame, m_previousDecodedFrameSize);
 
@@ -588,14 +590,16 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			m_PreviousOrientation = nOrientation;
 			m_HasPreviousValues = true;
 
+            int iInsetLowerPadding = (int)((m_pVideoCallSession->GetOpponentVideoHeight()*10)/100);
+            
             int iWidth = m_decodingWidth;
             int iHeight = m_decodingHeight;
-
+            
 			int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 			int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
 			int iPosX = iWidth - iSmallWidth;
-			int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
+			int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 

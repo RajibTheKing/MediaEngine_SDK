@@ -1654,11 +1654,13 @@ int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int
     
     CalculateAspectRatioWithScreenAndModifyHeightWidth(inHeight, inWidth, m_iDeviceHeight, m_iDeviceWidth, newHeight, newWidth);
     
+    int iInsetLowerPadding = (int)((inHeight*10)/100);
+    
     diff_Width = inWidth - newWidth;
     diff_Height = inHeight - newHeight;
     
     iPosX = inWidth - m_iSmallFrameWidth - diff_Width/2;
-    iPosY = inHeight - m_iSmallFrameHeight - CALL_IN_LIVE_INSET_LOWER_PADDING - diff_Height/2;
+    iPosY = inHeight - m_iSmallFrameHeight - iInsetLowerPadding - diff_Height/2;
 
     
     //printf("TheKing--> H:W = %d:%d, nH:nW = %d:%d, iPosY:iPosX = %d:%d\n", inHeight, inWidth, newHeight, newWidth, iPosY, iPosX);

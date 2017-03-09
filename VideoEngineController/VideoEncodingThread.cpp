@@ -452,11 +452,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 				{
+                    
+                    int iInsetLowerPadding = (int)((m_pColorConverter->GetHeight()*10)/100);
+                    
 					int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 					int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
 					int iPosX = iWidth - iSmallWidth;
-					int iPosY = iHeight - iSmallHeight - CALL_IN_LIVE_INSET_LOWER_PADDING;
+					int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
                     
