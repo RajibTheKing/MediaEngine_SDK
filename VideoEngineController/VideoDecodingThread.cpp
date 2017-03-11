@@ -719,11 +719,12 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		{
             int iCroppedDataLen;
 
-            if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
-            {
-				iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_RenderingRGBFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, RGB24);
-            }
-            else
+            //if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+            //{
+			//	iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_RenderingRGBFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, RGB24);
+            //}
+            
+            if(m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
             {
                 iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
             }
