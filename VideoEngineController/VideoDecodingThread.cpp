@@ -727,16 +727,17 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
             if(m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
             {
                 iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_DecodedFrame, m_decodingHeight, m_decodingWidth, iScreenHeight, iScreenWidth, m_CropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
+                memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
+                memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
+                m_decodingHeight = iCropedHeight;
+                m_decodingWidth = iCropedWidth;
+                m_decodedFrameSize = iCroppedDataLen;
+                m_previousDecodedFrameSize = iCroppedDataLen;
+                m_PreviousDecodingHeight = iCropedHeight;
+                m_PreviousDecodingWidth = iCropedWidth;
             }
 
-			memcpy(m_DecodedFrame, m_CropedFrame, iCroppedDataLen);
-			memcpy(m_PreviousDecodedFrame, m_CropedFrame, iCroppedDataLen);
-			m_decodingHeight = iCropedHeight;
-			m_decodingWidth = iCropedWidth;
-			m_decodedFrameSize = iCroppedDataLen;
-			m_previousDecodedFrameSize = iCroppedDataLen;
-			m_PreviousDecodingHeight = iCropedHeight;
-			m_PreviousDecodingWidth = iCropedWidth;
+			
 		}
 	}
 
