@@ -122,9 +122,9 @@ m_llLastPlayTime(0)
 	}
 
 #ifdef USE_AECM
-	m_pEcho = new CEcho(66);
+	m_pEcho = nullptr;
 #ifdef USE_ECHO2
-	m_pEcho2 = new CEcho(77);
+	m_pEcho2 = nullptr;
 #endif
 #endif
 
@@ -175,9 +175,17 @@ CAudioCallSession::~CAudioCallSession()
 	delete m_pG729CodecNative;
 #endif
 #ifdef USE_AECM
-	delete m_pEcho;
+	if(m_pEcho != nullptr)
+	{
+		delete m_pEcho;
+		m_pEcho = nullptr;
+	}
 #ifdef USE_ECHO2
-	delete m_pEcho2;
+	if(m_pEcho2 != nullptr)
+	{
+		delete m_pEcho2;
+		m_pEcho2 = nullptr;
+	}
 #endif
 #endif
 #ifdef USE_ANS
@@ -279,8 +287,23 @@ void CAudioCallSession::StartCallInLive(int iRole)
 	{
 		m_Tools.SOSleep(1);
 	}
+
 	//LOGE("### Start call in live");
 	m_iRole = iRole;
+
+#ifdef USE_AECM
+	if(m_pEcho == nullptr)
+	{
+		m_pEcho = new CEcho(66);
+	}
+#ifdef USE_ECHO2
+	if (m_pEcho2 == nullptr)
+	{
+		m_pEcho2 = new CEcho(77);
+	}
+#endif
+#endif
+
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
 #ifdef LOCAL_SERVER_LIVE_CALL
@@ -339,10 +362,22 @@ void CAudioCallSession::EndCallInLive()
 
 	m_Tools.SOSleep(20);
 
+#ifdef USE_AECM
+	if (m_pEcho != nullptr)
+	{
+		delete m_pEcho;
+		m_pEcho = nullptr;
+	}
+#ifdef USE_ECHO2
+	if (m_pEcho2 != nullptr)
+	{
+		delete m_pEcho2;
+		m_pEcho2 = nullptr;
+	}
+#endif
+#endif
+
 	m_llDecodingTimeStampOffset = -1;
-
-
-
 	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
 
