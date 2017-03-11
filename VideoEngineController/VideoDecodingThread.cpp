@@ -736,8 +736,13 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
                 m_PreviousDecodingHeight = iCropedHeight;
                 m_PreviousDecodingWidth = iCropedWidth;
             }
-
-			
+            else
+            {
+                memcpy(m_PreviousDecodedFrame, m_DecodedFrame, m_decodedFrameSize);
+                m_previousDecodedFrameSize = m_decodedFrameSize;
+                m_PreviousDecodingHeight = m_decodingHeight;
+                m_PreviousDecodingWidth = m_decodingWidth;
+            }
 		}
 	}
 
