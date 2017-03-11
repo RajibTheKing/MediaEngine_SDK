@@ -122,9 +122,9 @@ m_llLastPlayTime(0)
 	}
 
 #ifdef USE_AECM
-	m_pEcho = nullptr;
+		m_pEcho = new CEcho(66);
 #ifdef USE_ECHO2
-	m_pEcho2 = nullptr;
+		m_pEcho2 = new CEcho(77);
 #endif
 #endif
 
@@ -398,13 +398,18 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 #ifdef USE_ECHO2
-		m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
+		if(m_pEcho2 != nullptr)
+		{
+			m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
+		}
 #endif
 #ifdef __DUMP_FILE__
 		fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
 #endif // __DUMP_FILE__
-
-		m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+		if(m_pEcho != nullptr)
+		{
+			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+		}
 
 	}
 #endif
@@ -425,9 +430,15 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 #ifdef USE_ECHO2
-		m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+		if (m_pEcho2 != nullptr)
+		{
+			m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+		}
 #endif
-		m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning(), m_bUsingLoudSpeaker);
+		if (m_pEcho != nullptr)
+		{
+			m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning(), m_bUsingLoudSpeaker);
+		}
 	}
 #endif
 	return true;
