@@ -470,7 +470,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 #endif
     
-    if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
+    if(m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
     {
         m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
     }
