@@ -118,11 +118,14 @@ public:
 
 	void InterruptOccured();
 	void InterruptOver();
+    
+    bool isDynamicIDR_Mechanism_Enable();
 
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
     bool m_bLiveVideoStreamRunning;
+    
     
 
 private:
@@ -218,7 +221,7 @@ private:
     LiveReceiver *m_pLiveReceiverVideo;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     
-    
+    bool m_bDynamic_IDR_Sending_Mechanism;
 
 protected:
 

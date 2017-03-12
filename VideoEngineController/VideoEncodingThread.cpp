@@ -459,7 +459,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
             
-            bool bNeedIDR = m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
+            bool bNeedIDR = false;
+            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+            {
+                bNeedIDR= m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
+            }
             
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
             llCalculatingTime = m_Tools.CurrentTimestamp();
@@ -509,7 +513,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 //            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
 			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
-            m_pIdrFrameIntervalController->NotifyEncodedFrame(m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber);
+            
+            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+            {
+                m_pIdrFrameIntervalController->NotifyEncodedFrame(m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber);
+            }
 
 			//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
             

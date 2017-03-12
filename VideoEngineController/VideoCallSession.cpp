@@ -55,6 +55,7 @@ m_iRole(0),
 m_bVideoEffectEnabled(true)
 
 {
+    
     m_nOpponentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
     m_nCurrentVideoCallQualityLevel = VIDEO_CALL_TYPE_UNKNOWN;
 
@@ -118,7 +119,9 @@ m_bVideoEffectEnabled(true)
     m_pIdrFrameIntervalController = new IDRFrameIntervalController();
 
 	m_BitRateController->SetSharedObject(sharedObject);
-
+    
+    m_bDynamic_IDR_Sending_Mechanism = true;
+    
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
 
@@ -321,8 +324,19 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, nServiceType);
 	else
-		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, nServiceType);
+    {
+        if(m_bDynamic_IDR_Sending_Mechanism == true)
+        {
+            m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, nServiceType);
+        }
+        else
+        {
+            m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, nServiceType);
+        }
+    }
 
+    
+    
 	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
 
@@ -1006,7 +1020,16 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
     else
-		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+    {
+        if(m_bDynamic_IDR_Sending_Mechanism == true)
+        {
+            this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+        }
+        else
+        {
+            this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+        }
+    }
 
 
 
@@ -1029,7 +1052,16 @@ int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int heig
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
 		else
-			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+        {
+            if(m_bDynamic_IDR_Sending_Mechanism == true)
+            {
+                this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+            }
+            else
+            {
+                this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+            }
+        }
 
 		return 1;
 	}
@@ -1092,7 +1124,16 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
     else
-		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+    {
+        if(m_bDynamic_IDR_Sending_Mechanism == true)
+        {
+            m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+        }
+        else
+        {
+            m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+        }
+    }
 
 
 
@@ -1210,4 +1251,9 @@ void CVideoCallSession::EndCallInLive()
 
 		m_iRole = 0;
 	}
+}
+
+bool CVideoCallSession::isDynamicIDR_Mechanism_Enable()
+{
+    return m_bDynamic_IDR_Sending_Mechanism;
 }
