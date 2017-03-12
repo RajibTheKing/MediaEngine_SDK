@@ -17,7 +17,7 @@ int m_sigma = 35;
 
 #elif defined(_DESKTOP_C_SHARP_)
 
-int m_sigma = 125;
+int m_sigma = 100;
 
 #else 
 
