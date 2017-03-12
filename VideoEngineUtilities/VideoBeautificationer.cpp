@@ -13,7 +13,7 @@ int m_sigma = 75;
 
 #else
 
-int m_sigma = 75;
+int m_sigma = 35;
 
 #endif
 

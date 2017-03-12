@@ -1213,7 +1213,7 @@ void CVideoCallSession::EndCallInLive()
 
 			m_pColorConverter->ClearSmallScreen();
 
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->LIVE_CALL_INSET_OFF);
+			//m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->LIVE_CALL_INSET_OFF);
 
 			m_nEntityType = ENTITY_TYPE_PUBLISHER;
 		}
@@ -1224,7 +1224,7 @@ void CVideoCallSession::EndCallInLive()
 
 			m_pColorConverter->ClearSmallScreen();
 
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->LIVE_CALL_INSET_OFF);
+			//m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_lfriendID, m_pCommonElementsBucket->m_pEventNotifier->LIVE_CALL_INSET_OFF);
 
 			m_nEntityType = ENTITY_TYPE_VIEWER;
 		}
