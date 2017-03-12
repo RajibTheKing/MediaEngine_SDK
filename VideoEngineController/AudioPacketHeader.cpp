@@ -203,3 +203,29 @@ void CAudioPacketHeader::showDetails(string prefix)
 		m_arrllInformation[9],
 		m_arrllInformation[10]);
 }
+
+
+void CAudioPacketHeader::SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+	int numPacketRecv, int channel, int version, long long timestamp,int iBlockNumber, int nTotalBlocksInThisFrame,int nBlockOffset)
+{
+	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
+		//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
+		SetInformation(packetType, INF_PACKETTYPE);
+		SetInformation(nHeaderLength, INF_HEADERLENGTH);
+		SetInformation(packetNumber, INF_PACKETNUMBER);
+		SetInformation(slotNumber, INF_SLOTNUMBER);
+		SetInformation(packetLength, INF_PACKETLENGTH);
+		SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
+		SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
+		SetInformation(version, INF_VERSIONCODE);
+		SetInformation(timestamp, INF_TIMESTAMP);
+		SetInformation(networkType, INF_NETWORKTYPE);
+		SetInformation(channel, INF_CHANNELS);
+		SetInformation(iBlockNumber, INF_PACKET_BLOCK_NUMBER);
+		SetInformation(nTotalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
+		SetInformation(nBlockOffset, INF_BLOCK_OFFSET);
+
+		showDetails("@#BUILD");
+
+		GetHeaderInByteArray(header);	
+}

@@ -206,6 +206,10 @@
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />
+    <ClCompile Include="AudioDePacketizer.cpp" />
+    <ClCompile Include="AudioPacketizer.cpp">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\Aac.h" />
@@ -282,6 +286,8 @@
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h" />
+    <ClInclude Include="AudioDePacketizer.h" />
+    <ClInclude Include="AudioPacketizer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />

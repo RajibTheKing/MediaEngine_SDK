@@ -204,6 +204,12 @@
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClCompile>
+    <ClCompile Include="AudioPacketizer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioDePacketizer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -427,6 +433,12 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h">
       <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioPacketizer.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioDePacketizer.h">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
