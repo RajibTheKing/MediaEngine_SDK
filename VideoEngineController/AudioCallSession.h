@@ -60,6 +60,7 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioCodec;
 class CAac;
+class AudioPacketizer;
 
 #ifdef USE_AECM
 class CEcho;
@@ -81,6 +82,7 @@ private:
 
 	long long m_llLastPlayTime;
 
+	AudioPacketizer* m_pAudioPacketizer;
 public:
 	int m_iNextPacketType;
 	CAudioByteBuffer m_AudioReceivedBuffer;

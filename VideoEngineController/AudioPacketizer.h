@@ -1,5 +1,4 @@
 #include "AudioMacros.h"
-#include "AudioPacketHeader.h"
 
 class CAudioCallSession;
 class CCommonElementsBucket;
@@ -14,7 +13,7 @@ public:
 		int iPrevRecvdSlotID, int nReceivedPacketsInPrevSlot, long long llFriendID);
 private:
 	CAudioCallSession* m_pAudioCallSession;
-	CAudioPacketHeader m_AudioPacketHeader;
+	CAudioPacketHeader* m_AudioPacketHeader;
 	CCommonElementsBucket* m_pCommonElementsBucket;
 
 	int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;

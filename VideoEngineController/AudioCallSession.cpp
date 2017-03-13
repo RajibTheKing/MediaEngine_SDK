@@ -3,6 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 #include "InterfaceOfAudioVideoEngine.h"
+#include "AudioPacketizer.h"
 
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
@@ -63,6 +64,7 @@ m_bIsCheckCall(bIsCheckCall),
 m_nServiceType(nServiceType),
 m_llLastPlayTime(0)
 {
+	m_pAudioPacketizer = new AudioPacketizer(this, pSharedObject);
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
 
@@ -159,6 +161,7 @@ m_llLastPlayTime(0)
 
 CAudioCallSession::~CAudioCallSession()
 {
+	delete m_pAudioPacketizer;
 	StopDecodingThread();
 	StopEncodingThread();
 
@@ -765,7 +768,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
 #ifndef LOCAL_SERVER_LIVE_CALL
-#ifndef NO_CONNECTIVITY			
+#ifndef NO_CONNECTIVITY	
 			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, 0);	//Need to check send type.
 #else
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, m_ucaRawFrameNonMuxed);
@@ -846,12 +849,33 @@ void CAudioCallSession::EncodingThreadProcedure()
 			//PRT("Encoding side: llCapturedTime = %lld, llRelativeTime = %lld, m_iPacketNumber = %d", llCapturedTime, llRelativeTime, m_iPacketNumber);
 			
 			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
+			
 			AddHeader(version, llRelativeTime);
 			SetAudioIdentifierAndNextPacketType();
 			SendAudioData(toolsObject);
 
 			if (VIEWER_IN_CALL == m_iRole)
 			{
+				m_pAudioPacketizer->Packetize(
+					true /*bool bShouldPacketize*/,
+					m_ucaRawFrameNonMuxed /*unsigned char* uchData*/,
+					m_nRawFrameSize + m_MyAudioHeadersize + 1 /*int nDataLength*/,
+					m_iPacketNumber /*int nFrameNumber*/,
+					MEDIA_TYPE_LIVE_CALL_AUDIO /*int packetType*/,
+					0 /*int networkType*/,
+					version /*int version*/,
+					llRelativeTime /*long long llRelativeTime*/, 
+					0 /*int channel*/,
+					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
+					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
+					m_FriendID /*long long llFriendID*/);
+
+
+				// SetAudioIdentifierAndNextPacketType();
+
+				/*void Packetize(bool bShouldPacketize, unsigned char* uchData, int nDataLength, int nFrameNumber, int packetType, int networkType, int version, long long llRelativeTime, int channel,
+				int iPrevRecvdSlotID, int nReceivedPacketsInPrevSlot, long long llFriendID)*/
+
 				toolsObject.SOSleep(CONSECUTIVE_AUDIO_PACKET_DELY);
 				int n50MsFrameSizeInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING / 2;
 				memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame + n50MsFrameSizeInShort, n50MsFrameSizeInShort * 2);
@@ -860,6 +884,9 @@ void CAudioCallSession::EncodingThreadProcedure()
 				SetAudioIdentifierAndNextPacketType();
 				SendAudioData(toolsObject);
 				//LOG_50MS("###SENDING_ME_TO_CALLSDK_CALLEE  m_iPacketNumber = %d  n50MsFrameSizeInShort = %d", m_iPacketNumber, n50MsFrameSizeInShort);
+			}
+			else {
+				
 			}
 
 			toolsObject.SOSleep(0);
@@ -1467,6 +1494,11 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLeng
 	m_SendingHeader->SetInformation(timestamp, INF_TIMESTAMP);
 	m_SendingHeader->SetInformation(networkType, INF_NETWORKTYPE);
 	m_SendingHeader->SetInformation(channel, INF_CHANNELS);
+
+	m_SendingHeader->SetInformation(0, INF_PACKET_BLOCK_NUMBER);
+	m_SendingHeader->SetInformation(1, INF_TOTAL_PACKET_BLOCKS);
+	m_SendingHeader->SetInformation(0, INF_BLOCK_OFFSET);
+	m_SendingHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
 
 	m_SendingHeader->showDetails("@#BUILD");
 
