@@ -204,6 +204,9 @@
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\GomGomGain.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -427,6 +430,9 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h">
       <Filter>Source Files\VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\GomGomGain.h">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
