@@ -1,3 +1,6 @@
+#ifndef _AUDIO_PACKETIZER_H_
+#define _AUDIO_PACKETIZER_H_
+
 #include "AudioMacros.h"
 
 class CAudioCallSession;
@@ -20,3 +23,5 @@ private:
 
 	unsigned char m_uchAudioBlock[MAX_AUDIO_PACKET_SIZE + 10];
 };
+
+#endif

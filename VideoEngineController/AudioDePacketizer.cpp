@@ -17,7 +17,7 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock) {
 	int iTotalBlock = m_pAudioPacketHeader.GetInformation(INF_TOTAL_PACKET_BLOCKS);
 	int iPacketNumber = m_pAudioPacketHeader.GetInformation(INF_PACKETNUMBER);
 	int iBlockOffset = m_pAudioPacketHeader.GetInformation(INF_BLOCK_OFFSET);
-	int iBlockLength = m_pAudioPacketHeader.GetInformation(INF_PACKETLENGTH);
+	int iBlockLength = m_pAudioPacketHeader.GetInformation(INF_BLOCK_LENGTH);
 
 	if (m_iPreviousPacketNumber == -1) {
 		m_iPreviousPacketNumber = iPacketNumber;

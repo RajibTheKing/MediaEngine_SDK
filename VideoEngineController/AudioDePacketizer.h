@@ -1,3 +1,6 @@
+#ifndef _AUDIO_DE_PACKETIZER_H_
+#define _AUDIO_DE_PACKETIZER_H_
+
 #include "AudioPacketHeader.h"
 #include "AudioMacros.h"
 
@@ -18,3 +21,5 @@ private:
 
 	unsigned char m_uchAudioStorageBuffer[MAX_AUDIO_FRAME_Length];
 };
+
+#endif

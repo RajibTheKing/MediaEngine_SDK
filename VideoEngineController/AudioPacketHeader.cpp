@@ -223,7 +223,7 @@ void CAudioPacketHeader::SetHeaderAllInByteArray(unsigned char* header, int pack
 		SetInformation(nHeaderLength, INF_HEADERLENGTH);
 		SetInformation(packetNumber, INF_PACKETNUMBER);
 		SetInformation(slotNumber, INF_SLOTNUMBER);
-		SetInformation(packetLength, INF_PACKETLENGTH);
+		SetInformation(packetLength, INF_BLOCK_LENGTH);
 		SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
 		SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
 		SetInformation(version, INF_VERSIONCODE);
@@ -238,4 +238,29 @@ void CAudioPacketHeader::SetHeaderAllInByteArray(unsigned char* header, int pack
 		showDetails("@#BUILD");
 
 		GetHeaderInByteArray(header);	
+}
+
+void CAudioPacketHeader::GetHeaderInfoAll(unsigned char* header, int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &nFrameNumber, int &nBlockLength, int &recvSlotNumber,
+	int &numPacketRecv, int &channel, int &version, long long &timestamp, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
+{
+	CopyHeaderToInformation(header);
+
+	packetType = GetInformation(INF_PACKETTYPE);
+	nHeaderLength = GetInformation(INF_HEADERLENGTH);
+	networkType = GetInformation(INF_NETWORKTYPE);
+	slotNumber = GetInformation(INF_SLOTNUMBER);
+	nFrameNumber = GetInformation(INF_PACKETNUMBER);
+	nBlockLength = GetInformation(INF_BLOCK_LENGTH);
+	recvSlotNumber = GetInformation(INF_RECVDSLOTNUMBER);
+	numPacketRecv = GetInformation(INF_NUMPACKETRECVD);
+	channel = GetInformation(INF_CHANNELS);
+	version = GetInformation(INF_VERSIONCODE);
+	timestamp = GetInformation(INF_TIMESTAMP);
+
+	iBlockNumber = GetInformation(INF_PACKET_BLOCK_NUMBER);
+	nNumberOfBlocks = GetInformation(INF_TOTAL_PACKET_BLOCKS);
+	iOffsetOfBlock = GetInformation(INF_BLOCK_OFFSET);
+	nFrameLength = GetInformation(INF_FRAME_LENGTH);
+
+	showDetails("@#PARSE");
 }

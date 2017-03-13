@@ -854,6 +854,20 @@ void CAudioCallSession::EncodingThreadProcedure()
 			SetAudioIdentifierAndNextPacketType();
 			SendAudioData(toolsObject);
 
+			//m_pAudioPacketizer->Packetize(
+			//	true /*bool bShouldPacketize*/,
+			//	m_ucaRawFrameNonMuxed /*unsigned char* uchData*/,
+			//	m_nRawFrameSize + m_MyAudioHeadersize + 1 /*int nDataLength*/,
+			//	m_iPacketNumber /*int nFrameNumber*/,
+			//	MEDIA_TYPE_LIVE_CALL_AUDIO /*int packetType*/,
+			//	0 /*int networkType*/,
+			//	version /*int version*/,
+			//	llRelativeTime /*long long llRelativeTime*/,
+			//	0 /*int channel*/,
+			//	m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
+			//	m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
+			//	m_FriendID /*long long llFriendID*/);
+
 			if (VIEWER_IN_CALL == m_iRole)
 			{
 				m_pAudioPacketizer->Packetize(
@@ -1487,7 +1501,7 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLeng
 	m_SendingHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
 	m_SendingHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
 	m_SendingHeader->SetInformation(slotNumber, INF_SLOTNUMBER);
-	m_SendingHeader->SetInformation(packetLength, INF_PACKETLENGTH);
+	m_SendingHeader->SetInformation(packetLength, INF_BLOCK_LENGTH);
 	m_SendingHeader->SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
 	m_SendingHeader->SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
 	m_SendingHeader->SetInformation(version, INF_VERSIONCODE);
@@ -1517,7 +1531,7 @@ void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLen
 	networkType = m_ReceivingHeader->GetInformation(INF_NETWORKTYPE);
 	slotNumber = m_ReceivingHeader->GetInformation(INF_SLOTNUMBER);
 	packetNumber = m_ReceivingHeader->GetInformation(INF_PACKETNUMBER);
-	packetLength = m_ReceivingHeader->GetInformation(INF_PACKETLENGTH);
+	packetLength = m_ReceivingHeader->GetInformation(INF_BLOCK_LENGTH);
 	recvSlotNumber = m_ReceivingHeader->GetInformation(INF_RECVDSLOTNUMBER);
 	numPacketRecv = m_ReceivingHeader->GetInformation(INF_NUMPACKETRECVD);
 	channel = m_ReceivingHeader->GetInformation(INF_CHANNELS);

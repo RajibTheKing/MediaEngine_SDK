@@ -6,7 +6,7 @@
 #define INF_NETWORKTYPE 2
 #define INF_VERSIONCODE 3
 #define INF_PACKETNUMBER 4
-#define INF_PACKETLENGTH 5
+#define INF_BLOCK_LENGTH 5
 #define INF_RECVDSLOTNUMBER 6
 #define INF_NUMPACKETRECVD 7
 #define INF_CHANNELS 8
@@ -45,7 +45,7 @@ static int HeaderBitmap[] =
 	2 /*INF_NETWORKTYPE*/,
 	5 /*INF_VERSIONCODE*/,
 	31 /*INF_PACKETNUMBER*/,
-	12 /*INF_PACKETLENGTH*/,
+	12 /*INF_BLOCK_LENGTH*/,
 	3 /*INF_RECVDSLOTNUMBER*/,
 	8 /*INF_NUMPACKETRECVD*/,
 	2 /*INF_CHANNELS*/,
@@ -87,6 +87,9 @@ public:
 
 	void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength);
+
+	void GetHeaderInfoAll(unsigned char* header, int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &nFrameNumber, int &nBlockLength, int &recvSlotNumber,
+		int &numPacketRecv, int &channel, int &version, long long &timestamp, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
 
 	void CopyHeaderToInformation(unsigned char *Header);
 	int GetHeaderInByteArray(unsigned char* data);
