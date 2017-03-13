@@ -1026,7 +1026,7 @@ void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPo
 	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
 }
 
-void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int))
+void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
 {
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }

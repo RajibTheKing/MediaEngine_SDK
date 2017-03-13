@@ -77,7 +77,7 @@ LongLong CCommonElementsBucket::GetUsername()
     return userName;
 }
 
-void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int))
+void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
 {
     
     SendFunctionPointer = callBackFunctionPointer;
