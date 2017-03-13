@@ -15,6 +15,8 @@
 #define INF_PACKET_BLOCK_NUMBER 11
 #define INF_TOTAL_PACKET_BLOCKS 12
 #define INF_BLOCK_OFFSET 13
+#define INF_FRAME_LENGTH 14
+
 
 /////////PacketTypes//////
 #define AUDIO_SKIP_PACKET_TYPE 0
@@ -51,7 +53,8 @@ static int HeaderBitmap[] =
 	40 /*INF_TIMESTAMP*/,
 	4 /*INF_BLOCK_NUMBER*/,
 	4 /*INF_TOTAL_BLOCK*/,
-	12 /*INF_BLOCK_OFFSET*/
+	16 /*INF_BLOCK_OFFSET*/,
+	16 /*INF_FRAME_LENGTH*/
 };
 
 static int SupportedPacketTypes[] =
@@ -68,12 +71,13 @@ class CAudioPacketHeader {
 
 	unsigned int m_nHeaderSizeInBit;
 	unsigned int m_nHeaderSizeInByte;
+	unsigned int m_nProcessingHeaderSizeInByte;
 	long long m_arrllInformation[MAXFIELDSINHEADER];
 
 	unsigned char ma_uchHeader[MAXHEADERSIZE];
 	int nNumberOfHeaderElements;
 	//int CopyInformationToHeader(unsigned int * Information);
-	void PutInformationToArray(int InfoType);
+	bool PutInformationToArray(int InfoType);
 
 public:
 	CAudioPacketHeader();
@@ -82,7 +86,7 @@ public:
 	~CAudioPacketHeader();
 
 	void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset);
+		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength);
 
 	void CopyHeaderToInformation(unsigned char *Header);
 	int GetHeaderInByteArray(unsigned char* data);

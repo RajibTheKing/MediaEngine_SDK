@@ -14,7 +14,7 @@ CAudioPacketHeader::CAudioPacketHeader()
 
 	m_nHeaderSizeInBit = headerSizeInBit;
 	m_nHeaderSizeInByte = (headerSizeInBit + 7) / 8;
-
+	m_nProcessingHeaderSizeInByte = m_nHeaderSizeInByte;
 	memset(m_arrllInformation, 0, sizeof(m_arrllInformation));
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
@@ -133,6 +133,9 @@ void CAudioPacketHeader::CopyHeaderToInformation(unsigned char *Header)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
 		PutInformationToArray(i);
+		if(INF_HEADERLENGTH == i && m_nHeaderSizeInByte != m_arrllInformation[INF_HEADERLENGTH]) {
+			m_nProcessingHeaderSizeInByte = m_arrllInformation[INF_HEADERLENGTH];
+		}
 	}
 }
 
@@ -141,7 +144,7 @@ long long CAudioPacketHeader::GetInformation(int InfoType)
 	return m_arrllInformation[InfoType];
 }
 
-void CAudioPacketHeader::PutInformationToArray(int InfoType)
+bool CAudioPacketHeader::PutInformationToArray(int InfoType)
 {
 	unsigned long long Information = 0;
 	int infoStartBit = 0;
@@ -152,6 +155,11 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 	int infoStartByte = infoStartBit / 8;
 	int infoStartBitOfByte = infoStartBit % 8;
 
+	if( infoStartByte + HeaderBitmap[InfoType] > (m_nProcessingHeaderSizeInByte << 3))
+	{
+		m_arrllInformation[InfoType] = -1;
+		return false;
+	}
     
 	if (infoStartBitOfByte + HeaderBitmap[InfoType] <= 8)//fits in 1 byte
 	{
@@ -174,6 +182,7 @@ void CAudioPacketHeader::PutInformationToArray(int InfoType)
 		Information &= (1LL << HeaderBitmap[InfoType]) - 1;
 	}
 	m_arrllInformation[InfoType] = Information;
+	return true;
 }
 
 void CAudioPacketHeader::showDetails(string prefix)
@@ -206,7 +215,7 @@ void CAudioPacketHeader::showDetails(string prefix)
 
 
 void CAudioPacketHeader::SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-	int numPacketRecv, int channel, int version, long long timestamp,int iBlockNumber, int nTotalBlocksInThisFrame,int nBlockOffset)
+	int numPacketRecv, int channel, int version, long long timestamp,int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength)
 {
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 		//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
@@ -224,6 +233,7 @@ void CAudioPacketHeader::SetHeaderAllInByteArray(unsigned char* header, int pack
 		SetInformation(iBlockNumber, INF_PACKET_BLOCK_NUMBER);
 		SetInformation(nTotalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
 		SetInformation(nBlockOffset, INF_BLOCK_OFFSET);
+		SetInformation(nFrameLength, INF_FRAME_LENGTH);
 
 		showDetails("@#BUILD");
 

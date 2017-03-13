@@ -152,10 +152,12 @@
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioDePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
@@ -206,10 +208,6 @@
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />
-    <ClCompile Include="AudioDePacketizer.cpp" />
-    <ClCompile Include="AudioPacketizer.cpp">
-      <DeploymentContent>true</DeploymentContent>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\Aac.h" />
@@ -217,11 +215,13 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCodec.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioMacros.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
@@ -286,8 +286,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h" />
-    <ClInclude Include="AudioDePacketizer.h" />
-    <ClInclude Include="AudioPacketizer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters" />
