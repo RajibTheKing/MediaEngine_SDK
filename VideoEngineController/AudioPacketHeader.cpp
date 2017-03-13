@@ -262,5 +262,17 @@ void CAudioPacketHeader::GetHeaderInfoAll(unsigned char* header, int &packetType
 	iOffsetOfBlock = GetInformation(INF_BLOCK_OFFSET);
 	nFrameLength = GetInformation(INF_FRAME_LENGTH);
 
+	if (iBlockNumber == -1)
+	{
+		iBlockNumber = 0;
+	}
+
+	if (nNumberOfBlocks == -1)
+	{
+		nNumberOfBlocks = 1;
+		iOffsetOfBlock = 0;
+		nFrameLength = nBlockLength;
+	}
+
 	showDetails("@#PARSE");
 }
