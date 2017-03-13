@@ -1402,7 +1402,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-
+			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> %d frm len = %d", nPacketDataLength, nFrameLength);
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
 				continue;
