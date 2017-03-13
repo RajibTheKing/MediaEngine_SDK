@@ -80,6 +80,7 @@ class CAudioCallSession
 private:
 	bool m_bIsAECMFarEndThreadBusy;
 	bool m_bIsAECMNearEndThreadBusy;
+	bool m_bIsCallInLiveRunning;
 	long long m_llLastPlayTime;
 
 public:

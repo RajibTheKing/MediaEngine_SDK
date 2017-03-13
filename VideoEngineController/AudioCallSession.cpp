@@ -63,7 +63,8 @@ m_bIsCheckCall(bIsCheckCall),
 m_nServiceType(nServiceType),
 m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
-m_bIsAECMNearEndThreadBusy(false)
+m_bIsAECMNearEndThreadBusy(false),
+m_bIsCallInLiveRunning(false)
 {
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
@@ -280,10 +281,12 @@ void CAudioCallSession::StartCallInLive(int iRole)
 	{
 		return;
 	}
-	if (m_iRole != CALL_NOT_RUNNING)//Call inside a call
+	if (m_iRole != CALL_NOT_RUNNING || m_bIsCallInLiveRunning)//Call inside a call
 	{
 		return;
 	}
+
+	m_bIsCallInLiveRunning = true;
 	m_pLiveReceiverAudio->m_bIsRoleChanging = true;
 	while (m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
 	{
@@ -386,6 +389,7 @@ void CAudioCallSession::EndCallInLive()
 
 	m_llDecodingTimeStampOffset = -1;
 	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
+	m_bIsCallInLiveRunning = false;
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
