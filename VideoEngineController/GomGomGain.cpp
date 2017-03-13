@@ -21,7 +21,8 @@ int CGomGomGain::AddGain(short *sInBuf, int sBufferSize)
 {
 	for (int i = 0; i < sBufferSize; i++)
 	{
-		m_sFilteredFrame[i] = (short)(mFilter->do_sample((double)sInBuf[i]));
+		//m_sFilteredFrame[i] = (short)(mFilter->do_sample((double)sInBuf[i]));
+		m_sFilteredFrame[i] = sInBuf[i];
 	}
 	
 	for (int i = 0; i < sBufferSize; i++)
@@ -39,7 +40,7 @@ int CGomGomGain::AddGain(short *sInBuf, int sBufferSize)
 	}
 	for (int i = 0; i < sBufferSize; i++)
 	{
-		for (int j = 10; j >= 1; j--)
+		for (int j = 2; j >= 1; j--)
 		{
 			if (abs(m_daMovingAvg[i]) * j > SHRT_MAX / 2)
 			{
