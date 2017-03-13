@@ -26,6 +26,7 @@ public:
 	void PencilSketchWhiteEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 	void ColorSketchEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 	void CartoonEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
+	void NewEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 
 
 private:

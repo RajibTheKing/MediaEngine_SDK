@@ -337,3 +337,155 @@ void CVideoEffects::CartoonEffect(unsigned char *pConvertingData, int inHeight, 
 
 	return;
 }
+
+void CVideoEffects::NewEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+{
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
+				+ (0. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) / 9.));
+
+		}
+	}
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
+				+ (0. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) / 9.));
+
+		}
+	}
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
+				+ (0. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) / 9.));
+
+		}
+	}
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
+				+ (0. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) / 9.));
+
+		}
+	}
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+		}
+	}
+
+
+	for (int i = 1; i <= inHeight; i++)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
+				+ (0. * m_mat[i][j]
+				- m_mat[i - 1][j - 1]
+				- m_mat[i - 1][j]
+				- m_mat[i - 1][j + 1]
+				- m_mat[i][j - 1]
+				- m_mat[i][j]
+				- m_mat[i][j + 1]
+				- m_mat[i + 1][j - 1]
+				- m_mat[i + 1][j]
+				- m_mat[i + 1][j + 1]) / 9.));
+
+		}
+	}
+
+	return;
+}
