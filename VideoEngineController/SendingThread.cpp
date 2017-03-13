@@ -283,8 +283,10 @@ void CSendingThread::SendingThreadProcedure()
 
 				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
+				int viewerDataLength = 0, calleeDataLength = 0;
+
 				if (bExist)
-					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector);
+					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
@@ -388,9 +390,19 @@ void CSendingThread::SendingThreadProcedure()
 #ifndef NO_CONNECTIVITY
 						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 
-						// do changes for audio
+						int viewerDataIndex = index + m_iDataToSendIndex;
+						int calleeDataIndex = viewerDataIndex + viewerDataLength;
 
-						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+						std::vector<std::pair<int, int> > liVector;
+						liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+						liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
+		
+						// do changes for audio
+						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend,
+							index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+
+						LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d",
+							viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
 #else
 						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
