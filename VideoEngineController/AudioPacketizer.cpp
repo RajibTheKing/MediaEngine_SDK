@@ -15,7 +15,8 @@ m_pCommonElementsBucket(pCommonElementsBucket)
 }
 
 AudioPacketizer::~AudioPacketizer()
-{	
+{
+	delete m_AudioPacketHeader;
 }
 
 void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, int nDataLength, int nFrameNumber, int packetType, int networkType, int version, long long llRelativeTime, int channel,
@@ -26,8 +27,9 @@ void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, i
 	int nMediaByteSize = 1, nCurrentBlockLength;
 
 	int iSlotID = nFrameNumber / AUDIO_SLOT_SIZE;
+	
 	iSlotID %= m_AudioPacketHeader->GetFieldCapacity(INF_SLOTNUMBER);
-
+	HITLER("XXP@#@#MARUF INIT PACKETING .... data Len = %d numBlock %d, SlotId %d", nDataLength, nNumberOfBlocks, iSlotID);
 	for (int iBlockNumber = 0; iBlockNumber < nNumberOfBlocks; iBlockNumber++ ) {
 
 		nCurrentBlockLength = min(m_nMaxDataSyzeInEachBlock, nDataLength - nBlockOffset);
@@ -40,9 +42,17 @@ void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, i
 		m_uchAudioBlock[0] = AUDIO_PACKET_MEDIA_TYPE;
 
 		nBlockOffset += nCurrentBlockLength;
-		HITLER("PACKETING ....");
-		// m_pCommonElementsBucket->SendFunctionPointer(llFriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_uchAudioBlock, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, 0);
+		HITLER("XXP@#@#MARUF PACKETING .... %d", iBlockNumber);
+
+#ifndef NO_CONNECTIVITY	
+		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, 0);	//Need to check send type.
+#else
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, m_uchAudioBlock);
+#endif
+		//m_pCommonElementsBucket->SendFunctionPointer(llFriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_uchAudioBlock, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, 0);
+		HITLER("XXP@#@#MARUF PACKETING SENT.... %d", iBlockNumber);
 	}
 
-	HITLER("PACKETING ENDS.");
+	HITLER("XXP@#@#MARUF PACKETING ENDS.");
 }
+

@@ -21,7 +21,7 @@ private:
 
 	int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;
 
-	unsigned char m_uchAudioBlock[MAX_AUDIO_PACKET_SIZE + 10];
+	unsigned char m_uchAudioBlock[MAX_AUDIO_DECODER_FRAME_SIZE + 10];
 };
 
 #endif

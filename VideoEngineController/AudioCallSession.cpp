@@ -4,6 +4,7 @@
 #include "Tools.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioPacketizer.h"
+#include "AudioDePacketizer.h"
 
 //#define __AUDIO_SELF_CALL__
 //#define FIRE_ENC_TIME
@@ -65,6 +66,7 @@ m_nServiceType(nServiceType),
 m_llLastPlayTime(0)
 {
 	m_pAudioPacketizer = new AudioPacketizer(this, pSharedObject);
+	m_pAudioDePacketizer = new AudioDePacketizer();
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
 
@@ -161,7 +163,18 @@ m_llLastPlayTime(0)
 
 CAudioCallSession::~CAudioCallSession()
 {
-	delete m_pAudioPacketizer;
+	if (NULL != m_pAudioPacketizer)
+	{
+		delete m_pAudioPacketizer;
+		m_pAudioPacketizer = NULL;
+	}
+
+	if (NULL != m_pAudioDePacketizer)
+	{
+		delete m_pAudioDePacketizer;
+		m_pAudioDePacketizer = NULL;
+	}
+	
 	StopDecodingThread();
 	StopEncodingThread();
 
@@ -849,11 +862,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			//PRT("Encoding side: llCapturedTime = %lld, llRelativeTime = %lld, m_iPacketNumber = %d", llCapturedTime, llRelativeTime, m_iPacketNumber);
 			
 			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
-			
-			AddHeader(version, llRelativeTime);
-			SetAudioIdentifierAndNextPacketType();
-			SendAudioData(toolsObject);
-
+					
 			//m_pAudioPacketizer->Packetize(
 			//	true /*bool bShouldPacketize*/,
 			//	m_ucaRawFrameNonMuxed /*unsigned char* uchData*/,
@@ -868,7 +877,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 			//	m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
 			//	m_FriendID /*long long llFriendID*/);
 
-			if (VIEWER_IN_CALL == m_iRole)
+			if (m_bLiveAudioStreamRunning && VIEWER_IN_CALL == m_iRole)
 			{
 				m_pAudioPacketizer->Packetize(
 					true /*bool bShouldPacketize*/,
@@ -885,22 +894,24 @@ void CAudioCallSession::EncodingThreadProcedure()
 					m_FriendID /*long long llFriendID*/);
 
 
-				// SetAudioIdentifierAndNextPacketType();
+				 SetAudioIdentifierAndNextPacketType();
 
 				/*void Packetize(bool bShouldPacketize, unsigned char* uchData, int nDataLength, int nFrameNumber, int packetType, int networkType, int version, long long llRelativeTime, int channel,
 				int iPrevRecvdSlotID, int nReceivedPacketsInPrevSlot, long long llFriendID)*/
 
-				toolsObject.SOSleep(CONSECUTIVE_AUDIO_PACKET_DELY);
+				/*toolsObject.SOSleep(CONSECUTIVE_AUDIO_PACKET_DELY);
 				int n50MsFrameSizeInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING / 2;
 				memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame + n50MsFrameSizeInShort, n50MsFrameSizeInShort * 2);
 				long long llRelativeTimeForThisPacket = llRelativeTime + HALF_FRAME_DURATION_IN_MS;
 				AddHeader(version, llRelativeTimeForThisPacket);
 				SetAudioIdentifierAndNextPacketType();
-				SendAudioData(toolsObject);
+				SendAudioData(toolsObject);*/
 				//LOG_50MS("###SENDING_ME_TO_CALLSDK_CALLEE  m_iPacketNumber = %d  n50MsFrameSizeInShort = %d", m_iPacketNumber, n50MsFrameSizeInShort);
 			}
 			else {
-				
+				AddHeader(version, llRelativeTime);
+				SetAudioIdentifierAndNextPacketType();
+				SendAudioData(toolsObject);
 			}
 
 			toolsObject.SOSleep(0);
@@ -1387,9 +1398,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			int dummy;
 			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-			
+			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame);
+				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
 
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
@@ -1412,29 +1423,38 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
-			{
-				continue;
-			}
+			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+
+			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength);
 			
-			llNow = m_Tools.CurrentTimestamp();
+			if (bIsCompleteFrame){
+				//m_ucaDecodingFrame
+				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
+				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+				{
+					continue;
+				}
+			}
+			llNow = m_Tools.CurrentTimestamp(); 
 
 			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
 
-			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
+			if (bIsCompleteFrame){
+				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
 
-			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-			DumpDecodedFrame();
-			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
+				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+				DumpDecodedFrame();
+				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
 
-			if (m_nDecodedFrameSize < 1)
-			{
-				ALOG("#EXP# Decoding Failed.");
-				continue;
+				if (m_nDecodedFrameSize < 1)
+				{
+					ALOG("#EXP# Decoding Failed.");
+					continue;
+				}
+
+				SendToPlayer(llNow, llLastTime, iPacketNumber);
+				toolsObject.SOSleep(0);
 			}
-
-			SendToPlayer(llNow, llLastTime, iPacketNumber);
-			toolsObject.SOSleep(0);
 		}
 	}
 
@@ -1517,12 +1537,10 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLeng
 	m_SendingHeader->showDetails("@#BUILD");
 
 	m_SendingHeader->GetHeaderInByteArray(header);
-
-
 }
 
 void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header)
+	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
 {
 	m_ReceivingHeader->CopyHeaderToInformation(header);
 
@@ -1537,6 +1555,24 @@ void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLen
 	channel = m_ReceivingHeader->GetInformation(INF_CHANNELS);
 	version = m_ReceivingHeader->GetInformation(INF_VERSIONCODE);
 	timestamp = m_ReceivingHeader->GetInformation(INF_TIMESTAMP);
+
+
+	iBlockNumber = m_ReceivingHeader->GetInformation(INF_PACKET_BLOCK_NUMBER);
+	nNumberOfBlocks = m_ReceivingHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
+	iOffsetOfBlock = m_ReceivingHeader->GetInformation(INF_BLOCK_OFFSET);
+	nFrameLength = m_ReceivingHeader->GetInformation(INF_FRAME_LENGTH);
+
+	if (iBlockNumber == -1)
+	{
+		iBlockNumber = 0;
+	}
+
+	if (nNumberOfBlocks == -1)
+	{
+		nNumberOfBlocks = 1;
+		iOffsetOfBlock = 0;
+		nFrameLength = packetLength;
+	}
 
 	m_ReceivingHeader->showDetails("@#PARSE");
 }

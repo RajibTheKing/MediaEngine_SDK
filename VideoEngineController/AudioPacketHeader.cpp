@@ -127,6 +127,8 @@ void CAudioPacketHeader::SetInformation(long long Information, int InfoType)
 
 void CAudioPacketHeader::CopyHeaderToInformation(unsigned char *Header)
 {
+	m_nProcessingHeaderSizeInByte = m_nHeaderSizeInByte;
+
 	memcpy(ma_uchHeader, Header, m_nHeaderSizeInByte);
 
 	for (int i = 0; i < nNumberOfHeaderElements; i++)
@@ -240,22 +242,21 @@ void CAudioPacketHeader::SetHeaderAllInByteArray(unsigned char* header, int pack
 		GetHeaderInByteArray(header);	
 }
 
-void CAudioPacketHeader::GetHeaderInfoAll(unsigned char* header, int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &nFrameNumber, int &nBlockLength, int &recvSlotNumber,
-	int &numPacketRecv, int &channel, int &version, long long &timestamp, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
+void CAudioPacketHeader::GetHeaderInfoAll(unsigned char* header, int &nHeaderLength, int &nFrameNumber, int &iBlockNumber, int &nNumberOfBlocks, int &nBlockLength, int &iOffsetOfBlock, int &nFrameLength)
 {
 	CopyHeaderToInformation(header);
 
-	packetType = GetInformation(INF_PACKETTYPE);
+	// packetType = GetInformation(INF_PACKETTYPE);
 	nHeaderLength = GetInformation(INF_HEADERLENGTH);
-	networkType = GetInformation(INF_NETWORKTYPE);
-	slotNumber = GetInformation(INF_SLOTNUMBER);
+	// networkType = GetInformation(INF_NETWORKTYPE);
+	// slotNumber = GetInformation(INF_SLOTNUMBER);
 	nFrameNumber = GetInformation(INF_PACKETNUMBER);
 	nBlockLength = GetInformation(INF_BLOCK_LENGTH);
-	recvSlotNumber = GetInformation(INF_RECVDSLOTNUMBER);
-	numPacketRecv = GetInformation(INF_NUMPACKETRECVD);
-	channel = GetInformation(INF_CHANNELS);
-	version = GetInformation(INF_VERSIONCODE);
-	timestamp = GetInformation(INF_TIMESTAMP);
+	// recvSlotNumber = GetInformation(INF_RECVDSLOTNUMBER);
+	//numPacketRecv = GetInformation(INF_NUMPACKETRECVD);
+	// channel = GetInformation(INF_CHANNELS);
+	// version = GetInformation(INF_VERSIONCODE);
+	// timestamp = GetInformation(INF_TIMESTAMP);
 
 	iBlockNumber = GetInformation(INF_PACKET_BLOCK_NUMBER);
 	nNumberOfBlocks = GetInformation(INF_TOTAL_PACKET_BLOCKS);
