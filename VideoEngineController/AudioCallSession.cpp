@@ -882,7 +882,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 				m_pAudioPacketizer->Packetize(
 					true /*bool bShouldPacketize*/,
 					m_ucaRawFrameNonMuxed /*unsigned char* uchData*/,
-					m_nRawFrameSize + m_MyAudioHeadersize + 1 /*int nDataLength*/,
+					m_nRawFrameSize /*int nDataLength*/,
 					m_iPacketNumber /*int nFrameNumber*/,
 					MEDIA_TYPE_LIVE_CALL_AUDIO /*int packetType*/,
 					0 /*int networkType*/,
