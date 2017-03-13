@@ -78,7 +78,8 @@ class CVoice;
 class CAudioCallSession
 {
 private:
-
+	bool m_bIsAECMFarEndThreadBusy;
+	bool m_bIsAECMNearEndThreadBusy;
 	long long m_llLastPlayTime;
 
 public:
