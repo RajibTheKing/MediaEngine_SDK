@@ -50,7 +50,7 @@ m_EffectValue(10)
 	{
 		double gray = y;
 		double sqrt_value = sqrt(gray);
-		gray = gray / (0.89686516089772L + 0.003202159061032L*gray - 0.044292372843353L*sqrt_value);
+		gray = gray / (0.89686516089772L + 0.002502159061032L*gray - 0.040292372843353L*sqrt_value);
 		gray = gray<256.0L ? gray : 255.0L;
 
 		//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -459,6 +459,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			totalYValue += pBlurConvertingData[iw + j - 1];
 			MakePixelBright(&pBlurConvertingData[iw + j - 1]);
 
+			MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+
 #endif
 			cur_pixel = pBlurConvertingData[iw + j - 1];
 
@@ -472,6 +474,11 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			//pBlurConvertingData[m_pVIndex[iw + j - 1]] += 1;
 		}
 	}
+
+
+	int m_AvarageValue = totalYValue/yLen;
+
+	SetBrighteningValue(m_AvarageValue, 10);
 
 	int niHeight = iHeight - m_rr;
 	int niWidth = iWidth - m_rr;
