@@ -437,16 +437,15 @@
     <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h">
-=======
-    <ClInclude Include="..\..\VideoEngineController\GomGomGain.h">
->>>>>>> gomgomgain-v1
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\GomGomGain.h">
+      <Filter>Source Files\AudioEngine</Filter>
+	</ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters">
