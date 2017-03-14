@@ -230,6 +230,18 @@
     <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h">
       <Filter>VideoEngineUtilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\Filt.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\GomGomGain.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -408,6 +420,18 @@
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp">
       <Filter>VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioDePacketizer.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketizer.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\Filt.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\GomGomGain.cpp">
+      <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
