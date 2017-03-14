@@ -624,8 +624,24 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
                     
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__) || defined (TARGET_OS_WINDOWS_PHONE)
-
-                    iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, YUVNV12);
+                    
+                    int nColorFormatType = -1;
+                    int nOwnDeviceType = m_pVideoCallSession->GetOwnDeviceType();
+                    
+                    if(nOwnDeviceType == DEVICE_TYPE_IOS)
+                    {
+                        nColorFormatType = YUVNV12;
+                    }
+                    else if(nOwnDeviceType == DEVICE_TYPE_ANDROID)
+                    {
+                        nColorFormatType = YUVNV21;
+                    }
+                    else if(nOwnDeviceType == DEVICE_TYPE_WINDOWS_PHONE)
+                    {
+                        nColorFormatType = YUVYV12;
+                    }
+                    
+                    iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nColorFormatType);
                         
                     //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
                     
