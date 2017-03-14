@@ -189,7 +189,7 @@ bool CAudioPacketHeader::PutInformationToArray(int InfoType)
 
 void CAudioPacketHeader::showDetails(string prefix)
 {
-	PRT("%s #-> "
+	HITLER("%s #-> "
 		"PT = %lld "
 		"HL = %lld "
 		"NT = %lld "
@@ -200,7 +200,11 @@ void CAudioPacketHeader::showDetails(string prefix)
 		"NPRECVD = %lld "
 		"C = %lld "
 		"SN = %lld "
-		"TS = %lld",
+		"TS = %lld "
+		"BN = %lld "
+		"TB = %lld "
+		"BO = %lld "
+		"FL = %lld ",
 		prefix.c_str(),
 		m_arrllInformation[0],
 		m_arrllInformation[1],
@@ -212,7 +216,11 @@ void CAudioPacketHeader::showDetails(string prefix)
 		m_arrllInformation[7],
 		m_arrllInformation[8],
 		m_arrllInformation[9],
-		m_arrllInformation[10]);
+		m_arrllInformation[10],
+		m_arrllInformation[11],
+		m_arrllInformation[12],
+		m_arrllInformation[13],
+		m_arrllInformation[14]);
 }
 
 
