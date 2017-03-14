@@ -131,7 +131,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
     //printf("TheKing--> Bitrate MiniPacket Found\n");
     CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " mini pkt found setting zero:////******");
 
-	m_nOppNotifiedByterate = (int)crTempHeader.getTimeStamp();
+	//m_nOppNotifiedByterate = (int)crTempHeader.getTimeStamp();
 
 	if (m_BandWidthRatioHelper.find((int)crTempHeader.getFrameNumber()) == -1)
     {
@@ -153,7 +153,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
     m_nBytesSendInMegaSlotInverval+=m_BandWidthRatioHelper.getElementAt(iSlotNumber);
 	m_nBytesReceivedInMegaSlotInterval += (int)crTempHeader.getTimeStamp();
 
-    NeedToNotifyClient(m_nOppNotifiedByterate);
+	NeedToNotifyClient(m_nBytesReceivedInMegaSlotInterval);
 
     if(m_nSlotIntervalCounter % MEGA_SLOT_INTERVAL == 0)
     {
