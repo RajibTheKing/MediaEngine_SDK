@@ -1,6 +1,12 @@
 #include "GomGomGain.h"
 #include "math.h"
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+#include <limits.h>
+
+#endif
+
 #define MAX_GAIN 10
 
 CGomGomGain::CGomGomGain(int id)
