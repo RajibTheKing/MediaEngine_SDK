@@ -155,6 +155,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/Voice.cpp \
 			../../../videoengine/VideoEngineController/Gain.cpp \
 			../../../videoengine/VideoEngineController/Echo.cpp \
+			../../../videoengine/VideoEngineController/GomGomGain.cpp \
 			../../../videoengine/VideoEngineUtilities/VideoBeautificationer.cpp \
 			../../../videoengine/VideoEngineController/LiveReceiver.cpp \
 			../../../videoengine/VideoEngineController/LiveVideoDecodingQueue.cpp \

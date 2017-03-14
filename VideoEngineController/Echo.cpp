@@ -50,7 +50,7 @@ CEcho::CEcho(int id)
 
 	AecmConfig aecConfig;
 	aecConfig.cngMode = AecmFalse;
-	aecConfig.echoMode = 4;
+	aecConfig.echoMode = 2;
 	if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
 	{
 		ALOG("WebRtcAecm_set_config unsuccessful id = " + m_Tools.IntegertoStringConvert(id));

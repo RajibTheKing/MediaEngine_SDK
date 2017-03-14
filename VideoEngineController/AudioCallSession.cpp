@@ -27,6 +27,7 @@
 #ifdef USE_VAD
 #include "Voice.h"
 #endif
+#include "GomGomGain.h"
 
 #define PUBLISHER_IN_CALL 1
 #define VIEWER_IN_CALL 2
@@ -39,7 +40,7 @@
 #endif
 
 #define OPUS_ENABLED
-//#define __DUMP_FILE__
+#define __DUMP_FILE__
 
 #ifdef __DUMP_FILE__
 FILE *FileInput;
@@ -69,6 +70,7 @@ m_llLastPlayTime(0)
 	m_pAudioDePacketizer = new AudioDePacketizer();
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
+	m_pGomGomGain = new CGomGomGain(123);
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 	{
@@ -145,7 +147,7 @@ m_llLastPlayTime(0)
 	m_pVoice = new CVoice();
 #endif
 
-
+	
 	m_iAudioVersionFriend = -1;
 	if(m_bLiveAudioStreamRunning)
 	{
@@ -215,7 +217,7 @@ CAudioCallSession::~CAudioCallSession()
 	delete m_pVoice;
 #endif
 
-
+	delete m_pGomGomGain;
 
 
 	if (m_bLiveAudioStreamRunning)
@@ -429,7 +431,10 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 
 	}
 #endif
-
+	if (m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)
+	{
+		m_pGomGomGain->AddGain(psaEncodingAudioData, unLength);
+	}
 	int returnedValue = m_AudioEncodingBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");

@@ -75,7 +75,7 @@ class CGain;
 #ifdef USE_VAD
 class CVoice;
 #endif
-
+class CGomGomGain;
 
 class CAudioCallSession
 {
@@ -212,6 +212,8 @@ private:
 
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
+
+	CGomGomGain *m_pGomGomGain;
 
 #ifdef AAC_ENABLED
 	CAac *m_cAac;
