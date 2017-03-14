@@ -202,7 +202,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 		m_inoLossSlot = 0;
 		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
 //		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
-		PRT("@@@@------------------------>Bitrate: %d\n",nChangedBitRate);
+		HITLER("@@@@------------------------>Bitrate: %d\n", nChangedBitRate);
 		if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
 		{
 			m_ihugeLossSlot = 0;
