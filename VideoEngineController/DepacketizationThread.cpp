@@ -255,7 +255,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT VVVVVVVVIDEO data packet");
 
-		CLogPrinter::Log("%d %d %d %d\n", (int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion(), m_pVersionController->GetCurrentCallVersion(), m_pVideoCallSession->GetOponentDeviceType());
+		//CLogPrinter::Log("%d %d %d %d\n", (int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion(), m_pVersionController->GetCurrentCallVersion(), m_pVideoCallSession->GetOponentDeviceType());
 
 //        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
 //                             "TheKing--> Finally, CurrentCallVersion = "+ m_Tools.IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion()) +

@@ -1387,7 +1387,7 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
         }
     }
     
-    printf("index = %d\n", indx);
+    //printf("index = %d\n", indx);
     
     byte *p = pData + YPlaneLength;
     byte *q = pData + YPlaneLength + UPlaneLength;

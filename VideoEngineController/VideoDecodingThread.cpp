@@ -647,7 +647,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	//QuickFix
 	
-	printf("service type = %d, ownDeviceType = %d, OpponentDevice type = %d\n", m_pVideoCallSession->GetServiceType(), m_pVideoCallSession->GetOwnDeviceType(), m_pVideoCallSession->GetOponentDeviceType());
+	//printf("service type = %d, ownDeviceType = %d, OpponentDevice type = %d\n", m_pVideoCallSession->GetServiceType(), m_pVideoCallSession->GetOwnDeviceType(), m_pVideoCallSession->GetOponentDeviceType());
 
 	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
 	{
