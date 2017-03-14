@@ -463,7 +463,7 @@ void CAudioCallSession::SetLoudSpeaker(bool bOn)
 int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	//    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
-	HITLER("#@#@26022017## DECODE DATA SMAPLE LENGTH %u", unLength);
+//	HITLER("#@#@26022017## DECODE DATA SMAPLE LENGTH %u", unLength);
 	if (m_bLiveAudioStreamRunning && (m_iRole != PUBLISHER_IN_CALL))
 	{
 		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
@@ -1166,7 +1166,7 @@ bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurr
 			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 			{
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = " + m_Tools.getText(llCurrentFrameRelativeTime) + " DELAY = " + m_Tools.getText(llWaitingTime) + " currentTime = " + m_Tools.getText(llNow) + " iPacketNumber = " + m_Tools.getText(iPacketNumber));
-				HITLER("#@#@26022017# ##################################################################### dropping audio data");
+//				HITLER("#@#@26022017# ##################################################################### dropping audio data");
 				LOG_AAC("#aac#aqa# Frame not received timely: %d", llWaitingTime);
 				return false;
 			}
@@ -1308,7 +1308,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 
         m_llLastPlayTime = m_Tools.CurrentTimestamp();
 #endif
-
+		HITLER("*STP -> PN: %d, FS: %d, STime: %lld",iCurrentPacketNumber, m_nDecodedFrameSize, m_llLastPlayTime);
         m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
                                                                   SERVICE_TYPE_LIVE_STREAM,
                                                                   m_nDecodedFrameSize,
@@ -1316,6 +1316,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
     }
 	else
 	{
+		HITLER("*STP -> PN: %d, FS: %d",iCurrentPacketNumber, m_nDecodedFrameSize);
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_CALL, m_nDecodedFrameSize, m_saDecodedFrame);
 	}
 
@@ -1362,7 +1363,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> %d frm len = %d", nPacketDataLength, nFrameLength);
+			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d",iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
 				continue;
