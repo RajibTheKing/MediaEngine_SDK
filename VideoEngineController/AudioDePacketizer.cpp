@@ -18,12 +18,12 @@ AudioDePacketizer::~AudioDePacketizer()
 bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int iTotalBlock, int iBlockLength, int iBlockOffset, int iPacketNumber, int nPacketLength)
  {
 	HITLER("XXP@#@#MARUF BOKKOR IS RUNNING PACKET BN = %d  TB = %d  BL = %d BO = %d PN = %d PL = %d", iBlockNo, iTotalBlock, iBlockLength, iBlockOffset, iPacketNumber, nPacketLength);
-	m_nFrameLength = nPacketLength;
 
 	if (m_iPreviousPacketNumber == -1) {
 		m_iPreviousPacketNumber = iPacketNumber;
 		m_iBlockOkayFlag |= (1 << iBlockNo);
-		memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock + m_iAudioHeaderLength, iBlockLength);
+		memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock, iBlockLength);
+		m_nFrameLength = nPacketLength;
 		if ((1 << iTotalBlock) == (m_iBlockOkayFlag + 1)) 
 		{ 
 			HITLER("XXP@#@#MARUF Packet Return True 1");
@@ -32,8 +32,17 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 	}
 	else {
 		if (m_iPreviousPacketNumber == iPacketNumber) {
+
+			int nIsBlockAlreadyExists = (m_iBlockOkayFlag & (1 << iBlockNo) );
+
+			if( nIsBlockAlreadyExists > 0)
+			{
+				return false;
+			}
+
 			m_iBlockOkayFlag |= (1 << iBlockNo);
-			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock + m_iAudioHeaderLength, iBlockLength);
+			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock, iBlockLength);
+			m_nFrameLength = nPacketLength;
 			if ((1 << iTotalBlock) == (m_iBlockOkayFlag + 1))
 			{
 				HITLER("XXP@#@#MARUF Packet Return True 2");
@@ -44,7 +53,8 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 			m_iBlockOkayFlag = 0;
 			m_iPreviousPacketNumber = iPacketNumber;
 			m_iBlockOkayFlag |= (1 << iBlockNo);
-			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock + m_iAudioHeaderLength, iBlockLength);
+			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock, iBlockLength);
+			m_nFrameLength = nPacketLength;
 		}
 		return false;
 	}
