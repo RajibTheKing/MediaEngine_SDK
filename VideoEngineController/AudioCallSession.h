@@ -60,6 +60,8 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioCodec;
 class CAac;
+class AudioPacketizer;
+class AudioDePacketizer;
 
 #ifdef USE_AECM
 class CEcho;
@@ -81,9 +83,11 @@ private:
 
 	long long m_llLastPlayTime;
 
+	AudioPacketizer* m_pAudioPacketizer;
 public:
 	int m_iNextPacketType;
 	CAudioByteBuffer m_AudioReceivedBuffer;
+	
 public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
@@ -92,6 +96,8 @@ public:
 	void EndCallInLive();
 
     CAudioCodec* GetAudioCodec();
+
+	AudioDePacketizer* m_pAudioDePacketizer;
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
@@ -275,7 +281,7 @@ private:
 		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &timeStamp);
 	void SendToPlayer(long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
 	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header);
+		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
 	///////End Of Methods Called From DecodingThreadProcedure/////
 
 protected:
