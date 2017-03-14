@@ -106,6 +106,24 @@ int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideo
 
 	return UVPlaneEnd;
 }
+int CColorConverter::ConvertYV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
+{
+    Locker lock(*m_pColorConverterMutex);
+    
+    int YPlaneLength = iVideoHeight*iVideoWidth;
+    int VPlaneLength = YPlaneLength >> 2;
+    int UPlaneLength = YPlaneLength >> 2;
+    int UVPlaneMidPoint = YPlaneLength + VPlaneLength;
+    int UVPlaneEnd = UVPlaneMidPoint + VPlaneLength;
+    
+    memcpy(m_pTempPlane, convertingData + YPlaneLength, UPlaneLength);
+    memcpy(convertingData + YPlaneLength, convertingData + YPlaneLength + UPlaneLength, VPlaneLength);
+    memcpy(convertingData + YPlaneLength + UPlaneLength, m_pTempPlane, UPlaneLength);
+    
+    return UVPlaneEnd;
+}
+
+
 
 int CColorConverter::ConvertNV21ToI420(unsigned char *convertingData)
 {

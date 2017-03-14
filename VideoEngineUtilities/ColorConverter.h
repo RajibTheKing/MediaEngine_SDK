@@ -38,6 +38,7 @@ public:
 	int ConvertNV21ToI420(unsigned char *convertingData);
 	int ConvertNV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	int ConvertNV21ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
+    int ConvertYV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	int ConvertYUY2ToI420(unsigned char * input, unsigned char * output);
 	int ConvertRGB24ToI420(unsigned char *input, unsigned char *output);
     
