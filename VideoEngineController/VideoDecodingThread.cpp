@@ -766,6 +766,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		}
 	}
 
+	/*
 	if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_ANDROID && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
 	{
 		int iHeight = this->m_pColorConverter->GetHeight();
@@ -792,6 +793,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			m_decodedFrameSize = iCroppedDataLen;
 		}
 	}
+	*/
      
     if(m_pVideoCallSession->GetCalculationStatus()==true && m_pVideoCallSession->GetResolationCheck() == false)
     {
