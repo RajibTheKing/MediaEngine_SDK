@@ -40,7 +40,7 @@ int CGomGomGain::AddGain(short *sInBuf, int sBufferSize)
 	}
 	for (int i = 0; i < sBufferSize; i++)
 	{
-		for (int j = 2; j >= 1; j--)
+		for (int j = 10; j >= 1; j--)
 		{
 			if (abs(m_daMovingAvg[i]) * j > SHRT_MAX / 2)
 			{
