@@ -1706,7 +1706,7 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pD
         {
             Crop_RGB24(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
         }
-        else if(pColorFormat == YUVNV21 || pColorFormat == YUVNV21)
+        else if(pColorFormat == YUVNV12 || pColorFormat == YUVNV21)
         {
             Crop_YUVNV12_YUVNV21(pData, inHeight, inWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, outputData, newHeight, newWidth);
         }
