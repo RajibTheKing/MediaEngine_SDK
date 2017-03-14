@@ -15,7 +15,7 @@ BitRateController::BitRateController(int nFPS, LongLong llfriendID) :
     m_nSlotIntervalCounter(0),
     m_bMegSlotCounterShouldStop(false),
     m_bSetBitRateCalled(false),
-    m_nPreviousByteRate(BITRATE_MAX/8),
+	m_nPreviousByteRate(BITRATE_BEGIN / 8),
     m_nBytesSendInSlotInverval(0),
     m_nFrameCounterBeforeEncoding(nFPS),
     m_nLastSendingSlot(0),
@@ -180,7 +180,9 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
 
         if(nNeedToChange == BITRATE_CHANGE_DOWN)
         {
-            m_nOppNotifiedByterate = BITRATE_DECREMENT_FACTOR * (m_nBytesReceivedInMegaSlotInterval/MEGA_SLOT_INTERVAL);
+			int reduceAmount = max(m_nBytesReceivedInMegaSlotInterval, m_nPreviousByteRate / 2);
+
+			m_nOppNotifiedByterate = BITRATE_DECREMENT_FACTOR * reduceAmount;
 
             //printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", m_nOppNotifiedByterate);
 
