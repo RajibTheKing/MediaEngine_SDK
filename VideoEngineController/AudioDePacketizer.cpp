@@ -28,17 +28,17 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 		{ 
 			HITLER("XXP@#@#MARUF Packet Return True 1");
 			return true; 
-		}
+		} 
 	}
 	else {
 		if (m_iPreviousPacketNumber == iPacketNumber) {
 
-			int nIsBlockAlreadyExists = (m_iBlockOkayFlag & (1 << iBlockNo) );
+			/*int nIsBlockAlreadyExists = (m_iBlockOkayFlag & (1 << iBlockNo) );
 
 			if( nIsBlockAlreadyExists > 0)
 			{
 				return false;
-			}
+			}*/
 
 			m_iBlockOkayFlag |= (1 << iBlockNo);
 			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock, iBlockLength);
@@ -58,10 +58,22 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 		}
 		return false;
 	}
+	return false;
 }
 
 int AudioDePacketizer::GetCompleteFrame(unsigned char* uchFrame){
 	memcpy(uchFrame, m_uchAudioStorageBuffer, m_nFrameLength);
+	/*int testFlag = 0;
+	for (int i = 0; i < m_nFrameLength; i++) {
+		if (m_uchAudioStorageBuffer[i] != i) {
+			testFlag = 1;
+			break;
+		}
+	}
+
+	if (testFlag) {
+		HITLER("XXP@#@#MARUF DATA CORRAPTED .......... ");
+	}*/
 	m_iBlockOkayFlag = 0;
 	m_iPreviousPacketNumber = -1;
 	return m_nFrameLength;

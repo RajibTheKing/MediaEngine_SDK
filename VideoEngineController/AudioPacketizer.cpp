@@ -22,6 +22,10 @@ AudioPacketizer::~AudioPacketizer()
 void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, int nDataLength, int nFrameNumber, int packetType, int networkType, int version, long long llRelativeTime, int channel,
 	int iPrevRecvdSlotID, int nReceivedPacketsInPrevSlot, long long llFriendID) {
 	
+	/*for (int i = 0; i < nDataLength; i++) {
+		uchData[i] = i;
+	}*/
+
 	int nNumberOfBlocks = (nDataLength + m_nMaxDataSyzeInEachBlock - 1) / m_nMaxDataSyzeInEachBlock;
 	int nBlockOffset = 0;	
 	int nMediaByteSize = 1, nCurrentBlockLength;

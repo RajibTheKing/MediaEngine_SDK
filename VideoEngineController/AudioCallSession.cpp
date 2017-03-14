@@ -658,7 +658,7 @@ void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &enc
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
 			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short);
-			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize /2);
+			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize );
 		}
 		else //Should only work for PUBLISHER when CALL_NOT_RUNNING
 		{
@@ -881,10 +881,10 @@ void CAudioCallSession::EncodingThreadProcedure()
 			{
 				m_pAudioPacketizer->Packetize(
 					true /*bool bShouldPacketize*/,
-					m_ucaRawFrameNonMuxed /*unsigned char* uchData*/,
+					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
 					m_nRawFrameSize /*int nDataLength*/,
 					m_iPacketNumber /*int nFrameNumber*/,
-					MEDIA_TYPE_LIVE_CALL_AUDIO /*int packetType*/,
+					AUDIO_LIVE_CALLEE_PACKET_TYPE /*int packetType*/,
 					0 /*int networkType*/,
 					version /*int version*/,
 					llRelativeTime /*long long llRelativeTime*/, 
@@ -1363,37 +1363,41 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-			HITLER("#STP FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d",iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d",iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
+				HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
+				continue;
+			}
+			if (!IsPacketNumberProcessable(iPacketNumber))
+			{
+				HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
 				continue;
 			}
 
-//			if (!IsPacketNumberProcessable(iPacketNumber))
-//			{
-//				continue;
-//			}
-
 			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
+				HITLER("XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
 				continue;
 			}
 
 			if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion, toolsObject))
 			{
+				HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE IN NORMAL CALL");
 				continue;
 			}
 
 			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
 			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength);
-			HITLER("#HERE [%d %d]",iPacketNumber, iBlockNumber);
+			HITLER("XXP@#@#MARUF [%d %d]",iPacketNumber, iBlockNumber);
 			if (bIsCompleteFrame){
 				//m_ucaDecodingFrame
-				HITLER("#STP Complete[%d %d]",iPacketNumber, iBlockNumber);
+				HITLER("XXP@#@#MARUF Complete[%d %d]",iPacketNumber, iBlockNumber);
 				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
 				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 				{
+					HITLER("XXP@#@#MARUF REMOVED ON RELATIVE TIME");
 					continue;
 				}
 			}
@@ -1402,15 +1406,16 @@ void CAudioCallSession::DecodingThreadProcedure()
 			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
 
 			if (bIsCompleteFrame){
+				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
 				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
 
 				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 				DumpDecodedFrame();
 				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
-
+				HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
 				if (m_nDecodedFrameSize < 1)
 				{
-					ALOG("#EXP# Decoding Failed.");
+					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 					continue;
 				}
 
