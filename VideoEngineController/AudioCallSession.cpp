@@ -1313,6 +1313,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 			//LOG_50MS("###RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d", iCurrentPacketNumber);
 			m_AudioDecodedBuffer.EnQueue(m_saEvenPacketStorage, m_nDecodedFrameSize * 2, 0);
 
+/*
 #ifdef __ANDROID__
 			while ((m_Tools.CurrentTimestamp() - m_llLastPlayTime) < 100)
 			{
@@ -1322,6 +1323,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 
 			m_llLastPlayTime = m_Tools.CurrentTimestamp();
 #endif
+*/
 
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
 				SERVICE_TYPE_LIVE_STREAM,
@@ -1330,6 +1332,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 
 			return;
 		}
+/*
 #ifdef __ANDROID__
 		else if (VIEWER_IN_CALL == m_iRole)
 		{
@@ -1342,6 +1345,7 @@ void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, in
 			m_llLastPlayTime = m_Tools.CurrentTimestamp();
 		}
 #endif
+*/
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
 			SERVICE_TYPE_LIVE_STREAM,
 			m_nDecodedFrameSize,
