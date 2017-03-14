@@ -364,7 +364,7 @@ void CAudioCallSession::EndCallInLive()
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
-	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
+//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
 	if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
 	{
 		ALOG("Invalid Audio Frame Length");
@@ -1368,10 +1368,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 				continue;
 			}
 
-			if (!IsPacketNumberProcessable(iPacketNumber))
-			{
-				continue;
-			}
+//			if (!IsPacketNumberProcessable(iPacketNumber))
+//			{
+//				continue;
+//			}
 
 			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
