@@ -21,6 +21,7 @@ class CCommonElementsBucket;
 #define YUV420  1003
 #define YUVNV12 1004
 #define YUVNV21 1005
+#define YUVYV12 1006
 
 class CColorConverter
 {
