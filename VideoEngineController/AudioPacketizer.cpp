@@ -3,6 +3,7 @@
 #include "Size.h"
 #include "AudioCallSession.h"
 #include "CommonElementsBucket.h"
+#include <vector>
 
 AudioPacketizer::AudioPacketizer(CAudioCallSession* audioCallSession, CCommonElementsBucket* pCommonElementsBucket): 
 m_pAudioCallSession(audioCallSession),
@@ -49,7 +50,7 @@ void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, i
 		HITLER("XXP@#@#MARUF PACKETING .... %d", iBlockNumber);
 
 #ifndef NO_CONNECTIVITY	
-		m_pCommonElementsBucket->SendFunctionPointer(llFriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_uchAudioBlock, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, 0);	//Need to check send type.
+		m_pCommonElementsBucket->SendFunctionPointer(llFriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_uchAudioBlock, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, 0, std::vector< std::pair<int, int> >());	//Need to check send type.
 #else
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, m_uchAudioBlock);
 #endif

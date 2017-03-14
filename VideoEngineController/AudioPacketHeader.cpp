@@ -2,6 +2,7 @@
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
 
+
 CAudioPacketHeader::CAudioPacketHeader()
 {
 	nNumberOfHeaderElements = sizeof(HeaderBitmap)/sizeof(int);
