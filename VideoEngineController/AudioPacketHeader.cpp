@@ -138,7 +138,7 @@ void CAudioPacketHeader::CopyHeaderToInformation(unsigned char *Header)
 		if(INF_HEADERLENGTH == i && m_nHeaderSizeInByte != m_arrllInformation[INF_HEADERLENGTH]) {
 
 			m_nProcessingHeaderSizeInByte = m_arrllInformation[INF_HEADERLENGTH];
-			HITLER("XXP@#@#MARUF H LEN UPDATED ..");
+			HITLER("XXP@#@#MARUF H LEN UPDATED ..%d", m_nProcessingHeaderSizeInByte);
 		}
 	}
 }
@@ -159,7 +159,7 @@ bool CAudioPacketHeader::PutInformationToArray(int InfoType)
 	int infoStartByte = infoStartBit / 8;
 	int infoStartBitOfByte = infoStartBit % 8;
 
-	if( infoStartByte + HeaderBitmap[InfoType] > (m_nProcessingHeaderSizeInByte << 3))
+	if (infoStartBit + HeaderBitmap[InfoType] >(m_nProcessingHeaderSizeInByte << 3))
 	{
 		HITLER("XXP@#@#MARUF INFO type = %d , sum = %d bitsize %d", InfoType, infoStartByte + HeaderBitmap[InfoType], (m_nProcessingHeaderSizeInByte << 3));
 		m_arrllInformation[InfoType] = -1;
