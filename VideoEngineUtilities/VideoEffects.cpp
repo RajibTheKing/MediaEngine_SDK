@@ -338,7 +338,7 @@ void CVideoEffects::CartoonEffect(unsigned char *pConvertingData, int inHeight, 
 	return;
 }
 
-void CVideoEffects::NewEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
+void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, int inWidth)
 {
 
 

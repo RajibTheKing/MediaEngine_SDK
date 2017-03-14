@@ -436,10 +436,11 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	memset(m_variance, iWidth, 0);
 
 	int cur_pixel, tmp, tmp2;
-
-#if defined(__ANDROID__)
 	int totalYValue = 0;
 	int yLen = iWidth * iHeight;
+#if defined(__ANDROID__)
+	/*int totalYValue = 0;*/
+	//int yLen = iWidth * iHeight;
 #endif
 
 	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
