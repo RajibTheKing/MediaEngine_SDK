@@ -1363,7 +1363,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d",iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			HITLER("#STP FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d",iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
 				continue;
@@ -1387,9 +1387,10 @@ void CAudioCallSession::DecodingThreadProcedure()
 			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
 			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength);
-			
+			HITLER("#HERE [%d %d]",iPacketNumber, iBlockNumber);
 			if (bIsCompleteFrame){
 				//m_ucaDecodingFrame
+				HITLER("#STP Complete[%d %d]",iPacketNumber, iBlockNumber);
 				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
 				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 				{
