@@ -1385,7 +1385,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 
 			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength);
+			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength);
 			
 			if (bIsCompleteFrame){
 				//m_ucaDecodingFrame
