@@ -283,8 +283,10 @@ void CSendingThread::SendingThreadProcedure()
 
 				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
+				int viewerDataLength = 0, calleeDataLength = 0;
+
 				if (bExist)
-					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector);
+					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
@@ -394,7 +396,20 @@ void CSendingThread::SendingThreadProcedure()
 					{
 #ifndef NO_CONNECTIVITY
 						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
-						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+
+						int viewerDataIndex = index + m_iDataToSendIndex;
+						int calleeDataIndex = viewerDataIndex + viewerDataLength;
+
+						std::vector<std::pair<int, int> > liVector;
+						liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+						liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
+		
+						// do changes for audio
+						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend,
+							index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+
+						LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d",
+							viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
 #else
 						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
@@ -632,11 +647,11 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 				HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", packetSize);
 				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 				{
-					m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_CALL_VIDEO, m_EncodedFrame, packetSize, 0);
+					m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_CALL_VIDEO, m_EncodedFrame, packetSize, 0, std::vector< std::pair<int, int> >());
 				}
 				else
 				{
-					m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_VIDEO, m_EncodedFrame, packetSize, 0);
+					m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_VIDEO, m_EncodedFrame, packetSize, 0, std::vector< std::pair<int, int> >());
 				}
 				
 #else

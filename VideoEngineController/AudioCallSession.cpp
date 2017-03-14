@@ -834,8 +834,8 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
 #ifndef LOCAL_SERVER_LIVE_CALL
-#ifndef NO_CONNECTIVITY	
-			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, 0);	//Need to check send type.
+#ifndef NO_CONNECTIVITY			
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());	//Need to check send type.
 #else
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, m_ucaRawFrameNonMuxed);
 #endif
@@ -858,7 +858,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 	else
 	{
 #ifndef NO_CONNECTIVITY
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0);
+		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
 #else
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
@@ -868,7 +868,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 		{
 			toolsObject.SOSleep(5);
 #ifndef NO_CONNECTIVITY
-			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0);
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
 #else
 			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
@@ -1496,7 +1496,8 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSendMu
 }
 #endif
 
-void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector)
+void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
+	int &sendingLengthViewer, int &sendingLengthCallee)
 {
 	Locker lock(*m_pAudioCallSessionMutex);
 
@@ -1504,6 +1505,8 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToS
 	m_vRawFrameLengthViewer.clear();
 	memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendViewer, m_iRawDataSendIndexViewer);
 	CombinedLength = m_iRawDataSendIndexViewer;
+	sendingLengthViewer = m_iRawDataSendIndexViewer;
+	LOGT("##TN##GetAudioData## viewerlength:%d calleelength:%d", m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee);
 
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
@@ -1514,8 +1517,10 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToS
 		m_vRawFrameLengthCallee.clear();
 		memcpy(pAudioCombinedDataToSend + m_iRawDataSendIndexViewer, m_ucaRawDataToSendCallee, m_iRawDataSendIndexCallee);
 		CombinedLength += m_iRawDataSendIndexCallee;
+		sendingLengthCallee = m_iRawDataSendIndexCallee;
 		m_iRawDataSendIndexCallee = 0;
 	}
+
 	m_iRawDataSendIndexViewer = 0;
 }
 

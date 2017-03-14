@@ -646,7 +646,7 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioAlarmCallback(void(*c
 	}
 }
 
-void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int))
+void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
 {
     if (NULL != m_pcController)
     {
