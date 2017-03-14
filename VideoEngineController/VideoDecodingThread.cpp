@@ -467,6 +467,10 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 #elif defined(__ANDROID__)
 
 	this->m_pColorConverter->ConvertNV21ToI420(m_PreviousDecodedFrameConvertedData, iHeight, iWidth);
+    
+#elif defined(TARGET_OS_WINDOWS_PHONE)
+    
+    this->m_pColorConverter->ConvertYV12ToI420(m_PreviousDecodedFrameConvertedData, iHeight, iWidth);
 
 #endif
     
