@@ -62,6 +62,12 @@ public:
 	void SetMediaUnitVersionInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetMediaUnitVersionFromMediaChunck(unsigned char convertedArray[]);
 
+	void SetMediaUnitStreamTypeInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetMediaUnitStreamTypeFromMediaChunck(unsigned char convertedArray[]);
+
+	void SetMediaUnitBlockInfoPositionInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetMediaUnitBlockInfoPositionFromMediaChunck(unsigned char convertedArray[]);
+
 	void SetMediaUnitHeaderLengthInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetMediaUnitHeaderLengthFromMediaChunck(unsigned char convertedArray[]);
 
@@ -74,6 +80,12 @@ public:
 
 	void SetAudioBlockSizeInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetAudioBlockSizeFromMediaChunck(unsigned char convertedArray[]);
+
+	void SetAudioBlockStartingPositionInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetAudioBlockStartingPositionFromMediaChunck(unsigned char convertedArray[]);
+
+	void SetVideoBlockStartingPositionInMediaChunck(int number, unsigned char convertedArray[]);
+	int GetVideoBlockStartingPositionFromMediaChunck(unsigned char convertedArray[]);
 
 	void SetVideoBlockSizeInMediaChunck(int number, unsigned char convertedArray[]);
 	int GetVideoBlockSizeFromMediaChunck(unsigned char convertedArray[]);

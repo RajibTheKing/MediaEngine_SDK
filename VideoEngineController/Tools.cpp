@@ -357,6 +357,34 @@ void Tools::SetMediaUnitVersionInMediaChunck(int number, unsigned char data[])
 	data[LIVE_MEDIA_UNIT_VERSION_BLOCK_POSITION] = number & 0xFF;
 }
 
+void Tools::SetMediaUnitStreamTypeInMediaChunck(int number, unsigned char data[])
+{
+	data[LIVE_MEDIA_UNIT_STREAM_TYPE_BLOCK_POSITION] = number & 0xFF;
+}
+
+int Tools::GetMediaUnitStreamTypeFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = data[LIVE_MEDIA_UNIT_STREAM_TYPE_BLOCK_POSITION] & 0xFF;
+
+	return number;
+}
+
+void Tools::SetMediaUnitBlockInfoPositionInMediaChunck(int number, unsigned char data[])
+{
+	data[LIVE_MEDIA_UNIT_BLOCK_INFO_POSITION_BLOCK_POSITION] = number & 0xFF;
+}
+
+int Tools::GetMediaUnitBlockInfoPositionFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = data[LIVE_MEDIA_UNIT_BLOCK_INFO_POSITION_BLOCK_POSITION] & 0xFF;
+
+	return number;
+}
+
 void Tools::SetMediaUnitTimestampInMediaChunck(long long number, unsigned char data[])
 {
 	SetIntegerLongLongUnsignedChar(data, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_POSITION, LIVE_MEDIA_UNIT_TIMESTAMP_BLOCK_SIZE, number);
@@ -421,6 +449,39 @@ int Tools::GetAudioBlockSizeFromMediaChunck(unsigned char data[])
 
 	return number;
 }
+
+
+
+
+void Tools::SetAudioBlockStartingPositionInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_AUDIO_STARTING_POSITION_BLOCK_POSITION, LIVE_MEDIA_UNIT_AUDIO_STARTING_POSITION_BLOCK_SIZE, number);
+}
+
+int Tools::GetAudioBlockStartingPositionFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_AUDIO_STARTING_POSITION_BLOCK_POSITION, LIVE_MEDIA_UNIT_AUDIO_STARTING_POSITION_BLOCK_SIZE);
+
+	return number;
+}
+
+void Tools::SetVideoBlockStartingPositionInMediaChunck(int number, unsigned char data[])
+{
+	SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_VIDEO_STARTING_POSITION_BLOCK_POSITION, LIVE_MEDIA_UNIT_VIDEO_STARTING_POSITION_BLOCK_SIZE, number);
+}
+
+int Tools::GetVideoBlockStartingPositionFromMediaChunck(unsigned char data[])
+{
+	int number;
+
+	number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_VIDEO_STARTING_POSITION_BLOCK_POSITION, LIVE_MEDIA_UNIT_VIDEO_STARTING_POSITION_BLOCK_SIZE);
+
+	return number;
+}
+
+
 
 void Tools::SetVideoBlockSizeInMediaChunck(int number, unsigned char data[])
 {

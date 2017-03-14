@@ -308,7 +308,7 @@ void CSendingThread::SendingThreadProcedure()
 			//	m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
 			//	m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
 
-				m_Tools.SetMediaUnitVersionInMediaChunck(0, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitVersionInMediaChunck(LIVE_HEADER_VERSION, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 				
@@ -359,6 +359,11 @@ void CSendingThread::SendingThreadProcedure()
 
 #endif
 
+				m_Tools.SetAudioBlockStartingPositionInMediaChunck(index + m_iDataToSendIndex, m_AudioVideoDataToSend);
+				m_Tools.SetVideoBlockStartingPositionInMediaChunck(index, m_AudioVideoDataToSend);
+
+				LOGE("audioStartingPosition %d videoStartingPosition %d\n", index + m_iDataToSendIndex, index);
+
 #ifndef DISABLE_VIDEO_FOR_LIVE
 				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
 #endif
@@ -375,6 +380,8 @@ void CSendingThread::SendingThreadProcedure()
 				int diff = timeNow - m_nTimeStampOfChunck;
 
 				m_Tools.SetMediaUnitHeaderLengthInMediaChunck(index, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitStreamTypeInMediaChunck(STREAM_TYPE_LIVE_STREAM, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitBlockInfoPositionInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitChunkDurationInMediaChunck(diff, m_AudioVideoDataToSend);
 
 #ifndef __LIVE_STREAMIN_SELF__

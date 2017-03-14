@@ -241,9 +241,11 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			int audioFrameSizes[100];
 			int videoFrameSizes[100];
 
-			int numberOfAudioFrames = m_Tools.GetNumberOfAudioFramesFromMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, in_data + nValidHeaderOffset);
+			int blockInfoPosition = m_Tools.GetMediaUnitBlockInfoPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
-			int index = LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
+			int numberOfAudioFrames = m_Tools.GetNumberOfAudioFramesFromMediaChunck(blockInfoPosition, in_data + nValidHeaderOffset);
+
+			int index = blockInfoPosition + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
 
 			for (int i = 0; i < numberOfAudioFrames; i++)
 			{
@@ -265,11 +267,18 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 
 			LOG_AAC("#aac#b4q# GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
 
-			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, lengthOfVideoData + headerLength, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
+			int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
+			int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
+
+			int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
+
+			LOGE("audioStartingPosition %d videoStartingPosition %d streamType %d\n", audioStartingPosition, videoStartingPosition, streamType);
+
+			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, audioStartingPosition, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
 			//m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
 #ifndef DISABLE_VIDEO_FOR_LIVE
-			iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, headerLength, in_data + headerLength, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames);
+			iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, videoStartingPosition, in_data + videoStartingPosition, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames);
 #endif
 			
 		}
