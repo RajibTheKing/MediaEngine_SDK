@@ -28,8 +28,7 @@ BitRateController::BitRateController(int nFPS, LongLong llfriendID) :
     m_nSpiralCounter(0),
     m_nUpCheckLimit(GOOD_MEGASLOT_TO_UP),
 	m_nContinuousUpCounter(0),
-	m_nContinuousUpCounterLimitToJump(1),
-	m_bInMaxBitrate(false),
+	m_nContinuousUpCounterLimitToJump(GOOD_MEGASLOT_TO_UP_LIMIT_TO_BITRATE_JUMP),
 	m_dFirstTimeBitRateChangeFactor(BITRATE_DECREMENT_FACTOR),
 	m_nOppNotifiedByterate(0),
 	m_nMostRecentRespondedSlotNumber(-1),
@@ -80,7 +79,6 @@ void BitRateController::ResetVideoController()
 	m_nUpCheckLimit(GOOD_MEGASLOT_TO_UP),
 	m_nContinuousUpCounter(0),
 	m_nContinuousUpCounterLimitToJump(1),
-	m_bInMaxBitrate(false),
 	m_dFirstTimeBitRateChangeFactor(BITRATE_DECREMENT_FACTOR),
 	m_nOppNotifiedByterate(0),
 	m_nMostRecentRespondedSlotNumber(-1),
@@ -200,7 +198,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
         }
 		else if (nNeedToChange == BITRATE_CHANGE_UP_JUMP)
 		{
-			m_nOppNotifiedByterate = BITRATE_MAX / 8;
+			m_nOppNotifiedByterate = min(BITRATE_MAX / 8, m_nPreviousByteRate + BITRATE_JUMP_DIFFERENCE / 8);
 
 			m_bSetBitRateCalled = false;
 			m_bMegSlotCounterShouldStop = true;
@@ -348,6 +346,7 @@ int BitRateController::NeedToChangeBitRate(double dDataReceivedRatio)
 
 		m_dPreviousMegaSlotStatus = dDataReceivedRatio;
 
+		/*
 		if (m_nLastState == BITRATE_CHANGE_UP && m_nSlotCounterToUp <= NUMBER_OF_WAIT_SLOT_TO_DETECT_UP_FAIL)
 			m_nSpiralCounter++;
 		else if (m_nLastState == BITRATE_CHANGE_DOWN && m_nSlotCounterToUp > NUMBER_OF_WAIT_SLOT_TO_DETECT_UP_FAIL)
@@ -355,12 +354,15 @@ int BitRateController::NeedToChangeBitRate(double dDataReceivedRatio)
 			m_nSpiralCounter = 0;
 			m_nUpCheckLimit = GOOD_MEGASLOT_TO_UP;
 		}
+		*/
+
+		if (m_nLastState == BITRATE_CHANGE_UP)
+			m_nSpiralCounter++;
 
         if(m_nSpiralCounter >= NUMBER_OF_SPIRAL_LIMIT)
             m_nUpCheckLimit = GOOD_MEGASLOT_TO_UP_SAFE;
 
         m_nLastState = BITRATE_CHANGE_DOWN;
-		m_bInMaxBitrate = false;
 
         return BITRATE_CHANGE_DOWN;
     }
@@ -401,20 +403,17 @@ int BitRateController::NeedToChangeBitRate(double dDataReceivedRatio)
 
 			m_nLastState = BITRATE_CHANGE_UP;
 
-			if (m_nContinuousUpCounterLimitToJump <= m_nContinuousUpCounter && m_bInMaxBitrate == false)
+			if (m_nContinuousUpCounterLimitToJump <= m_nContinuousUpCounter)
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, BITRATE_CHNANGE_LOG ,"Time to jump bitrate");
 
 				m_nContinuousUpCounterLimitToJump = GOOD_MEGASLOT_TO_UP_LIMIT_TO_BITRATE_JUMP;
 				m_nContinuousUpCounter = 0;
-				m_bInMaxBitrate = true;
 
 				return BITRATE_CHANGE_UP_JUMP;
 			}
-			else if (m_bInMaxBitrate == false)
+			else 
 				return BITRATE_CHANGE_UP;
-			else
-				return BITRATE_CHANGE_NO;
         }
     }
 
