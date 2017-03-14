@@ -1288,72 +1288,32 @@ void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTi
 
 void CAudioCallSession::SendToPlayer(long long &llNow, long long &llLastTime, int iCurrentPacketNumber)
 {
-	if (m_bLiveAudioStreamRunning == true)
-	{
+	if (m_bLiveAudioStreamRunning == true) {
 
-		llNow = Tools::CurrentTimestamp();
+        llNow = Tools::CurrentTimestamp();
 
-		__LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d", iPacketNumber, llNow - llLastTime, m_nDecodedFrameSize);
+        __LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d",
+              iPacketNumber, llNow - llLastTime, m_nDecodedFrameSize);
 
-		llLastTime = llNow;
-		if (m_iRole == PUBLISHER_IN_CALL)
-		{
-			if (iCurrentPacketNumber&1)
-			{
-				//LOG_50MS("###ODD_RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d  m_nDecodedFrameSize = %d", iCurrentPacketNumber, m_nDecodedFrameSize);
-				memcpy(m_saEvenPacketStorage + m_nDecodedFrameSize, m_saDecodedFrame, m_nDecodedFrameSize * 2);
-
-				if (iCurrentPacketNumber - 1 != m_iLastEvenStoredPacket)				
-				{
-					//memset(m_saEvenPacketStorage, 0, m_nDecodedFrameSize * 2);
-					return;
-				}
-			}
-			else
-			{
-				//LOG_50MS("###EVEN_RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d  m_nDecodedFrameSize = %d", iCurrentPacketNumber, m_nDecodedFrameSize);
-				memcpy(m_saEvenPacketStorage, m_saDecodedFrame, m_nDecodedFrameSize * 2);
-				m_iLastEvenStoredPacket = iCurrentPacketNumber;
-				return;
-			}
-			//LOG_50MS("###RECEIVING_ME_TO_CLIENT_PUBLISHER  iCurrentPacketNumber = %d", iCurrentPacketNumber);
-			m_AudioDecodedBuffer.EnQueue(m_saEvenPacketStorage, m_nDecodedFrameSize * 2, 0);
+        llLastTime = llNow;
+        if (m_iRole == PUBLISHER_IN_CALL) {
+            m_AudioDecodedBuffer.EnQueue(m_saDecodedFrame, m_nDecodedFrameSize, 0);
+        }
 
 #ifdef __ANDROID__
-			while ((m_Tools.CurrentTimestamp() - m_llLastPlayTime) < 100)
-			{
-				m_Tools.SOSleep(1);
-			}
+        while ((m_Tools.CurrentTimestamp() - m_llLastPlayTime) < 100) {
+            m_Tools.SOSleep(1);
+        }
 //			LOG_50MS("#echo#ST# PublisherInCallTimeStamp = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
 
-			m_llLastPlayTime = m_Tools.CurrentTimestamp();
+        m_llLastPlayTime = m_Tools.CurrentTimestamp();
 #endif
 
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
-				SERVICE_TYPE_LIVE_STREAM,
-				m_nDecodedFrameSize * 2,
-				m_saEvenPacketStorage);
-
-			return;
-		}
-#ifdef __ANDROID__
-		else if (VIEWER_IN_CALL == m_iRole)
-		{
-			while ((m_Tools.CurrentTimestamp() - m_llLastPlayTime) < 100)
-			{
-				m_Tools.SOSleep(1);
-			}
-//			LOG_50MS("#echo#ST# Sent To Player Diff = %lld", (m_Tools.CurrentTimestamp() - m_llLastPlayTime));
-
-			m_llLastPlayTime = m_Tools.CurrentTimestamp();
-		}
-#endif
-		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
-			SERVICE_TYPE_LIVE_STREAM,
-			m_nDecodedFrameSize,
-			m_saDecodedFrame);
-//		LOG_AAC("#aac#aqa# fireAudioDataTo: %lld, size: %d", m_FriendID, m_nDecodedFrameSize);
-	}
+        m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
+                                                                  SERVICE_TYPE_LIVE_STREAM,
+                                                                  m_nDecodedFrameSize,
+                                                                  m_saDecodedFrame);
+    }
 	else
 	{
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_CALL, m_nDecodedFrameSize, m_saDecodedFrame);
