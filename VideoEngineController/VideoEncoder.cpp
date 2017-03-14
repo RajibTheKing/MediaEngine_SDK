@@ -276,11 +276,14 @@ int CVideoEncoder::SetBitrate(int nBitRate)
 {
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
     
-	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN) 
+/*	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN) 
 		nTargetBitRate = BITRATE_MIN;
     
 	if (m_nNetworkType == NETWORK_TYPE_2G && nTargetBitRate<BITRATE_MIN_FOR_2G) 
-		nTargetBitRate = BITRATE_MIN_FOR_2G;
+		nTargetBitRate = BITRATE_MIN_FOR_2G;*/
+
+	if (nTargetBitRate < BITRATE_MIN)
+		nTargetBitRate = BITRATE_MIN;
     
     if(nTargetBitRate>BITRATE_MAX) 
 		nTargetBitRate = BITRATE_MAX;
