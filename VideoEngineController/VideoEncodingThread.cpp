@@ -399,17 +399,31 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaEncodingFrame, iHeight, iWidth);
-					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaEncodingFrame);
-					pair<int,int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_640_25 || m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_25)
+					{
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+					}
+					else
+					{
+						m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+						m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+					}
 #else
-					//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
-					//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+					
+
 					//LOGE("setVideoEffect -------------->>             m_VideoEffectParam[0] = %d, m_VideoEffectParam[1] = %d,  m_VideoEffectParam[2] = %d", m_VideoEffectParam[0], m_VideoEffectParam[1], m_VideoEffectParam[2]);
 
 #ifndef TARGET_OS_WINDOWS_PHONE
 
-					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_640_25 || m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_25)
+					{
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+					}
+					else
+					{
+						m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+						m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+					}
 #endif
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif

@@ -160,7 +160,7 @@ void CVideoBeautificationer::MakeFrameBlur(unsigned char *convertingData, int iV
 void CVideoBeautificationer::MakeFrameBlurAndStore(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
 	GaussianBlur_4thApproach(convertingData, m_pBluredImage, iVideoHeight, iVideoWidth, 2);
-	//memcpy(convertingData,  m_pBluredImage, iVideoHeight*iVideoWidth );
+	memcpy(convertingData,  m_pBluredImage, iVideoHeight*iVideoWidth );
 }
 
 void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *pixel)
@@ -168,10 +168,17 @@ void CVideoBeautificationer::MakeFrameBeautiful(unsigned char *pixel)
 	int iTotLen = m_nVideoWidth * m_nVideoHeight;
 	int iLen = m_nVideoWidth * m_nVideoHeight;//(int)(modifData.length / 1.5);
 	int totalYValue = 0;
+
 	for (int i = 0; i<iLen; i++)
 	{
+		if (IsSkinPixel(pixel[i], m_pUIndex[pixel[i]], m_pVIndex[pixel[i]]))
+		{
+			pixel[i] = m_pBluredImage[i];
+		}
+
 		totalYValue += pixel[i];
 		MakePixelBright(&pixel[i]);
+
 	}
 
 
