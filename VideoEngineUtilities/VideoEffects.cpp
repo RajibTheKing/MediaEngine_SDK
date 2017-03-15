@@ -342,11 +342,11 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 {
 
 
-	for (int i = 1; i <= inHeight; i++)
+	for (int i = 1, iw = 0; i <= inHeight; i++, iw += inWidth)
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+			m_mat[i][j] = pConvertingData[iw + j - 1];
 		}
 	}
 
@@ -371,11 +371,11 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 		}
 	}
 
-	for (int i = 1; i <= inHeight; i++)
+	for (int i = 1, iw = 0; i <= inHeight; i++, iw += inWidth)
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+			m_mat[i][j] = pConvertingData[iw + j - 1];
 		}
 	}
 
@@ -400,11 +400,11 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 		}
 	}
 
-	for (int i = 1; i <= inHeight; i++)
+	for (int i = 1, iw = 0; i <= inHeight; i++, iw += inWidth)
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+			m_mat[i][j] = pConvertingData[iw + j - 1];
 		}
 	}
 
@@ -429,11 +429,11 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 		}
 	}
 
-	for (int i = 1; i <= inHeight; i++)
+	for (int i = 1, iw = 0; i <= inHeight; i++, iw += inWidth)
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+			m_mat[i][j] = pConvertingData[iw + j - 1];
 		}
 	}
 
@@ -458,11 +458,11 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 		}
 	}
 
-	for (int i = 1; i <= inHeight; i++)
+	for (int i = 1, iw = 0; i <= inHeight; i++, iw += inWidth)
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			m_mat[i][j] = pConvertingData[(i - 1) * inWidth + j - 1];
+			m_mat[i][j] = pConvertingData[iw + j - 1];
 		}
 	}
 
@@ -483,7 +483,38 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 				- m_mat[i + 1][j - 1]
 				- m_mat[i + 1][j]
 				- m_mat[i + 1][j + 1]) / 9.));
+		}
+	}
 
+	return;
+}
+
+void CVideoEffects::MedianFilter(unsigned char *pConvertingData, int inHeight, int inWidth, int radius = 1)
+{
+	int a[9]; // a[(2 * radius + 1) * (2 * radius + 1)]
+	
+	for (int i = 1, iw = 0; i <= inHeight; i++, iw += inWidth)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			m_mat[i][j] = pConvertingData[iw + j - 1];
+		}
+	}
+
+	for (int i = 1, iw = 0; i <= inHeight; i++, iw += inWidth)
+	{
+		for (int j = 1; j <= inWidth; j++)
+		{
+			int cnt = 0;
+			for (int k = max(1, i - radius), kw = (k - 1) * inWidth; k <= min(inHeight, i + radius); k++, kw += inWidth)
+			{
+				for (int l = max(1, j - radius); l <= min(inWidth, j + radius); l++)
+				{
+					a[cnt++] = pConvertingData[kw + l - 1];
+				}
+			}
+			sort(a, a + cnt);
+			pConvertingData[iw + j - 1] = a[cnt >> 1];
 		}
 	}
 

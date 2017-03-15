@@ -3,6 +3,7 @@
 #define VIDEO_EFFECTS_H
 
 #include <string>
+#include <algorithm>
 
 class CAverageCalculator;
 
@@ -27,7 +28,7 @@ public:
 	void ColorSketchEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 	void CartoonEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 	void PlaitEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
-
+	void MedianFilter(unsigned char *pConvertingData, int inHeight, int inWidth, int radius);
 
 private:
     
