@@ -64,7 +64,9 @@ CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket*
 m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall),
 m_nServiceType(nServiceType),
-m_llLastPlayTime(0)
+m_llLastPlayTime(0),
+m_bIsAECMFarEndThreadBusy(false),
+m_bIsAECMNearEndThreadBusy(false)
 {
 	m_pAudioPacketizer = new AudioPacketizer(this, pSharedObject);
 	m_pAudioDePacketizer = new AudioDePacketizer();
@@ -300,6 +302,7 @@ void CAudioCallSession::StartCallInLive(int iRole)
 	{
 		return;
 	}
+
 	m_pLiveReceiverAudio->m_bIsRoleChanging = true;
 	while (m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
 	{
@@ -373,7 +376,6 @@ void CAudioCallSession::EndCallInLive()
 		fclose(FileInputMuxed);
 	}
 #endif
-	m_iRole = CALL_NOT_RUNNING;
 
 	m_pLiveAudioReceivedQueue->ResetBuffer();
 	m_AudioReceivedBuffer.ResetBuffer();
@@ -383,6 +385,11 @@ void CAudioCallSession::EndCallInLive()
 #ifdef USE_AECM
 	if (m_pEcho != nullptr)
 	{
+		while (m_bIsAECMNearEndThreadBusy || m_bIsAECMFarEndThreadBusy )
+		{
+			m_Tools.SOSleep(1);
+		}
+
 		delete m_pEcho;
 		m_pEcho = nullptr;
 	}
@@ -395,6 +402,7 @@ void CAudioCallSession::EndCallInLive()
 #endif
 #endif
 
+	m_iRole = CALL_NOT_RUNNING;
 	m_llDecodingTimeStampOffset = -1;
 	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
@@ -415,6 +423,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		(!m_bLiveAudioStreamRunning || 
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
+		m_bIsAECMNearEndThreadBusy = true;
 #ifdef USE_ECHO2
 		if (m_pEcho2 != nullptr)
 		{
@@ -428,7 +437,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		{
 			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
 		}
-
+		m_bIsAECMNearEndThreadBusy = false;
 	}
 #endif
 #ifdef __ANDROID__
@@ -452,6 +461,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 		(!m_bLiveAudioStreamRunning || 
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
+		m_bIsAECMFarEndThreadBusy = true;
 #ifdef USE_ECHO2
 		if (m_pEcho2 != nullptr)
 		{
@@ -462,6 +472,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 		{
 			m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning(), m_bUsingLoudSpeaker);
 		}
+		m_bIsAECMFarEndThreadBusy = false;
 	}
 #endif
 	return true;
