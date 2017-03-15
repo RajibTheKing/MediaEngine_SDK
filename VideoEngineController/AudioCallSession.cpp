@@ -40,7 +40,7 @@
 #endif
 
 #define OPUS_ENABLED
-#define __DUMP_FILE__
+//#define __DUMP_FILE__
 
 #ifdef __DUMP_FILE__
 FILE *FileInput;
