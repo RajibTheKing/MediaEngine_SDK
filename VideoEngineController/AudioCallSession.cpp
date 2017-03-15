@@ -831,6 +831,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 			m_clientSocket->SendToServer(m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1);
 #endif
 		}
+#if 0		
 		else if (m_iRole == VIEWER_IN_CALL)
 		{
 #ifndef LOCAL_SERVER_LIVE_CALL
@@ -843,6 +844,7 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 			m_clientSocket->SendToServer(m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1);
 #endif
 		}
+#endif
 		else
 		{
 			Locker lock(*m_pAudioCallSessionMutex);
