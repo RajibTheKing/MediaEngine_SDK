@@ -33,12 +33,12 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 	else {
 		if (m_iPreviousPacketNumber == iPacketNumber) {
 
-			/*int nIsBlockAlreadyExists = (m_iBlockOkayFlag & (1 << iBlockNo) );
+			int nIsBlockAlreadyExists = (m_iBlockOkayFlag & (1 << iBlockNo) );
 
 			if( nIsBlockAlreadyExists > 0)
 			{
 				return false;
-			}*/
+			}
 
 			m_iBlockOkayFlag |= (1 << iBlockNo);
 			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock, iBlockLength);
