@@ -399,14 +399,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_640_25 || m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_25)
+					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
 						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
 					}
 					else
 					{
-						m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
-						m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
 					}
 #else
 					
@@ -415,14 +415,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #ifndef TARGET_OS_WINDOWS_PHONE
 
-					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_640_25 || m_pVideoCallSession->GetOwnVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_25)
+					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
 						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
 					}
 					else
 					{
-						m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
-						m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
+						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
+						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
 					}
 #endif
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
