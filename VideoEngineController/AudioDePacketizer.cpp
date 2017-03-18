@@ -64,6 +64,11 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 			m_iBlockOkayFlag |= (1 << iBlockNo);
 			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock, iBlockLength);
 			m_nFrameLength = nPacketLength;
+			if ((1 << iTotalBlock) == (m_iBlockOkayFlag + 1))
+			{
+				HITLER("XXP@#@#MARUF Packet Return True 2");
+				return true;
+			}
 		}
 		return false;
 	}
@@ -73,7 +78,8 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 int AudioDePacketizer::GetCompleteFrame(unsigned char* uchFrame){
 	memcpy(uchFrame, m_uchAudioStorageBuffer, m_nFrameLength);
 	m_iBlockOkayFlag = 0;
-	m_iPreviousPacketNumber = -1;
+	m_iPreviousPacketNumber++;
+	memset(m_uchAudioStorageBuffer, 0, sizeof m_uchAudioStorageBuffer);
 	return m_nFrameLength;
 }
 
