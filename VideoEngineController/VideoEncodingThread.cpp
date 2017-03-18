@@ -217,6 +217,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int countZeroLengthFrame = 0;
 	bool bIsBitrateInitialized = false;
     long long llPacketizePrevTime = 0;
+
+	int sum = 0;
+	int sum2 = 0;
+	int sum3 = 0;
+	int countNumber = 1;
+
 	/*for(int i = 0; i < 200; i++)
 	{
 		if (m_pBitRateController->IsNetworkTypeMiniPacketReceived())
@@ -311,6 +317,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             
             //printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
             g_PrevEncodeTime = m_Tools.CurrentTimestamp();
+
+			long long startTime = m_Tools.CurrentTimestamp();
             
             
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
@@ -394,6 +402,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				int iWidth = m_pColorConverter->GetWidth();
 				int iHeight = m_pColorConverter->GetHeight();
 
+				int newHeight;
+				int newWidth;
+
+				m_pColorConverter->CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, 1920, 1130, newHeight, newWidth);
+
 				if (m_bVideoEffectEnabled == true)
 				{
 
@@ -401,7 +414,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), newHeight, newWidth, m_VideoEffectParam);
 					
 					}
 					else
@@ -420,7 +433,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15 || m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+						if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+						else
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), newHeight, newWidth, m_VideoEffectParam);
 					}
 					else
 					{
@@ -677,6 +693,22 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				++m_iFrameNumber;
 			}
+
+			if (countNumber == 1000)
+			{
+				countNumber = 1;
+				sum = 0;
+			}
+
+			sum += (int)(m_Tools.CurrentTimestamp() - startTime);
+
+#ifdef __ANDROID__
+
+			LOGSS("Average %d %d\n", sum / countNumber, countNumber);
+
+#endif
+
+			countNumber++;
 		
 			toolsObject.SOSleep(0);
 		}
