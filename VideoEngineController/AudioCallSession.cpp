@@ -1445,8 +1445,8 @@ void CAudioCallSession::DecodingThreadProcedure()
 			}
 
 			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
-
-			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength);
+			llNow = m_Tools.CurrentTimestamp();
+			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, llLastTime);
 			HITLER("XXP@#@#MARUF [%d %d]",iPacketNumber, iBlockNumber);
 			if (bIsCompleteFrame){
 				//m_ucaDecodingFrame

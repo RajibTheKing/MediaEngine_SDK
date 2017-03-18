@@ -4,7 +4,7 @@
 #include "AudioCallSession.h"
 
 AudioDePacketizer::AudioDePacketizer(CAudioCallSession * pAudioCallSession):
-m_pAudioCallSession(),
+m_pAudioCallSession(pAudioCallSession),
 m_iBlockOkayFlag(0), 
 m_iPreviousPacketNumber(-1)
 {
@@ -19,7 +19,7 @@ AudioDePacketizer::~AudioDePacketizer()
 	m_iBlockOkayFlag = 0;
 }
 
-bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int iTotalBlock, int iBlockLength, int iBlockOffset, int iPacketNumber, int nPacketLength)
+bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int iTotalBlock, int iBlockLength, int iBlockOffset, int iPacketNumber, int nPacketLength, long long &llNow, long long &llLastTime)
  {
 	HITLER("XXP@#@#MARUF BOKKOR IS RUNNING PACKET BN = %d  TB = %d  BL = %d BO = %d PN = %d PL = %d", iBlockNo, iTotalBlock, iBlockLength, iBlockOffset, iPacketNumber, nPacketLength);
 
@@ -56,8 +56,8 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 		else if(m_iPreviousPacketNumber < iPacketNumber){
 			if (m_iBlockOkayFlag && m_pAudioCallSession->getIsAudioLiveStreamRunning() && m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
 			{ 
-				SentIncompleteFrame(m_iPreviousPacketNumber);
-			}					
+				SentIncompleteFrame(m_iPreviousPacketNumber, llNow, llLastTime);
+			}				
 			m_iBlockOkayFlag = 0;
 			memset(m_uchAudioStorageBuffer, 0, nPacketLength);
 			m_iPreviousPacketNumber = iPacketNumber;
@@ -77,14 +77,14 @@ int AudioDePacketizer::GetCompleteFrame(unsigned char* uchFrame){
 	return m_nFrameLength;
 }
 
-void AudioDePacketizer::SentIncompleteFrame(int iLastPacketNumber)
+void AudioDePacketizer::SentIncompleteFrame(int iLastPacketNumber, long long &llNow, long long &llLastTime)
 {
-	HITLER("SENDING INCOMPLETE FRAME");
+	HITLER("XXP@#@#MARUF SENDING INCOMPLETE FRAME");
 	memcpy(m_saDataToPlay, m_uchAudioStorageBuffer, m_nFrameLength);
 	int nFrameLenInShort = m_nFrameLength / 2;
 
 	m_pAudioCallSession->DumpDecodedFrame(m_saDataToPlay, nFrameLenInShort);
 
 	long long llTemp1 = -1, llTemp2 = -1;
-	m_pAudioCallSession->SendToPlayer(m_saDataToPlay, nFrameLenInShort, llTemp1, llTemp2, iLastPacketNumber);
+	m_pAudioCallSession->SendToPlayer(m_saDataToPlay, nFrameLenInShort, llNow, llLastTime, iLastPacketNumber);
 }
