@@ -96,7 +96,7 @@ m_EffectValue(10)
 	memset(m_mean, m_nVideoHeight*m_nVideoWidth, 0);
 	memset(m_variance, m_nVideoHeight*m_nVideoWidth, 0);
 
-	luminaceHigh = (unsigned char)255;
+	luminaceHigh = 255;
 }
 
 CVideoBeautificationer::~CVideoBeautificationer()
@@ -229,51 +229,51 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 {
 	if (m_AverageValue < 10)
 	{
-		m_nThresholdValue = 80;
+		m_nThresholdValue = 60;
 	}
 	else if (m_AverageValue < 15)
 	{
-		m_nThresholdValue = 85;
+		m_nThresholdValue = 65;
 	}
 	else if (m_AverageValue < 20)
 	{
-		m_nThresholdValue = 90;
+		m_nThresholdValue = 70;
 	}
 	else if (m_AverageValue < 30)
 	{
-		m_nThresholdValue = 105;
+		m_nThresholdValue = 85;
 	}
 	else if (m_AverageValue < 40)
 	{
-		m_nThresholdValue = 110;
+		m_nThresholdValue = 90;
 	}
 	else if (m_AverageValue < 50)
 	{
-		m_nThresholdValue = 115;
+		m_nThresholdValue = 95;
 	}
 	else if (m_AverageValue < 60)
 	{
-		m_nThresholdValue = 120;
+		m_nThresholdValue = 100;
 	}
 	else if (m_AverageValue < 70)
 	{
-		m_nThresholdValue = 130;
+		m_nThresholdValue = 110;
 	}
 	else if (m_AverageValue < 80)
 	{
-		m_nThresholdValue = 135;
+		m_nThresholdValue = 115;
 	}
 	else{
-		m_nThresholdValue = 135;
+		m_nThresholdValue = 115;
 	}
 
-	m_nPreviousAddValueForBrightening = (unsigned char)(m_nThresholdValue - m_AverageValue);
-	m_nPreviousAddValueForBrightening = (unsigned char)(m_nPreviousAddValueForBrightening >> 1);
-	if (m_nPreviousAddValueForBrightening < (unsigned char)0)
-		m_nPreviousAddValueForBrightening = (unsigned char)0;
+	m_nPreviousAddValueForBrightening = (m_nThresholdValue - m_AverageValue);
+	m_nPreviousAddValueForBrightening = (m_nPreviousAddValueForBrightening >> 1);
+	if (m_nPreviousAddValueForBrightening < 0)
+		m_nPreviousAddValueForBrightening = 0;
 
-	m_nBrightnessPrecision = brightnessPrecision;
-	//m_nPreviousAddValueForBrightening += m_nBrightnessPrecision;
+	//m_nBrightnessPrecision = brightnessPrecision;
+	m_nPreviousAddValueForBrightening += m_nBrightnessPrecision;
 }
 
 void CVideoBeautificationer::MakePixelBright(unsigned char *pixel)
