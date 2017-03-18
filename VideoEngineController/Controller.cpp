@@ -320,7 +320,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 		if (m_Tools.CurrentTimestamp() - llCheckDeviceCapabilityStartTime > 3000)
 		{
 			int notification = m_EventNotifier.VIDEO_SESSION_START_FAILED;
-			m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
+			//m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
 			break;
 		}
 	}
@@ -710,7 +710,7 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
         if(m_Tools.CurrentTimestamp() - llCheckDeviceCapabilityStartTime > 500)
         {
             int notification = m_EventNotifier.SET_CAMERA_RESOLUTION_FAILED;
-            m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
+            //m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
             break;
         }
     }
