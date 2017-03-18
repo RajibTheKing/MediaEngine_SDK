@@ -34,6 +34,7 @@ m_llLastTimeStamp(-1)
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
     m_pVideoSendMutex.reset(new CLockHandler);
+	m_pVideoStartMutex.reset(new CLockHandler);
     m_pVideoReceiveMutex.reset(new CLockHandler);
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
@@ -70,6 +71,7 @@ m_llLastTimeStamp(-1)
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
     m_pVideoSendMutex.reset(new CLockHandler);
+	m_pVideoStartMutex.reset(new CLockHandler);
     m_pVideoReceiveMutex.reset(new CLockHandler);
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
@@ -134,6 +136,7 @@ CController::~CController()
 	CLogPrinter::Stop();
     
     SHARED_PTR_DELETE(m_pVideoSendMutex);
+	SHARED_PTR_DELETE(m_pVideoStartMutex);
     SHARED_PTR_DELETE(m_pVideoReceiveMutex);
     SHARED_PTR_DELETE(m_pAudioSendMutex);
     SHARED_PTR_DELETE(m_pAudioReceiveMutex);
@@ -295,6 +298,8 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 
 bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType)
 {
+	Locker lock1(*m_pVideoStartMutex);
+
     if(iVideoHeight * iVideoWidth > 352 * 288)
     {
         m_Quality[1].iHeight = iVideoHeight;
@@ -305,6 +310,20 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
         m_Quality[0].iHeight = iVideoHeight;
         m_Quality[0].iWidth = iVideoWidth;
     }
+
+	long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
+
+	while (m_bDeviceCapabilityRunning == true)
+	{
+		m_Tools.SOSleep(10);
+
+		if (m_Tools.CurrentTimestamp() - llCheckDeviceCapabilityStartTime > 3000)
+		{
+			int notification = m_EventNotifier.VIDEO_SESSION_START_FAILED;
+			m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
+			break;
+		}
+	}
     
     if(m_bDeviceCapabilityRunning == true) return false;
     
@@ -673,17 +692,21 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 
 int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 {
+	Locker lock1(*m_pVideoStartMutex);
+
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability started");
 
-        m_Quality[0].iHeight = iHeightLow;
-        m_Quality[0].iWidth = iWidthLow;
-        m_Quality[1].iHeight = iHeightHigh;
-        m_Quality[1].iWidth = iWidthHigh;
+    m_Quality[0].iHeight = iHeightLow;
+    m_Quality[0].iWidth = iWidthLow;
+    m_Quality[1].iHeight = iHeightHigh;
+    m_Quality[1].iWidth = iWidthHigh;
+
     long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
     
     while(m_bLiveCallRunning==true || m_bDeviceCapabilityRunning == true)
     {
         m_Tools.SOSleep(10);
+
         if(m_Tools.CurrentTimestamp() - llCheckDeviceCapabilityStartTime > 500)
         {
             int notification = m_EventNotifier.SET_CAMERA_RESOLUTION_FAILED;

@@ -143,6 +143,7 @@ private:
 
 	int m_nDeviceSupportedCallFPS;
 
+	SmartPointer<CLockHandler> m_pVideoStartMutex;
     SmartPointer<CLockHandler> m_pVideoSendMutex;
     SmartPointer<CLockHandler> m_pVideoReceiveMutex;
     SmartPointer<CLockHandler> m_pAudioSendMutex;
