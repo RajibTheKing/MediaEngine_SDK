@@ -47,6 +47,8 @@ public:
 	static const int SET_CAMERA_RESOLUTION_640x480 = 211;
     static const int SET_CAMERA_RESOLUTION_FAILED= 221;
 
+	static const int VIDEO_SESSION_START_FAILED = 121;
+
 	static const int LIVE_CALL_INSET_ON = 231;
 	static const int LIVE_CALL_INSET_OFF = 232;
 
