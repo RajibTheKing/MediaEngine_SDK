@@ -95,6 +95,8 @@ m_EffectValue(10)
 
 	memset(m_mean, m_nVideoHeight*m_nVideoWidth, 0);
 	memset(m_variance, m_nVideoHeight*m_nVideoWidth, 0);
+
+	luminaceHigh = (unsigned char)255;
 }
 
 CVideoBeautificationer::~CVideoBeautificationer()
@@ -265,10 +267,10 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 		m_nThresholdValue = 135;
 	}
 
-	m_nPreviousAddValueForBrightening = (m_nThresholdValue - m_AverageValue);
-	m_nPreviousAddValueForBrightening = m_nPreviousAddValueForBrightening >> 1;
-	if (m_nPreviousAddValueForBrightening < 0)
-		m_nPreviousAddValueForBrightening = 0;
+	m_nPreviousAddValueForBrightening = (unsigned char)(m_nThresholdValue - m_AverageValue);
+	m_nPreviousAddValueForBrightening = (unsigned char)(m_nPreviousAddValueForBrightening >> 1);
+	if (m_nPreviousAddValueForBrightening < (unsigned char)0)
+		m_nPreviousAddValueForBrightening = (unsigned char)0;
 
 	m_nBrightnessPrecision = brightnessPrecision;
 	//m_nPreviousAddValueForBrightening += m_nBrightnessPrecision;
@@ -454,7 +456,12 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlu
 	for (int i = 0; i < ll; i++)
 	{
 		totalYValue += pBlurConvertingData[i];
-		pBlurConvertingData[i] += m_nPreviousAddValueForBrightening;
+
+		if (pBlurConvertingData[i] >= luminaceHigh - m_nPreviousAddValueForBrightening)
+			pBlurConvertingData[i] = luminaceHigh;
+		else
+			pBlurConvertingData[i] += m_nPreviousAddValueForBrightening;
+
 		pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
 	}
 
@@ -543,9 +550,14 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 #elif defined(__ANDROID__)
 
-			totalYValue += pBlurConvertingData[iw + j - 1];
-			pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
-			pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
+			totalYValue += pBlurConvertingData[i];
+
+			if (pBlurConvertingData[i] >= luminaceHigh - m_nPreviousAddValueForBrightening)
+				pBlurConvertingData[i] = luminaceHigh;
+			else
+				pBlurConvertingData[i] += m_nPreviousAddValueForBrightening;
+
+			pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
 
 #endif
 			tmp += pBlurConvertingData[iw + j - 1];
@@ -679,7 +691,12 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 #elif defined(__ANDROID__)
 
 			totalYValue += pBlurConvertingData[iw + j - 1];
-			pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
+
+			if (pBlurConvertingData[iw + j - 1] >= luminaceHigh - m_nPreviousAddValueForBrightening)
+				pBlurConvertingData[iw + j - 1] = luminaceHigh;
+			else
+				pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
+
 			pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
 
 #endif

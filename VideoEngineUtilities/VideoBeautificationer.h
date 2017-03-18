@@ -51,7 +51,7 @@ public:
 
 private:
 
-	int m_nPreviousAddValueForBrightening;
+	unsigned char m_nPreviousAddValueForBrightening;
 	int m_nAverageLuminanceValue;
 	int m_nTotalLuminanceValue;
 	int m_ThresholdValueForBrightness;
@@ -61,6 +61,7 @@ private:
 
 	int m_iDeviceHeight;
 	int m_iDeviceWidth;
+	unsigned char luminaceHigh;
 
 	int m_nVideoHeight;
 	int m_nVideoWidth;
