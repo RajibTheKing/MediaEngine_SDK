@@ -44,6 +44,7 @@ FILE *FileInput;
 FILE *FileOutput;
 FILE *FileInputWithEcho;
 FILE *FileInputMuxed;
+FILE *FileInputPreGain;
 #endif
 
 
@@ -250,6 +251,7 @@ CAudioCallSession::~CAudioCallSession()
 	fclose(FileOutput);
 	fclose(FileInput);
 	fclose(FileInputWithEcho);
+	fclose(FileInputPreGain);
 #endif
 
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
@@ -433,6 +435,9 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		if (m_pEcho != nullptr)
 		{
 			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+#ifdef __DUMP_FILE__
+			fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
+#endif
 		}
 		m_bIsAECMNearEndThreadBusy = false;
 	}
@@ -896,6 +901,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 #ifdef __DUMP_FILE__
 	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
 	FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
+	FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
