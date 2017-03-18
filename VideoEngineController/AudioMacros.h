@@ -1,6 +1,13 @@
 #ifndef AUDIO_MACROS_H
 #define AUDIO_MACROS_H
 
+
+#define PUBLISHER_IN_CALL 1
+#define VIEWER_IN_CALL 2
+//#define VIEWER_NOT_IN_CALL 3 //never used so far
+#define CALL_NOT_RUNNING 4
+
+
 #if defined(TARGET_OS_WINDOWS_PHONE)
 #define MAX_AUDIO_ENCODING_BUFFER_SIZE 5
 #define MAX_AUDIO_ENCODING_FRAME_SIZE 3096

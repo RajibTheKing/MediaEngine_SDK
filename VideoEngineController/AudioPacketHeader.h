@@ -1,3 +1,6 @@
+#ifndef AUDIO_PACKET_HEADER_H
+#define AUDIO_PACKET_HEADER_H
+
 #include "Tools.h"
 #include "Size.h"
 
@@ -106,3 +109,5 @@ public:
 	void showDetails(string prefix);
 
 };
+
+#endif
