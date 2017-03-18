@@ -464,7 +464,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlu
 	return result;
 }
 
-pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam)
+pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, int *effectParam)
 {
 	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
 	if (effectParam[1] != 0)m_radius = effectParam[1];
