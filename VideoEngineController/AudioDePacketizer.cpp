@@ -1,8 +1,12 @@
 #include "AudioDePacketizer.h"
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
+#include "AudioCallSession.h"
 
-AudioDePacketizer::AudioDePacketizer() : m_iBlockOkayFlag(0), m_iPreviousPacketNumber(-1)
+AudioDePacketizer::AudioDePacketizer(CAudioCallSession * pAudioCallSession):
+m_pAudioCallSession(),
+m_iBlockOkayFlag(0), 
+m_iPreviousPacketNumber(-1)
 {
 	m_pAudioPacketHeader = new CAudioPacketHeader();
 	m_iAudioHeaderLength = m_pAudioPacketHeader->GetHeaderSize();
@@ -50,7 +54,12 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 			}
 		}
 		else if(m_iPreviousPacketNumber < iPacketNumber){
+			if (m_iBlockOkayFlag && m_pAudioCallSession->getIsAudioLiveStreamRunning() && m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
+			{ 
+				SentIncompleteFrame(m_iPreviousPacketNumber);
+			}					
 			m_iBlockOkayFlag = 0;
+			memset(m_uchAudioStorageBuffer, 0, nPacketLength);
 			m_iPreviousPacketNumber = iPacketNumber;
 			m_iBlockOkayFlag |= (1 << iBlockNo);
 			memcpy(m_uchAudioStorageBuffer + iBlockOffset, uchBlock, iBlockLength);
@@ -63,18 +72,19 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 
 int AudioDePacketizer::GetCompleteFrame(unsigned char* uchFrame){
 	memcpy(uchFrame, m_uchAudioStorageBuffer, m_nFrameLength);
-	/*int testFlag = 0;
-	for (int i = 0; i < m_nFrameLength; i++) {
-		if (m_uchAudioStorageBuffer[i] != i) {
-			testFlag = 1;
-			break;
-		}
-	}
-
-	if (testFlag) {
-		HITLER("XXP@#@#MARUF DATA CORRAPTED .......... ");
-	}*/
 	m_iBlockOkayFlag = 0;
 	m_iPreviousPacketNumber = -1;
 	return m_nFrameLength;
+}
+
+void AudioDePacketizer::SentIncompleteFrame(int iLastPacketNumber)
+{
+	HITLER("SENDING INCOMPLETE FRAME");
+	memcpy(m_saDataToPlay, m_uchAudioStorageBuffer, m_nFrameLength);
+	int nFrameLenInShort = m_nFrameLength / 2;
+
+	m_pAudioCallSession->DumpDecodedFrame(m_saDataToPlay, nFrameLenInShort);
+
+	long long llTemp1 = -1, llTemp2 = -1;
+	m_pAudioCallSession->SendToPlayer(m_saDataToPlay, nFrameLenInShort, llTemp1, llTemp2, iLastPacketNumber);
 }
