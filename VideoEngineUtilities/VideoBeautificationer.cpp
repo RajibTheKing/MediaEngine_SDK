@@ -539,17 +539,14 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 #elif defined(__ANDROID__)
 
 			totalYValue += pBlurConvertingData[iw + j - 1];
-			MakePixelBright(&pBlurConvertingData[iw + j - 1]);
-
-			MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+			pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
+			pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
 
 #endif
-			cur_pixel = pBlurConvertingData[iw + j - 1];
-
-			tmp += cur_pixel;
+			tmp += pBlurConvertingData[iw + j - 1];
 			m_mean[i][j] = tmp + m_mean[i - 1][j];
 
-			tmp2 += m_square[cur_pixel];
+			tmp2 += (pBlurConvertingData[iw + j - 1] * pBlurConvertingData[iw + j - 1]);
 			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
 
 			//pBlurConvertingData[m_pUIndex[iw + j - 1]] -= 1;
