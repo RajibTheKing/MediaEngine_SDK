@@ -57,8 +57,8 @@ m_EffectValue(10)
 
 		//modifYUV[y] = getMax(getMin(((unsigned char)1.1643*(gray - 24)), 255),0);
         
-        modifYUV[y] = getMin(((unsigned char)1.1643*(gray - 24)), 255);
-        modifYUV[y] = getMax(modifYUV[y], 0);
+		modifYUV[y] = getMin(((unsigned char)1.1643*(gray - 24)), (unsigned char)255);
+		modifYUV[y] = getMax(modifYUV[y], (unsigned char)0);
         
 		//#else
 
@@ -257,11 +257,12 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 		m_nPreviousAddValueForBrightening = 0;
 
 	m_nBrightnessPrecision = brightnessPrecision;
+	m_nPreviousAddValueForBrightening += m_nBrightnessPrecision;
 }
 
 void CVideoBeautificationer::MakePixelBright(unsigned char *pixel)
 {
-	int iPixelValue = *pixel + m_nPreviousAddValueForBrightening + m_nBrightnessPrecision;
+	int iPixelValue = *pixel + m_nPreviousAddValueForBrightening;
 	*pixel = getMin(iPixelValue, 255);
 }
 
@@ -388,6 +389,70 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 		}//(unsigned char)floor(val*iarr + 0.5); }
 	}
 	//return tcl;
+}
+
+pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam)
+{
+	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
+	if (effectParam[1] != 0)m_radius = effectParam[1];
+	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
+
+	long long startSharpingTime = m_Tools.CurrentTimestamp();
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)
+	//Do nothing
+	//Not Needed Yet...
+#else
+
+	for (int i = 0; i <= iHeight; i++)
+	{
+		m_mean[i][0] = 0;
+	}
+
+	memset(m_mean, iWidth, 0);
+
+
+	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+	{
+		int tmp = 0;
+
+		for (int j = 1; j <= iWidth; j++)
+		{
+			tmp += pBlurConvertingData[i * iWidth + j - 1];
+			m_mean[i][j] = tmp + m_mean[i - 1][j];
+
+			if (i > 2 && j > 2)
+			{
+				int indx = m_mean[i][j] - m_mean[i - 3][j] - m_mean[i][j - 3] + m_mean[i - 3][j - 3];
+
+				pBlurConvertingData[iw + j - 2] = m_precSharpness[pBlurConvertingData[iw + j - 2]][indx];
+			}
+		}
+	}
+
+#endif
+
+	long long endSharpingTime = m_Tools.CurrentTimestamp();
+
+	int ll = iHeight * iWidth;
+	int totalYValue = 0;
+
+	for (int i = 0; i < ll; i++)
+	{
+		totalYValue += pBlurConvertingData[i];
+		pBlurConvertingData[i] += m_nPreviousAddValueForBrightening;
+		pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
+	}
+
+	int m_AvarageValue = totalYValue / ll;
+
+	SetBrighteningValue(m_AvarageValue, 10);
+
+	long long endFilterTime = m_Tools.CurrentTimestamp();
+
+	//LOGE("VideoBeautificcationer -->> sharpingTimeDiff = %lld, filterTimeDiff = %lld, totalTimeDiff =% lld", -(startSharpingTime - endSharpingTime), -(endSharpingTime - endFilterTime), -(startSharpingTime - endFilterTime));
+	pair<int, int> result = { m_mean[iHeight][iWidth] / (iHeight*iWidth), m_variance[iHeight][iWidth] / (iHeight*iWidth) };
+	return result;
 }
 
 pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam)

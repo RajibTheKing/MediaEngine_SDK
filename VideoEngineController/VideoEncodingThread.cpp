@@ -402,9 +402,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
 						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+					
 					}
 					else
 					{
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+
 						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
 					}
@@ -415,12 +418,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #ifndef TARGET_OS_WINDOWS_PHONE
 
-					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
+					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15 || m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 					{
 						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
 					}
 					else
 					{
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+
 						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
 					}
