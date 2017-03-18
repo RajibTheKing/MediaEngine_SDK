@@ -84,6 +84,15 @@ m_EffectValue(10)
 		}
 	}
 
+
+	for (int i = 0; i < 641; i++)
+	{
+		for (int j = 0; j < 641; j++)
+		{
+			m_Multiplication[i][j] = i*j;
+		}
+	}
+
 }
 
 CVideoBeautificationer::~CVideoBeautificationer()
@@ -213,42 +222,42 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 {
 	if (m_AverageValue < 10)
 	{
-		m_nThresholdValue = 60;
+		m_nThresholdValue = 80;
 	}
 	else if (m_AverageValue < 15)
 	{
-		m_nThresholdValue = 65;
+		m_nThresholdValue = 85;
 	}
 	else if (m_AverageValue < 20)
 	{
-		m_nThresholdValue = 70;
+		m_nThresholdValue = 90;
 	}
 	else if (m_AverageValue < 30)
 	{
-		m_nThresholdValue = 85;
+		m_nThresholdValue = 105;
 	}
 	else if (m_AverageValue < 40)
 	{
-		m_nThresholdValue = 90;
+		m_nThresholdValue = 110;
 	}
 	else if (m_AverageValue < 50)
 	{
-		m_nThresholdValue = 95;
+		m_nThresholdValue = 115;
 	}
 	else if (m_AverageValue < 60)
 	{
-		m_nThresholdValue = 100;
+		m_nThresholdValue = 120;
 	}
 	else if (m_AverageValue < 70)
 	{
-		m_nThresholdValue = 110;
+		m_nThresholdValue = 130;
 	}
 	else if (m_AverageValue < 80)
 	{
-		m_nThresholdValue = 115;
+		m_nThresholdValue = 135;
 	}
 	else{
-		m_nThresholdValue = 115;
+		m_nThresholdValue = 135;
 	}
 
 	m_nPreviousAddValueForBrightening = (m_nThresholdValue - m_AverageValue);
@@ -257,7 +266,7 @@ void CVideoBeautificationer::SetBrighteningValue(int m_AverageValue, int brightn
 		m_nPreviousAddValueForBrightening = 0;
 
 	m_nBrightnessPrecision = brightnessPrecision;
-	m_nPreviousAddValueForBrightening += m_nBrightnessPrecision;
+	//m_nPreviousAddValueForBrightening += m_nBrightnessPrecision;
 }
 
 void CVideoBeautificationer::MakePixelBright(unsigned char *pixel)
@@ -376,16 +385,16 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 	int iarr = (r + r + 1);
 	for (int i = 0; i<h; i++)
 	{
-		int ti = i*w, li = ti, ri = ti + r;
-		int fv = (scl[ti] & 0xFF), lv = (scl[ti + w - 1] & 0xFF), val = (r + 1)*fv;
+		int ti = m_Multiplication[i][w], li = ti, ri = ti + r;
+		int fv = (scl[ti]), lv = (scl[ti + w - 1]), val = m_Multiplication[(r + 1)][fv];
 
-		for (int j = 0; j<r; j++) val += (scl[ti + j] & 0xFF);
-		for (int j = 0; j <= r; j++) { val += (scl[ri++] & 0xFF) - fv;   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF); }
+		for (int j = 0; j<r; j++) val += (scl[ti + j]);
+		for (int j = 0; j <= r; j++) { val += (scl[ri++]) - fv;   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF); }
 		for (int j = r + 1; j<w - r; j++) {
-			val += (scl[ri++] & 0xFF) - (scl[li++] & 0xFF);   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF);
+			val += (scl[ri++]) - (scl[li++]);   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF);
 		}
 		for (int j = w - r; j<w; j++) {
-			val += (scl[ri++] & 0xFF) - (scl[li++] & 0xFF);   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF);
+			val += (scl[ri++]) - (scl[li++] );   tcl[ti++] = (unsigned char)((unsigned char)(val / iarr) & 0xFF);
 		}//(unsigned char)floor(val*iarr + 0.5); }
 	}
 	//return tcl;

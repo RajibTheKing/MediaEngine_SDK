@@ -77,6 +77,7 @@ private:
 	int m_EffectValue;
 
 	int m_precSharpness[256][2300];
+	int m_Multiplication[641][641];
 
 };
 

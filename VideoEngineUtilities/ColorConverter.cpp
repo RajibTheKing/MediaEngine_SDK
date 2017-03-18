@@ -37,7 +37,7 @@ m_lfriendID(lfriendID)
     
 	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
 
-	for (int i = 0; i < 481; i++)
+	for (int i = 0; i < 641; i++)
 		for (int j = 0; j < 641; j++)
 		{
 			m_Multiplication[i][j] = i*j;

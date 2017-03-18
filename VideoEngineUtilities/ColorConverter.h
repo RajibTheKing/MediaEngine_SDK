@@ -141,7 +141,7 @@ private:
 	bool m_bClipInitialization;
 	int cyb, cyg, cyr;
 	
-	int m_Multiplication[481][641];
+	int m_Multiplication[641][641];
 
 	CVideoBeautificationer *m_VideoBeautificationer;
 
