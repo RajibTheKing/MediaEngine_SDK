@@ -70,7 +70,10 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 				return true;
 			}
 		}
-		return false;
+		else {
+			HITLER("XXP@#@#MARUF PACKET REMOVED DUE TO LOW PACKET NUMBER. PREV [%d] CUR [%d]", m_iPreviousPacketNumber, iPacketNumber);
+			return false;
+		}
 	}
 	return false;
 }
@@ -93,4 +96,10 @@ void AudioDePacketizer::SentIncompleteFrame(int iLastPacketNumber, long long &ll
 
 	long long llTemp1 = -1, llTemp2 = -1;
 	m_pAudioCallSession->SendToPlayer(m_saDataToPlay, nFrameLenInShort, llNow, llLastTime, iLastPacketNumber);
+}
+
+void AudioDePacketizer::ResetDepacketizer()
+{
+	m_iPreviousPacketNumber = -1;
+	memset(m_uchAudioStorageBuffer, 0, sizeof m_uchAudioStorageBuffer);
 }

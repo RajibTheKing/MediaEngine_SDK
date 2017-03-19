@@ -11,8 +11,12 @@ class AudioDePacketizer
 public:
 	AudioDePacketizer(CAudioCallSession * pAudioCallSession);
 	~AudioDePacketizer();
+	
 	bool dePacketize(unsigned char* uchBlock, int iBlockNo, int iTotalBlock, int iBlockLength, int iBlockOffset, int iPacketNumber, int nPacketLength, long long &llNow, long long &llLastTime);
+	
 	int GetCompleteFrame(unsigned char* uchFrame);
+
+	void ResetDepacketizer();
 private:
 	int m_iBlockOkayFlag;
 	int m_iAudioHeaderLength;
