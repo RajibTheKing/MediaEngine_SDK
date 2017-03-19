@@ -348,6 +348,7 @@ void CAudioCallSession::StartCallInLive(int iRole)
 	m_Tools.SOSleep(20);
 
 	m_llDecodingTimeStampOffset = -1;
+	m_pAudioDePacketizer->ResetDepacketizer();
 #ifdef __DUMP_FILE__
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
@@ -403,6 +404,7 @@ void CAudioCallSession::EndCallInLive()
 
 	m_iRole = CALL_NOT_RUNNING;
 	m_llDecodingTimeStampOffset = -1;
+	m_pAudioDePacketizer->ResetDepacketizer();
 	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
 
