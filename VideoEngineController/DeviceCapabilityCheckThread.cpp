@@ -156,6 +156,11 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 				CVideoCallSession* pVideoSession = m_pCController->StartTestVideoCall(llFriendID, nVideoHeigth, nVideoWidth, 0);
                 
                 m_Tools.SOSleep(1000);
+
+				while (pVideoSession->m_pVideoEncodingThread->IsThreadStarted() == false)
+				{
+					m_Tools.SOSleep(10);
+				}
                 
 #if defined(SOUL_SELF_DEVICE_CHECK)
 
