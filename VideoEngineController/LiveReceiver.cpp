@@ -234,20 +234,15 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 }
 
 
-int iExpectedPacketNumber = 0;
-
 void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks)
 {
-
 	if (m_bIsRoleChanging)
 	{
 		//LOGE("###DE### role changin lr....");
 		return;
 	}
 
-
 	m_bIsCurrentlyParsingAudioData = true;
-
 
     Locker lock(*m_pLiveReceiverMutex);
 	CAudioPacketHeader g_LiveReceiverHeader;
@@ -258,8 +253,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
     int iFrameNumber = 0, nUsedLength = 0;
     int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
     int nCurrentFrameLenWithMediaHeader;
-    nFrameLeftRange = nOffset;
-	bool done = true;
+    nFrameLeftRange = nOffset;	
 	int numOfMissingFrames = 0;
 
     while(iFrameNumber < nNumberOfAudioFrames)
@@ -272,7 +266,6 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
         //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
 
-//            while(iMissingIndex < nNumberOfMissingBlocks &&  (pMissingBlocks[iMissingIndex] + 1) * nCallSDKPacketLength  <= nFrameLeftRange)
         while(iMissingIndex < nNumberOfMissingBlocks &&  vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange)
             ++ iMissingIndex;
 
@@ -289,17 +282,6 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
         ++ iFrameNumber;
 
-		g_LiveReceiverHeader.CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-		int iPacketNumber = g_LiveReceiverHeader.GetInformation(INF_PACKETNUMBER);
-		if (iPacketNumber != iExpectedPacketNumber)
-		{
-			LOGENEW("live receiver unexpected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
-		}
-		else
-		{
-			LOGENEW("live receiver expected PACKETNUMBER = %d iFrameNumber = %d nNumberOfAudioFrames = %d\n", iPacketNumber, iFrameNumber, nNumberOfAudioFrames);
-		}
-		iExpectedPacketNumber = iPacketNumber + 1;
         if( !bCompleteFrame )
         {	
 			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
@@ -310,15 +292,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
         }else{
             //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
         }
-		if (done)
-		{
-			done = false;
-			LOGENEW("live receiver FIRST PACKETNUMBER = %d\n", iPacketNumber);
-		}
-		else
-		{
-			LOGENEW("live receiver PACKETNUMBER = %d\n", iPacketNumber);
-		}
+
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 
         m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
