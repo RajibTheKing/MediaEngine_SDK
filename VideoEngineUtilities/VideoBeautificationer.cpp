@@ -57,8 +57,10 @@ m_EffectValue(10)
 
 		//modifYUV[y] = getMax(getMin(((unsigned char)1.1643*(gray - 24)), 255),0);
         
-		modifYUV[y] = getMin(((unsigned char)1.1643*(gray - 24)), (unsigned char)255);
-		modifYUV[y] = getMax(modifYUV[y], (unsigned char)0);
+		int a = (int)getMin((1.1643*(gray - 24)), 255);
+		int b = getMax(a,0);
+
+		modifYUV[y] = (unsigned char)b;
         
 		//#else
 
