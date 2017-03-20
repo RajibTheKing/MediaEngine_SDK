@@ -253,7 +253,11 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 	{
 		HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
 		// fprintf(logFile, "XXP@#@#MARUF LIVE ST %d ED %d\n", missing.first, missing.second);
-		memset(uchAudioData + missing.first, 0, missing.second - missing.first + 1);
+		for (int i = missing.first; i <= missing.second; i++) {
+			if (i >= nOffset) {
+				uchAudioData[i] = 0;
+			}
+		}
 	}
 
 	m_bIsCurrentlyParsingAudioData = true;
@@ -318,11 +322,16 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
 
 		if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) {
+
+			if (bCompleteFrame && (uchAudioData[nFrameLeftRange + 1] != AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)) {
+				HITLER("XXP@#@#MARUF -> DIFF PACKET %d", (int)uchAudioData[nFrameLeftRange + 1]);
+				continue;
+			}
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
-			for (int i = 1600 - 1; i >= 0; i--) {
-				uchAudioData[nFrameRightRange - (1599 - i)] = i;
-			}
+			//for (int i = 1600 - 1; i >= 0; i--) {
+			//	uchAudioData[nFrameRightRange - (1599 - i)] = i%211;
+			//}
 			m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
 			continue;
 		}
@@ -335,7 +344,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
 
 			numOfMissingFrames++;
-			LOGENEW("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
+			HITLER("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
             continue;
         }else{
             //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);

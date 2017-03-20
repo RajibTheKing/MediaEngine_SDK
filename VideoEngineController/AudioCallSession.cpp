@@ -1443,25 +1443,29 @@ void CAudioCallSession::DecodingThreadProcedure()
 				if (m_iRole == VIEWER_IN_CALL)
 				{
 					HITLER("XXP@#@#MARUF -> Sending without test");
-					//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-					//DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-					unsigned char faul[2000];
+					// DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+					// DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+					//unsigned char faul[2000];
 
-					memcpy(faul, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
+					//memcpy(faul, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
 
-					for (int i = 0; i < 1600; i++) {
-						HITLER("XXP@#@#MARUF -> DATA %d -> %d", i, faul[i]);
-						if (faul[i] != i) {
-							HITLER("XXP@#@#MARUF -> DATA not coppied .");
-						}
-					}
+					//for (int i = 0; i < 1600; i++) {
+					//	// HITLER("XXP@#@#MARUF -> DATA %d -> %d", i%211, faul[i]);
+					//	if (faul[i] != (i%211)) {
+					//		HITLER("XXP@#@#MARUF -> DATA not coppied .");
+					//	}
+					//}
+					HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - 1600);
 					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
 					m_nDecodedFrameSize = 800;
 
 					DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 
 					SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, llNow, llLastTime, iPacketNumber);
-					toolsObject.SOSleep(0);
+					toolsObject.SOSleep(50);
+				}
+				else {
+					HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
 				}
 				continue;
 			}
@@ -1507,6 +1511,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			if (bIsCompleteFrame){
 				//m_ucaDecodingFrame
 				HITLER("XXP@#@#MARUF Complete[%d %d]",iPacketNumber, iBlockNumber);
+
 				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
 				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 				{
@@ -1521,7 +1526,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 			if (bIsCompleteFrame){
 				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
 				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-
+				HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
 				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
