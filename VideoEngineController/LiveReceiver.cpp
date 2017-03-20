@@ -8,7 +8,7 @@
 #include "Tools.h"
 #include "ThreadTools.h"
 #include "CommonElementsBucket.h"
-
+#include "AudioPacketHeader.h"
 
 LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject):
 m_pCommonElementsBucket(sharedObject)
@@ -19,10 +19,13 @@ m_pCommonElementsBucket(sharedObject)
     m_pLiveReceiverMutex.reset(new CLockHandler);
 	m_bIsCurrentlyParsingAudioData = false;
 	m_bIsRoleChanging = false;
+
+	m_pAudioPacketHeader = new CAudioPacketHeader();
 }
 
 LiveReceiver::~LiveReceiver(){
     SHARED_PTR_DELETE(m_pLiveReceiverMutex);
+	delete m_pAudioPacketHeader;
 }
 void LiveReceiver::SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue)
 {
@@ -242,6 +245,12 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 		return;
 	}
 
+	for (auto &missing : vMissingBlocks)
+	{
+		HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
+		memset(uchAudioData + missing.first, 0, missing.second - missing.first + 1);
+	}
+
 	m_bIsCurrentlyParsingAudioData = true;
 
     Locker lock(*m_pLiveReceiverMutex);
@@ -276,11 +285,31 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
             iLeftRange =  max(nFrameLeftRange, iLeftRange);
             iRightRange = min(nFrameRightRange,iRightRange);
-            if(iLeftRange <= iRightRange)
-                bCompleteFrame = false;
+			if (iLeftRange <= iRightRange)
+			{
+				HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
+				if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= 10)
+				{
+					HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
+					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+					int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+					
+					HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
+
+					if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
+						HITLER("XXP@#@#MARUF LIVE HEADER INCOMPLETE");
+						bCompleteFrame = false;
+					}
+				}
+				else
+				{
+					HITLER("XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
+					bCompleteFrame = false;
+				}
+			}
         }
 
-        ++ iFrameNumber;
+        ++iFrameNumber;
 
         if( !bCompleteFrame )
         {	

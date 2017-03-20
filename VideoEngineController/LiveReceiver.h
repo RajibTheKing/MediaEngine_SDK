@@ -11,8 +11,10 @@
 #include "LiveVideoDecodingQueue.h"
 #include "LiveAudioDecodingQueue.h"
 
+
 #include<vector>
 class CCommonElementsBucket;
+class CAudioPacketHeader;
 
 class LiveReceiver {
 public:
@@ -31,6 +33,8 @@ public:
 private:
 
 	Tools m_Tools;
+
+	CAudioPacketHeader *m_pAudioPacketHeader;
 
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;
     CAudioByteBuffer *m_pAudioDecoderBuffer;
