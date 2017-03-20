@@ -10,7 +10,7 @@
 
 #define LOG_TAG "LibraryLog"
 #define LOGF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGEF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define __LOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define PRT(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -54,14 +54,14 @@
 #define ON 1
 #define OFF 0
 
-#define LOG_ENABLED
+//#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 
 #define PACKET_DETAILS_LOG		OFF
 #define INSTENT_TEST_LOG_2		OFF
 #define INSTENT_TEST_LOG		OFF
-#define CHECK_CAPABILITY_LOG	ON
+#define CHECK_CAPABILITY_LOG	OFF
 #define QUEUE_OVERFLOW_LOG		OFF
 #define OPERATION_TIME_LOG		OFF
 #define QUEUE_TIME_LOG			OFF
