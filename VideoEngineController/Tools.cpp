@@ -159,6 +159,12 @@ std::string Tools::getText(long long number)
 	return (std::string)buf;
 }
 
+std::string Tools::getText(unsigned long long number)
+{
+	char buf[22];
+	sprintf(buf, "%llu", number);
+	return (std::string)buf;
+}
 
 std::string Tools::getText(double dConvertingValue)
 {

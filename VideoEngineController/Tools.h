@@ -44,6 +44,7 @@ public:
 	static std::string getText(double dConvertingValue);
 	static std::string getText(int nConvertingNumber);
 	static std::string getText(LongLong number);
+	static std::string getText(unsigned long long number);
     
     static int StringToIntegerConvert(std::string strConvertingString);
 	static std::string LongLongToString(LongLong llConvertingValue);
