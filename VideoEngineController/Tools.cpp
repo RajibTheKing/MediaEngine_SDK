@@ -122,6 +122,10 @@ std::string Tools::getText(long long number)
 {
 	char buf[22];
     
+	if (number == 0) {
+		return "0";
+	}
+
 	int i, j, k;
     
 	bool negative = false;
