@@ -10,8 +10,9 @@
 #include "CommonElementsBucket.h"
 #include "AudioPacketHeader.h"
 
-LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject):
-m_pCommonElementsBucket(sharedObject)
+LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject, CAudioCallSession* pAudioCallSession) :
+m_pCommonElementsBucket(sharedObject),
+m_pAudioCallSession(pAudioCallSession)
 {
     //m_pAudioDecoderBuffer = pAudioDecoderBuffer;
     m_pLiveAudioReceivedQueue = NULL;
@@ -21,11 +22,14 @@ m_pCommonElementsBucket(sharedObject)
 	m_bIsRoleChanging = false;
 
 	m_pAudioPacketHeader = new CAudioPacketHeader();
+
+	// logFile = fopen("/sdcard/LiveAudioMissing.txt", "w");
 }
 
 LiveReceiver::~LiveReceiver(){
     SHARED_PTR_DELETE(m_pLiveReceiverMutex);
 	delete m_pAudioPacketHeader;
+	// fclose(logFile);
 }
 void LiveReceiver::SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue)
 {
@@ -248,6 +252,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 	for (auto &missing : vMissingBlocks)
 	{
 		HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
+		// fprintf(logFile, "XXP@#@#MARUF LIVE ST %d ED %d\n", missing.first, missing.second);
 		memset(uchAudioData + missing.first, 0, missing.second - missing.first + 1);
 	}
 
@@ -310,6 +315,20 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
         }
 
         ++iFrameNumber;
+
+
+		if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) {
+			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
+			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
+			for (int i = 1600 - 1; i >= 0; i--) {
+				uchAudioData[nFrameRightRange - (1599 - i)] = i;
+			}
+			m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
+			continue;
+		}
+		else {
+			HITLER("XXP@#@#MARUF -> ERROR IN PACKET TYPE");
+		}
 
         if( !bCompleteFrame )
         {	

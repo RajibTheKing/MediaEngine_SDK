@@ -15,10 +15,11 @@
 #include<vector>
 class CCommonElementsBucket;
 class CAudioPacketHeader;
+class CAudioCallSession;
 
 class LiveReceiver {
 public:
-	LiveReceiver(CCommonElementsBucket* sharedObject);
+	LiveReceiver(CCommonElementsBucket* sharedObject, CAudioCallSession* pAudioCallSession);
     ~LiveReceiver();
     void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);
     void SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue);
@@ -41,6 +42,9 @@ private:
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue;
 	CCommonElementsBucket* m_pCommonElementsBucket;
+
+	CAudioCallSession* m_pAudioCallSession;
+	// FILE* logFile;
 };
 
 

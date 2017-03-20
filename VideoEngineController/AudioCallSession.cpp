@@ -76,7 +76,7 @@ m_bIsAECMNearEndThreadBusy(false)
 	{
 		m_bLiveAudioStreamRunning = true;
 		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
-		m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket);
+		m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, this);
 		m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
 	}
 
@@ -1436,6 +1436,38 @@ void CAudioCallSession::DecodingThreadProcedure()
 				//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
 				continue;
 			}
+
+			/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
+
+			if ( m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE ) {
+				if (m_iRole == VIEWER_IN_CALL)
+				{
+					HITLER("XXP@#@#MARUF -> Sending without test");
+					//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+					//DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+					unsigned char faul[2000];
+
+					memcpy(faul, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
+
+					for (int i = 0; i < 1600; i++) {
+						HITLER("XXP@#@#MARUF -> DATA %d -> %d", i, faul[i]);
+						if (faul[i] != i) {
+							HITLER("XXP@#@#MARUF -> DATA not coppied .");
+						}
+					}
+					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
+					m_nDecodedFrameSize = 800;
+
+					DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+
+					SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, llNow, llLastTime, iPacketNumber);
+					toolsObject.SOSleep(0);
+				}
+				continue;
+			}
+			HITLER("XXP@#@#MARUF -> data corrapted");
+			/// -------- LSKFDSKLFJSLDKF ------------------------------------------------------------------------------------------////
+
 			llCapturedTime = m_Tools.CurrentTimestamp();
 
 			int dummy;
