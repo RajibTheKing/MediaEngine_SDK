@@ -178,6 +178,8 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 
 				for (int i = 0; i < numberOfFrames; i++)
 				{
+					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() pushed sample data " + m_Tools.getText(i));
+
 					long long now = m_Tools.CurrentTimestamp();
                     int nowQueueSize = pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->GetQueueSize();
                     if(nowQueueSize == MAX_VIDEO_ENCODER_BUFFER_SIZE)
