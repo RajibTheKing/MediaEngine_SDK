@@ -7,7 +7,7 @@
 
 #endif
 
-#define MAX_GAIN 4
+#define MAX_GAIN 2
 
 CGomGomGain::CGomGomGain(int id)
 {
