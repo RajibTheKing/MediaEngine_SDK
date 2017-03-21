@@ -14,9 +14,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "646"
-            endingLineNumber = "646"
-            landmarkName = "CVideoCallSession::DepacketizationThreadProcedure()"
-            landmarkType = "5">
+            endingLineNumber = "646">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

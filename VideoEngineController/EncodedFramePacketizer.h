@@ -1,26 +1,18 @@
+
 #ifndef __ENCODED_FRAME_PACKETIZER_H_
 #define __ENCODED_FRAME_PACKETIZER_H_
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <stdio.h>
-#include <string>
-
-#include "SmartPointer.h"
-#include "LockHandler.h"
-#include "ThreadTools.h"
 #include "AudioVideoEngineDefinitions.h"
-#include "EncodingBuffer.h"
 #include "SendingBuffer.h"
 #include "Size.h"
 #include "Tools.h"
-#include "PacketHeader.h"
-#include "SendingThread.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
+#include "HashGenerator.h"
 
-namespace IPV
-{
-	class thread;
-}
+class CVideoCallSession;
 
 class CCommonElementsBucket;
 
@@ -29,49 +21,28 @@ class CEncodedFramePacketizer
 
 public:
 
-	CEncodedFramePacketizer(CCommonElementsBucket* sharedObject, CSendingBuffer* pSendingBuffer);
+	CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession);
 	~CEncodedFramePacketizer();
 
-	int Packetize(LongLong lFriendID, unsigned char *in_data, unsigned int in_size, int frameNumber, unsigned int iTimeStampDiff);
-
-	void StartEncodedFrameParsingThread();
-	void StopEncodedFrameParsingThread();
-
-	static void *CreateEncodedFrameParsingThread(void* param);
-
-//	void StartSendingThread();
-//	void StopSendingThread();
-	void SendingThreadProcedure();
-	static void *CreateVideoSendingThread(void* param);
-
-	int GetSleepTime();
+	int Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy);
 
 private:
+
 	Tools m_Tools;
-	int m_PacketSize;
 
-	CPacketHeader m_PacketHeader;
+	int m_nOwnDeviceType;
 
-	CSendingBuffer *m_SendingBuffer;
-
-	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-
-	CCommonElementsBucket* m_pCommonElementsBucket;
-
-//	CSendingThread *m_pSendingThread;
-
-	bool bSendingThreadRunning;
-	bool bSendingThreadClosed;
-
-	unsigned char m_Packet[MAX_VIDEO_PACKET_SIZE];
-
-protected:
-
-	std::thread* m_pEncodedFrameParsingThread;
-
-	SmartPointer<std::thread> pSendingThread;
-
-	SmartPointer<CLockHandler> m_pEncodedFrameParsingMutex;
+	int m_nPacketSize;
+    CVideoCallSession *m_pVideoCallSession;
+    
+	//CPacketHeader m_cPacketHeader;
+    CVideoHeader m_cVideoHeader;
+    
+	CSendingBuffer *m_pcSendingBuffer;
+	CCommonElementsBucket* m_pcCommonElementsBucket;
+	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
+    long long llSendingquePrevTime;
+    CHashGenerator *m_pHashGenerator;
 
 };
 

@@ -4,36 +4,83 @@
 #include "VideoCallSession.h"
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
-#include "DefinedDataTypes.h"
 
-CController::CController()
+//extern int g_StopVideoSending;
+
+CController::CController():
+
+m_nDeviceStrongness(STATUS_UNCHECKED),
+m_nMemoryEnoughness(STATUS_UNCHECKED),
+m_nEDVideoSupportablity(STATUS_UNCHECKED),
+m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
+m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
+m_pAudioEncodeDecodeSession(NULL),
+m_pVideoMuxingAndEncodeSession(NULL),
+m_pDeviceCapabilityCheckBuffer(NULL),
+m_pDeviceCapabilityCheckThread(NULL),
+m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
+m_bDeviceCapabilityRunning(false),
+m_bLiveCallRunning(false),
+m_bCallInLiveEnabled(false),
+m_EventNotifier(this),
+m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start(CLogPrinter::DEBUGS, "");
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
+
+	m_nDeviceDisplayHeight = -1;
+	m_nDeviceDisplayWidth = -1;
 	
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
     m_pVideoSendMutex.reset(new CLockHandler);
+	m_pVideoStartMutex.reset(new CLockHandler);
     m_pVideoReceiveMutex.reset(new CLockHandler);
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
+
+	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
+	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
 
 CController::CController(const char* sLoggerPath, int iLoggerPrintLevel) :
+
 logFilePath(sLoggerPath),
-iLoggerPrintLevel(iLoggerPrintLevel)
+iLoggerPrintLevel(iLoggerPrintLevel),
+m_nDeviceStrongness(STATUS_UNCHECKED),
+m_nMemoryEnoughness(STATUS_UNCHECKED),
+m_nEDVideoSupportablity(STATUS_UNCHECKED),
+m_nHighFPSVideoSupportablity(STATUS_UNCHECKED),
+m_nDeviceSupportedCallFPS(LOW_FRAME_RATE),
+m_pAudioEncodeDecodeSession(NULL),
+m_pVideoMuxingAndEncodeSession(NULL),
+m_pDeviceCapabilityCheckBuffer(NULL),
+m_pDeviceCapabilityCheckThread(NULL),
+m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
+m_bDeviceCapabilityRunning(false),
+m_bLiveCallRunning(false),
+m_bCallInLiveEnabled(false),
+m_EventNotifier(this),
+m_llLastTimeStamp(-1)
 {
 	CLogPrinter::Start((CLogPrinter::Priority)iLoggerPrintLevel, sLoggerPath);
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initializing");
 
+	m_nDeviceDisplayHeight = -1;
+	m_nDeviceDisplayWidth = -1;
+
 	m_pCommonElementsBucket = new CCommonElementsBucket();
     
     m_pVideoSendMutex.reset(new CLockHandler);
+	m_pVideoStartMutex.reset(new CLockHandler);
     m_pVideoReceiveMutex.reset(new CLockHandler);
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
+
+	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
+	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
@@ -56,13 +103,43 @@ CController::~CController()
 {
 	CLogPrinter_Write(CLogPrinter::WARNING, "CController::~CController()");
 
+	if (NULL != m_pDeviceCapabilityCheckThread)
+	{
+
+		delete m_pDeviceCapabilityCheckThread;
+		m_pDeviceCapabilityCheckThread = NULL;
+	}
+
+	if (NULL != m_pDeviceCapabilityCheckBuffer)
+	{
+		delete m_pDeviceCapabilityCheckBuffer;
+		m_pDeviceCapabilityCheckBuffer = NULL;
+	}
+
 	if (NULL != m_pCommonElementsBucket)
 	{
 		delete m_pCommonElementsBucket;
 		m_pCommonElementsBucket = NULL;
 	}
+
+	if (NULL != m_pAudioEncodeDecodeSession)
+	{
+		delete m_pAudioEncodeDecodeSession;
+
+		m_pAudioEncodeDecodeSession = NULL;
+	}
+
+	if (NULL != m_pVideoMuxingAndEncodeSession)
+	{
+		delete m_pVideoMuxingAndEncodeSession;
+
+		m_pVideoMuxingAndEncodeSession = NULL;
+	}
+
+	CLogPrinter::Stop();
     
     SHARED_PTR_DELETE(m_pVideoSendMutex);
+	SHARED_PTR_DELETE(m_pVideoStartMutex);
     SHARED_PTR_DELETE(m_pVideoReceiveMutex);
     SHARED_PTR_DELETE(m_pAudioSendMutex);
     SHARED_PTR_DELETE(m_pAudioReceiveMutex);
@@ -79,7 +156,7 @@ bool CController::SetUserName(const LongLong& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const LongLong& lFriendID)
+bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
 {
 	CAudioCallSession* pAudioSession;
     
@@ -94,7 +171,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType);
 
 		pAudioSession->InitializeAudioCallSession(lFriendID);
 
@@ -110,8 +187,150 @@ bool CController::StartAudioCall(const LongLong& lFriendID)
 	}
 }
 
-bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+bool CController::SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder)
 {
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetVolume(iVolume, bRecorder);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::SetLoudSpeaker(const LongLong& lFriendID, bool bOn)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetLoudSpeaker(bOn);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::SetEchoCanceller(const LongLong& lFriendID, bool bOn)
+{
+	CAudioCallSession* pAudioSession;
+	//return false;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetEchoCanceller(bOn);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::StartTestAudioCall(const LongLong& lFriendID)
+{
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() called");
+
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+
+	if (!bExist)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session creating");
+
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
+
+		pAudioSession->InitializeAudioCallSession(lFriendID);
+
+		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session created");
+
+		return true;
+	}
+	else
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session already exists");
+
+		return false;
+	}
+}
+
+CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+{
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() called");
+    
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (!bExist)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session creating");
+
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, ENTITY_TYPE_CALLER);
+
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType);
+
+		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session created");
+
+		return pVideoSession;
+	}
+	else
+	{
+		//pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session already exists");
+
+		return NULL;
+	}
+}
+
+bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType)
+{
+	Locker lock1(*m_pVideoStartMutex);
+
+    if(iVideoHeight * iVideoWidth > 352 * 288)
+    {
+        m_Quality[1].iHeight = iVideoHeight;
+        m_Quality[1].iWidth = iVideoWidth;
+    }
+    else
+    {
+        m_Quality[0].iHeight = iVideoHeight;
+        m_Quality[0].iWidth = iVideoWidth;
+    }
+
+	long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
+
+	while (m_bDeviceCapabilityRunning == true)
+	{
+		m_Tools.SOSleep(10);
+
+		if (m_Tools.CurrentTimestamp() - llCheckDeviceCapabilityStartTime > LIVE_START_HEIGHEST_WAITTIME)
+		{
+			int notification = m_EventNotifier.VIDEO_SESSION_START_FAILED;
+			//m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
+			break;
+		}
+	}
+    
+    if(m_bDeviceCapabilityRunning == true) return false;
+    
+    
 	CVideoCallSession* pVideoSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartVideoCall called");
@@ -123,25 +342,30 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 
 	if (!bExist)
 	{
+        m_bLiveCallRunning = true;
+        
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(lFriendID, m_pCommonElementsBucket);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel, nServiceType, nEntityType);
 
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,iNetworkType);
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,nServiceType,iNetworkType);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
+        
+        
 
 		return true;
 	}
 	else
 	{
+       // pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
 		return false;
 	}	
 }
 
-int CController::EncodeAndTransfer(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
+int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -160,7 +384,7 @@ int CController::EncodeAndTransfer(const LongLong& lFriendID, unsigned char *in_
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::EncodeAndTransfer got encoder");
 
 		if (pVideoEncoder)
-			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
+			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size, 0);
 		else 
 			return -1;
 	}
@@ -170,7 +394,41 @@ int CController::EncodeAndTransfer(const LongLong& lFriendID, unsigned char *in_
 	}
 }
 
-int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
+int CController::PushPacketForDecodingVector(const LongLong& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+{
+	CVideoCallSession* pVideoSession = NULL;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushPacketForDecoding called");
+
+	//	LOGE("CController::PushPacketForDecoding");
+
+	Locker lock(*m_pVideoReceiveMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	//	LOGE("CController::PushPacketForDecoding video session exists");
+
+	if (bExist)
+	{
+		//		LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
+		//		CVideoDecoder *pCVideoDecoder = pVideoSession->GetVideoDecoder();
+		//		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding1");
+		//		CEncodedFrameDepacketizer *p_CEncodedFrameDepacketizer = pCVideoDecoder->GetEncodedFrameDepacketizer();
+		//		CEncodedFrameDepacketizer *p_CEncodedFrameDepacketizer = pVideoSession->GetEncodedFrameDepacketizer();
+		//		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
+		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
+		if (pVideoSession)
+			return pVideoSession->PushPacketForMergingVector(offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames);
+		else
+			return -1;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+int CController::PushPacketForDecoding(const LongLong& lFriendID,unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 	CVideoCallSession* pVideoSession = NULL;
 
@@ -194,7 +452,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 //		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
 //		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
-			return pVideoSession->PushPacketForMerging(++in_data, in_size-1);
+			return pVideoSession->PushPacketForMerging(in_data, in_size, false, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
 		else
 			return -1;
 	}
@@ -204,15 +462,15 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID, unsigned char 
 	}
 }
 
-int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
+int CController::PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	CAudioCallSession* pAudioSession;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called");
 
 	//	LOGE("CController::PushPacketForDecoding");
-    
-    Locker lock(*m_pAudioReceiveMutex);
+
+	Locker lock(*m_pAudioReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
@@ -220,23 +478,22 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 
 	if (bExist)
 	{
-				//LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
-        
-        CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
-        
-		CAudioDecoder *pCAudioDecoder = pAudioSession->GetAudioDecoder();
+		//LOGE("CController::ParseFrameIntoPackets getting PushPacketForDecoding");
+
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called 2");
 
 		//if (pCAudioDecoder)
-        {
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
-            return pAudioSession->DecodeAudioData(in_data, in_size);
-        }
-			
+
+		{
+			CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder exists");
+			return pAudioSession->DecodeAudioData(nOffset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+		}
+
 		/*else
-        {
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder doesnt exist");
-			return -1;
-        }*/
+		{
+		CLogPrinter_Write(CLogPrinter::DEBUGS, "pCAudioDecoder doesnt exist");
+		return -1;
+		}*/
 	}
 	else
 	{
@@ -244,8 +501,20 @@ int CController::PushAudioForDecoding(const LongLong& lFriendID, unsigned char *
 	}
 }
 
+long long g_lPrevAudioFrame = 0;
+
+int iDataSentInCurrentSec = 0;
+long long llTimeStamp = 0;
 int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
 {
+	long long llNow = m_Tools.CurrentTimestamp();
+	if(llNow - llTimeStamp >= 1000)
+	{
+//		CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataSent = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+		iDataSentInCurrentSec = 0;
+		llTimeStamp = llNow;
+	}
+	iDataSentInCurrentSec ++;
 	CAudioCallSession* pAudioSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData");
@@ -259,12 +528,22 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	if (bExist)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData getting encoder");
-		CAudioEncoder *pAudioEncoder = pAudioSession->GetAudioEncoder();
+		//CAudioCodec *pAudioEncoder = pAudioSession->GetAudioCodec();
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData got encoder");
 
 		//if (pAudioEncoder)
 		{
-			return pAudioSession->EncodeAudioData(in_data,in_size);
+            /*for(int i=0;i<in_size;i++)
+            {
+                in_data[i] = rand()%255;
+            }*/
+            long long lEncodeStartTime = m_Tools.CurrentTimestamp();
+            
+            int ret = pAudioSession->EncodeAudioData(in_data,in_size);
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> AudioEncodingTime = " + m_Tools.LongLongtoStringConvert((m_Tools.CurrentTimestamp() - lEncodeStartTime)) + "asdfasdf");
+            //printf("TheKing--> zAudioEncodingTime = %lld, zAudioEncodingTimeDiff = %lld, in_size = %d\n", m_Tools.CurrentTimestamp() - lEncodeStartTime, m_Tools.CurrentTimestamp() - g_lPrevAudioFrame, in_size);
+            g_lPrevAudioFrame = m_Tools.CurrentTimestamp();
+            return ret;
 		}
 		
 	}
@@ -274,12 +553,40 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	}
 }
 
-//int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
-int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type)
+int CController::CancelAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
 {
+	CAudioCallSession* pAudioSession;
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::CancelAudioData");
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData audio session exists");
+
+	if (bExist)
+	{
+		int ret = pAudioSession->CancelAudioData(in_data, in_size);
+		return ret;		
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+
+int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
+{
+	/*if (g_StopVideoSending)
+	{
+		CLogPrinter_WriteSpecific6(CLogPrinter::DEBUGS, "SendVideoData stopped");
+		return -1;
+
+	}*/
 	CVideoCallSession* pVideoSession;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
+    
     
     Locker lock(*m_pVideoSendMutex);
 
@@ -298,8 +605,8 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 			if (in_size > MAX_VIDEO_ENCODER_FRAME_SIZE)
 				return -1;
 
-			pVideoSession->m_pVideoEncodingThread->orientation_type = orientation_type;
-			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size);
+			pVideoSession->m_pVideoEncodingThread->SetOrientationType(orientation_type);
+			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size, device_orientation);
 		}
 		else
 			return -1;
@@ -310,29 +617,199 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 	}
 }
 
-int CController::SetHeightWidth(const LongLong& lFriendID, int width, int height)
+int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
 {
-/*	CVideoCallSession* pVideoSession;
+	CVideoCallSession* pVideoSession;
+
+	if(height * width > 352 * 288)
+	{
+		m_Quality[1].iHeight = height;
+		m_Quality[1].iWidth = width;
+	}
+	else
+	{
+		m_Quality[0].iHeight = height;
+		m_Quality[0].iWidth = width;
+	}
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
 	if (bExist)
 	{
-		CVideoDecoder *pVideoDecoder = pVideoSession->GetVideoDecoder();
-
-		if (pVideoDecoder)
-			return pVideoDecoder->Decode(in_data, in_size, out_buffer, width, height);
-		else return -1;
+		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width);
 	}
 	else
-	{*/
+	{
 		return -1;
-//	}
+	}
+}
+
+int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
+{
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		return pVideoSession->SetVideoEffect(nEffectStatus);
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+
+int CController::TestVideoEffect(const IPVLongType llFriendID, int *param, int size)
+{
+	CVideoCallSession* pVideoSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		return pVideoSession->TestVideoEffect(param, size);
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+
+int CController::SetDeviceDisplayHeightWidth(int height, int width)
+{
+	Locker lock(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
+
+	m_nDeviceDisplayHeight = height;
+	m_nDeviceDisplayWidth = width;
+	return 1;
 }
 
 int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 {
 	return -1;
+}
+
+int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
+{
+
+	Locker lock1(*m_pVideoStartMutex);
+
+	if (m_bDeviceCapabilityRunning == true) return -1;
+	m_bDeviceCapabilityRunning = true;
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability started --> ffiendID = " + m_Tools.getText(lFriendID));
+
+    m_Quality[0].iHeight = iHeightLow;
+    m_Quality[0].iWidth = iWidthLow;
+    m_Quality[1].iHeight = iHeightHigh;
+    m_Quality[1].iWidth = iWidthHigh;
+
+    long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
+    
+    while(m_bLiveCallRunning==true || m_bDeviceCapabilityRunning == true)
+    {
+        m_Tools.SOSleep(10);
+
+		if (m_Tools.CurrentTimestamp() - llCheckDeviceCapabilityStartTime > CALL_START_HIGHEST_WAITTIME)
+        {
+            int notification = m_EventNotifier.SET_CAMERA_RESOLUTION_FAILED;
+            //m_EventNotifier.fireVideoNotificationEvent(lFriendID, notification);
+            break;
+        }
+    }
+
+    if(m_bLiveCallRunning == true) return -1;
+
+
+    
+
+    
+	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
+	{
+
+		int iRet = m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
+		if(iRet == -1) return -1;
+	}
+
+	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability start instruction queued");
+    
+    return 1;
+}
+
+int CController::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
+{
+    m_Quality[0].iHeight = iHeightLow;
+    m_Quality[0].iWidth = iWidthLow;
+    m_Quality[1].iHeight = iHeightHigh;
+    m_Quality[1].iWidth = iWidthHigh;
+    
+    if(iNotification == CEventNotifier::SET_CAMERA_RESOLUTION_640x480_25FPS)
+    {
+        m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_640_25;
+    }
+    else if(iNotification == CEventNotifier::SET_CAMERA_RESOLUTION_352x288_25FPS)
+    {
+        m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_25;
+    }
+    else if(iNotification == CEventNotifier::SET_CAMERA_RESOLUTION_352x288_25FPS_NOT_SUPPORTED)
+    {
+        m_nSupportedResolutionFPSLevel = SUPPORTED_RESOLUTION_FPS_352_15;
+        
+    }
+    else
+    {
+        m_nSupportedResolutionFPSLevel = RESOLUTION_FPS_SUPPORT_NOT_TESTED;
+    }
+    
+    return 1;
+}
+
+void CController::InterruptOccured(const LongLong lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::InterruptOccured called");
+
+	Locker lock(*m_pVideoSendMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::InterruptOccured got session");
+
+		if (pVideoSession)
+		{
+			pVideoSession->InterruptOccured();
+		}
+	}
+}
+
+void CController::InterruptOver(const LongLong lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::InterruptOver called");
+
+	Locker lock(*m_pVideoSendMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::InterruptOver got session");
+
+		if (pVideoSession)
+		{
+			pVideoSession->InterruptOver();
+		}
+	}
 }
 
 void CController::initializeEventHandler()
@@ -366,13 +843,72 @@ bool CController::StopAudioCall(const LongLong& lFriendID)
     return bReturnedValue;
 }
 
+bool CController::StopTestAudioCall(const LongLong& lFriendID)
+{
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() called");
+
+	Locker lock1(*m_pAudioSendMutex);
+	Locker lock2(*m_pAudioReceiveMutex);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() checking session");
+
+	CAudioCallSession *m_pSession;
+
+	m_pSession = m_pCommonElementsBucket->m_pAudioCallSessionList->GetFromAudioSessionList(lFriendID);
+
+	if (NULL == m_pSession)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() session doesn't exists");
+
+		return false;
+	}
+
+	bool bReturnedValue = m_pCommonElementsBucket->m_pAudioCallSessionList->RemoveFromAudioSessionList(lFriendID);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() ended with bReturnedValue " + m_Tools.IntegertoStringConvert(bReturnedValue));
+
+	return bReturnedValue;
+}
+
+bool CController::StopTestVideoCall(const LongLong& lFriendID)
+{
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() called -> friendID = " + m_Tools.getText(lFriendID));
+
+	Locker lock1(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() checking session");
+
+	CVideoCallSession *m_pSession;
+
+	m_pSession = m_pCommonElementsBucket->m_pVideoCallSessionList->GetFromVideoSessionList(lFriendID);
+
+	if (NULL == m_pSession)
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() session doesn't exists");
+
+		return false;
+	}
+
+	bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() ended with bReturnedValue " + m_Tools.IntegertoStringConvert(bReturnedValue));
+
+    m_bDeviceCapabilityRunning = false;
+    
+	return bReturnedValue;
+}
+
 bool CController::StopVideoCall(const LongLong& lFriendID)
 {
-    CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
-
+    CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called. --> friendID = " + m_Tools.getText(lFriendID));
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
+    
     Locker lock1(*m_pVideoSendMutex);
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
     Locker lock2(*m_pVideoReceiveMutex);
-
+//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
+    
     CVideoCallSession *m_pSession;
     
     m_pSession = m_pCommonElementsBucket->m_pVideoCallSessionList->GetFromVideoSessionList(lFriendID);
@@ -387,34 +923,114 @@ bool CController::StopVideoCall(const LongLong& lFriendID)
 
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
     
+    
+    m_bLiveCallRunning = false;
+    
     return bReturnedValue;
 }
+
+int CController::StartAudioEncodeDecodeSession()
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+		m_pAudioEncodeDecodeSession = new CAudioFileEncodeDecodeSession();
+
+	return m_pAudioEncodeDecodeSession->StartAudioEncodeDecodeSession();
+}
+
+int CController::EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer)
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pAudioEncodeDecodeSession->EncodeAudioFile(psaEncodingDataBuffer, nAudioFrameSize, ucaEncodedDataBuffer);
+}
+
+int CController::DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer)
+{
+	if (NULL == m_pAudioEncodeDecodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pAudioEncodeDecodeSession->DecodeAudioFile(ucaDecodedDataBuffer, nAudioFrameSize, psaDecodingDataBuffer);
+}
+
+int CController::StopAudioEncodeDecodeSession()
+{
+	if (NULL != m_pAudioEncodeDecodeSession)
+	{
+		m_pAudioEncodeDecodeSession->StopAudioEncodeDecodeSession();
+
+		delete m_pAudioEncodeDecodeSession;
+
+		m_pAudioEncodeDecodeSession = NULL;
+
+		return 1;
+	}
+	else
+		return 0;
+}
+
+int CController::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth)
+{
+	LOGENEW("fahad -->> CController::StartVideoMuxingAndEncodeSession 0");
+	if (NULL == m_pVideoMuxingAndEncodeSession)
+	{
+		LOGENEW("fahad -->> CController::StartVideoMuxingAndEncodeSession null");
+		m_pVideoMuxingAndEncodeSession = new CVideoMuxingAndEncodeSession(m_pCommonElementsBucket);
+	}
+
+	return m_pVideoMuxingAndEncodeSession->StartVideoMuxingAndEncodeSession(pBMP32Data, iLen, nVideoHeight, nVideoWidth);
+}
+
+int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth)
+{
+	if (NULL == m_pVideoMuxingAndEncodeSession)
+	{
+		return 0;
+	}
+	else
+		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth);
+}
+
+int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
+{
+	if (NULL != m_pVideoMuxingAndEncodeSession)
+	{
+		int ret = m_pVideoMuxingAndEncodeSession->StopVideoMuxingAndEncodeSession(finalData);
+
+		delete m_pVideoMuxingAndEncodeSession;
+
+		m_pVideoMuxingAndEncodeSession = NULL;
+
+		return ret;
+	}
+	else
+		return 0;
+}
+
 
 void CController::UninitializeLibrary()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
 
+	if (NULL != m_pDeviceCapabilityCheckThread)
+	{
+		m_pDeviceCapabilityCheckThread->StopDeviceCapabilityCheckThread();
+	}
+
 	m_pCommonElementsBucket->m_pVideoCallSessionList->ClearAllFromVideoSessionList();
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();
 }
 
-void CController::TempChange()
-{
-	//Locker lock(*m_pInternalThreadMutex);
-	//{
-		//m_pCommonElementsBucket->m_pVideoCallSessionList->ResetAllInSessionList();
-       
-	//}
-}
-
 void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
 {
-   // std::cout << "Test set callback 5 A" << std::endl;
-    
     m_EventNotifier.SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int, int, int))
+void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }
@@ -424,19 +1040,124 @@ void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFun
 	m_EventNotifier.SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+void CController::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int))
+{
+	m_EventNotifier.SetNotifyClientWithNetworkStrengthNotificationCallback(callBackFunctionPointer);
+}
+
+void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int))
 {
     m_EventNotifier.SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);
 }
 
 void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
 {
-    m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
+	m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
 }
 
-void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
+void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
 {
-    
+	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
+}
+
+void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
+{
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
+
+bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->StartCallInLive(iRole);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::EndAudioCallInLive(const LongLong& lFriendID)
+{
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->EndCallInLive();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::StartVideoCallInLive(const LongLong& lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	Locker lock(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+	
+	if (bExist)
+	{
+		pVideoSession->StartCallInLive();
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CController::EndVideoCallInLive(const LongLong& lFriendID)
+{
+	CVideoCallSession* pVideoSession;
+
+	Locker lock(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		pVideoSession->EndCallInLive();
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+bool CController::IsCallInLiveEnabled()
+{
+	return this->m_bCallInLiveEnabled;
+}
+
+void CController::SetCallInLiveEnabled(bool value)
+{
+	this->m_bCallInLiveEnabled = value;
+}
+
+int CController::GetDeviceDisplayHeight()
+{
+	return m_nDeviceDisplayHeight;
+}
+
+int CController::GetDeviceDisplayWidth()
+{
+	return m_nDeviceDisplayWidth;
+}
+
 

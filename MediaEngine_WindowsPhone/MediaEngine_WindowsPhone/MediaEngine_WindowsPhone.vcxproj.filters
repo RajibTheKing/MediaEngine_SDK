@@ -20,13 +20,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioDecoder.h">
-      <Filter>VideoEngineController</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h">
-      <Filter>VideoEngineController</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioEncoder.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h">
@@ -176,6 +170,78 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VersionController.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioCodec.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveReceiver.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\HashGenerator.h">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DepacketizationBufferIndex.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\LiveStreamingHeader.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoHeader.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\Aac.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\Filt.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\GomGomGain.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -184,13 +250,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioDecoder.cpp">
-      <Filter>VideoEngineController</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp">
-      <Filter>VideoEngineController</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp">
@@ -299,6 +359,78 @@
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VersionController.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\HashGenerator.cpp">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DepacketizationBufferIndex.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoHeader.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\Aac.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp">
+      <Filter>VideoEngineUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioDePacketizer.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketizer.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\Filt.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\GomGomGain.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>

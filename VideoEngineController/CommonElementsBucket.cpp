@@ -2,8 +2,9 @@
 #include "LockHandler.h"
 #include "LogPrinter.h"
 
-CCommonElementsBucket::CCommonElementsBucket():
+CCommonElementsBucket::CCommonElementsBucket() :
 userName(-1),
+m_nPacketSizeOfNetwork(-1),
 sharedMutex(NULL)
 
 {
@@ -22,6 +23,12 @@ CCommonElementsBucket::~CCommonElementsBucket()
 	{
 		delete m_pVideoCallSessionList;
 		m_pVideoCallSessionList = NULL;
+	}
+
+	if (NULL != m_pAudioCallSessionList)
+	{
+		delete m_pAudioCallSessionList;
+		m_pAudioCallSessionList = NULL;
 	}
 
 	if (NULL != m_pVideoEncoderList)
@@ -45,6 +52,16 @@ void CCommonElementsBucket::InstantiateSharedMutex()
     }
 }
 
+void CCommonElementsBucket::SetPacketSizeOfNetwork(int packetSizeOfNetwork)
+{
+	m_nPacketSizeOfNetwork = packetSizeOfNetwork;
+}
+
+int CCommonElementsBucket::GetPacketSizeOfNetwork()
+{
+	return m_nPacketSizeOfNetwork;
+}
+
 CLockHandler* CCommonElementsBucket::GetSharedMutex()
 {
     return sharedMutex;
@@ -60,7 +77,7 @@ LongLong CCommonElementsBucket::GetUsername()
     return userName;
 }
 
-void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int))
+void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
 {
     
     SendFunctionPointer = callBackFunctionPointer;

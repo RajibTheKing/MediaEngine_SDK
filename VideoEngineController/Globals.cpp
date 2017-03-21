@@ -4,11 +4,22 @@
 
 #include "Globals.h"
 #include "ResendingBuffer.h"
+#include "LiveReceiver.h"
+#include "LiveVideoDecodingQueue.h"
+#include "AudioDecoderBuffer.h"
 
-CFPSController g_FPSController;
-CResendingBuffer g_ResendBuffer;
-PairMap g_timeInt;
 
-bool g_bIsVersionDetectableOpponent = false;
-unsigned char g_uchSendPacketVersion = 0;
-int g_uchOpponentVersion = -1;
+//PairMap g_timeInt;
+
+//LiveReceiver *g_LiveReceiver = NULL;
+//LiveVideoDecodingQueue g_LiveVideoDecodingQueue;
+//bool Globals::g_bIsLiveStreaming = false;
+
+
+Globals::Globals()
+{
+
+}
+
+//PairMap g_timeInt;
+

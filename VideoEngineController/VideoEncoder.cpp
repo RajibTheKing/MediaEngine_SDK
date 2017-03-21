@@ -1,21 +1,24 @@
+
 #include "VideoEncoder.h"
 #include "CommonElementsBucket.h"
-#include "DefinedDataTypes.h"
 #include "LogPrinter.h"
-#include "Tools.h"
-#include "codec_def.h"
-#include "size.h"
+#include "ThreadTools.h"
 
-CVideoEncoder::CVideoEncoder(CCommonElementsBucket* sharedObject):
-m_pCommonElementsBucket(sharedObject),
-m_iMaxBitrate(BITRATE_MAX),
-m_iBitrate(BITRATE_MAX - 25000),
-m_iNetworkType(NETWORK_TYPE_NOT_2G),
-m_pSVCVideoEncoder(NULL)
+#include <string>
+
+CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject, LongLong llfriendID) :
+
+m_pCommonElementsBucket(pSharedObject),
+m_nMaxBitRate(BITRATE_MAX),
+m_nBitRate(BITRATE_MAX - 25000),
+m_nNetworkType(NETWORK_TYPE_NOT_2G),
+m_pSVCVideoEncoder(NULL),
+m_lfriendID(llfriendID)
+
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
 
-	m_pMediaSocketMutex.reset(new CLockHandler);
+	m_pVideoEncoderMutex.reset(new CLockHandler);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CVideoEncoder Video Encoder Created");
 }
@@ -29,246 +32,437 @@ CVideoEncoder::~CVideoEncoder()
         m_pSVCVideoEncoder = NULL;
     }
 
-	SHARED_PTR_DELETE(m_pMediaSocketMutex);
+	SHARED_PTR_DELETE(m_pVideoEncoderMutex);
 }
 
-int CVideoEncoder::CreateVideoEncoder(int iHeight, int iWidth)
+int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 {
+	Locker lock(*m_pVideoEncoderMutex);
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
-	long iRet = WelsCreateSVCEncoder(&m_pSVCVideoEncoder);
+	m_nVideoWidth = nVideoWidth;
+	m_nVideoHeight = nVideoHeight;
 
-	m_iWidth = iWidth;
-	m_iHeight = iHeight;
+	SEncParamExt encoderParemeters;
 
-	SEncParamExt encParam;
-	memset(&encParam, 0, sizeof(SEncParamExt));
-	m_pSVCVideoEncoder->GetDefaultParams(&encParam);
-	encParam.iUsageType = CAMERA_VIDEO_REAL_TIME;
-	encParam.iTemporalLayerNum = 0;
-	encParam.uiIntraPeriod = I_INTRA_PERIOD;
-	encParam.eSpsPpsIdStrategy = INCREASING_ID;
-	encParam.bEnableSSEI = false;
-	encParam.bEnableFrameCroppingFlag = true;
-	encParam.iLoopFilterDisableIdc = 0;
-	encParam.iLoopFilterAlphaC0Offset = 0;
-	encParam.iLoopFilterBetaOffset = 0;
-	encParam.iMultipleThreadIdc = 0;
-#ifdef BITRATE_ENABLED
-	encParam.iRCMode = RC_BITRATE_MODE;//RC_OFF_MODE;
-	encParam.iMinQp = 0;
-	encParam.iMaxQp = 52;
-#else
- 	encParam.iRCMode = RC_OFF_MODE;
-#endif
+	memset(&encoderParemeters, 0, sizeof(SEncParamExt));
 
+	m_pSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
 
-	encParam.bEnableDenoise = false;
-	encParam.bEnableSceneChangeDetect = false;
-	encParam.bEnableBackgroundDetection = true;
-	encParam.bEnableAdaptiveQuant = false;
-	encParam.bEnableFrameSkip = true;
-	encParam.bEnableLongTermReference = true;
-	encParam.iLtrMarkPeriod = 20;
-	encParam.bPrefixNalAddingCtrl = false;
-	encParam.iSpatialLayerNum = 1;
-
-
-
-	SSpatialLayerConfig *pDLayer = &encParam.sSpatialLayers[0];
-	pDLayer->uiProfileIdc = PRO_BASELINE;//;
-	encParam.iPicWidth = pDLayer->iVideoWidth = m_iWidth;
-	encParam.iPicHeight = pDLayer->iVideoHeight = m_iHeight;
-	encParam.fMaxFrameRate = pDLayer->fFrameRate = (float)FRAME_RATE;
-	encParam.iTargetBitrate = pDLayer->iSpatialBitrate = BITRATE_BEGIN;
-	encParam.iTargetBitrate = pDLayer->iMaxSpatialBitrate = BITRATE_BEGIN;
+	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
+	encoderParemeters.iTemporalLayerNum = 0;
+	encoderParemeters.uiIntraPeriod = nIFrameInterval;
+	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
+	encoderParemeters.bEnableSSEI = false;
+	encoderParemeters.bEnableFrameCroppingFlag = true;
+	encoderParemeters.iLoopFilterDisableIdc = 0;
+	encoderParemeters.iLoopFilterAlphaC0Offset = 0;
+	encoderParemeters.iLoopFilterBetaOffset = 0;
+	encoderParemeters.iMultipleThreadIdc = 0;
+    encoderParemeters.iEntropyCodingModeFlag = true;
     
-	pDLayer->iDLayerQp = 24;
-	pDLayer->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+    
+    
+    
+    if(!bCheckDeviceCapability)
+    {        
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
+		{
+			encoderParemeters.iRCMode = RC_BITRATE_MODE;
+			encoderParemeters.iMinQp = 0;
+			encoderParemeters.iMaxQp = 52;
+		}
+		else
+        {
+            encoderParemeters.iRCMode = RC_BITRATE_MODE;
+            encoderParemeters.iMinQp = 0;
+            encoderParemeters.iMaxQp = 52;
+        }
+        
+    }
+    else
+    {
+        encoderParemeters.iRCMode = RC_OFF_MODE;
+    }
+    
+    
+    
+    
+    
+    
+	encoderParemeters.bEnableDenoise = false;
+	encoderParemeters.bEnableSceneChangeDetect = false;
+	encoderParemeters.bEnableBackgroundDetection = true;
+	encoderParemeters.bEnableAdaptiveQuant = false;
+	encoderParemeters.bEnableFrameSkip = true;
+	encoderParemeters.bEnableLongTermReference = true;
+	encoderParemeters.iLtrMarkPeriod = 20;
+	encoderParemeters.bPrefixNalAddingCtrl = false;
+	encoderParemeters.iSpatialLayerNum = 1;
+
+
+	SSpatialLayerConfig *spartialLayerConfiguration = &encoderParemeters.sSpatialLayers[0];
+
+	spartialLayerConfiguration->uiProfileIdc = PRO_BASELINE;//;
+
+	encoderParemeters.iPicWidth = spartialLayerConfiguration->iVideoWidth = m_nVideoWidth;
+	encoderParemeters.iPicHeight = spartialLayerConfiguration->iVideoHeight = m_nVideoHeight;
+	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
+    if(!bCheckDeviceCapability)
+    {
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
+		{
+			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			m_nBitRate = BITRATE_BEGIN_FOR_STREAM;
+		}
+		else
+		{
+			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_Call -- %d", BITRATE_BEGIN);
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+			m_nBitRate = BITRATE_BEGIN;
+		}
+    }
+    else
+    {
+		//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+    }
+
+
+	spartialLayerConfiguration->iDLayerQp = 24;
+	//spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+	spartialLayerConfiguration->sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder encoder initializing");
-	iRet = m_pSVCVideoEncoder->InitializeExt(&encParam);
-	if (iRet != 0){
+
+	long nReturnedValueFromEncoder = m_pSVCVideoEncoder->InitializeExt(&encoderParemeters);
+
+	if (nReturnedValueFromEncoder != 0)
+	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to initialize OpenH264 encoder ");
+
 		return 0;
 	}
-
-#ifdef BITRATE_ENABLED
-//	SetBitrate(12);
-//	SetMaxBitrate(12);
-#endif
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
 
 	return 1;
 }
 
-int CVideoEncoder::SetBitrate(int iFps)
+int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 {
-	int iBitRate = iFps - (iFps%25000);
-    
-    if(m_iNetworkType == NETWORK_TYPE_NOT_2G && iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
-    
-    if(m_iNetworkType == NETWORK_TYPE_2G && iBitRate<BITRATE_MIN_FOR_2G) iBitRate = BITRATE_MIN_FOR_2G;
-    
-    if(iBitRate>BITRATE_MAX) iBitRate = BITRATE_MAX;
-    
-	SBitrateInfo targetEncoderBitrateInfo;
+	Locker lock(*m_pVideoEncoderMutex);
 
-		targetEncoderBitrateInfo.iLayer = SPATIAL_LAYER_0;
-		targetEncoderBitrateInfo.iBitrate = (iBitRate);
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
-		int iRet;
-		if(m_pSVCVideoEncoder)
+	long nReturnedValueFromEncoder = WelsCreateSVCEncoder(&m_pSVCVideoEncoder);
+
+	m_nVideoWidth = nVideoWidth;
+	m_nVideoHeight = nVideoHeight;
+
+	SEncParamExt encoderParemeters;
+
+	memset(&encoderParemeters, 0, sizeof(SEncParamExt));
+
+	m_pSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
+
+	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
+	encoderParemeters.iTemporalLayerNum = 0;
+	encoderParemeters.uiIntraPeriod = nIFrameInterval;
+	encoderParemeters.eSpsPpsIdStrategy = INCREASING_ID;
+	encoderParemeters.bEnableSSEI = false;
+	encoderParemeters.bEnableFrameCroppingFlag = true;
+	encoderParemeters.iLoopFilterDisableIdc = 0;
+	encoderParemeters.iLoopFilterAlphaC0Offset = 0;
+	encoderParemeters.iLoopFilterBetaOffset = 0;
+	encoderParemeters.iMultipleThreadIdc = 0;
+    encoderParemeters.iEntropyCodingModeFlag = true;
+    
+	//encoderParemeters.iRCMode = RC_OFF_MODE;
+    
+    
+    if(!bCheckDeviceCapability)
+    { 
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
-            
-			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
-			if (iRet != 0)
-			{
-				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(iBitRate));
-                //printf("FAAATTTTTAAAALLLLLL: setbitrate, iBitRate = %d\n", iBitRate);
-			}
-			else
-			{
-				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
-                
-                m_iBitrate = iBitRate;
-			}
+			encoderParemeters.iRCMode = RC_BITRATE_MODE;
+			encoderParemeters.iMinQp = 0;
+			encoderParemeters.iMaxQp = 52;
 		}
+        else
+        {
+            encoderParemeters.iRCMode = RC_BITRATE_MODE;
+            encoderParemeters.iMinQp = 0;
+            encoderParemeters.iMaxQp = 52;
+        }
+        
+    }
+    else
+    {
+        encoderParemeters.iRCMode = RC_OFF_MODE;
+    }
     
-    //printf("FVampireEngg--> SetBitrate(%d) = %d\n", iBitRate, iRet);
-		CLogPrinter_WriteLog(CLogPrinter::INFO, BITRATE_CHNANGE_LOG ,"FVampireEngg--> SetBitrate " + Tools::IntegertoStringConvert(iBitRate) + " = " + Tools::IntegertoStringConvert(iRet));
     
     
-    return iRet;
+	encoderParemeters.bEnableDenoise = false;
+	encoderParemeters.bEnableSceneChangeDetect = false;
+	encoderParemeters.bEnableBackgroundDetection = true;
+	encoderParemeters.bEnableAdaptiveQuant = false;
+	encoderParemeters.bEnableFrameSkip = true;
+	encoderParemeters.bEnableLongTermReference = true;
+	encoderParemeters.iLtrMarkPeriod = 20;
+	encoderParemeters.bPrefixNalAddingCtrl = false;
+	encoderParemeters.iSpatialLayerNum = 1;
 
-}
 
-void CVideoEncoder::SetNetworkType(int iNetworkType)
-{
-    m_iNetworkType = iNetworkType;
-}
+	SSpatialLayerConfig *spartialLayerConfiguration = &encoderParemeters.sSpatialLayers[0];
 
-int CVideoEncoder::SetMaxBitrate(int bitrate)
-{
-	bitrate = bitrate * MAX_BITRATE_MULTIPLICATION_FACTOR;
+	spartialLayerConfiguration->uiProfileIdc = PRO_BASELINE;//;
 
-	int iBitRate = bitrate - (bitrate % 25000);
-    
-    if(iBitRate<BITRATE_MIN) iBitRate = BITRATE_MIN;
+	encoderParemeters.iPicWidth = spartialLayerConfiguration->iVideoWidth = m_nVideoWidth;
+	encoderParemeters.iPicHeight = spartialLayerConfiguration->iVideoHeight = m_nVideoHeight;
+	encoderParemeters.fMaxFrameRate = spartialLayerConfiguration->fFrameRate = (float)nFPS;
 
-    if(iBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE) iBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
-
-	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
-	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
-	maxEncoderBitRateInfo.iBitrate = (iBitRate);
-
-		int iRet;
-		if(m_pSVCVideoEncoder)
+    if(!bCheckDeviceCapability)
+    {
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
-			iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
-			if (iRet != 0){
-				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(iBitRate));
-                
-                //printf("FAAATTTTTAAAALLLLLL: SetMaxBitRate, iBitRate = %d\n", iBitRate);
-			}
-			else
-			{
-				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder max bitrate set to " + Tools::IntegertoStringConvert(iBitRate));
-                
-                m_iMaxBitrate = iBitRate;
-			}
-
-		}
-    
-    printf("FVampireEngg--> SetmaxBitrate(%d) = %d\n", iBitRate, iRet);
-    return iRet;
-}
-
-void CVideoEncoder::SetFramerate(int iFps)
-{
-	/*SRateThresholds FrameRateTh;
-	FrameRateTh.iMinThresholdFrameRate = iFps;
-	FrameRateTh.iHeight = m_iHeight;
-	FrameRateTh.iWidth = m_iWidth;
-	FrameRateTh.iSkipFrameRate = 1;
-	FrameRateTh.iSkipFrameStep = 2;
-	FrameRateTh.iThresholdOfMaxRate = 15;
-	FrameRateTh.iThresholdOfMinRate = 8;
-
-	int iRet;
-	if(m_pSVCVideoEncoder)
-	{
-		iRet = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_FRAME_RATE, &FrameRateTh);
-		if (iRet != 0){
-			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to set framerate---<< "+ Tools::IntegertoStringConvert(iFps));
-
+			//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+			m_nBitRate = BITRATE_BEGIN_FOR_STREAM;
 		}
 		else
 		{
-			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder framerate set to---<< " + Tools::IntegertoStringConvert(iFps));
-		}
-	}*/
-}
+			//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_Call -- %d, bExist= %d, pVideoSession->GetServiceType() = %d", BITRATE_BEGIN, bExist, pVideoSession->GetServiceType());
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
+			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
+			m_nBitRate = BITRATE_BEGIN;
+		}     
+    }
+    else
+    {
+		LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+        encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+    }
+    
+	spartialLayerConfiguration->iDLayerQp = 24;
+	//spartialLayerConfiguration->sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
+	spartialLayerConfiguration->sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
 
-int CVideoEncoder::EncodeAndTransfer(unsigned char *in_data, unsigned int in_size, unsigned char *out_buffer)
-{
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder encoder initializing");
 
-	if (NULL == m_pSVCVideoEncoder){
-		CLogPrinter_Write("OpenH264 encoder NULL!");
+	nReturnedValueFromEncoder = m_pSVCVideoEncoder->InitializeExt(&encoderParemeters);
+
+	if (nReturnedValueFromEncoder != 0)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to initialize OpenH264 encoder ");
+
 		return 0;
 	}
 
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoEncoder::CreateVideoEncoder Open h264 video encoder initialized");
+
+	return 1;
+}
+
+int CVideoEncoder::SetBitrate(int nBitRate)
+{
+	int nTargetBitRate = nBitRate - (nBitRate % 25000);
+    
+/*	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN) 
+		nTargetBitRate = BITRATE_MIN;
+    
+	if (m_nNetworkType == NETWORK_TYPE_2G && nTargetBitRate<BITRATE_MIN_FOR_2G) 
+		nTargetBitRate = BITRATE_MIN_FOR_2G;*/
+
+	if (nTargetBitRate < BITRATE_MIN)
+		nTargetBitRate = BITRATE_MIN;
+    
+    if(nTargetBitRate>BITRATE_MAX) 
+		nTargetBitRate = BITRATE_MAX;
+    
+	SBitrateInfo targetEncoderBitrateInfo;
+
+	targetEncoderBitrateInfo.iLayer = SPATIAL_LAYER_0;
+	targetEncoderBitrateInfo.iBitrate = nTargetBitRate;
+
+	LOGEF("fahad -->> VideoEncoder::SetBitrate -- nTargetBitRate = %d", nTargetBitRate);
+	int nReturnedValueFromEncoder;
+
+	if(m_pSVCVideoEncoder)
+	{
+		nReturnedValueFromEncoder = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
+
+		if (nReturnedValueFromEncoder != 0)
+		{
+			CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder unable to set bitrate "+ Tools::IntegertoStringConvert(nTargetBitRate));
+		}
+		else
+		{
+			CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder bitrate set to " + Tools::IntegertoStringConvert(nTargetBitRate));
+                
+			m_nBitRate = nTargetBitRate;
+		}
+	}
+	else
+	{
+		CLogPrinter_Write("OpenH264 encoder NULL!");
+	}
+        
+    return nReturnedValueFromEncoder;
+}
+
+void CVideoEncoder::SetNetworkType(int nNetworkType)
+{
+	m_nNetworkType = nNetworkType;
+}
+
+int CVideoEncoder::SetMaxBitrate(int nBitRate)
+{
+	nBitRate = nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR;
+
+	int nTargetBitRate = nBitRate - (nBitRate % 25000);
+    
+    if(nTargetBitRate<BITRATE_MIN) 
+		nTargetBitRate = BITRATE_MIN;
+
+    if(nTargetBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE) 
+		nTargetBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
+
+	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
+
+	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
+	maxEncoderBitRateInfo.iBitrate = nTargetBitRate;
+
+	LOGEF("fahad -->> VideoEncoder::SetMaxBitrate -- nTargetBitRate = %d", nTargetBitRate);
+	int nReturnedValueFromEncoder;
+
+	if(m_pSVCVideoEncoder)
+	{
+		nReturnedValueFromEncoder = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
+
+		if (nReturnedValueFromEncoder != 0)
+		{
+			CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder unable to set max bitrate "+ Tools::IntegertoStringConvert(nTargetBitRate));
+		}
+		else
+		{
+			CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder max bitrate set to " + Tools::IntegertoStringConvert(nTargetBitRate));
+                
+			m_nMaxBitRate = nTargetBitRate;
+		}
+
+	}
+	else
+	{
+		CLogPrinter_Write("OpenH264 encoder NULL!");
+	}
+
+    return nReturnedValueFromEncoder;
+}
+
+int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData)
+{
+	Locker lock(*m_pVideoEncoderMutex);
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
+
+	if (NULL == m_pSVCVideoEncoder)
+	{
+		CLogPrinter_Write("OpenH264 encoder NULL!");
+
+		return 0;
+	}
 
 	SFrameBSInfo frameBSInfo;
 	SSourcePicture sourcePicture;
+
 	sourcePicture.iColorFormat = videoFormatI420;
 	sourcePicture.uiTimeStamp = 0;
-	sourcePicture.iPicWidth = m_iWidth;
-	sourcePicture.iPicHeight = m_iHeight;
-	sourcePicture.iStride[0] = m_iWidth;
+	sourcePicture.iPicWidth = m_nVideoWidth;
+	sourcePicture.iPicHeight = m_nVideoHeight;
+
+	sourcePicture.iStride[0] = m_nVideoWidth;
 	sourcePicture.iStride[1] = sourcePicture.iStride[2] = sourcePicture.iStride[0] >> 1;
-	sourcePicture.pData[0] = (unsigned char *)in_data;
-	sourcePicture.pData[1] = sourcePicture.pData[0] + (m_iWidth * m_iHeight);
-	sourcePicture.pData[2] = sourcePicture.pData[1] + (m_iWidth * m_iHeight >> 2);
 
-	int iRet = m_pSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
+	sourcePicture.pData[0] = (unsigned char *)ucaEncodingVideoFrameData;
+	sourcePicture.pData[1] = sourcePicture.pData[0] + (m_nVideoWidth * m_nVideoHeight);
+	sourcePicture.pData[2] = sourcePicture.pData[1] + (m_nVideoWidth * m_nVideoHeight >> 2);
 
-	if (iRet != 0){
+	int nReturnedValueFromEncoder = m_pSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
+
+	if (nReturnedValueFromEncoder != 0)
+	{
         CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoEncoder::EncodeAndTransfer Encode FAILED");
+
 		return 0;
 	}
-	// fixed issue in case dismatch source picture introduced by frame skipped, 1/12/2010
+
 	if (videoFrameTypeSkip == frameBSInfo.eFrameType || videoFrameTypeInvalid == frameBSInfo.eFrameType)
 	{
 		return 0;
 	}
-	int iFrameSize = 0;
-	int copy_index = 0;
-	for (int iLayer = 0; iLayer < frameBSInfo.iLayerNum; iLayer++){
+
+	int nEncodedVideoFrameSize = 0;
+
+	for (int iLayer = 0, iCopyIndex = 0; iLayer < frameBSInfo.iLayerNum; iLayer++)
+	{
 		SLayerBSInfo* pLayerBsInfo = &frameBSInfo.sLayerInfo[iLayer];
-		if (pLayerBsInfo){
-			int iLayerSize = 0;
-			for (int iNalIdx = pLayerBsInfo->iNalCount - 1; iNalIdx >= 0; iNalIdx--){
-				iLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIdx];
+		
+		if (pLayerBsInfo)
+		{
+			int nLayerSize = 0;
+
+			for (int iNalIndex = pLayerBsInfo->iNalCount - 1; iNalIndex >= 0; iNalIndex--)
+			{
+				nLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIndex];
 			}
-			memcpy(out_buffer + copy_index, pLayerBsInfo->pBsBuf, iLayerSize);
-			copy_index += iLayerSize;
-			iFrameSize += iLayerSize;
+
+			memcpy(ucaEncodedVideoFrameData + iCopyIndex, pLayerBsInfo->pBsBuf, nLayerSize);
+
+			iCopyIndex += nLayerSize;
+			nEncodedVideoFrameSize += nLayerSize;
 		}
 	}
 
-	return iFrameSize;
+	return nEncodedVideoFrameSize;
 }
 
 int CVideoEncoder::GetBitrate()
 {
-    return m_iBitrate;
+	return m_nBitRate;
 }
 int CVideoEncoder::GetMaxBitrate()
 {
-    return m_iMaxBitrate;
+	return m_nMaxBitRate;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		188587E91C0AEEAC00B1F435 /* AudioCallSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587B71C0AEEAC00B1F435 /* AudioCallSession.cpp */; };
 		188587EA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587B91C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp */; };
-		188587EB1C0AEEAC00B1F435 /* AudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587BB1C0AEEAC00B1F435 /* AudioDecoder.cpp */; };
-		188587EC1C0AEEAC00B1F435 /* AudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587BD1C0AEEAC00B1F435 /* AudioEncoder.cpp */; };
 		188587ED1C0AEEAC00B1F435 /* CommonElementsBucket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587C41C0AEEAC00B1F435 /* CommonElementsBucket.cpp */; };
 		188587EE1C0AEEAC00B1F435 /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587C61C0AEEAC00B1F435 /* Controller.cpp */; };
 		188587EF1C0AEEAC00B1F435 /* DecodingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587C81C0AEEAC00B1F435 /* DecodingBuffer.cpp */; };
@@ -34,10 +32,16 @@
 		18EB836F1C0ED768006738CB /* libprocessing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836B1C0ED768006738CB /* libprocessing.a */; };
 		18EB83701C0ED768006738CB /* libwelsdec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836C1C0ED768006738CB /* libwelsdec.a */; };
 		18EB83711C0ED768006738CB /* libwelsenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836D1C0ED768006738CB /* libwelsenc.a */; };
+		6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A3E37511E0932F500228138 /* LiveStreamingHeader.cpp */; };
+		6A4C25411E152F8E00679D74 /* Aac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A4C253A1E152F8E00679D74 /* Aac.cpp */; };
+		6A4C25431E152F9900679D74 /* libaac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A4C25421E152F9900679D74 /* libaac.a */; };
+		6A4F57871E0A3D8000C48ACC /* VideoBeautificationer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */; };
+		6AAEC53D1E07EF9E001525FE /* VideoHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */; };
 		9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */; };
 		9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */; };
 		9D25D6DE1C316D2C00BBDB63 /* SendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D25D6DC1C316D2C00BBDB63 /* SendingBuffer.cpp */; };
 		9D9910381C296914007BA91C /* VideoPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9910361C296914007BA91C /* VideoPacketQueue.cpp */; };
+		D11DAA691CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */; };
 		D18E5FC71C96D57F00E5EDAA /* DepacketizationThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FBD1C96D57F00E5EDAA /* DepacketizationThread.cpp */; };
 		D18E5FC81C96D57F00E5EDAA /* RenderingThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FBF1C96D57F00E5EDAA /* RenderingThread.cpp */; };
 		D18E5FC91C96D57F00E5EDAA /* SendingThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D18E5FC11C96D57F00E5EDAA /* SendingThread.cpp */; };
@@ -48,7 +52,26 @@
 		DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0C1C38ED5E00E6AFF8 /* ResendingBuffer.cpp */; };
 		DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */; };
 		DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */; };
+		DA3B79211DED86D20061BEFC /* HashGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */; };
+		DA3C0FFA1E78382B00155A52 /* AudioDePacketizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3C0FF41E78382B00155A52 /* AudioDePacketizer.cpp */; };
+		DA3C0FFB1E78382B00155A52 /* AudioPacketizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3C0FF61E78382B00155A52 /* AudioPacketizer.cpp */; };
+		DA3C0FFC1E78382B00155A52 /* GomGomGain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3C0FF81E78382B00155A52 /* GomGomGain.cpp */; };
+		DA3C0FFF1E78395700155A52 /* Filt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA3C0FFD1E78395700155A52 /* Filt.cpp */; };
+		DA4D47401DBDDDCF00EB407D /* LiveReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4D473C1DBDDDCF00EB407D /* LiveReceiver.cpp */; };
+		DA4D47411DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4D473E1DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp */; };
+		DA550FE01D7557BA00638DA6 /* AudioFileCodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */; };
 		DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */; };
+		DA77B0EE1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */; };
+		DA77B0EF1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */; };
+		DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */; };
+		DA77B0F51CF45C8800719D7D /* VersionController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F31CF45C8800719D7D /* VersionController.cpp */; };
+		DA78E7AE1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */; };
+		DA8133421DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */; };
+		DA86B3051E4B239000ED7C83 /* VideoEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */; };
+		DA91E7AA1D682440006F50E2 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA91E7A91D682440006F50E2 /* libopus.a */; };
+		DA91E7AF1D6824AF006F50E2 /* AudioCodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA91E7AB1D6824AE006F50E2 /* AudioCodec.cpp */; };
+		DA91E7B01D6824AF006F50E2 /* AudioPacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */; };
+		DA9CFEAC1DFBC7E2004112C4 /* MuxingVideoData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA9CFEAA1DFBC7E2004112C4 /* MuxingVideoData.cpp */; };
 		DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */; };
 		DAA0F0E31C675A5F009E0F39 /* SynchronizedMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */; };
 		DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAB12201C464B23001A4B91 /* RenderingBuffer.cpp */; };
@@ -73,10 +96,6 @@
 		188587B81C0AEEAC00B1F435 /* AudioCallSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioCallSession.h; path = VideoEngineController/AudioCallSession.h; sourceTree = "<group>"; };
 		188587B91C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioCallSessionListHandler.cpp; path = VideoEngineController/AudioCallSessionListHandler.cpp; sourceTree = "<group>"; };
 		188587BA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioCallSessionListHandler.h; path = VideoEngineController/AudioCallSessionListHandler.h; sourceTree = "<group>"; };
-		188587BB1C0AEEAC00B1F435 /* AudioDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDecoder.cpp; path = VideoEngineController/AudioDecoder.cpp; sourceTree = "<group>"; };
-		188587BC1C0AEEAC00B1F435 /* AudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDecoder.h; path = VideoEngineController/AudioDecoder.h; sourceTree = "<group>"; };
-		188587BD1C0AEEAC00B1F435 /* AudioEncoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioEncoder.cpp; path = VideoEngineController/AudioEncoder.cpp; sourceTree = "<group>"; };
-		188587BE1C0AEEAC00B1F435 /* AudioEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioEncoder.h; path = VideoEngineController/AudioEncoder.h; sourceTree = "<group>"; };
 		188587BF1C0AEEAC00B1F435 /* AudioVideoEngineDefinitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioVideoEngineDefinitions.h; path = VideoEngineController/AudioVideoEngineDefinitions.h; sourceTree = "<group>"; };
 		188587C01C0AEEAC00B1F435 /* codec_api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = codec_api.h; path = VideoEngineController/codec_api.h; sourceTree = "<group>"; };
 		188587C11C0AEEAC00B1F435 /* codec_app_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = codec_app_def.h; path = VideoEngineController/codec_app_def.h; sourceTree = "<group>"; };
@@ -130,6 +149,20 @@
 		18EB836B1C0ED768006738CB /* libprocessing.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprocessing.a; sourceTree = "<group>"; };
 		18EB836C1C0ED768006738CB /* libwelsdec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwelsdec.a; sourceTree = "<group>"; };
 		18EB836D1C0ED768006738CB /* libwelsenc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwelsenc.a; sourceTree = "<group>"; };
+		6A3E37511E0932F500228138 /* LiveStreamingHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveStreamingHeader.cpp; path = VideoEngineController/LiveStreamingHeader.cpp; sourceTree = "<group>"; };
+		6A3E37521E0932F500228138 /* LiveStreamingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveStreamingHeader.h; path = VideoEngineController/LiveStreamingHeader.h; sourceTree = "<group>"; };
+		6A4C253A1E152F8E00679D74 /* Aac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Aac.cpp; path = VideoEngineController/Aac.cpp; sourceTree = "<group>"; };
+		6A4C253B1E152F8E00679D74 /* Aac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Aac.h; path = VideoEngineController/Aac.h; sourceTree = "<group>"; };
+		6A4C253C1E152F8E00679D74 /* aacdecoder_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aacdecoder_lib.h; path = VideoEngineController/aacdecoder_lib.h; sourceTree = "<group>"; };
+		6A4C253D1E152F8E00679D74 /* aacdecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aacdecoder.h; path = VideoEngineController/aacdecoder.h; sourceTree = "<group>"; };
+		6A4C253E1E152F8E00679D74 /* FDK_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FDK_audio.h; path = VideoEngineController/FDK_audio.h; sourceTree = "<group>"; };
+		6A4C253F1E152F8E00679D74 /* genericStds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = genericStds.h; path = VideoEngineController/genericStds.h; sourceTree = "<group>"; };
+		6A4C25401E152F8E00679D74 /* machine_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = machine_type.h; path = VideoEngineController/machine_type.h; sourceTree = "<group>"; };
+		6A4C25421E152F9900679D74 /* libaac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaac.a; sourceTree = "<group>"; };
+		6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoBeautificationer.cpp; path = VideoEngineUtilities/VideoBeautificationer.cpp; sourceTree = "<group>"; };
+		6A4F57861E0A3D8000C48ACC /* VideoBeautificationer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoBeautificationer.h; path = VideoEngineUtilities/VideoBeautificationer.h; sourceTree = "<group>"; };
+		6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoHeader.cpp; path = VideoEngineController/VideoHeader.cpp; sourceTree = "<group>"; };
+		6AAEC53C1E07EF9E001525FE /* VideoHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoHeader.h; path = VideoEngineController/VideoHeader.h; sourceTree = "<group>"; };
 		9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioEncoderBuffer.cpp; path = VideoEngineController/AudioEncoderBuffer.cpp; sourceTree = "<group>"; };
 		9D00A8B51C1BF161001A52BC /* AudioEncoderBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioEncoderBuffer.h; path = VideoEngineController/AudioEncoderBuffer.h; sourceTree = "<group>"; };
 		9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDecoderBuffer.cpp; path = VideoEngineController/AudioDecoderBuffer.cpp; sourceTree = "<group>"; };
@@ -138,6 +171,8 @@
 		9D25D6DD1C316D2C00BBDB63 /* SendingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SendingBuffer.h; path = VideoEngineController/SendingBuffer.h; sourceTree = "<group>"; };
 		9D9910361C296914007BA91C /* VideoPacketQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoPacketQueue.cpp; path = VideoEngineController/VideoPacketQueue.cpp; sourceTree = "<group>"; };
 		9D9910371C296914007BA91C /* VideoPacketQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoPacketQueue.h; path = VideoEngineController/VideoPacketQueue.h; sourceTree = "<group>"; };
+		D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFileEncodeDecodeSession.cpp; path = VideoEngineController/AudioFileEncodeDecodeSession.cpp; sourceTree = "<group>"; };
+		D11DAA681CE1B829008D74C0 /* AudioFileEncodeDecodeSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFileEncodeDecodeSession.h; path = VideoEngineController/AudioFileEncodeDecodeSession.h; sourceTree = "<group>"; };
 		D18E5FBD1C96D57F00E5EDAA /* DepacketizationThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DepacketizationThread.cpp; path = VideoEngineController/DepacketizationThread.cpp; sourceTree = "<group>"; };
 		D18E5FBE1C96D57F00E5EDAA /* DepacketizationThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DepacketizationThread.h; path = VideoEngineController/DepacketizationThread.h; sourceTree = "<group>"; };
 		D18E5FBF1C96D57F00E5EDAA /* RenderingThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderingThread.cpp; path = VideoEngineController/RenderingThread.cpp; sourceTree = "<group>"; };
@@ -158,9 +193,46 @@
 		DA2A7B101C38ED8200E6AFF8 /* FPSController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FPSController.h; path = VideoEngineController/FPSController.h; sourceTree = "<group>"; };
 		DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PacketHeader.cpp; path = VideoEngineController/PacketHeader.cpp; sourceTree = "<group>"; };
 		DA3AF4BA1C55F67400E566BB /* PacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PacketHeader.h; path = VideoEngineController/PacketHeader.h; sourceTree = "<group>"; };
+		DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HashGenerator.cpp; path = VideoEngineUtilities/HashGenerator.cpp; sourceTree = "<group>"; };
+		DA3B79201DED86D20061BEFC /* HashGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HashGenerator.h; path = VideoEngineUtilities/HashGenerator.h; sourceTree = "<group>"; };
+		DA3C0FF41E78382B00155A52 /* AudioDePacketizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDePacketizer.cpp; path = VideoEngineController/AudioDePacketizer.cpp; sourceTree = "<group>"; };
+		DA3C0FF51E78382B00155A52 /* AudioDePacketizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDePacketizer.h; path = VideoEngineController/AudioDePacketizer.h; sourceTree = "<group>"; };
+		DA3C0FF61E78382B00155A52 /* AudioPacketizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioPacketizer.cpp; path = VideoEngineController/AudioPacketizer.cpp; sourceTree = "<group>"; };
+		DA3C0FF71E78382B00155A52 /* AudioPacketizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioPacketizer.h; path = VideoEngineController/AudioPacketizer.h; sourceTree = "<group>"; };
+		DA3C0FF81E78382B00155A52 /* GomGomGain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GomGomGain.cpp; path = VideoEngineController/GomGomGain.cpp; sourceTree = "<group>"; };
+		DA3C0FF91E78382B00155A52 /* GomGomGain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GomGomGain.h; path = VideoEngineController/GomGomGain.h; sourceTree = "<group>"; };
+		DA3C0FFD1E78395700155A52 /* Filt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Filt.cpp; path = VideoEngineController/Filt.cpp; sourceTree = "<group>"; };
+		DA3C0FFE1E78395700155A52 /* Filt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Filt.h; path = VideoEngineController/Filt.h; sourceTree = "<group>"; };
 		DA3E13181C3BA48B009B9319 /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Size.h; path = VideoEngineController/Size.h; sourceTree = "<group>"; };
+		DA4D473C1DBDDDCF00EB407D /* LiveReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveReceiver.cpp; path = VideoEngineController/LiveReceiver.cpp; sourceTree = "<group>"; };
+		DA4D473D1DBDDDCF00EB407D /* LiveReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveReceiver.h; path = VideoEngineController/LiveReceiver.h; sourceTree = "<group>"; };
+		DA4D473E1DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveVideoDecodingQueue.cpp; path = VideoEngineController/LiveVideoDecodingQueue.cpp; sourceTree = "<group>"; };
+		DA4D473F1DBDDDCF00EB407D /* LiveVideoDecodingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveVideoDecodingQueue.h; path = VideoEngineController/LiveVideoDecodingQueue.h; sourceTree = "<group>"; };
+		DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFileCodec.cpp; path = VideoEngineController/AudioFileCodec.cpp; sourceTree = "<group>"; };
+		DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFileCodec.h; path = VideoEngineController/AudioFileCodec.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
+		DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceCapabilityCheckBuffer.cpp; path = VideoEngineController/DeviceCapabilityCheckBuffer.cpp; sourceTree = "<group>"; };
+		DA77B0EB1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceCapabilityCheckBuffer.h; path = VideoEngineController/DeviceCapabilityCheckBuffer.h; sourceTree = "<group>"; };
+		DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceCapabilityCheckThread.cpp; path = VideoEngineController/DeviceCapabilityCheckThread.cpp; sourceTree = "<group>"; };
+		DA77B0ED1CF4597D00719D7D /* DeviceCapabilityCheckThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceCapabilityCheckThread.h; path = VideoEngineController/DeviceCapabilityCheckThread.h; sourceTree = "<group>"; };
+		DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AverageCalculator.cpp; path = VideoEngineController/AverageCalculator.cpp; sourceTree = "<group>"; };
+		DA77B0F11CF45C5100719D7D /* AverageCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AverageCalculator.h; path = VideoEngineController/AverageCalculator.h; sourceTree = "<group>"; };
+		DA77B0F31CF45C8800719D7D /* VersionController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionController.cpp; path = VideoEngineController/VersionController.cpp; sourceTree = "<group>"; };
+		DA77B0F41CF45C8800719D7D /* VersionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionController.h; path = VideoEngineController/VersionController.h; sourceTree = "<group>"; };
+		DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAudioDecodingQueue.cpp; path = VideoEngineController/LiveAudioDecodingQueue.cpp; sourceTree = "<group>"; };
+		DA78E7AD1DDAFEFE006A1798 /* LiveAudioDecodingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioDecodingQueue.h; path = VideoEngineController/LiveAudioDecodingQueue.h; sourceTree = "<group>"; };
+		DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoMuxingAndEncodeSession.cpp; path = VideoEngineController/VideoMuxingAndEncodeSession.cpp; sourceTree = "<group>"; };
+		DA8133411DFEC969008FE395 /* VideoMuxingAndEncodeSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoMuxingAndEncodeSession.h; path = VideoEngineController/VideoMuxingAndEncodeSession.h; sourceTree = "<group>"; };
+		DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoEffects.cpp; path = VideoEngineUtilities/VideoEffects.cpp; sourceTree = "<group>"; };
+		DA86B3041E4B239000ED7C83 /* VideoEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoEffects.h; path = VideoEngineUtilities/VideoEffects.h; sourceTree = "<group>"; };
+		DA91E7A91D682440006F50E2 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopus.a; sourceTree = "<group>"; };
+		DA91E7AB1D6824AE006F50E2 /* AudioCodec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioCodec.cpp; path = VideoEngineController/AudioCodec.cpp; sourceTree = "<group>"; };
+		DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioPacketHeader.cpp; path = VideoEngineController/AudioPacketHeader.cpp; sourceTree = "<group>"; };
+		DA91E7AD1D6824AF006F50E2 /* AudioCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioCodec.h; path = VideoEngineController/AudioCodec.h; sourceTree = "<group>"; };
+		DA91E7AE1D6824AF006F50E2 /* AudioPacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioPacketHeader.h; path = VideoEngineController/AudioPacketHeader.h; sourceTree = "<group>"; };
+		DA9CFEAA1DFBC7E2004112C4 /* MuxingVideoData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MuxingVideoData.cpp; path = VideoEngineUtilities/MuxingVideoData.cpp; sourceTree = "<group>"; };
+		DA9CFEAB1DFBC7E2004112C4 /* MuxingVideoData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MuxingVideoData.h; path = VideoEngineUtilities/MuxingVideoData.h; sourceTree = "<group>"; };
 		DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BitRateController.cpp; path = VideoEngineController/BitRateController.cpp; sourceTree = "<group>"; };
 		DAA0F0DF1C675A3C009E0F39 /* BitRateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BitRateController.h; path = VideoEngineController/BitRateController.h; sourceTree = "<group>"; };
 		DAA0F0E11C675A5F009E0F39 /* SynchronizedMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SynchronizedMap.cpp; path = VideoEngineController/SynchronizedMap.cpp; sourceTree = "<group>"; };
@@ -177,7 +249,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				18EB836F1C0ED768006738CB /* libprocessing.a in Frameworks */,
+				6A4C25431E152F9900679D74 /* libaac.a in Frameworks */,
 				18EB83701C0ED768006738CB /* libwelsdec.a in Frameworks */,
+				DA91E7AA1D682440006F50E2 /* libopus.a in Frameworks */,
 				18EB836E1C0ED768006738CB /* libcommon.a in Frameworks */,
 				18EB83711C0ED768006738CB /* libwelsenc.a in Frameworks */,
 				1887672F1C0ACD5500899605 /* libG729Library.a in Frameworks */,
@@ -193,6 +267,8 @@
 				DA63DA791C7C6D9100EF3793 /* ExtraFiles */,
 				18EB83691C0ED768006738CB /* openh264 */,
 				1887672E1C0ACD5500899605 /* libG729Library.a */,
+				6A4C25421E152F9900679D74 /* libaac.a */,
+				DA91E7A91D682440006F50E2 /* libopus.a */,
 				18AAB7741C0059320069154C /* VideoEngineController */,
 				18AAB7431C00582B0069154C /* VideoEngineUtilities */,
 				1852B3481BCE1D3A000FF5C4 /* Products */,
@@ -213,9 +289,17 @@
 				188587FD1C0AEEBC00B1F435 /* ColorConverter.cpp */,
 				188587FE1C0AEEBC00B1F435 /* ColorConverter.h */,
 				188587FF1C0AEEBC00B1F435 /* DefinedDataTypes.h */,
+				DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */,
+				DA3B79201DED86D20061BEFC /* HashGenerator.h */,
 				188588001C0AEEBC00B1F435 /* LockHandler.cpp */,
 				188588011C0AEEBC00B1F435 /* LockHandler.h */,
+				DA9CFEAA1DFBC7E2004112C4 /* MuxingVideoData.cpp */,
+				DA9CFEAB1DFBC7E2004112C4 /* MuxingVideoData.h */,
 				188588021C0AEEBC00B1F435 /* SmartPointer.h */,
+				6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */,
+				6A4F57861E0A3D8000C48ACC /* VideoBeautificationer.h */,
+				DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */,
+				DA86B3041E4B239000ED7C83 /* VideoEffects.h */,
 			);
 			name = VideoEngineUtilities;
 			sourceTree = "<group>";
@@ -223,19 +307,33 @@
 		18AAB7741C0059320069154C /* VideoEngineController */ = {
 			isa = PBXGroup;
 			children = (
+				6A4C253A1E152F8E00679D74 /* Aac.cpp */,
+				6A4C253B1E152F8E00679D74 /* Aac.h */,
+				6A4C253C1E152F8E00679D74 /* aacdecoder_lib.h */,
+				6A4C253D1E152F8E00679D74 /* aacdecoder.h */,
 				188587B71C0AEEAC00B1F435 /* AudioCallSession.cpp */,
 				188587B81C0AEEAC00B1F435 /* AudioCallSession.h */,
 				188587B91C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp */,
 				188587BA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.h */,
-				188587BB1C0AEEAC00B1F435 /* AudioDecoder.cpp */,
-				188587BC1C0AEEAC00B1F435 /* AudioDecoder.h */,
+				DA91E7AB1D6824AE006F50E2 /* AudioCodec.cpp */,
+				DA91E7AD1D6824AF006F50E2 /* AudioCodec.h */,
 				9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */,
 				9D00A8B81C1C17E5001A52BC /* AudioDecoderBuffer.h */,
-				188587BD1C0AEEAC00B1F435 /* AudioEncoder.cpp */,
-				188587BE1C0AEEAC00B1F435 /* AudioEncoder.h */,
+				DA3C0FF41E78382B00155A52 /* AudioDePacketizer.cpp */,
+				DA3C0FF51E78382B00155A52 /* AudioDePacketizer.h */,
 				9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */,
 				9D00A8B51C1BF161001A52BC /* AudioEncoderBuffer.h */,
+				DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */,
+				DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */,
+				D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */,
+				D11DAA681CE1B829008D74C0 /* AudioFileEncodeDecodeSession.h */,
+				DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */,
+				DA91E7AE1D6824AF006F50E2 /* AudioPacketHeader.h */,
+				DA3C0FF61E78382B00155A52 /* AudioPacketizer.cpp */,
+				DA3C0FF71E78382B00155A52 /* AudioPacketizer.h */,
 				188587BF1C0AEEAC00B1F435 /* AudioVideoEngineDefinitions.h */,
+				DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */,
+				DA77B0F11CF45C5100719D7D /* AverageCalculator.h */,
 				DAF780BC1C63095B000A8565 /* BandwidthController.cpp */,
 				DAF780BD1C63095B000A8565 /* BandwidthController.h */,
 				DAA0F0DE1C675A3C009E0F39 /* BitRateController.cpp */,
@@ -252,6 +350,10 @@
 				188587C91C0AEEAC00B1F435 /* DecodingBuffer.h */,
 				D18E5FBD1C96D57F00E5EDAA /* DepacketizationThread.cpp */,
 				D18E5FBE1C96D57F00E5EDAA /* DepacketizationThread.h */,
+				DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */,
+				DA77B0EB1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.h */,
+				DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */,
+				DA77B0ED1CF4597D00719D7D /* DeviceCapabilityCheckThread.h */,
 				188587E71C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp */,
 				188587E81C0AEEAC00B1F435 /* EncodedFrameDepacketizer.h */,
 				188587CA1C0AEEAC00B1F435 /* EncodedFramePacketizer.cpp */,
@@ -260,15 +362,30 @@
 				188587CD1C0AEEAC00B1F435 /* EncodingBuffer.h */,
 				188587CE1C0AEEAC00B1F435 /* EventNotifier.cpp */,
 				188587CF1C0AEEAC00B1F435 /* EventNotifier.h */,
+				6A4C253E1E152F8E00679D74 /* FDK_audio.h */,
+				DA3C0FFD1E78395700155A52 /* Filt.cpp */,
+				DA3C0FFE1E78395700155A52 /* Filt.h */,
 				DA2A7B0F1C38ED8200E6AFF8 /* FPSController.cpp */,
 				DA2A7B101C38ED8200E6AFF8 /* FPSController.h */,
 				188587D01C0AEEAC00B1F435 /* G729CodecNative.h */,
+				6A4C253F1E152F8E00679D74 /* genericStds.h */,
 				DA2A7B091C38ED5400E6AFF8 /* Globals.cpp */,
 				DA2A7B0A1C38ED5400E6AFF8 /* Globals.h */,
+				DA3C0FF81E78382B00155A52 /* GomGomGain.cpp */,
+				DA3C0FF91E78382B00155A52 /* GomGomGain.h */,
 				188587D11C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.cpp */,
 				188587D21C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.h */,
+				DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */,
+				DA78E7AD1DDAFEFE006A1798 /* LiveAudioDecodingQueue.h */,
+				DA4D473C1DBDDDCF00EB407D /* LiveReceiver.cpp */,
+				DA4D473D1DBDDDCF00EB407D /* LiveReceiver.h */,
+				6A3E37511E0932F500228138 /* LiveStreamingHeader.cpp */,
+				6A3E37521E0932F500228138 /* LiveStreamingHeader.h */,
+				DA4D473E1DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp */,
+				DA4D473F1DBDDDCF00EB407D /* LiveVideoDecodingQueue.h */,
 				188587D31C0AEEAC00B1F435 /* LogPrinter.cpp */,
 				188587D41C0AEEAC00B1F435 /* LogPrinter.h */,
+				6A4C25401E152F8E00679D74 /* machine_type.h */,
 				188587D51C0AEEAC00B1F435 /* macros.h */,
 				DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */,
 				DA3AF4BA1C55F67400E566BB /* PacketHeader.h */,
@@ -292,6 +409,8 @@
 				188587D81C0AEEAC00B1F435 /* Tools.h */,
 				188587D91C0AEEAC00B1F435 /* typedef.h */,
 				188587DA1C0AEEAC00B1F435 /* typedefs.h */,
+				DA77B0F31CF45C8800719D7D /* VersionController.cpp */,
+				DA77B0F41CF45C8800719D7D /* VersionController.h */,
 				188587DB1C0AEEAC00B1F435 /* VideoCallSession.cpp */,
 				188587DC1C0AEEAC00B1F435 /* VideoCallSession.h */,
 				188587DD1C0AEEAC00B1F435 /* VideoCallSessionListHandler.cpp */,
@@ -306,6 +425,10 @@
 				188587E41C0AEEAC00B1F435 /* VideoEncoderListHandler.h */,
 				D18E5FC51C96D57F00E5EDAA /* VideoEncodingThread.cpp */,
 				D18E5FC61C96D57F00E5EDAA /* VideoEncodingThread.h */,
+				6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */,
+				6AAEC53C1E07EF9E001525FE /* VideoHeader.h */,
+				DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */,
+				DA8133411DFEC969008FE395 /* VideoMuxingAndEncodeSession.h */,
 				188587E51C0AEEAC00B1F435 /* VideoPacketBuffer.cpp */,
 				188587E61C0AEEAC00B1F435 /* VideoPacketBuffer.h */,
 				9D9910361C296914007BA91C /* VideoPacketQueue.cpp */,
@@ -344,6 +467,7 @@
 				1852B3431BCE1D3A000FF5C4 /* Sources */,
 				1852B3441BCE1D3A000FF5C4 /* Frameworks */,
 				1852B3451BCE1D3A000FF5C4 /* CopyFiles */,
+				DA38CA1B1D3DEEC00066B096 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -385,52 +509,89 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		DA38CA1B1D3DEEC00066B096 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "##########################################\n#\n# c.f. http://stackoverflow.com/questions/3520977/build-fat-static-library-device-simulator-using-xcode-and-sdk-4\n#\n# Version 2.7\n#\n# Latest Change:\n# - Supports iPhone 5 / iPod Touch 5 (uses Apple's workaround to lipo bug)\n#\n# Purpose:\n#   Automatically create a Universal static library for iPhone + iPad + iPhone Simulator from within XCode\n#\n# Author: Adam Martin - http://twitter.com/redglassesapps\n# Based on: original script from Eonil (main changes: Eonil's script WILL NOT WORK in Xcode GUI - it WILL CRASH YOUR COMPUTER)\n#\n\nset -e\nset -o pipefail\n\n#################[ Tests: helps workaround any future bugs in Xcode ]########\n#\nDEBUG_THIS_SCRIPT=\"false\"\n\nif [ $DEBUG_THIS_SCRIPT = \"true\" ]\nthen\necho \"########### TESTS #############\"\necho \"Use the following variables when debugging this script; note that they may change on recursions\"\necho \"BUILD_DIR = $BUILD_DIR\"\necho \"BUILD_ROOT = $BUILD_ROOT\"\necho \"CONFIGURATION_BUILD_DIR = $CONFIGURATION_BUILD_DIR\"\necho \"BUILT_PRODUCTS_DIR = $BUILT_PRODUCTS_DIR\"\necho \"CONFIGURATION_TEMP_DIR = $CONFIGURATION_TEMP_DIR\"\necho \"TARGET_BUILD_DIR = $TARGET_BUILD_DIR\"\nfi\n\n#####################[ part 1 ]##################\n# First, work out the BASESDK version number (NB: Apple ought to report this, but they hide it)\n#    (incidental: searching for substrings in sh is a nightmare! Sob)\n\nSDK_VERSION=$(echo ${SDK_NAME} | grep -o '\\d\\+\\.\\d\\+$')\n\n# Next, work out if we're in SIM or DEVICE\n\nif [ ${PLATFORM_NAME} = \"iphonesimulator\" ]\nthen\nOTHER_SDK_TO_BUILD=iphoneos${SDK_VERSION}\nelse\nOTHER_SDK_TO_BUILD=iphonesimulator${SDK_VERSION}\nfi\n\necho \"XCode has selected SDK: ${PLATFORM_NAME} with version: ${SDK_VERSION} (although back-targetting: ${IPHONEOS_DEPLOYMENT_TARGET})\"\necho \"...therefore, OTHER_SDK_TO_BUILD = ${OTHER_SDK_TO_BUILD}\"\n#\n#####################[ end of part 1 ]##################\n\n#####################[ part 2 ]##################\n#\n# IF this is the original invocation, invoke WHATEVER other builds are required\n#\n# Xcode is already building ONE target...\n#\n# ...but this is a LIBRARY, so Apple is wrong to set it to build just one.\n# ...we need to build ALL targets\n# ...we MUST NOT re-build the target that is ALREADY being built: Xcode WILL CRASH YOUR COMPUTER if you try this (infinite recursion!)\n#\n#\n# So: build ONLY the missing platforms/configurations.\n\nif [ \"true\" == ${ALREADYINVOKED:-false} ]\nthen\necho \"RECURSION: I am NOT the root invocation, so I'm NOT going to recurse\"\nelse\n# CRITICAL:\n# Prevent infinite recursion (Xcode sucks)\nexport ALREADYINVOKED=\"true\"\n\necho \"RECURSION: I am the root ... recursing all missing build targets NOW...\"\necho \"RECURSION: ...about to invoke: xcodebuild -configuration \\\"${CONFIGURATION}\\\" -project \\\"${PROJECT_NAME}.xcodeproj\\\" -target \\\"${TARGET_NAME}\\\" -sdk \\\"${OTHER_SDK_TO_BUILD}\\\" ${ACTION} RUN_CLANG_STATIC_ANALYZER=NO\" BUILD_DIR=\\\"${BUILD_DIR}\\\" BUILD_ROOT=\\\"${BUILD_ROOT}\\\" SYMROOT=\\\"${SYMROOT}\\\"\n\nxcodebuild -configuration \"${CONFIGURATION}\" -project \"${PROJECT_NAME}.xcodeproj\" -target \"${TARGET_NAME}\" -sdk \"${OTHER_SDK_TO_BUILD}\" ${ACTION} RUN_CLANG_STATIC_ANALYZER=NO BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" SYMROOT=\"${SYMROOT}\"\n\nACTION=\"build\"\n\n#Merge all platform binaries as a fat binary for each configurations.\n\n# Calculate where the (multiple) built files are coming from:\nCURRENTCONFIG_DEVICE_DIR=${SYMROOT}/${CONFIGURATION}-iphoneos\nCURRENTCONFIG_SIMULATOR_DIR=${SYMROOT}/${CONFIGURATION}-iphonesimulator\n\necho \"Taking device build from: ${CURRENTCONFIG_DEVICE_DIR}\"\necho \"Taking simulator build from: ${CURRENTCONFIG_SIMULATOR_DIR}\"\n\nCREATING_UNIVERSAL_DIR=${SYMROOT}/${CONFIGURATION}-universal\necho \"...I will output a universal build to: ${CREATING_UNIVERSAL_DIR}\"\n\n# ... remove the products of previous runs of this script\n#      NB: this directory is ONLY created by this script - it should be safe to delete!\n\n#RajibTheKing: এইখানে একটা সমস্যা আছে, কারণ কিছু কিছু প্রোজেক্ট Deploy করার সময় ঝামেলা করবে। কারণ মাঝে মাঝে আমাদের প্রজেক্ট এর মধ্যে Multiple সাব-প্রজেক্ট থাকতে পারে।\n#rm -rf \"${CREATING_UNIVERSAL_DIR}\"\n#mkdir \"${CREATING_UNIVERSAL_DIR}\"\n\n#RajibTheKing: এই প্রব্লেম এর সমাধান একটাই ... আমাদের আগে থেকে দেখে নিতে হবে, এর আগে এই নামে কোন Directory আছে কি নাহ।\nif [ ! -d \"${CREATING_UNIVERSAL_DIR}\" ]; then\nmkdir \"${CREATING_UNIVERSAL_DIR}\"\nfi\n\n\n#\necho \"lipo: for current configuration (${CONFIGURATION}) creating output file: ${CREATING_UNIVERSAL_DIR}/${EXECUTABLE_NAME}\"\nxcrun -sdk iphoneos lipo -create -output \"${CREATING_UNIVERSAL_DIR}/${EXECUTABLE_NAME}\" \"${CURRENTCONFIG_DEVICE_DIR}/${EXECUTABLE_NAME}\" \"${CURRENTCONFIG_SIMULATOR_DIR}/${EXECUTABLE_NAME}\"\n\n#########\n#\n# Added: StackOverflow suggestion to also copy \"include\" files\n#    (untested, but should work OK)\n#\necho \"Fetching headers from ${PUBLIC_HEADERS_FOLDER_PATH}\"\necho \"  (if you embed your library project in another project, you will need to add\"\necho \"   a \"User Search Headers\" build setting of: (NB INCLUDE THE DOUBLE QUOTES BELOW!)\"\necho '        \"$(TARGET_BUILD_DIR)/usr/local/include/\"'\nif [ -d \"${CURRENTCONFIG_DEVICE_DIR}${PUBLIC_HEADERS_FOLDER_PATH}\" ]\nthen\nmkdir -p \"${CREATING_UNIVERSAL_DIR}${PUBLIC_HEADERS_FOLDER_PATH}\"\n# * needs to be outside the double quotes?\ncp -r \"${CURRENTCONFIG_DEVICE_DIR}${PUBLIC_HEADERS_FOLDER_PATH}\"* \"${CREATING_UNIVERSAL_DIR}${PUBLIC_HEADERS_FOLDER_PATH}\"\nfi\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		1852B3431BCE1D3A000FF5C4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA77B0EF1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp in Sources */,
 				DAAB12221C464B23001A4B91 /* RenderingBuffer.cpp in Sources */,
 				9D25D6DE1C316D2C00BBDB63 /* SendingBuffer.cpp in Sources */,
 				DA3AF4BB1C55F67400E566BB /* PacketHeader.cpp in Sources */,
+				6A4F57871E0A3D8000C48ACC /* VideoBeautificationer.cpp in Sources */,
 				188588031C0AEEBC00B1F435 /* ColorConverter.cpp in Sources */,
+				DA91E7AF1D6824AF006F50E2 /* AudioCodec.cpp in Sources */,
+				DA4D47411DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp in Sources */,
+				DA4D47401DBDDDCF00EB407D /* LiveReceiver.cpp in Sources */,
 				D18E5FCA1C96D57F00E5EDAA /* VideoDecodingThread.cpp in Sources */,
 				188587FA1C0AEEAC00B1F435 /* VideoEncoderListHandler.cpp in Sources */,
 				DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */,
-				188587EB1C0AEEAC00B1F435 /* AudioDecoder.cpp in Sources */,
 				DA2A7B0B1C38ED5400E6AFF8 /* Globals.cpp in Sources */,
 				188587E91C0AEEAC00B1F435 /* AudioCallSession.cpp in Sources */,
 				9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */,
 				188587EA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp in Sources */,
 				188587FC1C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp in Sources */,
+				DA8133421DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp in Sources */,
 				D18E5FC81C96D57F00E5EDAA /* RenderingThread.cpp in Sources */,
+				DA78E7AE1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp in Sources */,
 				188587F81C0AEEAC00B1F435 /* VideoDecoder.cpp in Sources */,
 				DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */,
+				DA3C0FFC1E78382B00155A52 /* GomGomGain.cpp in Sources */,
+				DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */,
 				188587F31C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.cpp in Sources */,
 				9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */,
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
-				188587EC1C0AEEAC00B1F435 /* AudioEncoder.cpp in Sources */,
+				6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */,
+				DA9CFEAC1DFBC7E2004112C4 /* MuxingVideoData.cpp in Sources */,
 				D18E5FC71C96D57F00E5EDAA /* DepacketizationThread.cpp in Sources */,
 				188587F11C0AEEAC00B1F435 /* EncodingBuffer.cpp in Sources */,
 				DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */,
 				188587F71C0AEEAC00B1F435 /* VideoCallSessionListHandler.cpp in Sources */,
 				188587F01C0AEEAC00B1F435 /* EncodedFramePacketizer.cpp in Sources */,
 				188587FB1C0AEEAC00B1F435 /* VideoPacketBuffer.cpp in Sources */,
+				DA77B0F51CF45C8800719D7D /* VersionController.cpp in Sources */,
 				9D9910381C296914007BA91C /* VideoPacketQueue.cpp in Sources */,
 				188587F91C0AEEAC00B1F435 /* VideoEncoder.cpp in Sources */,
 				DAF780BE1C63095B000A8565 /* BandwidthController.cpp in Sources */,
 				D18E5FCB1C96D57F00E5EDAA /* VideoEncodingThread.cpp in Sources */,
 				DAA0F0E31C675A5F009E0F39 /* SynchronizedMap.cpp in Sources */,
+				DA3C0FFA1E78382B00155A52 /* AudioDePacketizer.cpp in Sources */,
 				188587F21C0AEEAC00B1F435 /* EventNotifier.cpp in Sources */,
 				D18E5FC91C96D57F00E5EDAA /* SendingThread.cpp in Sources */,
 				188587ED1C0AEEAC00B1F435 /* CommonElementsBucket.cpp in Sources */,
+				DA3C0FFB1E78382B00155A52 /* AudioPacketizer.cpp in Sources */,
 				DA2A7B111C38ED8200E6AFF8 /* FPSController.cpp in Sources */,
 				DA2A7B081C38ED4500E6AFF8 /* PairMap.cpp in Sources */,
+				6A4C25411E152F8E00679D74 /* Aac.cpp in Sources */,
 				188588041C0AEEBC00B1F435 /* LockHandler.cpp in Sources */,
+				DA3C0FFF1E78395700155A52 /* Filt.cpp in Sources */,
 				188587F51C0AEEAC00B1F435 /* Tools.cpp in Sources */,
 				188587EF1C0AEEAC00B1F435 /* DecodingBuffer.cpp in Sources */,
+				DA91E7B01D6824AF006F50E2 /* AudioPacketHeader.cpp in Sources */,
 				188587EE1C0AEEAC00B1F435 /* Controller.cpp in Sources */,
+				DA3B79211DED86D20061BEFC /* HashGenerator.cpp in Sources */,
+				DA550FE01D7557BA00638DA6 /* AudioFileCodec.cpp in Sources */,
+				D11DAA691CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp in Sources */,
+				DA86B3051E4B239000ED7C83 /* VideoEffects.cpp in Sources */,
 				188587F61C0AEEAC00B1F435 /* VideoCallSession.cpp in Sources */,
+				6AAEC53D1E07EF9E001525FE /* VideoHeader.cpp in Sources */,
+				DA77B0EE1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -73,10 +73,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\Include\Opus\include;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <OutDir>..\..\..\TestCamera_WindowsPhone\Windows_Phone_Libs</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IncludePath>$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\OthersLib\boost\;$(SolutionDir)\..\Include\Opus\include;$(IncludePath)</IncludePath>
+    <OutDir>..\..\..\TestCamera_WindowsPhone\Windows_Phone_Libs\Release</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -130,13 +132,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\VideoEngineController\Aac.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioDecoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioEncoder.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
+    <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
     <ClInclude Include="..\..\VideoEngineController\BitRateController.h" />
     <ClInclude Include="..\..\VideoEngineController\codec_api.h" />
@@ -146,15 +154,24 @@
     <ClInclude Include="..\..\VideoEngineController\CommonElementsBucket.h" />
     <ClInclude Include="..\..\VideoEngineController\Controller.h" />
     <ClInclude Include="..\..\VideoEngineController\DecodingBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\DepacketizationBufferIndex.h" />
     <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFrameDepacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFramePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodingBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\EventNotifier.h" />
+    <ClInclude Include="..\..\VideoEngineController\Filt.h" />
     <ClInclude Include="..\..\VideoEngineController\FPSController.h" />
     <ClInclude Include="..\..\VideoEngineController\G729CodecNative.h" />
     <ClInclude Include="..\..\VideoEngineController\Globals.h" />
+    <ClInclude Include="..\..\VideoEngineController\GomGomGain.h" />
     <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveReceiver.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveStreamingHeader.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
     <ClInclude Include="..\..\VideoEngineController\PacketHeader.h" />
@@ -171,6 +188,7 @@
     <ClInclude Include="..\..\VideoEngineController\Tools.h" />
     <ClInclude Include="..\..\VideoEngineController\typedef.h" />
     <ClInclude Include="..\..\VideoEngineController\typedefs.h" />
+    <ClInclude Include="..\..\VideoEngineController\VersionController.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoCallSessionListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoDecoder.h" />
@@ -178,34 +196,55 @@
     <ClInclude Include="..\..\VideoEngineController\VideoEncoder.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncoderListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoHeader.h" />
+    <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\HashGenerator.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />
+    <ClInclude Include="..\..\VideoEngineUtilities\VideoEffects.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\VideoEngineController\Aac.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\AudioDecoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\AudioEncoder.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioDePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioPacketizer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\CommonElementsBucket.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Controller.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DecodingBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\DepacketizationBufferIndex.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFrameDepacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EventNotifier.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Filt.cpp" />
     <ClCompile Include="..\..\VideoEngineController\FPSController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Globals.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\GomGomGain.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
@@ -217,6 +256,7 @@
     <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VersionController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoDecoder.cpp" />
@@ -224,10 +264,16 @@
     <ClCompile Include="..\..\VideoEngineController\VideoEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncoderListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoHeader.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\HashGenerator.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
+    <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

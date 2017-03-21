@@ -7,11 +7,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-int g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;			
-bool gbStopFPSSending = false;												
-extern unsigned char g_uchSendPacketVersion;						// bring check						
+//extern unsigned char g_uchSendPacketVersion;						// bring check
 
-CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter) :
+CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession) :
 
 m_FriendID(friendID),
 m_pVideoPacketQueue(VideoPacketQueue),
@@ -20,16 +18,17 @@ m_pMiniPacketQueue(MiniPacketQueue),
 m_BitRateController(BitRateController),
 m_pEncodedFrameDepacketizer(EncodedFrameDepacketizer),
 m_pCommonElementsBucket(CommonElementsBucket),
-m_miniPacketBandCounter(miniPacketBandCounter)
-
+m_miniPacketBandCounter(miniPacketBandCounter),
+m_pVideoCallSession(pVideoCallSession),
+m_bResetForPublisherCallerCallEnd(false)
 {
-	g_iPacketCounterSinceNotifying = FPS_SIGNAL_IDLE_FOR_PACKETS;
-	gbStopFPSSending = false;
-
 	ExpectedFramePacketPair.first = 0;
 	ExpectedFramePacketPair.second = 0;
 
 	iNumberOfPacketsInCurrentFrame = 0;
+    m_pVersionController = pVersionController;
+    
+    
 }
 
 CVideoDepacketizationThread::~CVideoDepacketizationThread()
@@ -39,6 +38,7 @@ CVideoDepacketizationThread::~CVideoDepacketizationThread()
 
 void CVideoDepacketizationThread::StopDepacketizationThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::StopDepacketizationThread() called");
 
 	//if (pDepacketizationThread.get())
 	{
@@ -50,6 +50,8 @@ void CVideoDepacketizationThread::StopDepacketizationThread()
 			m_Tools.SOSleep(5);
 		}
 	}
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::StopDepacketizationThread() Depacketization Thread STOPPED");
 
 	//pDepacketizationThread.reset();
 }
@@ -95,251 +97,181 @@ void *CVideoDepacketizationThread::CreateVideoDepacketizationThread(void* param)
 	return NULL;
 }
 
+void CVideoDepacketizationThread::ResetForPublisherCallerCallEnd()
+{
+	m_bResetForPublisherCallerCallEnd = true;
+
+	while (m_bResetForPublisherCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
 void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Thread
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method");
 
 	Tools toolsObject;
-	unsigned char temp;
-	int frameSize, queSize = 0, retQueuSize = 0, miniPacketQueueSize = 0, consicutiveRetransmittedPkt = 0;
-	int frameNumber, packetNumber;
-	bool bIsMiniPacket;
-	int iPacketType = NORMAL_PACKET;
-	long long timeDiffForMiniPkt = m_Tools.CurrentTimestamp();
-
+	int frameSize, queSize = 0, miniPacketQueueSize = 0;
+    long long llDepacitazationThreadStartTime = m_Tools.CurrentTimestamp();
 	while (bDepacketizationThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
 
-		bIsMiniPacket = false;
-		queSize = m_pVideoPacketQueue->GetQueueSize();
-#ifdef	RETRANSMISSION_ENABLED
-		retQueuSize = m_pRetransVideoPacketQueue->GetQueueSize();
-		miniPacketQueueSize = m_pMiniPacketQueue->GetQueueSize();
-		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
-#endif
-		if (0 == queSize && 0 == retQueuSize && 0 == miniPacketQueueSize)
+		if (m_bResetForPublisherCallerCallEnd == true)
 		{
-			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for depacketization method");
+			m_pVideoPacketQueue->ResetBuffer();
+
+			m_bResetForPublisherCallerCallEnd = false;
+		}
+
+		queSize = m_pVideoPacketQueue->GetQueueSize();
+
+		miniPacketQueueSize = m_pMiniPacketQueue->GetQueueSize();
+        //printf("TheVersion--> Depcackatization Thread retQueueSize = %d, minQueueSize  =  %d\n", queSize, miniPacketQueueSize);
+
+		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "SIZE "+ m_Tools.IntegertoStringConvert(retQueuSize)+"  "+ m_Tools.IntegertoStringConvert(queSize));
+        
+
+		if (0 == queSize && 0 == miniPacketQueueSize)
+		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() NOTHING for DDDDepacketization method");
 
 			toolsObject.SOSleep(10);
+
+			continue;
 		}
-		else
-		{
-			g_iPacketCounterSinceNotifying++;
-#ifdef	RETRANSMISSION_ENABLED
-			if (miniPacketQueueSize != 0)
-			{
-				frameSize = m_pMiniPacketQueue->DeQueue(m_PacketToBeMerged);
-			}
-			else if (retQueuSize>0 && consicutiveRetransmittedPkt<2)
-			{
-				//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "RT QueueSize"+ m_Tools.IntegertoStringConvert(retQueuSize));
-				frameSize = m_pRetransVideoPacketQueue->DeQueue(m_PacketToBeMerged);
-				++consicutiveRetransmittedPkt;
-			}
-			else if (queSize>0){
-#endif
-				frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
 
-#ifdef	RETRANSMISSION_ENABLED
-				consicutiveRetransmittedPkt = 0;
-			}
-			else
-			{
-				frameSize = m_pRetransVideoPacketQueue->DeQueue(m_PacketToBeMerged);
-				++consicutiveRetransmittedPkt;
-			}
-			m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
-			CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() !@# Versions: " + m_Tools.IntegertoStringConvert(g_uchSendPacketVersion));
-			//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
-			//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
+		if (miniPacketQueueSize != 0) {
+			frameSize = m_pMiniPacketQueue->DeQueue(m_PacketToBeMerged);
 
-			bool bRetransmitted = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_RETRANS_PACKET) & 1;
-			bool bMiniPacket = (m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] >> BIT_INDEX_MINI_PACKET) & 1;
-			m_PacketToBeMerged[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA] = 0;
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOT MMMMinipacket");
+		}
+		else if (queSize > 0) {
+			frameSize = m_pVideoPacketQueue->DeQueue(m_PacketToBeMerged);
 
-			if (bMiniPacket && m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER)
-			{
-				m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader);
-				bIsMiniPacket = true;
-				toolsObject.SOSleep(1);
-				continue;
-			}
-			else if(bMiniPacket && m_RcvdPacketHeader.getPacketNumber() == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE)
-			{
-				m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
-				CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");
-				continue;
-			}
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT PACKET");
+		}
 
-			if (!bRetransmitted && !bMiniPacket)
-			{
+//		VLOG("#VR# CallVersion: " + Tools::IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion())
+//			 +"  OP: "+Tools::IntegertoStringConvert(m_pVersionController->GetOpponentVersion())
+//			 +"  OWN: "+Tools::IntegertoStringConvert(m_pVersionController->GetOwnVersion())
+//		);
 
-				iPacketType = NORMAL_PACKET;
+		m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
+//		m_RcvdPacketHeader.ShowDetails("RCV");
 
+		CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
+								   "CVideoDepacketizationThread::StartDepacketizationThread() !@# Versions: " +
+								   m_Tools.IntegertoStringConvert(g_uchSendPacketVersion));
+		//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
+		//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 
+		if (m_RcvdPacketHeader.GetPacketType() == __BITRATE_CONTROLL_PACKET_TYPE) {                    /* Opponent response of data receive. */
+//			VLOG("__BITRATE_CONTROLL_PACKET_TYPE");
+			m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader, m_pVideoCallSession->GetServiceType());
 
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT BITRATE PACKET");
 
-				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-				pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
-
-
-				if (currentFramePacketPair != ExpectedFramePacketPair && !m_pVideoPacketQueue->PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)) //Out of order frame found, need to retransmit
-				{
-					/*
-					string sMsg = "CVideoDepacketizationThread::Current(FN,PN) = ("
-					+ m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
-					+ ","
-					+ m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
-					+ ") and Expected(FN,PN) = ("
-					+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first)
-					+ ","
-					+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
-					+ ")" ;
-					printf("%s\n", sMsg.c_str());
-					*/
-
-					if (g_iPacketCounterSinceNotifying >= FPS_SIGNAL_IDLE_FOR_PACKETS)
-					{
-						//						g_FPSController.NotifyFrameDropped(currentFramePacketPair.first);
-						g_iPacketCounterSinceNotifying = 0;
-						gbStopFPSSending = false;
-					}
-					else
-					{
-						gbStopFPSSending = true;
-					}
-
-
-					if (currentFramePacketPair.first != ExpectedFramePacketPair.first) //different frame received
-					{
-						if (currentFramePacketPair.first - ExpectedFramePacketPair.first == 2) //one complete frame missed, maybe it was a mini frame containing only 1 packet
-						{
-							CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 1");
-							CreateAndSendMiniPacket(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second);
-							pair<int, int> requestFramePacketPair;
-							requestFramePacketPair.first = currentFramePacketPair.first;
-							requestFramePacketPair.second = 0;
-
-							int iSendCounter = 0;
-							while (requestFramePacketPair.second < currentFramePacketPair.second) //
-							{
-								if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-								if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-								{
-									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-								}
-								iSendCounter++;
-								requestFramePacketPair.second++;
-							}
-						}
-						else if (currentFramePacketPair.first - ExpectedFramePacketPair.first == 1) //last packets from last frame and some packets from current misssed
-						{
-							CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 2");
-							pair<int, int> requestFramePacketPair;
-							requestFramePacketPair.first = ExpectedFramePacketPair.first;
-							requestFramePacketPair.second = ExpectedFramePacketPair.second;
-
-							int iSendCounter = 0;
-							while (requestFramePacketPair.second < iNumberOfPacketsInCurrentFrame)
-							{
-								if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-								if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-								{
-									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-								}
-								iSendCounter++;
-								requestFramePacketPair.second++;
-							}
-
-							requestFramePacketPair.first = currentFramePacketPair.first;
-							requestFramePacketPair.second = 0;
-
-							iSendCounter = 0;
-							while (requestFramePacketPair.second < currentFramePacketPair.second)
-							{
-								if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-								if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-								{
-									CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-								}
-								iSendCounter++;
-								requestFramePacketPair.second++;
-							}
-
-						}
-						else//we dont handle burst frame miss, but 1st packets of the current frame should come, only if it is an iFrame
-						{
-							CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 3-- killed previous frames");
-							if (currentFramePacketPair.first % I_INTRA_PERIOD == 0)
-							{
-								pair<int, int> requestFramePacketPair;
-								requestFramePacketPair.first = currentFramePacketPair.first;
-								requestFramePacketPair.second = 0;
-
-								int iSendCounter = 0;
-								while (requestFramePacketPair.second < currentFramePacketPair.second)
-								{
-									if (iSendCounter /*&& requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-									if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-									{
-										CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-									}
-									iSendCounter++;
-									requestFramePacketPair.second++;
-								}
-							}
-						}
-
-					}
-					else //packet missed from same frame
-					{
-						CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 4");
-						pair<int, int> requestFramePacketPair;
-						requestFramePacketPair.first = ExpectedFramePacketPair.first;
-						requestFramePacketPair.second = ExpectedFramePacketPair.second;
-
-						int iSendCounter = 0;
-						while (requestFramePacketPair.second < currentFramePacketPair.second)
-						{
-							if (iSendCounter /* && requestFramePacketPair.first %8 ==0*/) m_Tools.SOSleep(1);
-							if (!m_pVideoPacketQueue->PacketExists(requestFramePacketPair.first, requestFramePacketPair.second))
-							{
-								CreateAndSendMiniPacket(requestFramePacketPair.first, requestFramePacketPair.second);
-							}
-							iSendCounter++;
-							requestFramePacketPair.second++;
-						}
-					}
-				}
-				UpdateExpectedFramePacketPair(currentFramePacketPair, iNumberOfPackets);
-
-			}
-			else if (bRetransmitted)
-			{
-				iPacketType = RETRANSMITTED_PACKET;
-				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ReTransmitted: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
-					+ " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
-			}
-			else if (bMiniPacket)
-			{
-				int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ::Minipacket: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
-					+ " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
-			}
-#endif
-			int CurrentPacketType = NORMAL_PACKET_TYPE;
-			if (bIsMiniPacket)
-				CurrentPacketType = MINI_PACKET_TYPE;
-			else if (bRetransmitted)
-				CurrentPacketType = RETRANSMITTED_PACKET_TYPE;
-
-			m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, CurrentPacketType, m_RcvdPacketHeader);
 			toolsObject.SOSleep(1);
+			continue;
 		}
+		else if (m_RcvdPacketHeader.GetPacketType() == __NETWORK_INFO_PACKET_TYPE) {        /* Opponent Network type */
+			m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT NETWORKKKKK packet");
+
+			CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS,
+									   "CVideoDepacketizationThread::StartDepacketizationThread() rcv minipkt PACKET FOR NETWORK_TYPE");
+			toolsObject.SOSleep(1);
+			continue;
+		}
+
+
+        if(m_RcvdPacketHeader.GetPacketType() == __NEGOTIATION_PACKET_TYPE)
+        {
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT NEgotiationNNNNN packet");
+
+			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
+			int nOpponentVideoCallQualityLevel = m_RcvdPacketHeader.GetVideoQualityLevel();
+
+//			VLOG("TheKing--> Got nOpponentVideoCallQualityLevel " + Tools::IntegertoStringConvert(nOpponentVideoCallQualityLevel));
+
+			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel())
+			{
+				m_pVideoCallSession->SetOpponentVideoCallQualityLevel(nOpponentVideoCallQualityLevel);
+				m_pVideoCallSession->SetCurrentVideoCallQualityLevel( min( m_pVideoCallSession->GetOwnVideoCallQualityLevel(), m_pVideoCallSession->GetOpponentVideoCallQualityLevel() ) );
+			}
+
+			if (bIs2GOpponentNetwork) {
+				m_pVideoCallSession->GetVideoEncoder()->SetNetworkType(NETWORK_TYPE_2G);
+				m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_2G);
+			}
+
+			if(m_pVersionController->GetOpponentVersion() == -1)
+			{
+//				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert(m_RcvdPacketHeader.getVersionCode()));
+
+				m_pVersionController->SetOpponentVersion((int)m_RcvdPacketHeader.getVersionCode());     //NEGOTIATION PACKETS CONTAIN OPPONENT VERSION.
+//				VLOG("#SOV# ########################################TheKing2 : " + Tools::IntegertoStringConvert((int)m_pVersionController->GetOpponentVersion()));
+				//printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
+
+				m_pVersionController->SetCurrentCallVersion(min ((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+
+				if (m_pVersionController->GetCurrentCallVersion() >= DEVICE_TYPE_CHECK_START_VERSION)
+					m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.getSenderDeviceType());
+			}
+
+            continue;
+        }
+        
+		if(-1 == m_pVersionController->GetOpponentVersion() && __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())  //It's a VIDEO packet. No dummy packet found before.
+        {
+			int nCurrentCallQualityLevelSetByOpponent = m_RcvdPacketHeader.GetVideoQualityLevel();
+			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
+
+			if (VIDEO_CALL_TYPE_UNKNOWN == m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) {	//Not necessary
+				m_pVideoCallSession->SetOpponentVideoCallQualityLevel(nCurrentCallQualityLevelSetByOpponent);
+				m_pVideoCallSession->SetCurrentVideoCallQualityLevel(m_pVideoCallSession->GetOpponentVideoCallQualityLevel());
+			}
+
+			if (bIs2GOpponentNetwork) {
+				m_pVideoCallSession->GetVideoEncoder()->SetNetworkType(NETWORK_TYPE_2G);
+				m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_2G);
+			}
+
+			m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());		//VIDEO PACKET CONTAINS CURRENT CALL VERSION.
+
+			//m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
+
+			m_pVersionController->SetCurrentCallVersion(min((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
+
+			if (m_pVersionController->GetCurrentCallVersion() >= DEVICE_TYPE_CHECK_START_VERSION)
+				m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.getSenderDeviceType());
+        }
+
+		if( !m_pVersionController->IsFirstVideoPacetReceived() &&  __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())
+			m_pVersionController->NotifyFirstVideoPacetReceived();
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT VVVVVVVVIDEO data packet");
+
+		//CLogPrinter::Log("%d %d %d %d\n", (int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion(), m_pVersionController->GetCurrentCallVersion(), m_pVideoCallSession->GetOponentDeviceType());
+
+//        CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,
+//                             "TheKing--> Finally, CurrentCallVersion = "+ m_Tools.IntegertoStringConvert(m_pVersionController->GetCurrentCallVersion()) +
+//                             ", CurrentVideoQuality = "+ m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetCurrentVideoCallQualityLevel()) +
+//                             ", OppVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOpponentVideoCallQualityLevel()) +
+//                             ", OwnVideoQuality = " + m_Tools.IntegertoStringConvert(m_pVideoCallSession->GetOwnVideoCallQualityLevel()) );
+
+#if 0
+		ExpectedPacket();	//Calculate Expected Video Packet For Debugging.
+		int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
+		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ::Minipacket: FrameNumber: " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber())
+													   + " PacketNumber. : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber()));
+#endif
+
+		m_pEncodedFrameDepacketizer->Depacketize(m_PacketToBeMerged, frameSize, NORMAL_PACKET_TYPE, m_RcvdPacketHeader);
+		toolsObject.SOSleep(0);
 	}
 
 	bDepacketizationThreadClosed = true;
@@ -347,50 +279,6 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() Stopped DepacketizationThreadProcedure method");
 }
 
-void CVideoDepacketizationThread::CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber)
-{
-	unsigned char uchVersion = g_uchSendPacketVersion;
-
-//    if(INVALID_PACKET_NUMBER !=resendPacketNumber && resendFrameNumber % I_INTRA_PERIOD != 0 ) //
-	if(INVALID_PACKET_NUMBER !=resendPacketNumber  && INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE !=resendPacketNumber) //
-	{
-		return;
-	}
-
-	int numberOfPackets = 1000; //dummy numberOfPackets
-
-	CPacketHeader PacketHeader;
-	if (resendPacketNumber == INVALID_PACKET_NUMBER) {
-		//m_miniPacketBandCounter++;
-		if(0 == uchVersion) return;
-
-		PacketHeader.setPacketHeader(uchVersion, *m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
-	}
-	else if (resendPacketNumber == INVALID_PACKET_NUMBER_FOR_NETWORK_TYPE) {
-		//m_miniPacketBandCounter++;
-		//if(0 == uchVersion) return;
-
-		CLogPrinter_WriteSpecific5(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() send INVALID-->> PACKET_NUMBER_FOR_NETWORK_TYPE ");
-		PacketHeader.setPacketHeader(uchVersion, *m_miniPacketBandCounter/*SlotID*/, 0, resendPacketNumber/*Invalid_Packet*/, resendFrameNumber/*BandWidth*/, 0, 0, 0);
-	}
-	else {
-		PacketHeader.setPacketHeader(uchVersion, resendFrameNumber, numberOfPackets, resendPacketNumber, 0, 0, 0, 0);
-		g_timeInt.setTime(resendFrameNumber,resendPacketNumber);
-	}
-
-	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
-
-	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
-
-	m_miniPacket[RETRANSMISSION_SIG_BYTE_INDEX_WITHOUT_MEDIA + 1] |= 1<<BIT_INDEX_MINI_PACKET; //MiniPacket Flag
-
-	if(uchVersion)
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH + 1);
-	else
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, 2, m_miniPacket,PACKET_HEADER_LENGTH_NO_VERSION + 1);
-
-	//m_SendingBuffer.Queue(frameNumber, miniPacket, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
-}
 
 void CVideoDepacketizationThread::UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets)
 {
@@ -410,4 +298,52 @@ void CVideoDepacketizationThread::UpdateExpectedFramePacketPair(pair<int, int> c
 	}
 
 	//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExFrameNumber: "+ m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first) + " ExPacketNo. : "+  m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)+ " ExNumberOfPacket : "+  m_Tools.IntegertoStringConvert(iNumberOfPacketsInCurrentFrame));
+}
+
+
+void CVideoDepacketizationThread::ExpectedPacket()
+{
+	int iPacketType = NORMAL_PACKET;
+
+	int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
+	pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
+
+	if (currentFramePacketPair != ExpectedFramePacketPair /*&& !m_pVideoPacketQueue->PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)*/) //Out of order frame found, need to retransmit
+	{
+		/*
+        string sMsg = "CVideoDepacketizationThread::Current(FN,PN) = ("
+        + m_Tools.IntegertoStringConvert(currentFramePacketPair.first)
+        + ","
+        + m_Tools.IntegertoStringConvert(currentFramePacketPair.second)
+        + ") and Expected(FN,PN) = ("
+        + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.first)
+        + ","
+        + m_Tools.IntegertoStringConvert(ExpectedFramePacketPair.second)
+        + ")" ;
+        //printf("%s\n", sMsg.c_str());
+        */
+
+		if (currentFramePacketPair.first != ExpectedFramePacketPair.first) //different frame received
+		{
+			if (currentFramePacketPair.first - ExpectedFramePacketPair.first == 2) //one complete frame missed, maybe it was a mini frame containing only 1 packet
+			{
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 1");
+			}
+			else if (currentFramePacketPair.first - ExpectedFramePacketPair.first == 1) //last packets from last frame and some packets from current misssed
+			{
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 2");
+			}
+			else//we dont handle burst frame miss, but 1st packets of the current frame should come, only if it is an iFrame
+			{
+				CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 3-- killed previous frames");
+			}
+
+		}
+		else //packet missed from same frame
+		{
+			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CVideoDepacketizationThread::StartDepacketizationThread() ExpectedFramePacketPair case 4");
+		}
+	}
+
+	UpdateExpectedFramePacketPair(currentFramePacketPair, iNumberOfPackets);
 }

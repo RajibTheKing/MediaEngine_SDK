@@ -1,5 +1,6 @@
 #include "VideoEncoderListHandler.h"
 #include "LogPrinter.h"
+#include "ThreadTools.h"
 
 CVideoEncoderListHandler::CVideoEncoderListHandler()
 {

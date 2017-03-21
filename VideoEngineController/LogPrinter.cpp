@@ -1,13 +1,6 @@
 #include "LogPrinter.h"
-
-#ifdef __ANDROID__
-
-#include <android/log.h>
-
-#define LOG_TAG "LibraryLog"
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
-#endif
+#include "../VideoEngineUtilities/LockHandler.h"
+#include "ThreadTools.h"
 
 const std::string CLogPrinter::PRIORITY_NAMES[] =
 {
@@ -26,7 +19,7 @@ bool CLogPrinter::isLogEnable;
 CLogPrinter::CLogPrinter()
 {
 	Priority maxPriority = CLogPrinter::NONE;
-	std::string logFile = "";
+	std::string logFile = "/sdcard/DefaultMediaEnfineLog.txt";
     
     isLogEnable = false;
     
@@ -38,14 +31,17 @@ CLogPrinter::CLogPrinter()
 	logFile = FILE_NAME;
 #endif 
 
-	//if (logFile != "")
-	//{
-	//	instance.maxPriority = maxPriority;
-	//	instance.logFile = logFile;
-	//	instance.fileStream.open(logFile.c_str());
-	//}
-	//else
-	//	instance.maxPriority = CLogPrinter::NONE;
+	//m_pLogPrinterMutex.reset(new CLockHandler);
+
+	/*if (logFile != "")
+	{
+		instance.maxPriority = maxPriority;
+		instance.logFile = logFile;
+		instance.fileStream.open(logFile.c_str());
+	}
+	else
+		instance.maxPriority = CLogPrinter::NONE;
+	 */
 }
 
 void CLogPrinter::Start(Priority maxPriority, const char* logFile)
@@ -64,10 +60,21 @@ void CLogPrinter::Start(Priority maxPriority, const char* logFile)
 	{
 		instance.maxPriority = maxPriority;
 		instance.logFile = tempLogFile;
-		instance.fileStream.open(tempLogFile);
+
+#ifdef	LOG_ENABLED
+
+		instance.fileStream.open(tempLogFile, ofstream::out);
+
+#endif
+
 	}
 	else
 		instance.maxPriority = CLogPrinter::NONE;
+}
+
+CLogPrinter::~CLogPrinter()
+{
+	//SHARED_PTR_DELETE(m_pLogPrinterMutex);
 }
 
 void CLogPrinter::SetLoggerPath(std::string loc)
@@ -77,7 +84,12 @@ void CLogPrinter::SetLoggerPath(std::string loc)
 	if (instance.fileStream.is_open())
 		instance.fileStream.close();
 
-	instance.fileStream.open(loc.c_str());
+#ifdef	LOG_ENABLED
+
+	instance.fileStream.open(loc.c_str(), ofstream::out);
+
+#endif
+
 }
 
 bool CLogPrinter::SetLoggingState(bool loggingState, int logLevel)
@@ -93,6 +105,43 @@ void CLogPrinter::Stop()
 	{
 		instance.fileStream.close();
 	}
+}
+
+void CLogPrinter::Argument_to_String(string &dst, const char *format, va_list ap)
+{
+    int length;
+    va_list apDuplicate;
+    va_copy(apDuplicate, ap);
+    length = vsnprintf(NULL, 0, format, apDuplicate);
+    va_end(apDuplicate);
+    
+    if (length > 0)
+    {
+        dst.resize(length);
+        vsnprintf((char *)dst.data(), dst.size() + 1, format, ap);
+    }
+    else
+    {
+        dst = "Format error! format: ";
+        dst.append(format);
+    }
+}
+
+void CLogPrinter::Log(const char *format, ...)
+{
+    std::string str;
+    va_list vargs;
+    va_start(vargs, format);
+    Argument_to_String(str, format, vargs);
+    va_end(vargs);
+
+    
+#if defined(__ANDROID__)
+    LOGE("%s", str.c_str());
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_IPHONE)
+    printf("%s\n", str.c_str());
+#endif
+
 }
 
 void CLogPrinter::SetPriority(Priority maxPriority)
@@ -146,7 +195,7 @@ void CLogPrinter::Write(Priority priority, const std::string message)
 void CLogPrinter::WriteSpecific(Priority priority, const std::string message)
 {
 
-    if(isLogEnable)
+    //if(isLogEnable)
     {
         
 #ifdef __SPECIFIC_LOG__
@@ -170,7 +219,7 @@ void CLogPrinter::WriteSpecific(Priority priority, const std::string message)
 void CLogPrinter::WriteSpecific2(Priority priority, const std::string message)
 {
 
-    if(isLogEnable)
+    //if(isLogEnable)
     {
 
 
@@ -250,7 +299,7 @@ long long CLogPrinter::WriteForOperationTime(Priority priority, const std::strin
 
 long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::string message, bool calculatedTime, long long prevTime)
 {
-	if (isLogEnable)
+	if (isLogEnabled)
 	{
 		if (calculatedTime)
 		{
@@ -290,6 +339,24 @@ long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::
 	}
 
 	return -1;
+}
+
+void CLogPrinter::WriteFileLog(Priority priority, int isLogEnabled, const std::string message)
+{
+	//Locker lock(*m_pLogPrinterMutex);
+
+#ifdef __ANDROID__
+
+	if(isLogEnabled)
+	{
+
+		ostream& stream = instance.fileStream.is_open() ? instance.fileStream : std::cout;
+		stream << GetDateTime() << PRIORITY_NAMES[priority] << ": " << message << endl;
+
+	}
+
+#endif
+
 }
 
 void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)

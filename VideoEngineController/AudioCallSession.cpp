@@ -2,358 +2,1613 @@
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "InterfaceOfAudioVideoEngine.h"
+#include "AudioPacketizer.h"
+#include "AudioDePacketizer.h"
+
+//#define __AUDIO_SELF_CALL__
+//#define FIRE_ENC_TIME
+
+#ifdef LOCAL_SERVER_LIVE_CALL
+#define LOCAL_SERVER_IP "192.168.0.120"
+#endif
+
+#define __DUPLICATE_AUDIO__
+
+#ifdef USE_AECM
+#include "Echo.h"
+#endif
+#ifdef USE_ANS
+#include "Noise.h"
+#endif
+#ifdef USE_AGC
+#include "Gain.h"
+#endif
+#ifdef USE_VAD
+#include "Voice.h"
+#endif
+#include "GomGomGain.h"
+
+
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    #include <dispatch/dispatch.h>
+#include <dispatch/dispatch.h>
 #endif
-//#include <android/log.h>
 
-//#define LOG_TAG "NewTest"
-//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define OPUS_ENABLED
+//#define __DUMP_FILE__
 
-CAudioCallSession::CAudioCallSession(LongLong fname, CCommonElementsBucket* sharedObject) :
+#ifdef __DUMP_FILE__
+FILE *FileInput;
+FILE *FileOutput;
+FILE *FileInputWithEcho;
+FILE *FileInputMuxed;
+FILE *FileInputPreGain;
+#endif
 
-m_pCommonElementsBucket(sharedObject)
 
+//#define USE_ECHO2
+
+#define __TIMESTAMP_MOD__ 100000
+
+#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 2
+#define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 10
+#define CONSECUTIVE_AUDIO_PACKET_DELY 25
+
+
+
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
+m_pCommonElementsBucket(pSharedObject),
+m_bIsCheckCall(bIsCheckCall),
+m_nServiceType(nServiceType),
+m_llLastPlayTime(0),
+m_bIsAECMFarEndThreadBusy(false),
+m_bIsAECMNearEndThreadBusy(false)
 {
-	m_pSessionMutex.reset(new CLockHandler);
-	friendID = fname;
-    
-    StartEncodingThread();
-    StartDecodingThread();
+	m_pAudioPacketizer = new AudioPacketizer(this, pSharedObject);
+	m_pAudioDePacketizer = new AudioDePacketizer(this);
+	m_iRole = CALL_NOT_RUNNING;
+	m_bLiveAudioStreamRunning = false;
+	m_pGomGomGain = new CGomGomGain(123);
 
+	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
+	{
+		m_bLiveAudioStreamRunning = true;
+		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
+		m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, this);
+		m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
+	}
+
+
+	m_pAudioCallSessionMutex.reset(new CLockHandler);
+	m_FriendID = llFriendID;
+
+#ifdef AAC_ENABLED
+	m_cAac = new CAac();
+	m_cAac->SetParameters(44100, 2);
+#endif
+
+	StartEncodingThread();
+	StartDecodingThread();
+
+	m_SendingHeader = new CAudioPacketHeader();
+	m_ReceivingHeader = new CAudioPacketHeader();
+
+	m_MyAudioHeadersize = m_SendingHeader->GetHeaderSize();
+
+	m_llEncodingTimeStampOffset = m_Tools.CurrentTimestamp();
+	m_llDecodingTimeStampOffset = -1;
+	m_iPacketNumber = 0;
+	m_iLastEvenStoredPacket = -1;
+	m_iLastDecodedPacketNumber = -1;
+	m_iSlotID = 0;
+	m_iPrevRecvdSlotID = -1;
+	m_iCurrentRecvdSlotID = -1;
+	m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
+	m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
+	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
+
+	m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[INF_PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+
+    if(m_bLiveAudioStreamRunning)
+	{
+		m_iRawDataSendIndexViewer = 0;
+		m_iRawDataSendIndexCallee = 0;
+		m_vRawFrameLengthViewer.clear();
+		m_vRawFrameLengthCallee.clear();
+	}
+
+	m_bUsingLoudSpeaker = false;
+	m_bEchoCancellerEnabled = true;
+
+	if(m_bLiveAudioStreamRunning)
+	{
+		//m_bEchoCancellerEnabled = false;
+	}
+
+#ifdef USE_AECM
+	m_pEcho = new CEcho(66);
+#ifdef USE_ECHO2
+	m_pEcho2 = new CEcho(77);
+#endif
+#endif
+
+#ifdef USE_ANS
+	m_pNoise = new CNoise();
+#endif
+
+#ifdef USE_AGC
+	m_pRecorderGain = new CGain();
+	m_pPlayerGain = new CGain();
+#endif
+
+#ifdef USE_VAD
+	m_pVoice = new CVoice();
+#endif
+
+	
+	m_iAudioVersionFriend = -1;
+	if(m_bLiveAudioStreamRunning)
+	{
+		m_iAudioVersionSelf = __AUDIO_LIVE_VERSION__;
+	}
+	else {
+		m_iAudioVersionSelf = __AUDIO_CALL_VERSION__;
+	}
+#ifdef LOCAL_SERVER_LIVE_CALL
+	m_clientSocket = VideoSockets::GetInstance();
+	m_clientSocket->SetAudioCallSession(this);
+#endif
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
 CAudioCallSession::~CAudioCallSession()
 {
-    StopDecodingThread();
-    StopEncodingThread();
-
-
-    delete m_pG729CodecNative;
-
-    
-	/*if (NULL != m_pAudioDecoder)
+	if (NULL != m_pAudioPacketizer)
 	{
-		delete m_pAudioDecoder;
-
-		m_pAudioDecoder = NULL;
+		delete m_pAudioPacketizer;
+		m_pAudioPacketizer = NULL;
 	}
 
-	if (NULL != m_pAudioEncoder)
+	if (NULL != m_pAudioDePacketizer)
 	{
-		delete m_pAudioEncoder;
+		delete m_pAudioDePacketizer;
+		m_pAudioDePacketizer = NULL;
+	}
+	
+	StopDecodingThread();
+	StopEncodingThread();
 
-		m_pAudioEncoder = NULL;
-	}*/
+#ifdef AAC_ENABLED
+	if (m_cAac != nullptr){
+		delete m_cAac;
+		m_cAac = nullptr;
+	}
+#endif
 
-	friendID = -1;
+#ifdef OPUS_ENABLED
+	delete m_pAudioCodec;
+#else
+	delete m_pG729CodecNative;
+#endif
+#ifdef USE_AECM
+	if (m_pEcho != nullptr)
+	{
+	delete m_pEcho;
+		m_pEcho = nullptr;
+	}
+#ifdef USE_ECHO2
+	if (m_pEcho2 != nullptr)
+	{
+	delete m_pEcho2;
+		m_pEcho2 = nullptr;
+	}
+#endif
+#endif
+#ifdef USE_ANS
+	delete m_pNoise;
+#endif
+#ifdef USE_AGC
+	delete m_pRecorderGain;
+	delete m_pPlayerGain;
+#endif
+#ifdef USE_VAD
+	delete m_pVoice;
+#endif
 
-	SHARED_PTR_DELETE(m_pSessionMutex);
+	delete m_pGomGomGain;
+
+
+	if (m_bLiveAudioStreamRunning)
+	{
+		if (NULL != m_pLiveReceiverAudio)
+		{
+			delete m_pLiveReceiverAudio;
+			m_pLiveReceiverAudio = NULL;
+		}
+
+		if (NULL != m_pLiveAudioReceivedQueue)
+		{
+			delete m_pLiveAudioReceivedQueue;
+
+			m_pLiveAudioReceivedQueue = NULL;
+		}
+	}
+
+	if (NULL != m_SendingHeader)
+	{
+		delete m_SendingHeader;
+	}
+
+	if(NULL != m_ReceivingHeader)
+	{
+		delete m_ReceivingHeader;
+	}
+
+	m_FriendID = -1;
+#ifdef __DUMP_FILE__
+	fclose(FileOutput);
+	fclose(FileInput);
+	fclose(FileInputWithEcho);
+	fclose(FileInputPreGain);
+#endif
+
+	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 }
 
-LongLong CAudioCallSession::GetFriendID()
-{
-	return friendID;
-}
-
-void CAudioCallSession::InitializeAudioCallSession(LongLong lFriendID)
+void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
-	//this->m_pAudioEncoder = new CAudioEncoder(m_pCommonElementsBucket);
+	//this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket);
 
-	//m_pAudioEncoder->CreateAudioEncoder();
-
-	//this->m_pAudioDecoder = new CAudioDecoder(m_pCommonElementsBucket);
+	//m_pAudioCodec->CreateAudioEncoder();
 
 	//m_pAudioDecoder->CreateAudioDecoder();
-
+#ifdef OPUS_ENABLED
+	this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket, this, llFriendID);
+	m_pAudioCodec->CreateAudioEncoder();
+#else
 	m_pG729CodecNative = new G729CodecNative();
 	int iRet = m_pG729CodecNative->Open();
+#endif
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
 }
 
-long long iMS = -1;
-int iAudioDataCounter = 0;
-
-int CAudioCallSession::EncodeAudioData(short *in_data, unsigned int in_size)
-{
-    /*
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1");
-	int size = m_pG729CodecNative->Encode(in_data, in_size, &m_EncodedFrame[1]);
-    m_EncodingFrame[0] = 0;
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
-
-    //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodingFrame);
-
-    m_pCommonElementsBucket->SendFunctionPointer(friendID,1,m_EncodedFrame,size);
-    
-    return 1;
-    */
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-    
-    
-    /*iAudioDataCounter++;
-    if(iMS == -1) iMS = m_Tools.CurrentTimestamp();
-    if(m_Tools.CurrentTimestamp() - iMS >= 1000)
-    {
-        printf("TheVampire--> Number of AudioData in 1Sec = %d\n", iAudioDataCounter);
-        iAudioDataCounter = 0;
-        iMS = m_Tools.CurrentTimestamp();
-    }*/
-    
-    int returnedValue = m_EncodingBuffer.Queue(in_data, in_size);
-    
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
-
-    return returnedValue;
+bool CAudioCallSession::getIsAudioLiveStreamRunning(){
+	return m_bLiveAudioStreamRunning;
 }
 
-int CAudioCallSession::DecodeAudioData(unsigned char *in_data, unsigned int in_size)
+void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
-    if(in_size > 200)
-    {
-        CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData BIG AUDIO !!!");
-        return 0;
-    }
-    
-    /*CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData in_size " + m_Tools.IntegertoStringConvert(in_size));
-    
-	int size = m_pG729CodecNative->Decode(&in_data[1], in_size-1, m_DecodedFrame);
-    
-    CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "CController::DecodeAudioData size " + m_Tools.IntegertoStringConvert(size));
-    
-	m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(friendID, size, m_DecodedFrame);
-    
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::DecodeAudioData 3");
-     
-    return 1;*/
-    
-    int returnedValue = m_DecodingBuffer.Queue(&in_data[1], in_size-1);
+	return;
+#ifdef USE_AECM
+	m_bEchoCancellerEnabled = /*bOn*/ true;
+#endif
+}
+
+
+void CAudioCallSession::StartCallInLive(int iRole)
+{
+	if (iRole != VIEWER_IN_CALL && iRole != PUBLISHER_IN_CALL)//Unsupported or inaccessible role
+	{
+		return;
+	}
+	if (m_iRole != CALL_NOT_RUNNING)//Call inside a call
+	{
+		return;
+	}
+
+	m_pLiveReceiverAudio->m_bIsRoleChanging = true;
+	while (m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
+	{
+		m_Tools.SOSleep(1);
+	}
+
+	//LOGE("### Start call in live");
+	m_iRole = iRole;
+
+#ifdef USE_AECM
+	if (m_pEcho == nullptr)
+	{
+		m_pEcho = new CEcho(66);
+	}
+#ifdef USE_ECHO2
+	if (m_pEcho2 == nullptr)
+	{
+		m_pEcho2 = new CEcho(77);
+	}
+#endif
+#endif
+
+	if (m_iRole == PUBLISHER_IN_CALL)
+	{
+#ifdef LOCAL_SERVER_LIVE_CALL
+		m_clientSocket->InitializeSocket(LOCAL_SERVER_IP, 60001);
+#endif
+		m_AudioDecodedBuffer.ResetBuffer(); //Contains Data From Last Call
+		m_AudioReceivedBuffer.ResetBuffer(); //Contains Data From Last Call
+		m_iRawDataSendIndexCallee = 0; //Contains Data From Last Call
+		m_vRawFrameLengthCallee.clear(); //Contains Data From Last Call
+	}
+	else if (m_iRole == VIEWER_IN_CALL)
+	{
+#ifdef LOCAL_SERVER_LIVE_CALL
+		m_clientSocket->InitializeSocket(LOCAL_SERVER_IP, 60002);
+#endif
+		m_pLiveAudioReceivedQueue->ResetBuffer(); //Contains Data From Live Stream
+		m_AudioReceivedBuffer.ResetBuffer(); //Contains Data From Last Call
+		m_iRawDataSendIndexCallee = 0; //Contains Data From Last Call when viewer was a publisher
+		m_vRawFrameLengthCallee.clear(); //Contains Data From Last Call when viewer was a publisher
+	}
+
+	m_Tools.SOSleep(20);
+
+	m_llDecodingTimeStampOffset = -1;
+	m_pAudioDePacketizer->ResetDepacketizer();
+#ifdef __DUMP_FILE__
+	if (m_iRole == PUBLISHER_IN_CALL)
+	{
+		FileInputMuxed= fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
+	}
+#endif
+	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
+}
+
+void CAudioCallSession::EndCallInLive()
+{
+	if (m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL)//Call Not Running
+	{
+		return;
+	}
+	m_pLiveReceiverAudio->m_bIsRoleChanging = true;
+	while (m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
+	{
+		m_Tools.SOSleep(1);
+	}
+
+#ifdef __DUMP_FILE__
+	if (m_iRole == PUBLISHER_IN_CALL)
+	{
+		fclose(FileInputMuxed);
+	}
+#endif
+
+	m_pLiveAudioReceivedQueue->ResetBuffer();
+	m_AudioReceivedBuffer.ResetBuffer();
+
+	m_Tools.SOSleep(20);
+
+#ifdef USE_AECM
+	if (m_pEcho != nullptr)
+	{
+		while (m_bIsAECMNearEndThreadBusy || m_bIsAECMFarEndThreadBusy )
+		{
+			m_Tools.SOSleep(1);
+		}
+
+		delete m_pEcho;
+		m_pEcho = nullptr;
+	}
+#ifdef USE_ECHO2
+	if (m_pEcho2 != nullptr)
+	{
+		delete m_pEcho2;
+		m_pEcho2 = nullptr;
+	}
+#endif
+#endif
+
+	m_iRole = CALL_NOT_RUNNING;
+	m_llDecodingTimeStampOffset = -1;
+	m_pAudioDePacketizer->ResetDepacketizer();
+	m_pLiveReceiverAudio->m_bIsRoleChanging = false;
+}
+
+int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
+{
+//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
+	if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
+	{
+		ALOG("Invalid Audio Frame Length");
+		return -1;
+	}
+	//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+	long long llCurrentTime = Tools::CurrentTimestamp();
+	LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
+#ifdef USE_AECM
+	if (m_bEchoCancellerEnabled && 
+		(!m_bLiveAudioStreamRunning || 
+		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
+	{
+		m_bIsAECMNearEndThreadBusy = true;
+#ifdef USE_ECHO2
+		if (m_pEcho2 != nullptr)
+		{
+			m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
+		}
+#endif
+#ifdef __DUMP_FILE__
+		fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
+#endif // __DUMP_FILE__
+		if (m_pEcho != nullptr)
+		{
+			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+#ifdef __DUMP_FILE__
+			fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
+#endif
+		}
+		m_bIsAECMNearEndThreadBusy = false;
+	}
+#endif
+	int returnedValue = m_AudioEncodingBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
 
 	return returnedValue;
 }
 
-CAudioEncoder* CAudioCallSession::GetAudioEncoder()
+int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 {
-	//	return sessionMediaList.GetFromAudioEncoderList(mediaName);
-
-	return m_pAudioEncoder;
+	LOG_50MS("_+_+ FarEnd Time= %lld", Tools::CurrentTimestamp());
+#ifdef USE_AECM
+	if (m_bEchoCancellerEnabled && 
+		(!m_bLiveAudioStreamRunning || 
+		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
+	{
+		m_bIsAECMFarEndThreadBusy = true;
+#ifdef USE_ECHO2
+		if (m_pEcho2 != nullptr)
+		{
+			m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+		}
+#endif
+		if (m_pEcho != nullptr)
+		{
+			m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning(), m_bUsingLoudSpeaker);
+		}
+		m_bIsAECMFarEndThreadBusy = false;
+	}
+#endif
+	return true;
 }
 
-CAudioDecoder* CAudioCallSession::GetAudioDecoder()
+void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 {
-	//	return sessionMediaList.GetFromAudioEncoderList(mediaName);
-
-	return m_pAudioDecoder;
+#ifdef USE_AGC
+	//if (!m_bLiveAudioStreamRunning)
+	{
+		if (bRecorder)
+		{
+			m_pRecorderGain->SetGain(iVolume);
+		}
+		else
+		{
+			m_pPlayerGain->SetGain(iVolume);
+		}
+	}
+#endif
 }
 
+void CAudioCallSession::SetLoudSpeaker(bool bOn)
+{
+#ifdef USE_AGC
+	/*if (m_bUsingLoudSpeaker != bOn)
+	{
+	m_bUsingLoudSpeaker = bOn;
+	if (bOn)
+	{
+	m_iVolume = m_iVolume * 1.0 / LS_RATIO;
+	}
+	else
+	{
+	m_iVolume *= LS_RATIO;
+	}
+	}*/
+	//This method may be used in future.
+#endif
+	m_bUsingLoudSpeaker = bOn;
+	/*
+	#ifdef USE_AECM
+	delete m_pEcho;
+	m_pEcho = new CEcho(66);
+	#ifdef USE_ECHO2
+	delete m_pEcho2;
+	m_pEcho2 = new CEcho(77);
+	#endif
+	#endif*/
+}
+
+int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+{
+	if (m_bLiveAudioStreamRunning && (m_iRole != PUBLISHER_IN_CALL))
+	{
+		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
+		return 1;
+	}
+
+	int returnedValue = m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
+
+	return returnedValue;
+}
+
+CAudioCodec* CAudioCallSession::GetAudioCodec()
+{
+	return m_pAudioCodec;
+}
 
 void CAudioCallSession::StopEncodingThread()
 {
-    //if (pInternalThread.get())
-    {
-        bEncodingThreadRunning = false;
-        
-        while (!bEncodingThreadClosed)
-            m_Tools.SOSleep(5);
-    }
-    
-    //pInternalThread.reset();
+	//if (pInternalThread.get())
+	{
+		m_bAudioEncodingThreadRunning = false;
+
+		while (!m_bAudioEncodingThreadClosed)
+			m_Tools.SOSleep(5);
+	}
+
+	//pInternalThread.reset();
+}
+
+void CAudioCallSession::MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength)
+{
+	int nSum = 0;
+	for (int i = 0; i < iDataLength; i++)
+	{
+		pMuxedData[i] = pData1[i] + pData2[i];
+
+		nSum = (int)pData1[i] + pData2[i];
+
+		if(nSum > SHRT_MAX) {
+			pMuxedData[i] = SHRT_MAX;
+			LOG_50MS("_+_+ Over = %d",nSum);
+		}
+		else if(nSum < SHRT_MIN) {
+			pMuxedData[i] = SHRT_MIN;
+			LOG_50MS("_+_+ Under = %d",nSum);
+		}
+	}
 }
 
 void CAudioCallSession::StartEncodingThread()
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 1");
-    
-    if (pEncodingThread.get())
-    {
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 2");
-        
-        pEncodingThread.reset();
-        
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 3");
-        
-        return;
-    }
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 4");
-    
-    bEncodingThreadRunning = true;
-    bEncodingThreadClosed = false;
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 5");
-    
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 1");
+
+	if (m_pAudioEncodingThread.get())
+	{
+		m_pAudioEncodingThread.reset();
+
+		return;
+	}
+	//LOGE("##EN### im running");
+	m_bAudioEncodingThreadRunning = true;
+	m_bAudioEncodingThreadClosed = false;
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    
-    dispatch_queue_t EncodeThreadQ = dispatch_queue_create("EncodeThreadQ",DISPATCH_QUEUE_CONCURRENT);
-    dispatch_async(EncodeThreadQ, ^{
-        this->EncodingThreadProcedure();
-    });
-    
+
+	dispatch_queue_t EncodeThreadQ = dispatch_queue_create("EncodeThreadQ", DISPATCH_QUEUE_CONCURRENT);
+	dispatch_async(EncodeThreadQ, ^{
+		this->EncodingThreadProcedure();
+	});
+
 #else
-    
-    std::thread myThread(CreateAudioEncodingThread, this);
-    myThread.detach();
-    
+
+	std::thread myThread(CreateAudioEncodingThread, this);
+	myThread.detach();
+
 #endif
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread Encoding Thread started");
-    
-    return;
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread Encoding Thread started");
+
+	return;
 }
 
 void *CAudioCallSession::CreateAudioEncodingThread(void* param)
 {
-    CAudioCallSession *pThis = (CAudioCallSession*)param;
-    pThis->EncodingThreadProcedure();
-    
-    return NULL;
+	CAudioCallSession *pThis = (CAudioCallSession*)param;
+	pThis->EncodingThreadProcedure();
+
+	return NULL;
 }
 
+#ifdef FIRE_ENC_TIME
+int encodingtimetimes = 0, cumulitiveenctime = 0;
+#endif
+
+void CAudioCallSession::MuxIfNeeded()
+{
+	long long lastDecodedTimeStamp;
+	if (m_bLiveAudioStreamRunning && m_iRole == PUBLISHER_IN_CALL)
+	{
+		int nLastDecodedFrameSize = 0;
+		if (m_AudioDecodedBuffer.GetQueueSize() != 0)
+		{
+			nLastDecodedFrameSize = m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame, lastDecodedTimeStamp);
+			if (nLastDecodedFrameSize == CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning)) //Both must be 800
+			{
+				MuxAudioData(m_saAudioRecorderFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize);
+			}
+			else
+			{
+				nLastDecodedFrameSize = 0;
+			}
+		}
+		if (nLastDecodedFrameSize == 0)
+		{
+			memcpy(m_saAudioMUXEDFrame, m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short));
+		}
+#ifdef __DUMP_FILE__
+		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputMuxed);
+#endif
+	}
+}
+
+void CAudioCallSession::DumpEncodingFrame()
+{
+#ifdef __DUMP_FILE__
+	fwrite(m_saAudioRecorderFrame, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInput);
+#endif
+}
+
+void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & llCapturedTime)
+{
+
+	__LOG("#WQ Relative Time Counter: %d-------------------------------- NO: %lld\n", cnt, llCapturedTime - llLasstTime);
+	cnt++;
+	llLasstTime = llCapturedTime;
+	countFrame++;
+	llRelativeTime = llCapturedTime - m_llEncodingTimeStampOffset;
+}
+
+bool CAudioCallSession::PreProcessAudioBeforeEncoding()
+{
+	//if (!m_bLiveAudioStreamRunning)
+	{
+#ifdef USE_VAD			
+		if (!m_pVoice->HasVoice(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning)))
+		{
+			return false;
+		}
+#endif
+
+
+#ifdef USE_AGC
+		m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
+		m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), getIsAudioLiveStreamRunning());
+#endif
+
+
+#ifdef USE_ANS
+		memcpy(m_saAudioEncodingTempFrame, m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short));
+		m_pNoise->Denoise(m_saAudioEncodingTempFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), m_saAudioEncodingDenoisedFrame, getIsAudioLiveStreamRunning());
+#ifdef USE_AECM
+
+		memcpy(m_saAudioRecorderFrame, m_saAudioEncodingDenoisedFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
+#else
+		memcpy(m_saAudioRecorderFrame, m_saAudioEncodingDenoisedFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning));
+#endif
+#endif
+	}
+	return true;
+}
+
+void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &encodingTime, double &avgCountTimeStamp)
+{
+#ifdef OPUS_ENABLED
+	if (m_bLiveAudioStreamRunning == false)
+	{
+		m_nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
+		
+		//ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
+		encodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
+		m_pAudioCodec->DecideToChangeComplexity(encodingTime);
+	}
+	else
+	{
+		if (m_iRole == PUBLISHER_IN_CALL)
+		{
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short);
+			memcpy(&m_ucaRawFrameMuxed[1 + m_MyAudioHeadersize], m_saAudioMUXEDFrame, m_nRawFrameSize);
+
+			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
+		}
+		else if (m_iRole == VIEWER_IN_CALL)
+		{
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short);
+			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize );
+		}
+		else //Should only work for PUBLISHER when CALL_NOT_RUNNING
+		{
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) * sizeof(short);
+			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
+		}
+	}
+	avgCountTimeStamp += encodingTime;
+
+	if (!m_bLiveAudioStreamRunning) {
+#ifdef FIRE_ENC_TIME
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_ENCODING_TIME, encodingTime, 0);
+		cumulitiveenctime += encodingTime;
+		encodingtimetimes++;
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_FIRE_AVG_ENCODING_TIME, cumulitiveenctime * 1.0 / encodingtimetimes, 0);
+#endif
+	}
+#else
+	nEncodedFrameSize = m_pG729CodecNative->Encode(m_saAudioRecorderFrame, nEncodingFrameSize, &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
+	encodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
+	avgCountTimeStamp += encodingTime;
+#endif
+	//            if (countFrame % 100 == 0)
+	//                ALOG("#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize)
+	//                     + " nEncodedFrameSize = " + m_Tools.IntegertoStringConvert(nEncodedFrameSize) + " ratio: " + m_Tools.DoubleToString((nEncodedFrameSize * 100) / nEncodingFrameSize)
+	//                     + " EncodeTime: " + m_Tools.IntegertoStringConvert(encodingTime)
+	//                     + " AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame)
+	//                     + " MaxFrameNumber: " + m_Tools.IntegertoStringConvert(m_nMaxAudioPacketNumber));
+}
+
+void CAudioCallSession::AddHeader(int &version, long long &llRelativeTime)
+{
+	m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
+	m_iSlotID %= m_SendingHeader->GetFieldCapacity(INF_SLOTNUMBER);
+
+	if (!m_bLiveAudioStreamRunning)
+	{
+		BuildAndGetHeaderInArray(m_iNextPacketType, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nEncodedFrameSize,
+			m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaEncodedFrame[1]);
+	}
+	else
+	{
+		if (m_iRole == PUBLISHER_IN_CALL)
+		{
+			BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+			BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameMuxed[1]);
+		}
+		else if (m_iRole == VIEWER_IN_CALL)
+		{
+			BuildAndGetHeaderInArray(AUDIO_LIVE_CALLEE_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize / 2,
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+		}
+		else
+		{
+			BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+		}
+	}
+
+	m_ucaRawFrameNonMuxed[0] = 0;   //Setting Audio packet type( = 0).
+	m_ucaRawFrameMuxed[0] = 0;   //Setting Audio packet type( = 0).
+	m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
+}
+
+void CAudioCallSession::SetAudioIdentifierAndNextPacketType()
+{
+	++m_iPacketNumber;
+	if (m_iPacketNumber == m_llMaxAudioPacketNumber)
+	{
+		m_iPacketNumber = 0;
+	}
+
+	if (false == m_bLiveAudioStreamRunning && m_iNextPacketType == AUDIO_NOVIDEO_PACKET_TYPE)
+	{
+		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
+	}
+}
+
+void CAudioCallSession::SendAudioData(Tools toolsObject)
+{
+#ifdef  __AUDIO_SELF_CALL__
+	if (m_bLiveAudioStreamRunning == false)
+	{
+		ALOG("#A#EN#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
+		m_AudioReceivedBuffer.EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
+		return;
+	}
+#endif
+	if (m_bIsCheckCall != LIVE_CALL_MOOD)	//Capability test call
+	{
+		return;
+	}
+
+
+	if (m_bLiveAudioStreamRunning)
+	{
+		if (m_iRole == PUBLISHER_IN_CALL)
+		{
+			Locker lock(*m_pAudioCallSessionMutex);
+			if ((m_iRawDataSendIndexViewer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+			{
+
+				memcpy(m_ucaRawDataToSendViewer + m_iRawDataSendIndexViewer, m_ucaRawFrameMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
+				m_iRawDataSendIndexViewer += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
+				m_vRawFrameLengthViewer.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			}
+#ifndef LOCAL_SERVER_LIVE_CALL
+			if ((m_iRawDataSendIndexCallee + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+			{
+				memcpy(m_ucaRawDataToSendCallee + m_iRawDataSendIndexCallee, m_ucaRawFrameNonMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
+				m_iRawDataSendIndexCallee += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
+				m_vRawFrameLengthCallee.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			}
+#else
+			m_clientSocket->SendToServer(m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1);
+#endif
+		}
+#if 0		
+		else if (m_iRole == VIEWER_IN_CALL)
+		{
+#ifndef LOCAL_SERVER_LIVE_CALL
+#ifndef NO_CONNECTIVITY			
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());	//Need to check send type.
+#else
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, m_ucaRawFrameNonMuxed);
+#endif
+#else
+			m_clientSocket->SendToServer(m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1);
+#endif
+		}
+#endif
+		else
+		{
+			Locker lock(*m_pAudioCallSessionMutex);
+			if ((m_iRawDataSendIndexViewer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+			{
+				memcpy(m_ucaRawDataToSendViewer + m_iRawDataSendIndexViewer, m_ucaRawFrameNonMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
+				m_iRawDataSendIndexViewer += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
+				m_vRawFrameLengthViewer.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			}
+		}
+
+	}
+	else
+	{
+#ifndef NO_CONNECTIVITY
+		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
+#else
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+#endif
+
+#ifdef  __DUPLICATE_AUDIO__
+		if (false == m_bLiveAudioStreamRunning && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
+		{
+			toolsObject.SOSleep(5);
+#ifndef NO_CONNECTIVITY
+			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
+#else
+			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+#endif
+		}
+#endif
+	}
+
+}
+
+
+/****************************************EncodingThreadProcedure*****************************************/
 void CAudioCallSession::EncodingThreadProcedure()
 {
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
-    Tools toolsObject;
-    int frameSize, encodedFrameSize;
-    
-    while (bEncodingThreadRunning)
-    {
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodingThreadProcedure");
-        
-        if (m_EncodingBuffer.GetQueueSize() == 0)
-            toolsObject.SOSleep(10);
-        else
-        {
-            frameSize = m_EncodingBuffer.DeQueue(m_EncodingFrame);
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+#ifdef __DUMP_FILE__
+	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
+	FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
+	FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
+#endif
+	Tools toolsObject;
+	long long encodingTime = 0;
+	long long llCapturedTime = 0;
+	double avgCountTimeStamp = 0;
+	int countFrame = 0;
+    int version = 0;
+	long long llRelativeTime = 0;	
 
-            CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData 1, frameSize = " + m_Tools.IntegertoStringConvert(frameSize));
-            int size;
+	long long llLasstTime = -1;
+	int cnt = 1;
+	while (m_bAudioEncodingThreadRunning)
+	{
+		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
+			toolsObject.SOSleep(10);
+		else
+		{
+			m_AudioEncodingBuffer.DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+			MuxIfNeeded();
+			DumpEncodingFrame();
+			PrintRelativeTime(cnt, llLasstTime, countFrame, llRelativeTime, llCapturedTime);
 
+			if (false == PreProcessAudioBeforeEncoding())
+			{
+				continue;
+			}
 
-            size = m_pG729CodecNative->Encode(m_EncodingFrame, frameSize, &m_EncodedFrame[1]);
+			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
 
-            m_EncodedFrame[0] = 0;
-            
-            CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData encoded");
-            
-            //m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(1, size, m_EncodedFrame);
-            
-            m_pCommonElementsBucket->SendFunctionPointer(friendID,1,m_EncodedFrame,size);
+			if (m_bLiveAudioStreamRunning && VIEWER_IN_CALL == m_iRole)
+			{
+				m_pAudioPacketizer->Packetize(
+					true /*bool bShouldPacketize*/,
+					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
+					m_nRawFrameSize /*int nDataLength*/,
+					m_iPacketNumber /*int nFrameNumber*/,
+					AUDIO_LIVE_CALLEE_PACKET_TYPE /*int packetType*/,
+					0 /*int networkType*/,
+					version /*int version*/,
+					llRelativeTime /*long long llRelativeTime*/, 
+					0 /*int channel*/,
+					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
+					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
+					m_FriendID /*long long llFriendID*/);
 
-            toolsObject.SOSleep(0);
-            
-        }
-    }
-    
-    bEncodingThreadClosed = true;
-    
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+				 SetAudioIdentifierAndNextPacketType();
+			}
+			else {
+				AddHeader(version, llRelativeTime);
+				SetAudioIdentifierAndNextPacketType();
+				SendAudioData(toolsObject);
+			}
+
+			toolsObject.SOSleep(0);
+		}
+	}
+
+	m_bAudioEncodingThreadClosed = true;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
 void CAudioCallSession::StopDecodingThread()
 {
-    //if (pDecodingThread.get())
-    {
-        bDecodingThreadRunning = false;
-        
-        while (!bDecodingThreadClosed)
-            m_Tools.SOSleep(5);
-    }
-    
-    //pDecodingThread.reset();
+	//if (m_pAudioDecodingThread.get())
+	{
+		m_bAudioDecodingThreadRunning = false;
+
+		while (!m_bAudioDecodingThreadClosed)
+			m_Tools.SOSleep(5);
+	}
+
+	//m_pAudioDecodingThread.reset();
 }
 
 void CAudioCallSession::StartDecodingThread()
 {
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 1");
-    
-    if (pDecodingThread.get())
-    {
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 2");
-        
-        pDecodingThread.reset();
-        
-        CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 3");
-        
-        return;
-    }
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 4");
-    
-    bDecodingThreadRunning = true;
-    bDecodingThreadClosed = false;
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 5");
-    
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 1");
+
+	if (m_pAudioDecodingThread.get())
+	{
+		m_pAudioDecodingThread.reset();
+
+		return;
+	}
+
+	m_bAudioDecodingThreadRunning = true;
+	m_bAudioDecodingThreadClosed = false;
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    
-    dispatch_queue_t DecodeThreadQ = dispatch_queue_create("DecodeThreadQ",DISPATCH_QUEUE_CONCURRENT);
-    dispatch_async(DecodeThreadQ, ^{
-        this->DecodingThreadProcedure();
-    });
-    
+
+	dispatch_queue_t DecodeThreadQ = dispatch_queue_create("DecodeThreadQ", DISPATCH_QUEUE_CONCURRENT);
+	dispatch_async(DecodeThreadQ, ^{
+		this->DecodingThreadProcedure();
+	});
+
 #else
-    
-    std::thread myThread(CreateAudioDecodingThread, this);
-    myThread.detach();
-    
+
+	std::thread myThread(CreateAudioDecodingThread, this);
+	myThread.detach();
+
 #endif
-    
-    CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread Decoding Thread started");
-    
-    return;
+
+	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread Decoding Thread started");
+
+	return;
 }
 
 void *CAudioCallSession::CreateAudioDecodingThread(void* param)
 {
-    CAudioCallSession *pThis = (CAudioCallSession*)param;
-    pThis->DecodingThreadProcedure();
-    
-    return NULL;
+	CAudioCallSession *pThis = (CAudioCallSession*)param;
+	pThis->DecodingThreadProcedure();
+
+	return NULL;
 }
 
+bool CAudioCallSession::IsQueueEmpty(Tools &toolsObject)
+{
+	if (m_bLiveAudioStreamRunning)
+	{
+#ifdef LOCAL_SERVER_LIVE_CALL
+		if ((m_iRole == PUBLISHER_IN_CALL || m_iRole == VIEWER_IN_CALL) && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
+		{
+			toolsObject.SOSleep(5);
+			return true;
+		}
+		else if (m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
+		{
+			toolsObject.SOSleep(5);
+			return true;
+		}
+#else
+		if (m_iRole == PUBLISHER_IN_CALL && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
+		{
+			toolsObject.SOSleep(5);
+			return true;
+		}
+		else if (m_iRole != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
+		{
+			toolsObject.SOSleep(5);
+			return true;
+		}
+#endif
+	}
+	else if (m_AudioReceivedBuffer.GetQueueSize() == 0)
+	{
+		toolsObject.SOSleep(10);
+		return true;
+	}
+	return false;
+}
+
+void CAudioCallSession::DequeueData(int &m_nDecodingFrameSize)
+{
+	if (m_bLiveAudioStreamRunning)
+	{
+#ifndef LOCAL_SERVER_LIVE_CALL
+		if (m_iRole != PUBLISHER_IN_CALL)
+		{
+			m_nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+		}
+		else
+		{
+			m_nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+		}
+#else
+		if (m_iRole == PUBLISHER_IN_CALL || m_iRole == VIEWER_IN_CALL)
+		{
+			m_nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+		}
+		else
+		{
+			m_nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+		}
+#endif
+	}
+	else
+	{
+		m_nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+	}
+}
+
+bool CAudioCallSession::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
+{
+#ifndef LOCAL_SERVER_LIVE_CALL
+	if (m_bLiveAudioStreamRunning)
+	{
+		LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_iRole, nCurrentAudioPacketType);
+		if (m_iRole == PUBLISHER_IN_CALL  && nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
+		{
+			return true;
+		}
+		else if (m_iRole == VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)
+		{
+			return true;
+		}
+		else if ((m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL) 
+			&& (nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE ||
+			nCurrentAudioPacketType == AUDIO_CHANNEL_PACKET_TYPE))
+		{
+			return true;
+		}
+	}
+	else
+	{
+		return true;
+	}
+	return false;
+#else
+	return true;
+#endif
+}
+
+
+bool CAudioCallSession::IsPacketNumberProcessable(int &iPacketNumber)
+{
+	if (false == m_bLiveAudioStreamRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {
+		PRT("@@@@########Skipped Packet: %d",iPacketNumber);
+		return false;								
+	}
+	return true;
+}
+
+bool CAudioCallSession::IsPacketTypeSupported(int &nCurrentAudioPacketType)
+{
+	if (!m_bLiveAudioStreamRunning)
+	{
+		if (m_ReceivingHeader->IsPacketTypeSupported(nCurrentAudioPacketType))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return true;
+	}
+}
+
+bool CAudioCallSession::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
+{
+	if (false == m_bLiveAudioStreamRunning)
+	{
+		if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
+		{
+			//ALOG("#V#TYPE# ############################################### SKIPPET");
+			toolsObject.SOSleep(0);
+			return false;
+		}
+		else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
+		{
+			//g_StopVideoSending = 1;*/
+			if (false == m_bLiveAudioStreamRunning)
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
+			return true;
+		}
+		else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
+		{		
+			m_iAudioVersionFriend = nVersion;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return true;
+	}
+}
+
+bool CAudioCallSession::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType)
+{
+#ifndef LOCAL_SERVER_LIVE_CALL
+	if (m_bLiveAudioStreamRunning)
+	{
+		if (m_pLiveReceiverAudio->m_bIsRoleChanging == true)
+		{
+			return false;
+		}
+		if ((m_iRole == PUBLISHER_IN_CALL) || (m_iRole == VIEWER_IN_CALL))
+		{
+			return true;
+		}
+		if (-1 == m_llDecodingTimeStampOffset)
+		{
+			m_Tools.SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
+			m_llDecodingTimeStampOffset = m_Tools.CurrentTimestamp() - llCurrentFrameRelativeTime;
+			LOGENEW("iPacketNumber resyncing");
+		}
+		else
+		{
+			long long llNow = m_Tools.CurrentTimestamp();
+			long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
+			long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
+
+			LOGENEW("@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d", llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
+
+			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
+			{
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = " + m_Tools.getText(llCurrentFrameRelativeTime) + " DELAY = " + m_Tools.getText(llWaitingTime) + " currentTime = " + m_Tools.getText(llNow) + " iPacketNumber = " + m_Tools.getText(iPacketNumber));
+//				HITLER("#@#@26022017# ##################################################################### dropping audio data");
+				LOG_AAC("#aac#aqa# Frame not received timely: %d", llWaitingTime);
+				return false;
+			}
+
+			while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
+			{
+				m_Tools.SOSleep(5);
+				llExpectedEncodingTimeStamp = m_Tools.CurrentTimestamp() - m_llDecodingTimeStampOffset;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		return true;
+	}
+#else
+	return true;
+#endif
+}
+
+void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
+{
+	if (!m_bLiveAudioStreamRunning)
+	{
+		if (nSlotNumber != m_iCurrentRecvdSlotID)
+		{
+			m_iPrevRecvdSlotID = m_iCurrentRecvdSlotID;
+			if (m_iPrevRecvdSlotID != -1)
+			{
+				m_iReceivedPacketsInPrevSlot = m_iReceivedPacketsInCurrentSlot;
+			}
+
+			m_iCurrentRecvdSlotID = nSlotNumber;
+			m_iReceivedPacketsInCurrentSlot = 0;
+
+#ifdef OPUS_ENABLED
+			if (false == m_bLiveAudioStreamRunning) {
+				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+			}
+#endif
+		}
+		m_iReceivedPacketsInCurrentSlot++;
+	}
+}
+
+
+void CAudioCallSession::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType)
+{
+	m_iLastDecodedPacketNumber = iPacketNumber;
+	LOGEF("Role %d, Before decode", m_iRole);
+	if (!m_bLiveAudioStreamRunning)
+	{
+#ifdef OPUS_ENABLED
+		m_nDecodedFrameSize = m_pAudioCodec->decodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
+		ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+		LOGEF("Role %d, done decode", m_iRole);
+
+#else
+		m_nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
+#endif
+
+
+#ifdef USE_AGC
+		m_pRecorderGain->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize);
+		m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, getIsAudioLiveStreamRunning());
+#endif
+	}
+	else
+	{
+		if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)	//Only for channel
+		{
+			long long llNow = m_Tools.CurrentTimestamp();
+#ifdef AAC_ENABLED
+			m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
+			LOG_AAC("$@@@@@@@@@--> AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
+#else
+			LOG_AAC("Continue for AudioChannelPacket!");
+#endif
+		}
+		else 
+		{
+			memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
+			m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
+			LOGEF("Role %d, no viewers in call", m_iRole);
+		}		
+	}
+}
+
+void CAudioCallSession::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize)
+{
+#ifdef __DUMP_FILE__
+	fwrite(psDecodedFrame, 2, nDecodedFrameSize, FileOutput);
+#endif
+}
+
+void CAudioCallSession::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
+	int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)
+{
+	if (!m_bLiveAudioStreamRunning)
+	{
+		llNow = m_Tools.CurrentTimestamp();
+		//            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(m_nDecodedFrameSize));
+		if (llNow - llTimeStamp >= 1000)
+		{
+			//                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+			iDataSentInCurrentSec = 0;
+			llTimeStamp = llNow;
+		}
+		iDataSentInCurrentSec++;
+
+		++iFrameCounter;
+		nDecodingTime = m_Tools.CurrentTimestamp() - llCapturedTime;
+		dbTotalTime += nDecodingTime;
+		//            if(iFrameCounter % 100 == 0)
+		//                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(m_nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
+	}
+}
+
+void CAudioCallSession::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber)
+{
+	if (m_bLiveAudioStreamRunning == true) {
+
+        llNow = Tools::CurrentTimestamp();
+
+        __LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d",
+			iPacketNumber, llNow - llLastTime, nSentFrameSize);
+
+        llLastTime = llNow;
+        if (m_iRole == PUBLISHER_IN_CALL) {
+			m_AudioDecodedBuffer.EnQueue(pshSentFrame, nSentFrameSize, 0);
+        }
+
+        m_llLastPlayTime = m_Tools.CurrentTimestamp();
+
+		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, m_llLastPlayTime);
+#ifdef __ANDROID__
+		if (m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)
+		{
+			m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize);
+		}
+#endif
+        m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
+                                                                  SERVICE_TYPE_LIVE_STREAM,
+																  nSentFrameSize,
+																  pshSentFrame);
+    }
+	else
+	{
+		HITLER("*STP -> PN: %d, FS: %d",iCurrentPacketNumber, m_nDecodedFrameSize);
+		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
+	}
+
+}
+
+/****************************************DecodingThreadProcedure*****************************************/
 void CAudioCallSession::DecodingThreadProcedure()
 {
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
-    Tools toolsObject;
-    int frameSize;
-    
-    while (bDecodingThreadRunning)
-    {
-        //CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::DecodingThreadProcedure");
-        
-        if (m_DecodingBuffer.GetQueueSize() == 0)
-            toolsObject.SOSleep(10);
-        else
-        {
-            frameSize = m_DecodingBuffer.DeQueue(m_DecodingFrame);
-            
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure frameSize " + m_Tools.IntegertoStringConvert(frameSize));
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
 
-            int size;
+	Tools toolsObject;
+	int iFrameCounter = 0, nCurrentAudioPacketType = 0, iPacketNumber = 0;
+	long long llCapturedTime, nDecodingTime = 0;
+	double dbTotalTime = 0;
 
-            size = m_pG729CodecNative->Decode(m_DecodingFrame, frameSize, m_DecodedFrame);
+	int iDataSentInCurrentSec = 0;
+	long long llTimeStamp = 0;
+	long long llNow = 0;
+	long long llLastDecodedTime = -1;
+	int nCurrentPacketHeaderLength = 0;
 
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure size " + m_Tools.IntegertoStringConvert(size));
-#if defined(DUMP_DECODED_AUDIO)
-			m_Tools.WriteToFile(m_DecodedFrame, size);
+#ifdef __DUMP_FILE__
+	FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
 #endif
-            m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(friendID, size, m_DecodedFrame);
-            
-            CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure 3");
 
-            toolsObject.SOSleep(1);
-        }
-    }
-    
-    bDecodingThreadClosed = true;
-    
-    CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
+	long long llLastTime = -1, llDiffTimeNow = -1;
+	long long llRelativeTime = 0;
+	while (m_bAudioDecodingThreadRunning)
+	{
+		if (!IsQueueEmpty(toolsObject))
+		{
+			DequeueData(m_nDecodingFrameSize);
+
+			if (m_nDecodingFrameSize < 1)
+			{
+				//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
+				continue;
+			}
+
+			/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
+
+			if ( m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE ) {
+				if (m_iRole == VIEWER_IN_CALL)
+				{
+					// DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+					// DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+
+					HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
+					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
+					m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
+
+					DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+
+					SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, llNow, llLastTime, iPacketNumber);
+					toolsObject.SOSleep(0);
+				}
+				else {
+					HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
+				}
+				continue;
+			}
+			/// --------------------------------------------------------------------------------------------------////
+
+			llCapturedTime = m_Tools.CurrentTimestamp();
+
+			int dummy;
+			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
+			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
+			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
+				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+
+			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d",iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
+			{
+				HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
+				continue;
+			}
+			if (!IsPacketNumberProcessable(iPacketNumber))
+			{
+				HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
+				continue;
+			}
+
+			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
+			{
+				HITLER("XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
+				continue;
+			}
+
+			if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion, toolsObject))
+			{
+				HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE IN NORMAL CALL");
+				continue;
+			}
+
+			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+			llNow = m_Tools.CurrentTimestamp();
+			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, llLastTime);
+			HITLER("XXP@#@#MARUF [%d %d]",iPacketNumber, iBlockNumber);
+			if (bIsCompleteFrame){
+				//m_ucaDecodingFrame
+				HITLER("XXP@#@#MARUF Complete[%d %d]",iPacketNumber, iBlockNumber);
+
+				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
+				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+				{
+					HITLER("XXP@#@#MARUF REMOVED ON RELATIVE TIME");
+					continue;
+				}
+			}
+			llNow = m_Tools.CurrentTimestamp(); 
+
+			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
+
+			if (bIsCompleteFrame){
+				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
+				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
+				HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
+				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
+				HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
+				if (m_nDecodedFrameSize < 1)
+				{
+					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
+					continue;
+				}
+
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, llNow, llLastTime, iPacketNumber);
+				toolsObject.SOSleep(0);
+			}
+		}
+	}
+
+	m_bAudioDecodingThreadClosed = true;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
+}
+#if 0
+void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSendMuxed, int &RawLengthMuxed, std::vector<int> &vRawDataLengthVectorMuxed,
+	std::vector<int> &vRawDataLengthVectorNonMuxed, int &RawLengthNonMuxed, unsigned char * pAudioNonMuxedDataToSend = 0)
+{
+	Locker lock(*m_pAudioCallSessionMutex);
+
+	vRawDataLengthVectorMuxed = m_vRawFrameLengthViewer;
+	m_vRawFrameLengthViewer.clear();
+	memcpy(pAudioRawDataToSendMuxed, m_ucaRawDataToSendViewer, m_iRawDataSendIndexViewer);
+	RawLengthMuxed = m_iRawDataSendIndexViewer;
+	m_iRawDataSendIndexViewer = 0;
+
+	vRawDataLengthVectorNonMuxed = m_vRawFrameLengthCallee;
+	m_vRawFrameLengthCallee.clear();
+	memcpy(pAudioNonMuxedDataToSend, m_ucaRawDataToSendCallee, m_iRawDataSendIndexCallee);
+	RawLengthNonMuxed = m_iRawDataSendIndexCallee;
+	m_iRawDataSendIndexCallee = 0;
+}
+#endif
+
+void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
+	int &sendingLengthViewer, int &sendingLengthCallee)
+{
+	Locker lock(*m_pAudioCallSessionMutex);
+
+	vCombinedDataLengthVector = m_vRawFrameLengthViewer;
+	m_vRawFrameLengthViewer.clear();
+	memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendViewer, m_iRawDataSendIndexViewer);
+	CombinedLength = m_iRawDataSendIndexViewer;
+	sendingLengthViewer = m_iRawDataSendIndexViewer;
+	LOGT("##TN##GetAudioData## viewerlength:%d calleelength:%d", m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee);
+
+	if (m_iRole == PUBLISHER_IN_CALL)
+	{
+		for (int a : m_vRawFrameLengthCallee)
+		{
+			vCombinedDataLengthVector.push_back(a);
+		}
+		m_vRawFrameLengthCallee.clear();
+		memcpy(pAudioCombinedDataToSend + m_iRawDataSendIndexViewer, m_ucaRawDataToSendCallee, m_iRawDataSendIndexCallee);
+		CombinedLength += m_iRawDataSendIndexCallee;
+		sendingLengthCallee = m_iRawDataSendIndexCallee;
+		m_iRawDataSendIndexCallee = 0;
+	}
+
+	m_iRawDataSendIndexViewer = 0;
 }
 
+
+int CAudioCallSession::GetServiceType()
+{
+	return m_nServiceType;
+}
+
+void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+	int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header)
+{
+	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
+	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
+
+	m_SendingHeader->SetInformation(packetType, INF_PACKETTYPE);
+	m_SendingHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
+	m_SendingHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
+	m_SendingHeader->SetInformation(slotNumber, INF_SLOTNUMBER);
+	m_SendingHeader->SetInformation(packetLength, INF_BLOCK_LENGTH);
+	m_SendingHeader->SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
+	m_SendingHeader->SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
+	m_SendingHeader->SetInformation(version, INF_VERSIONCODE);
+	m_SendingHeader->SetInformation(timestamp, INF_TIMESTAMP);
+	m_SendingHeader->SetInformation(networkType, INF_NETWORKTYPE);
+	m_SendingHeader->SetInformation(channel, INF_CHANNELS);
+
+	m_SendingHeader->SetInformation(0, INF_PACKET_BLOCK_NUMBER);
+	m_SendingHeader->SetInformation(1, INF_TOTAL_PACKET_BLOCKS);
+	m_SendingHeader->SetInformation(0, INF_BLOCK_OFFSET);
+	m_SendingHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
+
+	m_SendingHeader->showDetails("@#BUILD");
+
+	m_SendingHeader->GetHeaderInByteArray(header);
+}
+
+void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
+{
+	m_ReceivingHeader->CopyHeaderToInformation(header);
+
+	packetType = m_ReceivingHeader->GetInformation(INF_PACKETTYPE);
+	nHeaderLength = m_ReceivingHeader->GetInformation(INF_HEADERLENGTH);
+	networkType = m_ReceivingHeader->GetInformation(INF_NETWORKTYPE);
+	slotNumber = m_ReceivingHeader->GetInformation(INF_SLOTNUMBER);
+	packetNumber = m_ReceivingHeader->GetInformation(INF_PACKETNUMBER);
+	packetLength = m_ReceivingHeader->GetInformation(INF_BLOCK_LENGTH);
+	recvSlotNumber = m_ReceivingHeader->GetInformation(INF_RECVDSLOTNUMBER);
+	numPacketRecv = m_ReceivingHeader->GetInformation(INF_NUMPACKETRECVD);
+	channel = m_ReceivingHeader->GetInformation(INF_CHANNELS);
+	version = m_ReceivingHeader->GetInformation(INF_VERSIONCODE);
+	timestamp = m_ReceivingHeader->GetInformation(INF_TIMESTAMP);
+
+
+	iBlockNumber = m_ReceivingHeader->GetInformation(INF_PACKET_BLOCK_NUMBER);
+	nNumberOfBlocks = m_ReceivingHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
+	iOffsetOfBlock = m_ReceivingHeader->GetInformation(INF_BLOCK_OFFSET);
+	nFrameLength = m_ReceivingHeader->GetInformation(INF_FRAME_LENGTH);
+
+	if (iBlockNumber == -1)
+	{
+		iBlockNumber = 0;
+	}
+
+	if (nNumberOfBlocks == -1)
+	{
+		nNumberOfBlocks = 1;
+		iOffsetOfBlock = 0;
+		nFrameLength = packetLength;
+	}
+}
+
+int CAudioCallSession::GetRole()
+{
+	return m_iRole;
+}

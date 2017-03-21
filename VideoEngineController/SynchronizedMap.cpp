@@ -1,10 +1,6 @@
 
 #include "SynchronizedMap.h"
-#include "SmartPointer.h"
-#include "EventNotifier.h"
 #include "ThreadTools.h"
-#include <string.h>
-#include "LogPrinter.h"
 
 CSynchronizedMap::CSynchronizedMap()
 {
@@ -14,34 +10,32 @@ CSynchronizedMap::CSynchronizedMap()
 CSynchronizedMap::~CSynchronizedMap()
 {
 	SHARED_PTR_DELETE(m_pSynchronizedMapMutex);
-/*	if (m_pSynchronizedMapMutex.get())
-		m_pSynchronizedMapMutex.reset();*/
 }
 
 void CSynchronizedMap::clear()
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	m_STLMap.clear();
+	m_STLMapSynchronizedMap.clear();
 }
 
-int CSynchronizedMap::find(int index)
+int CSynchronizedMap::find(int iIndex)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	if(m_STLMap.find(index) == m_STLMap.end())
+	if (m_STLMapSynchronizedMap.find(iIndex) == m_STLMapSynchronizedMap.end())
 	{
 		return -1;
 	}
 	else
-		return m_STLMap[index];
+		return m_STLMapSynchronizedMap[iIndex];
 }
 
-int CSynchronizedMap::getElementAt(int index)
+int CSynchronizedMap::getElementAt(int iIndex)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	return m_STLMap[index];
+	return m_STLMapSynchronizedMap[iIndex];
 }
 
 int CSynchronizedMap::end()
@@ -49,19 +43,27 @@ int CSynchronizedMap::end()
 	return -1;
 }
 
-void CSynchronizedMap::insert(int index, int element)
+void CSynchronizedMap::insert(int iIndex, int nElement)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	m_STLMap[index] = element;
+	m_STLMapSynchronizedMap[iIndex] = nElement;
 }
 
-void CSynchronizedMap::erase(int index)
+void CSynchronizedMap::erase(int iIndex)
 {
 	Locker lock(*m_pSynchronizedMapMutex);
 
-	if(m_STLMap.find(index) != m_STLMap.end())
+	if (m_STLMapSynchronizedMap.find(iIndex) != m_STLMapSynchronizedMap.end())
 	{
-		m_STLMap.erase(index);
+		m_STLMapSynchronizedMap.erase(iIndex);
+	}
+}
+
+void CSynchronizedMap::eraseAllSmallerEqual(int iIndex){
+	Locker lock(*m_pSynchronizedMapMutex);
+	while(m_STLMapSynchronizedMap.size() > 0 && m_STLMapSynchronizedMap.begin()->first <= iIndex)
+	{
+		m_STLMapSynchronizedMap.erase(m_STLMapSynchronizedMap.begin());
 	}
 }

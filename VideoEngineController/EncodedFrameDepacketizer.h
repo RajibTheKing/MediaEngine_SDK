@@ -16,7 +16,8 @@
 #include "AudioVideoEngineDefinitions.h"
 #include "Size.h"
 #include "Tools.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 
 
 namespace IPV
@@ -35,45 +36,35 @@ public:
 	CEncodedFrameDepacketizer(CCommonElementsBucket* sharedObject, CVideoCallSession *pVideoCallSession);
 	~CEncodedFrameDepacketizer();
 
-	int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader);
+	void ResetEncodedFrameDepacketizer();
+
+	//int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader);
+	int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader);
 	void MoveForward(int frame);
 	int CreateNewIndex(int frame);
 	void ClearFrame(int index, int frame);
-	int GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight);
-	//int GetPacketLength(unsigned char *packetData, int start_index);
+	int GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight, int &nOrientation);
 
-	map<int, int> m_mFrameTimeStamp;
+	map<long long, long long> m_mFrameTimeStamp;
+	map<long long, int> m_mFrameOrientation;
 
 	Tools m_Tools;
 
 private:
 	int ProcessFrame(unsigned char *data,int index,int frameNumber,int &nFramNumber);
 	int GetEncodingTime(int nFrameNumber);
+	int GetOrientation(int nFrameNumber);
 	bool m_bIsDpkgBufferFilledUp;
 	int m_iFirstFrameReceived;
 
-	queue<int>m_IframeQueue;
 	int SafeFinder(int Data);
 
-	int m_iRetransPktDrpd;
-	int m_iRetransPktUsed;
-	int m_iIntervalDroppedFPS;
-	int m_nIntervalLastFrameNumber;
-	int m_iCountResendPktSent;
-	int m_iCountReqResendPacket;
-	int m_iMaxFrameNumRecvd;
-	int m_iMaxFrameNumRecvdOld;
+	long long m_iMaxFrameNumRecvd;
 	long long m_FirstFrameEncodingTime;
-	unsigned int timeStamp;
-
-	LongLong lastTimeStamp;
-
-	int fpsCompleteFrame;
-
 
 	std::map<int, int> m_FrameTracker;
-	int m_FrontFrame;
-	int m_BackFrame;
+	long long m_FrontFrame;
+	long long m_BackFrame;
 	int m_Counter;
 	int m_BufferSize;
 	std::set<int> m_AvailableIndexes;
@@ -83,13 +74,11 @@ private:
 
 	CVideoPacketBuffer m_CVideoPacketBuffer[DEPACKETIZATION_BUFFER_SIZE + 1];
 
-	CPacketHeader PacketHeader;
+	//CVideoHeader PacketHeader;	// use to hoy na
 
 	unsigned char * m_pPacketToResend;
 
 protected:
-
-	std::thread* m_pEncodedFrameDepacketizerThread;
 
 	SmartPointer<CLockHandler> m_pEncodedFrameDepacketizerMutex;
 

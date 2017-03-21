@@ -3,6 +3,7 @@
 //
 
 #include "PairMap.h"
+#include "ThreadTools.h"
 
 PairMap::PairMap(){
     m_pMutex.reset(new CLockHandler);

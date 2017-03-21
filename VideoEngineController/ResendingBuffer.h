@@ -10,7 +10,9 @@
 
 class CResendingBuffer
 {
+
 public:
+
 	CResendingBuffer();
 	~CResendingBuffer();
 
@@ -18,10 +20,6 @@ public:
 	int DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber, int &timeStampDiff);
 	void IncreamentIndex(int &index);
 	void Reset();
-
-
-
-	//	int GetQueueSize();
 
 private:
 

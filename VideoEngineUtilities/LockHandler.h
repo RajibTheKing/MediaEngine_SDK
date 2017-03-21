@@ -9,7 +9,6 @@
 #include <pthread.h>
 #endif
 
-#include "DefinedDataTypes.h"
 #include "AudioVideoEngineDefinitions.h"
 
 class Locker;
@@ -28,18 +27,18 @@ public:
 
 private:
 
-	std::mutex *m_pSingleSemaphore;
-
+	std::mutex *m_pMutex;
 };
 
 class Locker
 {
-	CLockHandler& mutex;
 
 public:
 
 	Locker(CLockHandler& m):
+
 	mutex(m) 
+
 	{ 
 		mutex.Lock(); 
 	}
@@ -48,6 +47,10 @@ public:
 	{ 
 		mutex.UnLock(); 
 	}
+
+private:
+
+	CLockHandler& mutex;
 };
 
 

@@ -10,6 +10,12 @@ LOCAL_MODULE := openh264lib
 LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libopenh264.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Prebuilt FileTransfer
+include $(CLEAR_VARS)
+LOCAL_MODULE := FileTransfer
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libFileTransfer.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 # Prebuilt IPVConnectivityDll
 include $(CLEAR_VARS)
 LOCAL_MODULE := IPVConnectivityDll
@@ -34,6 +40,48 @@ LOCAL_MODULE := IPVStunMessage
 LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libIPVStunMessage.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+# Prebuilt AAC
+include $(CLEAR_VARS)
+LOCAL_MODULE := AAC
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libFraunhoferAAC.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt Opus
+include $(CLEAR_VARS)
+LOCAL_MODULE := Opus
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libopus.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt AECM
+include $(CLEAR_VARS)
+LOCAL_MODULE := AECM
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_aecm.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt SPEEXAECM
+include $(CLEAR_VARS)
+LOCAL_MODULE := SPEEXAECM
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libSpeexAECM.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt NS
+include $(CLEAR_VARS)
+LOCAL_MODULE := NS
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_ns.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt AGC
+include $(CLEAR_VARS)
+LOCAL_MODULE := AGC
+LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_agc.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+# Prebuilt VAD
+# include $(CLEAR_VARS)
+# LOCAL_MODULE := VAD
+# LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_vad.a
+# include $(PREBUILT_STATIC_LIBRARY)
+
 #  VideoEngineController
 include $(CLEAR_VARS)
 G729    := g729
@@ -45,16 +93,22 @@ LOCAL_C_INCLUDES := \
 			../../../RingIDSDK \
 			../../../videoengine/OthersLib/boost \
 			../../../videoengine/include/ \
+			../../../videoengine/include/aecm \
+			../../../videoengine/include/aecm/webrtc \
 
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
 LOCAL_SRC_FILES := \
+			../../../videoengine/VideoEngineController/AudioPacketizer.cpp \
+			../../../videoengine/VideoEngineController/AudioDePacketizer.cpp \
+			../../../videoengine/VideoEngineController/VideoSockets.cpp \
+			../../../videoengine/VideoEngineController/Filt.cpp \
 			../../../videoengine/VideoEngineUtilities/LockHandler.cpp \
             ../../../videoengine/VideoEngineUtilities/ColorConverter.cpp \
+            ../../../videoengine/VideoEngineUtilities/HashGenerator.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSession.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSessionListHandler.cpp \
-            ../../../videoengine/VideoEngineController/AudioDecoder.cpp \
-            ../../../videoengine/VideoEngineController/AudioEncoder.cpp \
+            ../../../videoengine/VideoEngineController/AudioCodec.cpp \
             ../../../videoengine/VideoEngineController/CommonElementsBucket.cpp \
 			../../../videoengine/VideoEngineController/Controller.cpp \
 			../../../videoengine/VideoEngineController/EncodedFramePacketizer.cpp \
@@ -90,6 +144,31 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/DepacketizationBufferIndex.cpp \
 			../../../videoengine/VideoEngineController/BandwidthController.cpp \
 			../../../videoengine/VideoEngineController/BitRateController.cpp \
+			../../../videoengine/VideoEngineController/AverageCalculator.cpp \
+			../../../videoengine/VideoEngineController/AudioFileEncodeDecodeSession.cpp \
+			../../../videoengine/VideoEngineController/VersionController.cpp \
+			../../../videoengine/VideoEngineController/DeviceCapabilityCheckBuffer.cpp \
+			../../../videoengine/VideoEngineController/DeviceCapabilityCheckThread.cpp \
+			../../../videoengine/VideoEngineController/AudioPacketHeader.cpp \
+			../../../videoengine/VideoEngineController/AudioFileCodec.cpp \
+			../../../videoengine/VideoEngineController/Noise.cpp \
+			../../../videoengine/VideoEngineController/Voice.cpp \
+			../../../videoengine/VideoEngineController/Gain.cpp \
+			../../../videoengine/VideoEngineController/Echo.cpp \
+			../../../videoengine/VideoEngineController/GomGomGain.cpp \
+			../../../videoengine/VideoEngineUtilities/VideoBeautificationer.cpp \
+			../../../videoengine/VideoEngineController/LiveReceiver.cpp \
+			../../../videoengine/VideoEngineController/LiveVideoDecodingQueue.cpp \
+			../../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
+			../../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
+			../../../videoengine/VideoEngineController/VideoHeader.cpp \
+			../../../videoengine/VideoEngineController/Aac.cpp \
+			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
+			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+			../../../videoengine/VideoEngineUtilities/VideoEffects.cpp \
+
+			
+
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -161,6 +240,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket FileTransfer IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)

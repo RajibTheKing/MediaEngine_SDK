@@ -6,10 +6,12 @@
 #include "SmartPointer.h"
 #include "LogPrinter.h"
 #include "VideoPacketQueue.h"
-#include "PacketHeader.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 #include "BitRateController.h"
 #include "EncodedFrameDepacketizer.h"
-#include "DecodingBuffer.h"
+#include "VersionController.h"
+
 
 #include <thread>
 
@@ -20,7 +22,7 @@ class CVideoDepacketizationThread
 
 public:
 
-	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter);
+	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession);
 	~CVideoDepacketizationThread();
 
 	void StartDepacketizationThread();
@@ -28,21 +30,26 @@ public:
 	void DepacketizationThreadProcedure();
 	static void *CreateVideoDepacketizationThread(void* param);
 
-	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
-	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
+	void ResetForPublisherCallerCallEnd();
 
 private:
+
+	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
+	void ExpectedPacket();
 
 	bool bDepacketizationThreadRunning;
 	bool bDepacketizationThreadClosed;
 
+	CVideoCallSession *m_pVideoCallSession;
 	CVideoPacketQueue *m_pVideoPacketQueue;						
 	CVideoPacketQueue *m_pRetransVideoPacketQueue;				
 	CVideoPacketQueue *m_pMiniPacketQueue;						
-	CPacketHeader m_RcvdPacketHeader;							
+	CVideoHeader m_RcvdPacketHeader;							
 	BitRateController *m_BitRateController;						
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
-	CCommonElementsBucket* m_pCommonElementsBucket;				
+	CCommonElementsBucket* m_pCommonElementsBucket;			
+
+	bool m_bResetForPublisherCallerCallEnd;
 
 	pair<int, int> ExpectedFramePacketPair;						
 	int iNumberOfPacketsInCurrentFrame;
@@ -51,11 +58,11 @@ private:
 	LongLong m_FriendID;										
 
 	unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
-	unsigned char m_miniPacket[PACKET_HEADER_LENGTH_NO_VERSION + 1];
 
 	Tools m_Tools;
-
-	SmartPointer<std::thread> pDepacketizationThread;
+    CVersionController *m_pVersionController;
+    
+    SmartPointer<std::thread> pDepacketizationThread;
 };
 
 #endif 

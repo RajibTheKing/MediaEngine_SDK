@@ -2,8 +2,8 @@
 
 #include "typedef.h"
 
-#define	G729_BIT_STREAM_SIZE	10
-#define	PCM_BIT_STREAM_SIZE		80
+#define	G729_BIT_STREAM_SIZE	20
+#define	PCM_BIT_STREAM_SIZE		160
 
 #ifdef __cplusplus
 

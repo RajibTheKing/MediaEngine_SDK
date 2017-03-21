@@ -1,11 +1,6 @@
 
 #include "ResendingBuffer.h"
-
-#include "SmartPointer.h"
-#include "LockHandler.h"
 #include "ThreadTools.h"
-#include <string.h>
-#include "LogPrinter.h"
 
 
 CResendingBuffer::CResendingBuffer() :
@@ -74,10 +69,3 @@ void CResendingBuffer::IncreamentIndex(int &index)
 	if (index >= m_iQueueCapacity)
 		index = 0;
 }
-
-//int CResendingBuffer::GetQueueSize()
-//{
-//	Locker lock(*m_pChannelMutex);
-//
-//	return 0;
-//}

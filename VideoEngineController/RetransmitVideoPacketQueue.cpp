@@ -1,8 +1,6 @@
 
 #include "RetransmitVideoPacketQueue.h"
 
-#include <string.h>
-
 CRetransmitVideoPacketQueue::CRetransmitVideoPacketQueue() :
 m_iPushIndex(0),
 m_iPopIndex(0),
@@ -14,8 +12,7 @@ m_iQueueCapacity(MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE)
 
 CRetransmitVideoPacketQueue::~CRetransmitVideoPacketQueue()
 {
-	/*if (m_pChannelMutex.get())
-		m_pChannelMutex.reset();*/
+
 }
 
 int CRetransmitVideoPacketQueue::Queue(unsigned char *frame, int length)
@@ -39,25 +36,6 @@ int CRetransmitVideoPacketQueue::Queue(unsigned char *frame, int length)
 		return 1;
 	}
 }
-/*
-bool CRetransmitVideoPacketQueue::PacketExists(int iFrameNUmber, int iPacketNumber)
-{
-	for(int i = 0; i < m_iQueueSize; i ++)
-	{
-		pair<int, int> CVideoPacketQueue ;
-		int iNumberOfPackets;
-
-		CVideoPacketQueue = Tools::GetFramePacketFromHeader(m_Buffer[i], iNumberOfPackets);
-		if(CVideoPacketQueue.first == iFrameNUmber && CVideoPacketQueue.second == iPacketNumber)
-		{
-			return true;
-		}
-	}
-
-	return false;
-
-}
-*/
 
 int CRetransmitVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
 {

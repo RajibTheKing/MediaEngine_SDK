@@ -1,19 +1,25 @@
 
 #include "RenderingThread.h"
 #include "CommonElementsBucket.h"
+#include "VideoCallSession.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket) :
+long long g_llFirstFrameReceiveTime;
+
+CVideoRenderingThread::CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket *commonElementsBucket, CVideoCallSession *pVideoCallSession, bool bIsCheckCall) :
 
 m_RenderingBuffer(renderingBuffer),
 m_pCommonElementsBucket(commonElementsBucket),
-m_FriendID(friendID)
+m_FriendID(friendID),
+m_lRenderCallTime(0),
+m_bIsCheckCall(bIsCheckCall)
 
 {
-
+    m_llRenderFrameCounter = 0;
+    m_pVideoCallSession = pVideoCallSession;
 }
 
 CVideoRenderingThread::~CVideoRenderingThread()
@@ -23,6 +29,8 @@ CVideoRenderingThread::~CVideoRenderingThread()
 
 void CVideoRenderingThread::StopRenderingThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoRenderingThread::StopRenderingThread() called");
+
 	//if (pInternalThread.get())
 	{
 
@@ -35,6 +43,8 @@ void CVideoRenderingThread::StopRenderingThread()
 	}
 
 	//pInternalThread.reset();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoRenderingThread::StopRenderingThread() Rendering Thread STOPPPP");
 }
 
 void CVideoRenderingThread::StartRenderingThread()
@@ -77,6 +87,7 @@ void *CVideoRenderingThread::CreateVideoRenderingThread(void* param)
 	return NULL;
 }
 
+
 void CVideoRenderingThread::RenderingThreadProcedure()
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() started RenderingThreadProcedure method");
@@ -87,14 +98,20 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	long long currentFrameTime, decodingTime, firstFrameEncodingTime;
 	int videoHeight, videoWidth;
 	long long currentTimeStamp;
+	long long prevFrameTimeStamp = 0;
+	int currentTimeGap = 52;
 	int prevTimeStamp = 0;
 	int minTimeGap = 51;
 	bool m_b1stDecodedFrame = true;
 	long long m_ll1stDecodedFrameTimeStamp = 0;
-
+    long long lRenderingTimeDiff = 0;
+    long long llPrevTimeStamp = 0;
+	//CAverageCalculator *pRenderingFps = new CAverageCalculator();
+    long long llFirePrevTime = 0;
+    long long llDequeuePrevTime = 0;
 	while (bRenderingThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() RUNNING RenderingThreadProcedure method");
 
 		if (m_RenderingBuffer->GetQueueSize() == 0)
 		{
@@ -104,33 +121,113 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 		}
 		else
 		{
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoRenderingThread::RenderingThreadProcedure() GOT FRAME for Rendering method");
+            
+			int timeDiffForQueue, orientation;
 
-			int timeDiffForQueue;
-
-			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue);
+			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue, orientation);
+            
+            m_llRenderFrameCounter++;
+			if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD && m_llRenderFrameCounter<FPS_MAXIMUM * 2)
+            {
+                //printf("Skipping for frame = %lld\n", m_llRenderFrameCounter);
+                continue;
+            }
+            
+            
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() m_RenderingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
 
 			currentFrameTime = toolsObject.CurrentTimestamp();
+            
+            if(m_pVideoCallSession->GetCalculationStartTime() == 0)
+            {
+                m_pVideoCallSession->SetCalculationStartMechanism(true);
+
+				CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoRenderingThread::RenderingThreadProcedure() device check calculation stated");
+            }
+            
 
 			if (m_b1stDecodedFrame)
 			{
-				m_ll1stDecodedFrameTimeStamp = currentFrameTime;
 				firstFrameEncodingTime = nTimeStampDiff;
 				m_b1stDecodedFrame = false;
 			}
 			else
 			{
 				minTimeGap = nTimeStampDiff - prevTimeStamp;
+				currentTimeGap = currentFrameTime - prevFrameTimeStamp;
+                m_RenderTimeCalculator.UpdateData(currentTimeGap);
+                //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Library Rendering TimeDiff = " + m_Tools.DoubleToString(m_RenderTimeCalculator.GetAverage()));
+                
 			}
 
-			prevTimeStamp = nTimeStampDiff;
 
-			if (frameSize<1 || minTimeGap < 50)
+
+
+
+			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap " + toolsObject.IntegertoStringConvert(minTimeGap) + " currentTimeGap " + toolsObject.IntegertoStringConvert(currentTimeGap));
+
+            /*
+			if( (currentTimeGap < 50 && (currentTimeGap + 10) < minTimeGap))
+			{
+				CLogPrinter_WriteSpecific5(CLogPrinter::INFO, " minTimeGap break " + toolsObject.IntegertoStringConvert( minTimeGap) + " currentTimeGap "
+																  + toolsObject.IntegertoStringConvert( currentTimeGap));
 				continue;
 
-			toolsObject.SOSleep(5);
+			}*/
 
-			m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth);
+			prevFrameTimeStamp = currentFrameTime;
+			prevTimeStamp = nTimeStampDiff;
+            
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> Rendering TimeDiff = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - lRenderingTimeDiff));
+            
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DiffWithFirstFrame From Camera = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - g_llFirstFrameReceiveTime));
+            
+			//if (frameSize<1 || minTimeGap < 50)
+			//	continue;
+            
+            lRenderingTimeDiff = m_Tools.CurrentTimestamp();
+            
+
+            //CalculateFPS();
+            
+            //if(m_pVideoCallSession->GetResolutionNegotiationStatus() == true)
+
+
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+            {
+				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
+                {
+//                    pRenderingFps->CalculateFPS("RenderingFPS--> ");
+//                    long long nowCurrentTimeStampDiff = m_Tools.CurrentTimestamp() - llPrevTimeStamp;
+//                    //LOGE(" fahadRajib  time diff for rendering-->----------------------  %d", minTimeGap );
+//                    if(nowCurrentTimeStampDiff < 30)
+//                        toolsObject.SOSleep(30 - nowCurrentTimeStampDiff);
+//                    else
+//                        toolsObject.SOSleep(0);
+//
+
+					toolsObject.SOSleep(1);
+
+					if (m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
+						m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);					
+//
+//                    llPrevTimeStamp = m_Tools.CurrentTimestamp();
+                }
+	            else
+                {
+					//pRenderingFps->CalculateFPS("RenderingFPS--> ");
+
+                    toolsObject.SOSleep(1);
+                    
+                    
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+                    
+                }
+                
+                
+            }
+
 		}
 	}
 
@@ -138,3 +235,19 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() stopped RenderingThreadProcedure method.");
 }
+
+void CVideoRenderingThread::CalculateFPS()
+{
+    
+    if(m_Tools.CurrentTimestamp() - m_lRenderCallTime >= 1000)
+    {
+    //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, ">>>>>>>> FPS = (" + m_Tools.IntegertoStringConvert(m_nRenderFrameCount));
+        m_nRenderFrameCount = 0;
+        m_lRenderCallTime = m_Tools.CurrentTimestamp();
+        
+    }
+    m_nRenderFrameCount++;
+}
+
+
+

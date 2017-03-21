@@ -1,66 +1,59 @@
-#include "VideoPacketBuffer.h"
-#include "CommonElementsBucket.h"
-#include "LogPrinter.h"
-#include "Tools.h"
 
+#include "VideoPacketBuffer.h"
+#include "HashGenerator.h"
+#include "VideoHeader.h"
+
+#define USE_HASH_GENERATOR_TO_DEPACKETIZE
 
 CVideoPacketBuffer::CVideoPacketBuffer():
-m_NumberOfGotPackets(0),
-m_NumberOfPackets(MAX_NUMBER_OF_PACKETS),
-m_FrameSize(0),
-m_isClear(true)
-{
-	memset(m_pPacketTracker, 0, MAX_NUMBER_OF_PACKETS);
+m_nNumberOfGotPackets(0),
+m_nNumberOfPackets(MAX_NUMBER_OF_PACKETS),
+m_nFrameSize(0),
+m_bIsClear(true)
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CVideoPacketBuffer::CVideoPacketBuffer");
+{
+	memset(m_baPacketTracker, 0, MAX_NUMBER_OF_PACKETS);
 }
 
 CVideoPacketBuffer::~CVideoPacketBuffer()
 {
-/*	if (m_pEncodedFrameDepacketizerThread)
-	{
-		delete m_pEncodedFrameDepacketizerThread;
-		m_pEncodedFrameDepacketizerThread = NULL;
-	}
 
-	SHARED_PTR_DELETE(m_pEncodedFrameDepacketizerMutex);*/
 }
 
 void CVideoPacketBuffer::Reset()
 {
-	if (!m_isClear)
+	if (!m_bIsClear)
 	{
-		memset(m_pPacketTracker, 0, MAX_NUMBER_OF_PACKETS);
-		m_NumberOfPackets = MAX_NUMBER_OF_PACKETS;
-		m_NumberOfGotPackets = 0;
-		m_isClear = true;
-		m_FrameSize= 0;
+		memset(m_baPacketTracker, 0, MAX_NUMBER_OF_PACKETS);
+		m_nNumberOfPackets = MAX_NUMBER_OF_PACKETS;
+		m_nNumberOfGotPackets = 0;
+		m_bIsClear = true;
+		m_nFrameSize= 0;
 	}
 }
 
-bool CVideoPacketBuffer::PushVideoPacket(unsigned char *in_data, unsigned int in_size, int packetNumber)
+bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsigned int unLength, int nPacketNumber, int iHeaderLength, int nPacketStartingIndex)
 {
-	if (false == m_pPacketTracker[packetNumber])
+	
+	if (false == m_baPacketTracker[nPacketNumber])
 	{
-		int nPacketDataLength;
-		m_pPacketTracker[packetNumber] = true;
-		m_NumberOfGotPackets++;
+		int nPacketDataLength = unLength;
 
-		if(in_data[VERSION_BYTE_INDEX]) {
-			nPacketDataLength = (in_size-1) - PACKET_HEADER_LENGTH;
-			memcpy(m_pFrameData + packetNumber * ( MAX_VIDEO_PACKET_SIZE - PACKET_HEADER_LENGTH - 1),
-				   in_data + PACKET_HEADER_LENGTH, nPacketDataLength);
-		}
-		else {
-//			nPacketDataLength = in_size - PACKET_HEADER_LENGTH_NO_VERSION;
-			nPacketDataLength = in_size;
-			memcpy(m_pFrameData + packetNumber * MAX_PACKET_SIZE_WITHOUT_HEADER_NO_VERSION,
-				   in_data + PACKET_HEADER_LENGTH_NO_VERSION, nPacketDataLength);
-		}
+		m_baPacketTracker[nPacketNumber] = true;
+		m_nNumberOfGotPackets++;
+        
+        
+#ifdef USE_HASH_GENERATOR_TO_DEPACKETIZE
 
-		m_FrameSize += nPacketDataLength;
+		memcpy(m_ucaFrameData + nPacketStartingIndex, pucVideoPacketData + iHeaderLength, nPacketDataLength);
+#else
+        
+        memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + iHeaderLength, nPacketDataLength);
+#endif
+        
+		m_nFrameSize += nPacketDataLength;
 
-		return (m_NumberOfGotPackets == m_NumberOfPackets);
+		return (m_nNumberOfGotPackets == m_nNumberOfPackets);
 	}
 	else
 		return false;
@@ -68,7 +61,7 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *in_data, unsigned int in
 
 int CVideoPacketBuffer::IsComplete()
 {
-	if (m_NumberOfGotPackets == m_NumberOfPackets)
+	if (m_nNumberOfGotPackets == m_nNumberOfPackets)
 	{
 		return 1;
 	}
@@ -78,16 +71,17 @@ int CVideoPacketBuffer::IsComplete()
 	}
 }
 
-void CVideoPacketBuffer::SetNumberOfPackets(int number)
+void CVideoPacketBuffer::SetNumberOfPackets(int nNumberOfPackets)
 {
-	m_isClear = false;
-	m_NumberOfPackets = number;
+	m_bIsClear = false;
+	m_nNumberOfPackets = nNumberOfPackets;
 }
 
-bool CVideoPacketBuffer::IsIFrame(){
-	return (m_pFrameData[4] & 0x1F)==7;
-}
 
+void CVideoPacketBuffer::SetFrameNumber(int nFrameNumber)
+{
+    m_nFrameNumber = nFrameNumber;
+}
 
 
 

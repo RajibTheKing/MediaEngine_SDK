@@ -1,402 +1,269 @@
+
 #include "EncodedFramePacketizer.h"
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
-#include "Tools.h"
-#include "VideoPacketBuffer.h"
-#include "ResendingBuffer.h"
 #include "Globals.h"
-#include "BandwidthController.h"
+#include "VideoCallSession.h"
 
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#include <dispatch/dispatch.h>
-#endif
 
-extern bool g_bIsVersionDetectableOpponent;
-extern unsigned char g_uchSendPacketVersion;
-extern int g_uchOpponentVersion;
-BandwidthController g_BandWidthController;
+#define USE_HASH_GENERATOR_TO_PACKETIZE
 
-extern deque<pair<int, int>> ExpectedFramePacketDeQueue;
-extern CResendingBuffer g_ResendBuffer;
-extern CFPSController g_FPSController;
+CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
-CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* sharedObject, CSendingBuffer* pSendingBuffer) :
-m_PacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
-m_pCommonElementsBucket(sharedObject)
+m_nPacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
+m_pcCommonElementsBucket(pcSharedObject)
+
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::CEncodedFramePacketizer");
 
-	m_pEncodedFrameParsingMutex.reset(new CLockHandler);
-	m_pEncodedFrameParsingThread = NULL;
-
-	m_SendingBuffer = pSendingBuffer;
-//	m_SendingBuffer = new CSendingBuffer();
-//	m_pSendingThread = new CSendingThread(sharedObject, m_SendingBuffer, &g_FPSController);
-
-//	StartSendingThread();
+	m_pcSendingBuffer = pcSendingBuffer;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::CEncodedFramePacketizer Created");
+    
+    m_pVideoCallSession = pVideoCallSession;
+    llSendingquePrevTime = 0;
+
+	m_nOwnDeviceType = pVideoCallSession->GetOwnDeviceType();
+    
+    m_pHashGenerator = new CHashGenerator();
+    m_pHashGenerator->SetSeedNumber(m_Tools.CurrentTimestamp() % SEED_MOD_VALUE);
+    
 }
 
 CEncodedFramePacketizer::~CEncodedFramePacketizer()
 {
-	/*	if (m_pEncodedFrameParsingThread)
-	{
-	delete m_pEncodedFrameParsingThread;
-	m_pEncodedFrameParsingThread = NULL;
-	}*/
-//
-//	StopSendingThread();
-
-//	if (NULL != m_pSendingThread)
-//	{
-//		delete m_pSendingThread;
-//		m_pSendingThread = NULL;
-//	}
-
-//	if (NULL != m_SendingBuffer)
-//	{
-//		delete m_SendingBuffer;
-//		m_SendingBuffer = NULL;
-//	}
-
-	SHARED_PTR_DELETE(m_pEncodedFrameParsingMutex);
+    if(m_pHashGenerator != NULL)
+    {
+        delete m_pHashGenerator;
+        m_pHashGenerator = NULL;
+    }
 }
 
-int CEncodedFramePacketizer::Packetize(LongLong lFriendID, unsigned char *in_data, unsigned int in_size, int frameNumber,
-	unsigned int iTimeStampDiff)
+int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy)
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
 
-	unsigned char uchOpponentVersion = g_uchSendPacketVersion;
+	int nOpponentVersion = m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
+    unsigned char uchSendVersion = 0;
 
-	int nHeaderLenWithoutMedia = PACKET_HEADER_LENGTH_NO_VERSION;
+	int nVersionWiseHeaderLength = VIDEO_HEADER_LENGTH;
+    
+    if(nOpponentVersion == -1 || nOpponentVersion == 0 || bIsDummy == true)
+    {
+        uchSendVersion = 0;
+    }
+    else
+    {
+        uchSendVersion = (unsigned char)m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
+    }
 
-	if (uchOpponentVersion)
-		nHeaderLenWithoutMedia = PACKET_HEADER_LENGTH;
+	int nPacketHeaderLenghtWithMediaType = nVersionWiseHeaderLength + 1;
 
-	int nPacketHeaderLenghtWithMedia = nHeaderLenWithoutMedia + 1;
+	m_nPacketSize = MAX_VIDEO_PACKET_SIZE - nPacketHeaderLenghtWithMediaType;
 
+	int nNumberOfPackets = (unLength + m_nPacketSize - 1) / m_nPacketSize;
 
-	m_PacketSize = MAX_VIDEO_PACKET_SIZE - nPacketHeaderLenghtWithMedia;
-	int packetizedSize = m_PacketSize;
-
-	int readPacketLength = 0;
-
-	int numberOfPackets = (in_size + m_PacketSize - 1) / m_PacketSize;
-
-	if (numberOfPackets > MAX_NUMBER_OF_PACKETS)
+	if (nNumberOfPackets > MAX_NUMBER_OF_PACKETS)
 		return -1;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize in_size " + m_Tools.IntegertoStringConvert(in_size) + " m_PacketSize " + m_Tools.IntegertoStringConvert(m_PacketSize));
 
-	for (int packetNumber = 0; readPacketLength < in_size; packetNumber++, readPacketLength += m_PacketSize)
+    int nNetworkType = m_pVideoCallSession->GetBitRateController()->GetOwnNetworkType();
+    unsigned char uchOwnVersion = m_pVideoCallSession->GetVersionController()->GetOwnVersion();
+    int nOwnQualityLevel = m_pVideoCallSession->GetOwnVideoCallQualityLevel();
+    int nCurrentCallQualityLevel = m_pVideoCallSession->GetCurrentVideoCallQualityLevel();
+
+    if(bIsDummy) 
 	{
-		if (m_PacketSize + readPacketLength > in_size)
-			m_PacketSize = in_size - readPacketLength;
+		/*m_cPacketHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,
+                                        uchOwnVersion,
+                                        0, 0, 0, unCaptureTimeDifference, 0, 0,
+                                        nOwnQualityLevel, 0, nNetworkType);*/
 
-		//m_PacketHeader.setPacketHeader(uchOpponentVersion, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, m_PacketSize + nPacketHeaderLenghtWithMedia);
+		m_cVideoHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,				//packetType
+										uchOwnVersion,							//VersionCode
+										VIDEO_HEADER_LENGTH,					//HeaderLength
+										0,										//FPSByte
+										0,										//FrameNumber
+										nNetworkType,							//NetworkType
+										0,										//Device Orientation
+										nOwnQualityLevel,						//QualityLevel
+										0,										//NumberofPacket
+										0,										//PacketNumber
+										unCaptureTimeDifference,				//TimeStamp
+										0,										//PacketStartingIndex
+										0,										//PacketDataLength
+										m_nOwnDeviceType						//SenderDeviceType
+										);
 
-		m_PacketHeader.setPacketHeader(uchOpponentVersion, frameNumber, numberOfPackets, packetNumber, iTimeStampDiff, 0, 0, uchOpponentVersion ? m_PacketSize + nPacketHeaderLenghtWithMedia : m_PacketSize);
+        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
 
 
-		m_PacketHeader.GetHeaderInByteArray(m_Packet + 1);
+        //m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+		m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+		m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType, 0, 0);
 
-		m_Packet[0] = VIDEO_PACKET_MEDIA_TYPE;
-		memcpy(m_Packet + nPacketHeaderLenghtWithMedia, in_data + readPacketLength, m_PacketSize);
+        return 1;
+    }
 
-		//m_pCommonElementsBucket->m_pEventNotifier->firePacketEvent(m_pCommonElementsBucket->m_pEventNotifier->ENCODED_PACKET, frameNumber, numberOfPackets, packetNumber, m_PacketSize, nPacketHeaderLenghtWithMedia + m_PacketSize, m_Packet);
+//    string __show = "#VP FrameNumber: "+Tools::IntegertoStringConvert(iFrameNumber)+"  NP: "+Tools::IntegertoStringConvert(nNumberOfPackets)+"  Size: "+Tools::IntegertoStringConvert(unLength);
+//    LOGE("%s",__show.c_str());
+	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_VIEWER_CALLEE)
+	{
 
-		//		m_PacketHeader.setPacketHeader(m_Packet+1);
-		//		CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "$$--> Lenght "+m_Tools.IntegertoStringConvert(m_PacketHeader.getPacketLength())+"  # TS: "+ m_Tools.IntegertoStringConvert(m_PacketHeader.getTimeStamp()));
+        int nPacketNumber = 0;
+        int nNumberOfPackets = 1;
+        
+        m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
+                                       uchOwnVersion,                   //VersionCode
+                                       VIDEO_HEADER_LENGTH,             //HeaderLength
+                                       0,                               //FPSByte
+                                       iFrameNumber,                    //FrameNumber
+                                       nNetworkType,                    //NetworkType
+                                       device_orientation,              //Device Orientation
+                                       nCurrentCallQualityLevel,        //QualityLevel
+                                       nNumberOfPackets,                //NumberofPacket
+                                       nPacketNumber,                   //PacketNumber
+                                       unCaptureTimeDifference,         //TimeStamp
+                                       0,                               //PacketStartingIndex
+                                       unLength,                         //PacketDataLength
+									   m_nOwnDeviceType					//SenderDeviceType
+                                       );
 
-//		CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize Queue lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(nPacketHeaderLenghtWithMedia + m_PacketSize));
-		m_SendingBuffer->Queue(lFriendID, m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);
-		g_ResendBuffer.Queue(m_Packet, nPacketHeaderLenghtWithMedia + m_PacketSize, frameNumber, packetNumber);//enqueue(pchPacketToResend);
-		//    m_pCommonElementsBucket->SendFunctionPointer(lFriendID,2,m_Packet,nPacketHeaderLenghtWithMedia + m_PacketSize);
+        
+        m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
+        
+        /* m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+                                            uchSendVersion,
+                                            iFrameNumber,
+                                            nNumberOfPackets,
+                                            nPacketNumber,
+                                            unCaptureTimeDifference,
+                                            0,
+                                            unLength,
+                                            nCurrentCallQualityLevel,
+                                            device_orientation,
+                                            nNetworkType);*/
+
+        
+        
+		//m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+        //m_cPacketHeader.ShowDetails("JUST");
+        
+        m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+        m_cVideoHeader.ShowDetails("JUST");
+
+		memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData , unLength);
+
+
+        {
+            m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + unLength, iFrameNumber, nPacketNumber);
+            
+            //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+        }
 	}
+    else
+    {
+        int iStartIndex;
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
+        nNumberOfPackets = m_pHashGenerator->CalculateNumberOfPackets(iFrameNumber, unLength);
+        iStartIndex = 0;
+#endif
+        
+        
+        for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
+        {
+#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
+            m_nPacketSize = m_pHashGenerator->GetHashedPacketSize(iFrameNumber, nPacketNumber);
+#endif
+            
+            if (nPacketizedDataLength + m_nPacketSize > unLength)
+                m_nPacketSize = unLength - nPacketizedDataLength;
+            
+            /*m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+                                            uchSendVersion,
+                                            iFrameNumber,
+                                            nNumberOfPackets,
+                                            nPacketNumber,
+                                            unCaptureTimeDifference,
+                                            0,
+                                            m_nPacketSize,
+                                            nCurrentCallQualityLevel,
+                                            device_orientation,
+                                            nNetworkType);
+											*/
+
+			m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
+                                           uchSendVersion,                  //VersionCode
+											VIDEO_HEADER_LENGTH,             //HeaderLength
+											0,                               //FPSByte
+											iFrameNumber,                    //FrameNumber
+											nNetworkType,                    //NetworkType
+											device_orientation,              //Device Orientation
+											nCurrentCallQualityLevel,        //QualityLevel
+											nNumberOfPackets,                //NumberofPacket
+											nPacketNumber,                   //PacketNumber
+											unCaptureTimeDifference,         //TimeStamp
+											iStartIndex,                     //PacketStartingIndex
+											m_nPacketSize,                    //PacketDataLength
+											m_nOwnDeviceType				//SenderDeviceType
+											);
+            iStartIndex += m_nPacketSize;
+
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL))
+			{
+				m_ucaPacket[1] = VIDEO_PACKET_MEDIA_TYPE;
+				//m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+				m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 2);
+				//        m_cPacketHeader.ShowDetails("JUST");
+
+				memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType + 1, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
+			}
+			else
+			{
+				m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
+				//m_cPacketHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+				m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
+				//        m_cPacketHeader.ShowDetails("JUST");
+
+				memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData + nPacketizedDataLength, m_nPacketSize);
+			}
+ 
+            if(m_pVideoCallSession->GetResolationCheck() == false)
+            {
+                unsigned char *pEncodedFrame = m_ucaPacket;
+                int PacketSize = nPacketHeaderLenghtWithMediaType + m_nPacketSize;
+                //printf("Sending data for nFrameNumber--> %d\n", iFrameNumber);
+                m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --PacketSize, true);
+                //            CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Sending to self");
+                m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+            }
+            else
+            {
+                //m_cPacketHeader.ShowDetails("SendingSide: ");
+				if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL))
+                {
+                    m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize + 1, iFrameNumber, nPacketNumber);
+                }
+                else
+                {
+                    m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
+                }
+                
+                //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+            }
+        }
+    }
 
 	return 1;
 }
 
-void *CEncodedFramePacketizer::CreateEncodedFrameParsingThread(void* param)
-{
-	CEncodedFramePacketizer *pThis = (CEncodedFramePacketizer*)param;
 
-	return NULL;
-}
 
-void CEncodedFramePacketizer::StartEncodedFrameParsingThread()
-{
-	std::thread t(CreateEncodedFrameParsingThread, this);
 
-	t.detach();
 
-	return;
-}
 
-void CEncodedFramePacketizer::StopEncodedFrameParsingThread()
-{
-	if (m_pEncodedFrameParsingThread != NULL)
-	{
-		Locker lock(*m_pEncodedFrameParsingMutex);
 
-		/*delete m_pEncodedFrameParsingThread;
-
-		m_pEncodedFrameParsingThread = NULL;*/
-	}
-
-}
-
-
-
-
-
-
-
-
-
-/*
-void CEncodedFramePacketizer::StopSendingThread()
-{
-	m_pSendingThread->StopSendingThread();
-
-
-	//if (pInternalThread.get())
-	{
-	bSendingThreadRunning = false;
-
-	while (!bSendingThreadClosed)
-	m_Tools.SOSleep(5);
-	}
-
-	//pInternalThread.reset();
-
-}
-*/
-
-/*
-void CEncodedFramePacketizer::StartSendingThread()
-{
-	m_pSendingThread->StartSendingThread();
-
-
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 1");
-
-	if (pSendingThread.get())
-	{
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 2");
-	pSendingThread.reset();
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartDecodingThread 3");
-	return;
-	}
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 4");
-	bSendingThreadRunning = true;
-	bSendingThreadClosed = false;
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread 5");
-
-	#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
-	dispatch_queue_t SendingThreadQ = dispatch_queue_create("SendingThreadQ",DISPATCH_QUEUE_CONCURRENT);
-	dispatch_async(SendingThreadQ, ^{
-	this->SendingThreadProcedure();
-	});
-
-	#else
-
-	std::thread myThread(CreateVideoSendingThread, this);
-	myThread.detach();
-
-	#endif
-
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::StartedInternalThread Encoding Thread started");
-
-	return;
-
-}
-*/
-
-void *CEncodedFramePacketizer::CreateVideoSendingThread(void* param)
-{
-	/*
-	CEncodedFramePacketizer *pThis = (CEncodedFramePacketizer*)param;
-	pThis->SendingThreadProcedure();
-	*/
-	return NULL;
-}
-
-void CEncodedFramePacketizer::SendingThreadProcedure()
-{
-	/*
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Started EncodingThreadProcedure.");
-
-	Tools toolsObject;
-	int packetSize;
-	LongLong lFriendID;
-	int startFraction = SIZE_OF_INT_MINUS_8;
-	int fractionInterval = BYTE_SIZE;
-	int fpsSignal, frameNumber, packetNumber;
-	CPacketHeader packetHeader;
-
-	#ifdef  BANDWIDTH_CONTROLLING_TEST
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(8*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(3*1024);    g_TimePeriodInterval.push_back(100*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthController.SetTimeInterval(g_BandWidthList,g_TimePeriodInterval);
-	#endif
-
-	while (bSendingThreadRunning)
-	{
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure");
-
-	if (m_SendingBuffer->GetQueueSize() == 0)
-	toolsObject.SOSleep(10);
-	else
-	{
-	int timeDiffForQueue;
-
-	packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
-
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure Deque lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
-
-	CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
-
-	int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
-	pair<int,int> FramePacketToSend = {-1, -1};
-
-
-	packetHeader.setPacketHeader(m_EncodedFrame+1);
-
-	//		if(ExpectedFramePacketDeQueue.size() > 0)
-	//		{
-	//			FramePacketToSend = ExpectedFramePacketDeQueue.front();
-	//			ExpectedFramePacketDeQueue.pop_front();
-	//		}
-	#ifdef	RETRANSMISSION_ENABLED
-	//		for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
-	//		{
-	//			m_EncodedFrame[startPoint ++] = (FramePacketToSend.first >> f) & 0xFF;
-	//		}
-	//		for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendPacketNumber
-	//		{
-	//			m_EncodedFrame[startPoint ++] = (FramePacketToSend.second >> f) & 0xFF;
-	//		}
-	#endif
-	//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
-
-	unsigned char signal = g_FPSController.GetFPSSignalByte();
-	m_EncodedFrame[ 1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
-
-	//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
-
-
-
-	#ifdef PACKET_SEND_STATISTICS_ENABLED
-
-	int iNumberOfPackets = -1;
-
-	iNumberOfPackets = packetHeader.getNumberOfPacket();
-
-	//   pair<int, int> FramePacketPair = toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);
-	pair<int, int> FramePacketPair = make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
-
-	if (FramePacketPair.first != iPrevFrameNumer)
-	{
-	//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,"iNumberOfPacketsActuallySentFromLastFrame = %d, iNumberOfPacketsInLastFrame = %d, currentframenumber = %d\n",
-	//	iNumberOfPacketsActuallySentFromLastFrame, iNumberOfPacketsInLastFrame, FramePacketPair.first);
-
-	if (iNumberOfPacketsActuallySentFromLastFrame != iNumberOfPacketsInLastFrame)
-	{
-	CLogPrinter_WriteSpecific2(CLogPrinter::INFO,"$$-->******* iNumberOfPacketsActuallySentFromLastFrame = "
-	+ m_Tools.IntegertoStringConvert(iNumberOfPacketsActuallySentFromLastFrame)
-	+ " iNumberOfPacketsInLastFrame = "
-	+ m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrame)
-	+ " currentframenumber = "
-	+ m_Tools.IntegertoStringConvert(FramePacketPair.first)
-	+ " m_SendingBuffersize = "
-	+ m_Tools.IntegertoStringConvert(m_SendingBuffer->GetQueueSize()));
-
-	}
-
-
-	iNumberOfPacketsInLastFrame = iNumberOfPackets;
-	iNumberOfPacketsActuallySentFromLastFrame = 1;
-	iPrevFrameNumer = FramePacketPair.first;
-	}
-	else
-	{
-	iNumberOfPacketsActuallySentFromLastFrame++;
-	}
-	#endif
-
-
-	//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "Parsing..>>>  FN: "+ m_Tools.IntegertoStringConvert(packetHeader.getFrameNumber())
-	//														  + "  pNo : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketNumber())
-	//														  + "  Npkt : "+ m_Tools.IntegertoStringConvert(packetHeader.getNumberOfPacket())
-	//														  + "  FPS : "+ m_Tools.IntegertoStringConvert(packetHeader.getFPS())
-	//														  + "  Rt : "+ m_Tools.IntegertoStringConvert(packetHeader.getRetransSignal())
-	//														  + "  Len : "+ m_Tools.IntegertoStringConvert(packetHeader.getPacketLength())
-	//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(packetHeader.getTimeStamp()));
-
-
-	#ifdef  BANDWIDTH_CONTROLLING_TEST
-	if(g_BandWidthController.IsSendeablePacket(packetSize)) {
-	#endif
-
-	//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure lFriendID " + Tools::IntegertoStringConvert(lFriendID) + " packetSize " + Tools::IntegertoStringConvert(packetSize));
-	m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, "CEncodedFramePacketizer::SendingThreadProcedure sent");
-	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: "+ toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: "+ toolsObject.IntegertoStringConvert(packetNumber));
-
-	//toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0));
-
-	toolsObject.SOSleep(GetSleepTime());
-
-	#ifdef  BANDWIDTH_CONTROLLING_TEST
-	}
-	#endif
-
-	}
-	}
-
-	bSendingThreadClosed = true;
-
-//	CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
-	*/
-}
-
-int CEncodedFramePacketizer::GetSleepTime()
-{
-	/*
-	int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * FPS_MAXIMUM * 1.0) / (g_FPSController.GetOwnFPS()  * 1.0);
-	int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer->GetQueueSize() + 1.0);
-
-	if (SleepTimeDependingOnFPS < SleepTimeDependingOnQueueSize)
-	{
-	return SleepTimeDependingOnFPS;
-	}
-	else
-	{
-	return SleepTimeDependingOnQueueSize;
-	}
-	*/
-
-	return 0;
-}
 
 
 

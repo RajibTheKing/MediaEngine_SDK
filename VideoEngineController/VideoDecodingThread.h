@@ -9,49 +9,127 @@
 #include "RenderingBuffer.h"
 #include "VideoDecoder.h"
 #include "ColorConverter.h"
-#include "DecodingBuffer.h"
 #include "FPSController.h"
+#include "AverageCalculator.h"
+#include "LiveVideoDecodingQueue.h"
+#include "VideoHeader.h"
 
+#include "../VideoEngineUtilities/VideoEffects.h"
+
+//#include "Helper_IOS.hpp"
 #include <thread>
+
+class CVideoCallSession;
+class CCommonElementsBucket;
 
 class CVideoDecodingThread
 {
 
 public:
 
-	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, CRenderingBuffer *renderingBuffer, CVideoDecoder *videoDecoder, CColorConverter *colorConverter, CFPSController *g_FPSController);
+	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, 
+						 LongLong llFriendID,
+						 CCommonElementsBucket *pCommonElementBucket,
+                         CRenderingBuffer *renderingBuffer,
+                         LiveVideoDecodingQueue *pLiveVideoDecodingQueue,
+                         CVideoDecoder *videoDecoder,
+                         CColorConverter *colorConverter,
+                         CVideoCallSession* pVideoCallSession,
+                         bool bIsCheckCall,
+                         int nFPS
+                         );
+    
 	~CVideoDecodingThread();
-
+    void Reset();
 	void StartDecodingThread();
 	void StopDecodingThread();
 	void DecodingThreadProcedure();
 	static void *CreateDecodingThread(void* param);
 
-	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff);
+	void ResetForPublisherCallerCallEnd();
+	void ResetForViewerCallerCallStartEnd();
+
+	void InstructionToStop();
+
+	void SetCallFPS(int nFPS);
+
+	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation);
+	int DecodeAndSendToClient2();
 
 private:
 
+	CVideoCallSession* m_pVideoCallSession;
 	bool bDecodingThreadRunning;
 	bool bDecodingThreadClosed;
+
+	CCommonElementsBucket *m_pCommonElementBucket;
+	LongLong m_llFriendID;
 
 	int m_decodingHeight;
 	int m_decodingWidth;
 	int m_decodedFrameSize;
 
+	int m_previousDecodedFrameSize;
+	int m_PreviousDecodingHeight;
+	int m_PreviousDecodingWidth;
+	int m_PreviousFrameNumber;
+	int m_PreviousOrientation;
+
+	bool m_HasPreviousValues;
+    
+    int m_Counter;
+
+	int m_nCallFPS;
+
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
 	CRenderingBuffer *m_RenderingBuffer;						
 	CVideoDecoder *m_pVideoDecoder;								
-	CColorConverter *m_pColorConverter;							
+	CColorConverter *m_pColorConverter;
 
-	CFPSController *g_FPSController;									
+	bool m_bResetForPublisherCallerCallEnd;
+	bool m_bResetForViewerCallerCallStartEnd;
+
+	bool m_bIsCheckCall;
+
+	unsigned char m_PreviousDecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+	unsigned char m_PreviousDecodedFrameConvertedData[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+
+#if defined(TARGET_OS_WINDOWS_PHONE)
+
+	unsigned char m_TempDecodedFrame[ULTRA_MAX_VIDEO_DECODER_FRAME_SIZE];
+
+#endif
+
+    unsigned char m_CropedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	Tools m_Tools;
-
+    CAverageCalculator *m_pCalculatorDecodeTime;
 	SmartPointer<std::thread> pDecodingThread;
+    
+    
+    
+    double m_dbAverageDecodingTime = 0, m_dbTotalDecodingTime = 0;
+    int m_nOponnentFPS, m_nMaxProcessableByMine;
+    int m_iDecodedFrameCounter = 0;
+  	long long m_nMaxDecodingTime = 0;
+    
+    
+    int m_FpsCounter;
+    long long m_FPS_TimeDiff;
+    long long llQueuePrevTime;
+    LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+    CVideoEffects *m_pVideoEffect;
+    int m_iMaxLen;
+    //int m_iEffectSelection;
+    //int m_iNumberOfEffect;
+    //int m_iNumberOfEffectedFrame;
+    
+    
+    
 };
 
 #endif 

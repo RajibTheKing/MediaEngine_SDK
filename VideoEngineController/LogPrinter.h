@@ -3,6 +3,37 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+
+#ifdef __ANDROID__
+
+#include <android/log.h>
+
+#define LOG_TAG "LibraryLog"
+#define LOGF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGEF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define __LOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define PRT(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOG_AAC(...)  //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGENEW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define HITLER(...)	 //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOG_50MS(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGT(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGSS(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
+#else
+#define LOG_AAC(...)  
+#define LOGF(...) 
+#define LOGE(...)
+#define LOGEF(...)
+#define __LOG(...)
+#define PRT(...)
+#define LOGENEW(...)
+#define HITLER(...)
+#define LOG_50MS(...)
+#define LOGT(...)
+#endif
+
 //#define __PRINT_LOG__
 //#define __EXACT_LOG__
 //#define __SPECIFIC_LOG__
@@ -16,20 +47,36 @@
 //#define __THREAD_LOG__
 //#define __BITRATE_CHNANGE_LOG__
 
+//#define  __SPECIFIC_LOG6__
+
+#define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+
 #define ON 1
 #define OFF 0
 
-#define LOG_ENABLED
+//#define LOG_ENABLED
 
+#define WRITE_TO_LOG_FILE		OFF
+
+#define PACKET_DETAILS_LOG		OFF
+#define INSTENT_TEST_LOG_2		OFF
 #define INSTENT_TEST_LOG		OFF
+#define CHECK_CAPABILITY_LOG	OFF
+#define QUEUE_OVERFLOW_LOG		OFF
 #define OPERATION_TIME_LOG		OFF
 #define QUEUE_TIME_LOG			OFF
 #define PACKET_LOSS_INFO_LOG	OFF
 #define THREAD_LOG				OFF
 #define BITRATE_CHNANGE_LOG		OFF
+#define DEPACKETIZATION_LOG		OFF
+#define VIDEO_NOTIFICATION_LOG  OFF
 
-
+#ifdef __ANDROID__
+#define FILE_NAME "/sdcard/VideoEngineTrack.txt"
+#else
 #define FILE_NAME "VideoEngineTrack.log"
+#endif
+
 #define PRIORITY CLogPrinter::DEBUGS
 
 #ifdef TARGET_OS_WINDOWS_PHONE
@@ -37,6 +84,8 @@ typedef __int64 IPVLongType;
 #else
 typedef long long IPVLongType;
 #endif
+
+#include "../VideoEngineUtilities/SmartPointer.h"
 
 #include <stdio.h>
 
@@ -48,19 +97,27 @@ typedef long long IPVLongType;
 #include <windows.h>
 #include <stdarg.h>
 
+
 #else
 #include <sys/time.h>
 #endif 
 
 #if defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_WINDOWS_PHONE)
+static FILE *logfp = NULL;
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
 #define printf(...) printg(__VA_ARGS__,"")
-#define printf(...)
+#define printk(...) printg(__VA_ARGS__,"")
+//#define printf(...)
+#define printFile(...) if(!logfp) {logfp = fopen("log.txt", "wb");} fprintf(logfp, __VA_ARGS__);
+#define printfiledone() fclose(logfp);
 #endif
-
 #define printf(...)
+
+#define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 using namespace std;
+
+class CLockHandler;
 
 class CLogPrinter
 {
@@ -78,12 +135,17 @@ public:
 	};
 
 	CLogPrinter();
+	~CLogPrinter();
 
 	static void Start(Priority maxPriority, const char* logFile);
 	static void Stop();
 	static void SetPriority(Priority maxPriority);
 	static void SetExactness(bool exact);
 	static std::string GetDateTime();
+    
+    static void Log(const char *format, ...);
+    static void Argument_to_String(string &dst, const char *format, va_list ap);
+    
 	static void Write(Priority priority, const std::string message);
 	static void SetLoggerPath(std::string location);
     static void WriteSpecific(Priority priority, const std::string message);
@@ -94,6 +156,7 @@ public:
 	static void WriteForPacketLossInfo(Priority priority, const std::string message);
 
 	static long long WriteLog(Priority priority, int isLogEnabled, const std::string message = "", bool calculatedTime = false, long long prevTime = 0);
+	static void WriteFileLog(Priority priority, int isLogEnabled, const std::string message);
 
 	static long long GetTimeDifference(long long prevTime);
 
@@ -107,6 +170,8 @@ private:
 	static CLogPrinter instance;
     static bool isLogEnable;
 
+	//static SmartPointer<CLockHandler> m_pLogPrinterMutex;
+
 };
 
 
@@ -117,8 +182,11 @@ private:
 #define CLogPrinter_WriteLog(...) 0
 #endif
 
-
-
+#ifdef LOG_ENABLED
+#define CLogPrinter_WriteFileLog(...) CLogPrinter::WriteFileLog(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteFileLog(...) 
+#endif
 
 #ifdef __PRINT_LOG__
 #define CLogPrinter_Write(...) CLogPrinter::Write(__VA_ARGS__)
@@ -142,6 +210,12 @@ private:
 #define CLogPrinter_WriteSpecific3(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteSpecific3(...)
+#endif
+
+#ifdef __SPECIFIC_LOG6__
+#define CLogPrinter_WriteSpecific6(...) CLogPrinter::WriteSpecific2(__VA_ARGS__)
+#else
+#define CLogPrinter_WriteSpecific6(...)
 #endif
 
 #ifdef __INSTENT_TEST_LOG__

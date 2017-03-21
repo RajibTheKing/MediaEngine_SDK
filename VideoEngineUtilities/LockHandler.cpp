@@ -1,49 +1,45 @@
+
 #include "LockHandler.h"
 
 CLockHandler::CLockHandler() :
-m_pSingleSemaphore(NULL)
+m_pMutex(NULL)
+
 {
-	/*if (m_pSingleSemaphore != NULL)
-	{
-		delete m_pSingleSemaphore;
-
-		m_pSingleSemaphore = NULL;
-	}*/
-
-	m_pSingleSemaphore = new std::mutex;
+	m_pMutex = new std::mutex;
 }
 
 CLockHandler::~CLockHandler()
 {
-/*	if (m_pSingleSemaphore != NULL)
+/*	
+	if (m_pMutex != NULL)
 	{
-		delete m_pSingleSemaphore;
+		delete m_pMutex;
 
-		m_pSingleSemaphore = NULL;
-	}*/
+		m_pMutex = NULL;
+	}
+*/
 }
 
 std::mutex* CLockHandler::GetMutex()
 {
-	if (NULL == m_pSingleSemaphore)
+	if (NULL == m_pMutex)
 		return NULL;
 
-	return m_pSingleSemaphore;
+	return m_pMutex;
 }
-
 
 void CLockHandler::Lock()
 {
-	if (NULL == m_pSingleSemaphore)
+	if (NULL == m_pMutex)
 		return;
 
-	m_pSingleSemaphore->lock();
+	m_pMutex->lock();
 }
 
 void CLockHandler::UnLock()
 {
-	if (NULL == m_pSingleSemaphore)
+	if (NULL == m_pMutex)
 		return;
 
-	m_pSingleSemaphore->unlock();
+	m_pMutex->unlock();
 }

@@ -1,22 +1,56 @@
 
 #include "SendingThread.h"
 #include "Size.h"
-#include "PacketHeader.h"
-//#include "Globals.cpp"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 #include "CommonElementsBucket.h"
+#include "VideoCallSession.h"
+#include "Controller.h"
+
+#include <vector>
+
+#include "LiveReceiver.h"
+#include "LiveVideoDecodingQueue.h"
+#include "Globals.h"
+#include "InterfaceOfAudioVideoEngine.h"
+
+#ifdef CHANNEL_FROM_FILE
+#include "Aac.h"
+#endif
+
+extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
+
+//#define SEND_VIDEO_TO_SELF 1
+//#define __LIVE_STREAMIN_SELF__
+
+//#define __RANDOM_MISSING_PACKET__
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CFPSController *FPSController) :
-
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
-g_FPSController(FPSController)
+m_bIsCheckCall(bIsCheckCall),
+m_iAudioDataToSendIndex(0),
+m_nTimeStampOfChunck(-1),
+m_nTimeStampOfChunckSend(0),
+m_lfriendID(llfriendID),
+m_bInterruptHappened(false),
+m_bInterruptRunning(false),
+m_bResetForViewerCallerCallEnd(false)
 
 {
-
+	m_pVideoCallSession = pVideoCallSession;
+    
+	if (pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
+    {
+        llPrevTime = -1;
+        m_iDataToSendIndex = 0;
+        firstFrame = true;
+        m_llPrevTimeWhileSendingToLive = 0;
+    }
 }
 
 CSendingThread::~CSendingThread()
@@ -26,6 +60,8 @@ CSendingThread::~CSendingThread()
 
 void CSendingThread::StopSendingThread()
 {
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::StopSendingThread() called");
+
 	//if (pInternalThread.get())
 	{
 		bSendingThreadRunning = false;
@@ -35,6 +71,8 @@ void CSendingThread::StopSendingThread()
 	}
 
 	//pInternalThread.reset();
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::StopSendingThread() Sending Thread STOPPPED");
 }
 
 void CSendingThread::StartSendingThread()
@@ -78,16 +116,72 @@ void *CSendingThread::CreateVideoSendingThread(void* param)
 	return NULL;
 }
 
+void CSendingThread::ResetForViewerCallerCallEnd()
+{
+	m_bResetForViewerCallerCallEnd = true;
+
+	while (m_bResetForViewerCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
 #ifdef PACKET_SEND_STATISTICS_ENABLED
-int iPacketCounter = 0;
-int iPrevFrameNumer = 0;
+long long iPrevFrameNumer = 0;
 int iNumberOfPacketsInLastFrame = 0;
 int iNumberOfPacketsActuallySentFromLastFrame = 0;
 #endif
 
-#ifdef  BANDWIDTH_CONTROLLING_TEST
-std::vector<int>g_TimePeriodInterval;
-std::vector<int>g_BandWidthList;
+#ifdef CHANNEL_FROM_FILE
+void CSendingThread::SendDataFromFile()
+{
+	CVideoCallSession* pVideoSession;
+
+	long long lFriendID = 200;
+//	std::string inFilePath = "sdcard/naac_file/chunks/chunk.";
+	std::string inFilePath = "sdcard/test_files/chunks/chunk.";
+
+	LOG_AAC("#aac#file# Sending File to AAC.");
+
+	unsigned char data[300000];
+
+	long long chunkDuration;
+	long long lastSleepTime, curSleepTime;
+
+	lastSleepTime = m_Tools.CurrentTimestamp();
+	for (int i = 0; i <= 100; i++)
+	{
+		int totFileSize = -1;
+		std::string filePath = inFilePath + m_Tools.IntegertoStringConvert(i);
+		LOG_AAC("#aac#file# FilePath: %s", filePath.c_str());
+
+		FILE *fd = fopen(filePath.c_str(), "rb");
+
+		if (!fd){
+			LOG_AAC("#aac#file# file open failed");
+			return;
+		}
+
+		if (!fseek(fd, 0, SEEK_END)) 
+		{
+			totFileSize = ftell(fd);
+			LOG_AAC("#aac#file# Reading from file: %lld", totFileSize);
+		}
+
+		fseek(fd, 0, SEEK_SET);
+		fread(data, 1, totFileSize, fd);
+
+		G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(lFriendID, MEDIA_TYPE_LIVE_STREAM, ENTITY_TYPE_VIEWER, data, totFileSize, std::vector< std::pair<int, int> >());
+		fclose(fd);
+
+		chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(data);
+		LOG_AAC("#aac#file# chunk_duration: %lld", chunkDuration);
+		curSleepTime = m_Tools.CurrentTimestamp();
+		m_Tools.SOSleep(chunkDuration - (curSleepTime - lastSleepTime));
+		lastSleepTime = m_Tools.CurrentTimestamp();
+//		m_Tools.SOSleep(2000);
+	}
+}
 #endif
 
 void CSendingThread::SendingThreadProcedure()
@@ -100,31 +194,49 @@ void CSendingThread::SendingThreadProcedure()
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
 	int fpsSignal, frameNumber, packetNumber;
-	CPacketHeader packetHeader;
+	//CPacketHeader packetHeader;
+	CVideoHeader packetHeader;
+	std::vector<int> vAudioDataLengthVector;
+	int videoPacketSizes[30];
+	int numberOfVideoPackets = 0;
+	int frameCounter = 0;
+	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-	g_BandWidthList.push_back(500 * 1024);    g_TimePeriodInterval.push_back(20 * 1000);
-	g_BandWidthList.push_back(8 * 1024);    g_TimePeriodInterval.push_back(20 * 1000);
-	g_BandWidthList.push_back(3 * 1024);    g_TimePeriodInterval.push_back(100 * 1000);
-	/*g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);
-	g_BandWidthList.push_back(500*1024);    g_TimePeriodInterval.push_back(20*1000);
-	g_BandWidthList.push_back(5*1024);    g_TimePeriodInterval.push_back(2*1000);*/
-	g_BandWidthController.SetTimeInterval(g_BandWidthList, g_TimePeriodInterval);
+	m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
+	m_BandWidthList.push_back(8 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
+	m_BandWidthList.push_back(3 * 1024);    m_TimePeriodInterval.push_back(100 * 1000);
+	/*m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);
+	m_BandWidthList.push_back(500*1024);    m_TimePeriodInterval.push_back(20*1000);
+	m_BandWidthList.push_back(5*1024);    m_TimePeriodInterval.push_back(2*1000);*/
+	m_BandWidthController.SetTimeInterval(m_BandWidthList, m_TimePeriodInterval);
 #endif
-
+    long long llSendingDequePrevTime = 0;
 	while (bSendingThreadRunning)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
+		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
+#ifdef CHANNEL_FROM_FILE
+		m_Tools.SOSleep(5000);
+		SendDataFromFile();
+		m_Tools.SOSleep(500000);
+#endif
+
+		if (m_bResetForViewerCallerCallEnd == true)
+		{
+			m_SendingBuffer->ResetBuffer();
+
+			m_bResetForViewerCallerCallEnd = false;
+		}
 
 		if (m_SendingBuffer->GetQueueSize() == 0)
 		{
@@ -134,39 +246,336 @@ void CSendingThread::SendingThreadProcedure()
 		}
 		else
 		{
+           
+            
+            
+            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() GOT packet for Sending method");
+			
+            
 			int timeDiffForQueue;
 			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
+            
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
+            
+            //printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
+            
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_VIEWER_CALLEE)
+            {
 
-			int startPoint = RESEND_INFO_START_BYTE_WITH_MEDIA_TYPE;
-			pair<int, int> FramePacketToSend = { -1, -1 };
+			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld", lFriendID);
+			
+			int iIntervalIFrame = m_pVideoCallSession->m_nCallFPS / IFRAME_INTERVAL;
+                
+            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() session got");
 
+			/*unsigned char *p = m_EncodedFrame + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
 
-			packetHeader.setPacketHeader(m_EncodedFrame + 1);
+			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
+			if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);*/
 
-			/*if(ExpectedFramePacketDeQueue.size() > 0)
+			if (frameNumber%iIntervalIFrame == 0 && firstFrame == false)
 			{
-			FramePacketToSend = ExpectedFramePacketDeQueue.front();
-			ExpectedFramePacketDeQueue.pop_front();
-			}*/
-#ifdef	RETRANSMISSION_ENABLED
-			/*for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendFrameNumber
-			{
-			m_EncodedFrame[startPoint ++] = (FramePacketToSend.first >> f) & 0xFF;
-			}
-			for (int f = startFraction; f >= 0; f -= fractionInterval)//ResendPacketNumber
-			{
-			m_EncodedFrame[startPoint ++] = (FramePacketToSend.second >> f) & 0xFF;
-			}*/
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() 200 ms completed");
+                
+				CAudioCallSession *pAudioSession;
+
+				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+
+				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
+
+				int viewerDataLength = 0, calleeDataLength = 0;
+
+				if (bExist)
+					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength);
+
+				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
+				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
+
+				long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
+				long long llNowTimeDiff;
+
+				if (m_llPrevTimeWhileSendingToLive == 0)
+				{
+					llNowTimeDiff = 0;
+					m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+				}
+				else
+				{
+					llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
+					m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+				}
+
+				m_nTimeStampOfChunckSend += llNowTimeDiff;
+
+			//	m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
+			//	m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
+
+				m_Tools.SetMediaUnitVersionInMediaChunck(LIVE_HEADER_VERSION, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
+				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
+				
+#ifdef DISABLE_VIDEO_FOR_LIVE
+				m_iDataToSendIndex = 0;
 #endif
-			//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Before Bye SIGBYTE: ");
 
-			unsigned char signal = g_FPSController->GetFPSSignalByte();
-			m_EncodedFrame[1 + SIGNAL_BYTE_INDEX_WITHOUT_MEDIA] = signal;
+				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
 
-			//			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " Bye SIGBYTE: "+ m_Tools.IntegertoStringConvert(signal));
+				int tempILen = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
+
+				m_Tools.SetNumberOfAudioFramesInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, vAudioDataLengthVector.size(), m_AudioVideoDataToSend);
+
+				int index = LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
+
+//				LLG("#IV#S#     m_iAudioDataToSendIndex  = "+Tools::IntegertoStringConvert(m_iAudioDataToSendIndex));
+//				LLG("#IV#S#     m_iDataToSendIndex  = "+Tools::IntegertoStringConvert(m_iDataToSendIndex));
 
 
+				for (int i = 0; i < vAudioDataLengthVector.size(); i++)
+				{
+					m_Tools.SetNextAudioFramePositionInMediaChunck(index, vAudioDataLengthVector[i], m_AudioVideoDataToSend);
+//					LLG("#IV#S#     AudiData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(vAudioDataLengthVector[i]));
+					index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
+				}
+#ifdef DISABLE_VIDEO_FOR_LIVE
+				numberOfVideoPackets = 0;
+#endif
+				m_Tools.SetNumberOfVideoFramesInMediaChunck(index, numberOfVideoPackets, m_AudioVideoDataToSend);
+
+				index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
+				
+#ifndef DISABLE_VIDEO_FOR_LIVE
+				for (int i = 0; i < numberOfVideoPackets; i++)
+				{
+					m_Tools.SetNextAudioFramePositionInMediaChunck(index, videoPacketSizes[i], m_AudioVideoDataToSend);
+//					LLG("#IV#S#     VideoData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(videoPacketSizes[i]));
+					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
+				}
+#endif
+
+#ifndef NEW_HEADER_FORMAT
+
+				for (int i = 1; i < NUMBER_OF_HEADER_FOR_STREAMING; i++)
+					memcpy(m_AudioVideoDataToSend + i * packetSizeOfNetwork, m_AudioVideoDataToSend, packetSizeOfNetwork);
+
+				index = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
+
+#endif
+
+				m_Tools.SetAudioBlockStartingPositionInMediaChunck(index + m_iDataToSendIndex, m_AudioVideoDataToSend);
+				m_Tools.SetVideoBlockStartingPositionInMediaChunck(index, m_AudioVideoDataToSend);
+
+				LOGE("audioStartingPosition %d videoStartingPosition %d\n", index + m_iDataToSendIndex, index);
+
+#ifndef DISABLE_VIDEO_FOR_LIVE
+				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
+#endif
+				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
+
+				int tempILen2 = m_Tools.GetVideoBlockSizeFromMediaChunck(m_AudioVideoDataToSend);
+                
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() chunck ready");
+
+				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
+
+				long long timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+				int diff = timeNow - m_nTimeStampOfChunck;
+
+				m_Tools.SetMediaUnitHeaderLengthInMediaChunck(index, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitStreamTypeInMediaChunck(STREAM_TYPE_LIVE_STREAM, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitBlockInfoPositionInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, m_AudioVideoDataToSend);
+				m_Tools.SetMediaUnitChunkDurationInMediaChunck(diff, m_AudioVideoDataToSend);
+
+#ifndef __LIVE_STREAMIN_SELF__
+
+#ifdef NEW_HEADER_FORMAT
+
+				if (m_bInterruptRunning == false)
+				{
+					if(m_bInterruptHappened == false)
+					{
+#ifndef NO_CONNECTIVITY
+						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+
+						int viewerDataIndex = index + m_iDataToSendIndex;
+						int calleeDataIndex = viewerDataIndex + viewerDataLength;
+
+						std::vector<std::pair<int, int> > liVector;
+						liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+						liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
+		
+						// do changes for audio
+						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend,
+							index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+
+						LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d",
+							viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
+#else
+						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
+#endif
+					}
+					else
+					{
+						m_bInterruptHappened = false;
+					}
+				}
+				
+#else
+				if (m_bInterruptRunning == false)
+				{
+					if (m_bInterruptHappened == false)
+						m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+					else
+						m_bInterruptHappened = false;
+				}
+				
+#endif
+
+				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
+				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
+
+
+#else        
+              /*  printf("Sending to liovestream, llNowTimeDiff = %lld\n", llNowTimeDiff);
+                
+                if(NULL != g_LiveReceiver)
+                {
+                    g_LiveReceiver->PushAudioData(m_AudioDataToSend, m_iAudioDataToSendIndex);
+                    g_LiveReceiver->PushVideoData(m_VideoDataToSend, m_iDataToSendIndex);
+                }*/
+
+				//LOGEF("fahad -->> m_pCommonElementsBucket 3 --> lFriendID = 200, bExist = %d", bExist);
+
+//				m_pVideoCallSession->m_pController->PushAudioForDecoding(m_lfriendID, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+//				if(bExist)
+                
+                int missingFrames[1003];
+                int nMissingFrames = 0;
+
+#ifdef	__RANDOM_MISSING_PACKET__
+
+				int nTotalSizeToSend = packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
+				const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfNetwork - 1 ) / packetSizeOfNetwork;
+
+                for(int i=0; i < nMaxMissingFrames; i ++)
+                {
+                    if(rand()%10 < 3)
+                        missingFrames[nMissingFrames++] = i;
+                }
+
+#endif
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushing for selfcall");
+                //LOGEF("TheKing--> Processing LIVESTREAM\n");
+				if(bExist)
+				{
+
+#ifdef NEW_HEADER_FORMAT
+
+				if (m_bInterruptRunning == false)
+				{
+					if (m_bInterruptHappened == false)
+						G_pInterfaceOfAudioVideoEngine->PushAudioForDecodingVector(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM,  m_pVideoCallSession->GetEntityType(),  m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, std::vector< std::pair<int, int> >());
+					else
+						m_bInterruptHappened = false;
+				}
+					
+#else
+				if (m_bInterruptRunning == false)
+				{
+					if (m_bInterruptHappened == false)
+						G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
+					else
+						m_bInterruptHappened = false;
+				}
+					
+#endif
+				
+				}
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
+#endif
+
+
+                
+                
+
+				LOGEF("fahad (m_iDataToSendIndex,m_iAudioDataToSendIndex, total) -- ( %d, %d, %d )  --frameNumber == %d, bExist = %d %d %d %d\n", m_iDataToSendIndex, m_iAudioDataToSendIndex, m_iDataToSendIndex + m_iAudioDataToSendIndex, frameNumber, bExist, (int)llNowTimeDiff, diff, index);
+
+				int tempIndex = m_iDataToSendIndex;
+				numberOfVideoPackets = 0;
+				m_iDataToSendIndex = 0;
+				memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
+				m_iDataToSendIndex += (packetSize);
+
+				long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
+
+				m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %lld\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
+
+				videoPacketSizes[numberOfVideoPackets++] = packetSize;
+			}
+			else
+			{
+				if (firstFrame == true)
+				{
+					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+					long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
+					long long llNowTimeDiff;
+
+					if (m_llPrevTimeWhileSendingToLive == 0)
+					{
+						llNowTimeDiff = 0;
+						m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+					}
+					else
+					{
+						llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
+						m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
+					}
+				}
+
+                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() 200 ms not ready");
+                
+				if(m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
+				{  
+					memcpy(m_VideoDataToSend + m_iDataToSendIndex ,m_EncodedFrame, packetSize);
+
+					//CPacketHeader packetHeader;
+					CVideoHeader packetHeader;
+					long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
+
+					//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %lld\n", frameNumber, frameNumberHeader, packetSize);
+                    
+                    unsigned char *p = m_VideoDataToSend+m_iDataToSendIndex + 1;
+                    int nCurrentFrameLen = ((int)p[13] << 8) + p[14];
+                    //CPacketHeader   ccc;
+					CVideoHeader ccc;
+                    ccc.setPacketHeader(p);
+                    int nTemp = ccc.getPacketLength();
+                    //printf("SendingSide--> nCurrentFrameLen = %d, but packetSize = %d, iDataToSendIndex = %d, gotLengthFromHeader = %d\n", nCurrentFrameLen, packetSize, m_iDataToSendIndex, nTemp); 
+                    
+					m_iDataToSendIndex += (packetSize);
+
+					videoPacketSizes[numberOfVideoPackets++] = packetSize;
+				}
+			}
+			firstFrame = false;
+			toolsObject.SOSleep(0);
+        }
+else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
+
+			unsigned char signal = m_pVideoCallSession->GetFPSController()->GetFPSSignalByte();
+
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
+			{
+				m_EncodedFrame[2 + 3] = signal;
+			}
+			else
+			{
+				m_EncodedFrame[1 + 3] = signal;
+			}
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
 
@@ -174,7 +583,7 @@ void CSendingThread::SendingThreadProcedure()
 
 			iNumberOfPackets = packetHeader.getNumberOfPacket();
 
-			pair<int, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
+			pair<long long, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
 
 			if (FramePacketPair.first != iPrevFrameNumer)
 			{
@@ -216,26 +625,79 @@ void CSendingThread::SendingThreadProcedure()
 
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-			if (g_BandWidthController.IsSendeablePacket(packetSize)) {
+			if (m_BandWidthController.IsSendeablePacket(packetSize)) {
 #endif
+
+			if (m_bIsCheckCall == LIVE_CALL_MOOD)
+			{
+//				m_cVH.setPacketHeader(m_EncodedFrame);
+
+//				m_cVH.ShowDetails("Before Sending ");
+
 #if defined(SEND_VIDEO_TO_SELF)
-			CVideoCallSession* pVideoSession;
-			bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
-			unsigned char *pEncodedFrame = m_EncodedFrame;
-			pVideoSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+
+                unsigned char *pEncodedFrame = m_EncodedFrame;
+                LOGEF("TheKing--> Processing CALL!!!\n");
+				m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize, false);
 #else
 				//printf("WIND--> SendFunctionPointer with size  = %d\n", packetSize);
-				m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() came for CALL !!!!!!!");
+
+#ifndef NO_CONNECTIVITY
+				HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", packetSize);
+				if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
+				{
+					m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_CALL_VIDEO, m_EncodedFrame, packetSize, 0, std::vector< std::pair<int, int> >());
+				}
+				else
+				{
+					m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_VIDEO, m_EncodedFrame, packetSize, 0, std::vector< std::pair<int, int> >());
+				}
+				
+#else
+				HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", packetSize);
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(m_pVideoCallSession->GetFriendID(), packetSize, m_EncodedFrame);
+#endif
 
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
-
-				//toolsObject.SOSleep((int)(SENDING_INTERVAL_FOR_15_FPS * MAX_FPS * 1.0) / (g_FPSController->GetOwnFPS()  * 1.0));
 #endif
-				toolsObject.SOSleep(/*GetSleepTime()*/1);
+			}
+
+#if 0
+
+                
+                
+                
+                //m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+                
+                //unsigned char *pEncodedFrame = m_EncodedFrame;
+                //m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize, true);
+                
+                /*
+                if(m_pVideoCallSession->GetResolationCheck() == false)
+                {
+                    unsigned char *pEncodedFrame = m_EncodedFrame;
+                    //m_pVideoCallSession->PushPacketForMerging(++pEncodedFrame, --packetSize);
+                    
+                    
+                    //m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE);
+                }
+                else
+                {
+                    m_pCommonElementsBucket->SendFunctionPointer(lFriendID, 2, m_EncodedFrame, packetSize);
+                    
+                    //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
+                }
+                */
+                
+#endif
+				toolsObject.SOSleep(0);
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 			}
 #endif
+        }
+
 
 		}
 	}
@@ -245,17 +707,23 @@ void CSendingThread::SendingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
 }
 
+void CSendingThread::InterruptOccured()
+{
+	m_bInterruptHappened = true;
+	m_bInterruptRunning = true;
+}
+
+void CSendingThread::InterruptOver()
+{
+	m_bInterruptRunning = false;
+}
+
 int CSendingThread::GetSleepTime()
 {
-	int SleepTimeDependingOnFPS = (SENDING_INTERVAL_FOR_15_FPS * FPS_MAXIMUM * 1.0) / (g_FPSController->GetOwnFPS()  * 1.0);
-	int SleepTimeDependingOnQueueSize = 1000 * 1.0 / (m_SendingBuffer->GetQueueSize() + 1.0);
+	int SleepTime = MAX_VIDEO_PACKET_SENDING_SLEEP_MS - (m_pVideoCallSession->GetVideoEncoder()->GetBitrate() / REQUIRED_BITRATE_FOR_UNIT_SLEEP);
 
-	if (SleepTimeDependingOnFPS < SleepTimeDependingOnQueueSize)
-	{
-		return SleepTimeDependingOnFPS;
-	}
-	else
-	{
-		return SleepTimeDependingOnQueueSize;
-	}
+	if(SleepTime < MIN_VIDEO_PACKET_SENDING_SLEEP_MS)
+		SleepTime = MIN_VIDEO_PACKET_SENDING_SLEEP_MS;
+
+	return SleepTime;
 }

@@ -2,60 +2,83 @@
 // Created by ipvision on 2/6/2016.
 //
 
-#ifndef ANDROIDTESTCLIENTVE_FTEST_BITRATECONTROLLER_H
-#define ANDROIDTESTCLIENTVE_FTEST_BITRATECONTROLLER_H
-
+#ifndef _BITRATE_CONTROLLER_H_
+#define _BITRATE_CONTROLLER_H_
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
 #include "VideoEncoder.h"
 #include "SynchronizedMap.h"
-
-//#include "CommonElementsBucket.h"
+//#include "PacketHeader.h"
+#include "VideoHeader.h"
 
 class CCommonElementsBucket;
 
-class BitRateController {
+class BitRateController 
+{
+
 public:
-    BitRateController();
+
+	BitRateController(int nFPS, LongLong llfriendID);
     ~BitRateController();
 
-    void SetSharedObject(CCommonElementsBucket* sharedObject);
-    void SetEncoder(CVideoEncoder* VideEnocder);
-    bool HandleBitrateMiniPacket(CPacketHeader &tempHeader);
-    bool HandleNetworkTypeMiniPacket(CPacketHeader &tempHeader);
+    void SetSharedObject(CCommonElementsBucket* pcSharedObject);
+	void SetEncoder(CVideoEncoder* pcVideEnocder);
+
+	//bool HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType);
+	//bool HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader);
+
+	bool HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType);
+	bool HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader);
+
+
     bool UpdateBitrate();
-    void NotifyEncodedFrame(int &nFrameSize);
-    int NeedToChangeBitRate(double dataReceivedRatio);
-    int NeedToNotifyClient(int iCurrentByte);
+    void NotifyEncodedFrame(int &nrFrameSize);
+	void SetInitialBitrate();
 
-    long long m_lTimeStampForFirstMiniPkt;
-    //int m_iWaititngForFirstMiniPkt;
-    map<int, long long>  m_TimeDiffMapHelper;
-    int m_OppNotifiedByterate;
+	void SetCallFPS(int nFPS);
+	
+	int GetOpponentNetworkType();
+	void SetOpponentNetworkType(int nNetworkType);
 
-    int m_iOpponentNetworkType;
-    int m_iOwnNetworkType;
+	int GetOwnNetworkType();
+	void SetOwnNetworkType(int nNetworkType);
 
-    int m_iNetTypeMiniPktRcv;
-
+	bool IsNetworkTypeMiniPacketReceived();
+	void ResetVideoController();
+	
 private:
+
+	int NeedToChangeBitRate(double dDataReceivedRatio);
+	int NeedToNotifyClient(int nCurrentByte);
+
     Tools m_Tools;
-    int m_iGoodSlotCounter;
-    int m_iNormalSlotCounter;
-    int m_SlotCounter;
-    double m_PrevMegaSlotStatus;
 
-    int m_FrameCounterbeforeEncoding;
-    int m_LastSendingSlot;
+	LongLong m_FriendID;
 
-    int m_iPreviousByterate;
+	int m_nOppNotifiedByterate;
+	int m_nOpponentNetworkType;
+	int m_nOwnNetworkType;
+	bool m_bNetworkTypeMiniPacketReceived;
 
-    int m_bGotOppBandwidth;
-    int m_SlotIntervalCounter;
-    double m_fTotalDataInSlots;
-    double m_fAverageData;
+	int m_nCallFPS;
+
+	map<int, long long>  m_TimeDiffMapHelper;
+
+    int m_nGoodSlotCounter;
+    int m_nNormalSlotCounter;
+    int m_nSlotCounterToUp;
+	int m_nGoodSlotCounterToUp;
+    double m_dPreviousMegaSlotStatus;
+
+    int m_nFrameCounterBeforeEncoding;
+    int m_nLastSendingSlot;
+    int m_nPreviousByteRate;				// Will be changed based on side
+
+    int m_nSlotIntervalCounter;				// Will be changed based on side
+    double m_dTotalDataByteInSlots;			// Will be changed based on side
+    double m_dAverageDataByteInSlots;		// Will be changed based on side
 
 	bool m_bVideoQualityLowNotified;
 	bool m_bVideoQualityHighNotified;
@@ -63,30 +86,24 @@ private:
     
     CCommonElementsBucket* m_pCommonElementsBucket;
 
-    int m_ByteSendInSlotInverval;
-    int m_ByteSendInMegaSlotInverval;
-    int m_ByteRecvInMegaSlotInterval;
-    double dFirstTimeDecrease;
+    int m_nBytesSendInSlotInverval;
+    int m_nBytesSendInMegaSlotInverval;
+    int m_nBytesReceivedInMegaSlotInterval;
+    double m_dFirstTimeBitRateChangeFactor;
     bool m_bMegSlotCounterShouldStop;
-    bool m_bsetBitrateCalled;
-    int m_iStopNotificationController;
+    bool m_bSetBitRateCalled;
+    int m_nStopNotificationCounter;
 
-    bool m_bIsFirstTime;
     CSynchronizedMap m_BandWidthRatioHelper;
-    long long m_lTimeStampForMiniPkt;
-    long long timeDiffForMiniPkt;
-    bool m_bIsFirstMiniPktRcv;
     CVideoEncoder *m_pVideoEncoder;
 
-    int m_lastState;
-    int m_iSpiralCounter;
-	int m_iContinuousUpCounter;
-	int m_iContinuousUpCounterLimitToJump;
-    int m_iUpCheckLimit;
-	bool m_bInMaxBitrate;
-    int m_iMostRecentRespondedSlotNumber;
-    
+    int m_nLastState;
+    int m_nSpiralCounter;
+	int m_nContinuousUpCounter;
+	int m_nContinuousUpCounterLimitToJump;
+    int m_nUpCheckLimit;
+    int m_nMostRecentRespondedSlotNumber;
 };
 
 
-#endif //ANDROIDTESTCLIENTVE_FTEST_BITRATECONTROLLER_H
+#endif

@@ -3,18 +3,11 @@
 #define _VIDEO_PACKET_QUEUE_H_
 
 #include "SmartPointer.h"
-#include "EventNotifier.h"
-#include "ThreadTools.h"
 #include "LockHandler.h"
-#include <queue>
-#include <utility>
-#include "Tools.h"
 #include "Size.h"
-#include <set>
+#include "LogPrinter.h"
 
 using namespace std;
-
-
 
 class CVideoPacketQueue
 {
@@ -24,41 +17,23 @@ public:
 	CVideoPacketQueue();
 	~CVideoPacketQueue();
 
-	int Queue(unsigned char *frame, int length);
-	int DeQueue(unsigned char *decodeBuffer);
-	void IncreamentIndex(int &index);
+	int Queue(unsigned char *ucaVideoPacketData, int nLength);
+	int DeQueue(unsigned char *ucaVideoPacketData);
+	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
-
-#ifdef	RETRANSMISSION_ENABLED
-	bool PacketExists(int iFrameNUmber, int iPacketNumber);
-#endif
+	void ResetBuffer();
 
 private:
 
 	int m_iPushIndex;
 	int m_iPopIndex;
-	int m_iDecodingIndex;
-	int m_iQueueCapacity;
-	int m_iQueueSize;
+	int m_nQueueCapacity;
+	int m_nQueueSize;
 
-	unsigned char m_Buffer[MAX_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
-	int m_BufferDataLength[MAX_VIDEO_PACKET_QUEUE_SIZE];
-	int m_BufferIndexState[MAX_VIDEO_PACKET_QUEUE_SIZE];
-#ifdef	RETRANSMISSION_ENABLED
-	std::set<int>m_FrameInQueue;
-#endif
-	SmartPointer<CLockHandler> m_pChannelMutex;
+	unsigned char m_uc2aVideoPacketBuffer[MAX_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
+	int m_naBufferDataLengths[MAX_VIDEO_PACKET_QUEUE_SIZE];
 
-
-	/*pair<int, int> ExpectedFramePacketPair;
-	int iNumberOfPacketsInCurrentFrame;
-	pair<int, int> GetFramePacketFromHeader(unsigned char * packet, int &iNumberOfPackets);
-	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
-
-	int GetIntFromChar(unsigned char *packetData, int index);
-
-	std::queue<pair<int,int>> ExpectedFramePacketDeQueue;*/
-
+	SmartPointer<CLockHandler> m_pVideoPacketQueueMutex;
 };
 
-#endif //_VIDEO_PACKET_QUEUE_H_
+#endif
