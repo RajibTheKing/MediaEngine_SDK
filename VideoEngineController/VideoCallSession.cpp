@@ -91,7 +91,7 @@ m_nOpponentVideoWidth(-1)
     {
         m_bLiveVideoStreamRunning = true;
         m_pLiveVideoDecodingQueue = new LiveVideoDecodingQueue();
-		m_pLiveReceiverVideo = new LiveReceiver(m_pCommonElementsBucket);
+		m_pLiveReceiverVideo = new LiveReceiver(m_pCommonElementsBucket, NULL);
         m_pLiveReceiverVideo->SetVideoDecodingQueue(m_pLiveVideoDecodingQueue);
         
         

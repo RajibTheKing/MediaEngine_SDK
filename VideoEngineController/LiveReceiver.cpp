@@ -8,10 +8,12 @@
 #include "Tools.h"
 #include "ThreadTools.h"
 #include "CommonElementsBucket.h"
+#include "AudioPacketHeader.h"
+#include "AudioMacros.h"
 
-
-LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject):
-m_pCommonElementsBucket(sharedObject)
+LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject, CAudioCallSession* pAudioCallSession) :
+m_pCommonElementsBucket(sharedObject),
+m_pAudioCallSession(pAudioCallSession)
 {
     //m_pAudioDecoderBuffer = pAudioDecoderBuffer;
     m_pLiveAudioReceivedQueue = NULL;
@@ -19,10 +21,16 @@ m_pCommonElementsBucket(sharedObject)
     m_pLiveReceiverMutex.reset(new CLockHandler);
 	m_bIsCurrentlyParsingAudioData = false;
 	m_bIsRoleChanging = false;
+
+	m_pAudioPacketHeader = new CAudioPacketHeader();
+
+	// logFile = fopen("/sdcard/LiveAudioMissing.txt", "w");
 }
 
 LiveReceiver::~LiveReceiver(){
     SHARED_PTR_DELETE(m_pLiveReceiverMutex);
+	delete m_pAudioPacketHeader;
+	// fclose(logFile);
 }
 void LiveReceiver::SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue)
 {
@@ -238,8 +246,17 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 {
 	if (m_bIsRoleChanging)
 	{
-		//LOGE("###DE### role changin lr....");
 		return;
+	}
+
+	for (auto &missing : vMissingBlocks)
+	{
+		HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
+		int left = max(nOffset, missing.first);
+		if (left < missing.second)
+		{
+			memset(uchAudioData + left, 0, missing.second - left + 1);
+		}
 	}
 
 	m_bIsCurrentlyParsingAudioData = true;
@@ -255,16 +272,14 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
     int nCurrentFrameLenWithMediaHeader;
     nFrameLeftRange = nOffset;	
 	int numOfMissingFrames = 0;
+	int nProcessedFramsCounter = 0;
 
     while(iFrameNumber < nNumberOfAudioFrames)
     {
         bCompleteFrame = true;
-
         nFrameLeftRange = nUsedLength + nOffset;
         nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
         nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
-
-        //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
 
         while(iMissingIndex < nNumberOfMissingBlocks &&  vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange)
             ++ iMissingIndex;
@@ -276,27 +291,78 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
             iLeftRange =  max(nFrameLeftRange, iLeftRange);
             iRightRange = min(nFrameRightRange,iRightRange);
-            if(iLeftRange <= iRightRange)
-                bCompleteFrame = false;
+			if (iLeftRange <= iRightRange)
+			{
+				HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
+				if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
+				{
+					HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
+					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+					int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+					
+					HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
+
+					if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
+						HITLER("XXP@#@#MARUF LIVE HEADER INCOMPLETE");
+						bCompleteFrame = false;
+					}
+				}
+				else
+				{
+					HITLER("XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
+					bCompleteFrame = false;
+				}
+			}
         }
 
-        ++ iFrameNumber;
+        ++iFrameNumber;
+
+		if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) {
+
+			if (bCompleteFrame && (uchAudioData[nFrameLeftRange + 1] != AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)) {
+				HITLER("XXP@#@#MARUF -> DIFF PACKET %d", (int)uchAudioData[nFrameLeftRange + 1]);
+				continue;
+			}
+
+			if (!bCompleteFrame)
+			{
+				int nZeroCount = 0;
+				for (int i = 0; i < 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING; i++)
+				{
+					if (0 ==uchAudioData[nFrameRightRange - i])
+					{
+						nZeroCount++;
+					}
+				}
+
+				if (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2 == nZeroCount)	//Silent Frame ( Completly Missing frame)
+				{
+					continue;
+				}
+			}
+
+			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
+			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
+			nProcessedFramsCounter++;
+			m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
+			continue;
+		}
 
         if( !bCompleteFrame )
         {	
 			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
 
 			numOfMissingFrames++;
-			LOGENEW("live receiver continue PACKETNUMBER = %d\n", iPacketNumber);
+			HITLER("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
             continue;
-        }else{
-            //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
         }
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
-
+		nProcessedFramsCounter++;
         m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
     }
+
+	HITLER("#@LR -> Totla= %d Used = %d Missing = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
 	m_bIsCurrentlyParsingAudioData = false;
 	
 	LOG_AAC("#aac#b4q# TotalAudioFrames: %d, PushedAudioFrames: %d, NumOfMissingAudioFrames: %d", nNumberOfAudioFrames, (nNumberOfAudioFrames - numOfMissingFrames), numOfMissingFrames);

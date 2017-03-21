@@ -11,12 +11,15 @@
 #include "LiveVideoDecodingQueue.h"
 #include "LiveAudioDecodingQueue.h"
 
+
 #include<vector>
 class CCommonElementsBucket;
+class CAudioPacketHeader;
+class CAudioCallSession;
 
 class LiveReceiver {
 public:
-	LiveReceiver(CCommonElementsBucket* sharedObject);
+	LiveReceiver(CCommonElementsBucket* sharedObject, CAudioCallSession* pAudioCallSession);
     ~LiveReceiver();
     void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);
     void SetAudioDecodingQueue(LiveAudioDecodingQueue *pQueue);
@@ -32,11 +35,16 @@ private:
 
 	Tools m_Tools;
 
+	CAudioPacketHeader *m_pAudioPacketHeader;
+
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;
     CAudioByteBuffer *m_pAudioDecoderBuffer;
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
     LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue;
 	CCommonElementsBucket* m_pCommonElementsBucket;
+
+	CAudioCallSession* m_pAudioCallSession;
+	// FILE* logFile;
 };
 
 
