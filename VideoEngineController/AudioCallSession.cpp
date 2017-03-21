@@ -444,12 +444,6 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		m_bIsAECMNearEndThreadBusy = false;
 	}
 #endif
-#ifdef __ANDROID__
-	if (m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)
-	{
-		//m_pGomGomGain->AddGain(psaEncodingAudioData, unLength);
-	}
-#endif
 	int returnedValue = m_AudioEncodingBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
@@ -1361,6 +1355,12 @@ void CAudioCallSession::SendToPlayer(short* pshSentFrame, int nSentFrameSize, lo
         m_llLastPlayTime = m_Tools.CurrentTimestamp();
 
 		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, m_llLastPlayTime);
+#ifdef __ANDROID__
+		if (m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)
+		{
+			m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize);
+		}
+#endif
         m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_FriendID,
                                                                   SERVICE_TYPE_LIVE_STREAM,
 																  nSentFrameSize,
