@@ -255,7 +255,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 		int left = max(nOffset, missing.first);
 		if (left < missing.second)
 		{
-			memset(uchAudioData + left, 0, sizeof missing.second - left);
+			memset(uchAudioData + left, 0, missing.second - left + 1);
 		}
 	}
 
