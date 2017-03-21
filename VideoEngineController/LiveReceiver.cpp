@@ -252,10 +252,10 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 	for (auto &missing : vMissingBlocks)
 	{
 		HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
-		for (int i = missing.first; i <= missing.second; i++) {
-			if (i >= nOffset) {
-				uchAudioData[i] = 0;
-			}
+		int left = max(nOffset, missing.first);
+		if (left < missing.second)
+		{
+			memset(uchAudioData + left, 0, sizeof missing.second - left);
 		}
 	}
 

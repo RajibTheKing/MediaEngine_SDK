@@ -1416,9 +1416,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 					// DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 					// DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 
-					HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - 1600);
-					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
-					m_nDecodedFrameSize = 800;
+					HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
+					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
+					m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
 
 					DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 
