@@ -37,10 +37,10 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int n
     {
         CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + m_Tools.IntegertoStringConvert(nLength));
     }
-    if( nLength < 0 || nLength > MAX_VIDEO_ENCODED_FRAME_SIZE )
+    if( nLength < 0 || nLength >= MAX_VIDEO_ENCODED_FRAME_SIZE )
     {
         CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + m_Tools.IntegertoStringConvert(nLength));
-        //return 0;
+        return 0;
     }
 
     memcpy(m_uchBuffer[m_iPushIndex], saReceivedVideoFrameData, nLength);
