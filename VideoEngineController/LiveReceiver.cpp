@@ -246,14 +246,12 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 {
 	if (m_bIsRoleChanging)
 	{
-		//LOGE("###DE### role changin lr....");
 		return;
 	}
 
 	for (auto &missing : vMissingBlocks)
 	{
 		HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
-		// fprintf(logFile, "XXP@#@#MARUF LIVE ST %d ED %d\n", missing.first, missing.second);
 		for (int i = missing.first; i <= missing.second; i++) {
 			if (i >= nOffset) {
 				uchAudioData[i] = 0;
@@ -279,12 +277,9 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
     while(iFrameNumber < nNumberOfAudioFrames)
     {
         bCompleteFrame = true;
-
         nFrameLeftRange = nUsedLength + nOffset;
         nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
         nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
-
-        //LLG("#IV# THeKing--> Audio  left, right, iframenum  = "+ Tools::IntegertoStringConvert(nFrameLeftRange)+","+Tools::IntegertoStringConvert(nFrameRightRange)+","+Tools::IntegertoStringConvert(iFrameNumber));
 
         while(iMissingIndex < nNumberOfMissingBlocks &&  vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange)
             ++ iMissingIndex;
@@ -322,7 +317,6 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
         ++iFrameNumber;
 
-
 		if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) {
 
 			if (bCompleteFrame && (uchAudioData[nFrameLeftRange + 1] != AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)) {
@@ -349,15 +343,9 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
-			//for (int i = 1600 - 1; i >= 0; i--) {
-			//	uchAudioData[nFrameRightRange - (1599 - i)] = i%211;
-			//}
 			nProcessedFramsCounter++;
 			m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
 			continue;
-		}
-		else {
-			HITLER("XXP@#@#MARUF -> ERROR IN PACKET TYPE");
 		}
 
         if( !bCompleteFrame )
@@ -367,8 +355,6 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 			numOfMissingFrames++;
 			HITLER("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
             continue;
-        }else{
-            //LOGEF("THeKing--> #IV#    LiveReceiver::ProcessAudioStream Audio FRAME Completed -- FrameNumber = %d, CurrentFrameLenWithMediaHeadre = %d, audioFrameLength = %d ",audioFrameNumber , nFrameRightRange - nFrameLeftRange + 1, audioFrameLength);
         }
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;

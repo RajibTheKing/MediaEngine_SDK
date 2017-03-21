@@ -530,8 +530,6 @@ void CAudioCallSession::SetLoudSpeaker(bool bOn)
 
 int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
-	//    ALOG("#H#Received PacketType: "+m_Tools.IntegertoStringConvert(pucaDecodingAudioData[0]));
-//	HITLER("#@#@26022017## DECODE DATA SMAPLE LENGTH %u", unLength);
 	if (m_bLiveAudioStreamRunning && (m_iRole != PUBLISHER_IN_CALL))
 	{
 		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
@@ -930,23 +928,8 @@ void CAudioCallSession::EncodingThreadProcedure()
 			{
 				continue;
 			}
-			//PRT("Encoding side: llCapturedTime = %lld, llRelativeTime = %lld, m_iPacketNumber = %d", llCapturedTime, llRelativeTime, m_iPacketNumber);
 
 			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
-					
-			//m_pAudioPacketizer->Packetize(
-			//	true /*bool bShouldPacketize*/,
-			//	m_ucaRawFrameNonMuxed /*unsigned char* uchData*/,
-			//	m_nRawFrameSize + m_MyAudioHeadersize + 1 /*int nDataLength*/,
-			//	m_iPacketNumber /*int nFrameNumber*/,
-			//	MEDIA_TYPE_LIVE_CALL_AUDIO /*int packetType*/,
-			//	0 /*int networkType*/,
-			//	version /*int version*/,
-			//	llRelativeTime /*long long llRelativeTime*/,
-			//	0 /*int channel*/,
-			//	m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
-			//	m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
-			//	m_FriendID /*long long llFriendID*/);
 
 			if (m_bLiveAudioStreamRunning && VIEWER_IN_CALL == m_iRole)
 			{
@@ -982,18 +965,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 
 
 				 SetAudioIdentifierAndNextPacketType();
-
-				/*void Packetize(bool bShouldPacketize, unsigned char* uchData, int nDataLength, int nFrameNumber, int packetType, int networkType, int version, long long llRelativeTime, int channel,
-				int iPrevRecvdSlotID, int nReceivedPacketsInPrevSlot, long long llFriendID)*/
-
-				/*toolsObject.SOSleep(CONSECUTIVE_AUDIO_PACKET_DELY);
-				int n50MsFrameSizeInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING / 2;
-				memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame + n50MsFrameSizeInShort, n50MsFrameSizeInShort * 2);
-				long long llRelativeTimeForThisPacket = llRelativeTime + HALF_FRAME_DURATION_IN_MS;
-				AddHeader(version, llRelativeTimeForThisPacket);
-				SetAudioIdentifierAndNextPacketType();
-				SendAudioData(toolsObject);*/
-				//LOG_50MS("###SENDING_ME_TO_CALLSDK_CALLEE  m_iPacketNumber = %d  n50MsFrameSizeInShort = %d", m_iPacketNumber, n50MsFrameSizeInShort);
 			}
 			else {
 				AddHeader(version, llRelativeTime);
@@ -1442,19 +1413,9 @@ void CAudioCallSession::DecodingThreadProcedure()
 			if ( m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE ) {
 				if (m_iRole == VIEWER_IN_CALL)
 				{
-					HITLER("XXP@#@#MARUF -> Sending without test");
 					// DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 					// DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-					//unsigned char faul[2000];
 
-					//memcpy(faul, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
-
-					//for (int i = 0; i < 1600; i++) {
-					//	// HITLER("XXP@#@#MARUF -> DATA %d -> %d", i%211, faul[i]);
-					//	if (faul[i] != (i%211)) {
-					//		HITLER("XXP@#@#MARUF -> DATA not coppied .");
-					//	}
-					//}
 					HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - 1600);
 					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - 1600), 1600);
 					m_nDecodedFrameSize = 800;
@@ -1469,8 +1430,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 				}
 				continue;
 			}
-			HITLER("XXP@#@#MARUF -> data corrapted");
-			/// -------- LSKFDSKLFJSLDKF ------------------------------------------------------------------------------------------////
+			/// --------------------------------------------------------------------------------------------------////
 
 			llCapturedTime = m_Tools.CurrentTimestamp();
 
@@ -1663,8 +1623,6 @@ void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLen
 		iOffsetOfBlock = 0;
 		nFrameLength = packetLength;
 	}
-
-	m_ReceivingHeader->showDetails("@#PARSE");
 }
 
 int CAudioCallSession::GetRole()
