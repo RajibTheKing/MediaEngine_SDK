@@ -447,7 +447,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 #ifdef __ANDROID__
 	if (m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)
 	{
-		m_pGomGomGain->AddGain(psaEncodingAudioData, unLength);
+		//m_pGomGomGain->AddGain(psaEncodingAudioData, unLength);
 	}
 #endif
 	int returnedValue = m_AudioEncodingBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
