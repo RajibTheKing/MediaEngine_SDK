@@ -1462,7 +1462,7 @@ void CAudioCallSession::DecodingThreadProcedure()
 					DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 
 					SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, llNow, llLastTime, iPacketNumber);
-					toolsObject.SOSleep(50);
+					toolsObject.SOSleep(0);
 				}
 				else {
 					HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");

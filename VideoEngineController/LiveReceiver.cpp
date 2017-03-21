@@ -9,6 +9,7 @@
 #include "ThreadTools.h"
 #include "CommonElementsBucket.h"
 #include "AudioPacketHeader.h"
+#include "AudioMacros.h"
 
 LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject, CAudioCallSession* pAudioCallSession) :
 m_pCommonElementsBucket(sharedObject),
@@ -273,6 +274,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
     int nCurrentFrameLenWithMediaHeader;
     nFrameLeftRange = nOffset;	
 	int numOfMissingFrames = 0;
+	int nProcessedFramsCounter = 0;
 
     while(iFrameNumber < nNumberOfAudioFrames)
     {
@@ -297,7 +299,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 			if (iLeftRange <= iRightRange)
 			{
 				HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
-				if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= 10)
+				if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
 				{
 					HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
 					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
@@ -327,11 +329,30 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 				HITLER("XXP@#@#MARUF -> DIFF PACKET %d", (int)uchAudioData[nFrameLeftRange + 1]);
 				continue;
 			}
+
+			if (!bCompleteFrame)
+			{
+				int nZeroCount = 0;
+				for (int i = 0; i < 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING; i++)
+				{
+					if (0 ==uchAudioData[nFrameRightRange - i])
+					{
+						nZeroCount++;
+					}
+				}
+
+				if (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2 == nZeroCount)	//Silent Frame ( Completly Missing frame)
+				{
+					continue;
+				}
+			}
+
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
 			//for (int i = 1600 - 1; i >= 0; i--) {
 			//	uchAudioData[nFrameRightRange - (1599 - i)] = i%211;
 			//}
+			nProcessedFramsCounter++;
 			m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
 			continue;
 		}
@@ -351,9 +372,11 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
         }
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
-
+		nProcessedFramsCounter++;
         m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
     }
+
+	HITLER("#@LR -> Totla= %d Used = %d Missing = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
 	m_bIsCurrentlyParsingAudioData = false;
 	
 	LOG_AAC("#aac#b4q# TotalAudioFrames: %d, PushedAudioFrames: %d, NumOfMissingAudioFrames: %d", nNumberOfAudioFrames, (nNumberOfAudioFrames - numOfMissingFrames), numOfMissingFrames);

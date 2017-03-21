@@ -58,4 +58,7 @@
 
 #define HALF_FRAME_DURATION_IN_MS 50
 
+
+#define MINIMUM_AUDIO_HEADER_SIZE 20
+
 #endif
