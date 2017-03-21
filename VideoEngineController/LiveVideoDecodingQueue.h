@@ -10,7 +10,16 @@
 #include "Tools.h"
 
 #define LIVE_VIDEO_DECODING_QUEUE_SIZE 75
-#define MAX_VIDEO_ENCODED_FRAME_SIZE 25000
+
+#if defined(_DESKTOP_C_SHARP_)
+
+#define MAX_VIDEO_ENCODED_FRAME_SIZE 200000
+
+#else
+
+#define MAX_VIDEO_ENCODED_FRAME_SIZE 100000
+
+#endif
 
 
 class LiveVideoDecodingQueue {
