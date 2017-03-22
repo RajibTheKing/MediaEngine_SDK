@@ -464,7 +464,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlu
 		else
 			pBlurConvertingData[i] += m_nPreviousAddValueForBrightening;
 
-		pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
+		//pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
 	}
 
 	int m_AvarageValue = totalYValue / ll;
@@ -559,7 +559,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			else
 				pBlurConvertingData[i] += m_nPreviousAddValueForBrightening;
 
-			pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
+			//pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
 
 #endif
 			tmp += pBlurConvertingData[iw + j - 1];
@@ -699,7 +699,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			else
 				pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
 
-			pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
+			//pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
 
 #endif
 			tmp += pBlurConvertingData[iw + j - 1];
