@@ -18,7 +18,7 @@ public:
 	CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer, CCommonElementsBucket *pCommonElementBucket);
 	~CDeviceCapabilityCheckThread();
 
-	void StartDeviceCapabilityCheckThread(int iHeight, int iWidth);
+	int StartDeviceCapabilityCheckThread(int iHeight, int iWidth);
 	void StopDeviceCapabilityCheckThread();
 	void DeviceCapabilityCheckThreadProcedure();
 	static void *CreateVideoDeviceCapabilityCheckThread(void* param);
@@ -40,6 +40,7 @@ private:
 
 	Tools m_Tools;
     CCommonElementsBucket *m_pCommonElementBucket;
+	bool m_bThreadAllreadyStarted;
 
 	SmartPointer<std::thread> pDeviceCapabilityCheckThread;
 };

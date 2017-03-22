@@ -16,6 +16,7 @@ bDeviceCapabilityCheckThreadClosed(true)
 
 {
     m_pCommonElementBucket = pCommonElementBucket;
+	m_bThreadAllreadyStarted = false;
 }
 
 CDeviceCapabilityCheckThread::~CDeviceCapabilityCheckThread()
@@ -36,8 +37,11 @@ void CDeviceCapabilityCheckThread::StopDeviceCapabilityCheckThread()
 	//pInternalThread.reset();
 }
 
-void CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread(int iHeight, int iWidth)
+int CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread(int iHeight, int iWidth)
 {
+	if(m_bThreadAllreadyStarted == true) return -1;
+	m_bThreadAllreadyStarted = true;
+
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread() called");
 
 	m_nIdolCounter = 0;
@@ -62,7 +66,7 @@ void CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread(int iHeight,
 	{
 		pDeviceCapabilityCheckThread.reset();
 
-		return;
+		return -1;
 	}
 
 	bDeviceCapabilityCheckThreadRunning = true;
@@ -84,7 +88,8 @@ void CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread(int iHeight,
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::StartDeviceCapabilityCheckThread() DeviceCapabilityCheck Thread started");
 
-	return;
+
+	return 1;
 }
 
 void *CDeviceCapabilityCheckThread::CreateVideoDeviceCapabilityCheckThread(void* param)
@@ -273,6 +278,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 	}
 
 	bDeviceCapabilityCheckThreadClosed = true;
+	m_bThreadAllreadyStarted = false;
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() stopped DeviceCapabilityCheckThreadProcedure method.");
 }

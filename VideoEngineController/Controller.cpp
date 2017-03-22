@@ -59,6 +59,9 @@ m_pVideoMuxingAndEncodeSession(NULL),
 m_pDeviceCapabilityCheckBuffer(NULL),
 m_pDeviceCapabilityCheckThread(NULL),
 m_nSupportedResolutionFPSLevel(RESOLUTION_FPS_SUPPORT_NOT_TESTED),
+m_bDeviceCapabilityRunning(false),
+m_bLiveCallRunning(false),
+m_bCallInLiveEnabled(false),
 m_EventNotifier(this),
 m_llLastTimeStamp(-1)
 {
@@ -692,9 +695,13 @@ int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
 
 int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 {
+
 	Locker lock1(*m_pVideoStartMutex);
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability started");
+	if (m_bDeviceCapabilityRunning == true) return -1;
+	m_bDeviceCapabilityRunning = true;
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability started --> ffiendID = " + m_Tools.getText(lFriendID));
 
     m_Quality[0].iHeight = iHeightLow;
     m_Quality[0].iWidth = iWidthLow;
@@ -717,12 +724,16 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
 
     if(m_bLiveCallRunning == true) return -1;
 
-	if (m_bDeviceCapabilityRunning == true) return -1;
+
     
-    m_bDeviceCapabilityRunning = true;
+
     
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
-		m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
+	{
+
+		int iRet = m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
+		if(iRet == -1) return -1;
+	}
 
 	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);
 
@@ -861,12 +872,12 @@ bool CController::StopTestAudioCall(const LongLong& lFriendID)
 
 bool CController::StopTestVideoCall(const LongLong& lFriendID)
 {
-	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() called -> friendID = " + m_Tools.getText(lFriendID));
 
 	Locker lock1(*m_pVideoSendMutex);
 	Locker lock2(*m_pVideoReceiveMutex);
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() checking session");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() checking session");
 
 	CVideoCallSession *m_pSession;
 
@@ -874,14 +885,14 @@ bool CController::StopTestVideoCall(const LongLong& lFriendID)
 
 	if (NULL == m_pSession)
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() session doesn't exists");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() session doesn't exists");
 
 		return false;
 	}
 
 	bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopVideoCall() ended with bReturnedValue " + m_Tools.IntegertoStringConvert(bReturnedValue));
+	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() ended with bReturnedValue " + m_Tools.IntegertoStringConvert(bReturnedValue));
 
     m_bDeviceCapabilityRunning = false;
     
@@ -890,7 +901,7 @@ bool CController::StopTestVideoCall(const LongLong& lFriendID)
 
 bool CController::StopVideoCall(const LongLong& lFriendID)
 {
-    CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called.");
+    CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called. --> friendID = " + m_Tools.getText(lFriendID));
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
     
     Locker lock1(*m_pVideoSendMutex);
