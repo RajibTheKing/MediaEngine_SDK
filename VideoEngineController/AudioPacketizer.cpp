@@ -55,7 +55,7 @@ void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, i
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, m_uchAudioBlock);
 #endif
 		//m_pCommonElementsBucket->SendFunctionPointer(llFriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_uchAudioBlock, nCurrentBlockLength + m_nHeaderLengthWithMediaByte, 0);
-		m_Tools.SOSleep(3);
+		m_Tools.SOSleep(5);
 		HITLER("XXP@#@#MARUF PACKETING SENT.... %d", iBlockNumber);
 	}
 

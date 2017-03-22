@@ -941,23 +941,6 @@ void CAudioCallSession::EncodingThreadProcedure()
 					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
 					m_FriendID /*long long llFriendID*/);
 
-				toolsObject.SOSleep(10);
-
-				m_pAudioPacketizer->Packetize(
-					true /*bool bShouldPacketize*/,
-					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
-					m_nRawFrameSize /*int nDataLength*/,
-					m_iPacketNumber /*int nFrameNumber*/,
-					AUDIO_LIVE_CALLEE_PACKET_TYPE /*int packetType*/,
-					0 /*int networkType*/,
-					version /*int version*/,
-					llRelativeTime /*long long llRelativeTime*/,
-					0 /*int channel*/,
-					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
-					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
-					m_FriendID /*long long llFriendID*/);
-
-
 				 SetAudioIdentifierAndNextPacketType();
 			}
 			else {
