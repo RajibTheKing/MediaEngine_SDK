@@ -46,6 +46,7 @@ public:
 	bool SetComplexityOpus(int nComplexity);
 	void DecideToChangeBitrate(int iNumPacketRecvd);
 	void DecideToChangeComplexity(int iEncodingTime);
+	int GetCurrentBitrateOpus();
 
 private:
 

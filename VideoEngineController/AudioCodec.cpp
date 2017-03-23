@@ -69,11 +69,8 @@ int CAudioCodec::CreateAudioEncoder()
 
 	/*err = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(AUDIO_BITRATE_INIT));
 	if (err<0) return EXIT_FAILURE;*/
-    
-	if (m_pAudioCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pAudioCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pAudioCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
-        SetBitrateOpus(AUDIO_BITRATE_LIVE);
-    else
-        SetBitrateOpus(AUDIO_BITRATE_INIT);
+
+	SetBitrateOpus(AUDIO_BITRATE_INIT);
 
 
 	m_iComplexity = 10;
@@ -298,6 +295,11 @@ bool CAudioCodec::SetBitrateOpus(int nBitrate){
 //	ALOG("#BR# =========================>  NOW BR: "+m_Tools.IntegertoStringConvert(nBitrate));
 
 	return ret != 0;
+}
+
+int CAudioCodec::GetCurrentBitrateOpus()
+{
+	return m_iCurrentBitRate;
 }
 
 

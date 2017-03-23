@@ -1238,11 +1238,12 @@ void CAudioCallSession::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 			m_iCurrentRecvdSlotID = nSlotNumber;
 			m_iReceivedPacketsInCurrentSlot = 0;
 
-#ifdef OPUS_ENABLED
-			if (false == m_bLiveAudioStreamRunning) {
+			if (m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()) {
 				m_pAudioCodec->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 			}
-#endif
+			else if (m_pAudioCodec->GetCurrentBitrateOpus() != AUDIO_BITRATE_INIT){
+				m_pAudioCodec->SetBitrateOpus(AUDIO_BITRATE_INIT);
+			}
 		}
 		m_iReceivedPacketsInCurrentSlot++;
 	}
