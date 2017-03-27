@@ -10,14 +10,14 @@ m_pMutex(NULL)
 
 CLockHandler::~CLockHandler()
 {
-/*	
+	
 	if (m_pMutex != NULL)
 	{
 		delete m_pMutex;
 
 		m_pMutex = NULL;
 	}
-*/
+
 }
 
 std::mutex* CLockHandler::GetMutex()
