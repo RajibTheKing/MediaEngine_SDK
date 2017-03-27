@@ -36,8 +36,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-#define OPUS_ENABLED
-//#define __DUMP_FILE__
 
 #ifdef __DUMP_FILE__
 FILE *FileInput;
@@ -46,15 +44,6 @@ FILE *FileInputWithEcho;
 FILE *FileInputMuxed;
 FILE *FileInputPreGain;
 #endif
-
-
-//#define USE_ECHO2
-
-#define __TIMESTAMP_MOD__ 100000
-
-#define __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ 2
-#define __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ 10
-#define CONSECUTIVE_AUDIO_PACKET_DELY 25
 
 
 
