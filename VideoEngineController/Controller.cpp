@@ -722,7 +722,11 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
         }
     }
 
-    if(m_bLiveCallRunning == true) return -1;
+    if(m_bLiveCallRunning == true)
+    {
+        m_bDeviceCapabilityRunning = false;
+        return -1;
+    }
 
 
     
