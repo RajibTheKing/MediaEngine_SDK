@@ -13,6 +13,7 @@
 #include "LogPrinter.h"
 #include "LiveAudioDecodingQueue.h"
 #include "LiveReceiver.h"
+#include "AudioNearEndDataProcessor.h"
 
 #include <stdio.h>
 #include <string>
@@ -85,6 +86,7 @@ private:
 	long long m_llLastPlayTime;
 
 	AudioPacketizer* m_pAudioPacketizer;
+	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 public:
 	
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
@@ -129,11 +131,15 @@ public:
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthCallee);
     int GetServiceType();
+	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
+
 
 
 	int m_iNextPacketType;
 	CAudioByteBuffer m_AudioReceivedBuffer;
 	bool m_bIsCheckCall;
+	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
+
 #ifdef USE_AGC
 	CGain * m_pRecorderGain;
 	CGain * m_pPlayerGain;
@@ -158,7 +164,6 @@ private:
     int m_MyAudioHeadersize;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
-	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
 	
 
 	std::vector<int> m_vRawFrameLengthViewer, m_vRawFrameLengthCallee;
@@ -268,7 +273,6 @@ private:
 	void AddHeader(int &version, long long &nCurrentTimeStamp);
 	void SetAudioIdentifierAndNextPacketType();
 	void SendAudioData(Tools toolsObject);
-	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 	///////End of Methods Called From EncodingThreadProcedure/////

@@ -79,7 +79,7 @@ m_bIsAECMNearEndThreadBusy(false)
 	m_cAac->SetParameters(44100, 2);
 #endif
 
-	StartEncodingThread();
+	//StartEncodingThread();
 	StartDecodingThread();
 
 	m_SendingHeader = new CAudioPacketHeader();
@@ -150,11 +150,20 @@ m_bIsAECMNearEndThreadBusy(false)
 	m_clientSocket = VideoSockets::GetInstance();
 	m_clientSocket->SetAudioCallSession(this);
 #endif
+
+	m_pNearEndProcessor = new CAudioNearEndDataProcessor(llFriendID, this, pSharedObject, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
 
 CAudioCallSession::~CAudioCallSession()
 {
+	if (m_pNearEndProcessor)
+	{
+		delete m_pNearEndProcessor;
+		m_pNearEndProcessor = NULL;
+	}
+
 	if (NULL != m_pAudioPacketizer)
 	{
 		delete m_pAudioPacketizer;
@@ -167,8 +176,9 @@ CAudioCallSession::~CAudioCallSession()
 		m_pAudioDePacketizer = NULL;
 	}
 	
+	//TODO: move following call to beginning..
 	StopDecodingThread();
-	StopEncodingThread();
+	//StopEncodingThread();
 
 #ifdef AAC_ENABLED
 	if (m_cAac != nullptr){
@@ -526,6 +536,7 @@ CAudioCodec* CAudioCallSession::GetAudioCodec()
 	return m_pAudioCodec;
 }
 
+/*
 void CAudioCallSession::StopEncodingThread()
 {
 	//if (pInternalThread.get())
@@ -537,7 +548,7 @@ void CAudioCallSession::StopEncodingThread()
 	}
 
 	//pInternalThread.reset();
-}
+}*/
 
 void CAudioCallSession::MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength)
 {
@@ -559,6 +570,7 @@ void CAudioCallSession::MuxAudioData(short * pData1, short * pData2, short * pMu
 	}
 }
 
+/*
 void CAudioCallSession::StartEncodingThread()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread 1");
@@ -590,7 +602,8 @@ void CAudioCallSession::StartEncodingThread()
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread Encoding Thread started");
 
 	return;
-}
+}*/
+/*
 
 void *CAudioCallSession::CreateAudioEncodingThread(void* param)
 {
@@ -598,11 +611,12 @@ void *CAudioCallSession::CreateAudioEncodingThread(void* param)
 	pThis->EncodingThreadProcedure();
 
 	return NULL;
-}
+}*/
 
 #ifdef FIRE_ENC_TIME
 int encodingtimetimes = 0, cumulitiveenctime = 0;
 #endif
+/*
 
 void CAudioCallSession::MuxIfNeeded()
 {
@@ -630,14 +644,15 @@ void CAudioCallSession::MuxIfNeeded()
 		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputMuxed);
 #endif
 	}
-}
+}*/
 
+/*
 void CAudioCallSession::DumpEncodingFrame()
 {
 #ifdef __DUMP_FILE__
 	fwrite(m_saAudioRecorderFrame, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInput);
 #endif
-}
+}*/
 
 void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & llCapturedTime)
 {
@@ -648,6 +663,7 @@ void CAudioCallSession::PrintRelativeTime(int &cnt, long long &llLasstTime, int 
 	countFrame++;
 	llRelativeTime = llCapturedTime - m_llEncodingTimeStampOffset;
 }
+/*
 
 bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 {
@@ -679,8 +695,9 @@ bool CAudioCallSession::PreProcessAudioBeforeEncoding()
 #endif
 	}
 	return true;
-}
+}*/
 
+/*
 void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &encodingTime, double &avgCountTimeStamp)
 {
 #ifdef OPUS_ENABLED
@@ -733,7 +750,8 @@ void CAudioCallSession::EncodeIfNeeded(long long &llCapturedTime, long long &enc
 	//                     + " EncodeTime: " + m_Tools.IntegertoStringConvert(encodingTime)
 	//                     + " AvgTime: " + m_Tools.DoubleToString(avgCountTimeStamp / countFrame)
 	//                     + " MaxFrameNumber: " + m_Tools.IntegertoStringConvert(m_nMaxAudioPacketNumber));
-}
+}*/
+/*
 
 void CAudioCallSession::AddHeader(int &version, long long &llRelativeTime)
 {
@@ -770,7 +788,9 @@ void CAudioCallSession::AddHeader(int &version, long long &llRelativeTime)
 	m_ucaRawFrameMuxed[0] = 0;   //Setting Audio packet type( = 0).
 	m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
 }
+*/
 
+/*
 void CAudioCallSession::SetAudioIdentifierAndNextPacketType()
 {
 	++m_iPacketNumber;
@@ -784,7 +804,9 @@ void CAudioCallSession::SetAudioIdentifierAndNextPacketType()
 		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 	}
 }
+*/
 
+/*
 void CAudioCallSession::SendAudioData(Tools toolsObject)
 {
 #ifdef  __AUDIO_SELF_CALL__
@@ -872,8 +894,10 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 
 }
 
+*/
 
 /****************************************EncodingThreadProcedure*****************************************/
+/*
 void CAudioCallSession::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -913,18 +937,18 @@ void CAudioCallSession::EncodingThreadProcedure()
 			if (m_bLiveAudioStreamRunning && VIEWER_IN_CALL == m_iRole)
 			{
 				m_pAudioPacketizer->Packetize(
-					true /*bool bShouldPacketize*/,
-					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
-					m_nRawFrameSize /*int nDataLength*/,
-					m_iPacketNumber /*int nFrameNumber*/,
-					AUDIO_LIVE_CALLEE_PACKET_TYPE /*int packetType*/,
-					0 /*int networkType*/,
-					version /*int version*/,
-					llRelativeTime /*long long llRelativeTime*/, 
-					0 /*int channel*/,
-					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
-					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
-					m_FriendID /*long long llFriendID*/);
+					true / *bool bShouldPacketize* /,
+					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize / *unsigned char* uchData* /,
+					m_nRawFrameSize / *int nDataLength* /,
+					m_iPacketNumber / *int nFrameNumber* /,
+					AUDIO_LIVE_CALLEE_PACKET_TYPE / *int packetType* /,
+					0 / *int networkType* /,
+					version / *int version* /,
+					llRelativeTime / *long long llRelativeTime* /, 
+					0 / *int channel* /,
+					m_iPrevRecvdSlotID / *int iPrevRecvdSlotID* /,
+					m_iReceivedPacketsInPrevSlot / *int nReceivedPacketsInPrevSlot* /,
+					m_FriendID / *long long llFriendID* /);
 
 				toolsObject.SOSleep(10);
 
@@ -958,7 +982,7 @@ void CAudioCallSession::EncodingThreadProcedure()
 	m_bAudioEncodingThreadClosed = true;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
-}
+}*/
 
 void CAudioCallSession::StopDecodingThread()
 {
@@ -1516,6 +1540,9 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioRawDataToSendMu
 void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 	int &sendingLengthViewer, int &sendingLengthCallee)
 {
+
+	m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthCallee);
+/*
 	Locker lock(*m_pAudioCallSessionMutex);
 
 	vCombinedDataLengthVector = m_vRawFrameLengthViewer;
@@ -1538,15 +1565,14 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToS
 		m_iRawDataSendIndexCallee = 0;
 	}
 
-	m_iRawDataSendIndexViewer = 0;
+	m_iRawDataSendIndexViewer = 0;*/
 }
-
 
 int CAudioCallSession::GetServiceType()
 {
 	return m_nServiceType;
 }
-
+/*
 void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 	int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header)
 {
@@ -1573,7 +1599,7 @@ void CAudioCallSession::BuildAndGetHeaderInArray(int packetType, int nHeaderLeng
 	m_SendingHeader->showDetails("@#BUILD");
 
 	m_SendingHeader->GetHeaderInByteArray(header);
-}
+}*/
 
 void CAudioCallSession::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)

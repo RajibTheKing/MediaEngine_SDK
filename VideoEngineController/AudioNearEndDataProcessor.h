@@ -22,7 +22,7 @@ public:
 
 	static void *CreateAudioEncodingThread(void* param);
 	void EncodingThreadProcedure();
-	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
+	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthCallee);
 
 private:
@@ -37,9 +37,8 @@ private:
 	void AddHeader(int &version, long long &llRelativeTime);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-	void SendAudioData(Tools toolsObject);
+	void EnqueueReadyToSendData(Tools toolsObject);
 	
-
 	long long m_llFriendID;
 	bool m_bIsLiveStreamingRunning;
 	bool m_bIsReady;
@@ -71,6 +70,7 @@ private:
 	unsigned char m_ucaRawFrameMuxed[MAX_AUDIO_FRAME_Length], m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
 	int m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee;
 
+	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
 	unsigned char m_ucaRawDataToSendCallee[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	unsigned char m_ucaRawDataToSendViewer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	std::vector<int> m_vRawFrameLengthViewer, m_vRawFrameLengthCallee;
