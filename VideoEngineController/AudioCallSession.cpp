@@ -56,7 +56,7 @@ m_bIsAECMFarEndThreadBusy(false),
 m_bIsAECMNearEndThreadBusy(false)
 {
 	InitializeAudioCallSession(llFriendID);
-	m_pAudioPacketizer = new AudioPacketizer(this, pSharedObject);
+	m_pAudioPacketizer = new AudioPacketizer(this, pSharedObject); //TODO: movable
 	m_pAudioDePacketizer = new AudioDePacketizer(this);
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
