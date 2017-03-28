@@ -341,6 +341,8 @@ void CAudioCallSession::StartCallInLive(int iRole)
 		m_vRawFrameLengthCallee.clear(); //Contains Data From Last Call when viewer was a publisher
 	}
 
+	m_pNearEndProcessor->StartCallInLive();
+
 	m_Tools.SOSleep(20);
 
 	m_llDecodingTimeStampOffset = -1;

@@ -27,6 +27,7 @@ m_iRawDataSendIndexViewer(0),
 m_iRawDataSendIndexCallee(0)
 {
 	LOGT("##NF## anedp created.");
+	m_pAudioEncodingMutex.reset(new CLockHandler);
 	m_pAudioCodec = pAudioCallSession->GetAudioCodec();
 	m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[INF_PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
@@ -402,7 +403,7 @@ void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombin
 	memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendViewer, m_iRawDataSendIndexViewer);
 	CombinedLength = m_iRawDataSendIndexViewer;
 	sendingLengthViewer = m_iRawDataSendIndexViewer;
-	LOGT("##TN##GetAudioData## viewerlength:%d calleelength:%d", m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee);
+	LOGT("##NF##GetAudioData## viewerlength:%d calleelength:%d", m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee);
 
 	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
 	{

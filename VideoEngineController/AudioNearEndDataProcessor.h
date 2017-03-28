@@ -25,6 +25,11 @@ public:
 	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthCallee);
 
+	void StartCallInLive()
+	{
+		m_iRawDataSendIndexCallee = 0;
+	}
+
 private:
 	void StartEncodingThread();
 	void StopEncodingThread();

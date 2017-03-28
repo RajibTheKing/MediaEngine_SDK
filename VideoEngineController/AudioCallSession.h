@@ -209,7 +209,7 @@ private:
 
     unsigned char m_ucaRawDataToSendCallee[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	unsigned char m_ucaRawDataToSendViewer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
-	int m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee;
+	int m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee; //TODO: remove second var
 	long long m_llMaxAudioPacketNumber;
 
     bool m_bAudioEncodingThreadRunning;
