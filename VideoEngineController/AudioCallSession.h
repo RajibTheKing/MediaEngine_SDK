@@ -86,10 +86,7 @@ private:
 
 	AudioPacketizer* m_pAudioPacketizer;
 public:
-	int m_iNextPacketType;
-	CAudioByteBuffer m_AudioReceivedBuffer;
 	
-public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
 
@@ -97,6 +94,11 @@ public:
 	void EndCallInLive();
 
     CAudioCodec* GetAudioCodec();
+	AudioPacketizer* GetAudioPacketizer()
+	{
+		return m_pAudioPacketizer;
+	}
+
 
 	AudioDePacketizer* m_pAudioDePacketizer;
 
@@ -126,8 +128,16 @@ public:
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthCallee);
-
     int GetServiceType();
+
+
+	int m_iNextPacketType;
+	CAudioByteBuffer m_AudioReceivedBuffer;
+	bool m_bIsCheckCall;
+#ifdef USE_AGC
+	CGain * m_pRecorderGain;
+	CGain * m_pPlayerGain;
+#endif
 
 private:
 
@@ -162,7 +172,6 @@ private:
 	int m_iOpponentReceivedPackets;
 	
 
-	bool m_bIsCheckCall;
 
 	///////////Pre Encoding Data///////
     short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
@@ -235,11 +244,6 @@ private:
 
 #ifdef USE_ANS
 	CNoise *m_pNoise;
-#endif
-
-#ifdef USE_AGC
-	CGain * m_pRecorderGain;
-	CGain * m_pPlayerGain;
 #endif
 
 #ifdef USE_VAD

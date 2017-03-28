@@ -213,6 +213,9 @@
     <ClCompile Include="..\..\VideoEngineController\GomGomGain.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioNearEndDataProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -445,7 +448,10 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\GomGomGain.h">
       <Filter>Source Files\AudioEngine</Filter>
-	</ClInclude>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioNearEndDataProcessor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters">

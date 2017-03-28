@@ -55,6 +55,7 @@ m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
 m_bIsAECMNearEndThreadBusy(false)
 {
+	InitializeAudioCallSession(llFriendID);
 	m_pAudioPacketizer = new AudioPacketizer(this, pSharedObject);
 	m_pAudioDePacketizer = new AudioDePacketizer(this);
 	m_iRole = CALL_NOT_RUNNING;
@@ -255,13 +256,9 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 	//m_pAudioCodec->CreateAudioEncoder();
 
 	//m_pAudioDecoder->CreateAudioDecoder();
-#ifdef OPUS_ENABLED
+
 	this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket, this, llFriendID);
 	m_pAudioCodec->CreateAudioEncoder();
-#else
-	m_pG729CodecNative = new G729CodecNative();
-	int iRet = m_pG729CodecNative->Open();
-#endif
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
@@ -811,7 +808,6 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 			Locker lock(*m_pAudioCallSessionMutex);
 			if ((m_iRawDataSendIndexViewer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
 			{
-
 				memcpy(m_ucaRawDataToSendViewer + m_iRawDataSendIndexViewer, m_ucaRawFrameMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
 				m_iRawDataSendIndexViewer += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
 				m_vRawFrameLengthViewer.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
