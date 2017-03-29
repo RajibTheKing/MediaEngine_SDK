@@ -709,7 +709,7 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
 
     long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
     
-    while(m_bLiveCallRunning==true || m_bDeviceCapabilityRunning == true)
+    while(m_bLiveCallRunning==true)
     {
         m_Tools.SOSleep(10);
 
@@ -735,7 +735,12 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
 	{
 
 		int iRet = m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
-		if(iRet == -1) return -1;
+
+		if(iRet == -1)
+		{
+			m_bDeviceCapabilityRunning = false;
+			return -1;
+		}
 	}
 
 	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);

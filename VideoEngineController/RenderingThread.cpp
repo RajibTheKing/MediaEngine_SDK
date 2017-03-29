@@ -219,8 +219,8 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 					//pRenderingFps->CalculateFPS("RenderingFPS--> ");
 
                     toolsObject.SOSleep(1);
-                    
-                    
+
+					m_RenderTimeCalculator.CalculateFPS("renderingFPs: ");
 					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
                     
                 }
