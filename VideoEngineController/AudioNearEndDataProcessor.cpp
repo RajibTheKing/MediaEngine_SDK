@@ -116,6 +116,7 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 
 			if (m_bIsLiveStreamingRunning && VIEWER_IN_CALL == m_pAudioCallSession->GetRole())
 			{
+
 				m_pAudioCallSession->GetAudioPacketizer()->Packetize(
 					true /*bool bShouldPacketize*/,
 					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
@@ -129,6 +130,22 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
 					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
 					m_llFriendID /*long long llFriendID*/);
+
+				toolsObject.SOSleep(10);
+
+				m_pAudioCallSession->GetAudioPacketizer()->Packetize(
+						true /*bool bShouldPacketize*/,
+						m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
+						m_nRawFrameSize /*int nDataLength*/,
+						m_iPacketNumber /*int nFrameNumber*/,
+						AUDIO_LIVE_CALLEE_PACKET_TYPE /*int packetType*/,
+						0 /*int networkType*/,
+						version /*int version*/,
+						llRelativeTime /*long long llRelativeTime*/,
+						0 /*int channel*/,
+						m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
+						m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
+						m_llFriendID /*long long llFriendID*/);
 
 				SetAudioIdentifierAndNextPacketType();
 			}

@@ -898,93 +898,92 @@ void CAudioCallSession::SendAudioData(Tools toolsObject)
 
 */
 
-/****************************************EncodingThreadProcedure*****************************************/
-/*
-void CAudioCallSession::EncodingThreadProcedure()
-{
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
-#ifdef __DUMP_FILE__
-	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
-	FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
-	FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
-#endif
-	Tools toolsObject;
-	long long encodingTime = 0;
-	long long llCapturedTime = 0;
-	double avgCountTimeStamp = 0;
-	int countFrame = 0;
-    int version = 0;
-	long long llRelativeTime = 0;	
-
-	long long llLasstTime = -1;
-	int cnt = 1;
-	while (m_bAudioEncodingThreadRunning)
-	{
-		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
-			toolsObject.SOSleep(10);
-		else
-		{
-			m_AudioEncodingBuffer.DeQueue(m_saAudioRecorderFrame, llCapturedTime);
-			MuxIfNeeded();
-			DumpEncodingFrame();
-			PrintRelativeTime(cnt, llLasstTime, countFrame, llRelativeTime, llCapturedTime);
-
-			if (false == PreProcessAudioBeforeEncoding())
-			{
-				continue;
-			}
-
-			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
-
-			if (m_bLiveAudioStreamRunning && VIEWER_IN_CALL == m_iRole)
-			{
-				m_pAudioPacketizer->Packetize(
-					true / *bool bShouldPacketize* /,
-					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize / *unsigned char* uchData* /,
-					m_nRawFrameSize / *int nDataLength* /,
-					m_iPacketNumber / *int nFrameNumber* /,
-					AUDIO_LIVE_CALLEE_PACKET_TYPE / *int packetType* /,
-					0 / *int networkType* /,
-					version / *int version* /,
-					llRelativeTime / *long long llRelativeTime* /, 
-					0 / *int channel* /,
-					m_iPrevRecvdSlotID / *int iPrevRecvdSlotID* /,
-					m_iReceivedPacketsInPrevSlot / *int nReceivedPacketsInPrevSlot* /,
-					m_FriendID / *long long llFriendID* /);
-
-				toolsObject.SOSleep(10);
-
-				m_pAudioPacketizer->Packetize(
-					true /*bool bShouldPacketize*/,
-					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
-					m_nRawFrameSize /*int nDataLength*/,
-					m_iPacketNumber /*int nFrameNumber*/,
-					AUDIO_LIVE_CALLEE_PACKET_TYPE /*int packetType*/,
-					0 /*int networkType*/,
-					version /*int version*/,
-					llRelativeTime /*long long llRelativeTime*/,
-					0 /*int channel*/,
-					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
-					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
-					m_FriendID /*long long llFriendID*/);
-
-
-				 SetAudioIdentifierAndNextPacketType();
-			}
-			else {
-				AddHeader(version, llRelativeTime);
-				SetAudioIdentifierAndNextPacketType();
-				SendAudioData(toolsObject);
-			}
-
-			toolsObject.SOSleep(0);
-		}
-	}
-
-	m_bAudioEncodingThreadClosed = true;
-
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
-}*/
+// /****************************************EncodingThreadProcedure*****************************************/
+// /*
+// void CAudioCallSession::EncodingThreadProcedure()
+// {
+// 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
+// #ifdef __DUMP_FILE__
+// 	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
+// 	FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
+// 	FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
+// #endif
+// 	Tools toolsObject;
+// 	long long encodingTime = 0;
+// 	long long llCapturedTime = 0;
+// 	double avgCountTimeStamp = 0;
+// 	int countFrame = 0;
+//     int version = 0;
+// 	long long llRelativeTime = 0;	
+// 
+// 	long long llLasstTime = -1;
+// 	int cnt = 1;
+// 	while (m_bAudioEncodingThreadRunning)
+// 	{
+// 		if (m_AudioEncodingBuffer.GetQueueSize() == 0)
+// 			toolsObject.SOSleep(10);
+// 		else
+// 		{
+// 			m_AudioEncodingBuffer.DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+// 			MuxIfNeeded();
+// 			DumpEncodingFrame();
+// 			PrintRelativeTime(cnt, llLasstTime, countFrame, llRelativeTime, llCapturedTime);
+// 
+// 			if (false == PreProcessAudioBeforeEncoding())
+// 			{
+// 				continue;
+// 			}
+// 
+// 			EncodeIfNeeded(llCapturedTime, encodingTime, avgCountTimeStamp);
+// 
+// 			if (m_bLiveAudioStreamRunning && VIEWER_IN_CALL == m_iRole)
+// 			{
+// 				m_pAudioPacketizer->Packetize(
+// 					true / *bool bShouldPacketize* /,
+// 					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize / *unsigned char* uchData* /,
+// 					m_nRawFrameSize / *int nDataLength* /,
+// 					m_iPacketNumber / *int nFrameNumber* /,
+// 					AUDIO_LIVE_CALLEE_PACKET_TYPE / *int packetType* /,
+// 					0 / *int networkType* /,
+// 					version / *int version* /,
+// 					llRelativeTime / *long long llRelativeTime* /, 
+// 					0 / *int channel* /,
+// 					m_iPrevRecvdSlotID / *int iPrevRecvdSlotID* /,
+// 					m_iReceivedPacketsInPrevSlot / *int nReceivedPacketsInPrevSlot* /,
+// 					m_FriendID / *long long llFriendID* /);
+// 
+// 				toolsObject.SOSleep(10);
+// 
+// 				m_pAudioPacketizer->Packetize(
+// 					true /*bool bShouldPacketize*/,
+// 					m_ucaRawFrameNonMuxed + 1 + m_MyAudioHeadersize /*unsigned char* uchData*/,
+// 					m_nRawFrameSize /*int nDataLength*/,
+// 					m_iPacketNumber /*int nFrameNumber*/,
+// 					AUDIO_LIVE_CALLEE_PACKET_TYPE /*int packetType*/,
+// 					0 /*int networkType*/,
+// 					version /*int version*/,
+// 					llRelativeTime /*long long llRelativeTime*/,
+// 					0 /*int channel*/,
+// 					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
+// 					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
+// 					m_FriendID /*long long llFriendID*/);
+// 
+// 					/*SetAudioIdentifierAndNextPacketType();
+// 			}
+// 			else {
+// 				AddHeader(version, llRelativeTime);
+// 				SetAudioIdentifierAndNextPacketType();
+// 				SendAudioData(toolsObject);
+// 			}
+// 
+// 			toolsObject.SOSleep(0);
+// 		}
+// 	}
+// 
+// 	m_bAudioEncodingThreadClosed = true;
+// 
+// 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
+// }*/
 
 void CAudioCallSession::StopDecodingThread()
 {
