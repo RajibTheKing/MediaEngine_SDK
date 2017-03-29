@@ -20,9 +20,7 @@ m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
 m_bAudioEncodingThreadRunning(false),
 m_bAudioEncodingThreadClosed(true),
 m_nEncodedFrameSize(0),
-m_iPrevRecvdSlotID(-1),
 m_iPacketNumber(0),
-m_iReceivedPacketsInPrevSlot(0),
 m_iRawDataSendIndexViewer(0),
 m_iRawDataSendIndexCallee(0)
 {
@@ -127,8 +125,8 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 					version /*int version*/,
 					llRelativeTime /*long long llRelativeTime*/,
 					0 /*int channel*/,
-					m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
-					m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
+					m_pAudioCallSession->m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
+					m_pAudioCallSession->m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
 					m_llFriendID /*long long llFriendID*/);
 
 				toolsObject.SOSleep(10);
@@ -143,8 +141,8 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 						version /*int version*/,
 						llRelativeTime /*long long llRelativeTime*/,
 						0 /*int channel*/,
-						m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
-						m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
+						m_pAudioCallSession->m_iPrevRecvdSlotID /*int iPrevRecvdSlotID*/,
+						m_pAudioCallSession->m_iReceivedPacketsInPrevSlot /*int nReceivedPacketsInPrevSlot*/,
 						m_llFriendID /*long long llFriendID*/);
 
 				SetAudioIdentifierAndNextPacketType();
@@ -167,6 +165,7 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 void CAudioNearEndDataProcessor::EnqueueReadyToSendData(Tools toolsObject)
 {
 #ifdef  __AUDIO_SELF_CALL__
+	//Todo: m_AudioReceivedBuffer fix. not member of this class
 	if (m_bIsLiveStreamingRunning == false)
 	{
 		ALOG("#A#EN#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
@@ -260,26 +259,26 @@ void CAudioNearEndDataProcessor::AddHeader(int &version, long long &llRelativeTi
 	if (!m_bIsLiveStreamingRunning)
 	{
 		BuildAndGetHeaderInArray(m_iNextPacketType, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nEncodedFrameSize,
-			m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaEncodedFrame[1]);
+			m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaEncodedFrame[1]);
 	}
 	else
 	{
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
 		{
 			BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 			BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameMuxed[1]);
+				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameMuxed[1]);
 		}
 		else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 		{
 			BuildAndGetHeaderInArray(AUDIO_LIVE_CALLEE_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize / 2,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 		}
 		else
 		{
 			BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_iPrevRecvdSlotID, m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 		}
 	}
 

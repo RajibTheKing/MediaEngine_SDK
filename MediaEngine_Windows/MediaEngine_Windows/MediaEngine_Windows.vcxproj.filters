@@ -214,7 +214,10 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndDataProcessor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndDataProcessor.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -450,7 +453,10 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndDataProcessor.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndDataProcessor.h">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

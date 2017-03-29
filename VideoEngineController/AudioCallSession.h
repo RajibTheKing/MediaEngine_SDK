@@ -14,6 +14,7 @@
 #include "LiveAudioDecodingQueue.h"
 #include "LiveReceiver.h"
 #include "AudioNearEndDataProcessor.h"
+#include "AudioFarEndDataProcessor.h"
 
 #include <stdio.h>
 #include <string>
@@ -63,6 +64,7 @@ class CAudioCodec;
 class CAac;
 class AudioPacketizer;
 class AudioDePacketizer;
+class CAudioFarEndDataProcessor;
 
 #ifdef USE_AECM
 class CEcho;
@@ -87,6 +89,8 @@ private:
 
 	AudioPacketizer* m_pAudioPacketizer;
 	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
+	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
+
 public:
 	
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
@@ -139,7 +143,8 @@ public:
 	CAudioByteBuffer m_AudioReceivedBuffer;
 	bool m_bIsCheckCall;
 	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
-
+	int m_iPrevRecvdSlotID;
+	int m_iReceivedPacketsInPrevSlot;
 #ifdef USE_AGC
 	CGain * m_pRecorderGain;
 	CGain * m_pPlayerGain;
@@ -172,8 +177,8 @@ private:
     int m_iLastDecodedPacketNumber;    
     int m_iPacketNumber;
 	int m_iSlotID;
-	int m_iPrevRecvdSlotID, m_iCurrentRecvdSlotID;
-	int m_iReceivedPacketsInPrevSlot, m_iReceivedPacketsInCurrentSlot;
+	int m_iCurrentRecvdSlotID;
+	int m_iReceivedPacketsInCurrentSlot;
 	int m_iOpponentReceivedPackets;
 	
 
@@ -212,8 +217,10 @@ private:
 	int m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee; //TODO: remove second var
 	long long m_llMaxAudioPacketNumber;
 
+/*
     bool m_bAudioEncodingThreadRunning;
-    bool m_bAudioEncodingThreadClosed;
+    bool m_bAudioEncodingThreadClosed;*/
+
 
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;

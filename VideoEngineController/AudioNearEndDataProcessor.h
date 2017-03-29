@@ -13,6 +13,7 @@ class CCommonElementsBucket;
 class CAudioPacketHeader;
 class CAudioShortBuffer;
 class CAudioCodec;
+
 class CAudioNearEndDataProcessor
 {
 public:
@@ -50,9 +51,7 @@ private:
 	int m_nEncodedFrameSize;
 	int m_nRawFrameSize;
 	int m_MyAudioHeadersize;
-	int m_iPrevRecvdSlotID;
 	int m_iPacketNumber;
-	int m_iReceivedPacketsInPrevSlot;
 	int m_iNextPacketType;
 	int m_iSlotID;
 	LongLong m_llMaxAudioPacketNumber;

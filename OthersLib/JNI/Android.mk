@@ -104,6 +104,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/VideoSockets.cpp \
 			../../../videoengine/VideoEngineController/Filt.cpp \
 			../../../videoengine/VideoEngineController/AudioNearEndDataProcessor.cpp \
+			../../../videoengine/VideoEngineController/AudioFarEndDataProcessor.cpp \
 			../../../videoengine/VideoEngineUtilities/LockHandler.cpp \
             ../../../videoengine/VideoEngineUtilities/ColorConverter.cpp \
             ../../../videoengine/VideoEngineUtilities/HashGenerator.cpp \
