@@ -168,7 +168,7 @@ void CAudioNearEndDataProcessor::EnqueueReadyToSendData(Tools toolsObject)
 	//Todo: m_AudioReceivedBuffer fix. not member of this class
 	if (m_bIsLiveStreamingRunning == false)
 	{
-		ALOG("#A#EN#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
+		ALOG("#A#EN#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(m_iPacketNumber));
 		m_AudioReceivedBuffer.EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
 		return;
 	}

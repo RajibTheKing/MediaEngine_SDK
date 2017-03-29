@@ -211,7 +211,7 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 	{
 #ifdef OPUS_ENABLED
 		m_nDecodedFrameSize = m_pAudioCallSession->GetAudioCodec()->decodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
-		ALOG("#A#DE#--->> Self#  PacketNumber = " + m_Tools.IntegertoStringConvert(iPacketNumber));
+		ALOG("#A#DE#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(iPacketNumber));
 		LOGEF("Role %d, done decode", m_iRole);
 
 #else
@@ -436,8 +436,8 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long
 			if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 			{
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = "
-					+ m_Tools.getText(llCurrentFrameRelativeTime) + " DELAY = " + m_Tools.getText(llWaitingTime) + " currentTime = " + m_Tools.getText(llNow) 
-					+ " iPacketNumber = " + m_Tools.getText(iPacketNumber));
+					+ Tools::getText(llCurrentFrameRelativeTime) + " DELAY = " + Tools::getText(llWaitingTime) + " currentTime = " + Tools::getText(llNow)
+					+ " iPacketNumber = " + Tools::getText(iPacketNumber));
 				//				HITLER("#@#@26022017# ##################################################################### dropping audio data");
 				LOG_AAC("#aac#aqa# Frame not received timely: %d", llWaitingTime);
 				return false;
