@@ -344,7 +344,10 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
 			nProcessedFramsCounter++;
-			m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
+			if (m_pLiveAudioReceivedQueue)
+			{
+				m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
+			}
 			continue;
 		}
 
@@ -359,7 +362,10 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
         nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 		nProcessedFramsCounter++;
-        m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange +1 , nCurrentFrameLenWithMediaHeader - 1);
+		if (m_pLiveAudioReceivedQueue)
+		{
+			m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
+		}
     }
 
 	HITLER("#@LR -> Totla= %d Used = %d Missing = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
