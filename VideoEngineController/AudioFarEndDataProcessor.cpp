@@ -170,34 +170,33 @@ bool CAudioFarEndDataProcessor::IsQueueEmpty(Tools &toolsObject)
 	return false;
 }
 
-//Todo: change following variable name @| $
-void CAudioFarEndDataProcessor::DequeueData(int &m_nDecodingFrameSize)
+void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 {
 	if (m_bIsLiveStreamingRunning)
 	{
 #ifndef LOCAL_SERVER_LIVE_CALL
 		if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL)
 		{
-			m_nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
 		}
 		else
 		{
-			m_nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
 		}
 #else
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL || m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 		{
-			m_nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
 		}
 		else
 		{
-			m_nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
 		}
 #endif
 	}
 	else
 	{
-		m_nDecodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+		decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
 	}
 }
 

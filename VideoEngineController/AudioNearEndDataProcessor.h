@@ -35,6 +35,7 @@ public:
 private:
 	void StartEncodingThread();
 	void StopEncodingThread();
+	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void MuxIfNeeded();
 	void DumpEncodingFrame();
 	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & llCapturedTime);
@@ -60,10 +61,10 @@ private:
 
 	CAudioCodec *m_pAudioCodec;
 
-	CAudioCallSession *m_pAudioCallSession;
-	CCommonElementsBucket *m_pCommonElementsBucket;	
-	CAudioShortBuffer *m_pAudioEncodingBuffer;
-	CAudioPacketHeader *m_pAudioPacketHeader;
+	CAudioCallSession *m_pAudioCallSession = nullptr;
+	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;	
+	CAudioShortBuffer *m_pAudioEncodingBuffer = nullptr;
+	CAudioPacketHeader *m_pAudioPacketHeader = nullptr;
 
 	short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
 	unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
@@ -79,6 +80,7 @@ private:
 	unsigned char m_ucaRawDataToSendCallee[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	unsigned char m_ucaRawDataToSendViewer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	std::vector<int> m_vRawFrameLengthViewer, m_vRawFrameLengthCallee;
+	AudioPacketizer* m_pAudioPacketizer = nullptr;
 	
 	//SmartPointer<std::thread> m_pAudioEncodingThread;
 	SmartPointer<CLockHandler> m_pAudioEncodingMutex;
