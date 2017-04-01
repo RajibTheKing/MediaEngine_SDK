@@ -29,6 +29,7 @@ public:
 	void StartCallInLive()
 	{
 		m_iRawDataSendIndexCallee = 0;
+		m_vRawFrameLengthCallee.clear();
 	}
 
 private:

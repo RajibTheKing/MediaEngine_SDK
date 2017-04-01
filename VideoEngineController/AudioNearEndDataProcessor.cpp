@@ -164,7 +164,7 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 
 void CAudioNearEndDataProcessor::EnqueueReadyToSendData(Tools toolsObject)
 {
-#ifdef  __AUDIO_SELF_CALL__
+#ifdef  __AUDIO_SELF_CALL__ //Todo: build while this is enable
 	//Todo: m_AudioReceivedBuffer fix. not member of this class
 	if (m_bIsLiveStreamingRunning == false)
 	{
@@ -466,7 +466,7 @@ void CAudioNearEndDataProcessor::MuxIfNeeded()
 			nLastDecodedFrameSize = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame, lastDecodedTimeStamp);
 			if (nLastDecodedFrameSize == CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning)) //Both must be 800
 			{
-				m_pAudioCallSession->MuxAudioData(m_saAudioRecorderFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize);
+				m_pAudioCallSession->MuxAudioData(m_saAudioRecorderFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize); //Todo: put muxaudiodata in this class
 			}
 			else
 			{

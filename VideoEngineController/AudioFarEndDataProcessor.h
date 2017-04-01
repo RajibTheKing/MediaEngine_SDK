@@ -30,6 +30,15 @@ public:
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 	void StartCallInLive();
 	void StopCallInLive();
+	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
+	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
+
+
+	LiveReceiver *m_pLiveReceiverAudio = nullptr;
+	long long m_llDecodingTimeStampOffset = -1;
+	AudioDePacketizer* m_pAudioDePacketizer = nullptr;
+	CAudioByteBuffer m_AudioReceivedBuffer;
+
 
 private:
 
@@ -39,7 +48,6 @@ private:
 	int m_nDecodedFrameSize = 0;
 	int m_nDecodingFrameSize = 0;
 	int m_iAudioVersionFriend = -1;
-	long long m_llDecodingTimeStampOffset = -1;
 	//int m_iPrevRecvdSlotID;
 	int m_iCurrentRecvdSlotID = -1;
 	int m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
@@ -51,14 +59,11 @@ private:
 	CAudioPacketHeader *m_ReceivingHeader = nullptr;
 	CGomGomGain *m_pGomGomGain = nullptr;
 
-	CAudioByteBuffer m_AudioReceivedBuffer;
-	AudioDePacketizer* m_pAudioDePacketizer = nullptr;
 
 	bool m_bAudioDecodingThreadRunning;
 	bool m_bAudioDecodingThreadClosed;
 
 	LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue = nullptr;
-	LiveReceiver *m_pLiveReceiverAudio = nullptr;
 	unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
 	short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
 #ifdef AAC_ENABLED
@@ -73,8 +78,6 @@ private:
 	void DequeueData(int &m_nDecodingFrameSize);
 	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
 	bool IsPacketNumberProcessable(int &iPacketNumber);
-	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
-	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
 	bool IsPacketTypeSupported(int &nCurrentAudioPacketType);

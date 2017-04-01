@@ -126,6 +126,7 @@ void CAudioFarEndDataProcessor::StartCallInLive()
 	{
 		m_pLiveAudioReceivedQueue->ResetBuffer(); //Contains Data From Live Stream
 	}
+	m_AudioReceivedBuffer.ResetBuffer();
 }
 
 void CAudioFarEndDataProcessor::StopCallInLive()

@@ -106,7 +106,7 @@ public:
 	}
 
 
-	AudioDePacketizer* m_pAudioDePacketizer;
+	//AudioDePacketizer* m_pAudioDePacketizer;
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
@@ -160,8 +160,8 @@ private:
     Tools m_Tools;
     LongLong m_FriendID;
 	bool m_bEchoCancellerEnabled;
-	long long m_llEncodingTimeStampOffset;
-	long long m_llDecodingTimeStampOffset;
+	//long long m_llEncodingTimeStampOffset; //TODO:remove
+	//long long m_llDecodingTimeStampOffset;
 
     CAudioPacketHeader *m_SendingHeader;
     CAudioPacketHeader *m_ReceivingHeader;
@@ -225,8 +225,8 @@ private:
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
     
-    LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue; //TODO: remove this
-    LiveReceiver *m_pLiveReceiverAudio; //TODO: remove this
+    //LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue; //TODO: remove this
+    //LiveReceiver *m_pLiveReceiverAudio; //TODO: remove this
     
     bool m_bLiveAudioStreamRunning;
     int m_nServiceType;
