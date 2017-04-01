@@ -6,9 +6,6 @@
 #include "AudioPacketizer.h"
 #include "AudioDePacketizer.h"
 
-//#define __AUDIO_SELF_CALL__
-//#define FIRE_ENC_TIME
-
 #ifdef LOCAL_SERVER_LIVE_CALL
 #define LOCAL_SERVER_IP "192.168.0.120"
 #endif
@@ -37,16 +34,6 @@
 #endif
 
 
-#ifdef __DUMP_FILE__
-FILE *FileInput;
-FILE *FileOutput;
-FILE *FileInputWithEcho;
-FILE *FileInputMuxed;
-FILE *FileInputPreGain;
-#endif
-
-
-
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
 m_pCommonElementsBucket(pSharedObject),
 m_bIsCheckCall(bIsCheckCall),
@@ -59,7 +46,6 @@ m_bIsAECMNearEndThreadBusy(false)
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
 	m_iRole = CALL_NOT_RUNNING;
 	m_bLiveAudioStreamRunning = false;
-	m_pGomGomGain = new CGomGomGain(123);
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 	{
@@ -176,8 +162,6 @@ CAudioCallSession::~CAudioCallSession()
 #ifdef USE_VAD
 	delete m_pVoice;
 #endif
-
-	delete m_pGomGomGain;
 
 	m_FriendID = -1;
 #ifdef __DUMP_FILE__

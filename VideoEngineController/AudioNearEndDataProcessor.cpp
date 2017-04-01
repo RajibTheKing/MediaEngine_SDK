@@ -8,6 +8,7 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioPacketizer.h"
 #include "Gain.h"
+#include "AudioCallSession.h"
 
 
 CAudioNearEndDataProcessor::CAudioNearEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
@@ -42,7 +43,6 @@ m_iRawDataSendIndexCallee(0)
 }
 
 CAudioNearEndDataProcessor::~CAudioNearEndDataProcessor(){
-	//TODO: delete all new's inside cons.
 	StopEncodingThread();
 	if (m_pAudioPacketHeader)
 	{
@@ -87,9 +87,9 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
 #ifdef __DUMP_FILE__
-	FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
-	FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
-	FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
+	m_pAudioCallSession->FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
+	m_pAudioCallSession->FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
+	m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
 #endif
 	Tools toolsObject;
 	long long encodingTime = 0;
@@ -178,7 +178,7 @@ void CAudioNearEndDataProcessor::EnqueueReadyToSendData(Tools toolsObject)
 	if (m_bIsLiveStreamingRunning == false)
 	{
 		ALOG("#A#EN#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(m_iPacketNumber));
-		m_AudioReceivedBuffer.EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
+		m_pAudioCallSession->m_pFarEndProcessor->m_AudioReceivedBuffer.EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
 		return;
 	}
 #endif
@@ -460,7 +460,7 @@ void CAudioNearEndDataProcessor::PrintRelativeTime(int &cnt, long long &llLasstT
 void CAudioNearEndDataProcessor::DumpEncodingFrame()
 {
 #ifdef __DUMP_FILE__
-	fwrite(m_saAudioRecorderFrame, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), FileInput);
+	fwrite(m_saAudioRecorderFrame, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_pAudioCallSession->FileInput);
 #endif
 }
 
@@ -507,7 +507,7 @@ void CAudioNearEndDataProcessor::MuxIfNeeded()
 			memcpy(m_saAudioMUXEDFrame, m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short));
 		}
 #ifdef __DUMP_FILE__
-		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), FileInputMuxed);
+		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_pAudioCallSession->FileInputMuxed);
 #endif
 	}
 }

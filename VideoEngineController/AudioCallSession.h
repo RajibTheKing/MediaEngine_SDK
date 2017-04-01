@@ -16,6 +16,7 @@
 #include "AudioNearEndDataProcessor.h"
 #include "AudioFarEndDataProcessor.h"
 
+
 #include <stdio.h>
 #include <string>
 #include <map>
@@ -56,6 +57,11 @@ static string colon = "ALOG:";
 
 
 
+//#define __AUDIO_SELF_CALL__
+//#define __DUMP_FILE__
+
+
+//#define FIRE_ENC_TIME
 //#define __AUDIO_FIXED_COMPLEXITY__
 
 class CCommonElementsBucket;
@@ -130,6 +136,14 @@ public:
 	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
 
+#ifdef __DUMP_FILE__
+	FILE *FileInput;
+	FILE *FileOutput;
+	FILE *FileInputWithEcho;
+	FILE *FileInputMuxed;
+	FILE *FileInputPreGain;
+#endif
+
 private:
 
 #ifdef LOCAL_SERVER_LIVE_CALL
@@ -154,7 +168,6 @@ private:
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
 
-	CGomGomGain *m_pGomGomGain;
 
 #ifdef AAC_ENABLED
 	CAac *m_cAac;

@@ -306,9 +306,8 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 
 void CAudioFarEndDataProcessor::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize)
 {
-	//Todo: check if files are open. enable dump file
 #ifdef __DUMP_FILE__
-	fwrite(psDecodedFrame, 2, nDecodedFrameSize, FileOutput);
+	fwrite(psDecodedFrame, 2, nDecodedFrameSize, m_pAudioCallSession->FileOutput);
 #endif
 }
 
@@ -532,7 +531,7 @@ void CAudioFarEndDataProcessor::DecodingThreadProcedure()
 	int nCurrentPacketHeaderLength = 0;
 
 #ifdef __DUMP_FILE__
-	FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
+	m_pAudioCallSession->FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
 #endif
 
 	long long llLastTime = -1, llDiffTimeNow = -1;
