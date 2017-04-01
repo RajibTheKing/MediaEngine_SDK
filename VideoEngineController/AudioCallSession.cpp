@@ -165,6 +165,12 @@ m_bIsAECMNearEndThreadBusy(false)
 
 CAudioCallSession::~CAudioCallSession()
 {
+	/// Warning.
+	/// Never delete any pointer before stoping the encoding and decoding thread.
+
+	StopDecodingThread();
+	StopEncodingThread();
+	
 	if (NULL != m_pAudioPacketizer)
 	{
 		delete m_pAudioPacketizer;
@@ -176,9 +182,6 @@ CAudioCallSession::~CAudioCallSession()
 		delete m_pAudioDePacketizer;
 		m_pAudioDePacketizer = NULL;
 	}
-	
-	StopDecodingThread();
-	StopEncodingThread();
 
 #ifdef AAC_ENABLED
 	if (m_cAac != nullptr){
