@@ -225,8 +225,8 @@ private:
     bool m_bAudioDecodingThreadRunning;
     bool m_bAudioDecodingThreadClosed;
     
-    LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue;
-    LiveReceiver *m_pLiveReceiverAudio;
+    LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue; //TODO: remove this
+    LiveReceiver *m_pLiveReceiverAudio; //TODO: remove this
     
     bool m_bLiveAudioStreamRunning;
     int m_nServiceType;

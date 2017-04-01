@@ -27,7 +27,7 @@ class CAudioFarEndDataProcessor
 public:
 	CAudioFarEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
 	~CAudioFarEndDataProcessor();
-	int DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength);
+	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 	void StartCallInLive();
 	void StopCallInLive();
 

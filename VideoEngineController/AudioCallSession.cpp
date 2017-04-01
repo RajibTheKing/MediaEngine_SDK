@@ -521,13 +521,7 @@ void CAudioCallSession::SetLoudSpeaker(bool bOn)
 
 int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
-	if (m_bLiveAudioStreamRunning && (m_iRole != PUBLISHER_IN_CALL))
-	{
-		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
-		return 1;
-	}
-
-	return m_pFarEndProcessor->DecodeAudioData(pucaDecodingAudioData, unLength);
+	return m_pFarEndProcessor->DecodeAudioData(nOffset, pucaDecodingAudioData, unLength, numberOfFrames, frameSizes, vMissingFrames);
 }
 
 CAudioCodec* CAudioCallSession::GetAudioCodec()

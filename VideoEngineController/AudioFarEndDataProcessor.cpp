@@ -109,8 +109,14 @@ void CAudioFarEndDataProcessor::StopDecodingThread()
 		Tools::SOSleep(5);
 }
 
-int CAudioFarEndDataProcessor::DecodeAudioData(unsigned char *pucaDecodingAudioData, unsigned int unLength)
+int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames)
 {
+	if (m_bIsLiveStreamingRunning && (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL))
+	{
+		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
+		return 1;
+	}
+
 	return  m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
 }
 
