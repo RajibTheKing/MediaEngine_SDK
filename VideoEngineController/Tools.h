@@ -35,7 +35,7 @@ public:
 	Tools();
 	~Tools();
 
-	void SOSleep(int nSleepTimeout);
+	static void SOSleep(int nSleepTimeout);
 	static LongLong CurrentTimestamp();
     static std::string IntegertoStringConvert(int nConvertingNumber);
 	static std::string LongLongtoStringConvert(LongLong number);

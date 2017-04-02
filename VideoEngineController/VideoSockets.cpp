@@ -276,7 +276,7 @@ void VideoSockets::DataReceiverThread()
             continue;
         }
 		PRT("RECEIVED LEN DA %d", recv_len);
-		m_pMyAudioCallSession->m_AudioReceivedBuffer.EnQueue(baDataReceiverBuffer + 1, recv_len - 1);
+		m_pMyAudioCallSession->m_pFarEndProcessor->m_AudioReceivedBuffer.EnQueue(baDataReceiverBuffer + 1, recv_len - 1);
         // int iPacketType = (int)baDataReceiverBuffer[0];
 		
         
