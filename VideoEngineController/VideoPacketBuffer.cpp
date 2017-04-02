@@ -3,8 +3,6 @@
 #include "HashGenerator.h"
 #include "VideoHeader.h"
 
-#define USE_HASH_GENERATOR_TO_DEPACKETIZE
-
 CVideoPacketBuffer::CVideoPacketBuffer():
 m_nNumberOfGotPackets(0),
 m_nNumberOfPackets(MAX_NUMBER_OF_PACKETS),
@@ -41,15 +39,9 @@ bool CVideoPacketBuffer::PushVideoPacket(unsigned char *pucVideoPacketData, unsi
 
 		m_baPacketTracker[nPacketNumber] = true;
 		m_nNumberOfGotPackets++;
-        
-        
-#ifdef USE_HASH_GENERATOR_TO_DEPACKETIZE
 
 		memcpy(m_ucaFrameData + nPacketStartingIndex, pucVideoPacketData + iHeaderLength, nPacketDataLength);
-#else
-        
-        memcpy(m_ucaFrameData + nPacketNumber * MAX_PACKET_SIZE_WITHOUT_HEADER, pucVideoPacketData + iHeaderLength, nPacketDataLength);
-#endif
+
         
 		m_nFrameSize += nPacketDataLength;
 

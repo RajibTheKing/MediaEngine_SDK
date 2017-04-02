@@ -5,9 +5,6 @@
 #include "Globals.h"
 #include "VideoCallSession.h"
 
-
-#define USE_HASH_GENERATOR_TO_PACKETIZE
-
 CEncodedFramePacketizer::CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession) :
 
 m_nPacketSize(MAX_PACKET_SIZE_WITHOUT_HEADER),
@@ -165,17 +162,13 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
     else
     {
         int iStartIndex;
-#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
+        
         nNumberOfPackets = m_pHashGenerator->CalculateNumberOfPackets(iFrameNumber, unLength);
         iStartIndex = 0;
-#endif
-        
         
         for (int nPacketNumber = 0, nPacketizedDataLength = 0; nPacketizedDataLength < unLength; nPacketNumber++, nPacketizedDataLength += m_nPacketSize)
         {
-#ifdef USE_HASH_GENERATOR_TO_PACKETIZE
             m_nPacketSize = m_pHashGenerator->GetHashedPacketSize(iFrameNumber, nPacketNumber);
-#endif
             
             if (nPacketizedDataLength + m_nPacketSize > unLength)
                 m_nPacketSize = unLength - nPacketizedDataLength;
