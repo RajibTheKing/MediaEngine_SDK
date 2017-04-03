@@ -199,7 +199,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	while (bDecodingThreadRunning)
 	{
-		if (m_pVideoCallSession->isLiveVideoStreamRunning() && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
+		if (m_pVideoCallSession->isLiveVideoStreamRunning())
 		{
 			if (m_bResetForViewerCallerCallStartEnd == true)
 			{

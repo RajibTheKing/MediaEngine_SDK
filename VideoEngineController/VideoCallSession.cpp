@@ -1204,7 +1204,7 @@ void CVideoCallSession::EndCallInLive()
 	{
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
-			m_pVideoDepacketizationThread->ResetForPublisherCallerCallEnd();
+			//m_pVideoDepacketizationThread->ResetForPublisherCallerCallEnd();
 
 			SetFirstVideoPacketTime(-1);
 			SetShiftedTime(-1);
