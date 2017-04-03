@@ -120,7 +120,7 @@ public:
 #endif
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-		int &sendingLengthViewer, int &sendingLengthCallee);
+		int &sendingLengthViewer, int &sendingLengthCallee, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
     int GetServiceType();
 
 	int m_iNextPacketType;

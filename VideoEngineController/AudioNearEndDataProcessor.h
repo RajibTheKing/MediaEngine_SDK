@@ -24,7 +24,7 @@ public:
 	static void *CreateAudioEncodingThread(void* param);
 	void EncodingThreadProcedure();
 	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-		int &sendingLengthViewer, int &sendingLengthCallee);
+		int &sendingLengthViewer, int &sendingLengthCallee, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
 	void StartCallInLive()
 	{
@@ -45,7 +45,7 @@ private:
 	void AddHeader(int &version, long long &llRelativeTime);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-	void EnqueueReadyToSendData(Tools toolsObject);
+	void EnqueueReadyToSendData(Tools toolsObject, long long llRelativeTime);
 	
 	long long m_llFriendID;
 	bool m_bIsLiveStreamingRunning;
@@ -81,6 +81,8 @@ private:
 	unsigned char m_ucaRawDataToSendViewer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	std::vector<int> m_vRawFrameLengthViewer, m_vRawFrameLengthCallee;
 	AudioPacketizer* m_pAudioPacketizer = nullptr;
+	long long m_llLastChunkLastFrameRT;
+	long long m_llLastFrameRT;
 	
 	//SmartPointer<std::thread> m_pAudioEncodingThread;
 	SmartPointer<CLockHandler> m_pAudioEncodingMutex;
