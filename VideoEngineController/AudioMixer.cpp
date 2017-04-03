@@ -30,7 +30,7 @@ void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 	{
 		if (!(iMissingFlag & (1 << (i / iAudioSamplePerBlock))))
 		{
-			int value = ((uchCalleeAudio[i * 2] + m_iCalleeFrameInfoSize) << 8 + (uchCalleeAudio[i * 2 + 1] + m_iCalleeFrameInfoSize));
+			int value = (((int)uchCalleeAudio [i * 2 + m_iCalleeFrameInfoSize]) << 8 + ((int)uchCalleeAudio[i * 2 + 1 + m_iCalleeFrameInfoSize]));
 			if (value & (1 << 15)) {
 				value ^= (1 << 15);
 				value *= -1;
@@ -109,14 +109,14 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 	for (int i = 0; i < iTotalCallee; i++) {
 		if (uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize)] == calleeId)
 		{
-			iMissingBlocks = (uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize) + 1] << 8) + uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize) + 2];
+			iMissingBlocks = ((int)uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize) + 1] << 8) + (int)uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize) + 2];
 			break;
 		}
 	}
 
 	for (int i = 0; i < m_iAudioFrameSize; i++)
 	{
-		int calleeValue = (uchCalleeAudioData[i * 2] << 8) + uchCalleeAudioData[i * 2 + 1];
+		int calleeValue = (int)(uchCalleeAudioData[i * 2] << 8) + (int)uchCalleeAudioData[i * 2 + 1];
 		if (calleeValue & (1 << 15)) {
 			calleeValue ^= (1 << 15);
 			calleeValue *= -1;
