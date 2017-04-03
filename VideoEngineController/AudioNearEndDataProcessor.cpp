@@ -7,8 +7,10 @@
 #include "CommonElementsBucket.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioPacketizer.h"
-#include "Gain.h"
 #include "AudioCallSession.h"
+#ifdef USE_AGC
+#include "Gain.h"
+#endif
 
 
 CAudioNearEndDataProcessor::CAudioNearEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :

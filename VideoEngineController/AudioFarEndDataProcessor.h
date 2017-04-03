@@ -8,9 +8,12 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioDePacketizer.h"
 #include "AudioCodec.h"
-#include "Gain.h"
 #include "Aac.h"
 #include "GomGomGain.h"
+
+#ifdef USE_AGC
+#include "Gain.h"
+#endif
 
 class CAudioCallSession;
 class AudioPacketizer;
