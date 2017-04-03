@@ -17,4 +17,5 @@ private:
 	int m_iMixedData[MAX_AUDIO_DECODER_FRAME_SIZE];
 	void addAudioData(unsigned char* uchCalleeAudio);
 	int getAudioData(unsigned char* uchMixedAudioData);
+	int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId);
 };
