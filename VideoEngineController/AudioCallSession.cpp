@@ -460,10 +460,9 @@ void CAudioCallSession::SendToPlayer(short* pshSentFrame, int nSentFrameSize, lo
 
 
 void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-	int &sendingLengthViewer, int &sendingLengthCallee)
+	int &sendingLengthViewer, int &sendingLengthCallee, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 {
-
-	m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthCallee);
+	m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthCallee, llAudioChunkDuration, llAudioChunkRelativeTime);
 }
 
 int CAudioCallSession::GetServiceType()

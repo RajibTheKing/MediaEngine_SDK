@@ -23,9 +23,10 @@ m_bAudioEncodingThreadClosed(true),
 m_nEncodedFrameSize(0),
 m_iPacketNumber(0),
 m_iRawDataSendIndexViewer(0),
-m_iRawDataSendIndexCallee(0)
+m_iRawDataSendIndexCallee(0),
+m_llLastChunkLastFrameRT(-1),
+m_llLastFrameRT(0)
 {
-	LOGT("##NF## anedp created.");
 	m_pAudioEncodingMutex.reset(new CLockHandler);
 	m_pAudioCodec = pAudioCallSession->GetAudioCodec();
 	m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[INF_PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
@@ -113,7 +114,7 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 			MuxIfNeeded();
 			DumpEncodingFrame();
 			PrintRelativeTime(cnt, llLasstTime, countFrame, llRelativeTime, llCapturedTime);
-
+			m_llLastFrameRT = llRelativeTime;
 			if (false == PreProcessAudioBeforeEncoding())
 			{
 				continue;
@@ -159,7 +160,7 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 			else {
 				AddHeader(version, llRelativeTime);
 				SetAudioIdentifierAndNextPacketType();
-				EnqueueReadyToSendData(toolsObject);
+				EnqueueReadyToSendData(toolsObject, llRelativeTime);
 			}
 
 			toolsObject.SOSleep(0);
@@ -171,7 +172,7 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
 }
 
-void CAudioNearEndDataProcessor::EnqueueReadyToSendData(Tools toolsObject)
+void CAudioNearEndDataProcessor::EnqueueReadyToSendData(Tools toolsObject, long long llRelativeTime)
 {
 #ifdef  __AUDIO_SELF_CALL__ //Todo: build while this is enable
 	//Todo: m_AudioReceivedBuffer fix. not member of this class
@@ -194,6 +195,12 @@ void CAudioNearEndDataProcessor::EnqueueReadyToSendData(Tools toolsObject)
 		{
 			LOGT("###NF### EnqueReadyToSendData.");
 			Locker lock(*m_pAudioEncodingMutex);
+			if (0 == m_iRawDataSendIndexViewer && -1 == m_llLastChunkLastFrameRT)
+			{
+				m_llLastChunkLastFrameRT = llRelativeTime;
+			}
+
+			m_llLastFrameRT = llRelativeTime;
 			if ((m_iRawDataSendIndexViewer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
 			{
 				memcpy(m_ucaRawDataToSendViewer + m_iRawDataSendIndexViewer, m_ucaRawFrameMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
@@ -419,7 +426,7 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 }
 
 void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-	int &sendingLengthViewer, int &sendingLengthCallee)
+	int &sendingLengthViewer, int &sendingLengthCallee, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 {
 	Locker lock(*m_pAudioEncodingMutex);
 
@@ -429,6 +436,17 @@ void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombin
 	CombinedLength = m_iRawDataSendIndexViewer;
 	sendingLengthViewer = m_iRawDataSendIndexViewer;
 	LOGT("##NF##GetAudioData## viewerlength:%d calleelength:%d", m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee);
+
+	llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
+	llAudioChunkRelativeTime = m_llLastChunkLastFrameRT;		
+	if (0 == llAudioChunkDuration)
+	{
+		llAudioChunkDuration = 200;
+		llAudioChunkRelativeTime -= 200;
+	}
+
+	m_llLastChunkLastFrameRT = m_llLastFrameRT;
+	
 
 	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
 	{

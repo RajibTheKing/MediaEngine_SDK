@@ -291,9 +291,12 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
 				int viewerDataLength = 0, calleeDataLength = 0;
+				long long llAudioChunkDuration=5, llAudioChunkRelativeTime=5;
 
 				if (bExist)
-					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength);
+					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength, llAudioChunkDuration, llAudioChunkRelativeTime);
+
+				LOG_AAC("#RT# isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, friendId: %lld", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, lFriendID);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
@@ -314,7 +317,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				if (m_bAudioOnlyLive == true && m_nTimeStampOfChunck == -1)
 				{
-					// m_nTimeStampOfChunck = time stamp of current audio only chunk
+					m_nTimeStampOfChunck = llAudioChunkRelativeTime;
 				}
 
 				m_nTimeStampOfChunckSend += llNowTimeDiff;
@@ -410,7 +413,7 @@ void CSendingThread::SendingThreadProcedure()
 				
 				if (m_bAudioOnlyLive == true)
 				{
-					// timeNow = time stamp of current audio only chunk
+					timeNow = llAudioChunkRelativeTime;
 				}
 				else
 				{
@@ -547,7 +550,7 @@ void CSendingThread::SendingThreadProcedure()
 
 				if (m_bAudioOnlyLive == true)
 				{
-					// m_nTimeStampOfChunck = time stamp of current audio only chunk
+					m_nTimeStampOfChunck = llAudioChunkRelativeTime;
 				}
 				else
 				{
