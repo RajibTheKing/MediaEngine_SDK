@@ -174,7 +174,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 		//		else
 		//			return 0;
 
-		if (mediaType == MEDIA_TYPE_LIVE_STREAM)
+		if (mediaType == MEDIA_TYPE_LIVE_STREAM || mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO)
 		{
 			//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
 			//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
