@@ -68,6 +68,9 @@ private:
 
 //	CVideoHeader m_cVH;
 
+	bool m_bAudioOnlyLive;
+	bool m_bVideoOnlyLive;
+
 	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioVideoDataToSend[MAX_AUDIO_VIDEO_DATA_TO_SEND_SIZE];
