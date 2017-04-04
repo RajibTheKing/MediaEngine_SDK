@@ -77,6 +77,9 @@ private:
 	static void* CreateAudioDecodingThread(void* param);
 	void StopDecodingThread();
 	void DecodingThreadProcedure();
+
+	void AudioCallFarEndProcedure();
+	void LiveStreamFarEndProcedure();
 	bool IsQueueEmpty();
 	void DequeueData(int &m_nDecodingFrameSize);
 	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
