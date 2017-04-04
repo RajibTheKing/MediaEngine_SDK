@@ -9,11 +9,11 @@
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigma = 40;
+int m_sigma = 64;
 
 #elif defined(__ANDROID__)
 
-int m_sigma = 70;
+int m_sigma = 64;
 
 #elif defined(_DESKTOP_C_SHARP_)
 
@@ -631,11 +631,6 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	int www = iWidth - halfWidthDiff;
 
 	long long startSharpingTime = m_Tools.CurrentTimestamp();
-    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    //Do nothing
-    //Not Needed Yet...
-#else
 
 	for (int i = 0; i <= iHeight; i++) 
 	{
@@ -665,9 +660,6 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			}
 		}
 	}
-
-
-#endif
 
 	long long endSharpingTime = m_Tools.CurrentTimestamp();
 

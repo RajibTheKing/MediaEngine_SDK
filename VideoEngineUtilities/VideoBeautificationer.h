@@ -8,7 +8,7 @@
 #include "../videoEngineController/Tools.h"
 
 #define SHARPING_SHIFTING_NUMBER_1 2
-#define SHARPING_SHIFTING_NUMBER_2 2
+#define SHARPING_SHIFTING_NUMBER_2 1
 #define U_VALUE_1 95
 #define U_VALUE_2 125
 #define V_VALUE_1 135
