@@ -660,8 +660,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			
 			if (i > 2)
 			{
-				if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
-					pBlurConvertingData[iw2] = min(255, max(0, pBlurConvertingData[iw2] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
+				if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < U_VALUE_1 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > U_VALUE_2 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < V_VALUE_1 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > V_VALUE_2)
+					pBlurConvertingData[iw2] = min(255, max(0, pBlurConvertingData[iw2] + (((m_mean[i - 1][j] << SHARPING_SHIFTING_NUMBER_1) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> SHARPING_SHIFTING_NUMBER_2)));
 			}
 		}
 	}
