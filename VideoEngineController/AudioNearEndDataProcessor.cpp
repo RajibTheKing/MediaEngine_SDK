@@ -140,6 +140,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedure(){
 		}
 		else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 		{
+			HITLER("#@#@ gettting frame ready for publisher in chunk.");
 			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
 			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
 		}
@@ -458,6 +459,7 @@ void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombin
 		memcpy(pAudioCombinedDataToSend + m_iRawDataSendIndexViewer, m_ucaRawDataToSendPeer, m_iRawDataSendIndexPeer);
 		CombinedLength += m_iRawDataSendIndexPeer;
 		sendingLengthPeer = m_iRawDataSendIndexPeer;		
+		HITLER("#@#@ GetAudioDataToSend() combinedlength:%d sendinglengthPeer:%d", CombinedLength, sendingLengthPeer);
 	}
 
 	m_iRawDataSendIndexPeer = 0;

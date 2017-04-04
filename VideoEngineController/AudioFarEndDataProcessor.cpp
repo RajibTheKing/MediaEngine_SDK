@@ -352,33 +352,23 @@ void CAudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nH
 
 bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 {
-#ifndef LOCAL_SERVER_LIVE_CALL
-	if (m_bIsLiveStreamingRunning)
-	{
-		LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_pAudioCallSession->GetRole(), nCurrentAudioPacketType);
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL  && nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
-		{
-			return true;
-		}
-		else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)
-		{
-			return true;
-		}
-		else if ((m_pAudioCallSession->GetRole() != VIEWER_IN_CALL && m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL)
-			&& (nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE ||
-			nCurrentAudioPacketType == AUDIO_CHANNEL_PACKET_TYPE))
-		{
-			return true;
-		}
-	}
-	else
+	LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_pAudioCallSession->GetRole(), nCurrentAudioPacketType);
+	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL  && nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
 	{
 		return true;
 	}
+	else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)
+	{
+		return true;
+	}
+	else if ((m_pAudioCallSession->GetRole() == CALL_NOT_RUNNING)
+		&& (nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE ||
+		nCurrentAudioPacketType == AUDIO_CHANNEL_PACKET_TYPE))
+	{
+		return true;
+	}
+
 	return false;
-#else
-	return true;
-#endif
 }
 
 bool CAudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion)
@@ -549,10 +539,12 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 
 	int iDataSentInCurrentSec = 0; //NeedToFix.
 	long long llTimeStamp = 0;
+	int nQueueSize = m_pLiveAudioReceivedQueue->GetQueueSize();
 
-	if (!IsQueueEmpty())
+	if ( nQueueSize> 0)
 	{
-		DequeueData(m_nDecodingFrameSize);
+		m_nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+		
 
 		if (m_nDecodingFrameSize < 1)
 		{
@@ -561,13 +553,11 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 		}
 
 		/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
+		HITLER("@#@# at decoder. packettype: %d", m_ucaDecodingFrame[0]);
 
 		if (m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE) {
 			if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 			{
-				// DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-				// DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-
 				HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
 				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
 				m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
@@ -582,6 +572,27 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 			}
 			return;
 		}
+
+
+		if (m_ucaDecodingFrame[0] == AUDIO_LIVE_CALLEE_PACKET_TYPE) {
+			if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
+			{
+				HITLER("XXP@#@#MARUF -> publisher data found LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
+				m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
+
+				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				Tools::SOSleep(0);
+			}
+			else {
+				HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
+			}
+			return;
+		}
+
+
 		/// --------------------------------------------------------------------------------------------------////
 
 		llCapturedTime = Tools::CurrentTimestamp();
@@ -601,12 +612,6 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 		if (!IsPacketNumberProcessable(iPacketNumber))
 		{
 			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
-			return;
-		}
-
-		if (!IsPacketTypeSupported(nCurrentAudioPacketType))
-		{
-			HITLER("XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
 			return;
 		}
 
@@ -647,6 +652,9 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 			Tools::SOSleep(0);
 		}
 	}
+	else {
+		Tools::SOSleep(5);
+	}
 }
 
 void CAudioFarEndDataProcessor::AudioCallFarEndProcedure()
@@ -667,31 +675,7 @@ void CAudioFarEndDataProcessor::AudioCallFarEndProcedure()
 			//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
 			return;
 		}
-
-		/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
-
-		if (m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE) {
-			if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
-			{
-				// DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-				// DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-
-				HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
-				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
-				m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
-
-				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
-				Tools::SOSleep(0);
-			}
-			else {
-				HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
-			}
-			return;
-		}
-		/// --------------------------------------------------------------------------------------------------////
-
+		
 		llCapturedTime = Tools::CurrentTimestamp();
 
 		int dummy;
