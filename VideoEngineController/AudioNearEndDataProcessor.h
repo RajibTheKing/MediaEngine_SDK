@@ -48,6 +48,7 @@ private:
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 	void StoreDataForChunk(long long llRelativeTime);
+	void SentToNetwork(long long llRelativeTime);
 	
 	long long m_llFriendID;
 	bool m_bIsLiveStreamingRunning;
