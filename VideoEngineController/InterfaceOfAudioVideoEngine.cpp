@@ -115,7 +115,7 @@ bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, 
 
 	m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
 
-	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType);
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, false);
 
 	return bReturnedValue;
 }

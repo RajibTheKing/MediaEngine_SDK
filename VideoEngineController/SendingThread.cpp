@@ -29,7 +29,7 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID) :
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID, bool bAudioOnlyLive) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 m_bIsCheckCall(bIsCheckCall),
@@ -40,7 +40,7 @@ m_lfriendID(llfriendID),
 m_bInterruptHappened(false),
 m_bInterruptRunning(false),
 m_bResetForViewerCallerCallEnd(false),
-m_bAudioOnlyLive(false),
+m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false)
 
 {
