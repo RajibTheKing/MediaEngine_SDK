@@ -7,6 +7,10 @@
 //#define VIEWER_NOT_IN_CALL 3 //never used so far
 #define CALL_NOT_RUNNING 4
 
+/*		*VERSION   */
+#define AUDIO_CALL_VERSION				0
+
+#define AUDIO_LIVE_STREAMING_VERSION	0
 
 #if defined(TARGET_OS_WINDOWS_PHONE)
 #define MAX_AUDIO_ENCODING_BUFFER_SIZE 5
