@@ -1,6 +1,10 @@
 #include "AudioFarEndDataProcessor.h"
 #include "CommonElementsBucket.h"
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
+
 CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
 	m_llFriendID(llFriendID),
 	m_pAudioCallSession(pAudioCallSession),
