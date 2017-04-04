@@ -654,20 +654,20 @@ void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunction
     }
 }
 
-bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole)
+bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 	m_llTimeOffset = -1;
-	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
+	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
 	
 	m_pcController->SetCallInLiveEnabled(true);
 	
 	if (bReturnedValue)
 	{
-		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
+		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, nCallInLiveType);
 	}
 	
 	return bReturnedValue;
