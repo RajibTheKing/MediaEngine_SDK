@@ -455,7 +455,7 @@ void CAudioCallSession::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFra
 
 void CAudioCallSession::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber)
 {
-	m_pFarEndProcessor->SendToPlayer(pshSentFrame, nSentFrameSize, llNow, llLastTime, iCurrentPacketNumber);
+	m_pFarEndProcessor->SendToPlayer(pshSentFrame, nSentFrameSize, llLastTime, iCurrentPacketNumber);
 }
 
 
