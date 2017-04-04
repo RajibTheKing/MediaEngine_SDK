@@ -23,6 +23,7 @@ public:
 	void MakeFrameBlurAndStore(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	bool IsSkinPixel(unsigned char YPixel, unsigned char UPixel, unsigned char VPixel);
 	void StartBrightening(int iVideoHeight, int iVideoWidth, int nPrecision);
+	bool IsNotSkinPixel(unsigned char UPixel, unsigned char VPixel);
 
 	void SetBrighteningValue(int m_AverageValue, int brightnessPrecision);
 
