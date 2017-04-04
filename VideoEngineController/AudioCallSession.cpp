@@ -41,7 +41,8 @@ m_bIsCheckCall(bIsCheckCall),
 m_nServiceType(nServiceType),
 m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
-m_bIsAECMNearEndThreadBusy(false)
+m_bIsAECMNearEndThreadBusy(false),
+m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
 {
 	InitializeAudioCallSession(llFriendID);
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
@@ -205,7 +206,7 @@ void CAudioCallSession::SetEchoCanceller(bool bOn)
 }
 
 
-void CAudioCallSession::StartCallInLive(int iRole)
+void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 {
 	if (iRole != VIEWER_IN_CALL && iRole != PUBLISHER_IN_CALL)//Unsupported or inaccessible role
 	{
