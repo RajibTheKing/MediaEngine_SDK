@@ -243,13 +243,13 @@ void CSendingThread::SendingThreadProcedure()
 			m_bResetForViewerCallerCallEnd = false;
 		}
 
-		if (m_SendingBuffer->GetQueueSize() == 0 || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
+		if ((m_SendingBuffer->GetQueueSize() == 0 && m_bAudioOnlyLive == false) || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
 
 			toolsObject.SOSleep(10);
 		}
-		else if (m_SendingBuffer->GetQueueSize() > 0 || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
+		else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bAudioOnlyLive == false) || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
 		{
 			chunkStartTime = m_Tools.CurrentTimestamp();
             
