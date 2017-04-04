@@ -98,7 +98,7 @@ public:
     CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
     ~CAudioCallSession();
 
-	void StartCallInLive(int iRole);
+	void StartCallInLive(int iRole, int nCallInLiveType);
 	void EndCallInLive();
 
     CAudioCodec* GetAudioCodec();
@@ -120,7 +120,7 @@ public:
 #endif
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-		int &sendingLengthViewer, int &sendingLengthCallee, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
+		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
     int GetServiceType();
 
 	int m_iNextPacketType;
@@ -167,6 +167,8 @@ private:
 
     int m_iAudioVersionFriend;
     int m_iAudioVersionSelf;
+
+	int m_nCallInLiveType;
 
 
 #ifdef AAC_ENABLED

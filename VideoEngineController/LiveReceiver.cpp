@@ -316,12 +316,22 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
         }
 
         ++iFrameNumber;
-
-		if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) {
-
-			if (bCompleteFrame && (uchAudioData[nFrameLeftRange + 1] != AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)) {
-				HITLER("XXP@#@#MARUF -> DIFF PACKET %d", (int)uchAudioData[nFrameLeftRange + 1]);
-				continue;
+		HITLER("#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
+		if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL || m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL) 
+		{
+			
+			if (bCompleteFrame) 
+			{
+				if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL && uchAudioData[nFrameLeftRange + 1] != AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)
+				{
+					HITLER("XXP@#@#MARUF -> DIFF PACKET %d", (int)uchAudioData[nFrameLeftRange + 1]);
+					continue;
+				}
+				else if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL && uchAudioData[nFrameLeftRange + 1] != AUDIO_LIVE_CALLEE_PACKET_TYPE)
+				{
+					HITLER("XXP@#@#MARUF -> DIFF PACKET %d", (int)uchAudioData[nFrameLeftRange + 1]);
+					continue;
+				}
 			}
 
 			if (!bCompleteFrame)
@@ -342,7 +352,18 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 			}
 
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
-			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
+
+			if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+			{
+				uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
+				HITLER("#@#@ livereceiver type AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE");
+			}
+			else if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
+			{
+				uchAudioData[nFrameLeftRange + 1] = AUDIO_LIVE_CALLEE_PACKET_TYPE;
+				HITLER("#@#@ livereceiver type AUDIO_LIVE_CALLEE_PACKET_TYPE");
+			}
+
 			nProcessedFramsCounter++;
 			if (m_pLiveAudioReceivedQueue)
 			{

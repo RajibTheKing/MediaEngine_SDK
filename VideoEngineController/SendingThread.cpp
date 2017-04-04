@@ -243,13 +243,13 @@ void CSendingThread::SendingThreadProcedure()
 			m_bResetForViewerCallerCallEnd = false;
 		}
 
-		if (m_SendingBuffer->GetQueueSize() == 0 || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
+		if ((m_SendingBuffer->GetQueueSize() == 0 && m_bAudioOnlyLive == false) || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
 
 			toolsObject.SOSleep(10);
 		}
-		else if (m_SendingBuffer->GetQueueSize() > 0 || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
+		else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bAudioOnlyLive == false) || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
 		{
 			chunkStartTime = m_Tools.CurrentTimestamp();
             
@@ -266,7 +266,7 @@ void CSendingThread::SendingThreadProcedure()
             
             //printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
             
-			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_VIEWER_CALLEE)
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL))
             {
 
 			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld", lFriendID);
@@ -442,8 +442,15 @@ void CSendingThread::SendingThreadProcedure()
 						int calleeDataIndex = viewerDataIndex + viewerDataLength;
 
 						std::vector<std::pair<int, int> > liVector;
-						liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+
+						
+						liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));						
 						liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
+
+						if (ENTITY_TYPE_VIEWER_CALLEE == m_pVideoCallSession->GetEntityType())
+						{
+							reverse(liVector.begin(), liVector.end());	//Callee Data, Viewer data.
+						}
 		
 						// do changes for audio
 						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);

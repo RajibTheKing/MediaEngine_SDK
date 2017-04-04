@@ -57,7 +57,8 @@ m_nOponentDeviceType(DEVICE_TYPE_UNKNOWN),
 m_nOpponentVideoHeight(-1),
 m_nOpponentVideoWidth(-1),
 m_bAudioOnlyLive(bAudioOnlyLive),
-m_bVideoOnlyLive(false)
+m_bVideoOnlyLive(false),
+m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
 
 {
 
@@ -528,6 +529,9 @@ int g_CapturingFrameCounter = 0;
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
+
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+		return -5;
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER)
 		return 1;
@@ -1174,12 +1178,14 @@ int CVideoCallSession::GetEntityType()
 	return m_nEntityType;
 }
 
-void CVideoCallSession::StartCallInLive()
+void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 {
 	if (m_iRole != 0)
 		return;
 	else
 	{
+		m_nCallInLiveType = nCallInLiveType;
+
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
 		{
 			SetFirstVideoPacketTime(-1);
@@ -1206,7 +1212,7 @@ void CVideoCallSession::EndCallInLive()
 	{
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
-			m_pVideoDepacketizationThread->ResetForPublisherCallerCallEnd();
+			//m_pVideoDepacketizationThread->ResetForPublisherCallerCallEnd();
 
 			SetFirstVideoPacketTime(-1);
 			SetShiftedTime(-1);

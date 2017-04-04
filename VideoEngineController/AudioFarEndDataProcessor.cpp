@@ -11,7 +11,8 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudi
 	m_pCommonElementsBucket(pCommonElementsBucket),
 	m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
 	m_bAudioDecodingThreadRunning(false),
-	m_bAudioDecodingThreadClosed(true)
+	m_bAudioDecodingThreadClosed(true),
+	m_llLastTime(-1)
 {
 	if (m_bIsLiveStreamingRunning)
 	{
@@ -115,7 +116,7 @@ void CAudioFarEndDataProcessor::StopDecodingThread()
 
 int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames)
 {
-	if (m_bIsLiveStreamingRunning && (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL))
+	if (m_bIsLiveStreamingRunning)
 	{
 		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
 		return 1;
@@ -138,37 +139,37 @@ void CAudioFarEndDataProcessor::StopCallInLive()
 	m_pLiveAudioReceivedQueue->ResetBuffer();
 }
 
-bool CAudioFarEndDataProcessor::IsQueueEmpty(Tools &toolsObject)
+bool CAudioFarEndDataProcessor::IsQueueEmpty()
 {
 	if (m_bIsLiveStreamingRunning)
 	{
 #ifdef LOCAL_SERVER_LIVE_CALL
 		if ((m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL || m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
 		{
-			toolsObject.SOSleep(5);
+			Tools::SOSleep(5);
 			return true;
 		}
 		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
 		{
-			toolsObject.SOSleep(5);
+			Tools::SOSleep(5);
 			return true;
 		}
 #else
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
 		{
-			toolsObject.SOSleep(5);
+			Tools::SOSleep(5);
 			return true;
 		}
 		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
 		{
-			toolsObject.SOSleep(5);
+			Tools::SOSleep(5);
 			return true;
 		}
 #endif
 	}
 	else if (m_AudioReceivedBuffer.GetQueueSize() == 0)
 	{
-		toolsObject.SOSleep(10);
+		Tools::SOSleep(10);
 		return true;
 	}
 	return false;
@@ -234,7 +235,7 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 		m_pAudioCallSession->m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, m_bIsLiveStreamingRunning);
 #endif
 	}
-	else
+	else 
 	{
 		if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)	//Only for channel
 		{
@@ -274,8 +275,10 @@ bool CAudioFarEndDataProcessor::IsPacketTypeSupported(int &nCurrentAudioPacketTy
 	}
 }
 
-void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber)
+void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
 {
+	long long llNow = 0;
+
 	if (m_bIsLiveStreamingRunning == true) {
 
 		llNow = Tools::CurrentTimestamp();
@@ -353,43 +356,33 @@ void CAudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nH
 
 bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 {
-#ifndef LOCAL_SERVER_LIVE_CALL
-	if (m_bIsLiveStreamingRunning)
-	{
-		LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_pAudioCallSession->GetRole(), nCurrentAudioPacketType);
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL  && nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
-		{
-			return true;
-		}
-		else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)
-		{
-			return true;
-		}
-		else if ((m_pAudioCallSession->GetRole() != VIEWER_IN_CALL && m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL)
-			&& (nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE ||
-			nCurrentAudioPacketType == AUDIO_CHANNEL_PACKET_TYPE))
-		{
-			return true;
-		}
-	}
-	else
+	LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_pAudioCallSession->GetRole(), nCurrentAudioPacketType);
+	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL  && nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
 	{
 		return true;
 	}
+	else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)
+	{
+		return true;
+	}
+	else if ((m_pAudioCallSession->GetRole() == CALL_NOT_RUNNING)
+		&& (nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE ||
+		nCurrentAudioPacketType == AUDIO_CHANNEL_PACKET_TYPE))
+	{
+		return true;
+	}
+
 	return false;
-#else
-	return true;
-#endif
 }
 
-bool CAudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject)
+bool CAudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion)
 {
 	if (false == m_bIsLiveStreamingRunning)
 	{
 		if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
 		{
 			//ALOG("#V#TYPE# ############################################### SKIPPET");
-			toolsObject.SOSleep(0);
+			Tools::SOSleep(0);
 			return false;
 		}
 		else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
@@ -497,7 +490,7 @@ void CAudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlot
 }
 
 void CAudioFarEndDataProcessor::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
-	int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)
+	 long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)
 {
 	if (!m_bIsLiveStreamingRunning)
 	{
@@ -511,145 +504,240 @@ void CAudioFarEndDataProcessor::PrintDecodingTimeStats(long long &llNow, long lo
 		}
 		iDataSentInCurrentSec++;
 
-		++iFrameCounter;
+		
 		nDecodingTime = Tools::CurrentTimestamp() - llCapturedTime;
 		dbTotalTime += nDecodingTime;
-		//            if(iFrameCounter % 100 == 0)
-		//                ALOG( "#DE#--->> Size " + m_Tools.IntegertoStringConvert(m_nDecodedFrameSize) + " DecodingTime: "+ m_Tools.IntegertoStringConvert(nDecodingTime) + "A.D.Time : "+m_Tools.DoubleToString(dbTotalTime / iFrameCounter));
 	}
 }
-
+/**Decoding*/
 void CAudioFarEndDataProcessor::DecodingThreadProcedure()
 {
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");
-
-	Tools toolsObject;
-	int iFrameCounter = 0, nCurrentAudioPacketType = 0, iPacketNumber = 0;
-	long long llCapturedTime, nDecodingTime = 0;
-	double dbTotalTime = 0;
-
-	int iDataSentInCurrentSec = 0;
-	long long llTimeStamp = 0;
-	long long llNow = 0;
-	long long llLastDecodedTime = -1;
-	int nCurrentPacketHeaderLength = 0;
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");	
 
 #ifdef __DUMP_FILE__
 	m_pAudioCallSession->FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
 #endif
-
-	long long llLastTime = -1, llDiffTimeNow = -1;
-	long long llRelativeTime = 0;
+		
 	while (m_bAudioDecodingThreadRunning)
 	{
-		if (!IsQueueEmpty(toolsObject))
+		if (m_bIsLiveStreamingRunning)
 		{
-			DequeueData(m_nDecodingFrameSize);
-
-			if (m_nDecodingFrameSize < 1)
-			{
-				//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
-				continue;
-			}
-
-			/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
-
-			if (m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE) {
-				if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
-				{
-					// DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-					// DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-
-					HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
-					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
-					m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
-
-					DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-
-					SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, llNow, llLastTime, iPacketNumber);
-					toolsObject.SOSleep(0);
-				}
-				else {
-					HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
-				}
-				continue;
-			}
-			/// --------------------------------------------------------------------------------------------------////
-
-			llCapturedTime = Tools::CurrentTimestamp();
-
-			int dummy;
-			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
-
-			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
-			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
-			{
-				HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
-				continue;
-			}
-			if (!IsPacketNumberProcessable(iPacketNumber))
-			{
-				HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
-				continue;
-			}
-
-			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
-			{
-				HITLER("XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
-				continue;
-			}
-
-			if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion, toolsObject))
-			{
-				HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE IN NORMAL CALL");
-				continue;
-			}
-
-			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
-			llNow = Tools::CurrentTimestamp();
-			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, llLastTime);
-			HITLER("XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
-			if (bIsCompleteFrame){
-				//m_ucaDecodingFrame
-				HITLER("XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
-
-				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
-				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
-				{
-					HITLER("XXP@#@#MARUF REMOVED ON RELATIVE TIME");
-					continue;
-				}
-			}
-			llNow = Tools::CurrentTimestamp();
-
-			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
-
-			if (bIsCompleteFrame){
-				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
-				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-				HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
-				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, iFrameCounter, nDecodingTime, dbTotalTime, llCapturedTime);
-				HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
-				if (m_nDecodedFrameSize < 1)
-				{
-					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
-					continue;
-				}
-
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, llNow, llLastTime, iPacketNumber);
-				toolsObject.SOSleep(0);
-			}
+			LiveStreamFarEndProcedure();
+		}
+		else 
+		{
+			AudioCallFarEndProcedure();
 		}
 	}
 
 	m_bAudioDecodingThreadClosed = true;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
+}
+
+void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
+{
+	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
+	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
+	double dbTotalTime = 0; //MeaningLess
+
+	int iDataSentInCurrentSec = 0; //NeedToFix.
+	long long llTimeStamp = 0;
+	int nQueueSize = m_pLiveAudioReceivedQueue->GetQueueSize();
+
+	if ( nQueueSize> 0)
+	{
+		m_nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+		
+
+		if (m_nDecodingFrameSize < 1)
+		{
+			//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
+			return;
+		}
+
+		/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
+		HITLER("@#@# at decoder. packettype: %d", m_ucaDecodingFrame[0]);
+
+		if (m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE) {
+			if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+			{
+				HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
+				m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
+
+				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				Tools::SOSleep(0);
+			}
+			else {
+				HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
+			}
+			return;
+		}
+
+
+		if (m_ucaDecodingFrame[0] == AUDIO_LIVE_CALLEE_PACKET_TYPE) {
+			if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
+			{
+				HITLER("XXP@#@#MARUF -> publisher data found LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
+				m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
+
+				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				Tools::SOSleep(0);
+			}
+			else {
+				HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
+			}
+			return;
+		}
+
+
+		/// --------------------------------------------------------------------------------------------------////
+
+		llCapturedTime = Tools::CurrentTimestamp();
+
+		int dummy;
+		int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
+		int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
+		ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
+			nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+
+		HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+		if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
+		{
+			HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
+			return;
+		}
+		if (!IsPacketNumberProcessable(iPacketNumber))
+		{
+			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
+			return;
+		}
+
+		bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+		llNow = Tools::CurrentTimestamp();
+		bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
+		HITLER("XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
+		if (bIsCompleteFrame){
+			//m_ucaDecodingFrame
+			HITLER("XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
+
+			m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
+			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+			{
+				HITLER("XXP@#@#MARUF REMOVED ON RELATIVE TIME");
+				return;
+			}
+		}
+		llNow = Tools::CurrentTimestamp();
+
+		SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
+
+		if (bIsCompleteFrame){
+			HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
+			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
+			HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
+			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+			DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
+			HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
+			if (m_nDecodedFrameSize < 1)
+			{
+				HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
+				return;
+			}
+
+			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+			Tools::SOSleep(0);
+		}
+	}
+	else {
+		Tools::SOSleep(5);
+	}
+}
+
+void CAudioFarEndDataProcessor::AudioCallFarEndProcedure()
+{
+	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
+	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
+	double dbTotalTime = 0; //MeaningLess
+
+	int iDataSentInCurrentSec = 0; //NeedToFix.
+	long long llTimeStamp = 0;
+
+	if (!IsQueueEmpty())
+	{
+		DequeueData(m_nDecodingFrameSize);
+
+		if (m_nDecodingFrameSize < 1)
+		{
+			//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
+			return;
+		}
+		
+		llCapturedTime = Tools::CurrentTimestamp();
+
+		int dummy;
+		int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
+		int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
+		ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
+			nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+
+		HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+		
+		if (!IsPacketNumberProcessable(iPacketNumber))
+		{
+			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
+			return;
+		}
+
+		if (!IsPacketTypeSupported(nCurrentAudioPacketType))
+		{
+			HITLER("XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
+			return;
+		}
+
+		if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion))
+		{
+			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE IN NORMAL CALL");
+			return;
+		}
+
+		bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+		llNow = Tools::CurrentTimestamp();
+		bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
+		HITLER("XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
+		if (bIsCompleteFrame){
+			//m_ucaDecodingFrame
+			HITLER("XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
+
+			m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
+		}
+		llNow = Tools::CurrentTimestamp();
+		
+		if (bIsCompleteFrame){
+			HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
+			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
+			HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
+			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+			DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
+			HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
+			if (m_nDecodedFrameSize < 1)
+			{
+				HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
+				return;
+			}
+
+			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+			Tools::SOSleep(0);
+		}
+	}
 }
 
 

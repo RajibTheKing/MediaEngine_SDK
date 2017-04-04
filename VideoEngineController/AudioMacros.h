@@ -7,6 +7,10 @@
 //#define VIEWER_NOT_IN_CALL 3 //never used so far
 #define CALL_NOT_RUNNING 4
 
+/*		*VERSION   */
+#define AUDIO_CALL_VERSION				0
+
+#define AUDIO_LIVE_STREAMING_VERSION	0
 
 #if defined(TARGET_OS_WINDOWS_PHONE)
 #define MAX_AUDIO_ENCODING_BUFFER_SIZE 5
@@ -58,6 +62,8 @@
 
 
 #define MINIMUM_AUDIO_HEADER_SIZE 20
+
+#define STANDARD_CHUNK_DURATION 200
 
 //#define USE_ECHO2
 #define __TIMESTAMP_MOD__ 100000

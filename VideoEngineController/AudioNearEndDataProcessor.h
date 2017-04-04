@@ -24,28 +24,32 @@ public:
 	static void *CreateAudioEncodingThread(void* param);
 	void EncodingThreadProcedure();
 	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-		int &sendingLengthViewer, int &sendingLengthCallee, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
+		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
 	void StartCallInLive()
 	{
-		m_iRawDataSendIndexCallee = 0;
-		m_vRawFrameLengthCallee.clear();
+		m_iRawDataSendIndexPeer = 0;
+		m_vRawFrameLengthPeer.clear();
 	}
 
 private:
+	void LiveStreamNearendProcedure();
+	void AudioCallNearendProcedure();
 	void StartEncodingThread();
 	void StopEncodingThread();
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void MuxIfNeeded();
 	void DumpEncodingFrame();
-	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & llCapturedTime);
+	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 	bool PreProcessAudioBeforeEncoding();
-	void EncodeIfNeeded(long long &llCapturedTime, long long &encodingTime, double &avgCountTimeStamp);
+	void EncodeIfNeeded();
 	void SetAudioIdentifierAndNextPacketType();
+	void AddHeaderLive(int &version, long long &llRelativeTime);
 	void AddHeader(int &version, long long &llRelativeTime);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-	void EnqueueReadyToSendData(Tools toolsObject, long long llRelativeTime);
+	void StoreDataForChunk(long long llRelativeTime);
+	void SentToNetwork(long long llRelativeTime);
 	
 	long long m_llFriendID;
 	bool m_bIsLiveStreamingRunning;
@@ -74,12 +78,12 @@ private:
 	bool m_bAudioEncodingThreadClosed;
 
 	unsigned char m_ucaRawFrameMuxed[MAX_AUDIO_FRAME_Length], m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
-	int m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee;
+	int m_iRawDataSendIndexViewer, m_iRawDataSendIndexPeer;
 
 	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
-	unsigned char m_ucaRawDataToSendCallee[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
+	unsigned char m_ucaRawDataToSendPeer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	unsigned char m_ucaRawDataToSendViewer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
-	std::vector<int> m_vRawFrameLengthViewer, m_vRawFrameLengthCallee;
+	std::vector<int> m_vRawFrameLengthViewer, m_vRawFrameLengthPeer;
 	AudioPacketizer* m_pAudioPacketizer = nullptr;
 	long long m_llLastChunkLastFrameRT;
 	long long m_llLastFrameRT;

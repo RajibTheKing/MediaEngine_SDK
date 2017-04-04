@@ -174,7 +174,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 		//		else
 		//			return 0;
 
-		if (mediaType == MEDIA_TYPE_LIVE_STREAM && nEntityType != ENTITY_TYPE_PUBLISHER_CALLER)
+		if (mediaType == MEDIA_TYPE_LIVE_STREAM || mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO)
 		{
 			//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
 			//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
@@ -231,7 +231,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
 			int chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
 
-			LOGEF("headerLength %d chunkDuration %d\n", headerLength, chunkDuration);
+			HITLER("##@@@TTTTTTheaderLength %d chunkDuration %d\n", headerLength, chunkDuration);
 
 			int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
 			int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
@@ -265,14 +265,14 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 				index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 			}
 
-			LOG_AAC("#aac#b4q# GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
+			HITLER("#TTTTTTTTTTTTaac#b4q# GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
 
 			int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 			int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
 			int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
 
-			LOGE("audioStartingPosition %d videoStartingPosition %d streamType %d\n", audioStartingPosition, videoStartingPosition, streamType);
+			HITLER("TTTTTTTTTTTaudioStartingPosition %d videoStartingPosition %d streamType %d\n", audioStartingPosition, videoStartingPosition, streamType);
 
 			iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, audioStartingPosition, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
@@ -661,13 +661,13 @@ bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID,
 		return false;
 	}
 	m_llTimeOffset = -1;
-	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole);
+	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
 	
 	m_pcController->SetCallInLiveEnabled(true);
 	
 	if (bReturnedValue)
 	{
-		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID);
+		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
 	}
 	
 	return bReturnedValue;

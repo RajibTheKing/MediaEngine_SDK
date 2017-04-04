@@ -503,6 +503,9 @@ int iDataSentInCurrentSec = 0;
 long long llTimeStamp = 0;
 int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
 {
+	//if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+	//	return -5;
+
 	long long llNow = m_Tools.CurrentTimestamp();
 	if(llNow - llTimeStamp >= 1000)
 	{
@@ -1065,14 +1068,14 @@ void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
 
-bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole)
+bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole, int nCallInLiveType)
 {
 	CAudioCallSession* pAudioSession;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->StartCallInLive(iRole);
+		pAudioSession->StartCallInLive(iRole, nCallInLiveType);
 		return true;
 	}
 	else
@@ -1097,7 +1100,7 @@ bool CController::EndAudioCallInLive(const LongLong& lFriendID)
 	}
 }
 
-bool CController::StartVideoCallInLive(const LongLong& lFriendID)
+bool CController::StartVideoCallInLive(const LongLong& lFriendID, int nCallInLiveType)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -1108,7 +1111,7 @@ bool CController::StartVideoCallInLive(const LongLong& lFriendID)
 	
 	if (bExist)
 	{
-		pVideoSession->StartCallInLive();
+		pVideoSession->StartCallInLive(nCallInLiveType);
 
 		return true;
 	}
