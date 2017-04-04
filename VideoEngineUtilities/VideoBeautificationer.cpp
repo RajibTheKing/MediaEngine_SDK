@@ -731,6 +731,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	int niHeight = iHeight - m_rr;
 	int niWidth = iWidth - m_rr - halfWidthDiff;
 	int iw = m_radius * iWidth + m_radius;
+	double sigmaPix = m_sigma * m_pixels;
 
 	//m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
 
@@ -747,12 +748,18 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 			//LOGE("viu %d miu %d\n",viu,miu/121*miu);
 
-
+			/*
 			double men = miu / m_pixels;
 			double var = (viu - (miu * men)) / m_pixels;
 
 			pBlurConvertingData[iw + wl] = min(255., max(0., (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma)));
+			*/
+
+			double var = viu - (miu * miu / m_pixels);
+
+			pBlurConvertingData[iw + wl] = min(255., max(0., ((miu * m_sigma) + var * pBlurConvertingData[iw + wl]) / (var + sigmaPix)));
 		}
+
 		iw += iWidth;
 	}
 
