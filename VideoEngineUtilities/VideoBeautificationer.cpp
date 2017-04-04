@@ -644,22 +644,28 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	memset(m_mean, iWidth, 0);
 
-	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+	/*for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
 		for (int j = 1; j <= iWidth; j++)
 		{
 			m_mean[i][j] = pBlurConvertingData[iw + j - 1];
 		}
-	}
+	}*/
 
-	for (int i = 1, iw = 0; i < iHeight; i++, iw += iWidth)
+	for (int i = 1, iw = 0, iw2 = -iWidth; i <= iHeight; i++, iw += iWidth, iw2 += iWidth)
 	{
-		for (int j = 1; j < iWidth; j++)
+		for (int j = 1 + halfWidthDiff; j <= www; j++)
 		{
-			if (IsNotSkinPixel(pBlurConvertingData[m_pUIndex[iw + j - 1]], pBlurConvertingData[m_pUIndex[iw + j - 1]]))
-				pBlurConvertingData[iw + j - 1] = min(255, max(0, pBlurConvertingData[iw + j - 1] + (4 * m_mean[i][j] - m_mean[i - 1][j] - m_mean[i + 1][j] - m_mean[i][j - 1] - m_mean[i][j + 1]) / 6));
+			m_mean[i][j] = pBlurConvertingData[iw + j - 1];
+			
+			if (i > 2)
+			{
+				if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
+					pBlurConvertingData[iw2] = min(255, max(0, pBlurConvertingData[iw2] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
+			}
 		}
 	}
+
 
 #endif
 
@@ -746,7 +752,6 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			double var = (viu - (miu * men)) / m_pixels;
 
 			pBlurConvertingData[iw + wl] = min(255., max(0., (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma)));
-
 		}
 		iw += iWidth;
 	}
