@@ -661,13 +661,13 @@ bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID,
 		return false;
 	}
 	m_llTimeOffset = -1;
-	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole);
+	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
 	
 	m_pcController->SetCallInLiveEnabled(true);
 	
 	if (bReturnedValue)
 	{
-		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID);
+		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
 	}
 	
 	return bReturnedValue;

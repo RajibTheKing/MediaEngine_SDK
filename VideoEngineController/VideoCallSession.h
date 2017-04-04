@@ -55,7 +55,7 @@ public:
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
 	CFPSController* GetFPSController();
 
-	void StartCallInLive();
+	void StartCallInLive(int nCallInLiveType);
 	void EndCallInLive();
 
 	CSendingThread *m_pSendingThread;
@@ -150,6 +150,8 @@ private:
 
 	bool m_bAudioOnlyLive;
 	bool m_bVideoOnlyLive;
+
+	int m_nCallInLiveType;
 
 	int m_iRole;
 

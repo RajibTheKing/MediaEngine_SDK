@@ -93,9 +93,9 @@ public:
 
 	void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
 
-	bool StartAudioCallInLive(const LongLong& lFriendID, int iRole);
+	bool StartAudioCallInLive(const LongLong& lFriendID, int iRole, int nCallInLiveType);
 	bool EndAudioCallInLive(const LongLong& lFriendID);
-	bool StartVideoCallInLive(const LongLong& lFriendID);
+	bool StartVideoCallInLive(const LongLong& lFriendID, int nCallInLiveType);
 	bool EndVideoCallInLive(const LongLong& lFriendID);
 	bool IsCallInLiveEnabled();
 	void SetCallInLiveEnabled(bool value);
