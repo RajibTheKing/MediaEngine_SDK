@@ -9,11 +9,11 @@
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigma = 125;
+int m_sigma = 40;
 
 #elif defined(__ANDROID__)
 
-int m_sigma = 35;
+int m_sigma = 70;
 
 #elif defined(_DESKTOP_C_SHARP_)
 
