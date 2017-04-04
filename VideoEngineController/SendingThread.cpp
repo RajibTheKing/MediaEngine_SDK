@@ -29,7 +29,7 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID) :
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID, bool bAudioOnlyLive) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 m_bIsCheckCall(bIsCheckCall),
@@ -40,7 +40,7 @@ m_lfriendID(llfriendID),
 m_bInterruptHappened(false),
 m_bInterruptRunning(false),
 m_bResetForViewerCallerCallEnd(false),
-m_bAudioOnlyLive(false),
+m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false)
 
 {
@@ -192,7 +192,7 @@ void CSendingThread::SendingThreadProcedure()
 
 	Tools toolsObject;
 	int packetSize = 0;
-	LongLong lFriendID;
+	LongLong lFriendID = m_lfriendID;
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
 	int fpsSignal, frameNumber, packetNumber;
@@ -243,13 +243,13 @@ void CSendingThread::SendingThreadProcedure()
 			m_bResetForViewerCallerCallEnd = false;
 		}
 
-		if (m_SendingBuffer->GetQueueSize() == 0 || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
+		if ((m_SendingBuffer->GetQueueSize() == 0 && m_bAudioOnlyLive == false) || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
 
 			toolsObject.SOSleep(10);
 		}
-		else if (m_SendingBuffer->GetQueueSize() > 0 || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
+		else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bAudioOnlyLive == false) || (m_bAudioOnlyLive == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
 		{
 			chunkStartTime = m_Tools.CurrentTimestamp();
             

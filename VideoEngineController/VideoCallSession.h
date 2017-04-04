@@ -36,7 +36,7 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType);
+	CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -147,6 +147,9 @@ private:
 	int m_nOwnVideoCallQualityLevel;
 	int m_nOpponentVideoCallQualityLevel;
 	int m_nCurrentVideoCallQualityLevel;
+
+	bool m_bAudioOnlyLive;
+	bool m_bVideoOnlyLive;
 
 	int m_iRole;
 
