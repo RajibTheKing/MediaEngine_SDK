@@ -13,6 +13,85 @@ m_iCalleeFrameInfoSize(6)
 	memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
 }
 
+
+int AudioMixer::readValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength)
+{
+	int iResult = 0;
+	int iTotalBitToRead = iReadBitLength;
+
+	int iBlockSize;
+	int iBlockMask;
+	int iBlockValue;
+
+	while (iTotalBitToRead)
+	{
+		iBlockSize = (8 - iBitOffset) > iTotalBitToRead ? iTotalBitToRead : (8 - iBitOffset);
+		iBlockMask = (1 << iBlockSize) - 1;
+		iBlockMask <<= iBitOffset;
+		iBlockValue = (int)uchByteArray[iIndexOffset] & iBlockMask;
+		iBlockValue >>= iBitOffset;
+		iResult = iResult | (iBlockValue << (iReadBitLength - iTotalBitToRead));
+
+		iTotalBitToRead -= iBlockSize;
+		iBitOffset += iBlockSize;
+		if (iBitOffset == 8)
+		{
+			iBitOffset = 0;
+			iIndexOffset += 1;
+		}
+	}
+
+	if (iResult & (1 << (iReadBitLength - 1)))
+	{
+		iResult ^= ((1 << iReadBitLength) - 1);
+		iResult += 1;
+		iResult *= -1;
+	}
+	return iResult;
+}
+void AudioMixer::writeValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iWriteBitLength, int iValue)
+{
+	int iTotalBitToWrite = iWriteBitLength;
+
+	if (iValue < 0) {
+		iValue *= -1;
+		iValue ^= ((1 << iWriteBitLength) - 1);
+		iValue += 1;
+	}
+
+	int iBlockSize;
+	int iBlockMask;
+	int iBlockValue;
+
+	while (iTotalBitToWrite)
+	{
+		iBlockSize = (8 - iBitOffset) > iTotalBitToWrite ? iTotalBitToWrite : (8 - iBitOffset);
+		iBlockMask = (1 << iBlockSize) - 1;
+		//iBlockMask <<= (iTotalBitToWrite - iBlockSize);
+		iBlockValue = iValue & iBlockMask;
+		iValue >>= iBlockSize;
+		//iBlockValue >>= (iTotalBitToWrite - iBlockSize);
+		iBlockValue <<= iBitOffset;
+		// prep to reset block size of iIndex
+		//iBlockMask >>= (iTotalBitToWrite - iBlockSize);
+		iBlockMask <<= iBitOffset;
+		iBlockMask = 0xFF ^ iBlockMask;
+		// reset ..
+		uchByteArray[iIndexOffset] = uchByteArray[iIndexOffset] & iBlockMask;
+		// set
+		uchByteArray[iIndexOffset] = uchByteArray[iIndexOffset] | iBlockValue;
+
+		iBitOffset += iBlockSize;
+		iTotalBitToWrite -= iBlockSize;
+
+		if (iBitOffset == 8) {
+			iBitOffset = 0;
+			iIndexOffset++;
+		}
+	}
+	return;
+}
+
 void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 {
 	int iCalleeId = uchCalleeAudio[0];
@@ -26,15 +105,14 @@ void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 	m_iTotalCallee++;
 	m_iCalleeMaskFlag |= (1 << iCalleeId);
 
+	int iIndexOffset = m_iCalleeFrameInfoSize;
+	int iBitOffset = 0;
+
 	for (int i = 0; i < m_iAudioFrameSize; i++) 
 	{
 		if (!(iMissingFlag & (1 << (i / iAudioSamplePerBlock))))
 		{
-			int value = (((int)uchCalleeAudio [i * 2 + m_iCalleeFrameInfoSize]) << 8 + ((int)uchCalleeAudio[i * 2 + 1 + m_iCalleeFrameInfoSize]));
-			if (value & (1 << 15)) {
-				value ^= (1 << 15);
-				value *= -1;
-			}
+			int value = readValue(uchCalleeAudio, iIndexOffset, iBitOffset, 16);
 			m_iMixedData[i] += value;
 		}
 	}
@@ -51,36 +129,7 @@ int AudioMixer::getAudioData(unsigned char* uchMixedAudioData)
 	int currentBit;
 	for (int i = 0; i < m_iAudioFrameSize; i++)
 	{
-		currentBit = m_iNumberOfBitsPerSample - 1;
-		// For negative value
-		int value = m_iMixedData[i];
-		while (currentBit) {
-			int blockSize = ((8 - iBitOffset) > currentBit ? currentBit : (8 - iBitOffset));
-			int blockMask = (((1 << blockSize) - 1) << (currentBit - blockSize));
-
-			int blockValue = (value & blockMask) >> ((currentBit - blockSize));
-			m_uchCalleeBlockInfo[iIndexOffset] |= (blockValue << iBitOffset);
-
-			if (iBitOffset == 8) {
-				iIndexOffset++;
-				iBitOffset = 0;
-			}
-			value = value >> blockSize;
-			currentBit -= blockSize;
-		}
-		// for negative
-		value = m_iMixedData[i];
-		if (value < 0) {
-			value *= -1;
-			m_uchCalleeBlockInfo[iIndexOffset] |= (1 << iBitOffset);
-			iBitOffset++;
-		}
-		else iBitOffset++;
-
-		if (iBitOffset == 8) {
-			iIndexOffset++;
-			iBitOffset = 0;
-		}
+		writeValue(m_uchCalleeBlockInfo, iIndexOffset, iBitOffset, m_iNumberOfBitsPerSample, m_iMixedData[i]);
 	}
 
 	memcpy(uchMixedAudioData, m_uchCalleeBlockInfo, iIndexOffset);
@@ -97,15 +146,23 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 {
 	int iTotalCallee = uchMixedAudioData[0];
 	int iBitPerSample = uchMixedAudioData[1];
+
 	int iPlayDataIndex = 0;
 
+	int iBitOffsetForCallee = 0;
+	int iIndexOffsetForCallee = 0;
 
-	int iBitOffset = 0;
-	int iIndexOffset = iTotalCallee * 6 + 2;
+	int iIndexOffsetForMixed = iTotalCallee * m_iCalleeFrameInfoSize + 2;
+	int iBitOffsetForMixed = 0;
+
+	int iBitOffsetForPlayAudio = 0;
+	int iIndexOffsetForPlayAudio = 0;
 
 	int iMissingBlocks = -1;
 	int iSamplePerBlock = m_iAudioFrameSize / m_iTotalBlock;
 
+
+	/// Find Callee info block for Callee designated by calleeId
 	for (int i = 0; i < iTotalCallee; i++) {
 		if (uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize)] == calleeId)
 		{
@@ -113,62 +170,18 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 			break;
 		}
 	}
-
+	
 	for (int i = 0; i < m_iAudioFrameSize; i++)
 	{
-		int calleeValue = (int)(uchCalleeAudioData[i * 2] << 8) + (int)uchCalleeAudioData[i * 2 + 1];
-		if (calleeValue & (1 << 15)) {
-			calleeValue ^= (1 << 15);
-			calleeValue *= -1;
-		}
-
-		int mixedValue = 0;
-		int totalBit = m_iNumberOfBitsPerSample - 1;
-
-		while (totalBit) {
-			int blockSize = (8 - iBitOffset) > totalBit ?  totalBit : (8 - iBitOffset);
-			int blockMask = (1 << blockSize) - 1;
-			blockMask <<= iBitOffset;
-			mixedValue = (mixedValue << blockSize) | (uchMixedAudioData[iIndexOffset] & blockMask);
-
-			totalBit -= blockSize;
-			iBitOffset += blockSize;
-			if (iBitOffset == 8)
-			{
-				iBitOffset = 0;
-				iIndexOffset++;
-			}
-		}
-
-		if (uchMixedAudioData[iIndexOffset] & (1 << iBitOffset)) {
-			mixedValue *= -1;
-		}
-
-		iBitOffset++;
-		if (iBitOffset == 8)
-		{
-			iBitOffset = 0;
-			iIndexOffset++;
-		}
+		int calleeValue = readValue(uchCalleeAudioData, iIndexOffsetForCallee, iBitOffsetForCallee, 16);
+		int mixedValue = readValue(uchMixedAudioData, iIndexOffsetForMixed, iBitOffsetForMixed, iBitPerSample);
 
 		if (!(iMissingBlocks & (1 << (i / iSamplePerBlock))))
 		{
 			mixedValue -= calleeValue;
 		}
-		uchAudioDataToPlay[i * 2] = 0;
-		uchAudioDataToPlay[i * 2 + 1] = 0;
 
-		if (mixedValue < 0) {
-			uchAudioDataToPlay[i * 2] |= (1 << 7);
-		}
-		int byteMask = (1 << 7) - 1;
-		int byteValue = mixedValue & (byteMask << 8);
-		byteMask >>= 8;
-		uchAudioDataToPlay[i * 2] = byteMask;
-
-		byteMask = (1 << 8) - 1;
-		byteValue = mixedValue & byteMask;
-		uchAudioDataToPlay[i * 2 + 1] = byteValue;
+		writeValue(uchAudioDataToPlay, iIndexOffsetForPlayAudio, iBitOffsetForPlayAudio, 16, mixedValue);
 	}
 
 	return m_iAudioFrameSize * 2;

@@ -18,4 +18,6 @@ private:
 	void addAudioData(unsigned char* uchCalleeAudio);
 	int getAudioData(unsigned char* uchMixedAudioData);
 	int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId);
+	int readValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength);
+	void writeValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength, int iValue);
 };
