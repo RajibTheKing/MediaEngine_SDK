@@ -25,7 +25,7 @@ m_bAudioEncodingThreadClosed(true),
 m_nEncodedFrameSize(0),
 m_iPacketNumber(0),
 m_iRawDataSendIndexViewer(0),
-m_iRawDataSendIndexCallee(0),
+m_iRawDataSendIndexPeer(0),
 m_llLastChunkLastFrameRT(-1),
 m_llLastFrameRT(0)
 {
@@ -86,6 +86,8 @@ void *CAudioNearEndDataProcessor::CreateAudioEncodingThread(void* param)
 	return NULL;
 }
 
+					/***Encoding*/
+
 void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
@@ -130,10 +132,26 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedure(){
 			return;
 		}
 
-		EncodeIfNeeded();
+		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
+		{
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
+			memcpy(&m_ucaRawFrameMuxed[1 + m_MyAudioHeadersize], m_saAudioMUXEDFrame, m_nRawFrameSize);
+			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
+		}
+		else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+		{
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
+			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
+		}
+		else //Should only work for PUBLISHER when CALL_NOT_RUNNING
+		{
+			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
+			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
+		}
 
 	
-		AddHeader(version, llRelativeTime);
+		AddHeaderLive(version, llRelativeTime);
+		
 		++m_iPacketNumber;
 		if (m_iPacketNumber == m_llMaxAudioPacketNumber)
 		{
@@ -188,37 +206,37 @@ void CAudioNearEndDataProcessor::StoreDataForChunk(long long llRelativeTime)
 		}
 
 		m_llLastFrameRT = llRelativeTime;
-		if ((m_iRawDataSendIndexViewer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+		if ((m_iRawDataSendIndexViewer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)	
 		{
 			memcpy(m_ucaRawDataToSendViewer + m_iRawDataSendIndexViewer, m_ucaRawFrameMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
 			m_iRawDataSendIndexViewer += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
 			m_vRawFrameLengthViewer.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
 		}
-#ifndef LOCAL_SERVER_LIVE_CALL
-		if ((m_iRawDataSendIndexCallee + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+
+		if ((m_iRawDataSendIndexPeer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
 		{
-			memcpy(m_ucaRawDataToSendCallee + m_iRawDataSendIndexCallee, m_ucaRawFrameNonMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
-			m_iRawDataSendIndexCallee += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
-			m_vRawFrameLengthCallee.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			memcpy(m_ucaRawDataToSendPeer + m_iRawDataSendIndexPeer, m_ucaRawFrameNonMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			m_iRawDataSendIndexPeer += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			m_vRawFrameLengthPeer.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
 		}
-#else
-		m_clientSocket->SendToServer(m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1);
-#endif
 	}
-#if 0		
-	else if (m_iRole == VIEWER_IN_CALL)
+	else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 	{
-#ifndef LOCAL_SERVER_LIVE_CALL
-#ifndef NO_CONNECTIVITY			
-		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());	//Need to check send type.
-#else
-		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, m_ucaRawFrameNonMuxed);
-#endif
-#else
-		m_clientSocket->SendToServer(m_ucaCompressedFrame, m_nCompressedFrameSize + m_MyAudioHeadersize + 1);
-#endif
+		if ((m_iRawDataSendIndexPeer + m_nRawFrameSize + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+		{
+			memcpy(m_ucaRawDataToSendPeer + m_iRawDataSendIndexPeer, m_ucaRawFrameNonMuxed, m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			m_iRawDataSendIndexPeer += (m_nRawFrameSize + m_MyAudioHeadersize + 1);
+			m_vRawFrameLengthPeer.push_back(m_nRawFrameSize + m_MyAudioHeadersize + 1);
+		}
+
+//#ifndef NO_CONNECTIVITY			
+//		m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_LIVE_CALL_AUDIO, m_ucaRawFrameNonMuxed, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());	//Need to check send type.
+//#else
+//		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, (m_nRawFrameSize / 2) + m_MyAudioHeadersize + 1, m_ucaRawFrameNonMuxed);
+//#endif
+
 	}
-#endif
+
 	else
 	{
 		Locker lock(*m_pAudioEncodingMutex);
@@ -267,6 +285,30 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 #endif
 }
 
+void CAudioNearEndDataProcessor::AddHeaderLive(int &version, long long &llRelativeTime)
+{
+	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
+	{
+		BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+			m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+		BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+			m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameMuxed[1]);
+	}
+	else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+	{
+		BuildAndGetHeaderInArray(AUDIO_LIVE_CALLEE_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize ,
+			m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+	}
+	else
+	{
+		BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+			m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+	}
+
+	m_ucaRawFrameNonMuxed[0] = 0;   //Setting Audio packet type( = 0).
+	m_ucaRawFrameMuxed[0] = 0;   //Setting Audio packet type( = 0).
+}
+
 void CAudioNearEndDataProcessor::AddHeader(int &version, long long &llRelativeTime)
 {
 	m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
@@ -276,30 +318,8 @@ void CAudioNearEndDataProcessor::AddHeader(int &version, long long &llRelativeTi
 	{
 		BuildAndGetHeaderInArray(m_iNextPacketType, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nEncodedFrameSize,
 			m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaEncodedFrame[1]);
-	}
-	else
-	{
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
-		{
-			BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
-			BuildAndGetHeaderInArray(AUDIO_MUXED_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameMuxed[1]);
-		}
-		else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
-		{
-			BuildAndGetHeaderInArray(AUDIO_LIVE_CALLEE_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize / 2,
-				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
-		}
-		else
-		{
-			BuildAndGetHeaderInArray(AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
-				m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
-		}
-	}
+	}	
 
-	m_ucaRawFrameNonMuxed[0] = 0;   //Setting Audio packet type( = 0).
-	m_ucaRawFrameMuxed[0] = 0;   //Setting Audio packet type( = 0).
 	m_ucaEncodedFrame[0] = 0;   //Setting Audio packet type( = 0).
 }
 
@@ -347,7 +367,6 @@ void CAudioNearEndDataProcessor::SetAudioIdentifierAndNextPacketType()
 
 void CAudioNearEndDataProcessor::EncodeIfNeeded()
 {
-
 	if (m_bIsLiveStreamingRunning == false)
 	{
 		long long llEncodingTime, llTimeBeforeEncoding = Tools::CurrentTimestamp();
@@ -357,26 +376,6 @@ void CAudioNearEndDataProcessor::EncodeIfNeeded()
 		llEncodingTime = Tools::CurrentTimestamp() - llTimeBeforeEncoding;
 		m_pAudioCodec->DecideToChangeComplexity(llEncodingTime);
 	}
-	else
-	{
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
-		{
-			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
-			memcpy(&m_ucaRawFrameMuxed[1 + m_MyAudioHeadersize], m_saAudioMUXEDFrame, m_nRawFrameSize);
-			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
-		}
-		else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
-		{
-			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
-			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
-		}
-		else //Should only work for PUBLISHER when CALL_NOT_RUNNING
-		{
-			m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
-			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
-		}
-	}
-	
 
 	if (!m_bIsLiveStreamingRunning) {
 #ifdef FIRE_ENC_TIME
@@ -421,42 +420,51 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 }
 
 void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-	int &sendingLengthViewer, int &sendingLengthCallee, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
+	int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 {
 	Locker lock(*m_pAudioEncodingMutex);
 
-	vCombinedDataLengthVector = m_vRawFrameLengthViewer;
-	m_vRawFrameLengthViewer.clear();
-	memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendViewer, m_iRawDataSendIndexViewer);
-	CombinedLength = m_iRawDataSendIndexViewer;
-	sendingLengthViewer = m_iRawDataSendIndexViewer;
-	LOGT("##NF##GetAudioData## viewerlength:%d calleelength:%d", m_iRawDataSendIndexViewer, m_iRawDataSendIndexCallee);
+	vCombinedDataLengthVector.clear();
+	CombinedLength = 0;
 
 	llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
-	llAudioChunkRelativeTime = m_llLastChunkLastFrameRT;		
+	llAudioChunkRelativeTime = m_llLastChunkLastFrameRT;
+
 	if (0 == llAudioChunkDuration)
 	{
-		llAudioChunkDuration = 200;
-		llAudioChunkRelativeTime -= 200;
+		llAudioChunkDuration = STANDARD_CHUNK_DURATION;
+		llAudioChunkRelativeTime -= STANDARD_CHUNK_DURATION;
 	}
 
 	m_llLastChunkLastFrameRT = m_llLastFrameRT;
 	
-
-	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
+	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL || m_pAudioCallSession->GetRole() == CALL_NOT_RUNNING)
 	{
-		for (int a : m_vRawFrameLengthCallee)
+		vCombinedDataLengthVector = m_vRawFrameLengthViewer;		
+		memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendViewer, m_iRawDataSendIndexViewer);
+		CombinedLength += m_iRawDataSendIndexViewer;
+		sendingLengthViewer = m_iRawDataSendIndexViewer;		
+	}
+	
+	LOGT("##NF##GetAudioData## viewerlength:%d calleelength:%d", m_iRawDataSendIndexViewer, m_iRawDataSendIndexPeer);
+
+	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL || m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+	{
+		for (int a : m_vRawFrameLengthPeer)
 		{
 			vCombinedDataLengthVector.push_back(a);
 		}
-		m_vRawFrameLengthCallee.clear();
-		memcpy(pAudioCombinedDataToSend + m_iRawDataSendIndexViewer, m_ucaRawDataToSendCallee, m_iRawDataSendIndexCallee);
-		CombinedLength += m_iRawDataSendIndexCallee;
-		sendingLengthCallee = m_iRawDataSendIndexCallee;
-		m_iRawDataSendIndexCallee = 0;
+		
+		memcpy(pAudioCombinedDataToSend + m_iRawDataSendIndexViewer, m_ucaRawDataToSendPeer, m_iRawDataSendIndexPeer);
+		CombinedLength += m_iRawDataSendIndexPeer;
+		sendingLengthPeer = m_iRawDataSendIndexPeer;		
 	}
 
+	m_iRawDataSendIndexPeer = 0;
 	m_iRawDataSendIndexViewer = 0;
+
+	m_vRawFrameLengthPeer.clear();
+	m_vRawFrameLengthViewer.clear();
 }
 
 void CAudioNearEndDataProcessor::UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime)
