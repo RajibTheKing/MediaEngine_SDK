@@ -112,7 +112,7 @@ void CAudioFarEndDataProcessor::StopDecodingThread()
 
 int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames)
 {
-	if (m_bIsLiveStreamingRunning && (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL))
+	if (m_bIsLiveStreamingRunning)
 	{
 		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
 		return 1;
