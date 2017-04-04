@@ -33,19 +33,21 @@ public:
 	}
 
 private:
+	void LiveStreamNearendProcedure();
+	void AudioCallNearendProcedure();
 	void StartEncodingThread();
 	void StopEncodingThread();
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
 	void MuxIfNeeded();
 	void DumpEncodingFrame();
-	void PrintRelativeTime(int &cnt, long long &llLasstTime, int &countFrame, long long & llRelativeTime, long long & llCapturedTime);
+	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 	bool PreProcessAudioBeforeEncoding();
-	void EncodeIfNeeded(long long &llCapturedTime, long long &encodingTime, double &avgCountTimeStamp);
+	void EncodeIfNeeded();
 	void SetAudioIdentifierAndNextPacketType();
 	void AddHeader(int &version, long long &llRelativeTime);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-	void EnqueueReadyToSendData(Tools toolsObject);
+	void StoreDataForChunk(long long llRelativeTime);
 	
 	long long m_llFriendID;
 	bool m_bIsLiveStreamingRunning;
