@@ -192,7 +192,7 @@ void CSendingThread::SendingThreadProcedure()
 
 	Tools toolsObject;
 	int packetSize = 0;
-	LongLong lFriendID;
+	LongLong lFriendID = m_lfriendID;
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
 	int fpsSignal, frameNumber, packetNumber;
