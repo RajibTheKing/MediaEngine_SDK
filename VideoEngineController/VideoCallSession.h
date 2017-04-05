@@ -125,6 +125,8 @@ public:
     int GetOpponentVideoHeight();
     int GetOpponentVideoWidth();
 
+	bool GetAudioOnlyLiveStatus();
+
 	void InterruptOccured();
 	void InterruptOver();
 

@@ -1261,3 +1261,8 @@ int CVideoCallSession::GetOpponentVideoWidth()
 {
     return m_nOpponentVideoWidth;
 }
+
+bool CVideoCallSession::GetAudioOnlyLiveStatus()
+{
+	return m_bAudioOnlyLive;
+}
