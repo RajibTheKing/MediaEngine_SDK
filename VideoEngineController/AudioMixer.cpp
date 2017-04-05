@@ -13,6 +13,20 @@ m_iCalleeFrameInfoSize(6)
 	memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
 }
 
+void AudioMixer::reset(int iNumberOfBitsPerSample, int iFrameSize)
+{
+	m_iTotalCallee = 0;
+	m_iCalleeMaskFlag = 0;
+	m_iNumberOfBitsPerSample = iNumberOfBitsPerSample; //
+	m_iAudioFrameSize = iFrameSize; //
+	m_iTotalBlock = 16;
+	m_iCalleeFrameInfoSize = 6;
+
+	memset(m_iMixedData, 0, sizeof m_iMixedData);
+	memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
+	return;
+}
+
 
 int AudioMixer::readValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength)
 {
@@ -95,7 +109,7 @@ void AudioMixer::writeValue(unsigned char *uchByteArray, int &iIndexOffset, int 
 void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 {
 	int iCalleeId = uchCalleeAudio[0];
-	int iMissingFlag = uchCalleeAudio[1] << 8 + uchCalleeAudio[2];
+	int iMissingFlag = (uchCalleeAudio[1] << 8) + uchCalleeAudio[2];
 	int iOffsetForTotalCalleeAndBit = 2;
 
 	int iAudioSamplePerBlock = m_iAudioFrameSize / m_iTotalBlock;
@@ -126,7 +140,6 @@ int AudioMixer::getAudioData(unsigned char* uchMixedAudioData)
 	int iIndexOffset = m_iCalleeFrameInfoSize * m_iTotalCallee + 2;
 	int iBitOffset = 0;
 
-	int currentBit;
 	for (int i = 0; i < m_iAudioFrameSize; i++)
 	{
 		writeValue(m_uchCalleeBlockInfo, iIndexOffset, iBitOffset, m_iNumberOfBitsPerSample, m_iMixedData[i]);
@@ -185,4 +198,41 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 	}
 
 	return m_iAudioFrameSize * 2;
+}
+
+void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIndex, int iEndIndex, int iCalleeId, int iFrameNumber, int iFrameSize, int iTotalBlock, std::vector<std::pair<int, int>> &vMissingBlocks)
+{
+	int samplesPerBlocks = (iEndIndex - iStartIndex + 1) / iTotalBlock;
+
+	int IndexOffset = 0;
+	int BitOffset = 0;
+	
+	int iMissingFlag = 0;
+	int iMissingVectorIndex = 0;
+
+	uchDestinaton[IndexOffset++] = iCalleeId;
+
+	for (int i = 0; i < (iEndIndex - iStartIndex + 1); i++)
+	{
+		while (iMissingVectorIndex < (int)vMissingBlocks.size() && vMissingBlocks[iMissingVectorIndex].second < (iStartIndex+i))
+		{
+			iMissingVectorIndex++;
+		}
+
+		if ((iStartIndex + i) >= vMissingBlocks[iMissingVectorIndex].first) {
+			iMissingFlag |= (1 << (i / samplesPerBlocks));
+		}
+	}
+
+	uchDestinaton[IndexOffset++] = (iMissingFlag & ((1 << 8) - 1));
+	iMissingFlag >>= 8;
+	uchDestinaton[IndexOffset++] = (iMissingFlag & ((1 << 8) - 1));
+
+	uchDestinaton[IndexOffset++] = (iFrameNumber & ((1 << 8) - 1));
+	iFrameNumber >>= 8;
+	uchDestinaton[IndexOffset++] = (iFrameNumber & ((1 << 8) - 1));
+	iFrameNumber >>= 8;
+	uchDestinaton[IndexOffset++] = (iFrameNumber & ((1 << 8) - 1));
+	iFrameNumber >>= 8;
+	return;
 }
