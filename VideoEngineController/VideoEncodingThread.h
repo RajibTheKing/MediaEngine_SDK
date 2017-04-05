@@ -47,7 +47,7 @@ public:
 
 	int TestVideoEffect(int *param, int size);
     
-    void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
+	void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
 
 	CEncodingBuffer *m_pEncodingBuffer;
 

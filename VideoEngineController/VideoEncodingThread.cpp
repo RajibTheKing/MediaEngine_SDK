@@ -223,6 +223,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int countNumber = 1;
 	int dummyTimeStampCounter = 0;
 
+#if defined(_DESKTOP_C_SHARP_)
+
+	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), RGB24);
+
+#else
+
+	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), YUV420)
+
+#endif
+
 	/*for(int i = 0; i < 200; i++)
 	{
 		if (m_pBitRateController->IsNetworkTypeMiniPacketReceived())
@@ -738,13 +748,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() stopped EncodingThreadProcedure method.");
 }
 
-
-
-
-
 void CVideoEncodingThread::MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat)
-{
-    
+{ 
     if(colorFormat == YUV420)
     {
         int yPlaneLength = iHeight * iWidth;
