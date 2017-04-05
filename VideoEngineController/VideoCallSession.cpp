@@ -1222,7 +1222,7 @@ void CVideoCallSession::EndCallInLive()
 			SetFirstVideoPacketTime(-1);
 			SetShiftedTime(-1);
 
-			m_pVideoDecodingThread->ResetForPublisherCallerCallEnd();
+			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
 
 			m_pColorConverter->ClearSmallScreen();
 
