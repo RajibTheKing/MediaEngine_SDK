@@ -238,8 +238,8 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 
 			//LOGEF("THeKing--> interface:receive ############## lengthOfVideoData =  %d  Pos=%d   Offset= %d,  \n", lengthOfVideoData,headerPosition, nValidHeaderOffset);
 
-			int audioFrameSizes[100];
-			int videoFrameSizes[100];
+			int audioFrameSizes[200];
+			int videoFrameSizes[150];
 
 			int blockInfoPosition = m_Tools.GetMediaUnitBlockInfoPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
