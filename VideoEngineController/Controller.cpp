@@ -681,7 +681,7 @@ void CController::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiv
 
 	CAudioCallSession* pAudioSession;
 
-	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(llFriendID, pAudioSession);
+	bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(llFriendID, pAudioSession);
 
 	if (bExist)
 	{
