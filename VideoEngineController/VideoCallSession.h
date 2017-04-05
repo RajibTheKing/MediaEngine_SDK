@@ -107,6 +107,8 @@ public:
 	BitRateController* GetBitRateController();
     bool isLiveVideoStreamRunning();
 
+	void SetCallInLiveType(int nCallInLiveType);
+
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
 	int SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width);
 

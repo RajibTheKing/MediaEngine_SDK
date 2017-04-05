@@ -319,6 +319,11 @@ void CAudioCallSession::EndCallInLive()
 	m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsRoleChanging = false;
 }
 
+void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)
+{
+	m_nCallInLiveType = nCallInLiveType;
+}
+
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
 //	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);

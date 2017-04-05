@@ -1014,6 +1014,11 @@ BitRateController* CVideoCallSession::GetBitRateController(){
 	return m_BitRateController;
 }
 
+void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
+{
+	m_nCallInLiveType = nCallInLiveType;
+}
+
 int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
 {
 	if(m_nVideoCallHeight != height || m_nVideoCallWidth != width)

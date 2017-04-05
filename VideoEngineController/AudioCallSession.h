@@ -101,6 +101,8 @@ public:
 	void StartCallInLive(int iRole, int nCallInLiveType);
 	void EndCallInLive();
 
+	void SetCallInLiveType(int nCallInLiveType);
+
     CAudioCodec* GetAudioCodec();
 
     void InitializeAudioCallSession(LongLong llFriendID);

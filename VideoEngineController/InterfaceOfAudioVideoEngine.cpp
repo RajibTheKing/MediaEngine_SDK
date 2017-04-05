@@ -694,5 +694,13 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
 	return bReturnedValue;
 }
 
+void CInterfaceOfAudioVideoEngine::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->SetCallInLiveType(llFriendID, nCallInLiveType);
+	}
+}
+
 
 

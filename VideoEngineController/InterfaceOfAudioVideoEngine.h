@@ -61,6 +61,8 @@ public:
 	bool StartCallInLive(const IPVLongType llFriendID, int iRole);
 	bool EndCallInLive(const IPVLongType llFriendID);
 
+	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
+
 	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 	int PushPacketForDecoding(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength);

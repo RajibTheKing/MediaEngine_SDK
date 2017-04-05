@@ -293,7 +293,12 @@ void CSendingThread::SendingThreadProcedure()
 				int viewerDataLength = 0, calleeDataLength = 0;
 				long long llAudioChunkDuration=5, llAudioChunkRelativeTime=5;
 
-				if (bExist)
+				m_iAudioDataToSendIndex = 0;
+
+				if (vAudioDataLengthVector.size()>0)
+					vAudioDataLengthVector.clear();
+
+				if (bExist && m_bVideoOnlyLive == false)
 					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength, llAudioChunkDuration, llAudioChunkRelativeTime);
 
 				LOG_AAC("#RT# isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, friendId: %lld", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, lFriendID);
@@ -436,26 +441,30 @@ void CSendingThread::SendingThreadProcedure()
 					if(m_bInterruptHappened == false)
 					{
 #ifndef NO_CONNECTIVITY
-						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 
-						int viewerDataIndex = index + m_iDataToSendIndex;
-						int calleeDataIndex = viewerDataIndex + viewerDataLength;
-
-						std::vector<std::pair<int, int> > liVector;
-
-						
-						liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));						
-						liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
-
-						if (ENTITY_TYPE_VIEWER_CALLEE == m_pVideoCallSession->GetEntityType())
+						if (m_bVideoOnlyLive == false)
 						{
-							reverse(liVector.begin(), liVector.end());	//Callee Data, Viewer data.
-						}
-		
-						// do changes for audio
-						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+							HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 
-						LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
+							int viewerDataIndex = index + m_iDataToSendIndex;
+							int calleeDataIndex = viewerDataIndex + viewerDataLength;
+
+							std::vector<std::pair<int, int> > liVector;
+
+							liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+							liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
+
+							if (ENTITY_TYPE_VIEWER_CALLEE == m_pVideoCallSession->GetEntityType())
+							{
+								reverse(liVector.begin(), liVector.end());	//Callee Data, Viewer data.
+							}
+
+							// do changes for audio
+							m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+
+							LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
+
+						}
 #else
 						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
