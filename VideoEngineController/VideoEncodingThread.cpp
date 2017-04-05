@@ -742,7 +742,29 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 
-
+void CVideoEncodingThread::MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat)
+{
+    
+    if(colorFormat == YUV420)
+    {
+        int yPlaneLength = iHeight * iWidth;
+        int uvPlaneLength = yPlaneLength>>1;
+        
+        memset(pData, 0, yPlaneLength);
+        memset(pData + yPlaneLength, 128, uvPlaneLength);
+    }
+    else if(colorFormat == RGB24)
+    {
+        memset(pData, 0, iHeight * iWidth * 3);
+    }
+    else
+    {
+        //This color format type is not handled
+    }
+    
+    return;
+    
+}
 
 
 

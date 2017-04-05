@@ -46,6 +46,8 @@ public:
 	int SetVideoEffect(int nEffectStatus);
 
 	int TestVideoEffect(int *param, int size);
+    
+    void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
 
 	CEncodingBuffer *m_pEncodingBuffer;
 
@@ -71,7 +73,7 @@ private:
 
     unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
 
-	unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+    unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 #if defined(_DESKTOP_C_SHARP_)
 	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
