@@ -244,6 +244,11 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks)
 {
+	if (!m_pAudioCallSession)
+	{
+		return;
+	}
+
 	if (m_bIsRoleChanging)
 	{
 		return;
