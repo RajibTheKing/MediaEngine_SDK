@@ -305,8 +305,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 													 BLANK_DATA_MOOD);
 
 			}
-			/*
-			if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true)
+			
+			if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
 			{
 				dummyTimeStampCounter++;
 
@@ -321,7 +321,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 				}
 			}
-			*/
+			
 			toolsObject.SOSleep(10);
 		}
 		else

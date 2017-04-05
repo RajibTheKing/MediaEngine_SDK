@@ -1270,3 +1270,8 @@ bool CVideoCallSession::GetAudioOnlyLiveStatus()
 {
 	return m_bAudioOnlyLive;
 }
+
+int CVideoCallSession::GetCallInLiveType()
+{
+	return m_nCallInLiveType;
+}

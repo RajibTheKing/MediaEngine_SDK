@@ -57,6 +57,8 @@ private:
 
 	bool m_bIsCheckCall;
 
+	bool m_bPassOnlyAudio;
+
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     
 	LongLong m_lfriendID;
