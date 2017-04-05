@@ -531,7 +531,10 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 {
     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
 
-	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && (m_nEntityType == ENTITY_TYPE_PUBLISHER || m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER) && m_bAudioOnlyLive == true)
+		return -10;
+
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
 		return -5;
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER)
