@@ -174,7 +174,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 		//		else
 		//			return 0;
 
-		if (mediaType == MEDIA_TYPE_LIVE_STREAM || mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO)
+		if ((mediaType == MEDIA_TYPE_LIVE_STREAM && (nEntityType == ENTITY_TYPE_VIEWER || nEntityType == ENTITY_TYPE_VIEWER_CALLEE)) || ((mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO) && nEntityType == ENTITY_TYPE_PUBLISHER_CALLER))
 		{
 			//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
 			//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
@@ -238,8 +238,8 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 
 			//LOGEF("THeKing--> interface:receive ############## lengthOfVideoData =  %d  Pos=%d   Offset= %d,  \n", lengthOfVideoData,headerPosition, nValidHeaderOffset);
 
-			int audioFrameSizes[100];
-			int videoFrameSizes[100];
+			int audioFrameSizes[200];
+			int videoFrameSizes[150];
 
 			int blockInfoPosition = m_Tools.GetMediaUnitBlockInfoPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
@@ -692,6 +692,14 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
 	}
 	
 	return bReturnedValue;
+}
+
+void CInterfaceOfAudioVideoEngine::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType)
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->SetCallInLiveType(llFriendID, nCallInLiveType);
+	}
 }
 
 

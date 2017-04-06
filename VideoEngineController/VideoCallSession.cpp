@@ -428,7 +428,8 @@ bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in
 {
 	if (m_bLiveVideoStreamRunning)
 	{
-		m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+		if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
+			m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
 
 		return true;
 	}
@@ -530,7 +531,10 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 {
     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
 
-	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && (m_nEntityType == ENTITY_TYPE_PUBLISHER || m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER) && m_bAudioOnlyLive == true)
+		return -10;
+
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
 		return -5;
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER)
@@ -1014,6 +1018,11 @@ BitRateController* CVideoCallSession::GetBitRateController(){
 	return m_BitRateController;
 }
 
+void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
+{
+	m_nCallInLiveType = nCallInLiveType;
+}
+
 int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
 {
 	if(m_nVideoCallHeight != height || m_nVideoCallWidth != width)
@@ -1217,7 +1226,7 @@ void CVideoCallSession::EndCallInLive()
 			SetFirstVideoPacketTime(-1);
 			SetShiftedTime(-1);
 
-			m_pVideoDecodingThread->ResetForPublisherCallerCallEnd();
+			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
 
 			m_pColorConverter->ClearSmallScreen();
 
@@ -1255,4 +1264,14 @@ int CVideoCallSession::GetOpponentVideoHeight()
 int CVideoCallSession::GetOpponentVideoWidth()
 {
     return m_nOpponentVideoWidth;
+}
+
+bool CVideoCallSession::GetAudioOnlyLiveStatus()
+{
+	return m_bAudioOnlyLive;
+}
+
+int CVideoCallSession::GetCallInLiveType()
+{
+	return m_nCallInLiveType;
 }

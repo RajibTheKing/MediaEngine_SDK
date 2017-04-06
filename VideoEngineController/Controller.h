@@ -59,6 +59,8 @@ public:
 
 	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
 
+	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
+
 	int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
 
 	void InterruptOccured(const LongLong lFriendID);

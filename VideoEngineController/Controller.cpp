@@ -659,6 +659,41 @@ int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 	}
 }
 
+void CController::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType)
+{
+	CVideoCallSession* pVideoSession;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::SetCallInLiveType called");
+
+	Locker lock(*m_pVideoSendMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::SetCallInLiveType got session");
+
+		if (pVideoSession)
+		{
+			pVideoSession->SetCallInLiveType(nCallInLiveType);
+		}
+	}
+
+	CAudioCallSession* pAudioSession;
+
+	bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(llFriendID, pAudioSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::SetCallInLiveType got session");
+
+		if (pAudioSession)
+		{
+			pAudioSession->SetCallInLiveType(nCallInLiveType);
+		}
+	}
+}
+
 
 int CController::TestVideoEffect(const IPVLongType llFriendID, int *param, int size)
 {
