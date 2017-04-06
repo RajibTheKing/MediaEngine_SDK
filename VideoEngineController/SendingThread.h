@@ -28,6 +28,8 @@ public:
 	void StopSendingThread();
 	void SendingThreadProcedure();
 	static void *CreateVideoSendingThread(void* param);
+    
+    int ParseChunk(unsigned char *in_data, unsigned int unLength);
 
 	void ResetForViewerCallerCallEnd();
 

@@ -475,6 +475,8 @@ void CSendingThread::SendingThreadProcedure()
 						}
 #else
 						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+                        printf("TheKing--> SendingSide TimeStampOfChunk %lld\n",m_nTimeStampOfChunck);
+                        this->ParseChunk(m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 #endif
 					}
@@ -797,3 +799,76 @@ int CSendingThread::GetSleepTime()
 
 	return SleepTime;
 }
+
+int CSendingThread::ParseChunk(unsigned char *in_data, unsigned int unLength)
+{
+    printf("SendingSide DATA FOR BOKKOR %u\n", unLength);
+    
+    int nValidHeaderOffset = 0;
+    
+    long long itIsNow = m_Tools.CurrentTimestamp();
+    long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
+    
+    //LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
+    
+    
+    long long expectedTime = itIsNow;
+    int tmp_headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
+    int tmp_chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
+    printf("SendingSide now:%lld peertimestamp:%lld expected:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d\n", itIsNow, recvTimeOffset, expectedTime, recvTimeOffset - expectedTime, tmp_chunkDuration , tmp_headerLength);
+    
+    
+    
+    printf("SendingSide recvTimeOffset  %lld\n",  recvTimeOffset);
+    
+    int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
+    int chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    printf("SendingSide--> headerLength %d chunkDuration %d\n", headerLength, chunkDuration);
+    
+    int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+    int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    printf("SendingSide interface:receive ############## lengthOfVideoData =  %d  lengthOfAudiooData = %d Offset= %d,  \n", lengthOfVideoData, lengthOfAudioData, nValidHeaderOffset);
+    
+    
+    int audioFrameSizes[200];
+    int videoFrameSizes[150];
+    
+    int blockInfoPosition = m_Tools.GetMediaUnitBlockInfoPositionFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    int numberOfAudioFrames = m_Tools.GetNumberOfAudioFramesFromMediaChunck(blockInfoPosition, in_data + nValidHeaderOffset);
+    
+    int index = blockInfoPosition + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
+    
+    for (int i = 0; i < numberOfAudioFrames; i++)
+    {
+        audioFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data + nValidHeaderOffset);
+        
+        index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
+    }
+    
+    int numberOfVideoFrames = m_Tools.GetNumberOfVideoFramesFromMediaChunck(index, in_data + nValidHeaderOffset);
+    
+    index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
+    
+    for (int i = 0; i < numberOfVideoFrames; i++)
+    {
+        videoFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data + nValidHeaderOffset);
+        
+        index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
+    }
+    
+    printf("SendingSide GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d,  audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, lengthOfAudioData);
+    
+    int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
+    int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
+    int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    printf("SendingSide audioStartingPosition = %d, videoStartingPosition = %d, streamType = %d\n", audioStartingPosition, videoStartingPosition, streamType);
+    
+    return 0;
+}
+
