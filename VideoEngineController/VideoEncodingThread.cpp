@@ -229,7 +229,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #else
 
-	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), YUV420)
+	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), YUV420);
 
 #endif
 
