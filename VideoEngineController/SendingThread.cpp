@@ -246,6 +246,8 @@ void CSendingThread::SendingThreadProcedure()
 
 		if (m_bAudioOnlyLive == true && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
 			m_bPassOnlyAudio = false;
+		else if (m_bAudioOnlyLive == false && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+			m_bPassOnlyAudio = true;
 		else if (m_bAudioOnlyLive == true)
 			m_bPassOnlyAudio = true;
 		else
