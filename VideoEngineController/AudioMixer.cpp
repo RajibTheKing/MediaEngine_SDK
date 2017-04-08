@@ -13,7 +13,7 @@ m_iCalleeFrameInfoSize(6)
 	memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
 }
 
-void AudioMixer::reset(int iNumberOfBitsPerSample, int iFrameSize)
+void AudioMixer::reset(int iNumberOfBitsPerSample, int iFrameSize) // sample size ..
 {
 	m_iTotalCallee = 0;
 	m_iCalleeMaskFlag = 0;
@@ -155,7 +155,7 @@ int AudioMixer::getAudioData(unsigned char* uchMixedAudioData)
 	return iIndexOffset;
 }
 
-int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId)
+int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId) 
 {
 	int iTotalCallee = uchMixedAudioData[0];
 	int iBitPerSample = uchMixedAudioData[1];
