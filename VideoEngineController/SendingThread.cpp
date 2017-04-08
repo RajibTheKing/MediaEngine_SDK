@@ -29,7 +29,7 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID) :
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID, bool bAudioOnlyLive) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 m_bIsCheckCall(bIsCheckCall),
@@ -39,7 +39,10 @@ m_nTimeStampOfChunckSend(0),
 m_lfriendID(llfriendID),
 m_bInterruptHappened(false),
 m_bInterruptRunning(false),
-m_bResetForViewerCallerCallEnd(false)
+m_bResetForViewerCallerCallEnd(false),
+m_bAudioOnlyLive(bAudioOnlyLive),
+m_bVideoOnlyLive(false),
+m_bPassOnlyAudio(false)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
@@ -189,8 +192,8 @@ void CSendingThread::SendingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() started Sending method");
 
 	Tools toolsObject;
-	int packetSize;
-	LongLong lFriendID;
+	int packetSize = 0;
+	LongLong lFriendID = m_lfriendID;
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
 	int fpsSignal, frameNumber, packetNumber;
@@ -222,6 +225,9 @@ void CSendingThread::SendingThreadProcedure()
 	m_BandWidthController.SetTimeInterval(m_BandWidthList, m_TimePeriodInterval);
 #endif
     long long llSendingDequePrevTime = 0;
+
+	long long chunkStartTime = m_Tools.CurrentTimestamp();
+
 	while (bSendingThreadRunning)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() RUNNING Sending method");
@@ -238,28 +244,37 @@ void CSendingThread::SendingThreadProcedure()
 			m_bResetForViewerCallerCallEnd = false;
 		}
 
-		if (m_SendingBuffer->GetQueueSize() == 0)
+		if (m_bAudioOnlyLive == true && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
+			m_bPassOnlyAudio = false;
+		else if (m_bAudioOnlyLive == true)
+			m_bPassOnlyAudio = true;
+		else
+			m_bPassOnlyAudio = false;
+
+		if ((m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
 
 			toolsObject.SOSleep(10);
 		}
-		else
+		else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
 		{
-           
+			chunkStartTime = m_Tools.CurrentTimestamp();
             
-            
-            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() GOT packet for Sending method");
-			
+            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() GOT packet for Sending method");		
             
 			int timeDiffForQueue;
-			packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
+
+			if (m_bPassOnlyAudio == false)
+			{
+				packetSize = m_SendingBuffer->DeQueue(lFriendID, m_EncodedFrame, frameNumber, packetNumber, timeDiffForQueue);
+			}	
             
 			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ,"CSendingThread::StartSendingThread() m_SendingBuffer " + toolsObject.IntegertoStringConvert(timeDiffForQueue));
             
             //printf("serverType Number %d\n", m_pVideoCallSession->GetServiceType());
             
-			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_VIEWER_CALLEE)
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL))
             {
 
 			LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld", lFriendID);
@@ -273,10 +288,10 @@ void CSendingThread::SendingThreadProcedure()
 			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
 			if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);*/
 
-			if (frameNumber%iIntervalIFrame == 0 && firstFrame == false)
+			if (m_bPassOnlyAudio == true || (frameNumber%iIntervalIFrame == 0 && firstFrame == false))
 			{
-                CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() 200 ms completed");
-                
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() 200 ms completed");
+
 				CAudioCallSession *pAudioSession;
 
 				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
@@ -284,9 +299,17 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
 				int viewerDataLength = 0, calleeDataLength = 0;
+				long long llAudioChunkDuration=5, llAudioChunkRelativeTime=5;
 
-				if (bExist)
-					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength);
+				m_iAudioDataToSendIndex = 0;
+
+				if (vAudioDataLengthVector.size()>0)
+					vAudioDataLengthVector.clear();
+
+				if (bExist && m_bVideoOnlyLive == false)
+					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength, llAudioChunkDuration, llAudioChunkRelativeTime);
+
+				HITLER("#RT# isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, friendId: %lld", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, lFriendID);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
@@ -305,17 +328,26 @@ void CSendingThread::SendingThreadProcedure()
 					m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
 				}
 
+				if (m_bPassOnlyAudio == true && m_nTimeStampOfChunck == -1)
+				{
+					m_nTimeStampOfChunck = llAudioChunkRelativeTime;
+				}
+
 				m_nTimeStampOfChunckSend += llNowTimeDiff;
 
-			//	m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
-			//	m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
+				//	m_Tools.IntToUnsignedCharConversion(m_iDataToSendIndex, m_AudioVideoDataToSend, 0);
+				//	m_Tools.IntToUnsignedCharConversion(m_iAudioDataToSendIndex, m_AudioVideoDataToSend, 4);
 
 				m_Tools.SetMediaUnitVersionInMediaChunck(LIVE_HEADER_VERSION, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
-				
+
 #ifdef DISABLE_VIDEO_FOR_LIVE
-				m_iDataToSendIndex = 0;
+
+				if (m_bPassOnlyAudio)
+				{
+					m_iDataToSendIndex = 0;
+				}	
 #endif
 
 				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
@@ -336,20 +368,29 @@ void CSendingThread::SendingThreadProcedure()
 //					LLG("#IV#S#     AudiData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(vAudioDataLengthVector[i]));
 					index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
 				}
+
 #ifdef DISABLE_VIDEO_FOR_LIVE
-				numberOfVideoPackets = 0;
+
+				if (m_bPassOnlyAudio)
+				{
+					numberOfVideoPackets = 0;
+				}		
 #endif
 				m_Tools.SetNumberOfVideoFramesInMediaChunck(index, numberOfVideoPackets, m_AudioVideoDataToSend);
 
 				index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
 				
 #ifndef DISABLE_VIDEO_FOR_LIVE
-				for (int i = 0; i < numberOfVideoPackets; i++)
+
+				if (m_bPassOnlyAudio == false)
 				{
-					m_Tools.SetNextAudioFramePositionInMediaChunck(index, videoPacketSizes[i], m_AudioVideoDataToSend);
-//					LLG("#IV#S#     VideoData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(videoPacketSizes[i]));
-					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
-				}
+					for (int i = 0; i < numberOfVideoPackets; i++)
+					{
+						m_Tools.SetNextAudioFramePositionInMediaChunck(index, videoPacketSizes[i], m_AudioVideoDataToSend);
+						//					LLG("#IV#S#     VideoData  = "+Tools::IntegertoStringConvert(i)+"  ] = "+Tools::IntegertoStringConvert(videoPacketSizes[i]));
+						index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
+					}
+				}		
 #endif
 
 #ifndef NEW_HEADER_FORMAT
@@ -367,7 +408,11 @@ void CSendingThread::SendingThreadProcedure()
 				LOGE("audioStartingPosition %d videoStartingPosition %d\n", index + m_iDataToSendIndex, index);
 
 #ifndef DISABLE_VIDEO_FOR_LIVE
-				memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
+
+				if (m_bPassOnlyAudio == false)
+				{
+					memcpy(m_AudioVideoDataToSend + index, m_VideoDataToSend, m_iDataToSendIndex);
+				}			
 #endif
 				memcpy(m_AudioVideoDataToSend + index + m_iDataToSendIndex, m_AudioDataToSend, m_iAudioDataToSendIndex);
 
@@ -377,8 +422,17 @@ void CSendingThread::SendingThreadProcedure()
 
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 
-				long long timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
-
+				long long timeNow;
+				
+				if (m_bPassOnlyAudio == true)
+				{
+					timeNow = llAudioChunkRelativeTime;
+				}
+				else
+				{
+					timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+				}
+				
 				int diff = timeNow - m_nTimeStampOfChunck;
 
 				m_Tools.SetMediaUnitHeaderLengthInMediaChunck(index, m_AudioVideoDataToSend);
@@ -395,23 +449,34 @@ void CSendingThread::SendingThreadProcedure()
 					if(m_bInterruptHappened == false)
 					{
 #ifndef NO_CONNECTIVITY
-						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 
-						int viewerDataIndex = index + m_iDataToSendIndex;
-						int calleeDataIndex = viewerDataIndex + viewerDataLength;
+						if (m_bVideoOnlyLive == false)
+						{
+							HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 
-						std::vector<std::pair<int, int> > liVector;
-						liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
-						liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
-		
-						// do changes for audio
-						m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend,
-							index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+							int viewerDataIndex = index + m_iDataToSendIndex;
+							int calleeDataIndex = viewerDataIndex + viewerDataLength;
 
-						LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d",
-							viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
+							std::vector<std::pair<int, int> > liVector;
+
+							liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+							liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
+
+							if (ENTITY_TYPE_VIEWER_CALLEE == m_pVideoCallSession->GetEntityType())
+							{
+								reverse(liVector.begin(), liVector.end());	//Callee Data, Viewer data.
+							}
+
+							// do changes for audio
+							m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+
+							LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
+
+						}
 #else
 						HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
+                        printf("TheKing--> SendingSide TimeStampOfChunk %lld\n",m_nTimeStampOfChunck);
+                        this->ParseChunk(m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 						m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 #endif
 					}
@@ -509,7 +574,14 @@ void CSendingThread::SendingThreadProcedure()
 
 				long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
-				m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+				if (m_bPassOnlyAudio == true)
+				{
+					m_nTimeStampOfChunck = llAudioChunkRelativeTime;
+				}
+				else
+				{
+					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+				}	
 
 				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %lld\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
 
@@ -727,3 +799,76 @@ int CSendingThread::GetSleepTime()
 
 	return SleepTime;
 }
+
+int CSendingThread::ParseChunk(unsigned char *in_data, unsigned int unLength)
+{
+    printf("SendingSide DATA FOR BOKKOR %u\n", unLength);
+    
+    int nValidHeaderOffset = 0;
+    
+    long long itIsNow = m_Tools.CurrentTimestamp();
+    long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
+    
+    //LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
+    
+    
+    long long expectedTime = itIsNow;
+    int tmp_headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
+    int tmp_chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
+    printf("SendingSide now:%lld peertimestamp:%lld expected:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d\n", itIsNow, recvTimeOffset, expectedTime, recvTimeOffset - expectedTime, tmp_chunkDuration , tmp_headerLength);
+    
+    
+    
+    printf("SendingSide recvTimeOffset  %lld\n",  recvTimeOffset);
+    
+    int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
+    int chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    printf("SendingSide--> headerLength %d chunkDuration %d\n", headerLength, chunkDuration);
+    
+    int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+    int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    printf("SendingSide interface:receive ############## lengthOfVideoData =  %d  lengthOfAudiooData = %d Offset= %d,  \n", lengthOfVideoData, lengthOfAudioData, nValidHeaderOffset);
+    
+    
+    int audioFrameSizes[200];
+    int videoFrameSizes[150];
+    
+    int blockInfoPosition = m_Tools.GetMediaUnitBlockInfoPositionFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    int numberOfAudioFrames = m_Tools.GetNumberOfAudioFramesFromMediaChunck(blockInfoPosition, in_data + nValidHeaderOffset);
+    
+    int index = blockInfoPosition + LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_FRAME_BLOCK_SIZE;
+    
+    for (int i = 0; i < numberOfAudioFrames; i++)
+    {
+        audioFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data + nValidHeaderOffset);
+        
+        index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
+    }
+    
+    int numberOfVideoFrames = m_Tools.GetNumberOfVideoFramesFromMediaChunck(index, in_data + nValidHeaderOffset);
+    
+    index += LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE;
+    
+    for (int i = 0; i < numberOfVideoFrames; i++)
+    {
+        videoFrameSizes[i] = m_Tools.GetNextAudioFramePositionFromMediaChunck(index, in_data + nValidHeaderOffset);
+        
+        index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
+    }
+    
+    printf("SendingSide GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d,  audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, lengthOfAudioData);
+    
+    int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
+    int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
+    int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
+    
+    printf("SendingSide audioStartingPosition = %d, videoStartingPosition = %d, streamType = %d\n", audioStartingPosition, videoStartingPosition, streamType);
+    
+    return 0;
+}
+

@@ -275,7 +275,7 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session creating");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, ENTITY_TYPE_CALLER);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, ENTITY_TYPE_CALLER, false);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType);
 
@@ -295,7 +295,7 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 	}
 }
 
-bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType)
+bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive)
 {
 	Locker lock1(*m_pVideoStartMutex);
 
@@ -342,7 +342,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
         
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel, nServiceType, nEntityType);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel, nServiceType, nEntityType, bAudioOnlyLive);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,nServiceType,iNetworkType);
 
@@ -503,6 +503,9 @@ int iDataSentInCurrentSec = 0;
 long long llTimeStamp = 0;
 int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
 {
+	//if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+	//	return -5;
+
 	long long llNow = m_Tools.CurrentTimestamp();
 	if(llNow - llTimeStamp >= 1000)
 	{
@@ -653,6 +656,41 @@ int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 	else
 	{
 		return -1;
+	}
+}
+
+void CController::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType)
+{
+	CVideoCallSession* pVideoSession;
+
+	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::SetCallInLiveType called");
+
+	Locker lock(*m_pVideoSendMutex);
+
+	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::SetCallInLiveType got session");
+
+		if (pVideoSession)
+		{
+			pVideoSession->SetCallInLiveType(nCallInLiveType);
+		}
+	}
+
+	CAudioCallSession* pAudioSession;
+
+	bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(llFriendID, pAudioSession);
+
+	if (bExist)
+	{
+		CLogPrinter_Write(CLogPrinter::INFO, "CController::SetCallInLiveType got session");
+
+		if (pAudioSession)
+		{
+			pAudioSession->SetCallInLiveType(nCallInLiveType);
+		}
 	}
 }
 
@@ -1065,14 +1103,14 @@ void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
 
-bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole)
+bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole, int nCallInLiveType)
 {
 	CAudioCallSession* pAudioSession;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->StartCallInLive(iRole);
+		pAudioSession->StartCallInLive(iRole, nCallInLiveType);
 		return true;
 	}
 	else
@@ -1097,7 +1135,7 @@ bool CController::EndAudioCallInLive(const LongLong& lFriendID)
 	}
 }
 
-bool CController::StartVideoCallInLive(const LongLong& lFriendID)
+bool CController::StartVideoCallInLive(const LongLong& lFriendID, int nCallInLiveType)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -1108,7 +1146,7 @@ bool CController::StartVideoCallInLive(const LongLong& lFriendID)
 	
 	if (bExist)
 	{
-		pVideoSession->StartCallInLive();
+		pVideoSession->StartCallInLive(nCallInLiveType);
 
 		return true;
 	}

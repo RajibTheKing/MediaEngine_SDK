@@ -7,6 +7,11 @@
 
 #include "Tools.h"
 
+
+#define CALL_IN_LIVE_TYPE_AUDIO_ONLY 1
+#define CALL_IN_LIVE_TYPE_VIDEO_ONLY 2
+#define CALL_IN_LIVE_TYPE_AUDIO_VIDEO 3
+
 #define MEDIA_TYPE_AUDIO 1
 #define MEDIA_TYPE_VIDEO 2
 #define MEDIA_TYPE_LIVE_STREAM 3
@@ -55,6 +60,8 @@ public:
 
 	bool StartCallInLive(const IPVLongType llFriendID, int iRole);
 	bool EndCallInLive(const IPVLongType llFriendID);
+
+	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
 	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);

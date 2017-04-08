@@ -244,6 +244,11 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int,int> > vMissingBlocks)
 {
+	if (!m_pAudioCallSession)
+	{
+		return;
+	}
+
 	if (m_bIsRoleChanging)
 	{
 		return;
@@ -267,6 +272,7 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
     size_t iMissingIndex = 0;
 
     bool bCompleteFrame = false;
+	bool bCompleteFrameHeader = false;
     int iFrameNumber = 0, nUsedLength = 0;
     int iLeftRange, iRightRange, nFrameLeftRange, nFrameRightRange;
     int nCurrentFrameLenWithMediaHeader;
@@ -277,11 +283,13 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
     while(iFrameNumber < nNumberOfAudioFrames)
     {
         bCompleteFrame = true;
+		bCompleteFrameHeader = true;
+
         nFrameLeftRange = nUsedLength + nOffset;
         nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[ iFrameNumber ] - 1;
         nUsedLength += pAudioFramsStartingByte[ iFrameNumber ];
 
-        while(iMissingIndex < nNumberOfMissingBlocks &&  vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange)
+        while( iMissingIndex < nNumberOfMissingBlocks && vMissingBlocks[ iMissingIndex ].second <= nFrameLeftRange )
             ++ iMissingIndex;
 
         if(iMissingIndex < nNumberOfMissingBlocks)
@@ -291,8 +299,10 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
             iLeftRange =  max(nFrameLeftRange, iLeftRange);
             iRightRange = min(nFrameRightRange,iRightRange);
-			if (iLeftRange <= iRightRange)
+
+			if (iLeftRange <= iRightRange)	//The frame is not complete.
 			{
+				bCompleteFrame = false;
 				HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
 				if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
 				{
@@ -304,52 +314,19 @@ void LiveReceiver::ProcessAudioStream(int nOffset, unsigned char* uchAudioData, 
 
 					if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
 						HITLER("XXP@#@#MARUF LIVE HEADER INCOMPLETE");
-						bCompleteFrame = false;
+						bCompleteFrameHeader = false;
 					}
 				}
 				else
 				{
 					HITLER("XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
-					bCompleteFrame = false;
+					bCompleteFrameHeader = false;
 				}
 			}
         }
 
         ++iFrameNumber;
-
-		if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) {
-
-			if (bCompleteFrame && (uchAudioData[nFrameLeftRange + 1] != AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)) {
-				HITLER("XXP@#@#MARUF -> DIFF PACKET %d", (int)uchAudioData[nFrameLeftRange + 1]);
-				continue;
-			}
-
-			if (!bCompleteFrame)
-			{
-				int nZeroCount = 0;
-				for (int i = 0; i < 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING; i++)
-				{
-					if (0 ==uchAudioData[nFrameRightRange - i])
-					{
-						nZeroCount++;
-					}
-				}
-
-				if (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2 == nZeroCount)	//Silent Frame ( Completly Missing frame)
-				{
-					continue;
-				}
-			}
-
-			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
-			uchAudioData[nFrameLeftRange + 1] = AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE;
-			nProcessedFramsCounter++;
-			if (m_pLiveAudioReceivedQueue)
-			{
-				m_pLiveAudioReceivedQueue->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
-			}
-			continue;
-		}
+		HITLER("#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
 
         if( !bCompleteFrame )
         {	

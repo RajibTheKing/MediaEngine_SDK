@@ -21,13 +21,15 @@ class CSendingThread
 {
 public:
 
-	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID);
+	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID, bool bAudioOnlyLive);
 	~CSendingThread();
 
 	void StartSendingThread();
 	void StopSendingThread();
 	void SendingThreadProcedure();
 	static void *CreateVideoSendingThread(void* param);
+    
+    int ParseChunk(unsigned char *in_data, unsigned int unLength);
 
 	void ResetForViewerCallerCallEnd();
 
@@ -57,6 +59,8 @@ private:
 
 	bool m_bIsCheckCall;
 
+	bool m_bPassOnlyAudio;
+
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     
 	LongLong m_lfriendID;
@@ -67,6 +71,9 @@ private:
 	bool m_bInterruptRunning;
 
 //	CVideoHeader m_cVH;
+
+	bool m_bAudioOnlyLive;
+	bool m_bVideoOnlyLive;
 
 	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
 	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];

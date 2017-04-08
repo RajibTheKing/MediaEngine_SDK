@@ -36,7 +36,7 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType);
+	CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive);
 	~CVideoCallSession();
 
 	LongLong GetFriendID();
@@ -55,7 +55,7 @@ public:
 	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
 	CFPSController* GetFPSController();
 
-	void StartCallInLive();
+	void StartCallInLive(int nCallInLiveType);
 	void EndCallInLive();
 
 	CSendingThread *m_pSendingThread;
@@ -107,6 +107,8 @@ public:
 	BitRateController* GetBitRateController();
     bool isLiveVideoStreamRunning();
 
+	void SetCallInLiveType(int nCallInLiveType);
+
 	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
 	int SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width);
 
@@ -122,6 +124,9 @@ public:
     void SetOpponentVideoHeightWidth(int iHight, int iWidth);
     int GetOpponentVideoHeight();
     int GetOpponentVideoWidth();
+
+	bool GetAudioOnlyLiveStatus();
+	int GetCallInLiveType();
 
 	void InterruptOccured();
 	void InterruptOver();
@@ -147,6 +152,11 @@ private:
 	int m_nOwnVideoCallQualityLevel;
 	int m_nOpponentVideoCallQualityLevel;
 	int m_nCurrentVideoCallQualityLevel;
+
+	bool m_bAudioOnlyLive;
+	bool m_bVideoOnlyLive;
+
+	int m_nCallInLiveType;
 
 	int m_iRole;
 

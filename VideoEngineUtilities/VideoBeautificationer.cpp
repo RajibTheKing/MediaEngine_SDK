@@ -9,11 +9,11 @@
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigma = 125;
+int m_sigma = 64;
 
 #elif defined(__ANDROID__)
 
-int m_sigma = 35;
+int m_sigma = 64;
 
 #elif defined(_DESKTOP_C_SHARP_)
 
@@ -614,6 +614,11 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	return result;
 }
 
+bool CVideoBeautificationer::IsNotSkinPixel(unsigned char UPixel, unsigned char VPixel)
+{
+	return (UPixel <= 94 || UPixel >= 126 || VPixel <= 134 || VPixel >= 176);
+}
+
 pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, int *effectParam)
 {
 	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
@@ -626,11 +631,6 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	int www = iWidth - halfWidthDiff;
 
 	long long startSharpingTime = m_Tools.CurrentTimestamp();
-    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)
-    //Do nothing
-    //Not Needed Yet...
-#else
 
 	for (int i = 0; i <= iHeight; i++) 
 	{
@@ -639,25 +639,27 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	memset(m_mean, iWidth, 0);
 
-	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+	/*for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
-		int tmp = 0;
+		for (int j = 1; j <= iWidth; j++)
+		{
+			m_mean[i][j] = pBlurConvertingData[iw + j - 1];
+		}
+	}*/
 
+	for (int i = 1, iw = 0, iw2 = -iWidth; i <= iHeight; i++, iw += iWidth, iw2 += iWidth)
+	{
 		for (int j = 1 + halfWidthDiff; j <= www; j++)
 		{
-			tmp += pBlurConvertingData[i * iWidth + j - 1];
-			m_mean[i][j] = tmp + m_mean[i - 1][j];
-
-			if (i > 2 && j > 2) 
+			m_mean[i][j] = pBlurConvertingData[iw + j - 1];
+			
+			if (i > 2)
 			{
-				int indx = m_mean[i][j] - m_mean[i - 3][j] - m_mean[i][j - 3] + m_mean[i - 3][j - 3];
-
-				pBlurConvertingData[iw + j - 2] = m_precSharpness[pBlurConvertingData[iw + j - 2]][indx];
+				if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < U_VALUE_1 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > U_VALUE_2 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < V_VALUE_1 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > V_VALUE_2)
+					pBlurConvertingData[iw2] = min(255, max(0, pBlurConvertingData[iw2] + (((m_mean[i - 1][j] << SHARPING_SHIFTING_NUMBER_1) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> SHARPING_SHIFTING_NUMBER_2)));
 			}
 		}
 	}
-
-#endif
 
 	long long endSharpingTime = m_Tools.CurrentTimestamp();
 
@@ -721,6 +723,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	int niHeight = iHeight - m_rr;
 	int niWidth = iWidth - m_rr - halfWidthDiff;
 	int iw = m_radius * iWidth + m_radius;
+	double sigmaPix = m_sigma * m_pixels;
 
 	//m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
 
@@ -737,13 +740,18 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 			//LOGE("viu %d miu %d\n",viu,miu/121*miu);
 
-
+			/*
 			double men = miu / m_pixels;
 			double var = (viu - (miu * men)) / m_pixels;
 
 			pBlurConvertingData[iw + wl] = min(255., max(0., (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma)));
+			*/
 
+			double var = viu - (miu * miu / m_pixels);
+
+			pBlurConvertingData[iw + wl] = min(255., max(0., ((miu * m_sigma) + var * pBlurConvertingData[iw + wl]) / (var + sigmaPix)));
 		}
+
 		iw += iWidth;
 	}
 

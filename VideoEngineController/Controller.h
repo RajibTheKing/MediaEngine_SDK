@@ -40,7 +40,7 @@ public:
 	bool SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder);
 	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
 	bool SetEchoCanceller(const LongLong& lFriendID, bool bOn);
-	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType);
+	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive);
 	bool StartTestAudioCall(const LongLong& lFriendID);
 	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
@@ -58,6 +58,8 @@ public:
     int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
 	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
+
+	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
 	int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
 
@@ -93,9 +95,9 @@ public:
 
 	void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
 
-	bool StartAudioCallInLive(const LongLong& lFriendID, int iRole);
+	bool StartAudioCallInLive(const LongLong& lFriendID, int iRole, int nCallInLiveType);
 	bool EndAudioCallInLive(const LongLong& lFriendID);
-	bool StartVideoCallInLive(const LongLong& lFriendID);
+	bool StartVideoCallInLive(const LongLong& lFriendID, int nCallInLiveType);
 	bool EndVideoCallInLive(const LongLong& lFriendID);
 	bool IsCallInLiveEnabled();
 	void SetCallInLiveEnabled(bool value);

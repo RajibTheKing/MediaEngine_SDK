@@ -53,8 +53,7 @@ m_bVideoEffectEnabled(true)
                  }
                  
              }
-         }
-         
+         }  
      }
 
 	memset(m_VideoEffectParam, 0, 100 * sizeof(int));
@@ -222,6 +221,17 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int sum2 = 0;
 	int sum3 = 0;
 	int countNumber = 1;
+	int dummyTimeStampCounter = 0;
+
+#if defined(_DESKTOP_C_SHARP_)
+
+	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), RGB24);
+
+#else
+
+	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), YUV420)
+
+#endif
 
 	/*for(int i = 0; i < 200; i++)
 	{
@@ -246,6 +256,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		if (m_bResetForViewerCallerCallEnd == true)
 		{
 			m_pEncodingBuffer->ResetBuffer();
+
+			dummyTimeStampCounter = 0;
 
 			m_bResetForViewerCallerCallEnd = false;
 		}
@@ -293,6 +305,23 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 													 BLANK_DATA_MOOD);
 
 			}
+			
+			if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
+			{
+				dummyTimeStampCounter++;
+
+				if (dummyTimeStampCounter % 4 == 0)
+				{
+
+#if defined(_DESKTOP_C_SHARP_)
+
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 30, 1);
+#else
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 30, 1);
+#endif
+				}
+			}
+			
 			toolsObject.SOSleep(10);
 		}
 		else
@@ -719,11 +748,28 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() stopped EncodingThreadProcedure method.");
 }
 
-
-
-
-
-
+void CVideoEncodingThread::MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat)
+{ 
+    if(colorFormat == YUV420)
+    {
+        int yPlaneLength = iHeight * iWidth;
+        int uvPlaneLength = yPlaneLength>>1;
+        
+        memset(pData, 0, yPlaneLength);
+        memset(pData + yPlaneLength, 128, uvPlaneLength);
+    }
+    else if(colorFormat == RGB24)
+    {
+        memset(pData, 0, iHeight * iWidth * 3);
+    }
+    else
+    {
+        //This color format type is not handled
+    }
+    
+    return;
+    
+}
 
 
 

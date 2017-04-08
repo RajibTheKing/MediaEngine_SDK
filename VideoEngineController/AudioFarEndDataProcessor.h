@@ -8,9 +8,12 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioDePacketizer.h"
 #include "AudioCodec.h"
-#include "Gain.h"
 #include "Aac.h"
 #include "GomGomGain.h"
+
+#ifdef USE_AGC
+#include "Gain.h"
+#endif
 
 class CAudioCallSession;
 class AudioPacketizer;
@@ -31,7 +34,7 @@ public:
 	void StartCallInLive();
 	void StopCallInLive();
 	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
-	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
+	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
 
 
 	LiveReceiver *m_pLiveReceiverAudio = nullptr;
@@ -41,7 +44,7 @@ public:
 
 
 private:
-
+	long long m_llLastTime;
 	long long m_llFriendID = -1;
 	bool m_bIsLiveStreamingRunning = false;
 	int m_iLastDecodedPacketNumber = -1;
@@ -74,7 +77,10 @@ private:
 	static void* CreateAudioDecodingThread(void* param);
 	void StopDecodingThread();
 	void DecodingThreadProcedure();
-	bool IsQueueEmpty(Tools &toolsObject);
+
+	void AudioCallFarEndProcedure();
+	void LiveStreamFarEndProcedure();
+	bool IsQueueEmpty();
 	void DequeueData(int &m_nDecodingFrameSize);
 	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
 	bool IsPacketNumberProcessable(int &iPacketNumber);
@@ -82,11 +88,11 @@ private:
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
 	bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 	bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
-	bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion, Tools &toolsObject);
+	bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion);
 	bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 	void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
 	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
-		int &iFrameCounter, long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime);
+		 long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime);
 };
 
 #endif //AUDIO_FAREND_DATA_PROCESSOR_H

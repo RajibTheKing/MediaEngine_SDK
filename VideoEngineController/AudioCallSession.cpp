@@ -41,7 +41,8 @@ m_bIsCheckCall(bIsCheckCall),
 m_nServiceType(nServiceType),
 m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
-m_bIsAECMNearEndThreadBusy(false)
+m_bIsAECMNearEndThreadBusy(false),
+m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
 {
 	InitializeAudioCallSession(llFriendID);
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
@@ -205,7 +206,7 @@ void CAudioCallSession::SetEchoCanceller(bool bOn)
 }
 
 
-void CAudioCallSession::StartCallInLive(int iRole)
+void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 {
 	if (iRole != VIEWER_IN_CALL && iRole != PUBLISHER_IN_CALL)//Unsupported or inaccessible role
 	{
@@ -316,6 +317,11 @@ void CAudioCallSession::EndCallInLive()
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 	m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsRoleChanging = false;
+}
+
+void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)
+{
+	m_nCallInLiveType = nCallInLiveType;
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
@@ -455,15 +461,14 @@ void CAudioCallSession::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFra
 
 void CAudioCallSession::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber)
 {
-	m_pFarEndProcessor->SendToPlayer(pshSentFrame, nSentFrameSize, llNow, llLastTime, iCurrentPacketNumber);
+	m_pFarEndProcessor->SendToPlayer(pshSentFrame, nSentFrameSize, llLastTime, iCurrentPacketNumber);
 }
 
 
 void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-	int &sendingLengthViewer, int &sendingLengthCallee)
+	int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 {
-
-	m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthCallee);
+	m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthPeer, llAudioChunkDuration, llAudioChunkRelativeTime);
 }
 
 int CAudioCallSession::GetServiceType()
