@@ -344,12 +344,14 @@ void CSendingThread::SendingThreadProcedure()
 				m_Tools.SetMediaUnitTimestampInMediaChunck(m_nTimeStampOfChunck, m_AudioVideoDataToSend);
 				m_Tools.SetAudioBlockSizeInMediaChunck(m_iAudioDataToSendIndex, m_AudioVideoDataToSend);
 
-#ifdef DISABLE_VIDEO_FOR_LIVE
-
 				if (m_bPassOnlyAudio)
 				{
 					m_iDataToSendIndex = 0;
-				}	
+				}
+
+#ifdef DISABLE_VIDEO_FOR_LIVE
+
+				m_iDataToSendIndex = 0;	
 #endif
 
 				m_Tools.SetVideoBlockSizeInMediaChunck(m_iDataToSendIndex, m_AudioVideoDataToSend);
@@ -371,12 +373,14 @@ void CSendingThread::SendingThreadProcedure()
 					index += LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE;
 				}
 
-#ifdef DISABLE_VIDEO_FOR_LIVE
-
 				if (m_bPassOnlyAudio)
 				{
 					numberOfVideoPackets = 0;
-				}		
+				}
+
+#ifdef DISABLE_VIDEO_FOR_LIVE
+
+				numberOfVideoPackets = 0;	
 #endif
 				m_Tools.SetNumberOfVideoFramesInMediaChunck(index, numberOfVideoPackets, m_AudioVideoDataToSend);
 
