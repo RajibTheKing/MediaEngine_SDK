@@ -24,6 +24,7 @@ class CAudioShortBuffer;
 class Tools;
 class CAudioByteBuffer;
 class CGomGomGain;
+class ILiveAudioParser;
 
 class CAudioFarEndDataProcessor
 {
@@ -44,6 +45,7 @@ public:
 
 
 private:
+	
 	long long m_llLastTime;
 	long long m_llFriendID = -1;
 	bool m_bIsLiveStreamingRunning = false;
@@ -56,11 +58,14 @@ private:
 	int m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 	int m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 
+	ILiveAudioParser* m_pLiveAudioParser;
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 	CAudioPacketHeader *m_pAudioPacketHeader = nullptr;
 	CAudioPacketHeader *m_ReceivingHeader = nullptr;
 	CGomGomGain *m_pGomGomGain = nullptr;
+
+	std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
 
 
 	bool m_bAudioDecodingThreadRunning;

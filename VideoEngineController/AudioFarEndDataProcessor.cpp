@@ -1,5 +1,8 @@
 #include "AudioFarEndDataProcessor.h"
 #include "CommonElementsBucket.h"
+#include "LiveAudioParser.h"
+#include "LiveAudioParserForCallee.h"
+#include "LiveAudioParserForPublisher.h"
 
 CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
 	m_llFriendID(llFriendID),
@@ -10,15 +13,32 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudi
 	m_bAudioDecodingThreadClosed(true),
 	m_llLastTime(-1)
 {
+
+	for (int i = 0; i < MAX_NUMBER_OF_CALLEE; i++){
+		m_vAudioFarEndBufferVector.push_back(new LiveAudioDecodingQueue() );
+	}
+
 	if (m_bIsLiveStreamingRunning)
 	{
+		if (m_pAudioCallSession->m_bIsPublisher)
+		{
+			m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector);
+		}
+		else
+		{
+			m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector);
+		}
+
 		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
 		m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, m_pAudioCallSession);
 		m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
+
+
 	}
 
 	m_ReceivingHeader = new CAudioPacketHeader();
 	m_pAudioDePacketizer = new AudioDePacketizer(m_pAudioCallSession);
+
 #ifdef AAC_ENABLED
 	m_cAac = new CAac();
 	m_cAac->SetParameters(44100, 2);

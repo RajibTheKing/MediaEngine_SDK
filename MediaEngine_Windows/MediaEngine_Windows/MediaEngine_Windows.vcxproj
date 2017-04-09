@@ -180,6 +180,8 @@
     <ClCompile Include="..\..\VideoEngineController\GomGomGain.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveAudioParserForCallee.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\LiveAudioParserForPublisher.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
@@ -255,6 +257,9 @@
     <ClInclude Include="..\..\VideoEngineController\GomGomGain.h" />
     <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioParser.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioParserForCallee.h" />
+    <ClInclude Include="..\..\VideoEngineController\LiveAudioParserForPublisher.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveReceiver.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveStreamingHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />

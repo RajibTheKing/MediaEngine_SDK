@@ -115,7 +115,7 @@ public:
 	void SetLoudSpeaker(bool bOn);
 	void SetEchoCanceller(bool bOn);
 	bool getIsAudioLiveStreamRunning();
-
+	bool m_bIsPublisher;
 #if 0	
 	void GetAudioSendToData(unsigned char * pAudioRawDataToSendMuxed, int &RawLengthMuxed, std::vector<int> &vRawDataLengthVectorMuxed,
 		std::vector<int> &vRawDataLengthVectorNonMuxed, int &RawLengthNonMuxed, unsigned char * pAudioNonMuxedDataToSend);
@@ -151,6 +151,7 @@ private:
 #ifdef LOCAL_SERVER_LIVE_CALL
 	VideoSockets *m_clientSocket;
 #endif
+
 
 	int m_iRole;
     Tools m_Tools;

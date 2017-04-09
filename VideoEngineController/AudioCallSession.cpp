@@ -42,7 +42,8 @@ m_nServiceType(nServiceType),
 m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
 m_bIsAECMNearEndThreadBusy(false),
-m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
+m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
+m_bIsPublisher(true)
 {
 	InitializeAudioCallSession(llFriendID);
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
@@ -53,7 +54,6 @@ m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
 	{
 		m_bLiveAudioStreamRunning = true;
 	}
-
 
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
