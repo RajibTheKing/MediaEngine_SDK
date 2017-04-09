@@ -4,6 +4,12 @@
 
 WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInited(false)
 {
+
+#ifdef ECHO_ANALYSIS
+	m_bWritingDump = false;
+	EchoFile = fopen("/sdcard/endSignal.pcma", "wb");
+#endif
+
 	int iAECERR = WebRtcAecm_Create(&AECM_instance);
 	if (iAECERR)
 	{
@@ -52,6 +58,10 @@ WebRTCEchoCanceller::~WebRTCEchoCanceller()
 {
 	ALOG("WebRtcAec_destructor called");
 	WebRtcAecm_Free(AECM_instance);
+
+#ifdef ECHO_ANALYSIS
+	fclose(EchoFile);
+#endif
 }
 
 
@@ -63,6 +73,17 @@ int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLi
 		return false;
 	}
 
+#ifdef ECHO_ANALYSIS
+	while (m_bWritingDump)
+	{
+		m_Tools.SOSleep(1);
+	}
+	m_bWritingDump = true;
+	short temp = WEBRTC_FAREND;
+	fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
+	fwrite(farEndData, sizeof(short), dataLen, EchoFile);
+	m_bWritingDump = false;
+#endif
 
 	for (int i = 0; i < dataLen; i += AECM_SAMPLES_IN_FRAME)
 	{
@@ -85,7 +106,7 @@ int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLi
 }
 
 
-int WebRTCEchoCanceller::CancelEchoFromNearEndData(short *nearEndData, int dataLen, bool isLiveStreamRunning)
+int WebRTCEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning)
 {
 	if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 	{
@@ -94,6 +115,18 @@ int WebRTCEchoCanceller::CancelEchoFromNearEndData(short *nearEndData, int dataL
 	}
 
 	iCounter++;
+
+#ifdef ECHO_ANALYSIS
+	while (m_bWritingDump)
+	{
+		m_Tools.SOSleep(1);
+	}
+	m_bWritingDump = true;
+	short temp = NEAREND;
+	fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
+	fwrite(nearEndData, sizeof(short), dataLen, EchoFile);
+	m_bWritingDump = false;
+#endif
 
 	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
 	{

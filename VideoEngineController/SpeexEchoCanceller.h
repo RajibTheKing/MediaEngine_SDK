@@ -13,7 +13,7 @@ class SpeexEchoCanceller : public EchoCancellerInterface
 {
 private:
 	bool m_bFarendArrived;
-	bool m_bReadingFarend, m_bWritingFarend, m_bWritingDump;
+	bool m_bReadingFarend, m_bWritingFarend;
 
 	short m_sSpeexFarendBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 
@@ -30,7 +30,7 @@ public:
 
 	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
 	
-	int CancelEchoFromNearEndData(short *nearEndData, int dataLen, bool isLiveStreamRunning);
+	int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning);
 
 };
 

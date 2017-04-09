@@ -52,7 +52,7 @@ int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiv
 }
 
 
-int SpeexEchoCanceller::CancelEchoFromNearEndData(short *nearEndData, int dataLen, bool isLiveStreamRunning)
+int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning)
 {
 	if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 	{
