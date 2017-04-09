@@ -10,9 +10,9 @@ class SpeexEchoCanceller : public EchoCancellerInterface
 
 public:
 
-	int AddFarEndData(short *farEndData, int dataLen);
+	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
 	
-	int CancelEchoFromNearEndData(short *nearEndData, int dataLen);
+	int CancelEchoFromNearEndData(short *nearEndData, int dataLen, bool isLiveStreamRunning);
 
 };
 

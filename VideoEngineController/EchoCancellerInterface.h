@@ -7,9 +7,9 @@ class EchoCancellerInterface
 
 public:
 
-	virtual int AddFarEndData(short *farEndData, int dataLen);
+	virtual int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
 
-	virtual int CancelEcho(short *nearEndData, int dataLen);
+	virtual int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning);
 
 };
 
