@@ -2,6 +2,9 @@
 #define ECHO_CANCELLER_INTERFACE_H
 
 
+#define AECM_SAMPLES_IN_FRAME 80
+
+
 class EchoCancellerInterface
 {
 

@@ -9,8 +9,6 @@
 #include "AudioMacros.h"
 
 
-#define AECM_SAMPLES_IN_FRAME 80
-
 class WebRTCEchoCanceller : public EchoCancellerInterface
 {
 private:
@@ -28,6 +26,7 @@ private:
 
 public:
 	WebRTCEchoCanceller();
+
 	~WebRTCEchoCanceller();
 
 	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);

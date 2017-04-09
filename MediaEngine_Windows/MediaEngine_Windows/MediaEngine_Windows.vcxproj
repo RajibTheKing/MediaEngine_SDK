@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Echo.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\EchoCancellerProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFrameDepacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodingBuffer.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\SpeexEchoCanceller.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VersionController.cpp" />
@@ -205,6 +207,7 @@
     <ClCompile Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoPacketQueue.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\WebRTCEchoCanceller.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\HashGenerator.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
@@ -242,6 +245,8 @@
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h" />
     <ClInclude Include="..\..\VideoEngineController\Echo.h" />
+    <ClInclude Include="..\..\VideoEngineController\EchoCancellerInterface.h" />
+    <ClInclude Include="..\..\VideoEngineController\EchoCancellerProvider.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFrameDepacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFramePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodingBuffer.h" />
@@ -267,6 +272,7 @@
     <ClInclude Include="..\..\VideoEngineController\SendingBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\SendingThread.h" />
     <ClInclude Include="..\..\VideoEngineController\Size.h" />
+    <ClInclude Include="..\..\VideoEngineController\SpeexEchoCanceller.h" />
     <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h" />
     <ClInclude Include="..\..\VideoEngineController\ThreadTools.h" />
     <ClInclude Include="..\..\VideoEngineController\Tools.h" />
@@ -284,6 +290,7 @@
     <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
+    <ClInclude Include="..\..\VideoEngineController\WebRTCEchoCanceller.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\HashGenerator.h" />
