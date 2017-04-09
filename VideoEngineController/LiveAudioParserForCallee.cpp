@@ -18,6 +18,18 @@ CLiveAudioParserForCallee::~CLiveAudioParserForCallee(){
 	delete m_pAudioPacketHeader;
 }
 
+void CLiveAudioParserForCallee::SetRoleChanging(bool bFlah){
+	m_bIsRoleChanging = bFlah;
+}
+
+bool CLiveAudioParserForCallee::GetRoleChanging(){
+	return m_bIsRoleChanging;
+}
+
+bool CLiveAudioParserForCallee::IsParsingAudioData(){
+	return m_bIsCurrentlyParsingAudioData;
+}
+
 void CLiveAudioParserForCallee::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
 	if (m_bIsRoleChanging)
 	{

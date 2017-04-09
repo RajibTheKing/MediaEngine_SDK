@@ -18,6 +18,18 @@ CLiveAudioParserForPublisher::~CLiveAudioParserForPublisher(){
 	delete m_pAudioPacketHeader;
 }
 
+void CLiveAudioParserForPublisher::SetRoleChanging(bool bFlah){
+	m_bIsRoleChanging = bFlah;
+}
+
+bool CLiveAudioParserForPublisher::GetRoleChanging(){
+	return m_bIsRoleChanging;
+}
+
+bool CLiveAudioParserForPublisher::IsParsingAudioData(){
+	return m_bIsCurrentlyParsingAudioData;
+}
+
 void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
 	if (m_bIsRoleChanging)
 	{

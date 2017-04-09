@@ -38,7 +38,8 @@ public:
 	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
 
 
-	LiveReceiver *m_pLiveReceiverAudio = nullptr;
+	//LiveReceiver *m_pLiveReceiverAudio = nullptr;
+	ILiveAudioParser* m_pLiveAudioParser;
 	long long m_llDecodingTimeStampOffset = -1;
 	AudioDePacketizer* m_pAudioDePacketizer = nullptr;
 	CAudioByteBuffer m_AudioReceivedBuffer;
@@ -58,7 +59,6 @@ private:
 	int m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 	int m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 
-	ILiveAudioParser* m_pLiveAudioParser;
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 	CAudioPacketHeader *m_pAudioPacketHeader = nullptr;

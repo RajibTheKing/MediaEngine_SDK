@@ -5,6 +5,7 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioPacketizer.h"
 #include "AudioDePacketizer.h"
+#include "LiveAudioParser.h"
 
 
 #ifdef LOCAL_SERVER_LIVE_CALL
@@ -217,8 +218,8 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 		return;
 	}
 
-	m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsRoleChanging = true;
-	while (m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
+	m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging (true);
+	while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 	{
 		m_Tools.SOSleep(1);
 	}
@@ -266,7 +267,7 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 		FileInputMuxed= fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
 	}
 #endif
-	m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsRoleChanging = false;
+	m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 }
 
 void CAudioCallSession::EndCallInLive()
@@ -275,8 +276,8 @@ void CAudioCallSession::EndCallInLive()
 	{
 		return;
 	}
-	m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsRoleChanging = true;
-	while (m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsCurrentlyParsingAudioData)
+	m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
+	while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 	{
 		m_Tools.SOSleep(1);
 	}
@@ -316,7 +317,7 @@ void CAudioCallSession::EndCallInLive()
 	m_iRole = CALL_NOT_RUNNING;
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
-	m_pFarEndProcessor->m_pLiveReceiverAudio->m_bIsRoleChanging = false;
+	m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 }
 
 void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)

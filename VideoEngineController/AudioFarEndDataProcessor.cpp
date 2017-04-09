@@ -30,8 +30,8 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudi
 		}
 
 		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
-		m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, m_pAudioCallSession);
-		m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
+		//m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, m_pAudioCallSession);
+		//m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
 
 
 	}
@@ -72,10 +72,10 @@ CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
 		delete m_pLiveAudioReceivedQueue;
 		m_pLiveAudioReceivedQueue = NULL;
 	}
-	if (m_pLiveReceiverAudio)
+	if (m_pLiveAudioParser)
 	{
-		delete m_pLiveReceiverAudio;
-		m_pLiveReceiverAudio = NULL;
+		delete m_pLiveAudioParser;
+		m_pLiveAudioParser = NULL;
 	}
 
 #ifdef AAC_ENABLED
@@ -134,7 +134,7 @@ int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaD
 {
 	if (m_bIsLiveStreamingRunning)
 	{
-		m_pLiveReceiverAudio->ProcessAudioStream(nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
+		m_pLiveAudioParser->ProcessLiveAudio(0, nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
 		return 1;
 	}
 
@@ -145,14 +145,14 @@ void CAudioFarEndDataProcessor::StartCallInLive()
 {
 	if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 	{
-		m_pLiveAudioReceivedQueue->ResetBuffer(); //Contains Data From Live Stream
+		m_vAudioFarEndBufferVector[0]->ResetBuffer(); //Contains Data From Live Stream
 	}
 	m_AudioReceivedBuffer.ResetBuffer();
 }
 
 void CAudioFarEndDataProcessor::StopCallInLive()
 {
-	m_pLiveAudioReceivedQueue->ResetBuffer();
+	m_vAudioFarEndBufferVector[0]->ResetBuffer();
 }
 
 bool CAudioFarEndDataProcessor::IsQueueEmpty()
@@ -165,7 +165,7 @@ bool CAudioFarEndDataProcessor::IsQueueEmpty()
 			Tools::SOSleep(5);
 			return true;
 		}
-		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
+		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
 		{
 			Tools::SOSleep(5);
 			return true;
@@ -176,7 +176,7 @@ bool CAudioFarEndDataProcessor::IsQueueEmpty()
 			Tools::SOSleep(5);
 			return true;
 		}
-		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_pLiveAudioReceivedQueue->GetQueueSize() == 0)	//All Viewers ( including callee)
+		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
 		{
 			Tools::SOSleep(5);
 			return true;
@@ -198,7 +198,7 @@ void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 #ifndef LOCAL_SERVER_LIVE_CALL
 		if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL)
 		{
-			decodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
 		}
 		else
 		{
@@ -211,7 +211,7 @@ void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 		}
 		else
 		{
-			decodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
 		}
 #endif
 	}
@@ -429,7 +429,7 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long
 #ifndef LOCAL_SERVER_LIVE_CALL
 	if (m_bIsLiveStreamingRunning)
 	{
-		if (m_pLiveReceiverAudio->m_bIsRoleChanging == true)
+		if (m_pLiveAudioParser->GetRoleChanging() == true)
 		{
 			return false;
 		}
@@ -559,11 +559,11 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 
 	int iDataSentInCurrentSec = 0; //NeedToFix.
 	long long llTimeStamp = 0;
-	int nQueueSize = m_pLiveAudioReceivedQueue->GetQueueSize();
+	int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
 
 	if ( nQueueSize> 0)
 	{
-		m_nDecodingFrameSize = m_pLiveAudioReceivedQueue->DeQueue(m_ucaDecodingFrame);
+		m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
 		
 
 		if (m_nDecodingFrameSize < 1)
