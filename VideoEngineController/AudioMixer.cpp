@@ -67,6 +67,12 @@ void AudioMixer::writeValue(unsigned char *uchByteArray, int &iIndexOffset, int 
 {
 	int iTotalBitToWrite = iWriteBitLength;
 
+	if (iValue > ((1 << iWriteBitLength) - 1))
+		iValue = ((1 << iWriteBitLength) - 1);
+	
+	if (iValue < (-1 * (1 << iWriteBitLength)))
+		iValue = -1 * (1 << iWriteBitLength);
+
 	if (iValue < 0) {
 		iValue *= -1;
 		iValue ^= ((1 << iWriteBitLength) - 1);
@@ -219,7 +225,7 @@ void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIn
 			iMissingVectorIndex++;
 		}
 
-		if ((iStartIndex + i) >= vMissingBlocks[iMissingVectorIndex].first) {
+		if ((iMissingVectorIndex < (int)vMissingBlocks.size()) && ((iStartIndex + i) >= vMissingBlocks[iMissingVectorIndex].first)) {
 			iMissingFlag |= (1 << (i / samplesPerBlocks));
 		}
 	}
@@ -235,4 +241,22 @@ void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIn
 	uchDestinaton[IndexOffset++] = (iFrameNumber & ((1 << 8) - 1));
 	iFrameNumber >>= 8;
 	return;
+}
+
+int AudioMixer::GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int nUserId){
+	int nNumberOfUsers = uchByteArray[0];
+	int nBlock = uchByteArray[1];	
+	for (int i = 0; i < nNumberOfUsers; i++)
+	{
+		int nId = uchByteArray[2 + i * 6];
+		int Index = 2 + i * 6 + 3;
+		int Offset = 0;
+		int bitLen = 24;
+		int nFrameNumber = readValue(uchByteArray, Index , Offset, bitLen);
+		if (nId == nUserId)
+		{
+			return nFrameNumber;
+		}
+	}
+	return -1;
 }
