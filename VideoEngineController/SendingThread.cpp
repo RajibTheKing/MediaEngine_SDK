@@ -466,12 +466,14 @@ void CSendingThread::SendingThreadProcedure()
 							std::vector<std::pair<int, int> > liVector;
 
 							liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
-							liVector.push_back(std::make_pair(calleeDataIndex, calleeDataLength));
+							liVector.push_back(std::make_pair(0, 0));
 
-							if (ENTITY_TYPE_VIEWER_CALLEE == m_pVideoCallSession->GetEntityType())
-							{
-								reverse(liVector.begin(), liVector.end());	//Callee Data, Viewer data.
-							}
+							LOG18("#18#Sent# viewerDataIndex=%d , viewerDataLength=%d", viewerDataIndex, viewerDataLength);
+
+							//if (ENTITY_TYPE_VIEWER_CALLEE == m_pVideoCallSession->GetEntityType())
+							//{
+							//	reverse(liVector.begin(), liVector.end());	//Callee Data, Viewer data.
+							//}
 
 							// do changes for audio
 							m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
