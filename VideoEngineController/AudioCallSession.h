@@ -127,6 +127,7 @@ public:
 
 	int m_iNextPacketType;
 	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
+	CAudioShortBuffer  m_ViewerInCallSentDataQueue;
 	int m_iPrevRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot;
 #ifdef USE_AGC

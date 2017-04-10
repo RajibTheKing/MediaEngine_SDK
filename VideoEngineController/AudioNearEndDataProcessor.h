@@ -40,7 +40,7 @@ private:
 	void StartEncodingThread();
 	void StopEncodingThread();
 	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
-	void MuxIfNeeded();
+	bool MuxIfNeeded(int &nDataSizeInByte, int nPacketNumber);
 	void DumpEncodingFrame();
 	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 	bool PreProcessAudioBeforeEncoding();
@@ -50,7 +50,7 @@ private:
 	void AddHeader(int &version, long long &llRelativeTime);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-	void StoreDataForChunk(long long llRelativeTime);
+	void StoreDataForChunk(long long llRelativeTime, int nDataLengthInByte);
 	void SentToNetwork(long long llRelativeTime);
 	
 	long long m_llFriendID;
