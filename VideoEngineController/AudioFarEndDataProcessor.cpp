@@ -394,20 +394,31 @@ void CAudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nH
 bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 {
 	LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_pAudioCallSession->GetRole(), nCurrentAudioPacketType);
-	if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL  && nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
+	
+	if (SERVICE_TYPE_CHANNEL == m_nServiceType)	//Channel
 	{
-		return true;
+		if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)
+		{
+			return true;
+		}
+		return false;
 	}
-	else if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL && nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE)
+	else if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
 	{
-		return true;
-	}
-	else if ((m_pAudioCallSession->GetRole() == CALL_NOT_RUNNING)
-		&& (nCurrentAudioPacketType == AUDIO_NONMUXED_LIVE_NONCALL_PACKET_TYPE || nCurrentAudioPacketType == AUDIO_MUXED_PACKET_TYPE ||
-		nCurrentAudioPacketType == AUDIO_CHANNEL_PACKET_TYPE))
-	{
-		return true;
-	}
+		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)	//
+		{
+			if (nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
+			return true;
+		}		
+		else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+		{
+			if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType || AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED == nCurrentAudioPacketType)
+			{
+				return true;
+			}
+		}
+
+	}	
 
 	return false;
 }
