@@ -25,6 +25,7 @@ class Tools;
 class CAudioByteBuffer;
 class CGomGomGain;
 class ILiveAudioParser;
+class AudioMixer;
 
 class CAudioFarEndDataProcessor
 {
@@ -59,6 +60,7 @@ private:
 	int m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 	int m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 
+	AudioMixer* m_pAudioMixer;
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 	CAudioPacketHeader *m_pAudioPacketHeader = nullptr;

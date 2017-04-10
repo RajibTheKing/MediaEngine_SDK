@@ -8,6 +8,7 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioPacketizer.h"
 #include "AudioCallSession.h"
+#include "AudioMixer.h"
 #ifdef USE_AGC
 #include "Gain.h"
 #endif
@@ -39,6 +40,8 @@ m_llLastFrameRT(0)
 
 	m_MyAudioHeadersize = m_pAudioPacketHeader->GetHeaderSize();
 	m_llEncodingTimeStampOffset = Tools::CurrentTimestamp();
+
+	m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 
 	m_bIsReady = true;
 
@@ -514,7 +517,11 @@ void CAudioNearEndDataProcessor::MuxIfNeeded()
 			nLastDecodedFrameSize = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame, lastDecodedTimeStamp);
 			if (nLastDecodedFrameSize == CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning)) //Both must be 800
 			{
+
 				MuxAudioData(m_saAudioRecorderFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize);
+				m_pAudioMixer->addAudioData((unsigned char*)m_saAudioRecorderFrame); // this data should contains only the mux header
+				m_pAudioMixer->addAudioData((unsigned char*)m_saAudioPrevDecodedFrame); // this data should contains only the mux header
+				nLastDecodedFrameSize = m_pAudioMixer->getAudioData((unsigned char*)m_saAudioMUXEDFrame);
 			}
 			else
 			{

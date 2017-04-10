@@ -3,6 +3,7 @@
 #include "LiveAudioParser.h"
 #include "LiveAudioParserForCallee.h"
 #include "LiveAudioParserForPublisher.h"
+#include "AudioMixer.h"
 
 CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
 	m_llFriendID(llFriendID),
@@ -13,6 +14,8 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudi
 	m_bAudioDecodingThreadClosed(true),
 	m_llLastTime(-1)
 {
+
+	m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING); //Need Remove Magic Numbers.
 
 	for (int i = 0; i < MAX_NUMBER_OF_CALLEE; i++){
 		m_vAudioFarEndBufferVector.push_back(new LiveAudioDecodingQueue() );
@@ -134,6 +137,12 @@ int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaD
 {
 	if (m_bIsLiveStreamingRunning)
 	{
+		/*
+			TODO: 
+				1. Here we assume that right now there is a single caller.
+					So we use default FarEnd data sender id zero.
+					if there is multiple caller then you need to give an ID for the data sender.
+		*/
 		m_pLiveAudioParser->ProcessLiveAudio(0, nOffset, pucaDecodingAudioData, unLength, frameSizes, numberOfFrames, vMissingFrames);
 		return 1;
 	}
@@ -615,6 +624,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 
 		/// --------------------------------------------------------------------------------------------------////
 
+
 		llCapturedTime = Tools::CurrentTimestamp();
 
 		int dummy;
@@ -629,11 +639,20 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 			HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
 			return;
 		}
+
 		if (!IsPacketNumberProcessable(iPacketNumber))
 		{
 			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
 			return;
 		}
+
+		bool bIs18BitData = true;
+		
+		//GetCallDatr;
+		unsigned char *pDataToBeRemoved;
+		int iTempId = 0;
+
+		m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, pDataToBeRemoved, iTempId);	//Need To check Casting.
 
 		bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 		llNow = Tools::CurrentTimestamp();

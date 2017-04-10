@@ -13,6 +13,7 @@ class CCommonElementsBucket;
 class CAudioPacketHeader;
 class CAudioShortBuffer;
 class CAudioCodec;
+class AudioMixer;
 
 class CAudioNearEndDataProcessor
 {
@@ -69,6 +70,7 @@ private:
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;	
 	CAudioShortBuffer *m_pAudioEncodingBuffer = nullptr;
 	CAudioPacketHeader *m_pAudioPacketHeader = nullptr;
+	AudioMixer *m_pAudioMixer = nullptr;
 
 	short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
 	unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
