@@ -602,6 +602,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 	int iDataSentInCurrentSec = 0; //NeedToFix.
 	long long llTimeStamp = 0;
 	int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
+	int nCalleeId = 1;
 
 	if (nQueueSize> 0)
 	{
@@ -660,15 +661,59 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 				return;
 			}
 		}
-		llNow = Tools::CurrentTimestamp();
-
-		SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
+		llNow = Tools::CurrentTimestamp();		
 
 		if (bIsCompleteFrame){
 			HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
 			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
 			HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
-			DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+
+			//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+			
+			if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType)
+			{
+				if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+				{
+					nCalleeId = 1;	//Should be fixed.
+					int nGetOwnFrameNumber;
+					nGetOwnFrameNumber = m_pAudioMixer->GetAudioFrameByParsingMixHeader(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nCalleeId);
+					long long llLastFrameNumber;
+					int nSize;
+					bool bFound = false;
+					while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize())
+					{
+						nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue.DeQueue(m_saCalleeSentData, llLastFrameNumber);
+
+						if (nGetOwnFrameNumber == llLastFrameNumber)
+						{
+							bFound = true;
+							break;
+						}
+					}
+					if (bFound)
+					{
+						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId) / sizeof(short);
+					}
+					else
+					{
+						//Do Some thing;
+						nCalleeId = -1;
+						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId) / sizeof(short);
+					}
+				}
+				else //For Only Viewers
+				{
+					nCalleeId = -1;
+					m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, -1) / sizeof(short);
+				}
+			}
+			else
+			{
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
+				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
+			}
+			
+
 			DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
 			HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
