@@ -13,8 +13,13 @@
 #include "Gain.h"
 #endif
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
 
-CAudioNearEndDataProcessor::CAudioNearEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
+CAudioNearEndDataProcessor::CAudioNearEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
+m_nServiceType(nServiceType),
+m_nEntityType(nEntityType),
 m_bIsReady(false),
 m_llFriendID(llFriendID),
 m_pAudioCallSession(pAudioCallSession),
@@ -265,10 +270,6 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 		return;
 	}
 #endif
-	if (m_pAudioCallSession->m_bIsCheckCall != LIVE_CALL_MOOD)	//Capability test call
-	{
-		return;
-	}
 
 #ifndef NO_CONNECTIVITY
 		m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());

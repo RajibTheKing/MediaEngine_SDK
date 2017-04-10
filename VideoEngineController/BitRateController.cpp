@@ -42,7 +42,8 @@ BitRateController::BitRateController(int nFPS, LongLong llfriendID) :
 	m_bVideoQualityLowNotified(false),
 	m_bVideoQualityHighNotified(false),
 	m_bVideoShouldStopNotified(false),
-	m_FriendID(llfriendID)
+	m_FriendID(llfriendID),
+    m_nVideoShouldStopCounter(0)
 
 {
 
@@ -176,7 +177,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
                       +" SlotNo: " + Tools::IntegertoStringConvert(iSlotNumber) + " MiniPkt time delley: "+ m_Tools.IntegertoStringConvert(nTimeDifferenceBetweenMiniPackets);
 
         //CLogPrinter_WriteLog(CLogPrinter::DEBUGS, INSTENT_TEST_LOG, sMsg);
-        printf( "%s", sMsg.c_str());
+        LOGE( "%s", sMsg.c_str());
 
         if(nNeedToChange == BITRATE_CHANGE_DOWN)
         {
@@ -453,6 +454,14 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 	else if (nCurrentByte<BITRATE_MIN)
     {
         m_nStopNotificationCounter++;
+        if(m_pVideoEncoder->GetBitrate() <= BITRATE_MIN)
+        {
+            m_nVideoShouldStopCounter++;
+        }
+        else
+        {
+            m_nVideoShouldStopCounter=0;
+        }
 
 		if (false == m_bVideoShouldStopNotified && m_nStopNotificationCounter >= STOP_NOTIFICATION_SENDING_COUNTER)
         {
@@ -462,6 +471,10 @@ int BitRateController::NeedToNotifyClient(int nCurrentByte)
 			m_bVideoShouldStopNotified = true;
 			m_bVideoQualityHighNotified = false;
 			m_bVideoQualityLowNotified = false;
+        }
+        if(m_nVideoShouldStopCounter >= STOP_VIDEO_FOR_BITRATE_COUNTER)
+        {
+            m_pCommonElementsBucket->m_pEventNotifier->fireVideoNotificationEvent(m_FriendID, CEventNotifier::VIDEO_SHOULD_STOP);
         }
     }
 	else if (nCurrentByte >= BITRATE_LOW)

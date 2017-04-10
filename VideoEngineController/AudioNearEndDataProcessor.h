@@ -19,7 +19,7 @@ class CAudioNearEndDataProcessor
 {
 public:
 
-	CAudioNearEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+	CAudioNearEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 	~CAudioNearEndDataProcessor();
 
 	static void *CreateAudioEncodingThread(void* param);
@@ -61,6 +61,8 @@ private:
 	int m_iPacketNumber;
 	int m_iNextPacketType;
 	int m_iSlotID;
+	int m_nServiceType;
+	int m_nEntityType;
 	LongLong m_llMaxAudioPacketNumber;
 	LongLong m_llEncodingTimeStampOffset;
 

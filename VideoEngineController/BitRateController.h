@@ -13,6 +13,8 @@
 //#include "PacketHeader.h"
 #include "VideoHeader.h"
 
+#define STOP_VIDEO_FOR_BITRATE_COUNTER 10
+
 class CCommonElementsBucket;
 
 class BitRateController 
@@ -93,6 +95,7 @@ private:
     bool m_bMegSlotCounterShouldStop;
     bool m_bSetBitRateCalled;
     int m_nStopNotificationCounter;
+	int m_nVideoShouldStopCounter;
 
     CSynchronizedMap m_BandWidthRatioHelper;
     CVideoEncoder *m_pVideoEncoder;

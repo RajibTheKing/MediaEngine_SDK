@@ -56,7 +56,7 @@ bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)
 	return Ret;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID , int nServiceType)
+bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType)
 {
 	m_llTimeOffset = -1;
 
@@ -65,7 +65,7 @@ bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID ,
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType);
+	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType);
 
 	return bReturnedValue;
 }
@@ -104,7 +104,7 @@ bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bo
     return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType)
+bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType, bool bAudioOnlyLive)
 {
 	m_llTimeOffset = -1;
 
@@ -115,7 +115,26 @@ bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, 
 
 	m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
 
-	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, false);
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, bAudioOnlyLive);
+
+	if (bReturnedValue)
+		bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType);
+
+	return bReturnedValue;
+}
+
+bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType, bool bAudioOnlyLive)
+{
+	m_llTimeOffset = -1;
+
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
+
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, bAudioOnlyLive);
 
 	return bReturnedValue;
 }
@@ -654,20 +673,20 @@ void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunction
     }
 }
 
-bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole)
+bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
 	m_llTimeOffset = -1;
-	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
+	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
 	
 	m_pcController->SetCallInLiveEnabled(true);
 	
 	if (bReturnedValue)
 	{
-		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, CALL_IN_LIVE_TYPE_AUDIO_VIDEO);
+		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, nCallInLiveType);
 	}
 	
 	return bReturnedValue;

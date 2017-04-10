@@ -142,6 +142,10 @@ bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
 void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	Locker lock(*m_pLiveReceiverMutex);
+
+	if (numberOfFrames <= 0)
+		return;
+
 	int numberOfMissingFrames = vMissingFrames.size();
 	int numOfMissingFrames = 0;
 

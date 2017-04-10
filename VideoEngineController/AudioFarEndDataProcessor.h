@@ -30,7 +30,7 @@ class AudioMixer;
 class CAudioFarEndDataProcessor
 {
 public:
-	CAudioFarEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
+	CAudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
 	~CAudioFarEndDataProcessor();
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 	void StartCallInLive();
@@ -47,7 +47,8 @@ public:
 
 
 private:
-	
+	int m_nServiceType;
+	int m_nEntityType;
 	long long m_llLastTime;
 	long long m_llFriendID = -1;
 	bool m_bIsLiveStreamingRunning = false;

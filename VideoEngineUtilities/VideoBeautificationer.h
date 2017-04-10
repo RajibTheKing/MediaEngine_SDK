@@ -7,13 +7,6 @@
 #include "../VideoEngineController/Size.h"
 #include "../videoEngineController/Tools.h"
 
-#define SHARPING_SHIFTING_NUMBER_1 2
-#define SHARPING_SHIFTING_NUMBER_2 1
-#define U_VALUE_1 95
-#define U_VALUE_2 125
-#define V_VALUE_1 135
-#define V_VALUE_2 175
-
 class CVideoBeautificationer
 {
 
@@ -30,7 +23,6 @@ public:
 	void MakeFrameBlurAndStore(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
 	bool IsSkinPixel(unsigned char YPixel, unsigned char UPixel, unsigned char VPixel);
 	void StartBrightening(int iVideoHeight, int iVideoWidth, int nPrecision);
-	bool IsNotSkinPixel(unsigned char UPixel, unsigned char VPixel);
 
 	void SetBrighteningValue(int m_AverageValue, int brightnessPrecision);
 

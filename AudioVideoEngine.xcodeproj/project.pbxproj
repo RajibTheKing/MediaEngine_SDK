@@ -66,6 +66,8 @@
 		DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */; };
 		DA77B0F51CF45C8800719D7D /* VersionController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F31CF45C8800719D7D /* VersionController.cpp */; };
 		DA78E7AE1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */; };
+		DA7CA7541E93957F007EAFBD /* AudioFarEndDataProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA7501E93957F007EAFBD /* AudioFarEndDataProcessor.cpp */; };
+		DA7CA7551E93957F007EAFBD /* AudioNearEndDataProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA7521E93957F007EAFBD /* AudioNearEndDataProcessor.cpp */; };
 		DA8133421DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */; };
 		DA86B3051E4B239000ED7C83 /* VideoEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */; };
 		DA91E7AA1D682440006F50E2 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA91E7A91D682440006F50E2 /* libopus.a */; };
@@ -222,6 +224,10 @@
 		DA77B0F41CF45C8800719D7D /* VersionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionController.h; path = VideoEngineController/VersionController.h; sourceTree = "<group>"; };
 		DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAudioDecodingQueue.cpp; path = VideoEngineController/LiveAudioDecodingQueue.cpp; sourceTree = "<group>"; };
 		DA78E7AD1DDAFEFE006A1798 /* LiveAudioDecodingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioDecodingQueue.h; path = VideoEngineController/LiveAudioDecodingQueue.h; sourceTree = "<group>"; };
+		DA7CA7501E93957F007EAFBD /* AudioFarEndDataProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFarEndDataProcessor.cpp; path = VideoEngineController/AudioFarEndDataProcessor.cpp; sourceTree = "<group>"; };
+		DA7CA7511E93957F007EAFBD /* AudioFarEndDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFarEndDataProcessor.h; path = VideoEngineController/AudioFarEndDataProcessor.h; sourceTree = "<group>"; };
+		DA7CA7521E93957F007EAFBD /* AudioNearEndDataProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioNearEndDataProcessor.cpp; path = VideoEngineController/AudioNearEndDataProcessor.cpp; sourceTree = "<group>"; };
+		DA7CA7531E93957F007EAFBD /* AudioNearEndDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioNearEndDataProcessor.h; path = VideoEngineController/AudioNearEndDataProcessor.h; sourceTree = "<group>"; };
 		DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoMuxingAndEncodeSession.cpp; path = VideoEngineController/VideoMuxingAndEncodeSession.cpp; sourceTree = "<group>"; };
 		DA8133411DFEC969008FE395 /* VideoMuxingAndEncodeSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoMuxingAndEncodeSession.h; path = VideoEngineController/VideoMuxingAndEncodeSession.h; sourceTree = "<group>"; };
 		DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoEffects.cpp; path = VideoEngineUtilities/VideoEffects.cpp; sourceTree = "<group>"; };
@@ -323,10 +329,14 @@
 				DA3C0FF51E78382B00155A52 /* AudioDePacketizer.h */,
 				9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */,
 				9D00A8B51C1BF161001A52BC /* AudioEncoderBuffer.h */,
+				DA7CA7501E93957F007EAFBD /* AudioFarEndDataProcessor.cpp */,
+				DA7CA7511E93957F007EAFBD /* AudioFarEndDataProcessor.h */,
 				DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */,
 				DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */,
 				D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */,
 				D11DAA681CE1B829008D74C0 /* AudioFileEncodeDecodeSession.h */,
+				DA7CA7521E93957F007EAFBD /* AudioNearEndDataProcessor.cpp */,
+				DA7CA7531E93957F007EAFBD /* AudioNearEndDataProcessor.h */,
 				DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */,
 				DA91E7AE1D6824AF006F50E2 /* AudioPacketHeader.h */,
 				DA3C0FF61E78382B00155A52 /* AudioPacketizer.cpp */,
@@ -544,6 +554,7 @@
 				DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */,
 				DA2A7B0B1C38ED5400E6AFF8 /* Globals.cpp in Sources */,
 				188587E91C0AEEAC00B1F435 /* AudioCallSession.cpp in Sources */,
+				DA7CA7541E93957F007EAFBD /* AudioFarEndDataProcessor.cpp in Sources */,
 				9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */,
 				188587EA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp in Sources */,
 				188587FC1C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp in Sources */,
@@ -552,6 +563,7 @@
 				DA78E7AE1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp in Sources */,
 				188587F81C0AEEAC00B1F435 /* VideoDecoder.cpp in Sources */,
 				DA2A7B0E1C38ED5E00E6AFF8 /* ResendingBuffer.cpp in Sources */,
+				DA7CA7551E93957F007EAFBD /* AudioNearEndDataProcessor.cpp in Sources */,
 				DA3C0FFC1E78382B00155A52 /* GomGomGain.cpp in Sources */,
 				DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */,
 				188587F31C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.cpp in Sources */,

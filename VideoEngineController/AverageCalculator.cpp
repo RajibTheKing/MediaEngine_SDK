@@ -67,7 +67,7 @@ void CAverageCalculator::CalculateFPS(string sTag)
 
 #ifdef __ANDROID__
 
-		LOGEF("%s %d\n", sTag.c_str(), m_iFpsCounter);
+		LOGE("%s %d\n", sTag.c_str(), m_iFpsCounter);
 
 #endif
 

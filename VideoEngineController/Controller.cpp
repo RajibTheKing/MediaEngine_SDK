@@ -156,7 +156,7 @@ bool CController::SetUserName(const LongLong& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
+bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, int nEntityType)
 {
 	CAudioCallSession* pAudioSession;
     
@@ -171,7 +171,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -744,7 +744,7 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
 
     long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
     
-    while(m_bLiveCallRunning==true || m_bDeviceCapabilityRunning == true)
+    while(m_bLiveCallRunning==true)
     {
         m_Tools.SOSleep(10);
 
@@ -770,7 +770,12 @@ int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHig
 	{
 
 		int iRet = m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
-		if(iRet == -1) return -1;
+
+		if(iRet == -1)
+		{
+			m_bDeviceCapabilityRunning = false;
+			return -1;
+		}
 	}
 
 	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);
