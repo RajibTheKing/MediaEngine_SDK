@@ -87,6 +87,7 @@ private:
 	void DecodingThreadProcedure();
 
 	void AudioCallFarEndProcedure();
+	void LiveStreamFarEndProcedureViewer();
 	void LiveStreamFarEndProcedure();
 	bool IsQueueEmpty();
 	void DequeueData(int &m_nDecodingFrameSize);
