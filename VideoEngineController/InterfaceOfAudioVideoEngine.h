@@ -51,7 +51,7 @@ public:
 	bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
 	bool InitializeLibrary(const IPVLongType& llUserID);
 	bool SetUserName(const IPVLongType llUserName);
-	bool StartAudioCall(const IPVLongType llFriendID, int nServiceType);
+	bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType);
 
 	bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
 	bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
@@ -62,6 +62,8 @@ public:
 	bool EndCallInLive(const IPVLongType llFriendID);
 
 	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
+
+	bool StartLiveStreaming(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0, bool bAudioOnlyLive = false);
 
 	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0, bool bAudioOnlyLive = false);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);

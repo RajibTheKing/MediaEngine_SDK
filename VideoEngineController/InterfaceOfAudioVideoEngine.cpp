@@ -56,7 +56,7 @@ bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)
 	return Ret;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID , int nServiceType)
+bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType)
 {
 	m_llTimeOffset = -1;
 
@@ -65,7 +65,7 @@ bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID ,
 		return false;
 	}
 
-	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType);
+	bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType);
 
 	return bReturnedValue;
 }
@@ -102,6 +102,25 @@ bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bo
 	bool bReturnedValue = m_pcController->SetEchoCanceller(lFriendID, bOn);
     
     return bReturnedValue;
+}
+
+bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType, bool bAudioOnlyLive)
+{
+	m_llTimeOffset = -1;
+
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
+
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, bAudioOnlyLive);
+
+	if (bReturnedValue)
+		bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType);
+
+	return bReturnedValue;
 }
 
 bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType, bool bAudioOnlyLive)

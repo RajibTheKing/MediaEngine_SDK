@@ -36,7 +36,7 @@ public:
 	~CController();
 
 	bool SetUserName(const LongLong& lUserName);
-	bool StartAudioCall(const LongLong& lFriendID, int nServiceType);
+	bool StartAudioCall(const LongLong& lFriendID, int nServiceType, int nEntityType);
 	bool SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder);
 	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
 	bool SetEchoCanceller(const LongLong& lFriendID, bool bOn);

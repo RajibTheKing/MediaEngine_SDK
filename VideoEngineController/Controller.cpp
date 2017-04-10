@@ -156,7 +156,7 @@ bool CController::SetUserName(const LongLong& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType)
+bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, int nEntityType)
 {
 	CAudioCallSession* pAudioSession;
     
