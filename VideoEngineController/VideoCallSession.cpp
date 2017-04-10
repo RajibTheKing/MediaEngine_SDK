@@ -1207,6 +1207,9 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 		{
 			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
 
+			m_pVideoEncoder->SetBitrate(BITRATE_FOR_INSET_STREAM);
+			m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_INSET_STREAM);
+
 			m_nEntityType = ENTITY_TYPE_VIEWER_CALLEE;
 		}
 
