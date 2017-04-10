@@ -607,7 +607,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 	if (nQueueSize> 0)
 	{
 		m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
-
+		LOG18("#18#FE#Viewer... ");
 
 		if (m_nDecodingFrameSize < 1)
 		{
@@ -722,7 +722,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 				HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 				return;
 			}
-
+			LOG18("#18#FE#Viewer  SendToPlayer");
 			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
 			Tools::SOSleep(0);
 		}
@@ -747,7 +747,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 	{
 		m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
 		
-
+		LOG18("#18#FE#Live..");
 		if (m_nDecodingFrameSize < 1)
 		{
 			//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
@@ -817,7 +817,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 				HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 				return;
 			}
-
+			LOG18("#18#FE#Live SendToPlayer");
 			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
 			Tools::SOSleep(0);
 		}
@@ -839,7 +839,7 @@ void CAudioFarEndDataProcessor::AudioCallFarEndProcedure()
 	if (!IsQueueEmpty())
 	{
 		DequeueData(m_nDecodingFrameSize);
-
+		LOG18("#18#FE#Call...");
 		if (m_nDecodingFrameSize < 1)
 		{
 			//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
@@ -899,7 +899,7 @@ void CAudioFarEndDataProcessor::AudioCallFarEndProcedure()
 				HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 				return;
 			}
-
+			LOG18("#18#FE#Call SendToPlayer");
 			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
 			Tools::SOSleep(0);
 		}

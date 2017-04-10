@@ -135,6 +135,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedureViewer(){
 		Tools::SOSleep(10);
 	else
 	{
+		LOG18("#18#NE#Viewer... ");
 		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 		int nDataLenthInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
 
@@ -162,7 +163,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedureViewer(){
 		{
 			m_iPacketNumber = 0;
 		}		
-
+		LOG18("#18#NE#Viewer  StoreDataForChunk");
 		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, 1600);
 		
 		Tools::SOSleep(0);
@@ -176,6 +177,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 		Tools::SOSleep(10);
 	else
 	{
+		LOG18("#18#NE#Publisher...");
 		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
 		DumpEncodingFrame();
@@ -216,7 +218,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 		{
 			m_iPacketNumber = 0;
 		}
-
+		LOG18("#18#NE#Publish  StoreDataForChunk");
 		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendingDataSizeInByte);
 
 		Tools::SOSleep(0);
@@ -231,6 +233,7 @@ void CAudioNearEndDataProcessor::AudioCallNearendProcedure(){
 		Tools::SOSleep(10);
 	else
 	{
+		LOG18("#18#NE#AudioCall...");
 		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
 		
@@ -247,7 +250,7 @@ void CAudioNearEndDataProcessor::AudioCallNearendProcedure(){
 		AddHeader(version, llRelativeTime);
 		SetAudioIdentifierAndNextPacketType();
 		SentToNetwork(llRelativeTime);		
-
+		LOG18("#18#NE#AudioCall Sent");
 		Tools::SOSleep(0);
 	}
 }
