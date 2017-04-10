@@ -39,8 +39,8 @@ private:
 	void AudioCallNearendProcedure();
 	void StartEncodingThread();
 	void StopEncodingThread();
-	void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
-	bool MuxIfNeeded(int &nDataSizeInByte, int nPacketNumber);
+	//void MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength);
+	bool MuxIfNeeded(short* shPublisherData, short *shMuxedData, int &nDataSizeInByte, int nPacketNumber);
 	void DumpEncodingFrame();
 	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 	bool PreProcessAudioBeforeEncoding();
@@ -77,7 +77,7 @@ private:
 
 	short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
 	unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
-	short m_saAudioMUXEDFrame[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
+	short m_saSendingDataPublisher[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
 
 	bool m_bAudioEncodingThreadRunning;
 	bool m_bAudioEncodingThreadClosed;

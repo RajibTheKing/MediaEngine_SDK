@@ -177,16 +177,17 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 	{
 		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
+		DumpEncodingFrame();
 
 		int nSendingDataSizeInByte = 1600;	//Or contain 18 bit data with mixed header.
 		bool bIsMuxed = false;
 
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
 		{
-			bIsMuxed = MuxIfNeeded(nSendingDataSizeInByte, m_iPacketNumber);
+			bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
 		}
 
-		DumpEncodingFrame();
+		
 		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 		m_llLastFrameRT = llRelativeTime;
 		if (false == PreProcessAudioBeforeEncoding())
@@ -195,7 +196,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 		}
 
 				
-		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, nSendingDataSizeInByte);
+		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saSendingDataPublisher, nSendingDataSizeInByte);
 		
 		//AddHeaderLive(version, llRelativeTime);
 
@@ -469,57 +470,78 @@ void CAudioNearEndDataProcessor::DumpEncodingFrame()
 #endif
 }
 
-void CAudioNearEndDataProcessor::MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength)
+//void CAudioNearEndDataProcessor::MuxAudioData(short * pData1, short * pData2, short * pMuxedData, int iDataLength)
+//{
+//	int nSum = 0;
+//	for (int i = 0; i < iDataLength; i++)
+//	{
+//		pMuxedData[i] = pData1[i] + pData2[i];
+//
+//		nSum = (int)pData1[i] + pData2[i];
+//
+//		if (nSum > SHRT_MAX) {
+//			pMuxedData[i] = SHRT_MAX;
+//			LOG_50MS("_+_+ Over = %d", nSum);
+//		}
+//		else if (nSum < SHRT_MIN) {
+//			pMuxedData[i] = SHRT_MIN;
+//			LOG_50MS("_+_+ Under = %d", nSum);
+//		}
+//	}
+//}
+
+bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMuxedData ,int &nDataSizeInByte, int nPacketNumber)
 {
-	int nSum = 0;
-	for (int i = 0; i < iDataLength; i++)
-	{
-		pMuxedData[i] = pData1[i] + pData2[i];
-
-		nSum = (int)pData1[i] + pData2[i];
-
-		if (nSum > SHRT_MAX) {
-			pMuxedData[i] = SHRT_MAX;
-			LOG_50MS("_+_+ Over = %d", nSum);
-		}
-		else if (nSum < SHRT_MIN) {
-			pMuxedData[i] = SHRT_MIN;
-			LOG_50MS("_+_+ Under = %d", nSum);
-		}
-	}
-}
-
-bool CAudioNearEndDataProcessor::MuxIfNeeded(int &nDataSizeInByte, int nPacketNumber)
-{
-	long long lastDecodedTimeStamp;
+	long long nFrameNumber;
 	nDataSizeInByte = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING ;
 	int nLastDecodedFrameSize = 0;
 	bool bIsMuxed = false;
+	int iDataStartIndex, iDataEndIndex;
+	int iCallId = 0, nNumberOfBlocks;
+	std::vector<pair<int, int> > vMissingBlocks;
 
 	if (m_pAudioCallSession->m_AudioDecodedBuffer.GetQueueSize() != 0)
 	{
-		nLastDecodedFrameSize = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame, lastDecodedTimeStamp);
-		if (nLastDecodedFrameSize == CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning)) //Both must be 800
-		{
+		nLastDecodedFrameSize = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame + 3, nFrameNumber);	//#Magic
+		
+		m_pAudioMixer->reset(18, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
+		
+		iDataStartIndex = 0;
+		iDataEndIndex = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING - 1;
+		iCallId = 0;	//Publisher
+		nNumberOfBlocks = 16;
 
-			//MuxAudioData(m_saAudioRecorderFrame, m_saAudioPrevDecodedFrame, m_saAudioMUXEDFrame, nLastDecodedFrameSize);
-			m_pAudioMixer->addAudioData((unsigned char*)m_saAudioRecorderFrame); // this data should contains only the mux header
+		memcpy(shMuxedData + 3, shPublisherData, 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	//3 instead of 6. since it is short.
+
+		AudioMixer::genCalleeChunkHeader((unsigned char*)shMuxedData, iDataStartIndex, iDataEndIndex, iCallId, nPacketNumber, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, nNumberOfBlocks, vMissingBlocks);
+
+		m_pAudioMixer->addAudioData((unsigned char*)shMuxedData); // this data should contains only the mux header
+
+		if (nLastDecodedFrameSize == 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING) //Both must be 800
+		{			
+			iDataStartIndex = 0;
+			iDataEndIndex = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING - 1;
+			iCallId = 1;	//Callee
+			nNumberOfBlocks = 16;
+			AudioMixer::genCalleeChunkHeader((unsigned char*)m_saAudioPrevDecodedFrame, iDataStartIndex, iDataEndIndex, iCallId, nFrameNumber, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, nNumberOfBlocks, vMissingBlocks);
 			m_pAudioMixer->addAudioData((unsigned char*)m_saAudioPrevDecodedFrame); // this data should contains only the mux header
-			nLastDecodedFrameSize = m_pAudioMixer->getAudioData((unsigned char*)m_saAudioMUXEDFrame);
+			
+			nLastDecodedFrameSize = m_pAudioMixer->getAudioData((unsigned char*)shMuxedData);
 		}
 		else
 		{
 			nLastDecodedFrameSize = 0;
+			return false;
 		}
 		bIsMuxed = true;
 	}
 	if (nLastDecodedFrameSize == 0)
 	{
-		memcpy(m_saAudioMUXEDFrame, m_saAudioRecorderFrame, nDataSizeInByte);
+		memcpy(shMuxedData, m_saAudioRecorderFrame, nDataSizeInByte);
 	}
-#ifdef __DUMP_FILE__
-		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_pAudioCallSession->FileInputMuxed);
-#endif
+//#ifdef __DUMP_FILE__
+//		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_pAudioCallSession->FileInputMuxed);
+//#endif
 	return bIsMuxed;
 }
 
