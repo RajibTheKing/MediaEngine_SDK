@@ -104,7 +104,7 @@ bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bo
     return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType, bool bAudioOnlyLive)
+bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth)
 {
 	m_llTimeOffset = -1;
 
@@ -113,12 +113,27 @@ bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriend
 		return false;
 	}
 
-	m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
-
-	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, bAudioOnlyLive);
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive);
 
 	if (bReturnedValue)
-		bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType);
+		bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType);
+
+	return bReturnedValue;
+}
+
+bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID)
+{
+	m_llTimeOffset = -1;
+
+	if (NULL == m_pcController)
+	{
+		return false;
+	}
+
+	bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false);
+
+	if (bReturnedValue)
+		bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER);
 
 	return bReturnedValue;
 }
