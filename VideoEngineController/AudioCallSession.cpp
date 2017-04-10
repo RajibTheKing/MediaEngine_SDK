@@ -35,9 +35,9 @@
 #endif
 
 
-CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, bool bIsCheckCall) :
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType) :
+m_nEntityType(nEntityType),
 m_pCommonElementsBucket(pSharedObject),
-m_bIsCheckCall(bIsCheckCall),
 m_nServiceType(nServiceType),
 m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
@@ -109,8 +109,8 @@ m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
 	m_clientSocket->SetAudioCallSession(this);
 #endif
 
-	m_pNearEndProcessor = new CAudioNearEndDataProcessor(llFriendID, this, pSharedObject, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
-	m_pFarEndProcessor = new CAudioFarEndDataProcessor(llFriendID, this, pSharedObject, m_bLiveAudioStreamRunning);
+	m_pNearEndProcessor = new CAudioNearEndDataProcessor(llFriendID, nServiceType, nEntityType, this, pSharedObject, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+	m_pFarEndProcessor = new CAudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
@@ -224,6 +224,7 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 	}
 
 	//LOGE("### Start call in live");
+	m_nEntityType = iRole;
 	m_iRole = iRole;
 
 #ifdef USE_AECM
@@ -312,6 +313,15 @@ void CAudioCallSession::EndCallInLive()
 	}
 #endif
 #endif
+
+	if (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
+	{
+		m_nEntityType = ENTITY_TYPE_PUBLISHER;
+	}
+	else if (ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+	{
+		m_nEntityType = ENTITY_TYPE_VIEWER;
+	}
 
 	m_iRole = CALL_NOT_RUNNING;
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;

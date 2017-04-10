@@ -171,7 +171,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 

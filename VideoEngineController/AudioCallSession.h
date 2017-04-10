@@ -95,7 +95,7 @@ private:
 
 public:
 	
-    CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject,int nServiceType, bool bIsCheckCall=false);
+	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType);
     ~CAudioCallSession();
 
 	void StartCallInLive(int iRole, int nCallInLiveType);
@@ -126,7 +126,6 @@ public:
     int GetServiceType();
 
 	int m_iNextPacketType;
-	bool m_bIsCheckCall;
 	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
 	int m_iPrevRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot;
@@ -164,6 +163,7 @@ private:
 
     bool m_bLiveAudioStreamRunning;
     int m_nServiceType;
+	int m_nEntityType;
     
 	int m_iVolume;
 
@@ -202,8 +202,6 @@ private:
 #else
 	G729CodecNative *m_pG729CodecNative;
 #endif
-
-private:
 
 public: 
 	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);

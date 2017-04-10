@@ -5,7 +5,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
+CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
+	m_nServiceType(nServiceType),
+	m_nEntityType(nEntityType),
 	m_llFriendID(llFriendID),
 	m_pAudioCallSession(pAudioCallSession),
 	m_pCommonElementsBucket(pCommonElementsBucket),
