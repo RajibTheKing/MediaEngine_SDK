@@ -9,7 +9,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall) :
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
 
 m_pVideoCallSession(pVideoCallSession),
 m_iFrameNumber(nFPS),
@@ -27,7 +27,8 @@ m_nCallFPS(nFPS),
 m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket),
 m_bResetForViewerCallerCallEnd(false),
-m_bVideoEffectEnabled(true)
+m_bVideoEffectEnabled(true),
+m_bSelfViewOnly(bSelfViewOnly)
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
     m_pCalculateEncodingTimeDiff = new CAverageCalculator();
@@ -544,86 +545,94 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                 
 			}
 
-			CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
+			if (m_bSelfViewOnly == false)
+			{
+				CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
 
-			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
+				llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-            llCalculatingTime = m_Tools.CurrentTimestamp();
-            
-            if(m_bIsCheckCall)
-                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame);
-            else
-                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
-            
-            //printf("The encoder returned , nENCODEDFrameSize = %d, frameNumber = %d\n", nENCODEDFrameSize, m_iFrameNumber);
-            
+				llCalculatingTime = m_Tools.CurrentTimestamp();
+
+				if(m_bIsCheckCall)
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame);
+				else
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+
+				//printf("The encoder returned , nENCODEDFrameSize = %d, frameNumber = %d\n", nENCODEDFrameSize, m_iFrameNumber);
+
 
 #else
-			long timeStampForEncoding = m_Tools.CurrentTimestamp();
+				long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-			if (m_bIsCheckCall)
-				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
-			else
-				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+				if (m_bIsCheckCall)
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
+				else
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
 
-			//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
+				//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
 
 
-			int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
-			sumOfEncodingTimediff += timeDiff;
-			if(nENCODEDFrameSize == 0)
-			{
-				sumOfZeroLengthEncodingTimediff += timeDiff;
-				countZeroLengthFrame++;
-			}
-			if (m_iFrameNumber % m_nCallFPS == 0)
-			{
-				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " m_iFrameNumber " + m_Tools.IntegertoStringConvert(m_iFrameNumber%m_nCallFPS) + " Encode time " + m_Tools.IntegertoStringConvert(timeDiff) +
-																		  " sumOfEncodingTimediff " + m_Tools.IntegertoStringConvert(sumOfEncodingTimediff ) + " ---  nENCODEDFrameSize  "
-																		  + m_Tools.IntegertoStringConvert(nENCODEDFrameSize) + " ---  countZeroLengthFrame  " + m_Tools.IntegertoStringConvert(countZeroLengthFrame)+
-																		  " --- ***** afterFrameDropFps  " + m_Tools.IntegertoStringConvert(m_nCallFPS - countZeroLengthFrame));
-				sumOfEncodingTimediff = 0;
-				countZeroLengthFrame = 0;
-			}
+				int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
+				sumOfEncodingTimediff += timeDiff;
+				if (nENCODEDFrameSize == 0)
+				{
+					sumOfZeroLengthEncodingTimediff += timeDiff;
+					countZeroLengthFrame++;
+				}
+				if (m_iFrameNumber % m_nCallFPS == 0)
+				{
+					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " m_iFrameNumber " + m_Tools.IntegertoStringConvert(m_iFrameNumber%m_nCallFPS) + " Encode time " + m_Tools.IntegertoStringConvert(timeDiff) +
+						" sumOfEncodingTimediff " + m_Tools.IntegertoStringConvert(sumOfEncodingTimediff) + " ---  nENCODEDFrameSize  "
+						+ m_Tools.IntegertoStringConvert(nENCODEDFrameSize) + " ---  countZeroLengthFrame  " + m_Tools.IntegertoStringConvert(countZeroLengthFrame) +
+						" --- ***** afterFrameDropFps  " + m_Tools.IntegertoStringConvert(m_nCallFPS - countZeroLengthFrame));
+					sumOfEncodingTimediff = 0;
+					countZeroLengthFrame = 0;
+				}
 
 #endif
-            
-            m_pCalculatorEncodeTime->UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
-            
-//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_pCalculatorEncodeTime->GetAverage()));
-//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
-			m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
+				m_pCalculatorEncodeTime->UpdateData(m_Tools.CurrentTimestamp() - llCalculatingTime);
 
-			//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
-            
-            
-            if(m_FPS_TimeDiff==0)
-                m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
-            
-            if(m_Tools.CurrentTimestamp() -  m_FPS_TimeDiff < 1000 )
-            {
-                m_FpsCounter++;
-            }
-            else
-            {
-                m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
-                
-                //printf("Current Encoding FPS = %d\n", m_FpsCounter);
-				if (m_FpsCounter >(m_nCallFPS - FPS_TOLERANCE_FOR_FPS))
-                {
-                    //kaj korte hobe
-                }
-                m_FpsCounter = 0;
-            }
+				//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "AverageVideoEncoding Time = " + m_Tools.DoubleToString(m_pCalculatorEncodeTime->GetAverage()));
+				//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
-			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::EncodingThreadProcedure() Sending for packetization nENCODEDFrameSize " + m_Tools.getText(nENCODEDFrameSize));
-            
+				m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
+
+				//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
+
+
+				if (m_FPS_TimeDiff == 0)
+					m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+
+				if (m_Tools.CurrentTimestamp() - m_FPS_TimeDiff < 1000)
+				{
+					m_FpsCounter++;
+				}
+				else
+				{
+					m_FPS_TimeDiff = m_Tools.CurrentTimestamp();
+
+					//printf("Current Encoding FPS = %d\n", m_FpsCounter);
+					if (m_FpsCounter >(m_nCallFPS - FPS_TOLERANCE_FOR_FPS))
+					{
+						//kaj korte hobe
+					}
+					m_FpsCounter = 0;
+				}
+
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::EncodingThreadProcedure() Sending for packetization nENCODEDFrameSize " + m_Tools.getText(nENCODEDFrameSize));
+			}
+
+			
 			//if (nENCODEDFrameSize > 0)
 			{
-				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
+
+				if (m_bSelfViewOnly == false)
+				{
+					m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
+				}	
 
 				if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
 				{

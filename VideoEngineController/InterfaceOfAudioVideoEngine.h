@@ -33,6 +33,8 @@
 #define ENTITY_TYPE_VIEWER_CALLEE 2
 #define ENTITY_TYPE_PUBLISHER_CALLER 1
 
+#define SESSION_ID_FOR_SELF_VIEW -1000
+
 typedef long long IPVLongType;
 
 //#define NO_CONNECTIVITY
@@ -63,7 +65,8 @@ public:
 
 	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
-	bool StartLiveStreaming(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0, bool bAudioOnlyLive = false);
+	bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive = true, int nVideoHeight = 352, int nVideoWidth = 288);
+	bool StartChannelView(const IPVLongType llFriendID);
 
 	bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0, bool bAudioOnlyLive = false);
 	int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);

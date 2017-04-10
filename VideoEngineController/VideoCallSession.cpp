@@ -16,7 +16,7 @@
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive) :
+CVideoCallSession::CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
@@ -58,7 +58,8 @@ m_nOpponentVideoHeight(-1),
 m_nOpponentVideoWidth(-1),
 m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false),
-m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
+m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
+m_bSelfViewOnly(bSelfViewOnly)
 
 {
 
@@ -362,7 +363,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 262");
 
 	m_pSendingThread = new CSendingThread(m_pCommonElementsBucket, m_SendingBuffer, this, m_bIsCheckCall, m_lfriendID, m_bAudioOnlyLive);
-	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_pCommonElementsBucket, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall);
+	m_pVideoEncodingThread = new CVideoEncodingThread(lFriendID, m_EncodingBuffer, m_pCommonElementsBucket, m_BitRateController, m_pColorConverter, m_pVideoEncoder, m_pEncodedFramePacketizer, this, m_nCallFPS, m_bIsCheckCall, m_bSelfViewOnly);
 	m_pVideoRenderingThread = new CVideoRenderingThread(lFriendID, m_RenderingBuffer, m_pCommonElementsBucket, this, m_bIsCheckCall);
 	m_pVideoDecodingThread = new CVideoDecodingThread(m_pEncodedFrameDepacketizer, lFriendID, m_pCommonElementsBucket, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoder, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
 	m_pVideoDepacketizationThread = new CVideoDepacketizationThread(lFriendID, m_pVideoPacketQueue, m_pRetransVideoPacketQueue, m_pMiniPacketQueue, m_BitRateController, m_pEncodedFrameDepacketizer, m_pCommonElementsBucket, &m_miniPacketBandCounter, m_pVersionController, this);
@@ -1205,6 +1206,9 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 		else if (m_nEntityType == ENTITY_TYPE_VIEWER)
 		{
 			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
+
+			m_pVideoEncoder->SetBitrate(BITRATE_FOR_INSET_STREAM);
+			m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_INSET_STREAM);
 
 			m_nEntityType = ENTITY_TYPE_VIEWER_CALLEE;
 		}
