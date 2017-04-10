@@ -3,7 +3,11 @@
 #include "LiveAudioParser.h"
 #include "LiveAudioParserForCallee.h"
 #include "LiveAudioParserForPublisher.h"
+#include "LiveAudioParserForChannel.h"
 #include "AudioMixer.h"
+#include "InterfaceOfAudioVideoEngine.h"
+
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -24,16 +28,16 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 	m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING); //Need Remove Magic Numbers.
 
 	for (int i = 0; i < MAX_NUMBER_OF_CALLEE; i++){
-		m_vAudioFarEndBufferVector.push_back(new LiveAudioDecodingQueue() );
+		m_vAudioFarEndBufferVector.push_back(new LiveAudioDecodingQueue() );	//Need to delete.
 	}
 
-	if (m_bIsLiveStreamingRunning)
+	if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
 	{
-		if (m_pAudioCallSession->m_bIsPublisher)
+		if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 		{
 			m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector);
 		}
-		else
+		else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
 			m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector);
 		}
@@ -41,8 +45,10 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
 		//m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, m_pAudioCallSession);
 		//m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
-
-
+	}
+	else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
+	{
+		m_pLiveAudioParser = new CLiveAudioParserForChannel(m_vAudioFarEndBufferVector);
 	}
 
 	m_ReceivingHeader = new CAudioPacketHeader();
@@ -588,48 +594,6 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 		}
 
 		/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
-		HITLER("@#@# at decoder. packettype: %d", m_ucaDecodingFrame[0]);
-
-		if (m_ucaDecodingFrame[0] == AUDIO_NONMUXED_LIVE_CALL_PACKET_TYPE) {
-			if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
-			{
-				HITLER("XXP@#@#MARUF -> LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
-				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
-				m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
-
-				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
-				Tools::SOSleep(0);
-			}
-			else {
-				HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
-			}
-			return;
-		}
-
-
-		if (m_ucaDecodingFrame[0] == AUDIO_LIVE_CALLEE_PACKET_TYPE) {
-			if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
-			{
-				HITLER("XXP@#@#MARUF -> publisher data found LENGHT REMAINING %d", m_nDecodingFrameSize - AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2);
-				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + (m_nDecodingFrameSize - (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2)), (AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING * 2));
-				m_nDecodedFrameSize = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
-
-				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
-				Tools::SOSleep(0);
-			}
-			else {
-				HITLER("XXP@#@#MARUF -> DATA LOGGING FAILED");
-			}
-			return;
-		}
-
-
-		/// --------------------------------------------------------------------------------------------------////
-
 
 		llCapturedTime = Tools::CurrentTimestamp();
 
