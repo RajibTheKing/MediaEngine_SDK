@@ -33,6 +33,8 @@
 #define ENTITY_TYPE_VIEWER_CALLEE 2
 #define ENTITY_TYPE_PUBLISHER_CALLER 1
 
+#define SESSION_ID_FOR_SELF_VIEW -1000
+
 typedef long long IPVLongType;
 
 //#define NO_CONNECTIVITY

@@ -22,7 +22,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -89,6 +89,7 @@ private:
 
 	CCommonElementsBucket *m_pCommonElementBucket;
 
+	bool m_bSelfViewOnly;
 
 	bool m_bIsThisThreadStarted;
 
