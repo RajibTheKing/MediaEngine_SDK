@@ -34,7 +34,8 @@ public:
 	}
 
 private:
-	void LiveStreamNearendProcedure();
+	void LiveStreamNearendProcedureViewer();
+	void LiveStreamNearendProcedurePublisher();
 	void AudioCallNearendProcedure();
 	void StartEncodingThread();
 	void StopEncodingThread();
