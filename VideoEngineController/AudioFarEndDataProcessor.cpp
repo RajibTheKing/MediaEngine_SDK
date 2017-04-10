@@ -325,7 +325,7 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 
 		llLastTime = llNow;
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL) {
-			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(pshSentFrame, nSentFrameSize, 0);
+			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);
 		}
 
 		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
