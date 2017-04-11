@@ -7,7 +7,7 @@
 using namespace std;
 
 
-#define VIDEO_HEADER_LENGTH 23
+#define VIDEO_HEADER_LENGTH 28
 
 
 class CVideoHeader {
@@ -30,7 +30,10 @@ public:
 							long long llTimeStamp,
 							unsigned int iPacketStartingIndex,
 							unsigned int PacketLength,
-							int senderDeviceType
+							int senderDeviceType,
+                            int nNumberOfInsets,
+                            int *pInsetHeights,
+                            int *pInsetWidths
 							);
     
     void ShowDetails(string sTag);
@@ -122,7 +125,20 @@ public:
     void setPacketStartingIndex(int iPacketStartingIndex);
     void setPacketStartingIndex(unsigned char *pData);
     int GetPacketStartingIndex();
-
+    
+    //Inset Information
+    void setNumberOfInset(int value);
+    void setNumberOfInset(unsigned char *pData);
+    int GetNumberOfInset();
+    
+    void setInsetHeights(int values[], int iLen);
+    void setInsetHeights(unsigned char *pData, int nNumberOfInsets);
+    void GetInsetHeights(int *pHeightValues, int nNumberOfInsets);
+    
+    void setInsetWidths(int values[], int iLen);
+    void setInsetWidths(unsigned char *pData, int nNumberOfInsets);
+    void GetInsetWidths(int *pHeightValues, int nNumberOfInsets);
+    
     //hello
 
 private:
@@ -167,8 +183,15 @@ private:
     //Total: 22 byte
     
 	int m_nSenderDeviceType = 0;	// 1 byte
+    
+    //Total: 23 byte
+    
+    int m_nNumberOfInset = 0; // 1 byte
+    int m_nInsetHeight[3];    // 2 byte Per Height
+    int m_nInsetWidth[3];    // 2 byte Per Width
 
-	//Total: 23 byte
+	//Total: 23 byte + 1 byte + m_NumberOfInset * 4 byte. [Current Situation]
+    //Total: (23 + 1 + 1 * 4) = 28 byte
 
 };
 

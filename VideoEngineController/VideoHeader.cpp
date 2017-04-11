@@ -19,7 +19,8 @@
 #define PACKET_STARTING_INDEX 16
 #define PACKET_DATA_LENGTH_INDEX 19
 #define SENDER_DEVICE_TYPE_INDEX 22
-
+#define NUMBER_OF_INSET_INDEX 23
+#define INSET_HEIGHT_WIDTH_INDEX 24
 
 #define QUALITY_BITS_N      3
 #define ORIENTATION_BITS_N  2
@@ -57,7 +58,14 @@ CVideoHeader::CVideoHeader()
     m_iPacketStartingIndex = 0; //3 byte
     m_iPacketDataLength = 0;    //3 byte
 
-	m_nSenderDeviceType = 0; // 1 byte   
+	m_nSenderDeviceType = 0; // 1 byte
+    
+    //insetInfo
+    m_nNumberOfInset = 0; //1 byte
+    m_nInsetHeight[0] = m_nInsetHeight[1] = m_nInsetHeight[2] = 0; // 2 byte per height
+    m_nInsetWidth[0] = m_nInsetWidth[1] = m_nInsetWidth[2] = 0; // 2 byte per height
+    
+    
 }
 
 CVideoHeader::~CVideoHeader()
@@ -86,6 +94,10 @@ void CVideoHeader::setPacketHeader(unsigned char *headerData)
     setPacketDataLength(headerData + PACKET_DATA_LENGTH_INDEX);
 
 	setSenderDeviceType(headerData + SENDER_DEVICE_TYPE_INDEX);
+    
+    setNumberOfInset(headerData + NUMBER_OF_INSET_INDEX);
+    setInsetHeights(headerData + INSET_HEIGHT_WIDTH_INDEX, m_nNumberOfInset);
+    setInsetWidths(headerData + INSET_HEIGHT_WIDTH_INDEX, m_nNumberOfInset);
 }
 
 
@@ -103,7 +115,10 @@ void CVideoHeader::setPacketHeader(	unsigned char packetType,
                                     long long llTimeStamp,
                                     unsigned int iPacketStartingIndex,
                                     unsigned int PacketLength,
-									int senderDeviceType
+									int senderDeviceType,
+                                    int nNumberOfInsets,
+                                    int *pInsetHeights,
+                                    int *pInsetWidths
                                     )
 {
     SetPacketType(packetType);
@@ -124,6 +139,11 @@ void CVideoHeader::setPacketHeader(	unsigned char packetType,
 	setPacketStartingIndex(iPacketStartingIndex);
 	setPacketDataLength(PacketLength);
 	setSenderDeviceType(senderDeviceType);
+    
+    //InsetInfo
+    setNumberOfInset(nNumberOfInsets);
+    setInsetHeights(pInsetHeights, nNumberOfInsets);
+    setInsetWidths(pInsetWidths, nNumberOfInsets);
 
 }
 
@@ -144,9 +164,14 @@ void CVideoHeader::ShowDetails(string sTag)
     +" SIndex:"+Tools::getText(m_iPacketStartingIndex)
     +" Len:"+Tools::getText(m_iPacketDataLength)
 	+ " SDT:" + Tools::getText(m_nSenderDeviceType)
+    + " NOI:" + Tools::getText(m_nNumberOfInset)
+    + " IH0:" + Tools::getText(m_nInsetHeight[0])
+    + " IW0:" + Tools::getText(m_nInsetWidth[0])
+    + " IH1:" + Tools::getText(m_nInsetHeight[1])
+    + " IW1:" + Tools::getText(m_nInsetWidth[1])
     ;
 
-	unsigned char pLocalData[30];
+	unsigned char pLocalData[100];
 	
 	GetHeaderInByteArray(pLocalData);
 	string sss = "#PKT#  -> " + sTag;
@@ -163,7 +188,7 @@ void CVideoHeader::ShowDetails(string sTag)
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sss);
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sLog);
+    CLogPrinter::Log("%s\n", sLog.c_str());
     
 }
 int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
@@ -219,7 +244,20 @@ int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
 
 	//Sender Device Type
 	data[index++] = m_nSenderDeviceType;
-
+    
+    //InsetInfo
+    data[index++] = m_nNumberOfInset;
+    
+    for(int i=0;i<m_nNumberOfInset;i++)
+    {
+        data[index++] = m_nInsetHeight[i]>>8;
+        data[index++] = m_nInsetHeight[i]>>0;
+    }
+    for(int i=0;i<m_nNumberOfInset;i++)
+    {
+        data[index++] = m_nInsetWidth[i]>>8;
+        data[index++] = m_nInsetWidth[i]>>0;
+    }
     return index;
 }
 
@@ -466,6 +504,69 @@ int CVideoHeader::GetPacketStartingIndex()
 {
     return m_iPacketStartingIndex;
 }
+
+
+//Inset Information
+void CVideoHeader::setNumberOfInset(int value)
+{
+    m_nNumberOfInset = value;
+}
+void CVideoHeader::setNumberOfInset(unsigned char *pData)
+{
+    m_nNumberOfInset = (int)pData[0];
+}
+int CVideoHeader::GetNumberOfInset()
+{
+    return m_nNumberOfInset;
+}
+
+void CVideoHeader::setInsetHeights(int values[], int iLen)
+{
+    for(int i=0;i<iLen;i++)
+    {
+        m_nInsetHeight[i] = values[i];
+    }
+}
+void CVideoHeader::setInsetHeights(unsigned char *pData, int nNumberOfInsets)
+{
+    
+    for(int i=0;i<nNumberOfInsets;i++)
+    {
+        int index = i*2;
+        m_nInsetHeight[i] = GetIntFromChar(pData+index, 0, 2);
+    }
+}
+void CVideoHeader::GetInsetHeights(int *pHeightValues, int nNumberOfInsets)
+{
+    for(int i=0;i<nNumberOfInsets;i++)
+    {
+        pHeightValues[i] = m_nInsetHeight[i];
+    }
+}
+
+void CVideoHeader::setInsetWidths(int values[], int iLen)
+{
+    for(int i=0;i<iLen;i++)
+    {
+        m_nInsetWidth[i] = values[i];
+    }
+}
+void CVideoHeader::setInsetWidths(unsigned char *pData, int nNumberOfInsets)
+{
+    for(int i=0;i<nNumberOfInsets;i++)
+    {
+        int index = nNumberOfInsets*2+(i*2);
+        m_nInsetWidth[i] = GetIntFromChar(pData + index, 0, 2);
+    }
+}
+void CVideoHeader::GetInsetWidths(int *pWidthValues, int nNumberOfInsets)
+{
+    for(int i=0;i<nNumberOfInsets;i++)
+    {
+        pWidthValues[i] = m_nInsetWidth[i];
+    }
+}
+
 
 
 
