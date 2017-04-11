@@ -147,7 +147,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedureViewer(){
 		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);		
 		DumpEncodingFrame();
 		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);		
-		m_llLastFrameRT = llRelativeTime;
+
 		if (false == PreProcessAudioBeforeEncoding())
 		{
 			return;
@@ -191,7 +191,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 		bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
 				
 		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
-		m_llLastFrameRT = llRelativeTime;
+
 		if (false == PreProcessAudioBeforeEncoding())
 		{
 			return;
@@ -265,12 +265,14 @@ void CAudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk
 {
 	Locker lock(*m_pAudioEncodingMutex);
 
+	
 	if (0 == m_iRawDataSendIndexViewer && -1 == m_llLastChunkLastFrameRT)
 	{
 		m_llLastChunkLastFrameRT = llRelativeTime;
 	}
 
 	m_llLastFrameRT = llRelativeTime;
+
 	if ((m_iRawDataSendIndexViewer + nDataLengthInByte + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
 	{
 		memcpy(m_ucaRawDataToSendViewer + m_iRawDataSendIndexViewer, uchDataToChunk, nDataLengthInByte + m_MyAudioHeadersize + 1);
@@ -430,6 +432,12 @@ void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombin
 
 	vCombinedDataLengthVector.clear();
 	CombinedLength = 0;
+	sendingLengthViewer = 0;
+	sendingLengthPeer = 0;
+	if (-1 == m_llLastChunkLastFrameRT)
+	{
+		return;
+	}
 
 	llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
 	llAudioChunkRelativeTime = m_llLastChunkLastFrameRT;
