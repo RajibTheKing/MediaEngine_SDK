@@ -69,6 +69,10 @@
 		DA7CA7541E93957F007EAFBD /* AudioFarEndDataProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA7501E93957F007EAFBD /* AudioFarEndDataProcessor.cpp */; };
 		DA7CA7551E93957F007EAFBD /* AudioNearEndDataProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA7521E93957F007EAFBD /* AudioNearEndDataProcessor.cpp */; };
 		DA8133421DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */; };
+		DA848BE41E9CFD43002BC7DE /* AudioMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BDB1E9CFD43002BC7DE /* AudioMixer.cpp */; };
+		DA848BE51E9CFD43002BC7DE /* LiveAudioParserForCallee.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BDE1E9CFD43002BC7DE /* LiveAudioParserForCallee.cpp */; };
+		DA848BE61E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BE01E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp */; };
+		DA848BE71E9CFD43002BC7DE /* LiveAudioParserForPublisher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BE21E9CFD43002BC7DE /* LiveAudioParserForPublisher.cpp */; };
 		DA86B3051E4B239000ED7C83 /* VideoEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */; };
 		DA91E7AA1D682440006F50E2 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA91E7A91D682440006F50E2 /* libopus.a */; };
 		DA91E7AF1D6824AF006F50E2 /* AudioCodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA91E7AB1D6824AE006F50E2 /* AudioCodec.cpp */; };
@@ -231,6 +235,15 @@
 		DA7CA7531E93957F007EAFBD /* AudioNearEndDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioNearEndDataProcessor.h; path = VideoEngineController/AudioNearEndDataProcessor.h; sourceTree = "<group>"; };
 		DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoMuxingAndEncodeSession.cpp; path = VideoEngineController/VideoMuxingAndEncodeSession.cpp; sourceTree = "<group>"; };
 		DA8133411DFEC969008FE395 /* VideoMuxingAndEncodeSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoMuxingAndEncodeSession.h; path = VideoEngineController/VideoMuxingAndEncodeSession.h; sourceTree = "<group>"; };
+		DA848BDB1E9CFD43002BC7DE /* AudioMixer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioMixer.cpp; path = VideoEngineController/AudioMixer.cpp; sourceTree = "<group>"; };
+		DA848BDC1E9CFD43002BC7DE /* AudioMixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioMixer.h; path = VideoEngineController/AudioMixer.h; sourceTree = "<group>"; };
+		DA848BDD1E9CFD43002BC7DE /* LiveAudioParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioParser.h; path = VideoEngineController/LiveAudioParser.h; sourceTree = "<group>"; };
+		DA848BDE1E9CFD43002BC7DE /* LiveAudioParserForCallee.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAudioParserForCallee.cpp; path = VideoEngineController/LiveAudioParserForCallee.cpp; sourceTree = "<group>"; };
+		DA848BDF1E9CFD43002BC7DE /* LiveAudioParserForCallee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioParserForCallee.h; path = VideoEngineController/LiveAudioParserForCallee.h; sourceTree = "<group>"; };
+		DA848BE01E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAudioParserForChannel.cpp; path = VideoEngineController/LiveAudioParserForChannel.cpp; sourceTree = "<group>"; };
+		DA848BE11E9CFD43002BC7DE /* LiveAudioParserForChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioParserForChannel.h; path = VideoEngineController/LiveAudioParserForChannel.h; sourceTree = "<group>"; };
+		DA848BE21E9CFD43002BC7DE /* LiveAudioParserForPublisher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveAudioParserForPublisher.cpp; path = VideoEngineController/LiveAudioParserForPublisher.cpp; sourceTree = "<group>"; };
+		DA848BE31E9CFD43002BC7DE /* LiveAudioParserForPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioParserForPublisher.h; path = VideoEngineController/LiveAudioParserForPublisher.h; sourceTree = "<group>"; };
 		DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoEffects.cpp; path = VideoEngineUtilities/VideoEffects.cpp; sourceTree = "<group>"; };
 		DA86B3041E4B239000ED7C83 /* VideoEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoEffects.h; path = VideoEngineUtilities/VideoEffects.h; sourceTree = "<group>"; };
 		DA91E7A91D682440006F50E2 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopus.a; sourceTree = "<group>"; };
@@ -333,10 +346,12 @@
 				DA7CA7501E93957F007EAFBD /* AudioFarEndDataProcessor.cpp */,
 				DA7CA7511E93957F007EAFBD /* AudioFarEndDataProcessor.h */,
 				DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */,
-				6AFFA2D11E9CE8CA00BDDC63 /* AudioMacros.h */,
 				DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */,
 				D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */,
 				D11DAA681CE1B829008D74C0 /* AudioFileEncodeDecodeSession.h */,
+				6AFFA2D11E9CE8CA00BDDC63 /* AudioMacros.h */,
+				DA848BDB1E9CFD43002BC7DE /* AudioMixer.cpp */,
+				DA848BDC1E9CFD43002BC7DE /* AudioMixer.h */,
 				DA7CA7521E93957F007EAFBD /* AudioNearEndDataProcessor.cpp */,
 				DA7CA7531E93957F007EAFBD /* AudioNearEndDataProcessor.h */,
 				DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */,
@@ -389,6 +404,13 @@
 				188587D21C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.h */,
 				DA78E7AC1DDAFEFE006A1798 /* LiveAudioDecodingQueue.cpp */,
 				DA78E7AD1DDAFEFE006A1798 /* LiveAudioDecodingQueue.h */,
+				DA848BDD1E9CFD43002BC7DE /* LiveAudioParser.h */,
+				DA848BDE1E9CFD43002BC7DE /* LiveAudioParserForCallee.cpp */,
+				DA848BDF1E9CFD43002BC7DE /* LiveAudioParserForCallee.h */,
+				DA848BE01E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp */,
+				DA848BE11E9CFD43002BC7DE /* LiveAudioParserForChannel.h */,
+				DA848BE21E9CFD43002BC7DE /* LiveAudioParserForPublisher.cpp */,
+				DA848BE31E9CFD43002BC7DE /* LiveAudioParserForPublisher.h */,
 				DA4D473C1DBDDDCF00EB407D /* LiveReceiver.cpp */,
 				DA4D473D1DBDDDCF00EB407D /* LiveReceiver.h */,
 				6A3E37511E0932F500228138 /* LiveStreamingHeader.cpp */,
@@ -551,6 +573,7 @@
 				DA91E7AF1D6824AF006F50E2 /* AudioCodec.cpp in Sources */,
 				DA4D47411DBDDDCF00EB407D /* LiveVideoDecodingQueue.cpp in Sources */,
 				DA4D47401DBDDDCF00EB407D /* LiveReceiver.cpp in Sources */,
+				DA848BE51E9CFD43002BC7DE /* LiveAudioParserForCallee.cpp in Sources */,
 				D18E5FCA1C96D57F00E5EDAA /* VideoDecodingThread.cpp in Sources */,
 				188587FA1C0AEEAC00B1F435 /* VideoEncoderListHandler.cpp in Sources */,
 				DAA0F0E01C675A3C009E0F39 /* BitRateController.cpp in Sources */,
@@ -570,6 +593,7 @@
 				DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */,
 				188587F31C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.cpp in Sources */,
 				9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */,
+				DA848BE61E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp in Sources */,
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
 				6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */,
 				DA9CFEAC1DFBC7E2004112C4 /* MuxingVideoData.cpp in Sources */,
@@ -596,12 +620,14 @@
 				188588041C0AEEBC00B1F435 /* LockHandler.cpp in Sources */,
 				DA3C0FFF1E78395700155A52 /* Filt.cpp in Sources */,
 				188587F51C0AEEAC00B1F435 /* Tools.cpp in Sources */,
+				DA848BE71E9CFD43002BC7DE /* LiveAudioParserForPublisher.cpp in Sources */,
 				188587EF1C0AEEAC00B1F435 /* DecodingBuffer.cpp in Sources */,
 				DA91E7B01D6824AF006F50E2 /* AudioPacketHeader.cpp in Sources */,
 				188587EE1C0AEEAC00B1F435 /* Controller.cpp in Sources */,
 				DA3B79211DED86D20061BEFC /* HashGenerator.cpp in Sources */,
 				DA550FE01D7557BA00638DA6 /* AudioFileCodec.cpp in Sources */,
 				D11DAA691CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp in Sources */,
+				DA848BE41E9CFD43002BC7DE /* AudioMixer.cpp in Sources */,
 				DA86B3051E4B239000ED7C83 /* VideoEffects.cpp in Sources */,
 				188587F61C0AEEAC00B1F435 /* VideoCallSession.cpp in Sources */,
 				6AAEC53D1E07EF9E001525FE /* VideoHeader.cpp in Sources */,
