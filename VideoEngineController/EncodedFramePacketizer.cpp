@@ -40,8 +40,8 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
     
-    int nNumberOfInsets = 2;
-    int pInsetHeights[] = {100,120,0}, pInsetWidths[] = {80,90,0};
+    int nNumberOfInsets = 1;
+    int pInsetHeights[] = {100,120,0}, pInsetWidths[] = {80,90,0}; //testing heights widths
 
 	int nOpponentVersion = m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
     unsigned char uchSendVersion = 0;
