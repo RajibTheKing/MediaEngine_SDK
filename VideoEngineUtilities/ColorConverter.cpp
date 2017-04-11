@@ -1481,7 +1481,7 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
     }
     
     
-    printf("uIndex, vIndex = %d, %d\n", uIndex, vIndex);
+    //printf("uIndex, vIndex = %d, %d\n", uIndex, vIndex);
     
     
     return outHeight * outWidth * 3 / 2;
@@ -1760,7 +1760,7 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
         newHeight = newHeight - newHeight%4;
         newWidth = inWidth;
     }
-    printf("ratio_screen = %f, ratio_VideoData = %f, diff = %f, inH:inW = %d:%d --> newH:newW = %d:%d\n", aspectRatio_Screen, aspectRatio_VideoData, fabs(aspectRatio_Screen-aspectRatio_VideoData), inHeight, inWidth, newHeight, newWidth);
+    //printf("ratio_screen = %f, ratio_VideoData = %f, diff = %f, inH:inW = %d:%d --> newH:newW = %d:%d\n", aspectRatio_Screen, aspectRatio_VideoData, fabs(aspectRatio_Screen-aspectRatio_VideoData), inHeight, inWidth, newHeight, newWidth);
 }
 int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY)
 {
