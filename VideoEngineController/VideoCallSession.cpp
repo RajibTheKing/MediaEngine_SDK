@@ -349,6 +349,12 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	else
 		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, nServiceType);
 
+	if (m_bAudioOnlyLive == true)
+	{
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_INSET_STREAM);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_INSET_STREAM);
+	}
+
 	m_pFPSController->SetEncoder(m_pVideoEncoder);
 	m_BitRateController->SetEncoder(m_pVideoEncoder);
 
