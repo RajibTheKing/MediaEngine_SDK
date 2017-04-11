@@ -14,7 +14,7 @@ public:
 	CEventNotifier(CController *pController);
 
 	void firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[]);
-	void fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iOrientation);
+	void fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iOrientation);
 	void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);
 	void fireAudioEvent(long long friendID, int eventType, int dataLenth, short data[]);
 	void fireAudioAlarm(int eventType, int dataLenth, short data[]);
@@ -22,7 +22,17 @@ public:
 	void fireNetworkStrengthNotificationEvent(long long callID, int eventType);
     
     void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
+
+#if defined(_DESKTOP_C_SHARP_)
+
+	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int));
+
+#else
+
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int));
+
+#endif
+
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
 	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
     void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int));

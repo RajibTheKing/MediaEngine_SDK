@@ -1073,10 +1073,21 @@ void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointe
     m_EventNotifier.SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 }
 
+#if defined(_DESKTOP_C_SHARP_)
+
+void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int))
+{
+	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
+}
+
+#else
+
 void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }
+
+#endif
 
 void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
 {
