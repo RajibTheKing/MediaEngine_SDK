@@ -268,6 +268,7 @@ void CAudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk
 	
 	if (0 == m_iRawDataSendIndexViewer && -1 == m_llLastChunkLastFrameRT)
 	{
+		HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
 		m_llLastChunkLastFrameRT = llRelativeTime;
 	}
 
@@ -434,10 +435,14 @@ void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombin
 	CombinedLength = 0;
 	sendingLengthViewer = 0;
 	sendingLengthPeer = 0;
+	llAudioChunkDuration = 0;
+	llAudioChunkRelativeTime = 0;
 	if (-1 == m_llLastChunkLastFrameRT)
 	{
 		return;
 	}
+
+//	HITLER("#RT# lastFrameRT: %lld, lastChunkLastFrameRT: %lld", m_llLastFrameRT, m_llLastChunkLastFrameRT);
 
 	llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
 	llAudioChunkRelativeTime = m_llLastChunkLastFrameRT;
