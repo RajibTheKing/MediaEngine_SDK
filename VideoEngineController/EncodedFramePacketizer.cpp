@@ -41,7 +41,11 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
     
     int nNumberOfInsets = 1;
-    int pInsetHeights[] = {100,120,0}, pInsetWidths[] = {80,90,0}; //testing heights widths
+
+	int height = m_pVideoCallSession->GetColorConverter()->GetSmallFrameHeight();
+	int width = m_pVideoCallSession->GetColorConverter()->GetSmallFrameWidth();
+
+	int pInsetHeights[] = { height, 0, 0 }, pInsetWidths[] = { width, 0, 0 }; //testing heights widths
 
 	int nOpponentVersion = m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
     unsigned char uchSendVersion = 0;

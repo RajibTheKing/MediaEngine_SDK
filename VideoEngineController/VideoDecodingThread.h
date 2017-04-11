@@ -53,7 +53,7 @@ public:
 
 	void SetCallFPS(int nFPS);
 
-	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation);
+	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth);
 	int DecodeAndSendToClient2();
 
 private:
@@ -61,6 +61,9 @@ private:
 	CVideoCallSession* m_pVideoCallSession;
 	bool bDecodingThreadRunning;
 	bool bDecodingThreadClosed;
+
+	int m_naInsetHeights[3];
+	int m_naInsetWidths[3];
 
 	CCommonElementsBucket *m_pCommonElementBucket;
 	LongLong m_llFriendID;
@@ -71,6 +74,8 @@ private:
 
 	int m_previousDecodedFrameSize;
 	int m_PreviousDecodingHeight;
+	int m_nPreviousInsetHeight;
+	int m_nPreviousInsetWidth;
 	int m_PreviousDecodingWidth;
 	int m_PreviousFrameNumber;
 	int m_PreviousOrientation;

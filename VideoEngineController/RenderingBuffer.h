@@ -16,9 +16,8 @@ public:
 	CRenderingBuffer();
 	~CRenderingBuffer();
 
-	int Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation);
-	int DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth,
-				int &nrTimeDifferenceInQueue, int &nOrientation);
+	int Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation, int nInsetHeight, int nInsetWidth);
+	int DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth, int &nrTimeDifferenceInQueue, int &nOrientation, int &nInsetHeight, int &nInsetWidth);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 	void ResetBuffer();
@@ -39,6 +38,8 @@ private:
 	int m_naBufferVideoHeights[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	int m_naBufferVideoWidths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	int m_naBufferVideoOrientations[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	int m_naBufferInsetHeights[MAX_VIDEO_RENDERER_BUFFER_SIZE];
+	int m_naBufferInsetWidths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	
 	long long m_llaBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_llaBufferCaptureTimeDifferences[MAX_VIDEO_RENDERER_BUFFER_SIZE];
