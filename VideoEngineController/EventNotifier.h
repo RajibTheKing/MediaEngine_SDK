@@ -14,7 +14,17 @@ public:
 	CEventNotifier(CController *pController);
 
 	void firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[]);
+
+#if defined(_DESKTOP_C_SHARP_)
+
 	void fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iOrientation);
+
+#else
+
+	void fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iOrientation);
+
+#endif
+
 	void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);
 	void fireAudioEvent(long long friendID, int eventType, int dataLenth, short data[]);
 	void fireAudioAlarm(int eventType, int dataLenth, short data[]);
