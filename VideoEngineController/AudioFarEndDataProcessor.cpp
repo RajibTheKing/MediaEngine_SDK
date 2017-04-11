@@ -627,7 +627,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 			nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
 		LOG18("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
-		fwrite(m_ucaDecodingFrame + nCurrentPacketHeaderLength, sizeof(unsigned char), nFrameLength, m_pAudioCallSession->File18BitData);
+
 
 		//int iInd = nCurrentPacketHeaderLength;
 		//LOG18("#18#FE#Viewer #beg %d %d %d %d %d", (int)m_ucaDecodingFrame[iInd], (int)m_ucaDecodingFrame[iInd+1],
