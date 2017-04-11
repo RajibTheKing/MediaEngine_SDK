@@ -91,6 +91,7 @@ public:
 	int getUIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 	int getVIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 	int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
+	int Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 	int Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 	int Merge_Two_VideoNV21(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
     int CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pData, int inHeight, int inWidth, int screenHeight, int screenWidth, unsigned char* outputData, int &outHeight, int &outWidth, int pColorFormat);
