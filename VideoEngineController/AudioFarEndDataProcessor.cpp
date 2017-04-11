@@ -713,7 +713,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
 			}
 			
-
+			LOG18("#18#FE#Viewer  m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
 			DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
 			HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);

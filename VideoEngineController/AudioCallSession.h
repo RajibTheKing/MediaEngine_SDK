@@ -58,7 +58,7 @@ static string colon = "ALOG:";
 
 
 //#define __AUDIO_SELF_CALL__
-//#define __DUMP_FILE__
+#define __DUMP_FILE__
 
 
 //#define FIRE_ENC_TIME
@@ -141,6 +141,7 @@ public:
 #ifdef __DUMP_FILE__
 	FILE *FileInput;
 	FILE *FileOutput;
+	FILE *FileInputMuxedBitType;
 	FILE *FileInputWithEcho;
 	FILE *FileInputMuxed;
 	FILE *FileInputPreGain;

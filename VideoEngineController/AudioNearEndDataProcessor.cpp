@@ -49,6 +49,13 @@ m_llLastFrameRT(0)
 
 	m_bIsReady = true;
 
+#ifdef __DUMP_FILE__
+	m_pAudioCallSession->FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
+	m_pAudioCallSession->FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
+	m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
+	m_pAudioCallSession->FileInputMuxedBitType = fopen("/sdcard/InputBit.pcm", "w");
+#endif	
+
 	StartEncodingThread();
 }
 
@@ -98,11 +105,6 @@ void *CAudioNearEndDataProcessor::CreateAudioEncodingThread(void* param)
 void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
-#ifdef __DUMP_FILE__
-	m_pAudioCallSession->FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
-	m_pAudioCallSession->FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
-	m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
-#endif	
 		
 	LOGT("##NF## encoder started");
 	while (m_bAudioEncodingThreadRunning)
@@ -218,7 +220,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 		{
 			m_iPacketNumber = 0;
 		}
-		LOG18("#18#NE#Publish  StoreDataForChunk");
+		LOG18("#18#NE#Publish  StoreDataForChunk nSendingDataSizeInByte = %d", nSendingDataSizeInByte);
 		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendingDataSizeInByte);
 
 		Tools::SOSleep(0);
@@ -473,6 +475,7 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 
 	if (m_pAudioCallSession->m_AudioDecodedBuffer.GetQueueSize() != 0)
 	{
+		bIsMuxed = true;
 		nLastDecodedFrameSize = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame + 3, nFrameNumber);	//#Magic
 		
 		m_pAudioMixer->reset(18, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
@@ -497,22 +500,22 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 			AudioMixer::genCalleeChunkHeader((unsigned char*)m_saAudioPrevDecodedFrame, iDataStartIndex, iDataEndIndex, iCallId, nFrameNumber, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, nNumberOfBlocks, vMissingBlocks);
 			m_pAudioMixer->addAudioData((unsigned char*)m_saAudioPrevDecodedFrame); // this data should contains only the mux header
 			
-			nLastDecodedFrameSize = m_pAudioMixer->getAudioData((unsigned char*)shMuxedData);
+			nDataSizeInByte = m_pAudioMixer->getAudioData((unsigned char*)shMuxedData);
 		}
 		else
 		{
-			nLastDecodedFrameSize = 0;
+			nDataSizeInByte = 0;
 			return false;
-		}
-		bIsMuxed = true;
+		}		
 	}
-	if (nLastDecodedFrameSize == 0)
+	else 
 	{
 		memcpy(shMuxedData, m_saAudioRecorderFrame, nDataSizeInByte);
 	}
-//#ifdef __DUMP_FILE__
-//		fwrite(m_saAudioMUXEDFrame, sizeof(short), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_pAudioCallSession->FileInputMuxed);
-//#endif
+#ifdef __DUMP_FILE__
+	fwrite(shMuxedData, sizeof(short), nDataSizeInByte / 2 , m_pAudioCallSession->FileInputMuxed);
+	fprintf(m_pAudioCallSession->FileInputMuxedBitType, "%d\n", nDataSizeInByte / 100);
+#endif
 	return bIsMuxed;
 }
 
