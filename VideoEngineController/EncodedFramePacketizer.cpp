@@ -39,6 +39,9 @@ CEncodedFramePacketizer::~CEncodedFramePacketizer()
 int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy)
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
+    
+    int nNumberOfInsets = 2;
+    int pInsetHeights[] = {100,120,0}, pInsetWidths[] = {80,90,0};
 
 	int nOpponentVersion = m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion();
     unsigned char uchSendVersion = 0;
@@ -76,7 +79,6 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                         uchOwnVersion,
                                         0, 0, 0, unCaptureTimeDifference, 0, 0,
                                         nOwnQualityLevel, 0, nNetworkType);*/
-
 		m_cVideoHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,				//packetType
 										uchOwnVersion,							//VersionCode
 										VIDEO_HEADER_LENGTH,					//HeaderLength
@@ -90,7 +92,10 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 										unCaptureTimeDifference,				//TimeStamp
 										0,										//PacketStartingIndex
 										0,										//PacketDataLength
-										m_nOwnDeviceType						//SenderDeviceType
+										m_nOwnDeviceType,						//SenderDeviceType
+                                        nNumberOfInsets,                        //NumberOfInsets
+                                        pInsetHeights,                          //InsetHeights
+                                        pInsetWidths                            //InsetWidths
 										);
 
         m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
@@ -124,7 +129,10 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                        unCaptureTimeDifference,         //TimeStamp
                                        0,                               //PacketStartingIndex
                                        unLength,                         //PacketDataLength
-									   m_nOwnDeviceType					//SenderDeviceType
+                                       m_nOwnDeviceType,				 //SenderDeviceType
+                                       nNumberOfInsets,                  //NumberOfInsets
+                                       pInsetHeights,                    //InsetHeights
+                                       pInsetWidths                      //InsetWidths
                                        );
 
         
@@ -154,6 +162,9 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
 
         {
+            CVideoHeader pH;
+            pH.setPacketHeader(m_ucaPacket+1);
+            pH.ShowDetails("JUST2");
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + unLength, iFrameNumber, nPacketNumber);
             
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));
@@ -199,8 +210,11 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 											unCaptureTimeDifference,         //TimeStamp
 											iStartIndex,                     //PacketStartingIndex
 											m_nPacketSize,                    //PacketDataLength
-											m_nOwnDeviceType				//SenderDeviceType
-											);
+                                           m_nOwnDeviceType,						//SenderDeviceType
+                                           nNumberOfInsets,                        //NumberOfInsets
+                                           pInsetHeights,                          //InsetHeights
+                                           pInsetWidths                            //InsetWidths
+                                           );
             iStartIndex += m_nPacketSize;
 
 			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL))
