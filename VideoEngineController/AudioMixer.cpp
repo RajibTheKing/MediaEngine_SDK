@@ -260,3 +260,15 @@ int AudioMixer::GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int
 	}
 	return -1;
 }
+
+void AudioMixer::Convert18BitTo16Bit(unsigned char* p18BitData, unsigned char* p16BitData, int nSampleSize)
+{
+	int readIndexOffset = 0;
+	int readBitOffset = 0;
+	int writeIndexOffset = 0;
+	int writeBitOffset = 0;
+	for (int i = 0; i < nSampleSize; ++i)
+	{
+		writeValue(p16BitData, writeIndexOffset, writeBitOffset, 16, readValue(p18BitData, readIndexOffset, readBitOffset, 18));
+	}
+}

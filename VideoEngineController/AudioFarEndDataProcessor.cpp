@@ -626,7 +626,16 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 		ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 			nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-		HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+		LOG18("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+		fwrite(m_ucaDecodingFrame + nCurrentPacketHeaderLength, sizeof(unsigned char), nFrameLength, m_pAudioCallSession->File18BitData);
+
+		//int iInd = nCurrentPacketHeaderLength;
+		//LOG18("#18#FE#Viewer #beg %d %d %d %d %d", (int)m_ucaDecodingFrame[iInd], (int)m_ucaDecodingFrame[iInd+1],
+		//	(int)m_ucaDecodingFrame[iInd+2], (int)m_ucaDecodingFrame[iInd+3], (int)m_ucaDecodingFrame[iInd+4]);
+		//iInd = nCurrentPacketHeaderLength + nFrameLength - 1;
+		//LOG18("#18#FE#Viewer #end %d %d %d %d %d", (int)m_ucaDecodingFrame[iInd], (int)m_ucaDecodingFrame[iInd - 1],
+		// (int)m_ucaDecodingFrame[iInd - 2], (int)m_ucaDecodingFrame[iInd - 3], (int)m_ucaDecodingFrame[iInd - 4]);
+
 		if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 		{
 			HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");

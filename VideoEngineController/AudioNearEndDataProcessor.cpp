@@ -53,8 +53,8 @@ m_llLastFrameRT(0)
 	m_pAudioCallSession->FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
 	m_pAudioCallSession->FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
 	m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");	
-	m_pAudioCallSession->File18BitType = fopen("/sdcard/File18BitType.pcm", "w");;
-	m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");;
+	m_pAudioCallSession->File18BitType = fopen("/sdcard/File18BitType.pcm", "wb");
+	m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");
 #endif	
 
 	StartEncodingThread();
@@ -518,8 +518,22 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 		memcpy(shMuxedData, m_saAudioRecorderFrame, nDataSizeInByte);
 	}
 #ifdef __DUMP_FILE__
-	fwrite(shMuxedData, sizeof(short), nDataSizeInByte / 2, m_pAudioCallSession->File18BitData);
-	fprintf(m_pAudioCallSession->File18BitType, "%d\n", nDataSizeInByte / 100);
+	AudioMixer* DumpAudioMixer = new AudioMixer(18,800);
+	unsigned char temp[2000];
+
+	if (nDataSizeInByte == 1800)
+	{
+		DumpAudioMixer->Convert18BitTo16Bit((unsigned char*)shMuxedData, temp, 800);
+		fwrite((short *)temp, sizeof(short), 800, m_pAudioCallSession->File18BitData);
+	}
+	else {
+		fwrite(shMuxedData, sizeof(short), 800, m_pAudioCallSession->File18BitData);
+	}
+
+	short val = nDataSizeInByte;
+	LOG18("#18#NE#DMP nDataSizeInByte = %d", nDataSizeInByte);
+	fwrite(&val, 2, 1, m_pAudioCallSession->File18BitType);
+
 #endif
 	return bIsMuxed;
 }

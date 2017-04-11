@@ -11,6 +11,8 @@ public:
 	void reset(int iNumberOfBitsPerSample, int iFrameSize);
 	static void genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIndex, int iEndIndex, int iCalleeId, int iFrameNumber, int iFrameSize, int iBlock, std::vector<std::pair<int, int>> &vMissingBlocks);
 	int GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int nUserId);
+	void Convert18BitTo16Bit(unsigned char* p18BitData, unsigned char* p16BitData, int nSampleSize);
+
 private:
 	int m_iTotalCallee;
 	int m_iNumberOfBitsPerSample;
