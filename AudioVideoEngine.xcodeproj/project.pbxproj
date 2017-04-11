@@ -165,6 +165,7 @@
 		6A4F57861E0A3D8000C48ACC /* VideoBeautificationer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoBeautificationer.h; path = VideoEngineUtilities/VideoBeautificationer.h; sourceTree = "<group>"; };
 		6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoHeader.cpp; path = VideoEngineController/VideoHeader.cpp; sourceTree = "<group>"; };
 		6AAEC53C1E07EF9E001525FE /* VideoHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoHeader.h; path = VideoEngineController/VideoHeader.h; sourceTree = "<group>"; };
+		6AFFA2D11E9CE8CA00BDDC63 /* AudioMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioMacros.h; path = VideoEngineController/AudioMacros.h; sourceTree = "<group>"; };
 		9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioEncoderBuffer.cpp; path = VideoEngineController/AudioEncoderBuffer.cpp; sourceTree = "<group>"; };
 		9D00A8B51C1BF161001A52BC /* AudioEncoderBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioEncoderBuffer.h; path = VideoEngineController/AudioEncoderBuffer.h; sourceTree = "<group>"; };
 		9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDecoderBuffer.cpp; path = VideoEngineController/AudioDecoderBuffer.cpp; sourceTree = "<group>"; };
@@ -332,6 +333,7 @@
 				DA7CA7501E93957F007EAFBD /* AudioFarEndDataProcessor.cpp */,
 				DA7CA7511E93957F007EAFBD /* AudioFarEndDataProcessor.h */,
 				DA550FDE1D7557BA00638DA6 /* AudioFileCodec.cpp */,
+				6AFFA2D11E9CE8CA00BDDC63 /* AudioMacros.h */,
 				DA550FDF1D7557BA00638DA6 /* AudioFileCodec.h */,
 				D11DAA671CE1B829008D74C0 /* AudioFileEncodeDecodeSession.cpp */,
 				D11DAA681CE1B829008D74C0 /* AudioFileEncodeDecodeSession.h */,
