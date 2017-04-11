@@ -471,7 +471,7 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 {
 	long long nFrameNumber;
 	nDataSizeInByte = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING ;
-	int nLastDecodedFrameSize = 0;
+	int nLastDecodedFrameSizeInByte = 0;
 	bool bIsMuxed = false;
 	int iDataStartIndex, iDataEndIndex;
 	int iCallId = 0, nNumberOfBlocks;
@@ -480,8 +480,8 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 	if (m_pAudioCallSession->m_AudioDecodedBuffer.GetQueueSize() != 0)
 	{
 		bIsMuxed = true;
-		nLastDecodedFrameSize = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame + 3, nFrameNumber);	//#Magic
-		
+		nLastDecodedFrameSizeInByte = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame + 3, nFrameNumber) * 2;	//#Magic
+		LOG18("#18@# DEQUE data of size %d", nLastDecodedFrameSizeInByte);
 		m_pAudioMixer->reset(18, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 		
 		iDataStartIndex = 0;
@@ -495,7 +495,7 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 
 		m_pAudioMixer->addAudioData((unsigned char*)shMuxedData); // this data should contains only the mux header
 
-		if (nLastDecodedFrameSize == 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING) //Both must be 800
+		if (nLastDecodedFrameSizeInByte == 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING) //Both must be 800
 		{			
 			iDataStartIndex = 0;
 			iDataEndIndex = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING - 1;
@@ -508,6 +508,7 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 		}
 		else
 		{
+			LOG18("#18@# RETURN WITH FALSE and zeor");
 			nDataSizeInByte = 0;
 			return false;
 		}		

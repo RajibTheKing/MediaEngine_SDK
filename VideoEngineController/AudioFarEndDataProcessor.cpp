@@ -327,6 +327,7 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 
 		llLastTime = llNow;
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL) {
+			LOG18("#18@# PUb enq , packet type %d", iCurrentPacketNumber);
 			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);
 		}
 
@@ -692,23 +693,27 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 					}
 					if (bFound)
 					{
+						LOG18("#18@# FOUND REMOVED AUDIO DATA");
 						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId) / sizeof(short);
 					}
 					else
 					{
 						//Do Some thing;
+						LOG18("#18@# FOUND REMOVED AUDIO DATA with -1");
 						nCalleeId = -1;
 						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId) / sizeof(short);
 					}
 				}
 				else //For Only Viewers
 				{
+					LOG18("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR");
 					nCalleeId = -1;
 					m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, -1) / sizeof(short);
 				}
 			}
 			else
 			{
+				LOG18("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR wrong media");
 				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
 				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
 			}
