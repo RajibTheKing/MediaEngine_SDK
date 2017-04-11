@@ -15,7 +15,9 @@ m_RenderingBuffer(renderingBuffer),
 m_pCommonElementsBucket(commonElementsBucket),
 m_FriendID(friendID),
 m_lRenderCallTime(0),
-m_bIsCheckCall(bIsCheckCall)
+m_bIsCheckCall(bIsCheckCall),
+m_nInsetHeight(-1),
+m_nInsetWidth(-1)
 
 {
     m_llRenderFrameCounter = 0;
@@ -124,8 +126,9 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoRenderingThread::RenderingThreadProcedure() GOT FRAME for Rendering method");
             
 			int timeDiffForQueue, orientation;
+			int insetHeight, insetWidth;
 
-			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue, orientation);
+			frameSize = m_RenderingBuffer->DeQueue(nFrameNumber, nTimeStampDiff, m_RenderingFrame, videoHeight, videoWidth, timeDiffForQueue, orientation, insetHeight, insetWidth);
             
             m_llRenderFrameCounter++;
 			if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD && m_llRenderFrameCounter<FPS_MAXIMUM * 2)
@@ -209,8 +212,18 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 					toolsObject.SOSleep(1);
 
+
+
 					if (m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
-						m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);					
+					{
+
+#if defined(_DESKTOP_C_SHARP_)
+
+						m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, insetHeight, insetWidth, orientation);
+#else
+						m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+#endif
+					}
 //
 //                    llPrevTimeStamp = m_Tools.CurrentTimestamp();
                 }
@@ -221,7 +234,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
                     toolsObject.SOSleep(1);
 
 					m_RenderTimeCalculator.CalculateFPS("renderingFPs: ");
-					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, 0, 0, orientation);
                     
                 }
                 

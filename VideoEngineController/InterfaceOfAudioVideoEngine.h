@@ -97,7 +97,17 @@ public:
 	int StopAudioEncodeDecodeSession();
 
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
+
+#if defined(_DESKTOP_C_SHARP_)
+
+	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
+
+#else
+
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int));
+
+#endif
+
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
 	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));

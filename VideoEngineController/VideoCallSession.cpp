@@ -742,8 +742,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 									nByteReceivedOrNetworkType,					//TimeStamp             //Sending Received Byte
 									0,											//PacketStartingIndex
 									0,											//PacketDataLength
-									0											//SenderDeviceType
-									);
+                                    0,                                          //SenderDeviceType
+                                    0,                                          //NumberOfInsets
+                                    nullptr,                                    //InsetHeights
+                                    nullptr                                     //InsetWidths
+                                    );
         
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
         PacketHeader.ShowDetails("BtratePacket SendingSide: ");
@@ -765,8 +768,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 										nByteReceivedOrNetworkType,				//TimeStamp
 										0,										//PacketStartingIndex
 										0,										//PacketDataLength
-										0										//SenderDeviceType
-										);
+                                        0,                                      //SenderDeviceType
+                                        0,                                      //NumberOfInsets
+                                        nullptr,                                //InsetHeights
+                                        nullptr                                 //InsetWidths
+                                     );
 	}
 
 	m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;

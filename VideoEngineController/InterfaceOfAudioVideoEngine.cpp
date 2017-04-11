@@ -636,6 +636,18 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callB
 	}
 }
 
+#if defined(_DESKTOP_C_SHARP_)
+
+void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int))
+{
+	if (NULL != m_pcController)
+	{
+		m_pcController->SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
+	}
+}
+
+#else
+
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
 {
 	if (NULL != m_pcController)
@@ -643,6 +655,8 @@ void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*ca
 		m_pcController->SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 	}
 }
+
+#endif
 
 void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
 {

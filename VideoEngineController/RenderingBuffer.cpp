@@ -26,7 +26,7 @@ void CRenderingBuffer::ResetBuffer()
 	m_nQueueSize = 0;
 }
 
-int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth,int nOrientation)
+int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation, int nInsetHeight, int nInsetWidth)
 {
     if(m_nQueueSize>=MAX_VIDEO_RENDERER_BUFFER_SIZE)
         printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
@@ -39,6 +39,8 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
 	m_naBufferVideoHeights[m_iPushIndex] = nVideoHeight;
 	m_naBufferVideoWidths[m_iPushIndex] = nVideoWidth;
 	m_naBufferVideoOrientations[m_iPushIndex] = nOrientation;
+	m_naBufferInsetHeights[m_iPushIndex] = nInsetHeight;
+	m_naBufferInsetWidths[m_iPushIndex] = nInsetWidth;
 
 	m_llaBufferCaptureTimeDifferences[m_iPushIndex] = llCaptureTimeDifference;
 	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
@@ -60,7 +62,7 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
 }
 
 int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth,
-							  int &nrTimeDifferenceInQueue, int &nOrientation)
+	int &nrTimeDifferenceInQueue, int &nOrientation, int &nInsetHeight, int &nInsetWidth)
 {
 	Locker lock(*m_pRenderingBufferMutex);
     //printf("TheKing--> RenderingBuffer m_nQueueSize = %d\n", m_nQueueSize);
@@ -77,6 +79,8 @@ int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDiffe
 		nrVideoHeight = m_naBufferVideoHeights[m_iPopIndex];
 		nrVideoWidth = m_naBufferVideoWidths[m_iPopIndex];
 		nOrientation = m_naBufferVideoOrientations[m_iPopIndex];
+		nInsetHeight = m_naBufferInsetHeights[m_iPopIndex];
+		nInsetWidth = m_naBufferInsetWidths[m_iPopIndex];
 
 		memcpy(ucaDecodedVideoFrameData, m_uc2aDecodedVideoDataBuffer[m_iPopIndex], nLength);
 

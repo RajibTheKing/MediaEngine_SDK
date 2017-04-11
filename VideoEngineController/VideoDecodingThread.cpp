@@ -284,9 +284,14 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 						}
 					}
 				}
+
+				int nNumberOfInsets = videoHeaderObject.GetNumberOfInset();
+
+				videoHeaderObject.GetInsetHeights(m_naInsetHeights, nNumberOfInsets);
+				videoHeaderObject.GetInsetWidths(m_naInsetWidths, nNumberOfInsets);
 				
 				//nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
-                nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(),0,0,0);
+				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(), 0, 0, 0, m_naInsetHeights[0], m_naInsetWidths[0]);
 
 				llSlotTimeStamp = m_Tools.CurrentTimestamp();
 				toolsObject.SOSleep(1);
@@ -394,7 +399,7 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 			*/
 
 
-			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime, nOrientation);
+			nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime, nOrientation, 0, 0);
 			//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 			//			toolsObject.SOSleep(100);
           
@@ -519,7 +524,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 #if defined(_DESKTOP_C_SHARP_)
 
-	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_RenderingRGBFrame, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation);
+	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_RenderingRGBFrame, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation, m_naInsetHeights[0], m_naInsetWidths[0]);
 
 	return m_previousDecodedFrameSize;
 
@@ -533,7 +538,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 }
 
-int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation)
+int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
     
@@ -616,6 +621,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 			memcpy(m_PreviousDecodedFrame, m_DecodedFrame, m_decodedFrameSize);
 			m_previousDecodedFrameSize = m_decodedFrameSize;
 			m_PreviousDecodingHeight = m_decodingHeight;
+			m_nPreviousInsetHeight = nInsetHeight;
+			m_nPreviousInsetWidth = nInsetWidth;
 			m_PreviousDecodingWidth = m_decodingWidth;
 			m_PreviousFrameNumber = nFramNumber;
 			m_PreviousOrientation = nOrientation;
@@ -856,7 +863,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
 
 #if defined(_DESKTOP_C_SHARP_)
-	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
+	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation, nInsetHeight, nInsetWidth);
 	return m_decodedFrameSize;
 #else
     

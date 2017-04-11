@@ -44,6 +44,8 @@ private:
 	Tools m_Tools;
     int m_nRenderFrameCount;
     long long m_lRenderCallTime;
+	int m_nInsetHeight;
+	int m_nInsetWidth;
 
 	bool m_bIsCheckCall;
     
