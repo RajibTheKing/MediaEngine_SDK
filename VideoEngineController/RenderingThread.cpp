@@ -234,7 +234,14 @@ void CVideoRenderingThread::RenderingThreadProcedure()
                     toolsObject.SOSleep(1);
 
 					m_RenderTimeCalculator.CalculateFPS("renderingFPs: ");
+
+#if defined(_DESKTOP_C_SHARP_)
+
 					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, 0, 0, orientation);
+
+#else
+					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, orientation);
+#endif
                     
                 }
                 

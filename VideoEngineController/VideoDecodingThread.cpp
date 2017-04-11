@@ -530,7 +530,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 #else
 
-	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_PreviousDecodedFrameConvertedData, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation);
+	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_PreviousDecodedFrameConvertedData, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation, 0, 0);
 
 	return m_previousDecodedFrameSize;
 
@@ -868,7 +868,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 #else
     
     
-	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation);
+	m_RenderingBuffer->Queue(nFramNumber, m_DecodedFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation, 0, 0);
 	return m_decodedFrameSize;
 #endif
 }
