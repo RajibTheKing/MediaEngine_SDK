@@ -52,8 +52,9 @@ m_llLastFrameRT(0)
 #ifdef __DUMP_FILE__
 	m_pAudioCallSession->FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
 	m_pAudioCallSession->FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
-	m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
-	m_pAudioCallSession->FileInputMuxedBitType = fopen("/sdcard/InputBit.pcm", "w");
+	m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");	
+	m_pAudioCallSession->File18BitType = fopen("/sdcard/File18BitType.pcm", "w");;
+	m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");;
 #endif	
 
 	StartEncodingThread();
@@ -202,7 +203,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 
 				
 		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saSendingDataPublisher, nSendingDataSizeInByte);
-		
+
 		//AddHeaderLive(version, llRelativeTime);
 
 		int nSendingFramePacketType = AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED;
@@ -513,8 +514,8 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 		memcpy(shMuxedData, m_saAudioRecorderFrame, nDataSizeInByte);
 	}
 #ifdef __DUMP_FILE__
-	fwrite(shMuxedData, sizeof(short), nDataSizeInByte / 2 , m_pAudioCallSession->FileInputMuxed);
-	fprintf(m_pAudioCallSession->FileInputMuxedBitType, "%d\n", nDataSizeInByte / 100);
+	fwrite(shMuxedData, sizeof(short), nDataSizeInByte / 2, m_pAudioCallSession->File18BitData);
+	fprintf(m_pAudioCallSession->File18BitType, "%d\n", nDataSizeInByte / 100);
 #endif
 	return bIsMuxed;
 }

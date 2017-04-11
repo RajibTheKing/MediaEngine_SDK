@@ -141,7 +141,8 @@ public:
 #ifdef __DUMP_FILE__
 	FILE *FileInput;
 	FILE *FileOutput;
-	FILE *FileInputMuxedBitType;
+	FILE *File18BitType;
+	FILE *File18BitData;
 	FILE *FileInputWithEcho;
 	FILE *FileInputMuxed;
 	FILE *FileInputPreGain;
