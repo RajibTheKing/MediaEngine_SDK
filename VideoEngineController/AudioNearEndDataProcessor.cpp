@@ -187,20 +187,15 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 
 		int nSendingDataSizeInByte = 1600;	//Or contain 18 bit data with mixed header.
 		bool bIsMuxed = false;
-
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
-		{
-			bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
-		}
-
 		
+		bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
+				
 		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 		m_llLastFrameRT = llRelativeTime;
 		if (false == PreProcessAudioBeforeEncoding())
 		{
 			return;
 		}
-
 				
 		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saSendingDataPublisher, nSendingDataSizeInByte);
 
@@ -221,8 +216,16 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 		{
 			m_iPacketNumber = 0;
 		}
-		LOG18("#18#NE#Publish  StoreDataForChunk nSendingDataSizeInByte = %d", nSendingDataSizeInByte);
-		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendingDataSizeInByte);
+		LOG18("#18#NE#Publish  StoreDataForChunk nSendingDataSizeInByte = %d m_MyAudioHeadersize = %d", nSendingDataSizeInByte, m_MyAudioHeadersize);
+		
+		int nSendigFrameSize = nSendingDataSizeInByte + m_MyAudioHeadersize + 1;
+		//for (int i = 0; i < 5; i++)
+		//{
+		//	m_ucaRawFrameNonMuxed[m_MyAudioHeadersize + 1 + i] = 110 + i;
+		//	m_ucaRawFrameNonMuxed[nSendigFrameSize - 1 - i] = 110 + i;
+		//}		
+
+		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendigFrameSize);
 
 		Tools::SOSleep(0);
 	}
