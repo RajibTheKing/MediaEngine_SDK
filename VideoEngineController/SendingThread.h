@@ -33,6 +33,8 @@ public:
 
 	void ResetForViewerCallerCallEnd();
 
+	void SetAudioOnlyDataAlreadySent(bool bAudioOnlyDataAlreadySent);
+
 	void InterruptOccured();
 	void InterruptOver();
 
@@ -69,6 +71,8 @@ private:
 
 	bool m_bInterruptHappened;
 	bool m_bInterruptRunning;
+
+	bool m_bAudioOnlyDataAlreadySent;
 
 //	CVideoHeader m_cVH;
 

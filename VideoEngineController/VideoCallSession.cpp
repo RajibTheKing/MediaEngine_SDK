@@ -1208,6 +1208,9 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 	{
 		m_nCallInLiveType = nCallInLiveType;
 
+		if (nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+			m_pSendingThread->SetAudioOnlyDataAlreadySent(false);
+
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
 		{
 			SetFirstVideoPacketTime(-1);

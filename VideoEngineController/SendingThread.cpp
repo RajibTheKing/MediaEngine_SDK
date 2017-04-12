@@ -42,7 +42,8 @@ m_bInterruptRunning(false),
 m_bResetForViewerCallerCallEnd(false),
 m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false),
-m_bPassOnlyAudio(false)
+m_bPassOnlyAudio(false),
+m_bAudioOnlyDataAlreadySent(false)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
@@ -309,7 +310,17 @@ void CSendingThread::SendingThreadProcedure()
 					vAudioDataLengthVector.clear();
 
 				if (bExist && m_bVideoOnlyLive == false)
+				{
 					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength, llAudioChunkDuration, llAudioChunkRelativeTime);
+
+					if (m_bPassOnlyAudio == true)
+					{
+						if (m_bAudioOnlyDataAlreadySent == false && calleeDataLength <= 0)
+							continue;
+						else
+							m_bAudioOnlyDataAlreadySent = true;
+					}
+				}
 
 				HITLER("#RT# isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, friendId: %lld", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, lFriendID);
 
@@ -780,6 +791,11 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 	bSendingThreadClosed = true;
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
+}
+
+void CSendingThread::SetAudioOnlyDataAlreadySent(bool bAudioOnlyDataAlreadySent)
+{
+	m_bAudioOnlyDataAlreadySent = bAudioOnlyDataAlreadySent;
 }
 
 void CSendingThread::InterruptOccured()
