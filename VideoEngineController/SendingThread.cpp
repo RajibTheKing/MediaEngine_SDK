@@ -513,8 +513,7 @@ void CSendingThread::SendingThreadProcedure()
               /*  printf("Sending to liovestream, llNowTimeDiff = %lld\n", llNowTimeDiff);
                 
                 if(NULL != g_LiveReceiver)
-                {
-                    g_LiveReceiver->PushAudioData(m_AudioDataToSend, m_iAudioDataToSendIndex);
+                {                    
                     g_LiveReceiver->PushVideoData(m_VideoDataToSend, m_iDataToSendIndex);
                 }*/
 
@@ -567,11 +566,7 @@ void CSendingThread::SendingThreadProcedure()
 				}
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
 #endif
-
-
-                
-                
-
+                             
 				LOGEF("fahad (m_iDataToSendIndex,m_iAudioDataToSendIndex, total) -- ( %d, %d, %d )  --frameNumber == %d, bExist = %d %d %d %d\n", m_iDataToSendIndex, m_iAudioDataToSendIndex, m_iDataToSendIndex + m_iAudioDataToSendIndex, frameNumber, bExist, (int)llNowTimeDiff, diff, index);
 
 				int tempIndex = m_iDataToSendIndex;
