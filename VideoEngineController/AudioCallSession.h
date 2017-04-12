@@ -40,8 +40,8 @@
 #endif
 
 
-#define __AUDIO_CALL_VERSION__  0
-#define __AUDIO_LIVE_VERSION__  0
+#define AUDIO_CALL_VERSION  0
+#define AUDIO_LIVE_VERSION  0
 
 #ifdef __ANDROID__
 #define USE_AECM
@@ -56,12 +56,12 @@ static string colon = "ALOG:";
 
 
 
-//#define __AUDIO_SELF_CALL__
-//#define __DUMP_FILE__
+//#define AUDIO_SELF_CALL
+//#define DUMP_FILE
 
 
 //#define FIRE_ENC_TIME
-//#define __AUDIO_FIXED_COMPLEXITY__
+//#define AUDIO_FIXED_COMPLEXITY
 
 class CCommonElementsBucket;
 class CVideoEncoder;
@@ -137,7 +137,7 @@ public:
 	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
 
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	FILE *FileInput;
 	FILE *FileOutput;
 	FILE *File18BitType;

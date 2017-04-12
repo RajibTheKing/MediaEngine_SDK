@@ -49,7 +49,7 @@ m_llLastFrameRT(0)
 
 	m_bIsReady = true;
 
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	m_pAudioCallSession->FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
 	m_pAudioCallSession->FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
 	m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");	
@@ -285,7 +285,7 @@ void CAudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk
 
 void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 {
-#ifdef  __AUDIO_SELF_CALL__ //Todo: build while this is enable
+#ifdef  AUDIO_SELF_CALL //Todo: build while this is enable
 	//Todo: m_AudioReceivedBuffer fix. not member of this class
 	if (m_bIsLiveStreamingRunning == false)
 	{
@@ -301,7 +301,7 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
 
-#ifdef  __DUPLICATE_AUDIO__
+#ifdef  DUPLICATE_AUDIO
 		if (false == m_bIsLiveStreamingRunning && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
 		{
 			Tools::SOSleep(5);
@@ -474,7 +474,7 @@ void CAudioNearEndDataProcessor::UpdateRelativeTimeAndFrame(long long &llLasstTi
 
 void CAudioNearEndDataProcessor::DumpEncodingFrame()
 {
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	fwrite(m_saAudioRecorderFrame, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_pAudioCallSession->FileInput);
 #endif
 }
@@ -530,7 +530,7 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 	{
 		memcpy(shMuxedData, m_saAudioRecorderFrame, nDataSizeInByte);
 	}
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	AudioMixer* DumpAudioMixer = new AudioMixer(18,800);
 	unsigned char temp[2000];
 

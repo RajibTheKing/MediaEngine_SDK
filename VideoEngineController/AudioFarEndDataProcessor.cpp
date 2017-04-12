@@ -353,7 +353,7 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 
 void CAudioFarEndDataProcessor::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize)
 {
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	fwrite(psDecodedFrame, 2, nDecodedFrameSize, m_pAudioCallSession->FileOutput);
 #endif
 }
@@ -565,7 +565,7 @@ void CAudioFarEndDataProcessor::DecodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");	
 
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	m_pAudioCallSession->FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
 #endif
 		

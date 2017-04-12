@@ -248,7 +248,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 				int tmp_chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
 				HITLER("@#DE#Interface##now:%lld peertimestamp:%lld expected:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d ", itIsNow, recvTimeOffset, expectedTime, recvTimeOffset - expectedTime, tmp_chunkDuration , tmp_headerLength);
 				
-				if (recvTimeOffset < expectedTime - __CHUNK_DELAY_TOLERANCE__) {
+				if (recvTimeOffset < expectedTime - CHUNK_DELAY_TOLERANCE) {
 					if (!m_pcController->IsCallInLiveEnabled())
 					{
 						//HITLER("##Discarding packet! | expected:%lld", expectedTime);

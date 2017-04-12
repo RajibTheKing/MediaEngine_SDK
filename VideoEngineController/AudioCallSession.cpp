@@ -12,7 +12,7 @@
 #define LOCAL_SERVER_IP "192.168.0.120"
 #endif
 
-#define __DUPLICATE_AUDIO__
+#define DUPLICATE_AUDIO
 
 #ifdef USE_AECM
 #include "Echo.h"
@@ -100,10 +100,10 @@ m_bIsPublisher(true)
 	m_iAudioVersionFriend = -1;
 	if(m_bLiveAudioStreamRunning)
 	{
-		m_iAudioVersionSelf = __AUDIO_LIVE_VERSION__;
+		m_iAudioVersionSelf = AUDIO_LIVE_VERSION;
 	}
 	else {
-		m_iAudioVersionSelf = __AUDIO_CALL_VERSION__;
+		m_iAudioVersionSelf = AUDIO_CALL_VERSION;
 	}
 #ifdef LOCAL_SERVER_LIVE_CALL
 	m_clientSocket = VideoSockets::GetInstance();
@@ -167,7 +167,7 @@ CAudioCallSession::~CAudioCallSession()
 #endif
 
 	m_FriendID = -1;
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	fclose(FileOutput);
 	fclose(FileInput);
 	fclose(FileInputWithEcho);
@@ -262,7 +262,7 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
 		FileInputMuxed= fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
@@ -283,7 +283,7 @@ void CAudioCallSession::EndCallInLive()
 		m_Tools.SOSleep(1);
 	}
 
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
 		fclose(FileInputMuxed);
@@ -358,13 +358,13 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 			m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
 		}
 #endif
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 		fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
-#endif // __DUMP_FILE__
+#endif // DUMP_FILE
 		if (m_pEcho != nullptr)
 		{
 			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
-#ifdef __DUMP_FILE__
+#ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
 #endif
 		}
