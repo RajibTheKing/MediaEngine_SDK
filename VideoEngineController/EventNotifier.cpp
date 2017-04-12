@@ -7,7 +7,7 @@
 
 void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 void(*notifyClientWithVideoDataCallback)(LongLong, int, unsigned char*, int, int, int, int, int, int) = NULL;
 
@@ -38,7 +38,7 @@ void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberO
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent 2");
 }
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 void CEventNotifier::fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iDeviceOrientation)
 {
@@ -136,7 +136,7 @@ void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPoi
     notifyClientWithPacketCallback = callBackFunctionPointer;
 }
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int))
 {

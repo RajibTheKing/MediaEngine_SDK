@@ -217,7 +217,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 					if (m_pVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
 					{
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 						m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, insetHeight, insetWidth, orientation);
 #else
@@ -235,7 +235,7 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 
 					m_RenderTimeCalculator.CalculateFPS("renderingFPs: ");
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 					m_pCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_FriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_RenderingFrame, videoHeight, videoWidth, 0, 0, orientation);
 
