@@ -12,7 +12,7 @@ typedef __int64 LongLong;
 typedef long long LongLong;
 #endif
 
-#if defined(TARGET_OS_WINDOWS_PHONE) || defined (_DESKTOP_C_SHARP_) || defined (_WIN32)
+#if defined(TARGET_OS_WINDOWS_PHONE) || defined (DESKTOP_C_SHARP) || defined (_WIN32)
 #include <windows.h>
 #elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
 #include <unistd.h>

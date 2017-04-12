@@ -113,7 +113,7 @@ typedef long long IPVLongType;
 #include <sys/time.h>
 #endif 
 
-#if defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_WINDOWS_PHONE)
+#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 static FILE *logfp = NULL;
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
 #define printf(...) printg(__VA_ARGS__,"")

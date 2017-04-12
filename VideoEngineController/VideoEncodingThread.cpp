@@ -224,7 +224,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int countNumber = 1;
 	int dummyTimeStampCounter = 0;
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), RGB24);
 
@@ -314,7 +314,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				if (dummyTimeStampCounter % 4 == 0)
 				{
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 30, 1);
 #else
@@ -374,7 +374,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame);
 
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 
 			int iCurWidth = this->m_pColorConverter->GetWidth();
 			int iCurHeight = this->m_pColorConverter->GetHeight();
@@ -644,7 +644,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					this->m_pColorConverter->ConvertI420ToNV12(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
 
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 
 					int m_decodedFrameSize;
 
@@ -680,7 +680,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     
                     int iCroppedDataLen;
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 					if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 					{

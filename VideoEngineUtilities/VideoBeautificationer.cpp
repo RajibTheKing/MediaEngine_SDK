@@ -15,7 +15,7 @@ int m_sigma = 40;
 
 int m_sigma = 35;
 
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 
 int m_sigma = 100;
 

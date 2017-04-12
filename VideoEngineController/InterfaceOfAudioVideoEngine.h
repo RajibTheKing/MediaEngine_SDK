@@ -98,7 +98,7 @@ public:
 
 	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
 

@@ -67,7 +67,7 @@ m_bSelfViewOnly(bSelfViewOnly)
 
 	m_nOwnDeviceType = DEVICE_TYPE_IOS;
 
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 
 	m_nOwnDeviceType = DEVICE_TYPE_DESKTOP;
 

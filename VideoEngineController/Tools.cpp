@@ -20,14 +20,14 @@ Tools::Tools()
 {
 	m_filePointerToWriteByteData = NULL;
 	m_filePointerToWriteShortData = NULL;
-#ifdef _DESKTOP_C_SHARP_
+#ifdef DESKTOP_C_SHARP
 	timeBeginPeriod(1);
 #endif
 }
 
 Tools::~Tools()
 {
-#ifdef _DESKTOP_C_SHARP_
+#ifdef DESKTOP_C_SHARP
 	timeEndPeriod(16);
 #endif
 	if (NULL != m_filePointerToWriteByteData)
@@ -218,7 +218,7 @@ LongLong  Tools::CurrentTimestamp()
 {
 	LongLong currentTime;
 
-#if	defined(_DESKTOP_C_SHARP_)
+#if	defined(DESKTOP_C_SHARP)
 	auto timeEpoch = std::chrono::system_clock::now().time_since_epoch();
 	currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEpoch).count();
 
@@ -290,7 +290,7 @@ unsigned long long Tools::GetTotalSystemMemory()
 
 	return pages * page_size;
 
-#elif defined (_DESKTOP_C_SHARP_)
+#elif defined (DESKTOP_C_SHARP)
 
 	MEMORYSTATUSEX status;
 	printf(" GetTotalSystemMemory1\n");
@@ -333,7 +333,7 @@ unsigned long long Tools::GetAvailableSystemMemory()
      long page_size = sysconf(_SC_PAGE_SIZE);
      return pages * page_size;
     
-#elif defined (_DESKTOP_C_SHARP_)
+#elif defined (DESKTOP_C_SHARP)
 
 	MEMORYSTATUSEX status;
 	status.dwLength = sizeof(status);
