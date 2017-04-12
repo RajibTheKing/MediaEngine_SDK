@@ -266,7 +266,7 @@ void CSendingThread::SendingThreadProcedure()
             
             CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() GOT packet for Sending method");		
             
-			int timeDiffForQueue;
+			int timeDiffForQueue = 0;
 
 			if (m_bPassOnlyAudio == false)
 			{
