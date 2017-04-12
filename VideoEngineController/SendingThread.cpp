@@ -315,14 +315,14 @@ void CSendingThread::SendingThreadProcedure()
 
 					if (m_bPassOnlyAudio == true)
 					{
-						if (m_bAudioOnlyDataAlreadySent == false && calleeDataLength <= 0)
+						if (m_bAudioOnlyDataAlreadySent == false && viewerDataLength <= 0)
 							continue;
 						else
 							m_bAudioOnlyDataAlreadySent = true;
 					}
 				}
 
-				HITLER("#RT# isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, friendId: %lld", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, lFriendID);
+				HITLER("#RT# isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, viewerDataLen: %d, calleeDataLen: %d", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, viewerDataLength, calleeDataLength);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
