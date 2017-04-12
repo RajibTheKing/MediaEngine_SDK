@@ -30,6 +30,30 @@ bool CLiveAudioParserForPublisher::IsParsingAudioData(){
 	return m_bIsCurrentlyParsingAudioData;
 }
 
+void CLiveAudioParserForPublisher::GenMissingBlock(unsigned char* uchAudioData, int nFrameLeftRange, int nFrameRightRange, std::vector<std::pair<int, int>>&vMissingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock)
+{
+	m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+	int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+	// add muxed header lenght with audio header length. 
+	if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
+		validHeaderLength += (totalCallee * 6 + 2);
+	}
+	// get audio data left range
+	int nAudioDataWithoutHeaderRightRange = nFrameRightRange;
+	int nAudioDataWithoutHeaderLeftRange = nFrameLeftRange + validHeaderLength;
+
+	for (auto &miss : vMissingBlocks) {
+		int leftPos = max(nAudioDataWithoutHeaderLeftRange, miss.first);
+		int rightPos = min(nAudioDataWithoutHeaderRightRange, miss.second);
+
+		if (leftPos <= rightPos) {
+			vCurrentFrameMissingBlock.push_back({ leftPos - nAudioDataWithoutHeaderLeftRange, rightPos - nAudioDataWithoutHeaderLeftRange });
+		}
+	}
+}
+
+
 void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
 	if (m_bIsRoleChanging)
 	{
@@ -92,6 +116,11 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
 					int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
 
+					if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+						int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
+						validHeaderLength += (totalCallee * 6 + 2);
+					}
+
 					HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
 
 					if (validHeaderLength >(iLeftRange - nFrameLeftRange)) {
@@ -110,7 +139,7 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 		++iFrameNumber;
 		HITLER("#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
 
-		if (!bCompleteFrame)
+		if (!bCompleteFrameHeader)
 		{
 			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
 
@@ -119,11 +148,15 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 			continue;
 		}
 
+		///calculate missing vector 
+		std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
+		GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
+
 		nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 		nProcessedFramsCounter++;
 		if (m_vAudioFarEndBufferVector[iId])
 		{
-			m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
+			m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1, vCurrentAudioFrameMissingBlock);
 		}
 	}
 

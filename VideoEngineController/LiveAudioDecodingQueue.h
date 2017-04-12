@@ -8,10 +8,13 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
+#include "vector"
 
 #define LIVE_AUDIO_DECODING_QUEUE_SIZE 150
 #define MAX_AUDIO_ENCODED_FRAME_LEN 2048
 
+using PI = std::pair < int, int > ;
+using VP = std::vector < PI > ;
 
 class LiveAudioDecodingQueue
 {
@@ -20,8 +23,8 @@ public:
     LiveAudioDecodingQueue();
     ~LiveAudioDecodingQueue();
 
-    int EnQueue(unsigned char *saReceivedAudioFrameData, int nLength);
-    int DeQueue(unsigned char *saReceivedAudioFrameData);
+    int EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP &vMissing = VP());
+	int DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing = VP());
     void IncreamentIndex(int &irIndex);
     int GetQueueSize();
     void ResetBuffer();
@@ -36,7 +39,7 @@ private:
 
     unsigned char m_uchBuffer[LIVE_AUDIO_DECODING_QUEUE_SIZE][MAX_AUDIO_ENCODED_FRAME_LEN];
     int m_naBufferDataLength[LIVE_AUDIO_DECODING_QUEUE_SIZE];
-
+	VP m_vMissingBuffer[LIVE_AUDIO_DECODING_QUEUE_SIZE];
     SmartPointer<CLockHandler> m_pLiveAudioDecodingQueueMutex;
 };
 

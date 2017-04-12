@@ -24,6 +24,7 @@ public:
 	virtual void SetRoleChanging(bool bFlag);
 	virtual bool GetRoleChanging();
 	virtual bool IsParsingAudioData();
+	virtual void GenMissingBlock(unsigned char* uchChunkData, int iFrameLeftRange, int iFrameRightRange, std::vector<std::pair<int, int>>&missingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock);
 };
 
 #endif

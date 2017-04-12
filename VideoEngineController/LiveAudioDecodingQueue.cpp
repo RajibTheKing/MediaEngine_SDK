@@ -29,7 +29,7 @@ void LiveAudioDecodingQueue::ResetBuffer()
     m_nQueueSize = 0;
 }
 
-int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength)
+int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP &vMissing)
 {
     Locker lock(*m_pLiveAudioDecodingQueueMutex);
 
@@ -37,6 +37,7 @@ int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int
 
     m_naBufferDataLength[m_iPushIndex] = nLength;
     
+	m_vMissingBuffer[m_iPushIndex] = vMissing;
 
     if (m_nQueueSize == m_nQueueCapacity)
     {
@@ -55,7 +56,7 @@ int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int
     return 1;
 }
 
-int LiveAudioDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData)
+int LiveAudioDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing)
 {
     Locker lock(*m_pLiveAudioDecodingQueueMutex);
 
@@ -68,7 +69,7 @@ int LiveAudioDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData)
         int length = m_naBufferDataLength[m_iPopIndex];
 
         memcpy(saReceivedAudioFrameData, m_uchBuffer[m_iPopIndex], length);
-
+		vMissing = m_vMissingBuffer[m_iPopIndex];
         IncreamentIndex(m_iPopIndex);
 
         m_nQueueSize--;
