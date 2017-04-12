@@ -30,6 +30,29 @@ bool CLiveAudioParserForChannel::IsParsingAudioData(){
 	return m_bIsCurrentlyParsingAudioData;
 }
 
+void CLiveAudioParserForChannel::GenMissingBlock(unsigned char* uchAudioData, int nFrameLeftRange, int nFrameRightRange, std::vector<std::pair<int, int>>&vMissingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock)
+{
+	m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+	int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+	// add muxed header lenght with audio header length. 
+	if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
+		validHeaderLength += (totalCallee * 6 + 2);
+	}
+	// get audio data left range
+	int nAudioDataWithoutHeaderRightRange = nFrameRightRange;
+	int nAudioDataWithoutHeaderLeftRange = nFrameLeftRange + validHeaderLength;
+
+	for (auto &miss : vMissingBlocks) {
+		int leftPos = max(nAudioDataWithoutHeaderLeftRange, miss.first);
+		int rightPos = min(nAudioDataWithoutHeaderRightRange, miss.second);
+
+		if (leftPos <= rightPos) {
+			vCurrentFrameMissingBlock.push_back({ leftPos - nAudioDataWithoutHeaderLeftRange, rightPos - nAudioDataWithoutHeaderLeftRange });
+		}
+	}
+}
+
 void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
 	if (m_bIsRoleChanging)
 	{
