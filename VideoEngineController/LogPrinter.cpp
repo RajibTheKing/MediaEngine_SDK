@@ -138,7 +138,7 @@ void CLogPrinter::Log(const char *format, ...)
     
 #if defined(__ANDROID__)
     LOGE("%s", str.c_str());
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_IPHONE)
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP) || defined(TARGET_OS_IPHONE)
     printf("%s\n", str.c_str());
 #endif
 
@@ -175,7 +175,7 @@ void CLogPrinter::Write(Priority priority, const std::string message)
 #if defined(TARGET_OS_IPHONE)
             
             cout<<PRIORITY_NAMES[priority] << "--> "<<message<<endl;
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_)
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP)
 			printf("%s ---> %s\n",PRIORITY_NAMES[priority].c_str(), message.c_str());
 #elif defined(__ANDROID__)
 
@@ -203,7 +203,7 @@ void CLogPrinter::WriteSpecific(Priority priority, const std::string message)
 
 #if defined(TARGET_OS_IPHONE)
         cout<<PRIORITY_NAMES[priority] << "--> "<<message<<endl;
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_)
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP)
 		printf("%s ---> %s\n",PRIORITY_NAMES[priority].c_str(), message.c_str());
 #elif defined(__ANDROID__)
 
@@ -226,7 +226,7 @@ void CLogPrinter::WriteSpecific2(Priority priority, const std::string message)
 
 #if defined(TARGET_OS_IPHONE)
         cout<<PRIORITY_NAMES[priority] << "--> "<<message<<endl;
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_)
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP)
 		printf("%s ---> %s\n",PRIORITY_NAMES[priority].c_str(), message.c_str());
 #elif defined(__ANDROID__)
 
@@ -286,7 +286,7 @@ long long CLogPrinter::WriteForOperationTime(Priority priority, const std::strin
 #elif defined(__ANDROID__)
 
 		LOGE("OperatTime: %lld ---> %s ", timeDiff, message.c_str());
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 		printf("OperatTimeLog: %lld %s\n", timeDiff, message.c_str());
 #endif
 
@@ -314,7 +314,7 @@ long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::
 
 			LOGE("%s :: %s --> %lld", PRIORITY_NAMES[priority].c_str(), message.c_str(), timeDiff);
 
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_IPHONE)
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP) || defined(TARGET_OS_IPHONE)
 
 			printf("%s :: %s --> %lld\n", PRIORITY_NAMES[priority].c_str(), message.c_str(), timeDiff);
 
@@ -329,7 +329,7 @@ long long CLogPrinter::WriteLog(Priority priority, int isLogEnabled, const std::
 
 			LOGE("%s :: %s", PRIORITY_NAMES[priority].c_str(), message.c_str());
 
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_) || defined(TARGET_OS_IPHONE)
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP) || defined(TARGET_OS_IPHONE)
 
 			printf("%s :: %s\n", PRIORITY_NAMES[priority].c_str(), message.c_str());
 
@@ -375,7 +375,7 @@ void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message
 
 		LOGE("QueueTime: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
 		
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 		printf("QueueTime:  %s\n", message.c_str());
 #endif
 
@@ -398,7 +398,7 @@ void CLogPrinter::WriteForPacketLossInfo(Priority priority, const std::string me
 #elif defined(__ANDROID__)
 
 		LOGE("PacketLoss: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 		printf("PacketLoss: %s\n", message.c_str());
 
 #endif
@@ -413,7 +413,7 @@ long long  CLogPrinter::GetTimeDifference(long long prevTime)
 
 #ifndef USE_CPP_11_TIME
 
-	#if defined(TARGET_OS_WINDOWS_PHONE) || defined(_DESKTOP_C_SHARP_)
+	#if defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP)
 		return GetTickCount64();
 	#else
 		struct timeval te;

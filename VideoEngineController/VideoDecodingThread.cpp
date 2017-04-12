@@ -33,7 +33,7 @@ m_HasPreviousValues(false),
 m_llFriendID(llFriendID)
 
 {
-#ifdef _DESKTOP_C_SHARP_ 
+#ifdef DESKTOP_C_SHARP 
 
     m_iMaxLen = MAX_FRAME_WIDTH * MAX_FRAME_HEIGHT * 3;
 
@@ -489,7 +489,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 	m_previousDecodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_PreviousDecodedFrameConvertedData, m_RenderingRGBFrame, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 	this->m_pColorConverter->ConvertI420ToYV12(m_PreviousDecodedFrameConvertedData, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
@@ -522,7 +522,7 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 		m_FpsCounter = 0;
 	}
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 
 	m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_RenderingRGBFrame, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation, m_naInsetHeights[0], m_naInsetWidths[0]);
 
@@ -700,7 +700,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	this->m_pColorConverter->ConvertI420ToNV12(m_DecodedFrame, m_decodingHeight, m_decodingWidth);
     
-#elif defined(_DESKTOP_C_SHARP_)
+#elif defined(DESKTOP_C_SHARP)
 	//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "DepacketizationThreadProcedure() For Desktop");
 	m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_DecodedFrame, m_RenderingRGBFrame, m_decodingHeight, m_decodingWidth);
 #elif defined(TARGET_OS_WINDOWS_PHONE)
@@ -862,7 +862,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
     
     
 
-#if defined(_DESKTOP_C_SHARP_)
+#if defined(DESKTOP_C_SHARP)
 	m_RenderingBuffer->Queue(nFramNumber, m_RenderingRGBFrame, m_decodedFrameSize, nTimeStampDiff, m_decodingHeight, m_decodingWidth, nOrientation, nInsetHeight, nInsetWidth);
 	return m_decodedFrameSize;
 #else
