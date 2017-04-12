@@ -1,5 +1,6 @@
 #include "AudioMixer.h"
 #include "string.h"
+#include "algorithm"
 
 AudioMixer::AudioMixer(int iNumberOfBitsPerSample, int iFrameSize) :
 m_iTotalCallee(0),
@@ -161,7 +162,7 @@ int AudioMixer::getAudioData(unsigned char* uchMixedAudioData)
 	return iIndexOffset;
 }
 
-int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId) 
+int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId, std::vector<std::pair<int,int>> &vMissingBlock) 
 {
 	int iTotalCallee = uchMixedAudioData[0];
 	int iBitPerSample = uchMixedAudioData[1];
@@ -190,6 +191,8 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 		}
 	}
 	
+	int nMissingIndex = 0;
+	int BitPerByte = 8;
 	for (int i = 0; i < m_iAudioFrameSize; i++)
 	{
 		int calleeValue = readValue(uchCalleeAudioData, iIndexOffsetForCallee, iBitOffsetForCallee, 16);
@@ -200,6 +203,24 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 			mixedValue -= calleeValue;
 		}
 
+		int nLeftBitPos = (i* m_iNumberOfBitsPerSample);
+		int nRightBitPos = nLeftBitPos + m_iNumberOfBitsPerSample;
+		int isMissing = 0;
+		while (nMissingIndex < (int)vMissingBlock.size() && ((vMissingBlock[nMissingIndex].second + 1) * BitPerByte - 1) < nLeftBitPos) {
+			nMissingIndex++;
+		}
+
+		if (nMissingIndex < (int)vMissingBlock.size()) {
+			int iLpos = std::max(vMissingBlock[nMissingIndex].first * BitPerByte, nLeftBitPos);
+			int iRpos = std::min((vMissingBlock[nMissingIndex].first + 1) * BitPerByte - 1, nRightBitPos);
+			if (iLpos < iRpos) {
+				isMissing = 1;
+			}
+		}
+
+		if (isMissing) {
+			mixedValue = 0;
+		}
 		writeValue(uchAudioDataToPlay, iIndexOffsetForPlayAudio, iBitOffsetForPlayAudio, 16, mixedValue);
 	}
 

@@ -328,7 +328,16 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 		llLastTime = llNow;
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL) {
 			LOG18("#18@# PUb enq , packet type %d", iCurrentPacketNumber);
-			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);
+			short tmpBuffer[2048];
+			int iStartIndex = 0;
+			int iEndIndex = 1599;
+			int iCalleeId = 1;
+			int iTotalBlocks = 16;
+			int iFrameSize = 800;
+			int iMuxHeaderSize = 3;
+			m_pAudioMixer->genCalleeChunkHeader((unsigned char*)tmpBuffer, iStartIndex, iEndIndex, iCalleeId, iCurrentPacketNumber, iFrameSize, iTotalBlocks, m_vFrameMissingBlocks);
+			memcpy(tmpBuffer+3, pshSentFrame, nSentFrameSize* sizeof(short));
+			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(pshSentFrame, nSentFrameSize + iMuxHeaderSize, iCurrentPacketNumber);
 		}
 
 		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
@@ -605,10 +614,10 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 	long long llTimeStamp = 0;
 	int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
 	int nCalleeId = 1;
-
+	m_vFrameMissingBlocks.clear();
 	if (nQueueSize> 0)
 	{
-		m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
+		m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
 		LOG18("#18#FE#Viewer... ");
 
 		if (m_nDecodingFrameSize < 1)
@@ -704,21 +713,21 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 					if (bFound)
 					{
 						LOG18("#18@# FOUND REMOVED AUDIO DATA");
-						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId) / sizeof(short);
+						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 					}
 					else
 					{
 						//Do Some thing;
 						LOG18("#18@# FOUND REMOVED AUDIO DATA with -1");
 						nCalleeId = -1;
-						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId) / sizeof(short);
+						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 					}
 				}
 				else //For Only Viewers
 				{
 					LOG18("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR");
 					nCalleeId = -1;
-					m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, -1) / sizeof(short);
+					m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 				}
 			}
 			else
@@ -757,10 +766,10 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedure()
 	int iDataSentInCurrentSec = 0; //NeedToFix.
 	long long llTimeStamp = 0;
 	int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
-
+	m_vFrameMissingBlocks.clear();
 	if ( nQueueSize> 0)
 	{
-		m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
+		m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
 		
 		LOG18("#18#FE#Live..");
 		if (m_nDecodingFrameSize < 1)
@@ -850,7 +859,7 @@ void CAudioFarEndDataProcessor::AudioCallFarEndProcedure()
 
 	int iDataSentInCurrentSec = 0; //NeedToFix.
 	long long llTimeStamp = 0;
-
+	
 	if (!IsQueueEmpty())
 	{
 		DequeueData(m_nDecodingFrameSize);

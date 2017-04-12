@@ -47,6 +47,8 @@ private:
 	void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte);
 	void SentToNetwork(long long llRelativeTime);
 	
+	std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
+
 	long long m_llFriendID;
 	bool m_bIsLiveStreamingRunning;
 	bool m_bIsReady;

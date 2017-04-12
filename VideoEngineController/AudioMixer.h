@@ -7,7 +7,7 @@ public:
 	~AudioMixer();
 	void addAudioData(unsigned char* uchCalleeAudio);
 	int getAudioData(unsigned char* uchMixedAudioData);
-	int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId);
+	int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId, std::vector<std::pair<int, int>> &vMissingBlock);
 	void reset(int iNumberOfBitsPerSample, int iFrameSize);
 	static void genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIndex, int iEndIndex, int iCalleeId, int iFrameNumber, int iFrameSize, int iBlock, std::vector<std::pair<int, int>> &vMissingBlocks);
 	int GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int nUserId);
