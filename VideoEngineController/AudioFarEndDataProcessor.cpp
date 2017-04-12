@@ -221,7 +221,7 @@ void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 #ifndef LOCAL_SERVER_LIVE_CALL
 		if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL)
 		{
-			decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
 		}
 		else
 		{

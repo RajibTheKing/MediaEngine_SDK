@@ -23,8 +23,8 @@ public:
     LiveAudioDecodingQueue();
     ~LiveAudioDecodingQueue();
 
-    int EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP &vMissing = VP());
-	int DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing = VP());
+    int EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP &vMissing);
+	int DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing);
     void IncreamentIndex(int &irIndex);
     int GetQueueSize();
     void ResetBuffer();

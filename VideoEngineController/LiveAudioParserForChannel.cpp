@@ -121,9 +121,10 @@ void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned
 
 		nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 		nProcessedFramsCounter++;
+		std::vector<std::pair<int, int>>vMissingFrame;
 		if (m_vAudioFarEndBufferVector[iId])
 		{
-			m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1);
+			m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1, vMissingFrame);
 		}
 	}
 
