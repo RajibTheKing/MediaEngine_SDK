@@ -7,8 +7,9 @@ BUILD_DIRECTORY="./";
 BUILD_NAME="";
 #BUILD_CONFIGURATION="Release";
 #BUILD_CONFIGURATION="Debug";
-BUILD_CONFIGURATION=$1
-XCODE_SDK_VERSION="10.2"
+BUILD_CONFIGURATION=$1;
+BUILD_NAME=$2;
+XCODE_SDK_VERSION=$3;
 
 #This is a function
 LogOutput()
@@ -44,7 +45,6 @@ CreateDirectoryIfNotExist()
 
 
 #read -p "Please Enter a BUILD_NAME: " -r BUILD_NAME;
-BUILD_NAME=$2;
 if [ "$BUILD_NAME" == "" ]; then
 	LogOutput "TheKing--> You must give a BUILD_NAME" "RED";
 	exit 1;
