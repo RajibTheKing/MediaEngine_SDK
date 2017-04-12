@@ -301,7 +301,7 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
 				int viewerDataLength = 0, calleeDataLength = 0;
-				long long llAudioChunkDuration=5, llAudioChunkRelativeTime=5;
+				long long llAudioChunkDuration=0, llAudioChunkRelativeTime=0;
 
 				m_iAudioDataToSendIndex = 0;
 
