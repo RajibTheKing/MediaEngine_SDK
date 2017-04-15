@@ -459,9 +459,13 @@ void CSendingThread::SendingThreadProcedure()
 				m_Tools.SetMediaUnitBlockInfoPositionInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitChunkDurationInMediaChunck(diff, m_AudioVideoDataToSend);
 
+				HITLERSS("#RT### Sending 0");
+
 #ifndef __LIVE_STREAMIN_SELF__
 
 #ifdef NEW_HEADER_FORMAT
+
+				HITLERSS("#RT### Sending 01");
 
 				if (m_bInterruptRunning == false)
 				{
@@ -471,6 +475,9 @@ void CSendingThread::SendingThreadProcedure()
 
 						if (m_bVideoOnlyLive == false)
 						{
+
+							HITLERSS("#RT### Sending 02");
+
 							HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
 
 							int viewerDataIndex = index + m_iDataToSendIndex;
@@ -503,15 +510,21 @@ void CSendingThread::SendingThreadProcedure()
 					}
 					else
 					{
+						HITLERSS("#RT### Sending 03");
 						m_bInterruptHappened = false;
 					}
 				}
 				
 #else
+				HITLERSS("#RT### Sending 1");
+
 				if (m_bInterruptRunning == false)
 				{
 					if (m_bInterruptHappened == false)
+					{
+						HITLERSS("#RT### Sending friendID %lld mediaType %d length %d duration %d", m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 						m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
+					}
 					else
 						m_bInterruptHappened = false;
 				}
@@ -523,6 +536,7 @@ void CSendingThread::SendingThreadProcedure()
 
 
 #else        
+				HITLERSS("#RT### Sending 11");
               /*  printf("Sending to liovestream, llNowTimeDiff = %lld\n", llNowTimeDiff);
                 
                 if(NULL != g_LiveReceiver)
