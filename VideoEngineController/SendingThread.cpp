@@ -309,6 +309,8 @@ void CSendingThread::SendingThreadProcedure()
 				if (vAudioDataLengthVector.size()>0)
 					vAudioDataLengthVector.clear();
 
+				HITLERSS("#RT### m_bAudioOnlyLive %d EntityType %d callInLiveType %d m_bPassOnlyAudio %d", m_bAudioOnlyLive, m_pVideoCallSession->GetEntityType(), m_pVideoCallSession->GetCallInLiveType(), m_bPassOnlyAudio);
+
 				if (bExist && m_bVideoOnlyLive == false)
 				{
 					pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength, llAudioChunkDuration, llAudioChunkRelativeTime);
@@ -322,7 +324,7 @@ void CSendingThread::SendingThreadProcedure()
 					}
 				}
 
-				HITLER("#RT# isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, viewerDataLen: %d, calleeDataLen: %d", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, viewerDataLength, calleeDataLength);
+				HITLERSS("#RT### isAudioCallSessionExist: %d, audioChunkDuration: %lld, relativeTime: %lld, viewerDataLen: %d, calleeDataLen: %d", bExist, llAudioChunkDuration, llAudioChunkRelativeTime, viewerDataLength, calleeDataLength);
 
 				//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex);
 				//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex);
