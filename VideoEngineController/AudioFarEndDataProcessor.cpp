@@ -337,7 +337,7 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 			int iMuxHeaderSize = 3;
 			m_pAudioMixer->genCalleeChunkHeader((unsigned char*)tmpBuffer, iStartIndex, iEndIndex, iCalleeId, iCurrentPacketNumber, iFrameSize, iTotalBlocks, m_vFrameMissingBlocks);
 			memcpy(tmpBuffer+3, pshSentFrame, nSentFrameSize* sizeof(short));
-			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(pshSentFrame, nSentFrameSize + iMuxHeaderSize, iCurrentPacketNumber);
+			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(tmpBuffer, nSentFrameSize + iMuxHeaderSize, iCurrentPacketNumber);
 		}
 
 		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
@@ -695,7 +695,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 				if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 				{
 					nCalleeId = 1;	//Should be fixed.
-					int nGetOwnFrameNumber;
+					long long nGetOwnFrameNumber;
 					nGetOwnFrameNumber = m_pAudioMixer->GetAudioFrameByParsingMixHeader(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nCalleeId);
 					long long llLastFrameNumber;
 					int nSize;
@@ -703,7 +703,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 					while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize())
 					{
 						nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue.DeQueue(m_saCalleeSentData, llLastFrameNumber);
-
+						LOG18("#18@# FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
 						if (nGetOwnFrameNumber == llLastFrameNumber)
 						{
 							bFound = true;

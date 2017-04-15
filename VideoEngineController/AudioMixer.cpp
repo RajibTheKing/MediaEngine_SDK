@@ -2,6 +2,9 @@
 #include "string.h"
 #include "algorithm"
 
+
+#include "LogPrinter.h"
+
 AudioMixer::AudioMixer(int iNumberOfBitsPerSample, int iFrameSize) :
 m_iTotalCallee(0),
 m_iCalleeMaskFlag(0),
@@ -115,8 +118,13 @@ void AudioMixer::writeValue(unsigned char *uchByteArray, int &iIndexOffset, int 
 
 void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 {
-	int iCalleeId = uchCalleeAudio[0];
-	int iMissingFlag = (uchCalleeAudio[1] << 8) + uchCalleeAudio[2];
+	int indexOffset = 0;
+	int bitOffset = 0;
+	int iCalleeId = readValue(uchCalleeAudio, indexOffset, bitOffset, 8);
+	int iMissingFlag = readValue(uchCalleeAudio, indexOffset, bitOffset, 16);
+	int FrameNo = readValue(uchCalleeAudio, indexOffset, bitOffset, 24);
+
+	LOG18("#18@# ADD AUDIO OF CALLEE %d WITH FRAME %d", iCalleeId, FrameNo);
 	int iOffsetForTotalCalleeAndBit = 2;
 
 	int iAudioSamplePerBlock = m_iAudioFrameSize / m_iTotalBlock;
@@ -211,8 +219,8 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 		}
 
 		if (nMissingIndex < (int)vMissingBlock.size()) {
-			int iLpos = std::max(vMissingBlock[nMissingIndex].first * BitPerByte, nLeftBitPos);
-			int iRpos = std::min((vMissingBlock[nMissingIndex].first + 1) * BitPerByte - 1, nRightBitPos);
+			int iLpos = max(vMissingBlock[nMissingIndex].first * BitPerByte, nLeftBitPos);
+			int iRpos = min((vMissingBlock[nMissingIndex].first + 1) * BitPerByte - 1, nRightBitPos);
 			if (iLpos < iRpos) {
 				isMissing = 1;
 			}
@@ -267,6 +275,9 @@ void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIn
 int AudioMixer::GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int nUserId){
 	int nNumberOfUsers = uchByteArray[0];
 	int nBlock = uchByteArray[1];	
+	
+	LOG18("#18@# FOUND USER %d, nBlock : %d", nNumberOfUsers, nBlock);
+
 	for (int i = 0; i < nNumberOfUsers; i++)
 	{
 		int nId = uchByteArray[2 + i * 6];
@@ -274,6 +285,7 @@ int AudioMixer::GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int
 		int Offset = 0;
 		int bitLen = 24;
 		int nFrameNumber = readValue(uchByteArray, Index , Offset, bitLen);
+		LOG18("#18@# FOUND UID %d nframe %d", nId, nFrameNumber);
 		if (nId == nUserId)
 		{
 			return nFrameNumber;
