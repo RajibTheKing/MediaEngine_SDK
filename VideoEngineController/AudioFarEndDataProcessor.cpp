@@ -578,7 +578,8 @@ void CAudioFarEndDataProcessor::DecodingThreadProcedure()
 			{
 				LiveStreamFarEndProcedureViewer();
 			}
-			else {
+			else 
+			{
 				LiveStreamFarEndProcedure();
 			}
 		}

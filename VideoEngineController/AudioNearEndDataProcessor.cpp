@@ -121,7 +121,8 @@ void CAudioNearEndDataProcessor::EncodingThreadProcedure()
 				LiveStreamNearendProcedureViewer();
 			}			
 		}
-		else {
+		else 
+		{
 			AudioCallNearendProcedure();
 		}
 	}
