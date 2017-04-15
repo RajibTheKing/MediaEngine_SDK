@@ -702,8 +702,14 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 					bool bFound = false;
 					while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize())
 					{
-						nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue.DeQueue(m_saCalleeSentData, llLastFrameNumber);
+						nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue.DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);
 						LOG18("#18@# FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
+						
+						if (nSize == -1) {
+							LOG18("#18@# FOUND EITHER CURRENT FRAME IS GREATER THAN FRONT OF QUEUE OR NO DATA IN QUEUE");
+							break;
+						}
+
 						if (nGetOwnFrameNumber == llLastFrameNumber)
 						{
 							bFound = true;

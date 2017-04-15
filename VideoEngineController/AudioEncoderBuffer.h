@@ -17,6 +17,7 @@ public:
 
 	int EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump);
 	int DeQueue(short *saCapturedAudioFrameData, long long &receivedTime);
+	int DeQueueForCallee(short *saCapturedAudioFrameData, long long &receivedTime, int iCalleeFrameNoSentByPublisher);
 	void IncreamentIndex(int &irIndex);
 	int GetQueueSize();
 	void ResetBuffer();

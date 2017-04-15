@@ -119,3 +119,32 @@ int CAudioShortBuffer::GetQueueSize()
 
 	return m_nQueueSize;
 }
+
+
+int CAudioShortBuffer::DeQueueForCallee(short *saCapturedAudioFrameData, long long &receivedTime, int iCalleeFrameNoSentByPublisher)
+{
+	Locker lock(*m_pAudioEnocdingBufferMutex);
+
+	if (m_nQueueSize == 0)
+	{
+		return -1;
+	}
+	else
+	{
+		int nlength = m_naBufferDataLength[m_iPopIndex];
+		receivedTime = m_laReceivedTimeList[m_iPopIndex];
+		if (receivedTime > iCalleeFrameNoSentByPublisher)
+		{
+			return -1;
+		}
+		memcpy(saCapturedAudioFrameData, m_s2aAudioEncodingBuffer[m_iPopIndex], nlength * 2);
+
+		IncreamentIndex(m_iPopIndex);
+
+		m_nQueueSize--;
+
+		return nlength;
+	}
+
+	return 1;
+}
