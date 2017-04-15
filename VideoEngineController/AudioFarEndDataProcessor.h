@@ -80,9 +80,8 @@ private:
 	unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
 	short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
 	short m_saCalleeSentData[MAX_AUDIO_FRAME_Length];
-#ifdef AAC_ENABLED
+
 	CAac *m_cAac = nullptr;
-#endif
 
 	void StartDecodingThread();
 	static void* CreateAudioDecodingThread(void* param);

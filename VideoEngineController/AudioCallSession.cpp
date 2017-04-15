@@ -59,10 +59,8 @@ m_bIsPublisher(true)
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
 
-#ifdef AAC_ENABLED
 	m_cAac = new CAac();
 	m_cAac->SetParameters(44100, 2);
-#endif
 
 	m_iPrevRecvdSlotID = -1;
 	m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
@@ -130,12 +128,11 @@ CAudioCallSession::~CAudioCallSession()
 		m_pFarEndProcessor = NULL;
 	}
 	
-#ifdef AAC_ENABLED
 	if (m_cAac != nullptr){
 		delete m_cAac;
 		m_cAac = nullptr;
 	}
-#endif
+
 #ifdef OPUS_ENABLED
 	delete m_pAudioCodec;
 #else

@@ -56,10 +56,8 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 	m_ReceivingHeader = new CAudioPacketHeader();
 	m_pAudioDePacketizer = new AudioDePacketizer(m_pAudioCallSession);
 
-#ifdef AAC_ENABLED
 	m_cAac = new CAac();
 	m_cAac->SetParameters(44100, 2);
-#endif
 	m_pGomGomGain = new CGomGomGain(123);
 
 	StartDecodingThread();
@@ -95,13 +93,11 @@ CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
 		m_pLiveAudioParser = NULL;
 	}
 
-#ifdef AAC_ENABLED
 	if (m_cAac)
 	{
 		delete m_cAac;
 		m_cAac = nullptr;
 	}
-#endif
 }
 
 void CAudioFarEndDataProcessor::StartDecodingThread()
@@ -279,12 +275,8 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 		if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)	//Only for channel
 		{
 			long long llNow = Tools::CurrentTimestamp();
-#ifdef AAC_ENABLED
 			m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
 			LOG_AAC("$@@@@@@@@@--> AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
-#else
-			LOG_AAC("Continue for AudioChannelPacket!");
-#endif
 		}
 		else
 		{

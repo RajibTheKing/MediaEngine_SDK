@@ -3,7 +3,6 @@
 #define _AUDIO_CALL_SESSION_H_
 
 #define OPUS_ENABLED
-#define AAC_ENABLED
 
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
@@ -28,10 +27,7 @@
 #include "VideoSockets.h"
 #endif
 
-
-#ifdef AAC_ENABLED
 #include "Aac.h"
-#endif
 
 #ifdef OPUS_ENABLED
 #include "AudioCodec.h"
@@ -175,10 +171,7 @@ private:
 
 	int m_nCallInLiveType;
 
-
-#ifdef AAC_ENABLED
 	CAac *m_cAac;
-#endif
 
 #ifdef USE_ANS
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
