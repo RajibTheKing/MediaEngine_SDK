@@ -7,11 +7,13 @@ public:
 	~AudioMixer();
 	void addAudioData(unsigned char* uchCalleeAudio);
 	int getAudioData(unsigned char* uchMixedAudioData);
-	int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId, std::vector<std::pair<int, int>> &vMissingBlock);
+	int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, long long calleeId, std::vector<std::pair<int, int>> &vMissingBlock);
 	void reset(int iNumberOfBitsPerSample, int iFrameSize);
-	static void genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIndex, int iEndIndex, int iCalleeId, int iFrameNumber, int iFrameSize, int iBlock, std::vector<std::pair<int, int>> &vMissingBlocks);
-	int GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int nUserId);
+	void genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIndex, int iEndIndex, long long iCalleeId, int iFrameNumber, int iFrameSize, int iBlock, std::vector<std::pair<int, int>> &vMissingBlocks);
+	int GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, long long nUserId);
 	void Convert18BitTo16Bit(unsigned char* p18BitData, unsigned char* p16BitData, int nSampleSize);
+	long long getMax(int bitLength);
+	long long getMin(int bitLength);
 
 private:
 	int m_iTotalCallee;
@@ -21,10 +23,14 @@ private:
 	int m_iTotalBlock;
 	int m_iCalleeFrameInfoSize;
 
+	int m_iCalleeIdLengthInByte;
+	int m_iMissingMaskLengthInByte;
+	int m_iFrameNumberLengthInByte;
+
 	unsigned char m_uchCalleeBlockInfo[MAX_AUDIO_DECODER_FRAME_SIZE];
 
 	int m_iMixedData[MAX_AUDIO_DECODER_FRAME_SIZE];
 
-	int readValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength);
-	void writeValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength, int iValue);	
+	long long readValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength);
+	void writeValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength, long long iValue);	
 };

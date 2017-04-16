@@ -502,11 +502,11 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 		iDataEndIndex = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING - 1;
 		iCallId = 0;	//Publisher
 		nNumberOfBlocks = 16;
-		int nMuxHeaderSize = 6;
+		int nMuxHeaderSize = 14;
 
-		memcpy(shMuxedData + 3, shPublisherData, 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	//3 instead of 6. since it is short.
+		memcpy(shMuxedData + (nMuxHeaderSize / 2), shPublisherData, 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	//3 instead of 6. since it is short.
 
-		AudioMixer::genCalleeChunkHeader((unsigned char*)shMuxedData, iDataStartIndex, iDataEndIndex, iCallId, nPacketNumber, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, nNumberOfBlocks, vMissingBlocks);
+		m_pAudioMixer->genCalleeChunkHeader((unsigned char*)shMuxedData, iDataStartIndex, iDataEndIndex,iCallId, nPacketNumber, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, nNumberOfBlocks, vMissingBlocks);
 
 		m_pAudioMixer->addAudioData((unsigned char*)shMuxedData); // this data should contains only the mux header
 

@@ -11,7 +11,10 @@ m_iCalleeMaskFlag(0),
 m_iNumberOfBitsPerSample(iNumberOfBitsPerSample),
 m_iAudioFrameSize(iFrameSize),
 m_iTotalBlock(16),
-m_iCalleeFrameInfoSize(6)
+m_iCalleeFrameInfoSize(14),
+m_iCalleeIdLengthInByte(8),
+m_iMissingMaskLengthInByte(2),
+m_iFrameNumberLengthInByte(4)
 {
 	memset(m_iMixedData, 0, sizeof m_iMixedData);
 	memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
@@ -24,7 +27,7 @@ void AudioMixer::reset(int iNumberOfBitsPerSample, int iFrameSize) // sample siz
 	m_iNumberOfBitsPerSample = iNumberOfBitsPerSample; //
 	m_iAudioFrameSize = iFrameSize; //
 	m_iTotalBlock = 16;
-	m_iCalleeFrameInfoSize = 6;
+	m_iCalleeFrameInfoSize = 14;
 
 	memset(m_iMixedData, 0, sizeof m_iMixedData);
 	memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
@@ -32,21 +35,21 @@ void AudioMixer::reset(int iNumberOfBitsPerSample, int iFrameSize) // sample siz
 }
 
 
-int AudioMixer::readValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength)
+long long AudioMixer::readValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iReadBitLength)
 {
-	int iResult = 0;
+	long long iResult = 0;
 	int iTotalBitToRead = iReadBitLength;
 
 	int iBlockSize;
-	int iBlockMask;
-	int iBlockValue;
+	long long iBlockMask;
+	long long iBlockValue;
 
 	while (iTotalBitToRead)
 	{
 		iBlockSize = (8 - iBitOffset) > iTotalBitToRead ? iTotalBitToRead : (8 - iBitOffset);
-		iBlockMask = (1 << iBlockSize) - 1;
+		iBlockMask = (1LL << iBlockSize) - 1;
 		iBlockMask <<= iBitOffset;
-		iBlockValue = (int)uchByteArray[iIndexOffset] & iBlockMask;
+		iBlockValue = (long long)uchByteArray[iIndexOffset] & iBlockMask;
 		iBlockValue >>= iBitOffset;
 		iResult = iResult | (iBlockValue << (iReadBitLength - iTotalBitToRead));
 
@@ -59,38 +62,53 @@ int AudioMixer::readValue(unsigned char *uchByteArray, int &iIndexOffset, int &i
 		}
 	}
 
-	if (iResult & (1 << (iReadBitLength - 1)))
+	if (iResult & (1LL << (iReadBitLength - 1)))
 	{
-		iResult ^= ((1 << iReadBitLength) - 1);
+		iResult ^= ((1LL << iReadBitLength) - 1LL);
 		iResult += 1;
 		iResult *= -1;
 	}
 	return iResult;
 }
-void AudioMixer::writeValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iWriteBitLength, int iValue)
+
+
+long long AudioMixer::getMax(int bitLength) {
+	return (1LL << (bitLength - 1)) - 1LL;
+}
+
+long long AudioMixer::getMin(int bitLength) {
+	long long value = (1LL << (bitLength - 1)) - 1LL;
+	value *= -1;
+	value -= 1;
+	return value;
+}
+
+void AudioMixer::writeValue(unsigned char *uchByteArray, int &iIndexOffset, int &iBitOffset, int iWriteBitLength, long long iValue)
 {
 	int iTotalBitToWrite = iWriteBitLength;
 
-	if (iValue > ((1 << iWriteBitLength) - 1))
-		iValue = ((1 << iWriteBitLength) - 1);
+	if (iValue > getMax(iWriteBitLength))
+		iValue = getMax(iWriteBitLength);
 	
-	if (iValue < (-1 * (1 << iWriteBitLength)))
-		iValue = -1 * (1 << iWriteBitLength);
+	if (iValue < 0) {
+		if (iValue < getMin(iWriteBitLength))
+			iValue = getMin(iWriteBitLength);
+	}
 
 	if (iValue < 0) {
-		iValue *= -1;
-		iValue ^= ((1 << iWriteBitLength) - 1);
-		iValue += 1;
+		iValue *= -1LL;
+		iValue ^= ((1LL << iWriteBitLength) - 1LL);
+		iValue += 1LL;
 	}
 
 	int iBlockSize;
-	int iBlockMask;
-	int iBlockValue;
+	long long iBlockMask;
+	long long iBlockValue;
 
 	while (iTotalBitToWrite)
 	{
 		iBlockSize = (8 - iBitOffset) > iTotalBitToWrite ? iTotalBitToWrite : (8 - iBitOffset);
-		iBlockMask = (1 << iBlockSize) - 1;
+		iBlockMask = (1LL << iBlockSize) - 1;
 		//iBlockMask <<= (iTotalBitToWrite - iBlockSize);
 		iBlockValue = iValue & iBlockMask;
 		iValue >>= iBlockSize;
@@ -120,11 +138,11 @@ void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 {
 	int indexOffset = 0;
 	int bitOffset = 0;
-	int iCalleeId = readValue(uchCalleeAudio, indexOffset, bitOffset, 8);
-	int iMissingFlag = readValue(uchCalleeAudio, indexOffset, bitOffset, 16);
-	int FrameNo = readValue(uchCalleeAudio, indexOffset, bitOffset, 24);
+	long long iCalleeId = readValue(uchCalleeAudio, indexOffset, bitOffset, m_iCalleeIdLengthInByte * 8);
+	long long iMissingFlag = readValue(uchCalleeAudio, indexOffset, bitOffset, m_iMissingMaskLengthInByte * 8);
+	long long FrameNo = readValue(uchCalleeAudio, indexOffset, bitOffset, m_iFrameNumberLengthInByte * 8);
 
-	LOG18("#18@# ADD AUDIO OF CALLEE %d WITH FRAME %d", iCalleeId, FrameNo);
+	LOG18("#18@# ADD AUDIO OF CALLEE %lld WITH FRAME %lld", iCalleeId, FrameNo);
 	int iOffsetForTotalCalleeAndBit = 2;
 
 	int iAudioSamplePerBlock = m_iAudioFrameSize / m_iTotalBlock;
@@ -132,7 +150,6 @@ void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 	memcpy(m_uchCalleeBlockInfo + iOffsetForTotalCalleeAndBit + m_iTotalCallee * m_iCalleeFrameInfoSize, uchCalleeAudio, m_iCalleeFrameInfoSize);
 
 	m_iTotalCallee++;
-	m_iCalleeMaskFlag |= (1 << iCalleeId);
 
 	int iIndexOffset = m_iCalleeFrameInfoSize;
 	int iBitOffset = 0;
@@ -170,7 +187,7 @@ int AudioMixer::getAudioData(unsigned char* uchMixedAudioData)
 	return iIndexOffset;
 }
 
-int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, int calleeId, std::vector<std::pair<int,int>> &vMissingBlock) 
+int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, long long calleeId, std::vector<std::pair<int,int>> &vMissingBlock) 
 {
 	int iTotalCallee = uchMixedAudioData[0];
 	int iBitPerSample = uchMixedAudioData[1];
@@ -186,15 +203,21 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 	int iBitOffsetForPlayAudio = 0;
 	int iIndexOffsetForPlayAudio = 0;
 
-	int iMissingBlocks = -1;
+	long long iMissingBlocks = -1;
 	int iSamplePerBlock = m_iAudioFrameSize / m_iTotalBlock;
 
 
 	/// Find Callee info block for Callee designated by calleeId
+	int iIndexOffset = 2;
+	int iBitOffset = 0;
 	for (int i = 0; i < iTotalCallee; i++) {
-		if (uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize)] == calleeId)
+		long long llCurCalleeId = readValue(uchMixedAudioData, iIndexOffset, iBitOffset, m_iCalleeIdLengthInByte * 8);
+		long long llCurMissingBlocks = readValue(uchMixedAudioData, iIndexOffset, iBitOffset, m_iMissingMaskLengthInByte * 8);
+		long long llCurFrameNo = readValue(uchMixedAudioData, iIndexOffset, iBitOffset, m_iFrameNumberLengthInByte * 8);
+
+		if (llCurCalleeId == calleeId)
 		{
-			iMissingBlocks = ((int)uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize) + 1] << 8) + (int)uchMixedAudioData[2 + (i * m_iCalleeFrameInfoSize) + 2];
+			iMissingBlocks = llCurMissingBlocks;
 			break;
 		}
 	}
@@ -203,10 +226,10 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 	int BitPerByte = 8;
 	for (int i = 0; i < m_iAudioFrameSize; i++)
 	{
-		int calleeValue = readValue(uchCalleeAudioData, iIndexOffsetForCallee, iBitOffsetForCallee, 16);
-		int mixedValue = readValue(uchMixedAudioData, iIndexOffsetForMixed, iBitOffsetForMixed, iBitPerSample);
+		long long calleeValue = readValue(uchCalleeAudioData, iIndexOffsetForCallee, iBitOffsetForCallee, 16);
+		long long mixedValue = readValue(uchMixedAudioData, iIndexOffsetForMixed, iBitOffsetForMixed, iBitPerSample);
 
-		if (!(iMissingBlocks & (1 << (i / iSamplePerBlock))))
+		if (!(iMissingBlocks & (1LL << (i / iSamplePerBlock))))
 		{
 			mixedValue -= calleeValue;
 		}
@@ -235,7 +258,7 @@ int AudioMixer::removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char
 	return m_iAudioFrameSize * 2;
 }
 
-void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIndex, int iEndIndex, int iCalleeId, int iFrameNumber, int iFrameSize, int iTotalBlock, std::vector<std::pair<int, int>> &vMissingBlocks)
+void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIndex, int iEndIndex, long long iCalleeId, int iFrameNumber, int iFrameSize, int iTotalBlock, std::vector<std::pair<int, int>> &vMissingBlocks)
 {
 	int samplesPerBlocks = (iEndIndex - iStartIndex + 1) / iTotalBlock;
 
@@ -245,7 +268,7 @@ void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIn
 	int iMissingFlag = 0;
 	int iMissingVectorIndex = 0;
 
-	uchDestinaton[IndexOffset++] = iCalleeId;
+	writeValue(uchDestinaton, IndexOffset, BitOffset, m_iCalleeIdLengthInByte * 8, iCalleeId);
 
 	for (int i = 0; i < (iEndIndex - iStartIndex + 1); i++)
 	{
@@ -259,33 +282,24 @@ void AudioMixer::genCalleeChunkHeader(unsigned char* uchDestinaton, int iStartIn
 		}
 	}
 
-	uchDestinaton[IndexOffset++] = (iMissingFlag & ((1 << 8) - 1));
-	iMissingFlag >>= 8;
-	uchDestinaton[IndexOffset++] = (iMissingFlag & ((1 << 8) - 1));
-
-	uchDestinaton[IndexOffset++] = (iFrameNumber & ((1 << 8) - 1));
-	iFrameNumber >>= 8;
-	uchDestinaton[IndexOffset++] = (iFrameNumber & ((1 << 8) - 1));
-	iFrameNumber >>= 8;
-	uchDestinaton[IndexOffset++] = (iFrameNumber & ((1 << 8) - 1));
-	iFrameNumber >>= 8;
+	writeValue(uchDestinaton, IndexOffset, BitOffset, m_iMissingMaskLengthInByte * 8, iMissingFlag);
+	writeValue(uchDestinaton, IndexOffset, BitOffset, m_iFrameNumberLengthInByte * 8, iFrameNumber);
 	return;
 }
 
-int AudioMixer::GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, int nUserId){
+int AudioMixer::GetAudioFrameByParsingMixHeader(unsigned char *uchByteArray, long long nUserId){
 	int nNumberOfUsers = uchByteArray[0];
 	int nBlock = uchByteArray[1];	
 	
 	LOG18("#18@# FOUND USER %d, nBlock : %d", nNumberOfUsers, nBlock);
-
+	int indexOffset = 2;
+	int bitOffst = 0;
 	for (int i = 0; i < nNumberOfUsers; i++)
 	{
-		int nId = uchByteArray[2 + i * 6];
-		int Index = 2 + i * 6 + 3;
-		int Offset = 0;
-		int bitLen = 24;
-		int nFrameNumber = readValue(uchByteArray, Index , Offset, bitLen);
-		LOG18("#18@# FOUND UID %d nframe %d", nId, nFrameNumber);
+		long long nId = readValue(uchByteArray, indexOffset, bitOffst, m_iCalleeIdLengthInByte * 8);
+		long long iMissingMask = readValue(uchByteArray, indexOffset, bitOffst, m_iMissingMaskLengthInByte * 8);
+		int nFrameNumber = (int)readValue(uchByteArray, indexOffset , bitOffst, m_iFrameNumberLengthInByte * 8);
+		LOG18("#18@# FOUND UID %lld nframe %d", nId, nFrameNumber);
 		if (nId == nUserId)
 		{
 			return nFrameNumber;

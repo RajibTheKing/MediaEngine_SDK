@@ -144,7 +144,7 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
 
 			numOfMissingFrames++;
-			HITLER("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
+			LOG18("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
 			continue;
 		}
 

@@ -326,10 +326,10 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 			int iCalleeId = 1;
 			int iTotalBlocks = 16;
 			int iFrameSize = 800;
-			int iMuxHeaderSize = 3;
+			int iMuxHeaderSize = 14;
 			m_pAudioMixer->genCalleeChunkHeader((unsigned char*)tmpBuffer, iStartIndex, iEndIndex, iCalleeId, iCurrentPacketNumber, iFrameSize, iTotalBlocks, m_vFrameMissingBlocks);
-			memcpy(tmpBuffer+3, pshSentFrame, nSentFrameSize* sizeof(short));
-			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(tmpBuffer, nSentFrameSize + iMuxHeaderSize, iCurrentPacketNumber);
+			memcpy(tmpBuffer+ (iMuxHeaderSize / 2), pshSentFrame, nSentFrameSize* sizeof(short));
+			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(tmpBuffer, nSentFrameSize + (iMuxHeaderSize / 2), iCurrentPacketNumber);
 		}
 
 		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
