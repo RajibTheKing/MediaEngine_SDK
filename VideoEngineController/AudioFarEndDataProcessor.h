@@ -45,7 +45,7 @@ public:
 	AudioDePacketizer* m_pAudioDePacketizer = nullptr;
 	CAudioByteBuffer m_AudioReceivedBuffer;
 
-
+	short tmpBuffer[2048];
 private:
 	int m_nServiceType;
 	int m_nEntityType;

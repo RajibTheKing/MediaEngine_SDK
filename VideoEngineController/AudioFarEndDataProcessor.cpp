@@ -320,7 +320,6 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 		llLastTime = llNow;
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL) {
 			LOG18("#18@# PUb enq , packet type %d", iCurrentPacketNumber);
-			short tmpBuffer[2048];
 			int iStartIndex = 0;
 			int iEndIndex = 1599;
 			int iCalleeId = 1;

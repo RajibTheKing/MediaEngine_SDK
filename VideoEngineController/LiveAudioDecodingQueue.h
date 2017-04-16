@@ -8,7 +8,7 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
-#include "vector"
+#include <vector>
 
 #define LIVE_AUDIO_DECODING_QUEUE_SIZE 150
 #define MAX_AUDIO_ENCODED_FRAME_LEN 2048

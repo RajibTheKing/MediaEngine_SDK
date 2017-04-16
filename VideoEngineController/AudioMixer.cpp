@@ -1,6 +1,6 @@
 #include "AudioMixer.h"
-#include "string.h"
-#include "algorithm"
+#include <string.h>
+#include <algorithm>
 
 
 #include "LogPrinter.h"
