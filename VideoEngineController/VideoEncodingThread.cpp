@@ -411,7 +411,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 
 #endif
-            
+            if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
+			{
+				MakeBlackScreen(m_ucaConvertedEncodingFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), YUV420);
+			}
+			
             /*if(m_bIsCheckCall == true)
             {
                 memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
