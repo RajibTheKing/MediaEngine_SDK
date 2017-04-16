@@ -172,6 +172,10 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
 			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
 			../../../videoengine/VideoEngineUtilities/VideoEffects.cpp \
+			../../../videoengine/VideoEngineController/NaiveGain.cpp \
+			../../../videoengine/VideoEngineController/WebRTCGain.cpp \
+			../../../videoengine/VideoEngineController/AudioGainInstanceProvider.cpp \
+			
 
 			
 
