@@ -25,6 +25,7 @@ public:
 	void StartBrightening(int iVideoHeight, int iVideoWidth, int nPrecision);
 
 	void SetBrighteningValue(int m_AverageValue, int brightnessPrecision);
+	bool IsNotSkinPixel(unsigned char UPixel, unsigned char VPixel);
 
 	void MakePixelBright(unsigned char *pixel);
 	void MakePixelBrightNew(unsigned char *pixel);
