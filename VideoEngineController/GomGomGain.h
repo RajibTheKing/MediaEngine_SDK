@@ -4,12 +4,12 @@
 #include "Tools.h"
 #include "AudioMacros.h"
 #include "filt.h"
+#include "AudioGainInterface.h"
 
 
-class CGomGomGain
+class CGomGomGain : public AudioGainInterface
 {
 private:
-	int m_ID;
 	Filter *mFilter;
 	double m_daMovingAvg[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 	unsigned int m_naMultFactor[MAX_AUDIO_FRAME_SAMPLE_SIZE];
@@ -17,8 +17,15 @@ private:
 	short m_sLastFilteredFrame[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 	bool b1stFrame;
 	int m_nMovingSum;
+
 public:
-	CGomGomGain(int id);
+	CGomGomGain();
+
 	~CGomGomGain();
-	int AddGain(short *sInBuf, int sBufferSize);
+	
+	int SetGain(int iGain);
+
+	int AddFarEnd(short *sInBuf, int nBufferSize);
+
+	int AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning);
 };
