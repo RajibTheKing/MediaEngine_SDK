@@ -13,7 +13,7 @@ int m_sigma = 40;
 
 #elif defined(__ANDROID__)
 
-int m_sigma = 64;
+int m_sigma = 128;
 
 #elif defined(DESKTOP_C_SHARP)
 
@@ -700,7 +700,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			//else
 			//	pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
 
-		//	pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
+			//pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
 
 #endif
 			tmp += pBlurConvertingData[iw + j - 1];
@@ -716,7 +716,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	int m_AvarageValue = totalYValue/yLen;
 
-	SetBrighteningValue(m_AvarageValue, 10);
+	//SetBrighteningValue(m_AvarageValue, 10);
 
 	int niHeight = iHeight - m_rr;
 	int niWidth = endWidth - m_rr;
