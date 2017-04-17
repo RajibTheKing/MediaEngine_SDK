@@ -538,11 +538,20 @@ int CVideoDecodingThread::DecodeAndSendToClient2()
 
 }
 
+int nIDR_Frame_Gap = -1;
 int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
     
     long long decTime = m_Tools.CurrentTimestamp();
+
+    int nalType = m_Tools.GetEncodedFrameType(in_data);
+	
+    if(nalType == SPS_DATA)
+    {
+        printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %d, IDR_FRAME_GAP = %d\n", nFramNumber, nFramNumber - nIDR_Frame_Gap);
+        nIDR_Frame_Gap = nFramNumber;
+    }
 
 #if defined(TARGET_OS_WINDOWS_PHONE)
 

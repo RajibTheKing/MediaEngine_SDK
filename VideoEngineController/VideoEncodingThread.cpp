@@ -9,13 +9,14 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
 
 m_pVideoCallSession(pVideoCallSession),
 m_iFrameNumber(nFPS),
 m_llFriendID(llFriendID),
 m_pEncodingBuffer(pEncodingBuffer),
 m_pBitRateController(pBitRateController),
+m_pIdrFrameIntervalController(pIdrFrameController),
 m_pColorConverter(pColorConverter),
 m_pVideoEncoder(pVideoEncoder),
 m_pEncodedFramePacketizer(pEncodedFramePacketizer),
@@ -557,14 +558,20 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
 
 				llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
-
+            
+            bool bNeedIDR = false;
+            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+            {
+                bNeedIDR= m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
+            }
+            
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 				llCalculatingTime = m_Tools.CurrentTimestamp();
 
-				if(m_bIsCheckCall)
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame);
-				else
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+            if(m_bIsCheckCall)
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame, false);
+            else
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 
 				//printf("The encoder returned , nENCODEDFrameSize = %d, frameNumber = %d\n", nENCODEDFrameSize, m_iFrameNumber);
 
@@ -572,10 +579,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 				long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-				if (m_bIsCheckCall)
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
-				else
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+			if (m_bIsCheckCall)
+				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
+			else
+				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 
 				//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
@@ -606,6 +613,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
 				m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
+            
+            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+            {
+                m_pIdrFrameIntervalController->NotifyEncodedFrame(m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber);
+            }
 
 				//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
 

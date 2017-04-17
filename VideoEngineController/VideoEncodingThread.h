@@ -6,6 +6,7 @@
 #include "SmartPointer.h"
 #include "EncodingBuffer.h"
 #include "BitRateController.h"
+#include "IDRFrameIntervalController.h"
 #include "ColorConverter.h"
 #include "EncodedFrameDepacketizer.h"
 #include "EncodedFramePacketizer.h"
@@ -22,7 +23,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
+	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -55,7 +56,8 @@ private:
 
 	CVideoCallSession *m_pVideoCallSession;
 							
-	BitRateController *m_pBitRateController;	
+	BitRateController *m_pBitRateController;
+    IDRFrameIntervalController *m_pIdrFrameIntervalController;
 	CColorConverter *m_pColorConverter;
 	CVideoEncoder *m_pVideoEncoder;
 	CEncodedFramePacketizer *m_pEncodedFramePacketizer;

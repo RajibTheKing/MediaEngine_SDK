@@ -120,7 +120,7 @@ int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, i
 	int iMergedYUVLen = m_CMuxingVideoData->MergeFrameYUV_With_VideoYUV(m_ucaYUVMuxFrame, m_ucaRotateYUVFrame, iHeight, iWidth, m_ucaMergedYUVFrame);
 
 	//m_ColorConverter->ConvertI420ToNV21(m_ucaMergedYUVFrame, iHeight, iWidth);
-	int encodedSize = m_VideoEncoder->EncodeVideoFrame(m_ucaMergedYUVFrame, iMergedYUVLen, m_ucaMergedData);
+	int encodedSize = m_VideoEncoder->EncodeVideoFrame(m_ucaMergedYUVFrame, iMergedYUVLen, m_ucaMergedData, false);
 
 	if(m_iFinalEncodedFrameBufferIndx + encodedSize < FINAL_ENCODED_FRAME_BUFFER_LEN)
 	{
