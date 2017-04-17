@@ -235,6 +235,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int countNumber = 1;
 	int dummyTimeStampCounter = 0;
 
+	bool bNeedIDR = false;
+
 #if defined(DESKTOP_C_SHARP)
 
 	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), RGB24);
@@ -265,9 +267,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
+		bNeedIDR = false;
+
 		if (m_bResetForViewerCallerCallEnd == true)
 		{
 			m_pEncodingBuffer->ResetBuffer();
+
+			m_iFrameNumber = m_nCallFPS;
+			bNeedIDR = true;
 
 			m_bResetForViewerCallerCallEnd = false;
 		}
@@ -573,11 +580,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Conversion ", llCalculatingTime);
 
 				llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
-            
-            bool bNeedIDR = false;
+
             if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
             {
-                bNeedIDR= m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
+                bNeedIDR = m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
             }
             
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -595,7 +601,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
 			if (m_bIsCheckCall)
-				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
+				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, false);
 			else
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 
