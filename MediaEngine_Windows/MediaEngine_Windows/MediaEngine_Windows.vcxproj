@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\NoiseReducerProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\RenderingBuffer.cpp" />
@@ -195,6 +196,7 @@
     <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VersionController.cpp" />
@@ -267,6 +269,8 @@
     <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
+    <ClInclude Include="..\..\VideoEngineController\NoiseReducerInterface.h" />
+    <ClInclude Include="..\..\VideoEngineController\NoiseReducerProvider.h" />
     <ClInclude Include="..\..\VideoEngineController\PacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\PairMap.h" />
     <ClInclude Include="..\..\VideoEngineController\RenderingBuffer.h" />
@@ -293,6 +297,7 @@
     <ClInclude Include="..\..\VideoEngineController\VideoMuxingAndEncodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\VideoPacketQueue.h" />
+    <ClInclude Include="..\..\VideoEngineController\WebRTCNoiseReducer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\HashGenerator.h" />
