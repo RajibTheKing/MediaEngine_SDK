@@ -231,6 +231,12 @@
     <ClCompile Include="..\..\VideoEngineController\LiveAudioParserForChannel.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\NoiseReducerProvider.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioHeaderCommon.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
@@ -486,6 +492,15 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\LiveAudioParserForChannel.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\NoiseReducerInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\WebRTCNoiseReducer.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\NoiseReducerProvider.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioHeaderCommon.h">
