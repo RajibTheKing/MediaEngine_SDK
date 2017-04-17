@@ -241,6 +241,7 @@ void CSendingThread::SendingThreadProcedure()
 		if (m_bResetForViewerCallerCallEnd == true)
 		{
 			m_SendingBuffer->ResetBuffer();
+			firstFrame = true;
 
 			m_bResetForViewerCallerCallEnd = false;
 		}

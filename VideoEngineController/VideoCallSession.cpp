@@ -1345,6 +1345,7 @@ void CVideoCallSession::EndCallInLive()
 		{
 			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
 			m_pVideoEncodingThread->ResetForViewerCallerCallEnd();
+			m_pSendingThread->ResetForViewerCallerCallEnd();
 
 			m_pColorConverter->ClearSmallScreen();
 
