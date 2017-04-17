@@ -1,11 +1,12 @@
 #ifndef WEBRTC_NOISE_REDUCER_H
 #define WEBRTC_NOISE_REDUCER_H
 
+#include "NoiseReducerInterface.h"
 #include "noise_suppression.h"
 #include "Tools.h"
 
 
-class WebRTCNoiseReducer
+class WebRTCNoiseReducer : public NoiseReducerInterface
 {
 	NsHandle* NS_instance;
 	Tools m_Tools;
@@ -20,3 +21,4 @@ public:
 
 
 #endif // !WEBRTC_NOISE_REDUCER_H
+

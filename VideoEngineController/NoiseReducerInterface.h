@@ -8,11 +8,11 @@ public:
 
 	virtual int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning) = 0;
 
-	virtual	~NoiseReducerInterface(){ }
+	virtual	~NoiseReducerInterface() { }
 };
 
 #endif // !NOISE_REDUCER_INTERFACE_H
 
 
-// NoiseReducerInterface --> 
+// NoiseReducerInterface --> WebRTCNoiseReducer --> NoiseReducerProvider
 
