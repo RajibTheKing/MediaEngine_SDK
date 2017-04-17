@@ -18,7 +18,7 @@
 class CAudioCallSession;
 class AudioPacketizer;
 class CCommonElementsBucket;
-class CAudioPacketHeader;
+class AudioPacketHeader;
 class CAudioShortBuffer;
 //class CAudioCodec;
 class Tools;
@@ -66,8 +66,8 @@ private:
 	AudioMixer* m_pAudioMixer;
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
-	CAudioPacketHeader *m_pAudioPacketHeader = nullptr;
-	CAudioPacketHeader *m_ReceivingHeader = nullptr;
+	//AudioPacketHeader *m_pAudioPacketHeader = nullptr;
+	SmartPointer<AudioPacketHeader> m_ReceivingHeader = nullptr;
 	CGomGomGain *m_pGomGomGain = nullptr;
 
 	std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;

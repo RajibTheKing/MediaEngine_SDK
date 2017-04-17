@@ -9,15 +9,16 @@ AudioPacketizer::AudioPacketizer(CAudioCallSession* audioCallSession, CCommonEle
 m_pAudioCallSession(audioCallSession),
 m_pCommonElementsBucket(pCommonElementsBucket)
 {
-	m_AudioPacketHeader = new CAudioPacketHeader();
+	m_AudioPacketHeader = AudioPacketHeader::GetInstance(HeaderCommon);
 	m_nHeaderLength = m_AudioPacketHeader->GetHeaderSize();
+
 	m_nHeaderLengthWithMediaByte = m_nHeaderLength + 1;
 	m_nMaxDataSyzeInEachBlock = MAX_AUDIO_PACKET_SIZE - m_nHeaderLengthWithMediaByte;
 }
 
 AudioPacketizer::~AudioPacketizer()
 {
-	delete m_AudioPacketHeader;
+	//delete m_AudioPacketHeader;
 }
 
 void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, int nDataLength, int nFrameNumber, int packetType, int networkType, int version, long long llRelativeTime, int channel,
@@ -33,7 +34,7 @@ void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, i
 
 	int iSlotID = nFrameNumber / AUDIO_SLOT_SIZE;
 	
-	iSlotID %= m_AudioPacketHeader->GetFieldCapacity(INF_SLOTNUMBER);
+	iSlotID %= m_AudioPacketHeader->GetFieldCapacity(InfoSlotNumber);
 	LOGT("##NF###XXP@#@#MARUF INIT PACKETING .... data Len = %d numBlock %d, SlotId %d", nDataLength, nNumberOfBlocks, iSlotID);
 	for (int iBlockNumber = 0; iBlockNumber < nNumberOfBlocks; iBlockNumber++ ) {
 

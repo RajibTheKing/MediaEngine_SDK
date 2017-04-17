@@ -225,7 +225,7 @@ void CAudioCodec::DecideToChangeBitrate(int iNumPacketRecvd)
 			{
 				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_BAD);
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
-				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
+				m_pAudioCallSession->m_iNextPacketType = PacketNoVideo;
 
 				m_bAudioShouldStopNotified = true;
 				m_bAudioQualityHighNotified = false;

@@ -10,12 +10,12 @@ CLiveAudioParserForCallee::CLiveAudioParserForCallee(std::vector<LiveAudioDecodi
 	m_bIsCurrentlyParsingAudioData = false;
 	m_bIsRoleChanging = false;
 
-	m_pAudioPacketHeader = new CAudioPacketHeader();
+	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HeaderCommon);
 }
 
 CLiveAudioParserForCallee::~CLiveAudioParserForCallee(){
 	SHARED_PTR_DELETE(m_pLiveReceiverMutex);
-	delete m_pAudioPacketHeader;
+	//delete m_pAudioPacketHeader;
 }
 
 void CLiveAudioParserForCallee::SetRoleChanging(bool bFlah){
@@ -33,9 +33,9 @@ bool CLiveAudioParserForCallee::IsParsingAudioData(){
 void CLiveAudioParserForCallee::GenMissingBlock(unsigned char* uchAudioData, int nFrameLeftRange, int nFrameRightRange, std::vector<std::pair<int, int>>&vMissingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock)
 {
 	m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-	int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+	int validHeaderLength = m_pAudioPacketHeader->GetInformation(InfoHeaderLength);
 	// add muxed header lenght with audio header length. 
-	if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+	if (uchAudioData[nFrameLeftRange] == PacketAudioLivePublisherMuxed) {
 		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
 		validHeaderLength += (totalCallee * 6 + 2);
 	}
@@ -72,7 +72,7 @@ void CLiveAudioParserForCallee::ProcessLiveAudio(int iId, int nOffset, unsigned 
 	m_bIsCurrentlyParsingAudioData = true;
 
 	Locker lock(*m_pLiveReceiverMutex);
-	CAudioPacketHeader g_LiveReceiverHeader;
+	SmartPointer<AudioPacketHeader> g_LiveReceiverHeader = AudioPacketHeader::GetInstance(HeaderCommon);
 	size_t nNumberOfMissingBlocks = vMissingBlocks.size();
 	size_t iMissingIndex = 0;
 
@@ -116,10 +116,10 @@ void CLiveAudioParserForCallee::ProcessLiveAudio(int iId, int nOffset, unsigned 
 					HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
 					// Get header length;
 					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-					validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+					validHeaderLength = m_pAudioPacketHeader->GetInformation(InfoHeaderLength);
 
 
-					if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+					if (uchAudioData[nFrameLeftRange] == PacketAudioLivePublisherMuxed) {
 						int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
 						validHeaderLength += (totalCallee * 6 + 2);
 					}

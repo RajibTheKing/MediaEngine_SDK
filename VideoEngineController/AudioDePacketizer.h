@@ -2,8 +2,9 @@
 #define _AUDIO_DE_PACKETIZER_H_
 
 #include "AudioMacros.h"
+#include "SmartPointer.h"
 
-class CAudioPacketHeader;
+class AudioPacketHeader;
 class CAudioCallSession;
 
 class AudioDePacketizer
@@ -22,7 +23,7 @@ private:
 	int m_iAudioHeaderLength;
 	int m_iPreviousPacketNumber;
 	int m_nFrameLength;
-	CAudioPacketHeader* m_pAudioPacketHeader;
+	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader;
 	CAudioCallSession* m_pAudioCallSession;
 	void SentIncompleteFrame(int iLastPacketNumber, long long &llNow, long long &llLastTime);
 

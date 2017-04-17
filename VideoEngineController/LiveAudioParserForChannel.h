@@ -5,13 +5,13 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 
-class CAudioPacketHeader;
+class AudioPacketHeader;
 
 class CLiveAudioParserForChannel : public ILiveAudioParser{
 private:
 	std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
 	SmartPointer<CLockHandler> m_pLiveReceiverMutex;
-	CAudioPacketHeader *m_pAudioPacketHeader;
+	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader;
 	bool m_bIsCurrentlyParsingAudioData;
 	bool m_bIsRoleChanging;
 

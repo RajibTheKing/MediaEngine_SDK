@@ -8,14 +8,14 @@ m_pAudioCallSession(pAudioCallSession),
 m_iBlockOkayFlag(0), 
 m_iPreviousPacketNumber(-1)
 {
-	m_pAudioPacketHeader = new CAudioPacketHeader();
+	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HeaderCommon);
 	m_iAudioHeaderLength = m_pAudioPacketHeader->GetHeaderSize();
 	m_nFrameLength = 0;
 }
 
 AudioDePacketizer::~AudioDePacketizer()
 {
-	delete m_pAudioPacketHeader;
+	//delete m_pAudioPacketHeader;
 	m_iBlockOkayFlag = 0;
 }
 

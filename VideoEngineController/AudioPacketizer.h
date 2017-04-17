@@ -4,9 +4,11 @@
 #include "AudioMacros.h"
 #include "Tools.h"
 
+#include "SmartPointer.h"
+
 class CAudioCallSession;
 class CCommonElementsBucket;
-class CAudioPacketHeader;
+class AudioPacketHeader;
 
 class AudioPacketizer
 {
@@ -17,7 +19,7 @@ public:
 		int iPrevRecvdSlotID, int nReceivedPacketsInPrevSlot, long long llFriendID);
 private:
 	CAudioCallSession* m_pAudioCallSession;
-	CAudioPacketHeader* m_AudioPacketHeader;
+	SmartPointer<AudioPacketHeader> m_AudioPacketHeader;
 	CCommonElementsBucket* m_pCommonElementsBucket;
 	Tools m_Tools;
 	int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;

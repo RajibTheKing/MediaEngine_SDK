@@ -10,7 +10,7 @@
 class CAudioCallSession;
 class AudioPacketizer;
 class CCommonElementsBucket;
-class CAudioPacketHeader;
+class AudioPacketHeader;
 class CAudioShortBuffer;
 class CAudioCodec;
 class AudioMixer;
@@ -68,7 +68,7 @@ private:
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;	
 	CAudioShortBuffer *m_pAudioEncodingBuffer = nullptr;
-	CAudioPacketHeader *m_pAudioPacketHeader = nullptr;
+	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader = nullptr;
 	AudioMixer *m_pAudioMixer = nullptr;
 
 	short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
