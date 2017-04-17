@@ -69,6 +69,7 @@
 		DA7CA7541E93957F007EAFBD /* AudioFarEndDataProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA7501E93957F007EAFBD /* AudioFarEndDataProcessor.cpp */; };
 		DA7CA7551E93957F007EAFBD /* AudioNearEndDataProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA7521E93957F007EAFBD /* AudioNearEndDataProcessor.cpp */; };
 		DA8133421DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */; };
+		DA8257291EA4D8EE00A042FA /* IDRFrameIntervalController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA8257271EA4D8EE00A042FA /* IDRFrameIntervalController.cpp */; };
 		DA848BE41E9CFD43002BC7DE /* AudioMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BDB1E9CFD43002BC7DE /* AudioMixer.cpp */; };
 		DA848BE51E9CFD43002BC7DE /* LiveAudioParserForCallee.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BDE1E9CFD43002BC7DE /* LiveAudioParserForCallee.cpp */; };
 		DA848BE61E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BE01E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp */; };
@@ -235,6 +236,8 @@
 		DA7CA7531E93957F007EAFBD /* AudioNearEndDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioNearEndDataProcessor.h; path = VideoEngineController/AudioNearEndDataProcessor.h; sourceTree = "<group>"; };
 		DA8133401DFEC969008FE395 /* VideoMuxingAndEncodeSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoMuxingAndEncodeSession.cpp; path = VideoEngineController/VideoMuxingAndEncodeSession.cpp; sourceTree = "<group>"; };
 		DA8133411DFEC969008FE395 /* VideoMuxingAndEncodeSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoMuxingAndEncodeSession.h; path = VideoEngineController/VideoMuxingAndEncodeSession.h; sourceTree = "<group>"; };
+		DA8257271EA4D8EE00A042FA /* IDRFrameIntervalController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IDRFrameIntervalController.cpp; path = VideoEngineController/IDRFrameIntervalController.cpp; sourceTree = "<group>"; };
+		DA8257281EA4D8EE00A042FA /* IDRFrameIntervalController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IDRFrameIntervalController.h; path = VideoEngineController/IDRFrameIntervalController.h; sourceTree = "<group>"; };
 		DA848BDB1E9CFD43002BC7DE /* AudioMixer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioMixer.cpp; path = VideoEngineController/AudioMixer.cpp; sourceTree = "<group>"; };
 		DA848BDC1E9CFD43002BC7DE /* AudioMixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioMixer.h; path = VideoEngineController/AudioMixer.h; sourceTree = "<group>"; };
 		DA848BDD1E9CFD43002BC7DE /* LiveAudioParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioParser.h; path = VideoEngineController/LiveAudioParser.h; sourceTree = "<group>"; };
@@ -327,6 +330,8 @@
 		18AAB7741C0059320069154C /* VideoEngineController */ = {
 			isa = PBXGroup;
 			children = (
+				DA8257271EA4D8EE00A042FA /* IDRFrameIntervalController.cpp */,
+				DA8257281EA4D8EE00A042FA /* IDRFrameIntervalController.h */,
 				6A4C253A1E152F8E00679D74 /* Aac.cpp */,
 				6A4C253B1E152F8E00679D74 /* Aac.h */,
 				6A4C253C1E152F8E00679D74 /* aacdecoder_lib.h */,
@@ -597,6 +602,7 @@
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
 				6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */,
 				DA9CFEAC1DFBC7E2004112C4 /* MuxingVideoData.cpp in Sources */,
+				DA8257291EA4D8EE00A042FA /* IDRFrameIntervalController.cpp in Sources */,
 				D18E5FC71C96D57F00E5EDAA /* DepacketizationThread.cpp in Sources */,
 				188587F11C0AEEAC00B1F435 /* EncodingBuffer.cpp in Sources */,
 				DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */,
