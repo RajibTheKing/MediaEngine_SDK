@@ -816,7 +816,11 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
                                  0,                                     //PacketNumber
                                  0,                                     //TimeStamp
                                  0,										//PacketStartingIndex
-                                 0										//PacketDataLength
+                                 0,										//PacketDataLength
+								 0,                                      //SenderDeviceType
+								 0,                                      //NumberOfInsets
+								 nullptr,                                //InsetHeights
+								 nullptr                                 //InsetWidths
                                  );
     
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
@@ -825,7 +829,7 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
     
 #ifndef NO_CONNECTIVITY
     printf("TheKing--> Trying.... CreateAndSend_IDR_Frame_Info_Packet\n");
-    m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, VIDEO_HEADER_LENGTH + 1, 0);
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, VIDEO_HEADER_LENGTH + 1, 0, std::vector< std::pair<int, int> >());
 #else
     m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, VIDEO_HEADER_LENGTH + 1, m_miniPacket);
 #endif
