@@ -322,7 +322,11 @@ void CAudioCallSession::EndCallInLive()
 		m_nEntityType = ENTITY_TYPE_VIEWER;
 	}
 
+
 	m_iRole = CALL_NOT_RUNNING;
+
+	m_pNearEndProcessor->StopCallInLive();
+
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 	m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
