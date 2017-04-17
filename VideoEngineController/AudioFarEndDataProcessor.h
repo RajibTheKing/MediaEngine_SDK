@@ -76,7 +76,6 @@ private:
 	bool m_bAudioDecodingThreadRunning;
 	bool m_bAudioDecodingThreadClosed;
 
-	LiveAudioDecodingQueue *m_pLiveAudioReceivedQueue = nullptr;
 	unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
 	short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
 	short m_saCalleeSentData[MAX_AUDIO_FRAME_Length];
