@@ -1299,11 +1299,17 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 			SetFirstVideoPacketTime(-1);
 			SetShiftedTime(-1);
 
+			m_pColorConverter->ClearSmallScreen();
+
+			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();	
+
 			m_nEntityType = ENTITY_TYPE_PUBLISHER_CALLER;
 		}
 		else if (m_nEntityType == ENTITY_TYPE_VIEWER)
 		{
 			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
+			m_pVideoEncodingThread->ResetForViewerCallerCallEnd();
+			m_pSendingThread->ResetForViewerCallerCallEnd();
 
 			m_pVideoEncoder->SetBitrate(BITRATE_FOR_INSET_STREAM);
 			m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_INSET_STREAM);
@@ -1330,10 +1336,10 @@ void CVideoCallSession::EndCallInLive()
 			SetFirstVideoPacketTime(-1);
 			SetShiftedTime(-1);
 
-			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
-
 			m_pColorConverter->ClearSmallScreen();
 
+			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();
+			
 			if (m_bAudioOnlyLive)
 				m_pVideoEncodingThread->ResetForPublisherCallerInAudioOnly();
 
