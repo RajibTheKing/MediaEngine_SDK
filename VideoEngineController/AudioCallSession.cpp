@@ -44,7 +44,8 @@ m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
 m_bIsAECMNearEndThreadBusy(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
-m_bIsPublisher(true)
+m_bIsPublisher(true),
+m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 {
 	InitializeAudioCallSession(llFriendID);
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
