@@ -166,6 +166,16 @@ void CVideoEncodingThread::ResetForViewerCallerCallEnd()
 	}
 }
 
+void CVideoEncodingThread::ResetForPublisherCallerInAudioOnly()
+{
+	m_ResetForPublisherCallerInAudioOnly = true;
+
+	while (m_ResetForPublisherCallerInAudioOnly)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
 void CVideoEncodingThread::SetOrientationType(int nOrientationType)
 {
 	m_nOrientationType = nOrientationType;
@@ -259,9 +269,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 		{
 			m_pEncodingBuffer->ResetBuffer();
 
+			m_bResetForViewerCallerCallEnd = false;
+		}
+
+		if (m_ResetForPublisherCallerInAudioOnly == true)
+		{
 			dummyTimeStampCounter = 0;
 
-			m_bResetForViewerCallerCallEnd = false;
+			m_ResetForPublisherCallerInAudioOnly = false;
 		}
 
 		m_bIsThisThreadStarted = true;

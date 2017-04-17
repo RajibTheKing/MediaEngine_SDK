@@ -32,6 +32,7 @@ public:
 	static void *CreateVideoEncodingThread(void* param);
 
 	void ResetForViewerCallerCallEnd();
+	void ResetForPublisherCallerInAudioOnly();
 
 	void SetOrientationType(int nOrientationType);
     void ResetVideoEncodingThread(BitRateController *pBitRateController);
@@ -65,6 +66,7 @@ private:
 	bool m_bVideoEffectEnabled;
 
 	bool m_bResetForViewerCallerCallEnd;
+	bool m_ResetForPublisherCallerInAudioOnly;
 
 	unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 	unsigned char m_ucaConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
