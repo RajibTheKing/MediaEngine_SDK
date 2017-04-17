@@ -317,10 +317,15 @@ void CSendingThread::SendingThreadProcedure()
 
 					if (m_bPassOnlyAudio == true)
 					{
+						/*
 						if (m_bAudioOnlyDataAlreadySent == false && viewerDataLength <= 0)
 							continue;
 						else
 							m_bAudioOnlyDataAlreadySent = true;
+						*/
+
+						if (viewerDataLength <= 0)
+							continue;
 					}
 				}
 
