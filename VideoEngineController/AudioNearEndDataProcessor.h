@@ -28,6 +28,7 @@ public:
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
 	void StartCallInLive();
+	void StopCallInLive();
 
 private:
 	void LiveStreamNearendProcedureViewer();

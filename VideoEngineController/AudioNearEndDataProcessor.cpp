@@ -563,5 +563,18 @@ void CAudioNearEndDataProcessor::StopEncodingThread()
 
 void CAudioNearEndDataProcessor::StartCallInLive()
 {
+	if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+	{
+		m_llLastChunkLastFrameRT = -1;
+		m_iRawDataSendIndexViewer = 0;
+	}
+}
 
+void CAudioNearEndDataProcessor::StopCallInLive()
+{
+	if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+	{
+		m_llLastChunkLastFrameRT = -1;
+		m_iRawDataSendIndexViewer = 0;
+	}
 }
