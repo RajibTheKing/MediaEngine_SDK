@@ -95,6 +95,8 @@ public:
     bool GetResolutionNegotiationStatus();
     CVersionController* GetVersionController();
 
+	void FirstFrameCapturingTimeStamp();
+
 	void StopDeviceAbilityChecking();
     
 	int GetOwnVideoCallQualityLevel();

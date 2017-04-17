@@ -980,6 +980,12 @@ CVersionController* CVideoCallSession::GetVersionController()
     return m_pVersionController;
     
 }
+
+void CVideoCallSession::FirstFrameCapturingTimeStamp()
+{
+	m_llFirstFrameCapturingTimeStamp = -1;
+}
+
 bool CVideoCallSession::GetResolutionNegotiationStatus()
 {
     return m_bResolutionNegotiationDone;
@@ -1301,6 +1307,8 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 
 			m_pVideoEncoder->SetBitrate(BITRATE_FOR_INSET_STREAM);
 			m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_INSET_STREAM);
+
+			m_llFirstFrameCapturingTimeStamp = -1;
 
 			m_nEntityType = ENTITY_TYPE_VIEWER_CALLEE;
 		}
