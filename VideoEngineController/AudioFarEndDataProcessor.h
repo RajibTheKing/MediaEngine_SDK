@@ -87,9 +87,10 @@ private:
 	void StopDecodingThread();
 	void DecodingThreadProcedure();
 
-	void AudioCallFarEndProcedure();
-	void LiveStreamFarEndProcedureViewer();
-	void LiveStreamFarEndProcedure();
+	void FarEndProcedureAudioCall();
+	void FarEndProcedureLiveStreamViewer();
+	void FarEndProcedureLiveStreamPublisher();
+	void FarEndProcedureChannel();
 	bool IsQueueEmpty();
 	void DequeueData(int &m_nDecodingFrameSize);
 	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
