@@ -44,7 +44,6 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 			m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector);
 		}
 
-		m_pLiveAudioReceivedQueue = new LiveAudioDecodingQueue();
 		//m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, m_pAudioCallSession);
 		//m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
 	}
@@ -67,6 +66,13 @@ CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
 {
 	StopDecodingThread();
 
+	for (auto &liveQ : m_vAudioFarEndBufferVector) {
+		if (liveQ) {
+			delete liveQ;
+			liveQ = nullptr;
+		}
+	}
+
 	if (m_pGomGomGain)
 	{
 		delete m_pGomGomGain;
@@ -81,11 +87,6 @@ CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
 	{
 		delete m_ReceivingHeader;
 		m_ReceivingHeader = nullptr;
-	}
-	if (m_pLiveAudioReceivedQueue)
-	{
-		delete m_pLiveAudioReceivedQueue;
-		m_pLiveAudioReceivedQueue = NULL;
 	}
 	if (m_pLiveAudioParser)
 	{

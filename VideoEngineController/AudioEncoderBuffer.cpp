@@ -21,6 +21,20 @@ mt_llSumOverFlowTime(0)
 	m_pAudioEnocdingBufferMutex.reset(new CLockHandler);
 }
 
+CAudioShortBuffer::CAudioShortBuffer(int iQueueSize) :
+
+m_iPushIndex(0),
+m_iPopIndex(0),
+m_nQueueSize(0),
+m_nQueueCapacity((iQueueSize < MAX_AUDIO_ENCODING_BUFFER_SIZE ? iQueueSize : MAX_AUDIO_ENCODING_BUFFER_SIZE)),
+mt_llPrevOverFlowTime(-1),
+m_dAvgOverFlowTime(0),
+mt_nOverFlowCounter(0),
+mt_llSumOverFlowTime(0)
+{
+	m_pAudioEnocdingBufferMutex.reset(new CLockHandler);
+}
+
 CAudioShortBuffer::~CAudioShortBuffer()
 {
 
@@ -41,6 +55,7 @@ void CAudioShortBuffer::ResetBuffer()
 
 int CAudioShortBuffer::EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump)
 {
+	LOG18("#18@# ENCO BUFFER SIZE %d", m_nQueueCapacity);
 	Locker lock(*m_pAudioEnocdingBufferMutex);
 
 	memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);

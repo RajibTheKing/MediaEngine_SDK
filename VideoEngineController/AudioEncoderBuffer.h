@@ -13,6 +13,7 @@ class CAudioShortBuffer
 public:
 
 	CAudioShortBuffer();
+	CAudioShortBuffer(int iQueueSize);
 	~CAudioShortBuffer();
 
 	int EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump);
