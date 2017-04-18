@@ -1,7 +1,7 @@
 #include "NoiseReducerProvider.h"
-#include "WebRTCNoiseReducer.h"
+#include "NoiseReducerInterface.h"
 
-#include "SmartPointer.h"
+#include "WebRTCNoiseReducer.h"
 
 SmartPointer<NoiseReducerInterface> NoiseReducerProvider::GetNoiseReducer(NoiseReducerType noiseReducerType)
 {

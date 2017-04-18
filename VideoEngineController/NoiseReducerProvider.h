@@ -1,8 +1,9 @@
 #ifndef NOISE_REDUCER_PROVIDER_H
 #define NOISE_REDUCER_PROVIDER_H
 
-#include "NoiseReducerInterface.h"
 #include "SmartPointer.h"
+
+class NoiseReducerInterface;
 
 enum NoiseReducerType
 {

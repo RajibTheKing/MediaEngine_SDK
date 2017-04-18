@@ -1,4 +1,6 @@
 #include "AudioGainInstanceProvider.h"
+#include "AudioGainInterface.h"
+
 #include "WebRTCGain.h"
 #include "GomGomGain.h"
 #include "NaiveGain.h"

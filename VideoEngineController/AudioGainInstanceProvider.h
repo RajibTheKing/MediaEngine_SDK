@@ -1,9 +1,9 @@
 #ifndef AUDIO_GAIN_INSTANCE_PROVIDER_H
 #define AUDIO_GAIN_INSTANCE_PROVIDER_H
 
-#include "AudioGainInterface.h"
 #include "SmartPointer.h"
 
+class AudioGainInterface;
 
 enum AudioGainType
 {
