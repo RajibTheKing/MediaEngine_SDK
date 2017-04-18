@@ -25,6 +25,7 @@ public:
 	void StartBrightening(int iVideoHeight, int iVideoWidth, int nPrecision);
 
 	void SetBrighteningValue(int m_AverageValue, int brightnessPrecision);
+	bool IsNotSkinPixel(unsigned char UPixel, unsigned char VPixel);
 
 	void MakePixelBright(unsigned char *pixel);
 	void MakePixelBrightNew(unsigned char *pixel);
@@ -44,6 +45,13 @@ public:
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, int *effectParam);
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
 	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
+    
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+    std::string getDeviceModel();
+    int isGreaterThanIphone5s();
+
+#endif
 
 	unsigned char m_pBluredImage[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH << 2];
 
@@ -58,6 +66,7 @@ private:
 	int m_nBrightnessPrecision;
 	int m_nBlurScale;
 	int m_nThresholdValue;
+	int m_nIsGreaterThen5s;
 
 	int m_iDeviceHeight;
 	int m_iDeviceWidth;
@@ -66,6 +75,9 @@ private:
 	int m_nVideoHeight;
 	int m_nVideoWidth;
 	int m_Sizes[3];
+
+	int m_preBrightness[260];
+	unsigned char m_ucpreBrightness[260];
 
 	int m_pUIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH + 1];
 	int m_pVIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH  + 1];
