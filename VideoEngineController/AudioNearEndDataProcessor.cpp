@@ -532,22 +532,24 @@ void CAudioNearEndDataProcessor::StopEncodingThread()
 		Tools::SOSleep(5);
 }
 
-void CAudioNearEndDataProcessor::StartCallInLive()
+void CAudioNearEndDataProcessor::StartCallInLive(int nEntityType)
 {
 	if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 	{
 		m_llLastChunkLastFrameRT = -1;
 		m_iRawDataSendIndexViewer = 0;
 	}
+	m_nEntityType = nEntityType;
 }
 
-void CAudioNearEndDataProcessor::StopCallInLive()
+void CAudioNearEndDataProcessor::StopCallInLive(int nEntityType)
 {
 	if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 	{
 		m_llLastChunkLastFrameRT = -1;
 		m_iRawDataSendIndexViewer = 0;
 	}
+	m_nEntityType = nEntityType;
 }
 
 long long CAudioNearEndDataProcessor::GetBaseOfRelativeTime()

@@ -161,18 +161,20 @@ int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaD
 	return  m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
 }
 
-void CAudioFarEndDataProcessor::StartCallInLive()
+void CAudioFarEndDataProcessor::StartCallInLive(int nEntityType)
 {
 	if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 	{
 		m_vAudioFarEndBufferVector[0]->ResetBuffer(); //Contains Data From Live Stream
 	}
 	m_AudioReceivedBuffer.ResetBuffer();
+	m_nEntityType = nEntityType;
 }
 
-void CAudioFarEndDataProcessor::StopCallInLive()
+void CAudioFarEndDataProcessor::StopCallInLive(int nEntityType)
 {
 	m_vAudioFarEndBufferVector[0]->ResetBuffer();
+	m_nEntityType = nEntityType;
 }
 
 bool CAudioFarEndDataProcessor::IsQueueEmpty()

@@ -27,8 +27,8 @@ public:
 	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
-	void StartCallInLive();
-	void StopCallInLive();
+	void StartCallInLive(int nEntityType);
+	void StopCallInLive(int nEntityType);
 
 	long long GetBaseOfRelativeTime();
 

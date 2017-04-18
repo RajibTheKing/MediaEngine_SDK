@@ -253,8 +253,8 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 #endif
 	}
 
-	m_pNearEndProcessor->StartCallInLive();
-	m_pFarEndProcessor->StartCallInLive();
+	m_pNearEndProcessor->StartCallInLive(m_nEntityType);
+	m_pFarEndProcessor->StartCallInLive(m_nEntityType);
 
 	m_Tools.SOSleep(20);
 
@@ -325,7 +325,8 @@ void CAudioCallSession::EndCallInLive()
 
 	m_iRole = CALL_NOT_RUNNING;
 
-	m_pNearEndProcessor->StopCallInLive();
+	m_pNearEndProcessor->StopCallInLive(m_nEntityType);
+	m_pFarEndProcessor->StartCallInLive(m_nEntityType);
 
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
