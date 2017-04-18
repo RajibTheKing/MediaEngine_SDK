@@ -175,6 +175,9 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/EchoCancellerProvider.cpp \
 			../../../videoengine/VideoEngineController/SpeexEchoCanceller.cpp \
 			../../../videoengine/VideoEngineController/WebRTCEchoCanceller.cpp \
+			../../../videoengine/VideoEngineController/NaiveGain.cpp \
+			../../../videoengine/VideoEngineController/WebRTCGain.cpp \
+			../../../videoengine/VideoEngineController/AudioGainInstanceProvider.cpp \
 
 			
 

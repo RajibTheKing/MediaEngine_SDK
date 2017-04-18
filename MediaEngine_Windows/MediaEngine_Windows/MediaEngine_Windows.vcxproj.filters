@@ -229,6 +229,14 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\LiveAudioParserForChannel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\WebRTCGain.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\NaiveGain.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioGainInstanceProvider.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp">
@@ -500,6 +508,16 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\LiveAudioParserForChannel.h">
+    <ClInclude Include="..\..\VideoEngineController\AudioGainInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\WebRTCGain.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\NaiveGain.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioGainInstanceProvider.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\NoiseReducerInterface.h">

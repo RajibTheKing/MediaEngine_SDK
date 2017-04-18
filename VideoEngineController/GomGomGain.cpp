@@ -9,9 +9,8 @@
 
 #define MAX_GAIN 2
 
-CGomGomGain::CGomGomGain(int id)
+CGomGomGain::CGomGomGain()
 {
-	m_ID = id;
 	mFilter = new Filter(BPF, 51, 8.0, 0.5, 2.0);
 	memset(m_daMovingAvg, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(double));
 	memset(m_naMultFactor, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(unsigned int));
@@ -20,12 +19,30 @@ CGomGomGain::CGomGomGain(int id)
 	m_nMovingSum = 0;
 }
 
+
 CGomGomGain::~CGomGomGain()
 {
 	delete mFilter;
 }
 
-int CGomGomGain::AddGain(short *sInBuf, int sBufferSize)
+
+int CGomGomGain::SetGain(int iGain)
+{
+	// We should set MAX_GAIN value here
+
+	return true;
+}
+
+
+int CGomGomGain::AddFarEnd(short *sInBuf, int nBufferSize)
+{
+	// Not need far end data !!!
+
+	return true;
+}
+
+
+int CGomGomGain::AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning)
 {
 	for (int i = 0; i < sBufferSize; i++)
 	{
