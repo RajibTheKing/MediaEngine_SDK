@@ -339,9 +339,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(DESKTOP_C_SHARP)
 
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 30, 1);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 10, 1);
 #else
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 30, 1);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 10, 1);
 #endif
 				}
 			}
@@ -467,7 +467,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				m_pColorConverter->CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, 1920, 1130, newHeight, newWidth);
 
-				if (m_bVideoEffectEnabled == true)
+				if (m_bVideoEffectEnabled == true && !(m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true))
 				{
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
