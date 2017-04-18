@@ -777,9 +777,12 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			//	pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
 
 			//pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
-#endif
+
 
 			pBlurConvertingData[iw + j - 1] = m_ucpreBrightness[pBlurConvertingData[iw + j - 1]];
+            
+#endif
+            
 			totalYValue += pBlurConvertingData[iw + j - 1];
 
 
