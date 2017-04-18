@@ -2,14 +2,12 @@
 #define WEBRTC_NOISE_REDUCER_H
 
 #include "NoiseReducerInterface.h"
-#include "noise_suppression.h"
-#include "Tools.h"
 
+#include "noise_suppression.h"
 
 class WebRTCNoiseReducer : public NoiseReducerInterface
 {
 	NsHandle* NS_instance;
-	Tools m_Tools;
 
 public:
 	

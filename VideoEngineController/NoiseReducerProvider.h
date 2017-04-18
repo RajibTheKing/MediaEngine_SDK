@@ -1,23 +1,20 @@
 #ifndef NOISE_REDUCER_PROVIDER_H
 #define NOISE_REDUCER_PROVIDER_H
 
-
 #include "NoiseReducerInterface.h"
-
+#include "SmartPointer.h"
 
 enum NoiseReducerType
 {
-	WebRTC_NR
+	WebRTC_ANR
 };
-
-
 
 class NoiseReducerProvider
 {
 
 public:
 
-	static NoiseReducerInterface* GetNoiseReducer(NoiseReducerType noiseReducerType);
+	static SmartPointer<NoiseReducerInterface> GetNoiseReducer(NoiseReducerType noiseReducerType);
 
 };
 

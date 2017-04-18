@@ -1,18 +1,27 @@
 #include "WebRTCNoiseReducer.h"
-#include "AudioCallSession.h"
+
+#include "AudioMacros.h"
+#include "LogPrinter.h"
+#include "Tools.h"
+
+#ifndef ALOG
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+#endif
 
 #define ANS_SAMPLES_IN_FRAME 80
-#define Mild 0
-#define Medium 1
-#define Aggressive 2
 
+enum ANRMode{
+	Mild = 0,
+	Medium,
+	Aggressive
+};
 
 WebRTCNoiseReducer::WebRTCNoiseReducer()
 {
 	int ansret = -1;
 	if ((ansret = WebRtcNs_Create(&NS_instance)))
 	{
-		ALOG("WebRtcNs_Create failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
+		ALOG("WebRtcNs_Create failed with error code = " + Tools::IntegertoStringConvert(ansret));
 	}
 	else
 	{
@@ -20,7 +29,7 @@ WebRTCNoiseReducer::WebRTCNoiseReducer()
 	}
 	if ((ansret = WebRtcNs_Init(NS_instance, AUDIO_SAMPLE_RATE)))
 	{
-		ALOG("WebRtcNs_Init failed with error code= " + m_Tools.IntegertoStringConvert(ansret));
+		ALOG("WebRtcNs_Init failed with error code= " + Tools::IntegertoStringConvert(ansret));
 	}
 	else
 	{
@@ -29,7 +38,7 @@ WebRTCNoiseReducer::WebRTCNoiseReducer()
 
 	if ((ansret = WebRtcNs_set_policy(NS_instance, Medium)))
 	{
-		ALOG("WebRtcNs_set_policy failed with error code = " + m_Tools.IntegertoStringConvert(ansret));
+		ALOG("WebRtcNs_set_policy failed with error code = " + Tools::IntegertoStringConvert(ansret));
 	}
 	else
 	{
@@ -46,7 +55,7 @@ WebRTCNoiseReducer::~WebRTCNoiseReducer()
 
 int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning)
 {
-	long long llNow = m_Tools.CurrentTimestamp();
+	long long llNow = Tools::CurrentTimestamp();
 	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += ANS_SAMPLES_IN_FRAME)
 	{
 		if (0 != WebRtcNs_Process(NS_instance, sInBuf + i, NULL, sOutBuf + i, NULL))
@@ -56,12 +65,12 @@ int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf,
 	}
 	if (memcmp(sInBuf, sOutBuf, sBufferSize * sizeof(short)) == 0)
 	{
-		ALOG("WebRtcNs_Process did nothing but took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+		ALOG("WebRtcNs_Process did nothing but took " + Tools::LongLongtoStringConvert(Tools::CurrentTimestamp() - llNow));
 		return false;
 	}
 	else
 	{
-		ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llNow));
+		ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + Tools::LongLongtoStringConvert(Tools::CurrentTimestamp() - llNow));
 		return true;
 	}
 }

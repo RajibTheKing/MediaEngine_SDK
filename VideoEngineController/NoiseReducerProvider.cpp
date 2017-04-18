@@ -1,17 +1,22 @@
 #include "NoiseReducerProvider.h"
 #include "WebRTCNoiseReducer.h"
 
+#include "SmartPointer.h"
 
-NoiseReducerInterface* NoiseReducerProvider::GetNoiseReducer(NoiseReducerType noiseReducerType)
+SmartPointer<NoiseReducerInterface> NoiseReducerProvider::GetNoiseReducer(NoiseReducerType noiseReducerType)
 {
+	NoiseReducerInterface* pInstance;
 	switch (noiseReducerType)
 	{
-	case WebRTC_NR:
-		return new WebRTCNoiseReducer();
+	case WebRTC_ANR:
+		pInstance = new WebRTCNoiseReducer();
+		break;
 
 	default:
-		return nullptr;
+		pInstance = nullptr;
 	}
+
+	return SmartPointer<NoiseReducerInterface>(pInstance);
 }
 
 
