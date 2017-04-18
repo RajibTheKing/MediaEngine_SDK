@@ -9,7 +9,10 @@
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigma = 40;
+#import <sys/utsname.h> // import it in your header or implementation file.
+//#import <UIKit/UIKit.h>
+
+int m_sigma = 64;
 
 #elif defined(__ANDROID__)
 
@@ -39,6 +42,13 @@ m_nPreviousAddValueForBrightening(0),
 m_nBrightnessPrecision(0),
 m_EffectValue(10)
 {
+    std::string sDeviceModel = getDeviceModel();
+    printf("TheKing--> GetDeviceModel = %s\n", sDeviceModel.c_str());
+    int ansGot = isGreaterThanIphone5s();
+    
+    printf("TheKing--> ansGot = %d\n", ansGot);
+    
+    
 	m_nVideoHeight = iVideoHeight;
 	m_nVideoWidth = iVideoWidth;
 
@@ -779,5 +789,153 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	return result;
 }
 
+int CVideoBeautificationer::isGreaterThanIphone5s()
+{
+    string sDeviceInfo = getDeviceModel();
+    CLogPrinter::Log("TheKing--> Here Devicetype ");
+    
+    if(sDeviceInfo=="iPhone7,1" ||
+       sDeviceInfo=="iPhone7,2" ||
+       sDeviceInfo=="iPhone8,1" ||
+       sDeviceInfo=="iPhone8,2" ||
+       sDeviceInfo=="iPhone8,4" ||
+       sDeviceInfo=="iPhone9,1" ||
+       sDeviceInfo=="iPhone9,2" ||
+       sDeviceInfo=="iPhone9,3" ||
+       sDeviceInfo=="iPhone9,4")
+    {
+        return 1;
+    }
+    else if(sDeviceInfo=="iPhone1,1" ||
+            sDeviceInfo=="iPhone1,2" ||
+            sDeviceInfo=="iPhone2,1" ||
+            sDeviceInfo=="iPhone3,1" ||
+            sDeviceInfo=="iPhone3,3" ||
+            sDeviceInfo=="iPhone4,1" ||
+            sDeviceInfo=="iPhone5,1" ||
+            sDeviceInfo=="iPhone5,2" ||
+            sDeviceInfo=="iPhone5,3" ||
+            sDeviceInfo=="iPhone5,4" ||
+            sDeviceInfo=="iPhone6,1" ||
+            sDeviceInfo=="iPhone6,2")
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+    
+}
 
+
+std::string  CVideoBeautificationer::getDeviceModel()
+{
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+    /*
+    //Simultor
+    @"i386"      on 32-bit Simulator
+    @"x86_64"    on 64-bit Simulator
+    
+    //iPhone
+    @"iPhone1,1" on iPhone
+    @"iPhone1,2" on iPhone 3G
+    @"iPhone2,1" on iPhone 3GS
+    @"iPhone3,1" on iPhone 4 (GSM)
+    @"iPhone3,3" on iPhone 4 (CDMA/Verizon/Sprint)
+    @"iPhone4,1" on iPhone 4S
+    @"iPhone5,1" on iPhone 5 (model A1428, AT&T/Canada)
+    @"iPhone5,2" on iPhone 5 (model A1429, everything else)
+    @"iPhone5,3" on iPhone 5c (model A1456, A1532 | GSM)
+    @"iPhone5,4" on iPhone 5c (model A1507, A1516, A1526 (China), A1529 | Global)
+    @"iPhone6,1" on iPhone 5s (model A1433, A1533 | GSM)
+    @"iPhone6,2" on iPhone 5s (model A1457, A1518, A1528 (China), A1530 | Global)
+    @"iPhone7,1" on iPhone 6 Plus
+    @"iPhone7,2" on iPhone 6
+    @"iPhone8,1" on iPhone 6S
+    @"iPhone8,2" on iPhone 6S Plus
+    @"iPhone8,4" on iPhone SE
+    @"iPhone9,1" on iPhone 7 (CDMA)
+    @"iPhone9,3" on iPhone 7 (GSM)
+    @"iPhone9,2" on iPhone 7 Plus (CDMA)
+    @"iPhone9,4" on iPhone 7 Plus (GSM)
+    
+    //iPad 1
+    @"iPad1,1" on iPad - Wifi (model A1219)
+    @"iPad1,1" on iPad - Wifi + Cellular (model A1337)
+    
+    //iPad 2
+    @"iPad2,1" - Wifi (model A1395)
+    @"iPad2,2" - GSM (model A1396)
+    @"iPad2,3" - 3G (model A1397)
+    @"iPad2,4" - Wifi (model A1395)
+    
+    // iPad Mini
+    @"iPad2,5" - Wifi (model A1432)
+    @"iPad2,6" - Wifi + Cellular (model  A1454)
+    @"iPad2,7" - Wifi + Cellular (model  A1455)
+    
+    //iPad 3
+    @"iPad3,1" - Wifi (model A1416)
+    @"iPad3,2" - Wifi + Cellular (model  A1403)
+    @"iPad3,3" - Wifi + Cellular (model  A1430)
+    
+    //iPad 4
+    @"iPad3,4" - Wifi (model A1458)
+    @"iPad3,5" - Wifi + Cellular (model  A1459)
+    @"iPad3,6" - Wifi + Cellular (model  A1460)
+    
+    //iPad AIR
+    @"iPad4,1" - Wifi (model A1474)
+    @"iPad4,2" - Wifi + Cellular (model A1475)
+    @"iPad4,3" - Wifi + Cellular (model A1476)
+    
+    // iPad Mini 2
+    @"iPad4,4" - Wifi (model A1489)
+    @"iPad4,5" - Wifi + Cellular (model A1490)
+    @"iPad4,6" - Wifi + Cellular (model A1491)
+    
+    // iPad Mini 3
+    @"iPad4,7" - Wifi (model A1599)
+    @"iPad4,8" - Wifi + Cellular (model A1600)
+    @"iPad4,9" - Wifi + Cellular (model A1601)
+    
+    // iPad Mini 4
+    @"iPad5,1" - Wifi (model A1538)
+    @"iPad5,2" - Wifi + Cellular (model A1550)
+    
+    //iPad AIR 2
+    @"iPad5,3" - Wifi (model A1566)
+    @"iPad5,4" - Wifi + Cellular (model A1567)
+    
+    // iPad PRO 12.9"
+    @"iPad6,3" - Wifi (model A1673)
+    @"iPad6,4" - Wifi + Cellular (model A1674)
+    @"iPad6,4" - Wifi + Cellular (model A1675)
+    
+    //iPad PRO 9.7"
+    @"iPad6,7" - Wifi (model A1584)
+    @"iPad6,8" - Wifi + Cellular (model A1652)
+    
+    //iPod Touch
+    @"iPod1,1"   on iPod Touch
+    @"iPod2,1"   on iPod Touch Second Generation
+    @"iPod3,1"   on iPod Touch Third Generation
+    @"iPod4,1"   on iPod Touch Fourth Generation
+    @"iPod7,1"   on iPod Touch 6th Generation
+    */
+    
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    char *p = systemInfo.machine;
+    
+    //NSString *nsDeviceModel = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    
+    std::string ans(p);
+    
+    return ans;
+#else
+    return "";
+#endif
+}
 

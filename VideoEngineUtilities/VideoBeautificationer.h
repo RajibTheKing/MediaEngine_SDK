@@ -45,6 +45,9 @@ public:
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, int *effectParam);
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
 	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
+    
+    std::string getDeviceModel();
+    int isGreaterThanIphone5s();
 
 	unsigned char m_pBluredImage[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH << 2];
 
