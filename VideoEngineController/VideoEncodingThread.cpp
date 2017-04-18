@@ -430,7 +430,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 			else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam90(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+			}
+			else if (m_nOrientationType == ORIENTATION_BACK_270_MIRRORED)
+			{
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam270(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
 			}
 
 #endif

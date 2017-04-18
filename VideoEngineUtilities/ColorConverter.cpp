@@ -479,7 +479,7 @@ void CColorConverter::mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsign
 
 }
 
-void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData)
+void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam90(unsigned char *m_pFrame, unsigned char *pData)
 {
 	Locker lock(*m_pColorConverterMutex);
 
@@ -520,6 +520,41 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *
 			pData[vIndex++] = m_pFrame[dimention + ind];
 			pData[i++] = m_pFrame[dimention + ind + 1];
 		}
+
+}
+
+void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam270(unsigned char *m_pFrame, unsigned char *pData)
+{
+	Locker lock(*m_pColorConverterMutex);
+
+	int iWidth = m_iVideoHeight;
+	int iHeight = m_iVideoWidth;
+
+	int i = 0;
+
+	for (int x = iWidth - 1; x >-1; --x)
+	{
+		for (int y = 0; y <iHeight; ++y)
+		{
+			pData[i] = m_pFrame[m_Multiplication[y][iWidth] + x];
+			i++;
+		}
+	}
+
+	int halfWidth = iWidth >> 1;
+	int halfHeight = iHeight >> 1;
+	int dimention = m_Multiplication[iHeight][iWidth];
+	int vIndex = dimention + m_Multiplication[halfHeight][halfWidth];
+
+	for (int x = halfWidth - 1; x>-1; --x)
+	{
+		for (int y = 0; y < halfHeight; ++y)
+		{
+			int ind = ( m_Multiplication[y][halfWidth] + x) * 2;
+			pData[vIndex++] = m_pFrame[dimention + ind];
+			pData[i++] = m_pFrame[dimention + ind + 1];
+		}
+	}
 
 }
 
