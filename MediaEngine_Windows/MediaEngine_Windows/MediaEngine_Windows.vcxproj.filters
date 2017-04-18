@@ -238,6 +238,14 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioHeaderCommon.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\EchoCancellerProvider.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\WebRTCEchoCanceller.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\SpeexEchoCanceller.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -504,6 +512,17 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioHeaderCommon.h">
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\EchoCancellerInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\WebRTCEchoCanceller.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\SpeexEchoCanceller.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\EchoCancellerProvider.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
