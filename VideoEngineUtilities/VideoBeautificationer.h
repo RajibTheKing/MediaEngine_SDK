@@ -46,8 +46,12 @@ public:
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
 	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
     
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
     std::string getDeviceModel();
     int isGreaterThanIphone5s();
+
+#endif
 
 	unsigned char m_pBluredImage[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH << 2];
 
@@ -62,6 +66,7 @@ private:
 	int m_nBrightnessPrecision;
 	int m_nBlurScale;
 	int m_nThresholdValue;
+	int m_nIsGreaterThen5s;
 
 	int m_iDeviceHeight;
 	int m_iDeviceWidth;
