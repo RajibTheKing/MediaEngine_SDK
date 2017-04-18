@@ -37,7 +37,6 @@ m_llLastFrameRT(0)
 	m_pAudioEncodingMutex.reset(new CLockHandler);
 	m_pAudioCodec = pAudioCallSession->GetAudioCodec();
 	m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[INF_PACKETNUMBER]) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
-	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
 	m_pAudioPacketHeader = new CAudioPacketHeader();
 	m_pAudioPacketizer = new AudioPacketizer(pAudioCallSession, pCommonElementsBucket);
@@ -161,10 +160,11 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedureViewer(){
 		int iSlotID = 0;
 		int iPrevRecvdSlotID = 0;
 		int iReceivedPacketsInPrevSlot = 0;
+		int nChannel = 0;
 
 		m_ucaRawFrameNonMuxed[0] = 0;
 		BuildAndGetHeaderInArray(AUDIO_LIVE_CALLEE_PACKET_TYPE, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, m_nRawFrameSize,
-			iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+			iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 		
 		++m_iPacketNumber;
 		if (m_iPacketNumber == m_llMaxAudioPacketNumber)
@@ -213,9 +213,10 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 		int iSlotID = 0;
 		int iPrevRecvdSlotID = 0;
 		int iReceivedPacketsInPrevSlot = 0;
+		int nChannel = 0;
 		m_ucaRawFrameNonMuxed[0] = 0;
 		BuildAndGetHeaderInArray(nSendingFramePacketType, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, nSendingDataSizeInByte,
-			iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+			iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 
 		++m_iPacketNumber;
 		if (m_iPacketNumber == m_llMaxAudioPacketNumber)
@@ -268,10 +269,16 @@ void CAudioNearEndDataProcessor::AudioCallNearendProcedure(){
 		int iSlotID = 0;
 		int iPrevRecvdSlotID = 0;
 		int iReceivedPacketsInPrevSlot = 0;
+		int nChannel = 0;
 
-		BuildAndGetHeaderInArray(m_iNextPacketType, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, m_nEncodedFrameSize, iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaEncodedFrame[1]);
+		BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, m_nEncodedFrameSize, iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaEncodedFrame[1]);
 
-		SetAudioIdentifierAndNextPacketType();
+		++m_iPacketNumber;
+		if (m_iPacketNumber == m_llMaxAudioPacketNumber)
+		{
+			m_iPacketNumber = 0;
+		}
+
 		SentToNetwork(llRelativeTime);		
 		LOG18("#18#NE#AudioCall Sent");
 		Tools::SOSleep(0);
@@ -358,21 +365,6 @@ void CAudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nH
 
 	m_pAudioPacketHeader->GetHeaderInByteArray(header);
 }
-
-void CAudioNearEndDataProcessor::SetAudioIdentifierAndNextPacketType()
-{
-	++m_iPacketNumber;
-	if (m_iPacketNumber == m_llMaxAudioPacketNumber)
-	{
-		m_iPacketNumber = 0;
-	}
-
-	if (false == m_bIsLiveStreamingRunning && m_iNextPacketType == AUDIO_NOVIDEO_PACKET_TYPE)
-	{
-		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
-	}
-}
-
 
 bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 {

@@ -42,7 +42,6 @@ private:
 	void DumpEncodingFrame();
 	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 	bool PreProcessAudioBeforeEncoding();
-	void SetAudioIdentifierAndNextPacketType();	
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 	void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte);
@@ -57,7 +56,6 @@ private:
 	int m_nRawFrameSize;
 	int m_MyAudioHeadersize;
 	int m_iPacketNumber;
-	int m_iNextPacketType;
 	int m_nServiceType;
 	int m_nEntityType;
 	LongLong m_llMaxAudioPacketNumber;
