@@ -68,6 +68,9 @@ private:
 	int m_nVideoWidth;
 	int m_Sizes[3];
 
+	int m_preBrightness[260];
+	unsigned char m_ucpreBrightness[260];
+
 	int m_pUIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH + 1];
 	int m_pVIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH  + 1];
 
