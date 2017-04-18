@@ -578,3 +578,8 @@ void CAudioNearEndDataProcessor::StopCallInLive()
 		m_iRawDataSendIndexViewer = 0;
 	}
 }
+
+long long CAudioNearEndDataProcessor::GetBaseOfRelativeTime()
+{ 
+	return m_llEncodingTimeStampOffset;
+}

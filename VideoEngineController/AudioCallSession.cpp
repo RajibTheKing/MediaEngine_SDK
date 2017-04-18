@@ -337,6 +337,11 @@ void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)
 	m_nCallInLiveType = nCallInLiveType;
 }
 
+long long CAudioCallSession::GetBaseOfRelativeTime()
+{
+	return m_pNearEndProcessor->GetBaseOfRelativeTime();
+}
+
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 {
 //	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);

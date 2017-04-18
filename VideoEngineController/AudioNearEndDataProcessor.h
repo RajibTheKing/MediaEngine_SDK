@@ -30,6 +30,8 @@ public:
 	void StartCallInLive();
 	void StopCallInLive();
 
+	long long GetBaseOfRelativeTime();
+
 private:
 	void LiveStreamNearendProcedureViewer();
 	void LiveStreamNearendProcedurePublisher();

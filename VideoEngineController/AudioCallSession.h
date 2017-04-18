@@ -97,6 +97,7 @@ public:
 	void EndCallInLive();
 
 	void SetCallInLiveType(int nCallInLiveType);
+	long long GetBaseOfRelativeTime();
 
     CAudioCodec* GetAudioCodec();
 
