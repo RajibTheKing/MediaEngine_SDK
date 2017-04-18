@@ -32,6 +32,7 @@ public:
     int ParseChunk(unsigned char *in_data, unsigned int unLength);
 
 	void ResetForViewerCallerCallEnd();
+	void ResetForPublisherCallerCallStartAudioOnly();
 
 	void SetAudioOnlyDataAlreadySent(bool bAudioOnlyDataAlreadySent);
 
@@ -68,6 +69,8 @@ private:
 	LongLong m_lfriendID;
 
 	bool m_bResetForViewerCallerCallEnd;
+
+	bool m_bResetForPublisherCallerCallStartAudioOnly;
 
 	bool m_bInterruptHappened;
 	bool m_bInterruptRunning;

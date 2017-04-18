@@ -40,6 +40,7 @@ m_lfriendID(llfriendID),
 m_bInterruptHappened(false),
 m_bInterruptRunning(false),
 m_bResetForViewerCallerCallEnd(false),
+m_bResetForPublisherCallerCallStartAudioOnly(false),
 m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false),
 m_bPassOnlyAudio(false),
@@ -125,6 +126,16 @@ void CSendingThread::ResetForViewerCallerCallEnd()
 	m_bResetForViewerCallerCallEnd = true;
 
 	while (m_bResetForViewerCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
+void CSendingThread::ResetForPublisherCallerCallStartAudioOnly()
+{
+	m_bResetForPublisherCallerCallStartAudioOnly = true;
+
+	while (m_bResetForPublisherCallerCallStartAudioOnly)
 	{
 		m_Tools.SOSleep(5);
 	}
@@ -246,6 +257,15 @@ void CSendingThread::SendingThreadProcedure()
 			m_bResetForViewerCallerCallEnd = false;
 		}
 
+		if (m_bResetForPublisherCallerCallStartAudioOnly == true)
+		{
+			firstFrame = true;
+
+			m_bResetForPublisherCallerCallStartAudioOnly = false;
+		}
+
+		LOGSS("##SS## m_bAudioOnlyLive %d entityType %d callInLiveType %d ", m_bAudioOnlyLive, m_pVideoCallSession->GetEntityType(), m_pVideoCallSession->GetCallInLiveType());
+
 		if (m_bAudioOnlyLive == true && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
 			m_bPassOnlyAudio = false;
 		else if (m_bAudioOnlyLive == false && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE && m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
@@ -254,6 +274,8 @@ void CSendingThread::SendingThreadProcedure()
 			m_bPassOnlyAudio = true;
 		else
 			m_bPassOnlyAudio = false;
+
+		LOGSS("##SS## m_bPassOnlyAudio %d ", m_bPassOnlyAudio);
 
 		if ((m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
 		{
@@ -291,6 +313,8 @@ void CSendingThread::SendingThreadProcedure()
 
 			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
 			if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);*/
+
+			LOGSS("##SS## firstFrame %d ", firstFrame);
 
 			if (m_bPassOnlyAudio == true || (frameNumber%iIntervalIFrame == 0 && firstFrame == false))
 			{
@@ -460,6 +484,8 @@ void CSendingThread::SendingThreadProcedure()
 				
 				int diff = timeNow - m_nTimeStampOfChunck;
 
+				LOGSS("##SS## even m_nTimeStampOfChunck %lld diff %d", m_nTimeStampOfChunck, diff);
+
 				m_Tools.SetMediaUnitHeaderLengthInMediaChunck(index, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitStreamTypeInMediaChunck(STREAM_TYPE_LIVE_STREAM, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitBlockInfoPositionInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, m_AudioVideoDataToSend);
@@ -502,7 +528,12 @@ void CSendingThread::SendingThreadProcedure()
 							//}
 
 							// do changes for audio
-							m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+							if ((diff > 1000 && m_bPassOnlyAudio == true) || diff < 0)
+							{
+
+							}
+							else
+								m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
 
 							LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
 
@@ -617,7 +648,9 @@ void CSendingThread::SendingThreadProcedure()
 				else
 				{
 					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
-				}	
+				}
+
+				LOGSS("##SS## odd m_nTimeStampOfChunck %lld", m_nTimeStampOfChunck);
 
 				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %lld\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
 
@@ -628,6 +661,8 @@ void CSendingThread::SendingThreadProcedure()
 				if (firstFrame == true)
 				{
 					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+					LOGSS("##SS## first m_nTimeStampOfChunck %lld", m_nTimeStampOfChunck);
 
 					long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
 					long long llNowTimeDiff;

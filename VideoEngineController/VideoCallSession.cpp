@@ -1303,6 +1303,11 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 
 			m_pVideoDecodingThread->ResetForViewerCallerCallStartEnd();	
 
+			LOGSS("##SS## m_bAudioOnlyLive %d nCallInLiveType %d", m_bAudioOnlyLive, m_nCallInLiveType);
+
+			if (m_bAudioOnlyLive == true && nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
+				m_pSendingThread->ResetForPublisherCallerCallStartAudioOnly();
+
 			m_nEntityType = ENTITY_TYPE_PUBLISHER_CALLER;
 		}
 		else if (m_nEntityType == ENTITY_TYPE_VIEWER)
