@@ -241,6 +241,7 @@ void CSendingThread::SendingThreadProcedure()
 		if (m_bResetForViewerCallerCallEnd == true)
 		{
 			m_SendingBuffer->ResetBuffer();
+			firstFrame = true;
 
 			m_bResetForViewerCallerCallEnd = false;
 		}
@@ -317,10 +318,15 @@ void CSendingThread::SendingThreadProcedure()
 
 					if (m_bPassOnlyAudio == true)
 					{
+						/*
 						if (m_bAudioOnlyDataAlreadySent == false && viewerDataLength <= 0)
 							continue;
 						else
 							m_bAudioOnlyDataAlreadySent = true;
+						*/
+
+						if (viewerDataLength <= 0)
+							continue;
 					}
 				}
 
