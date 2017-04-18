@@ -4,7 +4,9 @@
 #include "gain_control.h"
 #include "AudioMacros.h"
 
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+#ifndef ALOG
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
+#endif
 
 WebRTCGain::WebRTCGain() : m_bGainEnabled(false)
 {

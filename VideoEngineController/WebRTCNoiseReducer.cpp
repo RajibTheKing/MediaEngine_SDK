@@ -5,7 +5,7 @@
 #include "Tools.h"
 
 #ifndef ALOG
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 #endif
 
 #define ANS_SAMPLES_IN_FRAME 80

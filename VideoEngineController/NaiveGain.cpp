@@ -3,7 +3,9 @@
 #include "AudioMacros.h"
 #include "LogPrinter.h"
 
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+#ifndef ALOG
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
+#endif
 
 NaiveGain::NaiveGain() : m_bGainEnabled(false)
 {
