@@ -25,4 +25,5 @@ public:
 #endif  // !AUDIO_ENCODER_INTERFACE_H
 
 
-// AudioEncoderInterface --> 
+// AudioEncoderInterface --> AudioEncoderOpus / AudioNoEncoder --> AudioEncoderProvider
+
