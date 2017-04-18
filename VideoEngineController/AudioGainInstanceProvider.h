@@ -1,15 +1,15 @@
 #ifndef AUDIO_GAIN_INSTANCE_PROVIDER_H
 #define AUDIO_GAIN_INSTANCE_PROVIDER_H
 
-
 #include "AudioGainInterface.h"
+#include "SmartPointer.h"
 
 
 enum AudioGainType
 {
-	WebRTC,
-	GomGomGain,
-	Naive
+	WebRTC_AGC,
+	GomGomGain_AGC,
+	Naive_AGC
 };
 
 
@@ -18,7 +18,7 @@ class AudioGainInstanceProvider
 
 public:
 
-	static AudioGainInterface* GetAudioGainInstance(AudioGainType audioGainType);
+	static SmartPointer<AudioGainInterface> GetAudioGainInstance(AudioGainType audioGainType);
 
 };
 

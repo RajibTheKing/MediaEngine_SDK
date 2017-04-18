@@ -3,7 +3,7 @@
 
 
 #define MAX_GAIN 10
-#define DEF_GAIN 3
+#define DEFAULT_GAIN 3
 
 class AudioGainInterface
 {

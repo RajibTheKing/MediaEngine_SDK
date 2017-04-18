@@ -68,7 +68,7 @@ private:
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 	//AudioPacketHeader *m_pAudioPacketHeader = nullptr;
 	SmartPointer<AudioPacketHeader> m_ReceivingHeader = nullptr;
-	CGomGomGain *m_pGomGomGain = nullptr;
+	GomGomGain *m_pGomGomGain = nullptr;
 
 	std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
 

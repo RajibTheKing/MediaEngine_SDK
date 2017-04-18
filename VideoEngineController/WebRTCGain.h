@@ -2,20 +2,20 @@
 #define WEBRTC_GAIN_H
 
 #include "AudioGainInterface.h"
-#include "gain_control.h"
-#include "signal_processing_library.h"
-#include "Tools.h"
-
 
 #define AGC_SAMPLES_IN_FRAME 80
 #define AGC_ANALYSIS_SAMPLES_IN_FRAME 80
-#define AGCMODE_UNCHANGED 0
-#define AGCMODE_ADAPTIVE_ANALOG 1
-#define AGNMODE_ADAPTIVE_DIGITAL 2
-#define AGCMODE_FIXED_DIGITAL 3
-#define MINLEVEL 1
-#define MAXLEVEL 255
 
+#define WEBRTC_AGC_MIN_LEVEL 1
+#define WEBRTC_AGC_MAX_LEVEL 255
+
+enum AGCMode
+{
+	MODE_UNCHANGED = 0,
+	MODE_ADAPTIVE_ANALOG = 1,
+	MODE_ADAPTIVE_DIGITAL = 2,
+	MODE_FIXED_DIGITAL = 3
+};
 
 class WebRTCGain : public AudioGainInterface
 {
@@ -24,13 +24,12 @@ class WebRTCGain : public AudioGainInterface
 	int m_iVolume;
 
 	void* AGC_instance;
-	Tools m_Tools;
 
 public:
 
 	WebRTCGain();
 
-	~WebRTCGain();
+	virtual ~WebRTCGain();
 
 	int SetGain(int iGain);
 

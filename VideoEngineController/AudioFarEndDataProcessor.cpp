@@ -57,7 +57,7 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 
 	m_cAac = new CAac();
 	m_cAac->SetParameters(44100, 2);
-	m_pGomGomGain = new CGomGomGain(123);
+	m_pGomGomGain = new GomGomGain();
 
 	StartDecodingThread();
 }

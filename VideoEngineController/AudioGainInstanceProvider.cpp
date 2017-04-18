@@ -2,23 +2,29 @@
 #include "WebRTCGain.h"
 #include "GomGomGain.h"
 #include "NaiveGain.h"
-#include "LogPrinter.h"
 
-AudioGainInterface* AudioGainInstanceProvider::GetAudioGainInstance(AudioGainType audioGainType)
+SmartPointer<AudioGainInterface> AudioGainInstanceProvider::GetAudioGainInstance(AudioGainType audioGainType)
 {
+	AudioGainInterface* pInstance = nullptr;
 	switch (audioGainType)
 	{
-	case WebRTC:
-		LOG_AAC("#gain# new instance webRTC");
-		return new WebRTCGain();
+	case WebRTC_AGC:
 
-	case GomGomGain:
-		return new CGomGomGain();
+		pInstance = new WebRTCGain();
+		break;
 
-	case Naive:
-		return new NaiveGain();
+	case GomGomGain_AGC:
+		pInstance = new GomGomGain();
+		break;
+
+	case Naive_AGC:
+		pInstance = new NaiveGain();
+		break;
 
 	default:
-		return nullptr;
+		//Do nothing;
+		break;
 	}
+
+	return SmartPointer<AudioGainInterface>(pInstance);
 }

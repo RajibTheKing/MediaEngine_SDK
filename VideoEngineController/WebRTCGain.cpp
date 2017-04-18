@@ -1,12 +1,16 @@
 #include "WebRTCGain.h"
-#include "AudioCallSession.h"
 
+#include "LogPrinter.h"
+#include "gain_control.h"
+#include "AudioMacros.h"
+
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
 
 WebRTCGain::WebRTCGain() : m_bGainEnabled(false)
 {
 	LOG_AAC("#gain# WebRTCGain::WebRTCGain()");
 
-	m_iVolume = DEF_GAIN;
+	m_iVolume = DEFAULT_GAIN;
 	m_sTempBuf = new short[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 	int agcret = -1;
 
@@ -18,7 +22,7 @@ WebRTCGain::WebRTCGain() : m_bGainEnabled(false)
 	{
 		ALOG("WebRtcAgc_Create successful");
 	}
-	if ((agcret = WebRtcAgc_Init(AGC_instance, MINLEVEL, SHRT_MAX, AGNMODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
+	if ((agcret = WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, SHRT_MAX, MODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
 	{
 		ALOG("WebRtcAgc_Init failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
 	}

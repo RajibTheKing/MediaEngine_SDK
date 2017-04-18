@@ -1,10 +1,13 @@
 #include "NaiveGain.h"
-#include "AudioCallSession.h"
 
+#include "AudioMacros.h"
+#include "LogPrinter.h"
+
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
 
 NaiveGain::NaiveGain() : m_bGainEnabled(false)
 {
-	m_iVolume = DEF_GAIN;
+	m_iVolume = DEFAULT_GAIN;
 }
 
 
@@ -32,23 +35,11 @@ int NaiveGain::SetGain(int iGain)
 	}
 	else
 	{
-		m_iVolume = DEF_GAIN;
+		m_iVolume = DEFAULT_GAIN;
 	}
 
 	return true;
 }
-
-
-int NaiveGain::AddFarEnd(short *sInBuf, int nBufferSize)
-{
-	if (!m_bGainEnabled)
-	{
-		return false;
-	}
-
-	return true;
-}
-
 
 int NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 {

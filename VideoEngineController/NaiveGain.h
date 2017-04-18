@@ -3,24 +3,24 @@
 
 #include "AudioGainInterface.h"
 
-
 class NaiveGain : public AudioGainInterface
 {
-	bool m_bGainEnabled;
-	int m_iVolume;
-
 
 public:
 
 	NaiveGain();
 
-	~NaiveGain();
+	virtual ~NaiveGain();
 
 	int SetGain(int iGain);
 
-	int AddFarEnd(short *sInBuf, int nBufferSize);
+	int AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
 
 	int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning);
+
+private:
+	bool m_bGainEnabled;
+	int m_iVolume;
 
 };
 
