@@ -8,7 +8,7 @@ m_pAudioCallSession(pAudioCallSession),
 m_iBlockOkayFlag(0), 
 m_iPreviousPacketNumber(-1)
 {
-	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HeaderCommon);
+	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	m_iAudioHeaderLength = m_pAudioPacketHeader->GetHeaderSize();
 	m_nFrameLength = 0;
 }

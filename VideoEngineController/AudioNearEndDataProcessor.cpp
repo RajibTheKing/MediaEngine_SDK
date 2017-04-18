@@ -37,12 +37,11 @@ m_llLastFrameRT(0)
 	m_pAudioEncodingMutex.reset(new CLockHandler);
 	m_pAudioCodec = pAudioCallSession->GetAudioCodec();
 
-	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HeaderCommon);
+	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	
-	//m_llMaxAudioPacketNumber = ((1LL << HeaderBitmap[InfoPacketNumber]) ) * AUDIO_SLOT_SIZE;
-	m_llMaxAudioPacketNumber = (m_pAudioPacketHeader->GetFieldCapacity(InfoPacketNumber) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+	m_llMaxAudioPacketNumber = (m_pAudioPacketHeader->GetFieldCapacity(INF_PACKETNUMBER) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 	
-	m_iNextPacketType = PacketAudioNormal;
+	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
 	m_pAudioPacketizer = new AudioPacketizer(pAudioCallSession, pCommonElementsBucket);
 
@@ -163,7 +162,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedureViewer(){
 		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
 		
 		m_ucaRawFrameNonMuxed[0] = 0;
-		BuildAndGetHeaderInArray(PacketAudioLiveCallee, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
+		BuildAndGetHeaderInArray(AUDIO_LIVE_CALLEE_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, m_nRawFrameSize,
 			m_pAudioCallSession->m_iPrevRecvdSlotID, m_pAudioCallSession->m_iReceivedPacketsInPrevSlot, 0, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 		
 		++m_iPacketNumber;
@@ -206,11 +205,7 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 
 		//AddHeaderLive(version, llRelativeTime);
 
-		int nSendingFramePacketType = bIsMuxed ? PacketAudioLivePublisherMuxed : PacketAudioLivePublisherNonMuxed;
-
-		/*if (bIsMuxed){
-			nSendingFramePacketType = PacketAudioLivePublisherMuxed;
-		}*/
+		int nSendingFramePacketType = bIsMuxed ? AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED : AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED;
 
 		m_ucaRawFrameNonMuxed[0] = 0;
 		BuildAndGetHeaderInArray(nSendingFramePacketType, m_MyAudioHeadersize, 0, m_iSlotID, m_iPacketNumber, nSendingDataSizeInByte,
@@ -324,7 +319,7 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 void CAudioNearEndDataProcessor::AddHeader(int &version, long long &llRelativeTime)
 {
 	m_iSlotID = m_iPacketNumber / AUDIO_SLOT_SIZE;
-	m_iSlotID %= m_pAudioPacketHeader->GetFieldCapacity(InfoSlotNumber);
+	m_iSlotID %= m_pAudioPacketHeader->GetFieldCapacity(INF_SLOTNUMBER);
 
 	if (!m_bIsLiveStreamingRunning)
 	{
@@ -341,22 +336,22 @@ void CAudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nH
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
 
-	m_pAudioPacketHeader->SetInformation(packetType, InfoPacketType);
-	m_pAudioPacketHeader->SetInformation(nHeaderLength, InfoHeaderLength);
-	m_pAudioPacketHeader->SetInformation(packetNumber, InfoPacketNumber);
-	m_pAudioPacketHeader->SetInformation(slotNumber, InfoSlotNumber);
-	m_pAudioPacketHeader->SetInformation(packetLength, InfoBlockLength);
-	m_pAudioPacketHeader->SetInformation(recvSlotNumber, InfoRecvdSlotNumber);
-	m_pAudioPacketHeader->SetInformation(numPacketRecv, InfoNumPacketReceived);
-	m_pAudioPacketHeader->SetInformation(version, InfoVersionCode);
-	m_pAudioPacketHeader->SetInformation(timestamp, InfoTimestamp);
-	m_pAudioPacketHeader->SetInformation(networkType, InfoNetwrokType);
-	m_pAudioPacketHeader->SetInformation(channel, InfoChannel);
+	m_pAudioPacketHeader->SetInformation(packetType, INF_PACKETTYPE);
+	m_pAudioPacketHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
+	m_pAudioPacketHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
+	m_pAudioPacketHeader->SetInformation(slotNumber, INF_SLOTNUMBER);
+	m_pAudioPacketHeader->SetInformation(packetLength, INF_BLOCK_LENGTH);
+	m_pAudioPacketHeader->SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
+	m_pAudioPacketHeader->SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
+	m_pAudioPacketHeader->SetInformation(version, INF_VERSIONCODE);
+	m_pAudioPacketHeader->SetInformation(timestamp, INF_TIMESTAMP);
+	m_pAudioPacketHeader->SetInformation(networkType, INF_NETWORKTYPE);
+	m_pAudioPacketHeader->SetInformation(channel, INF_CHANNELS);
 
-	m_pAudioPacketHeader->SetInformation(0, InfoPacketBlockNumber);
-	m_pAudioPacketHeader->SetInformation(1, InfoTotalPacketBlocks);
-	m_pAudioPacketHeader->SetInformation(0, InfoBlockOffset);
-	m_pAudioPacketHeader->SetInformation(packetLength, InfoFrameLength);
+	m_pAudioPacketHeader->SetInformation(0, INF_PACKET_BLOCK_NUMBER);
+	m_pAudioPacketHeader->SetInformation(1, INF_TOTAL_PACKET_BLOCKS);
+	m_pAudioPacketHeader->SetInformation(0, INF_BLOCK_OFFSET);
+	m_pAudioPacketHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
 
 	m_pAudioPacketHeader->showDetails("@#BUILD");
 
@@ -371,9 +366,9 @@ void CAudioNearEndDataProcessor::SetAudioIdentifierAndNextPacketType()
 		m_iPacketNumber = 0;
 	}
 
-	if (false == m_bIsLiveStreamingRunning && m_iNextPacketType == PacketNoVideo)
+	if (false == m_bIsLiveStreamingRunning && m_iNextPacketType == AUDIO_NOVIDEO_PACKET_TYPE)
 	{
-		m_iNextPacketType = PacketAudioNormal;
+		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 	}
 }
 

@@ -24,49 +24,54 @@ typedef struct
 
 enum AudioHeaderInfoTypes
 {
-	InfoPacketType = 0,
-	InfoHeaderLength,
-	InfoNetwrokType,
-	InfoVersionCode,
-	InfoPacketNumber,
-	InfoBlockLength,
-	InfoRecvdSlotNumber,
-	InfoNumPacketReceived,
-	InfoChannel,
-	InfoSlotNumber,
-	InfoTimestamp,
-	InfoPacketBlockNumber,
-	InfoTotalPacketBlocks,
-	InfoBlockOffset,
-	InfoFrameLength
+	INF_PACKETTYPE = 0,
+	INF_HEADERLENGTH,
+	INF_NETWORKTYPE,
+	INF_VERSIONCODE,
+	INF_PACKETNUMBER,
+	INF_BLOCK_LENGTH,
+	INF_RECVDSLOTNUMBER,
+	INF_NUMPACKETRECVD,
+	INF_CHANNELS,
+	INF_SLOTNUMBER,
+	INF_TIMESTAMP,
+	INF_PACKET_BLOCK_NUMBER,
+	INF_TOTAL_PACKET_BLOCKS,
+	INF_BLOCK_OFFSET,
+	INF_FRAME_LENGTH
 };
 
 enum AudioPacketTypes
 {
-	PacketAudioSkip,
-	PacketAudioNormal,
-	PacketNoVideo,
-	PacketVersion,
-	PacketAudioChannel,
-	PacketAudioOpus,
-	PacketAudioLiveCallee,
-	PacketAudioLivePublisherMuxed,
-	PacketAudioLivePublisherNonMuxed
+	AUDIO_SKIP_PACKET_TYPE = 0,
+	AUDIO_NORMAL_PACKET_TYPE = 1,
+	AUDIO_NOVIDEO_PACKET_TYPE = 2,
+	AUDIO_VERSION_PACKET_TYPE = 3,
+	AUDIO_CHANNEL_PACKET_TYPE = 7,
+	AUDIO_OPUS_PACKET_TYPE = 9,
+	AUDIO_LIVE_CALLEE_PACKET_TYPE = 10,
+	AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED = 11,
+	AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED = 12
 };
 
 static int SupportedPacketTypes[] =
 {
-	PacketAudioSkip,
-	PacketAudioNormal,
-	PacketNoVideo,
-	PacketVersion
+	AUDIO_SKIP_PACKET_TYPE,
+	AUDIO_NORMAL_PACKET_TYPE,
+	AUDIO_NOVIDEO_PACKET_TYPE,
+	AUDIO_VERSION_PACKET_TYPE
 }; //Only for Call
 
 enum AudioHeaderTypes
 {
-	HeaderCommon,
-	HeaderChannel,
-	HeaderVoiceCall
+	HEADER_COMMON,
+	HEADER_CHANNEL,
+	HEADER_CALL
+};
+
+enum MaxSizes{
+	MAXFIELDSINHEADER = 15,
+	MAXHEADERSIZE = 100
 };
 
 class AudioPacketHeader
@@ -104,12 +109,7 @@ public:
 
 protected:
 
-	enum MaxSizes{
-		MaxFieldsInHeader = 15,
-		MaxHeaderSize = 100
-	};
-
-	int HeaderBitmap[MaxFieldsInHeader];
+	int HeaderBitmap[MAXFIELDSINHEADER];
 
 	AudioHeaderParams m_headerParams;
 
@@ -118,8 +118,8 @@ protected:
 	unsigned int m_nHeaderSizeInByte;
 	unsigned int m_nProcessingHeaderSizeInByte;
 
-	long long m_arrllInformation[MaxFieldsInHeader];
-	unsigned char ma_uchHeader[MaxHeaderSize];
+	long long m_arrllInformation[MAXFIELDSINHEADER];
+	unsigned char ma_uchHeader[MAXHEADERSIZE];
 
 };
 

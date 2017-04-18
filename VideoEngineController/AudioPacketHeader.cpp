@@ -6,11 +6,11 @@ static SmartPointer<AudioPacketHeader> GetInstance(AudioHeaderTypes type)
 	AudioPacketHeader* pPacketHeader = nullptr;
 	switch (type)
 	{
-	case HeaderCommon:
+	case HEADER_COMMON:
 		pPacketHeader = new AudioHeaderCommon();
 		break;
-	case HeaderChannel:
-	case HeaderVoiceCall:
+	case HEADER_CHANNEL:
+	case HEADER_CALL:
 	default:
 		pPacketHeader = nullptr;
 		break;

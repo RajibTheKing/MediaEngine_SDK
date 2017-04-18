@@ -99,7 +99,7 @@ bool AudioHeaderCommon::IsPacketTypeSupported(unsigned int PacketType)
 
 bool AudioHeaderCommon::IsPacketTypeSupported()
 {
-	unsigned int iPackeType = GetInformation(InfoPacketType);
+	unsigned int iPackeType = GetInformation(INF_PACKETTYPE);
 	return IsPacketTypeSupported(iPackeType);
 }
 
@@ -158,9 +158,9 @@ void AudioHeaderCommon::CopyHeaderToInformation(unsigned char *Header)
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
 		PutInformationToArray(i);
-		if (InfoHeaderLength == i && m_nHeaderSizeInByte != m_arrllInformation[InfoHeaderLength]) {
+		if (INF_HEADERLENGTH == i && m_nHeaderSizeInByte != m_arrllInformation[INF_HEADERLENGTH]) {
 
-			m_nProcessingHeaderSizeInByte = m_arrllInformation[InfoHeaderLength];
+			m_nProcessingHeaderSizeInByte = m_arrllInformation[INF_HEADERLENGTH];
 			HITLER("XXP@#@#MARUF H LEN UPDATED ..%u", m_nProcessingHeaderSizeInByte);
 		}
 	}
@@ -255,21 +255,21 @@ void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, int packe
 {
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
-	SetInformation(packetType, InfoPacketType);
-	SetInformation(nHeaderLength, InfoHeaderLength);
-	SetInformation(packetNumber, InfoPacketNumber);
-	SetInformation(slotNumber, InfoSlotNumber);
-	SetInformation(packetLength, InfoBlockLength);
-	SetInformation(recvSlotNumber, InfoRecvdSlotNumber);
-	SetInformation(numPacketRecv, InfoNumPacketReceived);
-	SetInformation(version, InfoVersionCode);
-	SetInformation(timestamp, InfoTimestamp);
-	SetInformation(networkType, InfoNetwrokType);
-	SetInformation(channel, InfoChannel);
-	SetInformation(iBlockNumber, InfoPacketBlockNumber);
-	SetInformation(nTotalBlocksInThisFrame, InfoTotalPacketBlocks);
-	SetInformation(nBlockOffset, InfoBlockOffset);
-	SetInformation(nFrameLength, InfoFrameLength);
+	SetInformation(packetType, INF_PACKETTYPE);
+	SetInformation(nHeaderLength, INF_HEADERLENGTH);
+	SetInformation(packetNumber, INF_PACKETNUMBER);
+	SetInformation(slotNumber, INF_SLOTNUMBER);
+	SetInformation(packetLength, INF_BLOCK_LENGTH);
+	SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
+	SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
+	SetInformation(version, INF_VERSIONCODE);
+	SetInformation(timestamp, INF_TIMESTAMP);
+	SetInformation(networkType, INF_NETWORKTYPE);
+	SetInformation(channel, INF_CHANNELS);
+	SetInformation(iBlockNumber, INF_PACKET_BLOCK_NUMBER);
+	SetInformation(nTotalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
+	SetInformation(nBlockOffset, INF_BLOCK_OFFSET);
+	SetInformation(nFrameLength, INF_FRAME_LENGTH);
 
 	showDetails("@#BUILD");
 
@@ -281,21 +281,21 @@ void AudioHeaderCommon::GetHeaderInfoAll(unsigned char* header, int &nHeaderLeng
 	CopyHeaderToInformation(header);
 
 	// packetType = GetInformation(INF_PACKETTYPE);
-	nHeaderLength = GetInformation(InfoHeaderLength);
+	nHeaderLength = GetInformation(INF_HEADERLENGTH);
 	// networkType = GetInformation(INF_NETWORKTYPE);
 	// slotNumber = GetInformation(INF_SLOTNUMBER);
-	nFrameNumber = GetInformation(InfoPacketNumber);
-	nBlockLength = GetInformation(InfoBlockLength);
+	nFrameNumber = GetInformation(INF_PACKETNUMBER);
+	nBlockLength = GetInformation(INF_BLOCK_LENGTH);
 	// recvSlotNumber = GetInformation(INF_RECVDSLOTNUMBER);
 	//numPacketRecv = GetInformation(INF_NUMPACKETRECVD);
 	// channel = GetInformation(INF_CHANNELS);
 	// version = GetInformation(INF_VERSIONCODE);
 	// timestamp = GetInformation(INF_TIMESTAMP);
 
-	iBlockNumber = GetInformation(InfoPacketBlockNumber);
-	nNumberOfBlocks = GetInformation(InfoTotalPacketBlocks);
-	iOffsetOfBlock = GetInformation(InfoBlockOffset);
-	nFrameLength = GetInformation(InfoFrameLength);
+	iBlockNumber = GetInformation(INF_PACKET_BLOCK_NUMBER);
+	nNumberOfBlocks = GetInformation(INF_TOTAL_PACKET_BLOCKS);
+	iOffsetOfBlock = GetInformation(INF_BLOCK_OFFSET);
+	nFrameLength = GetInformation(INF_FRAME_LENGTH);
 
 	if (iBlockNumber == -1)
 	{

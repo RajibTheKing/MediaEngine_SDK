@@ -10,7 +10,7 @@ CLiveAudioParserForChannel::CLiveAudioParserForChannel(std::vector<LiveAudioDeco
 	m_bIsCurrentlyParsingAudioData = false;
 	m_bIsRoleChanging = false;
 
-	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HeaderCommon);
+	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 }
 
 CLiveAudioParserForChannel::~CLiveAudioParserForChannel(){
@@ -33,9 +33,9 @@ bool CLiveAudioParserForChannel::IsParsingAudioData(){
 void CLiveAudioParserForChannel::GenMissingBlock(unsigned char* uchAudioData, int nFrameLeftRange, int nFrameRightRange, std::vector<std::pair<int, int>>&vMissingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock)
 {
 	m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-	int validHeaderLength = m_pAudioPacketHeader->GetInformation(InfoHeaderLength);
+	int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
 	// add muxed header lenght with audio header length. 
-	if (uchAudioData[nFrameLeftRange] == PacketAudioLivePublisherMuxed) {
+	if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
 		validHeaderLength += (totalCallee * 6 + 2);
 	}
@@ -72,7 +72,7 @@ void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned
 	m_bIsCurrentlyParsingAudioData = true;
 
 	Locker lock(*m_pLiveReceiverMutex);
-	SmartPointer<AudioPacketHeader> g_LiveReceiverHeader = AudioPacketHeader::GetInstance(HeaderCommon);
+	SmartPointer<AudioPacketHeader> g_LiveReceiverHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	size_t nNumberOfMissingBlocks = vMissingBlocks.size();
 	size_t iMissingIndex = 0;
 
@@ -113,7 +113,7 @@ void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned
 				{
 					HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
 					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-					int validHeaderLength = m_pAudioPacketHeader->GetInformation(InfoHeaderLength);
+					int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
 
 					HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
 

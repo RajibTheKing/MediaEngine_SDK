@@ -9,7 +9,7 @@ AudioPacketizer::AudioPacketizer(CAudioCallSession* audioCallSession, CCommonEle
 m_pAudioCallSession(audioCallSession),
 m_pCommonElementsBucket(pCommonElementsBucket)
 {
-	m_AudioPacketHeader = AudioPacketHeader::GetInstance(HeaderCommon);
+	m_AudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	m_nHeaderLength = m_AudioPacketHeader->GetHeaderSize();
 
 	m_nHeaderLengthWithMediaByte = m_nHeaderLength + 1;
@@ -34,7 +34,7 @@ void AudioPacketizer::Packetize(bool bShouldPacketize, unsigned char* uchData, i
 
 	int iSlotID = nFrameNumber / AUDIO_SLOT_SIZE;
 	
-	iSlotID %= m_AudioPacketHeader->GetFieldCapacity(InfoSlotNumber);
+	iSlotID %= m_AudioPacketHeader->GetFieldCapacity(INF_SLOTNUMBER);
 	LOGT("##NF###XXP@#@#MARUF INIT PACKETING .... data Len = %d numBlock %d, SlotId %d", nDataLength, nNumberOfBlocks, iSlotID);
 	for (int iBlockNumber = 0; iBlockNumber < nNumberOfBlocks; iBlockNumber++ ) {
 

@@ -65,7 +65,7 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 
 	m_iPrevRecvdSlotID = -1;
 	m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
-	m_iNextPacketType = PacketAudioNormal;
+	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
 	m_bUsingLoudSpeaker = false;
 	m_bEchoCancellerEnabled = true;

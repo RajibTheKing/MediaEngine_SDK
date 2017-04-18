@@ -52,7 +52,7 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 		m_pLiveAudioParser = new CLiveAudioParserForChannel(m_vAudioFarEndBufferVector);
 	}
 
-	m_ReceivingHeader = AudioPacketHeader::GetInstance(HeaderCommon);
+	m_ReceivingHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	m_pAudioDePacketizer = new AudioDePacketizer(m_pAudioCallSession);
 
 	m_cAac = new CAac();
@@ -273,7 +273,7 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 	}
 	else 
 	{
-		if (PacketAudioChannel == nCurrentAudioPacketType)	//Only for channel
+		if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)	//Only for channel
 		{
 			long long llNow = Tools::CurrentTimestamp();
 			m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
@@ -364,23 +364,23 @@ void CAudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nH
 {
 	m_ReceivingHeader->CopyHeaderToInformation(header);
 
-	packetType = m_ReceivingHeader->GetInformation(InfoPacketType);
-	nHeaderLength = m_ReceivingHeader->GetInformation(InfoHeaderLength);
-	networkType = m_ReceivingHeader->GetInformation(InfoNetwrokType);
-	slotNumber = m_ReceivingHeader->GetInformation(InfoSlotNumber);
-	packetNumber = m_ReceivingHeader->GetInformation(InfoPacketNumber);
-	packetLength = m_ReceivingHeader->GetInformation(InfoBlockLength);
-	recvSlotNumber = m_ReceivingHeader->GetInformation(InfoRecvdSlotNumber);
-	numPacketRecv = m_ReceivingHeader->GetInformation(InfoNumPacketReceived);
-	channel = m_ReceivingHeader->GetInformation(InfoChannel);
-	version = m_ReceivingHeader->GetInformation(InfoVersionCode);
-	timestamp = m_ReceivingHeader->GetInformation(InfoTimestamp);
+	packetType = m_ReceivingHeader->GetInformation(INF_PACKETTYPE);
+	nHeaderLength = m_ReceivingHeader->GetInformation(INF_HEADERLENGTH);
+	networkType = m_ReceivingHeader->GetInformation(INF_NETWORKTYPE);
+	slotNumber = m_ReceivingHeader->GetInformation(INF_SLOTNUMBER);
+	packetNumber = m_ReceivingHeader->GetInformation(INF_PACKETNUMBER);
+	packetLength = m_ReceivingHeader->GetInformation(INF_BLOCK_LENGTH);
+	recvSlotNumber = m_ReceivingHeader->GetInformation(INF_RECVDSLOTNUMBER);
+	numPacketRecv = m_ReceivingHeader->GetInformation(INF_NUMPACKETRECVD);
+	channel = m_ReceivingHeader->GetInformation(INF_CHANNELS);
+	version = m_ReceivingHeader->GetInformation(INF_VERSIONCODE);
+	timestamp = m_ReceivingHeader->GetInformation(INF_TIMESTAMP);
 
 
-	iBlockNumber = m_ReceivingHeader->GetInformation(InfoPacketBlockNumber);
-	nNumberOfBlocks = m_ReceivingHeader->GetInformation(InfoTotalPacketBlocks);
-	iOffsetOfBlock = m_ReceivingHeader->GetInformation(InfoBlockOffset);
-	nFrameLength = m_ReceivingHeader->GetInformation(InfoFrameLength);
+	iBlockNumber = m_ReceivingHeader->GetInformation(INF_PACKET_BLOCK_NUMBER);
+	nNumberOfBlocks = m_ReceivingHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
+	iOffsetOfBlock = m_ReceivingHeader->GetInformation(INF_BLOCK_OFFSET);
+	nFrameLength = m_ReceivingHeader->GetInformation(INF_FRAME_LENGTH);
 
 	if (iBlockNumber == -1)
 	{
@@ -401,7 +401,7 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudi
 	
 	if (SERVICE_TYPE_CHANNEL == m_nServiceType)	//Channel
 	{
-		if (PacketAudioChannel == nCurrentAudioPacketType)
+		if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)
 		{
 			return true;
 		}
@@ -411,12 +411,12 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudi
 	{
 		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)	//
 		{
-			if (nCurrentAudioPacketType == PacketAudioLiveCallee)
+			if (nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
 			return true;
 		}		
 		else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
-			if (PacketAudioLivePublisherMuxed == nCurrentAudioPacketType || PacketAudioLivePublisherNonMuxed == nCurrentAudioPacketType)
+			if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType || AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED == nCurrentAudioPacketType)
 			{
 				return true;
 			}
@@ -431,20 +431,20 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAud
 {
 	if (false == m_bIsLiveStreamingRunning)
 	{
-		if (PacketAudioSkip == nCurrentAudioPacketType)
+		if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
 		{
 			//ALOG("#V#TYPE# ############################################### SKIPPET");
 			Tools::SOSleep(0);
 			return false;
 		}
-		else if (PacketNoVideo == nCurrentAudioPacketType)
+		else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
 		{
 			//g_StopVideoSending = 1;*/
 			if (false == m_bIsLiveStreamingRunning)
 				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
 			return true;
 		}
-		else if (PacketAudioNormal == nCurrentAudioPacketType)
+		else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
 		{
 			m_iAudioVersionFriend = nVersion;
 			return true;
@@ -682,7 +682,7 @@ void CAudioFarEndDataProcessor::LiveStreamFarEndProcedureViewer()
 
 			//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 			
-			if (PacketAudioLivePublisherMuxed == nCurrentAudioPacketType)
+			if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType)
 			{
 				if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
 				{
