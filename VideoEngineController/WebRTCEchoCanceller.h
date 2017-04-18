@@ -5,9 +5,7 @@
 #include "EchoCancellerInterface.h"
 #include "echo_control_mobile.h"
 
-#include "Tools.h"
 #include "AudioMacros.h"
-
 
 //#define ECHO_ANALYSIS
 
@@ -21,6 +19,16 @@ FILE *EchoFile;
 
 class WebRTCEchoCanceller : public EchoCancellerInterface
 {
+
+public:
+	WebRTCEchoCanceller();
+
+	virtual ~WebRTCEchoCanceller();
+
+	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
+
+	int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning);
+
 private:
 	void* AECM_instance;
 
@@ -32,17 +40,6 @@ private:
 	int iCounter, iCounter2;
 
 	short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
-	Tools m_Tools;
-
-
-public:
-	WebRTCEchoCanceller();
-
-	~WebRTCEchoCanceller();
-
-	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
-
-	int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning);
 
 };
 

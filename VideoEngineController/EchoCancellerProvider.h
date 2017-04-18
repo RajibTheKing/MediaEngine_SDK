@@ -1,14 +1,14 @@
 #ifndef ECHO_CANCELLER_PROVIDER_H
 #define ECHO_CANCELLER_PROVIDER_H
 
+#include "SmartPointer.h"
 
-#include "EchoCancellerInterface.h"
-
+class EchoCancellerInterface;
 
 enum EchoCancellerType
 {
-	WebRTC,
-	Speex
+	WebRTC_ECM,
+	Speex_ECM
 };
 
 
@@ -17,7 +17,7 @@ class EchoCancellerProvider
 	
 public:
 
-	static EchoCancellerInterface* GetEchoCanceller(EchoCancellerType echoCancellerType);
+	static SmartPointer<EchoCancellerInterface> GetEchoCanceller(EchoCancellerType echoCancellerType);
 
 };
 

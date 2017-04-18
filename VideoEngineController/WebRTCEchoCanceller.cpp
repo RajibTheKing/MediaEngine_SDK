@@ -1,5 +1,11 @@
 #include "WebRTCEchoCanceller.h"
-#include "AudioCallSession.h"
+
+#include "Tools.h"
+#include "LogPrinter.h"
+
+#ifndef ALOG
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
+#endif
 
 
 WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInited(false)
@@ -13,22 +19,22 @@ WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInite
 	int iAECERR = WebRtcAecm_Create(&AECM_instance);
 	if (iAECERR)
 	{
-		ALOG("WebRtcAecm_Create failed id = " + m_Tools.IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Create failed id = " + Tools::IntegertoStringConvert(id));
 	}
 	else
 	{
-		ALOG("WebRtcAecm_Create successful id = " + m_Tools.IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Create successful id = " + Tools::IntegertoStringConvert(id));
 		m_bAecmCreated = true;
 	}
 
 	iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
 	if (iAECERR)
 	{
-		ALOG("WebRtcAecm_Init failed id = " + m_Tools.IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Init failed id = " + Tools::IntegertoStringConvert(id));
 	}
 	else
 	{
-		ALOG("WebRtcAecm_Init successful id = " + m_Tools.IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Init successful id = " + Tools::IntegertoStringConvert(id));
 		m_bAecmInited = true;
 	}
 
@@ -38,11 +44,11 @@ WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInite
 
 	if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
 	{
-		ALOG("WebRtcAecm_set_config unsuccessful id = " + m_Tools.IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_set_config unsuccessful id = " + Tools::IntegertoStringConvert(id));
 	}
 	else
 	{
-		ALOG("WebRtcAecm_set_config successful id = " + m_Tools.IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_set_config successful id = " + Tools::IntegertoStringConvert(id));
 	}
 
 	memset(m_sZeroBuf, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
@@ -76,7 +82,7 @@ int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLi
 #ifdef ECHO_ANALYSIS
 	while (m_bWritingDump)
 	{
-		m_Tools.SOSleep(1);
+		Tools::SOSleep(1);
 	}
 	m_bWritingDump = true;
 	short temp = WEBRTC_FAREND;
@@ -89,16 +95,16 @@ int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLi
 	{
 		if (0 != WebRtcAecm_BufferFarend(AECM_instance, farEndData + i, AECM_SAMPLES_IN_FRAME))
 		{
-			ALOG("WebRtcAec_BufferFarend failed id = " + m_Tools.IntegertoStringConvert(m_ID) + " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
-				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
+			ALOG("WebRtcAec_BufferFarend failed id = " + Tools::IntegertoStringConvert(m_ID) + " err = " + Tools::IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
+				+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
+				+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));
 		}
 		else
 		{
-			m_llLastFarendTime = m_Tools.CurrentTimestamp();
-			/*ALOG("WebRtcAec_BufferFarend successful id = " + m_Tools.IntegertoStringConvert(m_ID)
-			+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-			+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
+			m_llLastFarendTime = Tools::CurrentTimestamp();
+			/*ALOG("WebRtcAec_BufferFarend successful id = " + Tools::IntegertoStringConvert(m_ID)
+			+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
+			+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));*/
 		}
 	}
 
@@ -119,7 +125,7 @@ int WebRTCEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLive
 #ifdef ECHO_ANALYSIS
 	while (m_bWritingDump)
 	{
-		m_Tools.SOSleep(1);
+		Tools::SOSleep(1);
 	}
 	m_bWritingDump = true;
 	short temp = NEAREND;
@@ -131,7 +137,7 @@ int WebRTCEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLive
 	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
 	{
 		bool bFailed = false, bZeroed = false;
-		int delay = m_Tools.CurrentTimestamp() - m_llLastFarendTime/*10*/;
+		int delay = Tools::CurrentTimestamp() - m_llLastFarendTime/*10*/;
 		if (delay < 0)
 		{
 			delay = 0;
@@ -139,17 +145,17 @@ int WebRTCEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLive
 
 		if (0 != WebRtcAecm_Process(AECM_instance, nearEndData + i, NULL, nearEndData + i, AECM_SAMPLES_IN_FRAME, 50))
 		{
-			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)delay)
-				+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
-				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
+			ALOG("WebRtcAec_Process failed bAecmCreated = " + Tools::IntegertoStringConvert((int)bAecmCreated) + " delay = " + Tools::IntegertoStringConvert((int)delay)
+				+ " err = " + Tools::IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
+				+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
+				+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));
 			bFailed = true;
 		}
 		else
 		{
-			/*ALOG("WebRtcAec_Process successful Delay = " + m_Tools.IntegertoStringConvert((int)delay) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
-			+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-			+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
+			/*ALOG("WebRtcAec_Process successful Delay = " + Tools::IntegertoStringConvert((int)delay) + " id = " + Tools::IntegertoStringConvert(m_ID)
+			+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
+			+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));*/
 		}
 	}
 
