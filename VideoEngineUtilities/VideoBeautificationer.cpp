@@ -690,8 +690,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	if (effectParam[1] != 0)m_radius = effectParam[1];
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
 
-	int startWidth = (iWidth - iNewWidth)/2 - m_rr;
-	int endWidth = iWidth - startWidth + m_rr;
+	int startWidth = (iWidth - iNewWidth)/2 - 0;
+	int endWidth = iWidth - startWidth + 0;
 
 	//for (int i = 0; i <= iHeight; i++) 
 	//{
