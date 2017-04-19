@@ -1,5 +1,4 @@
 #include "NoiseReducerProvider.h"
-#include "NoiseReducerInterface.h"
 
 #include "WebRTCNoiseReducer.h"
 

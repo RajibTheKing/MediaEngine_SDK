@@ -1,5 +1,4 @@
 #include "GomGomGain.h"
-#include "math.h"
 #include "filt.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)

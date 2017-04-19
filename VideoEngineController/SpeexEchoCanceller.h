@@ -5,7 +5,6 @@
 #include "EchoCancellerInterface.h"
 #include "speex/speex_echo.h"
 #include "speex/speex_preprocess.h"
-#include "Tools.h"
 #include "AudioMacros.h"
 
 
@@ -19,8 +18,6 @@ private:
 
 	SpeexEchoState *st;
 	SpeexPreprocessState *den;
-	Tools m_Tools;
-
 
 public:
 

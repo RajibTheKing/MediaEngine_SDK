@@ -1,6 +1,8 @@
 #include "SpeexEchoCanceller.h"
-#include "AudioCallSession.h"
-#include "Filt.h"
+#include "LogPrinter.h"
+#include "Tools.h"
+
+#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 
 
 
@@ -42,7 +44,7 @@ int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiv
 {
 	while (m_bReadingFarend)
 	{
-		m_Tools.SOSleep(1);
+		Tools::SOSleep(1);
 	}
 	m_bWritingFarend = true;
 	memcpy(m_sSpeexFarendBuf, farEndData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
@@ -62,7 +64,7 @@ int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveS
 
 	while (m_bWritingFarend)
 	{
-		m_Tools.SOSleep(1);
+		Tools::SOSleep(1);
 	}
 	m_bReadingFarend = true;
 

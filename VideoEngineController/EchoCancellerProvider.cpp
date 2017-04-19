@@ -1,6 +1,5 @@
 #include "EchoCancellerProvider.h"
 
-#include "EchoCancellerInterface.h"
 #include "WebRTCEchoCanceller.h"
 #include "SpeexEchoCanceller.h"
 
