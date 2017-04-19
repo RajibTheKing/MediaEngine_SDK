@@ -249,6 +249,29 @@ void AudioHeaderCommon::showDetails(char prefix[])
 		m_arrllInformation[14]);
 }
 
+void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, AudioHeaderParams& params)
+{
+	SetInformation(params.packetType, INF_PACKETTYPE);
+	SetInformation(params.nHeaderLength, INF_HEADERLENGTH);
+	SetInformation(params.packetNumber, INF_PACKETNUMBER);
+	SetInformation(params.slotNumber, INF_SLOTNUMBER);
+	SetInformation(params.packetLength, INF_BLOCK_LENGTH);
+	SetInformation(params.recvSlotNumber, INF_RECVDSLOTNUMBER);
+	SetInformation(params.numPacketRecv, INF_NUMPACKETRECVD);
+	SetInformation(params.version, INF_VERSIONCODE);
+	SetInformation(params.timestamp, INF_TIMESTAMP);
+	SetInformation(params.networkType, INF_NETWORKTYPE);
+	SetInformation(params.channel, INF_CHANNELS);
+	SetInformation(params.iBlockNumber, INF_PACKET_BLOCK_NUMBER);
+	SetInformation(params.nTotalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
+	SetInformation(params.nBlockOffset, INF_BLOCK_OFFSET);
+	SetInformation(params.nFrameLength, INF_FRAME_LENGTH);
+
+	showDetails("@#BUILD");
+
+	GetHeaderInByteArray(header);
+}
+
 
 void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 	int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength)
