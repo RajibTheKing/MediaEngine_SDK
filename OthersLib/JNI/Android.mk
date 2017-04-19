@@ -152,6 +152,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckBuffer.cpp \
 			../../../videoengine/VideoEngineController/DeviceCapabilityCheckThread.cpp \
 			../../../videoengine/VideoEngineController/AudioPacketHeader.cpp \
+			../../../videoengine/VideoEngineController/AudioHeaderCommon.cpp \
 			../../../videoengine/VideoEngineController/AudioFileCodec.cpp \
 			../../../videoengine/VideoEngineController/Noise.cpp \
 			../../../videoengine/VideoEngineController/Voice.cpp \
