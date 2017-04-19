@@ -11,10 +11,7 @@
 #include "AudioMixer.h"
 
 #include "NoiseReducerInterface.h"
-
-#ifdef USE_AGC
-#include "Gain.h"
-#endif
+#include "AudioGainInterface.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -383,10 +380,15 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 		}
 #endif
 
-#ifdef USE_AGC
-		m_pAudioCallSession->m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
-		m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
-#endif
+		if (m_pAudioCallSession->m_pPlayerGain.get())
+		{
+			m_pAudioCallSession->m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
+		}
+		
+		if (m_pAudioCallSession->m_pRecorderGain.get())
+		{
+			m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
+		}
 
 		if (m_pNoise.get())
 		{

@@ -9,12 +9,8 @@
 #include "AudioDePacketizer.h"
 #include "AudioCodec.h"
 #include "Aac.h"
-#include "GomGomGain.h"
 
-#ifdef USE_AGC
-#include "Gain.h"
-#endif
-
+class AudioGainInterface;
 class CAudioCallSession;
 class AudioPacketizer;
 class CCommonElementsBucket;
@@ -23,7 +19,7 @@ class CAudioShortBuffer;
 //class CAudioCodec;
 class Tools;
 class CAudioByteBuffer;
-class CGomGomGain;
+class GomGomGain;
 class ILiveAudioParser;
 class AudioMixer;
 
@@ -68,7 +64,7 @@ private:
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 	//AudioPacketHeader *m_pAudioPacketHeader = nullptr;
 	SmartPointer<AudioPacketHeader> m_ReceivingHeader = nullptr;
-	GomGomGain *m_pGomGomGain = nullptr;
+	SmartPointer<GomGomGain> m_pGomGomGain;
 
 	std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
 

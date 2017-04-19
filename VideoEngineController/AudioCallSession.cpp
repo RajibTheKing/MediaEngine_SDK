@@ -18,16 +18,12 @@
 
 #include "NoiseReducerProvider.h"
 
-#ifdef USE_AGC
-#include "Gain.h"
-#endif
+#include "AudioGainInstanceProvider.h"
+#include "AudioGainInterface.h"
+
 #ifdef USE_VAD
 #include "Voice.h"
 #endif
-#include "GomGomGain.h"
-
-
-
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -77,10 +73,8 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 
 	m_pNoise = NoiseReducerProvider::GetNoiseReducer(WebRTC_ANR);
 
-#ifdef USE_AGC
-	m_pRecorderGain = new CGain();
-	m_pPlayerGain = new CGain();
-#endif
+	m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_AGC);
+	m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_AGC);
 
 #ifdef USE_VAD
 	m_pVoice = new CVoice();
@@ -131,10 +125,6 @@ CAudioCallSession::~CAudioCallSession()
 	delete m_pG729CodecNative;
 #endif
 
-#ifdef USE_AGC
-	delete m_pRecorderGain;
-	delete m_pPlayerGain;
-#endif
 #ifdef USE_VAD
 	delete m_pVoice;
 #endif
@@ -366,24 +356,18 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 
 void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 {
-#ifdef USE_AGC
-	//if (!m_bLiveAudioStreamRunning)
+	if (bRecorder)
 	{
-		if (bRecorder)
-		{
-			m_pRecorderGain->SetGain(iVolume);
-		}
-		else
-		{
-			m_pPlayerGain->SetGain(iVolume);
-		}
+		m_pRecorderGain.get() ? m_pRecorderGain->SetGain(iVolume) : 0;
 	}
-#endif
+	else
+	{
+		m_pPlayerGain.get() ? m_pPlayerGain->SetGain(iVolume) : 0;
+	}
 }
 
 void CAudioCallSession::SetLoudSpeaker(bool bOn)
 {
-#ifdef USE_AGC
 	/*if (m_bUsingLoudSpeaker != bOn)
 	{
 	m_bUsingLoudSpeaker = bOn;
@@ -397,7 +381,7 @@ void CAudioCallSession::SetLoudSpeaker(bool bOn)
 	}
 	}*/
 	//This method may be used in future.
-#endif
+
 	m_bUsingLoudSpeaker = bOn;
 	/*
 	#ifdef USE_AECM

@@ -70,13 +70,11 @@ class CAudioFarEndDataProcessor;
 class EchoCancellerInterface;
 class NoiseReducerInterface;
 
-#ifdef USE_AGC
-class CGain;
-#endif
+class AudioGainInterface;
+
 #ifdef USE_VAD
 class CVoice;
 #endif
-class CGomGomGain;
 
 class CAudioCallSession
 {
@@ -128,10 +126,9 @@ public:
 	CAudioShortBuffer  m_ViewerInCallSentDataQueue;
 	int m_iPrevRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot;
-#ifdef USE_AGC
-	CGain * m_pRecorderGain;
-	CGain * m_pPlayerGain;
-#endif
+
+	SmartPointer<AudioGainInterface> m_pRecorderGain;
+	SmartPointer<AudioGainInterface> m_pPlayerGain;
 
 	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;

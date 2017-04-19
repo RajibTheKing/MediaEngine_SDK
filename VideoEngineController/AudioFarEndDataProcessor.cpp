@@ -8,6 +8,9 @@
 #include "InterfaceOfAudioVideoEngine.h"
 
 
+#include "GomGomGain.h"
+#include "AudioGainInstanceProvider.h"
+#include "AudioGainInterface.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -57,7 +60,7 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 
 	m_cAac = new CAac();
 	m_cAac->SetParameters(44100, 2);
-	m_pGomGomGain = new GomGomGain();
+	m_pGomGomGain.reset(new GomGomGain());
 
 	StartDecodingThread();
 }
@@ -73,11 +76,6 @@ CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
 		}
 	}
 
-	if (m_pGomGomGain)
-	{
-		delete m_pGomGomGain;
-		m_pGomGomGain = nullptr;
-	}
 	if (m_pAudioDePacketizer)
 	{
 		delete m_pAudioDePacketizer;
@@ -267,11 +265,10 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 		m_nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
 #endif
 
+		m_pAudioCallSession->m_pRecorderGain.get() ? m_pAudioCallSession->m_pRecorderGain->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize) : 0;
+		
+		m_pAudioCallSession->m_pPlayerGain.get() ? m_pAudioCallSession->m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, m_bIsLiveStreamingRunning) : 0;
 
-#ifdef USE_AGC
-		m_pAudioCallSession->m_pRecorderGain->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize);
-		m_pAudioCallSession->m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, m_bIsLiveStreamingRunning);
-#endif
 	}
 	else 
 	{
