@@ -149,11 +149,11 @@ m_EffectValue(10)
 		
 		if (i >= 25 && i <= 125) 
 		{
-			m_preBrightness[i] += (i - 25) * 15 / firstDif;
+			m_preBrightness[i] += (i - 25) * 10 / firstDif;
 		}
 		else if (i >= 125 && i <= 225) 
 		{
-			m_preBrightness[i] += (225 - i) * 15 / secondDif;
+			m_preBrightness[i] += (225 - i) * 10 / secondDif;
 		}
 	}
 
