@@ -783,6 +783,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
             
 #endif
             
+            
+            
 			totalYValue += pBlurConvertingData[iw + j - 1];
 
 
@@ -791,9 +793,13 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 			tmp2 += (pBlurConvertingData[iw + j - 1] * pBlurConvertingData[iw + j - 1]);
 			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
-
-			//pBlurConvertingData[m_pUIndex[iw + j - 1]] -= 1;
-			//pBlurConvertingData[m_pVIndex[iw + j - 1]] += 1;
+            
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+            
+			pBlurConvertingData[m_pUIndex[iw + j - 1]] += 1;
+			pBlurConvertingData[m_pVIndex[iw + j - 1]] -= 1;
+#endif
+            
 		}
 	}
 
