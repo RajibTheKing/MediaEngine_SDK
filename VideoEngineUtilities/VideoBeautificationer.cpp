@@ -9,11 +9,14 @@
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigma = 40;
+#import <sys/utsname.h> // import it in your header or implementation file.
+//#import <UIKit/UIKit.h>
+
+int m_sigma = 64;
 
 #elif defined(__ANDROID__)
 
-int m_sigma = 35;
+int m_sigma = 128;
 
 #elif defined(DESKTOP_C_SHARP)
 
@@ -22,6 +25,24 @@ int m_sigma = 100;
 #else 
 
 int m_sigma = 35;
+
+#endif
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+int m_sigmaDigit = 6;
+
+#elif defined(__ANDROID__)
+
+int m_sigmaDigit = 7;
+
+#elif defined(DESKTOP_C_SHARP)
+
+int m_sigmaDigit = 7;
+
+#else 
+
+int m_sigmaDigit = 5;
 
 #endif
 
@@ -39,6 +60,28 @@ m_nPreviousAddValueForBrightening(0),
 m_nBrightnessPrecision(0),
 m_EffectValue(10)
 {
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+    std::string sDeviceModel = getDeviceModel();
+    //printf("TheKing--> GetDeviceModel = %s\n", sDeviceModel.c_str());
+	m_nIsGreaterThen5s = isGreaterThanIphone5s();
+    
+    //printf("TheKing--> ansGot = %d\n", ansGot);
+
+	if (m_nIsGreaterThen5s > 0)
+	{
+		m_sigma = 128;
+		m_sigmaDigit = 7;
+	}
+	else
+	{
+		m_sigma = 64;
+		m_sigmaDigit = 6;
+	}
+
+#endif
+    
 	m_nVideoHeight = iVideoHeight;
 	m_nVideoWidth = iVideoWidth;
 
@@ -60,7 +103,9 @@ m_EffectValue(10)
 		int a = (int)getMin((1.1643*(gray - 24)), 255);
 		int b = getMax(a,0);
 
-		modifYUV[y] = (unsigned char)b;
+		unsigned char c = (unsigned char)((double)y * 0.803921 + 50.0);
+
+		modifYUV[y] = (unsigned char)c;
         
 		//#else
 
@@ -94,6 +139,26 @@ m_EffectValue(10)
 			m_Multiplication[i][j] = i*j;
 		}
 	}
+
+	int firstDif = 125 - 25;
+	int secondDif = 225 - 125;
+	
+	for (int i = 0; i < 256; i++)
+	{
+		m_preBrightness[i] = i;
+		
+		if (i >= 25 && i <= 125) 
+		{
+			m_preBrightness[i] += (i - 25) * 10 / firstDif;
+		}
+		else if (i >= 125 && i <= 225) 
+		{
+			m_preBrightness[i] += (225 - i) * 10 / secondDif;
+		}
+	}
+
+	for (int i = 0; i < 256; i++)
+		m_ucpreBrightness[i] = (unsigned char)m_preBrightness[i];
 
 	memset(m_mean, m_nVideoHeight*m_nVideoWidth, 0);
 	memset(m_variance, m_nVideoHeight*m_nVideoWidth, 0);
@@ -614,65 +679,79 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	return result;
 }
 
+bool CVideoBeautificationer::IsNotSkinPixel(unsigned char UPixel, unsigned char VPixel)
+{
+	return (UPixel <= 94 || UPixel >= 126 || VPixel <= 134 || VPixel >= 176);
+}
+
 pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, int *effectParam)
 {
 	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
 	if (effectParam[1] != 0)m_radius = effectParam[1];
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
 
-	int widthDiff = iWidth - iNewWidth;
-	int halfWidthDiff = widthDiff / 2;
+	int startWidth = (iWidth - iNewWidth)/2 - m_rr;
+	int endWidth = iWidth - startWidth + m_rr;
 
-	int www = iWidth - halfWidthDiff;
+	//for (int i = 0; i <= iHeight; i++) 
+	//{
+	//	m_mean[i][0] = 0;
+	//}
 
-	long long startSharpingTime = m_Tools.CurrentTimestamp();
-    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)
-    //Do nothing
-    //Not Needed Yet...
-#else
-
-	for (int i = 0; i <= iHeight; i++) 
-	{
-		m_mean[i][0] = 0;
-	}
-
-	memset(m_mean, iWidth, 0);
-
+	//memset(m_mean, iWidth, 0);
+	/*
 	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
-		int tmp = 0;
-
-		for (int j = 1 + halfWidthDiff; j <= www; j++)
+		for (int j = startWidth; j <= endWidth; j++)
 		{
-			tmp += pBlurConvertingData[i * iWidth + j - 1];
-			m_mean[i][j] = tmp + m_mean[i - 1][j];
-
-			if (i > 2 && j > 2) 
-			{
-				int indx = m_mean[i][j] - m_mean[i - 3][j] - m_mean[i][j - 3] + m_mean[i - 3][j - 3];
-
-				pBlurConvertingData[iw + j - 2] = m_precSharpness[pBlurConvertingData[iw + j - 2]][indx];
-			}
+			m_mean[i][j] = pBlurConvertingData[iw + j - 1];
 		}
 	}
+	*/
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	if (m_nIsGreaterThen5s > 0)
 
 #endif
 
-	long long endSharpingTime = m_Tools.CurrentTimestamp();
-
-	for (int i = 0; i <= iHeight; i++) 
 	{
-		m_mean[i][0] = 0;
-		m_variance[i][0] = 0;
-	}
+		for (int i = 1, iw = 0, iw2 = -iWidth; i <= iHeight; i++, iw += iWidth, iw2 += iWidth)
+		{
+			for (int j = startWidth; j <= endWidth; j++)
+			{
+				m_mean[i][j] = pBlurConvertingData[iw + j - 1];
 
-	memset(m_mean, iWidth, 0);
-	memset(m_variance, iWidth, 0);
+				if (i > 2)
+				{
+					//if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 2)));
+#else
+					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
+#endif
+				}
+			}
+		}
+	}
+	
+	
+	
+
+	//for (int i = 0; i <= iHeight; i++) 
+	//{
+	//	m_mean[i][startWidth - 1] = 0;
+	//	m_variance[i][startWidth - 1] = 0;
+	//}
+
+	//memset(m_mean, iWidth, 0);
+	//memset(m_variance, iWidth, 0);
 
 	int cur_pixel, tmp, tmp2;
 	int totalYValue = 0;
 	int yLen = iWidth * iHeight;
+
 #if defined(__ANDROID__)
 	/*int totalYValue = 0;*/
 	//int yLen = iWidth * iHeight;
@@ -681,9 +760,9 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 	{
 		tmp = 0, tmp2 = 0;
-		m_mean[i][0] = 0;
+		m_mean[i][startWidth - 1] = 0;
 
-		for (int j = 1 + halfWidthDiff; j <= www; j++)
+		for (int j = startWidth; j <= endWidth; j++)
 		{
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -692,16 +771,21 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 #elif defined(__ANDROID__)
 
-			totalYValue += pBlurConvertingData[iw + j - 1];
-
-			if (pBlurConvertingData[iw + j - 1] >= luminaceHigh - m_nPreviousAddValueForBrightening)
-				pBlurConvertingData[iw + j - 1] = luminaceHigh;
-			else
-				pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
+			//if (pBlurConvertingData[iw + j - 1] >= luminaceHigh - m_nPreviousAddValueForBrightening)
+			//	pBlurConvertingData[iw + j - 1] = luminaceHigh;
+			//else
+			//	pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
 
 			//pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
 
+
+			pBlurConvertingData[iw + j - 1] = m_ucpreBrightness[pBlurConvertingData[iw + j - 1]];
+            
 #endif
+            
+			totalYValue += pBlurConvertingData[iw + j - 1];
+
+
 			tmp += pBlurConvertingData[iw + j - 1];
 			m_mean[i][j] = tmp + m_mean[i - 1][j];
 
@@ -713,14 +797,60 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 		}
 	}
 
-
 	int m_AvarageValue = totalYValue/yLen;
 
-	SetBrighteningValue(m_AvarageValue, 10);
+#if defined(__ANDROID__)
+
+	if (m_AvarageValue < 25)
+	{
+		m_sigma = 16;
+		m_sigmaDigit = 4;
+	}
+	else if (m_AvarageValue < 50)
+	{
+		m_sigma = 32;
+		m_sigmaDigit = 5;
+	}
+	else if (m_AvarageValue < 75)
+	{
+		m_sigma = 64;
+		m_sigmaDigit = 6;
+	}
+	else
+	{
+		m_sigma = 128;
+		m_sigmaDigit = 7;
+	}
+
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	if (m_AvarageValue < 50)
+	{
+		m_sigma = 32;
+		m_sigmaDigit = 5;
+	}
+	else
+	{
+		if (m_nIsGreaterThen5s > 0)
+		{
+			m_sigma = 128;
+			m_sigmaDigit = 7;
+		}
+		else
+		{
+			m_sigma = 64;
+			m_sigmaDigit = 6;
+		}	
+	}
+
+#endif
+
+	//SetBrighteningValue(m_AvarageValue, 10);
 
 	int niHeight = iHeight - m_rr;
-	int niWidth = iWidth - m_rr - halfWidthDiff;
+	int niWidth = endWidth - m_rr;
 	int iw = m_radius * iWidth + m_radius;
+	double sigmaPix = m_sigma * m_pixels;
 
 	//m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
 
@@ -728,31 +858,184 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	for (int hl = 0, hr = m_rr; hl < niHeight; hl++, hr++)
 	{
-		for (int wl = halfWidthDiff, wr = m_rr + halfWidthDiff; wl < niWidth; wl++, wr++)
+		for (int wl = startWidth, wr = m_rr + startWidth; wl < niWidth; wl++, wr++)
 		{
 			int miu = m_mean[hl][wl] + m_mean[hr][wr] - m_mean[hl][wr] - m_mean[hr][wl];
 			int viu = m_variance[hl][wl] + m_variance[hr][wr] - m_variance[hl][wr] - m_variance[hr][wl];
+			
+			//double men = miu / m_pixels;
+			//double var = (viu - (miu * miu) / m_pixels) / m_pixels;
+			//var = abs(var);
 
-			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_3, "viu " + m_Tools.getText(viu) + " alter " + m_Tools.getText(miu * miu / 121));
+			//m_tmpPixel[iw + wl] = (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma);
+			
+			double var = viu - (miu * miu / m_pixels);
 
-			//LOGE("viu %d miu %d\n",viu,miu/121*miu);
-
-
-			double men = miu / m_pixels;
-			double var = (viu - (miu * men)) / m_pixels;
-
-			pBlurConvertingData[iw + wl] = min(255., max(0., (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma)));
-
+			pBlurConvertingData[iw + wl] = min(255., max(0., ((miu << m_sigmaDigit) + var * pBlurConvertingData[iw + wl]) / (var + sigmaPix)));
 		}
+
 		iw += iWidth;
 	}
 
 	long long endFilterTime = m_Tools.CurrentTimestamp();
 
 	//LOGE("VideoBeautificcationer -->> sharpingTimeDiff = %lld, filterTimeDiff = %lld, totalTimeDiff =% lld", -(startSharpingTime - endSharpingTime), -(endSharpingTime - endFilterTime), -(startSharpingTime - endFilterTime));
+	
 	pair<int, int> result = { m_mean[iHeight][iWidth] / (iHeight*iWidth), m_variance[iHeight][iWidth] / (iHeight*iWidth) };
+
 	return result;
 }
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+int CVideoBeautificationer::isGreaterThanIphone5s()
+{
+    string sDeviceInfo = getDeviceModel();
+    CLogPrinter::Log("TheKing--> Here Devicetype ");
+    
+    if(sDeviceInfo=="iPhone7,1" ||
+       sDeviceInfo=="iPhone7,2" ||
+       sDeviceInfo=="iPhone8,1" ||
+       sDeviceInfo=="iPhone8,2" ||
+       sDeviceInfo=="iPhone8,4" ||
+       sDeviceInfo=="iPhone9,1" ||
+       sDeviceInfo=="iPhone9,2" ||
+       sDeviceInfo=="iPhone9,3" ||
+       sDeviceInfo=="iPhone9,4")
+    {
+        return 1;
+    }
+    else if(sDeviceInfo=="iPhone1,1" ||
+            sDeviceInfo=="iPhone1,2" ||
+            sDeviceInfo=="iPhone2,1" ||
+            sDeviceInfo=="iPhone3,1" ||
+            sDeviceInfo=="iPhone3,3" ||
+            sDeviceInfo=="iPhone4,1" ||
+            sDeviceInfo=="iPhone5,1" ||
+            sDeviceInfo=="iPhone5,2" ||
+            sDeviceInfo=="iPhone5,3" ||
+            sDeviceInfo=="iPhone5,4" ||
+            sDeviceInfo=="iPhone6,1" ||
+            sDeviceInfo=="iPhone6,2")
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+    
+}
 
 
+std::string  CVideoBeautificationer::getDeviceModel()
+{
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+    /*
+    //Simultor
+    @"i386"      on 32-bit Simulator
+    @"x86_64"    on 64-bit Simulator
+    
+    //iPhone
+    @"iPhone1,1" on iPhone
+    @"iPhone1,2" on iPhone 3G
+    @"iPhone2,1" on iPhone 3GS
+    @"iPhone3,1" on iPhone 4 (GSM)
+    @"iPhone3,3" on iPhone 4 (CDMA/Verizon/Sprint)
+    @"iPhone4,1" on iPhone 4S
+    @"iPhone5,1" on iPhone 5 (model A1428, AT&T/Canada)
+    @"iPhone5,2" on iPhone 5 (model A1429, everything else)
+    @"iPhone5,3" on iPhone 5c (model A1456, A1532 | GSM)
+    @"iPhone5,4" on iPhone 5c (model A1507, A1516, A1526 (China), A1529 | Global)
+    @"iPhone6,1" on iPhone 5s (model A1433, A1533 | GSM)
+    @"iPhone6,2" on iPhone 5s (model A1457, A1518, A1528 (China), A1530 | Global)
+    @"iPhone7,1" on iPhone 6 Plus
+    @"iPhone7,2" on iPhone 6
+    @"iPhone8,1" on iPhone 6S
+    @"iPhone8,2" on iPhone 6S Plus
+    @"iPhone8,4" on iPhone SE
+    @"iPhone9,1" on iPhone 7 (CDMA)
+    @"iPhone9,3" on iPhone 7 (GSM)
+    @"iPhone9,2" on iPhone 7 Plus (CDMA)
+    @"iPhone9,4" on iPhone 7 Plus (GSM)
+    
+    //iPad 1
+    @"iPad1,1" on iPad - Wifi (model A1219)
+    @"iPad1,1" on iPad - Wifi + Cellular (model A1337)
+    
+    //iPad 2
+    @"iPad2,1" - Wifi (model A1395)
+    @"iPad2,2" - GSM (model A1396)
+    @"iPad2,3" - 3G (model A1397)
+    @"iPad2,4" - Wifi (model A1395)
+    
+    // iPad Mini
+    @"iPad2,5" - Wifi (model A1432)
+    @"iPad2,6" - Wifi + Cellular (model  A1454)
+    @"iPad2,7" - Wifi + Cellular (model  A1455)
+    
+    //iPad 3
+    @"iPad3,1" - Wifi (model A1416)
+    @"iPad3,2" - Wifi + Cellular (model  A1403)
+    @"iPad3,3" - Wifi + Cellular (model  A1430)
+    
+    //iPad 4
+    @"iPad3,4" - Wifi (model A1458)
+    @"iPad3,5" - Wifi + Cellular (model  A1459)
+    @"iPad3,6" - Wifi + Cellular (model  A1460)
+    
+    //iPad AIR
+    @"iPad4,1" - Wifi (model A1474)
+    @"iPad4,2" - Wifi + Cellular (model A1475)
+    @"iPad4,3" - Wifi + Cellular (model A1476)
+    
+    // iPad Mini 2
+    @"iPad4,4" - Wifi (model A1489)
+    @"iPad4,5" - Wifi + Cellular (model A1490)
+    @"iPad4,6" - Wifi + Cellular (model A1491)
+    
+    // iPad Mini 3
+    @"iPad4,7" - Wifi (model A1599)
+    @"iPad4,8" - Wifi + Cellular (model A1600)
+    @"iPad4,9" - Wifi + Cellular (model A1601)
+    
+    // iPad Mini 4
+    @"iPad5,1" - Wifi (model A1538)
+    @"iPad5,2" - Wifi + Cellular (model A1550)
+    
+    //iPad AIR 2
+    @"iPad5,3" - Wifi (model A1566)
+    @"iPad5,4" - Wifi + Cellular (model A1567)
+    
+    // iPad PRO 12.9"
+    @"iPad6,3" - Wifi (model A1673)
+    @"iPad6,4" - Wifi + Cellular (model A1674)
+    @"iPad6,4" - Wifi + Cellular (model A1675)
+    
+    //iPad PRO 9.7"
+    @"iPad6,7" - Wifi (model A1584)
+    @"iPad6,8" - Wifi + Cellular (model A1652)
+    
+    //iPod Touch
+    @"iPod1,1"   on iPod Touch
+    @"iPod2,1"   on iPod Touch Second Generation
+    @"iPod3,1"   on iPod Touch Third Generation
+    @"iPod4,1"   on iPod Touch Fourth Generation
+    @"iPod7,1"   on iPod Touch 6th Generation
+    */
+    
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    char *p = systemInfo.machine;
+    
+    //NSString *nsDeviceModel = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    
+    std::string ans(p);
+    
+    return ans;
+#else
+    return "";
+#endif
+}
+
+#endif

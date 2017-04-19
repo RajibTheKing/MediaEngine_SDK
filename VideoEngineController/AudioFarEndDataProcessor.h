@@ -33,8 +33,8 @@ public:
 	CAudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
 	~CAudioFarEndDataProcessor();
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
-	void StartCallInLive();
-	void StopCallInLive();
+	void StartCallInLive(int nEntityType);
+	void StopCallInLive(int nEntityType);
 	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
 
@@ -87,9 +87,10 @@ private:
 	void StopDecodingThread();
 	void DecodingThreadProcedure();
 
-	void AudioCallFarEndProcedure();
-	void LiveStreamFarEndProcedureViewer();
-	void LiveStreamFarEndProcedure();
+	void FarEndProcedureAudioCall();
+	void FarEndProcedureLiveStreamViewer();
+	void FarEndProcedureLiveStreamPublisher();
+	void FarEndProcedureChannel();
 	bool IsQueueEmpty();
 	void DequeueData(int &m_nDecodingFrameSize);
 	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);

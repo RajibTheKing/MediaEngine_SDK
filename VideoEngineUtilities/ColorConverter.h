@@ -49,7 +49,8 @@ public:
     void NegativeRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData);
-	void mirrorRotateAndConvertNV21ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
+	void mirrorRotateAndConvertNV21ToI420ForBackCam90(unsigned char *m_pFrame, unsigned char *pData);
+	void mirrorRotateAndConvertNV21ToI420ForBackCam270(unsigned char *m_pFrame, unsigned char *pData);
 	void mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData);
     int mirrorI420_XDirection(unsigned char *inData, unsigned char *outData, int iHeight, int iWidth);
 

@@ -22,7 +22,7 @@ public:
     int TintColorBlueEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
     int TintColorPinkEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 	void SaturationChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double scale);
-	void ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast);
+	void ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast = 100);
 	void PencilSketchGrayEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 	void PencilSketchWhiteEffect(unsigned char *pConvertingData, int inHeight, int inWidth);
 	void ColorSketchEffect(unsigned char *pConvertingData, int inHeight, int inWidth);

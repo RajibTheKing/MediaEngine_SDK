@@ -263,6 +263,9 @@
     <ClInclude Include="..\..\VideoEngineController\LiveAudioParserForPublisher.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\IDRFrameIntervalController.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -470,6 +473,9 @@
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\LiveAudioParserForPublisher.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\IDRFrameIntervalController.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>

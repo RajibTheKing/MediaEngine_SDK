@@ -27,7 +27,10 @@ public:
 	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
-	void StartCallInLive();
+	void StartCallInLive(int nEntityType);
+	void StopCallInLive(int nEntityType);
+
+	long long GetBaseOfRelativeTime();
 
 private:
 	void LiveStreamNearendProcedureViewer();
@@ -39,9 +42,6 @@ private:
 	void DumpEncodingFrame();
 	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 	bool PreProcessAudioBeforeEncoding();
-	void EncodeIfNeeded();
-	void SetAudioIdentifierAndNextPacketType();	
-	void AddHeader(int &version, long long &llRelativeTime);
 	void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 	void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte);
@@ -56,8 +56,6 @@ private:
 	int m_nRawFrameSize;
 	int m_MyAudioHeadersize;
 	int m_iPacketNumber;
-	int m_iNextPacketType;
-	int m_iSlotID;
 	int m_nServiceType;
 	int m_nEntityType;
 	LongLong m_llMaxAudioPacketNumber;

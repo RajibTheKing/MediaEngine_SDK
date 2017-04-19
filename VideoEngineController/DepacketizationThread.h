@@ -11,6 +11,8 @@
 #include "BitRateController.h"
 #include "EncodedFrameDepacketizer.h"
 #include "VersionController.h"
+#include "IDRFrameIntervalController.h"
+
 
 
 #include <thread>
@@ -22,7 +24,7 @@ class CVideoDepacketizationThread
 
 public:
 
-	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession);
+	CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, IDRFrameIntervalController *pIdrFrameController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession);
 	~CVideoDepacketizationThread();
 
 	void StartDepacketizationThread();
@@ -45,9 +47,12 @@ private:
 	CVideoPacketQueue *m_pRetransVideoPacketQueue;				
 	CVideoPacketQueue *m_pMiniPacketQueue;						
 	CVideoHeader m_RcvdPacketHeader;							
-	BitRateController *m_BitRateController;						
+	BitRateController *m_BitRateController;
+    IDRFrameIntervalController *m_pIdrFrameIntervalController;
 	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
-	CCommonElementsBucket* m_pCommonElementsBucket;			
+	CCommonElementsBucket* m_pCommonElementsBucket;
+    
+    
 
 	bool m_bResetForPublisherCallerCallEnd;
 

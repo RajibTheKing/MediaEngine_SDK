@@ -11,7 +11,6 @@ SmartPointer<AudioGainInterface> AudioGainInstanceProvider::GetAudioGainInstance
 	switch (audioGainType)
 	{
 	case WebRTC_AGC:
-
 		pInstance = new WebRTCGain();
 		break;
 

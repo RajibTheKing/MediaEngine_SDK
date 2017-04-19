@@ -9,13 +9,14 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
+CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
 
 m_pVideoCallSession(pVideoCallSession),
 m_iFrameNumber(nFPS),
 m_llFriendID(llFriendID),
 m_pEncodingBuffer(pEncodingBuffer),
 m_pBitRateController(pBitRateController),
+m_pIdrFrameIntervalController(pIdrFrameController),
 m_pColorConverter(pColorConverter),
 m_pVideoEncoder(pVideoEncoder),
 m_pEncodedFramePacketizer(pEncodedFramePacketizer),
@@ -165,6 +166,16 @@ void CVideoEncodingThread::ResetForViewerCallerCallEnd()
 	}
 }
 
+void CVideoEncodingThread::ResetForPublisherCallerInAudioOnly()
+{
+	m_ResetForPublisherCallerInAudioOnly = true;
+
+	while (m_ResetForPublisherCallerInAudioOnly)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
 void CVideoEncodingThread::SetOrientationType(int nOrientationType)
 {
 	m_nOrientationType = nOrientationType;
@@ -224,6 +235,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	int countNumber = 1;
 	int dummyTimeStampCounter = 0;
 
+	bool bNeedIDR = false;
+
 #if defined(DESKTOP_C_SHARP)
 
 	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), RGB24);
@@ -254,13 +267,23 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThread::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
+		bNeedIDR = false;
+
 		if (m_bResetForViewerCallerCallEnd == true)
 		{
 			m_pEncodingBuffer->ResetBuffer();
 
-			dummyTimeStampCounter = 0;
+			m_iFrameNumber = m_nCallFPS;
+			bNeedIDR = true;
 
 			m_bResetForViewerCallerCallEnd = false;
+		}
+
+		if (m_ResetForPublisherCallerInAudioOnly == true)
+		{
+			dummyTimeStampCounter = 0;
+
+			m_ResetForPublisherCallerInAudioOnly = false;
 		}
 
 		m_bIsThisThreadStarted = true;
@@ -316,9 +339,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(DESKTOP_C_SHARP)
 
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 30, 1);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 10, 1);
 #else
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 30, 1);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 10, 1);
 #endif
 				}
 			}
@@ -407,7 +430,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 			else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam90(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+			}
+			else if (m_nOrientationType == ORIENTATION_BACK_270_MIRRORED)
+			{
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam270(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
 			}
 
 #endif
@@ -444,7 +471,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				m_pColorConverter->CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, 1920, 1130, newHeight, newWidth);
 
-				if (m_bVideoEffectEnabled == true)
+				if (m_bVideoEffectEnabled == true && !(m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true))
 				{
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -558,13 +585,18 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
+            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+            {
+                bNeedIDR = m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
+            }
+            
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 				llCalculatingTime = m_Tools.CurrentTimestamp();
 
-				if(m_bIsCheckCall)
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame);
-				else
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+            if(m_bIsCheckCall)
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame, false);
+            else
+                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 
 				//printf("The encoder returned , nENCODEDFrameSize = %d, frameNumber = %d\n", nENCODEDFrameSize, m_iFrameNumber);
 
@@ -572,10 +604,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 				long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-				if (m_bIsCheckCall)
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame);
-				else
-					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame);
+			if (m_bIsCheckCall)
+				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, false);
+			else
+				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 
 				//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
@@ -606,6 +638,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
 				m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
+            
+            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+            {
+                m_pIdrFrameIntervalController->NotifyEncodedFrame(m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber);
+            }
 
 				//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
 

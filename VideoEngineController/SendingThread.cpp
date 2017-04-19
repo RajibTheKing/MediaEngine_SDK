@@ -40,10 +40,11 @@ m_lfriendID(llfriendID),
 m_bInterruptHappened(false),
 m_bInterruptRunning(false),
 m_bResetForViewerCallerCallEnd(false),
+m_bResetForPublisherCallerCallStartAudioOnly(false),
 m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false),
 m_bPassOnlyAudio(false),
-m_bAudioOnlyDataAlreadySent(false)
+m_llBaseRelativeTimeOfAudio(-1)
 
 {
 	m_pVideoCallSession = pVideoCallSession;
@@ -125,6 +126,16 @@ void CSendingThread::ResetForViewerCallerCallEnd()
 	m_bResetForViewerCallerCallEnd = true;
 
 	while (m_bResetForViewerCallerCallEnd)
+	{
+		m_Tools.SOSleep(5);
+	}
+}
+
+void CSendingThread::ResetForPublisherCallerCallStartAudioOnly()
+{
+	m_bResetForPublisherCallerCallStartAudioOnly = true;
+
+	while (m_bResetForPublisherCallerCallStartAudioOnly)
 	{
 		m_Tools.SOSleep(5);
 	}
@@ -241,9 +252,19 @@ void CSendingThread::SendingThreadProcedure()
 		if (m_bResetForViewerCallerCallEnd == true)
 		{
 			m_SendingBuffer->ResetBuffer();
+			firstFrame = true;
 
 			m_bResetForViewerCallerCallEnd = false;
 		}
+
+		if (m_bResetForPublisherCallerCallStartAudioOnly == true)
+		{
+			firstFrame = true;
+
+			m_bResetForPublisherCallerCallStartAudioOnly = false;
+		}
+
+		LOGSS("##SS## m_bAudioOnlyLive %d entityType %d callInLiveType %d ", m_bAudioOnlyLive, m_pVideoCallSession->GetEntityType(), m_pVideoCallSession->GetCallInLiveType());
 
 		if (m_bAudioOnlyLive == true && m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
 			m_bPassOnlyAudio = false;
@@ -253,6 +274,8 @@ void CSendingThread::SendingThreadProcedure()
 			m_bPassOnlyAudio = true;
 		else
 			m_bPassOnlyAudio = false;
+
+		LOGSS("##SS## m_bPassOnlyAudio %d ", m_bPassOnlyAudio);
 
 		if ((m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
 		{
@@ -291,13 +314,18 @@ void CSendingThread::SendingThreadProcedure()
 			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
 			if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);*/
 
+			CAudioCallSession *pAudioSession;
+
+			bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+
+			if (bExist && m_llBaseRelativeTimeOfAudio == -1)
+				m_llBaseRelativeTimeOfAudio = pAudioSession->GetBaseOfRelativeTime();
+
+			LOGSS("##SS## firstFrame %d ", firstFrame);
+
 			if (m_bPassOnlyAudio == true || (frameNumber%iIntervalIFrame == 0 && firstFrame == false))
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() 200 ms completed");
-
-				CAudioCallSession *pAudioSession;
-
-				bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
 				//LOGEF("fahad -->> m_pCommonElementsBucket 2 --> lFriendID = %lld, bExist = %d", lFriendID, bExist);
 
@@ -317,10 +345,15 @@ void CSendingThread::SendingThreadProcedure()
 
 					if (m_bPassOnlyAudio == true)
 					{
+						/*
 						if (m_bAudioOnlyDataAlreadySent == false && viewerDataLength <= 0)
 							continue;
 						else
 							m_bAudioOnlyDataAlreadySent = true;
+						*/
+
+						if (viewerDataLength <= 0)
+							continue;
 					}
 				}
 
@@ -442,6 +475,7 @@ void CSendingThread::SendingThreadProcedure()
 				//LOGEF("THeKing--> sending --> iLen1 =  %d, iLen 2 = %d  [Video: %d   ,Audio: %d]\n", tempILen, tempILen2, m_iDataToSendIndex, m_iAudioDataToSendIndex);
 
 				long long timeNow;
+				long long thisFrameTime = m_Tools.CurrentTimestamp();
 				
 				if (m_bPassOnlyAudio == true)
 				{
@@ -450,9 +484,16 @@ void CSendingThread::SendingThreadProcedure()
 				else
 				{
 					timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+					if (m_bAudioOnlyLive)
+					{
+						timeNow = thisFrameTime - m_llBaseRelativeTimeOfAudio;
+					}
 				}
 				
 				int diff = timeNow - m_nTimeStampOfChunck;
+
+				LOGSS("##SS## even m_nTimeStampOfChunck %lld diff %d", m_nTimeStampOfChunck, diff);
 
 				m_Tools.SetMediaUnitHeaderLengthInMediaChunck(index, m_AudioVideoDataToSend);
 				m_Tools.SetMediaUnitStreamTypeInMediaChunck(STREAM_TYPE_LIVE_STREAM, m_AudioVideoDataToSend);
@@ -496,7 +537,12 @@ void CSendingThread::SendingThreadProcedure()
 							//}
 
 							// do changes for audio
-							m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+							if ((diff > 1000 && m_bPassOnlyAudio == true) || diff < 0)
+							{
+
+							}
+							else
+								m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
 
 							LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
 
@@ -608,10 +654,16 @@ void CSendingThread::SendingThreadProcedure()
 				{
 					m_nTimeStampOfChunck = llAudioChunkRelativeTime;
 				}
+				else if (m_bAudioOnlyLive)
+				{
+					m_nTimeStampOfChunck = thisFrameTime - m_llBaseRelativeTimeOfAudio;
+				}
 				else
 				{
 					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
-				}	
+				}
+
+				LOGSS("##SS## odd m_nTimeStampOfChunck %lld", m_nTimeStampOfChunck);
 
 				//LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %d, iLen = %lld\n", frameNumber, frameNumberHeader, packetSize, tempIndex);
 
@@ -622,6 +674,13 @@ void CSendingThread::SendingThreadProcedure()
 				if (firstFrame == true)
 				{
 					m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+
+					if (m_bAudioOnlyLive)
+					{
+						m_nTimeStampOfChunck = m_Tools.CurrentTimestamp() - m_llBaseRelativeTimeOfAudio;
+					}
+
+					LOGSS("##SS## first m_nTimeStampOfChunck %lld", m_nTimeStampOfChunck);
 
 					long long llNowLiveSendingTimeStamp = m_Tools.CurrentTimestamp();
 					long long llNowTimeDiff;
@@ -807,11 +866,6 @@ else{	//packetHeader.setPacketHeader(m_EncodedFrame + 1);
 	bSendingThreadClosed = true;
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() stopped SendingThreadProcedure method.");
-}
-
-void CSendingThread::SetAudioOnlyDataAlreadySent(bool bAudioOnlyDataAlreadySent)
-{
-	m_bAudioOnlyDataAlreadySent = bAudioOnlyDataAlreadySent;
 }
 
 void CSendingThread::InterruptOccured()

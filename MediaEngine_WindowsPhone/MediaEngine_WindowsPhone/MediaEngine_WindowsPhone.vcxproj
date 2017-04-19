@@ -170,6 +170,7 @@
     <ClInclude Include="..\..\VideoEngineController\G729CodecNative.h" />
     <ClInclude Include="..\..\VideoEngineController\Globals.h" />
     <ClInclude Include="..\..\VideoEngineController\GomGomGain.h" />
+    <ClInclude Include="..\..\VideoEngineController\IDRFrameIntervalController.h" />
     <ClInclude Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveAudioDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LiveAudioParser.h" />
@@ -250,6 +251,7 @@
     <ClCompile Include="..\..\VideoEngineController\FPSController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Globals.cpp" />
     <ClCompile Include="..\..\VideoEngineController\GomGomGain.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\IDRFrameIntervalController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\InterfaceOfAudioVideoEngine.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveAudioDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveAudioParserForCallee.cpp" />

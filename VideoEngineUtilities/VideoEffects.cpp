@@ -170,7 +170,7 @@ void CVideoEffects::SaturationChangeEffect(unsigned char *pConvertingData, int i
 	return;
 }
 
-void CVideoEffects::ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast = 100)
+void CVideoEffects::ContrastChangeEffect(unsigned char *pConvertingData, int inHeight, int inWidth, double contrast)
 {
 	double factor = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast));
 	int lim = inHeight * inWidth;

@@ -226,8 +226,8 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 #endif
 	}
 
-	m_pNearEndProcessor->StartCallInLive();
-	m_pFarEndProcessor->StartCallInLive();
+	m_pNearEndProcessor->StartCallInLive(m_nEntityType);
+	m_pFarEndProcessor->StartCallInLive(m_nEntityType);
 
 	m_Tools.SOSleep(20);
 
@@ -286,7 +286,12 @@ void CAudioCallSession::EndCallInLive()
 		m_nEntityType = ENTITY_TYPE_VIEWER;
 	}
 
+
 	m_iRole = CALL_NOT_RUNNING;
+
+	m_pNearEndProcessor->StopCallInLive(m_nEntityType);
+	m_pFarEndProcessor->StartCallInLive(m_nEntityType);
+
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 	m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
@@ -295,6 +300,11 @@ void CAudioCallSession::EndCallInLive()
 void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)
 {
 	m_nCallInLiveType = nCallInLiveType;
+}
+
+long long CAudioCallSession::GetBaseOfRelativeTime()
+{
+	return m_pNearEndProcessor->GetBaseOfRelativeTime();
 }
 
 int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)

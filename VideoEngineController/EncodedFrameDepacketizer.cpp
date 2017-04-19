@@ -304,6 +304,9 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG ,"No Pkt Found Dropped-----> "+m_Tools.IntegertoStringConvert(m_FrontFrame)+"  ExpTime: "+m_Tools.IntegertoStringConvert(nExpectedTime));
 //			g_FPSController.NotifyFrameDropped(m_FrontFrame);
 			MoveForward(m_FrontFrame);	//Drop the frame
+            //asdf
+            m_VideoCallSession->CreateAndSend_IDR_Frame_Info_Packet(m_FrontFrame);
+            
 			return -1;
 		}
 		//At least one packet is found and it is not the right time to send this frame to decoder.
@@ -342,6 +345,9 @@ int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramN
 		CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG,"Incomplete Frame Dropped-----> "+m_Tools.IntegertoStringConvert(m_FrontFrame)+"  ExpTime: "+m_Tools.IntegertoStringConvert(nExpectedTime));
 //		g_FPSController.NotifyFrameDropped(m_FrontFrame);
 		MoveForward(m_FrontFrame);
+        //asdf
+        m_VideoCallSession->CreateAndSend_IDR_Frame_Info_Packet(m_FrontFrame);
+        
 		CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CEncodedFrameDepacketizer::GetReceivedFrame 2");
 		return -1;
 	}

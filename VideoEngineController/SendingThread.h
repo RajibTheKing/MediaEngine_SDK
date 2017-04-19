@@ -32,8 +32,7 @@ public:
     int ParseChunk(unsigned char *in_data, unsigned int unLength);
 
 	void ResetForViewerCallerCallEnd();
-
-	void SetAudioOnlyDataAlreadySent(bool bAudioOnlyDataAlreadySent);
+	void ResetForPublisherCallerCallStartAudioOnly();
 
 	void InterruptOccured();
 	void InterruptOver();
@@ -68,11 +67,12 @@ private:
 	LongLong m_lfriendID;
 
 	bool m_bResetForViewerCallerCallEnd;
+	long long m_llBaseRelativeTimeOfAudio;
+
+	bool m_bResetForPublisherCallerCallStartAudioOnly;
 
 	bool m_bInterruptHappened;
 	bool m_bInterruptRunning;
-
-	bool m_bAudioOnlyDataAlreadySent;
 
 //	CVideoHeader m_cVH;
 

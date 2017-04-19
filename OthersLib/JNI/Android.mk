@@ -118,6 +118,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/EncodingBuffer.cpp \
 			../../../videoengine/VideoEngineController/EventNotifier.cpp \
 			../../../videoengine/VideoEngineController/InterfaceOFAudioVideoEngine.cpp \
+			../../../videoengine/VideoEngineController/IDRFrameIntervalController.cpp \
 			../../../videoengine/VideoEngineController/LogPrinter.cpp \
 			../../../videoengine/VideoEngineController/Tools.cpp \
 			../../../videoengine/VideoEngineController/VideoCallSession.cpp \
