@@ -7,6 +7,8 @@
 #include "AudioDePacketizer.h"
 #include "LiveAudioParser.h"
 
+#include "EchoCancellerProvider.h"
+#include "EchoCancellerInterface.h"
 
 #ifdef LOCAL_SERVER_LIVE_CALL
 #define LOCAL_SERVER_IP "192.168.0.120"
@@ -14,9 +16,6 @@
 
 #define DUPLICATE_AUDIO
 
-#ifdef USE_AECM
-#include "Echo.h"
-#endif
 #ifdef USE_ANS
 #include "Noise.h"
 #endif
@@ -75,12 +74,7 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 		//m_bEchoCancellerEnabled = false;
 	}
 
-#ifdef USE_AECM
-	m_pEcho = new CEcho(66);
-#ifdef USE_ECHO2
-	m_pEcho2 = new CEcho(77);
-#endif
-#endif
+	m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
 
 #ifdef USE_ANS
 	m_pNoise = new CNoise();
@@ -139,20 +133,7 @@ CAudioCallSession::~CAudioCallSession()
 #else
 	delete m_pG729CodecNative;
 #endif
-#ifdef USE_AECM
-	if (m_pEcho != nullptr)
-	{
-	delete m_pEcho;
-		m_pEcho = nullptr;
-	}
-#ifdef USE_ECHO2
-	if (m_pEcho2 != nullptr)
-	{
-	delete m_pEcho2;
-		m_pEcho2 = nullptr;
-	}
-#endif
-#endif
+
 #ifdef USE_ANS
 	delete m_pNoise;
 #endif
@@ -226,18 +207,10 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 	m_nEntityType = iRole;
 	m_iRole = iRole;
 
-#ifdef USE_AECM
-	if (m_pEcho == nullptr)
+	if (!m_pEcho.get())
 	{
-		m_pEcho = new CEcho(66);
+		m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
 	}
-#ifdef USE_ECHO2
-	if (m_pEcho2 == nullptr)
-	{
-		m_pEcho2 = new CEcho(77);
-	}
-#endif
-#endif
 
 	if (m_iRole == PUBLISHER_IN_CALL)
 	{
@@ -293,25 +266,16 @@ void CAudioCallSession::EndCallInLive()
 
 	m_Tools.SOSleep(20);
 
-#ifdef USE_AECM
-	if (m_pEcho != nullptr)
+	if (m_pEcho.get())
 	{
-		while (m_bIsAECMNearEndThreadBusy || m_bIsAECMFarEndThreadBusy )
+		//TODO: WE MUST FIND BETTER WAY TO AVOID THIS LOOPING
+		while (m_bIsAECMNearEndThreadBusy || m_bIsAECMFarEndThreadBusy)
 		{
 			m_Tools.SOSleep(1);
 		}
 
-		delete m_pEcho;
-		m_pEcho = nullptr;
+		m_pEcho.reset();
 	}
-#ifdef USE_ECHO2
-	if (m_pEcho2 != nullptr)
-	{
-		delete m_pEcho2;
-		m_pEcho2 = nullptr;
-	}
-#endif
-#endif
 
 	if (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 	{
@@ -344,31 +308,30 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
 	long long llCurrentTime = Tools::CurrentTimestamp();
 	LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
-#ifdef USE_AECM
+
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 		m_bIsAECMNearEndThreadBusy = true;
-#ifdef USE_ECHO2
-		if (m_pEcho2 != nullptr)
-		{
-			m_pEcho2->AddFarEnd(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
-		}
-#endif
+
 #ifdef DUMP_FILE
 		fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
-#endif // DUMP_FILE
-		if (m_pEcho != nullptr)
+#endif //DUMP_FILE
+
+		if (m_pEcho.get())
 		{
-			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+			//m_pEcho->AddFarEndData(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
+			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
+
 #ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
 #endif
 		}
+
 		m_bIsAECMNearEndThreadBusy = false;
 	}
-#endif
+
 	int returnedValue = m_AudioEncodingBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
@@ -379,25 +342,21 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 {
 	LOG_50MS("_+_+ FarEnd Time= %lld", Tools::CurrentTimestamp());
-#ifdef USE_AECM
+
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
 		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
 	{
 		m_bIsAECMFarEndThreadBusy = true;
-#ifdef USE_ECHO2
-		if (m_pEcho2 != nullptr)
+
+		if (m_pEcho.get())
 		{
-			m_pEcho2->CancelEcho(psaPlayingAudioData, unLength, m_bUsingLoudSpeaker, getIsAudioLiveStreamRunning());
+			m_pEcho->CancelEcho(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning());
 		}
-#endif
-		if (m_pEcho != nullptr)
-		{
-			m_pEcho->AddFarEnd(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning(), m_bUsingLoudSpeaker);
-		}
+
 		m_bIsAECMFarEndThreadBusy = false;
 	}
-#endif
+
 	return true;
 }
 

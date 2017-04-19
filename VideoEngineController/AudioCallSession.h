@@ -67,9 +67,8 @@ class AudioPacketizer;
 class AudioDePacketizer;
 class CAudioFarEndDataProcessor;
 
-#ifdef USE_AECM
-class CEcho;
-#endif
+class EchoCancellerInterface;
+
 #ifdef USE_ANS
 class CNoise;
 #endif
@@ -177,13 +176,7 @@ private:
 	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
 #endif
 
-#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
-	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_Length];
-#endif
-
-#ifdef USE_AECM
-	CEcho *m_pEcho, *m_pEcho2;
-#endif
+	SmartPointer<EchoCancellerInterface> m_pEcho;
 
 #ifdef USE_ANS
 	CNoise *m_pNoise;

@@ -61,9 +61,12 @@ int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf,
 		if (0 != WebRtcNs_Process(NS_instance, sInBuf + i, NULL, sOutBuf + i, NULL))
 		{
 			ALOG("WebRtcNs_Process failed");
+
+			return false;
 		}
 	}
-	if (memcmp(sInBuf, sOutBuf, sBufferSize * sizeof(short)) == 0)
+
+	/*if (memcmp(sInBuf, sOutBuf, sBufferSize * sizeof(short)) == 0)
 	{
 		ALOG("WebRtcNs_Process did nothing but took " + Tools::LongLongtoStringConvert(Tools::CurrentTimestamp() - llNow));
 		return false;
@@ -72,5 +75,7 @@ int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf,
 	{
 		ALOG("WebRtcNs_Process tried to do something, believe me :-(. It took " + Tools::LongLongtoStringConvert(Tools::CurrentTimestamp() - llNow));
 		return true;
-	}
+	}*/
+
+	return true;
 }
