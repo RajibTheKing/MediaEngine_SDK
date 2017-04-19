@@ -563,8 +563,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	m_nFrameCount++;
 
+#ifndef DESKTOP_C_SHARP
+
 	if (m_nFrameCount % 5 == 0)
 		return -20;
+
+#endif
     
     m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
     /*if(m_bIsCheckCall==true)
