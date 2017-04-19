@@ -68,10 +68,8 @@ class AudioDePacketizer;
 class CAudioFarEndDataProcessor;
 
 class EchoCancellerInterface;
+class NoiseReducerInterface;
 
-#ifdef USE_ANS
-class CNoise;
-#endif
 #ifdef USE_AGC
 class CGain;
 #endif
@@ -99,6 +97,11 @@ public:
 	long long GetBaseOfRelativeTime();
 
     CAudioCodec* GetAudioCodec();
+
+	SmartPointer<NoiseReducerInterface> GetNoiseReducer()
+	{
+		return m_pNoise;
+	}
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
@@ -173,15 +176,9 @@ private:
 
 	CAac *m_cAac;
 
-#ifdef USE_ANS
-	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
-#endif
-
 	SmartPointer<EchoCancellerInterface> m_pEcho;
 
-#ifdef USE_ANS
-	CNoise *m_pNoise;
-#endif
+	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 #ifdef USE_VAD
 	CVoice *m_pVoice;

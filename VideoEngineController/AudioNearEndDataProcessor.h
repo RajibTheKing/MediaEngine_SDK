@@ -15,6 +15,8 @@ class CAudioShortBuffer;
 class CAudioCodec;
 class AudioMixer;
 
+class NoiseReducerInterface;
+
 class CAudioNearEndDataProcessor
 {
 public:
@@ -62,6 +64,7 @@ private:
 	LongLong m_llEncodingTimeStampOffset;
 
 	CAudioCodec *m_pAudioCodec;
+	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;	

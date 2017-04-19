@@ -9,6 +9,9 @@
 #include "AudioPacketizer.h"
 #include "AudioCallSession.h"
 #include "AudioMixer.h"
+
+#include "NoiseReducerInterface.h"
+
 #ifdef USE_AGC
 #include "Gain.h"
 #endif
@@ -36,6 +39,10 @@ m_llLastFrameRT(0)
 {
 	m_pAudioEncodingMutex.reset(new CLockHandler);
 	m_pAudioCodec = pAudioCallSession->GetAudioCodec();
+
+	//TODO: We shall remove the AudioSession instance from Near End 
+	//and shall pass necessary objects to it, e.g. Codec, Noise, Gain
+	m_pNoise = m_pAudioCallSession->GetNoiseReducer();
 
 	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	
@@ -376,16 +383,15 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 		}
 #endif
 
-
 #ifdef USE_AGC
 		m_pAudioCallSession->m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
 		m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
 #endif
-		 
 
-#ifdef USE_ANS
-		m_pNoise->Denoise(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_saAudioRecorderFrame, m_bIsLiveStreamingRunning);
-#endif
+		if (m_pNoise.get())
+		{
+			m_pNoise->Denoise(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_saAudioRecorderFrame, m_bIsLiveStreamingRunning);
+		}
 
 	}
 	return true;

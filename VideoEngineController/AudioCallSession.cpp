@@ -16,9 +16,8 @@
 
 #define DUPLICATE_AUDIO
 
-#ifdef USE_ANS
-#include "Noise.h"
-#endif
+#include "NoiseReducerProvider.h"
+
 #ifdef USE_AGC
 #include "Gain.h"
 #endif
@@ -76,9 +75,7 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 
 	m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
 
-#ifdef USE_ANS
-	m_pNoise = new CNoise();
-#endif
+	m_pNoise = NoiseReducerProvider::GetNoiseReducer(WebRTC_ANR);
 
 #ifdef USE_AGC
 	m_pRecorderGain = new CGain();
@@ -134,9 +131,6 @@ CAudioCallSession::~CAudioCallSession()
 	delete m_pG729CodecNative;
 #endif
 
-#ifdef USE_ANS
-	delete m_pNoise;
-#endif
 #ifdef USE_AGC
 	delete m_pRecorderGain;
 	delete m_pPlayerGain;
