@@ -235,6 +235,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCodec.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioDecoderInterface.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderInterface.h" />
