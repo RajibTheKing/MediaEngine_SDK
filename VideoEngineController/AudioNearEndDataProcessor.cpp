@@ -44,9 +44,6 @@ m_llLastFrameRT(0)
 	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	
 	m_llMaxAudioPacketNumber = (m_pAudioPacketHeader->GetFieldCapacity(INF_PACKETNUMBER) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
-	
-
-	m_pAudioPacketizer = new AudioPacketizer(pAudioCallSession, pCommonElementsBucket);
 
 	m_MyAudioHeadersize = m_pAudioPacketHeader->GetHeaderSize();
 	m_llEncodingTimeStampOffset = Tools::CurrentTimestamp();
@@ -71,10 +68,6 @@ CAudioNearEndDataProcessor::~CAudioNearEndDataProcessor(){
 	if (m_pAudioPacketHeader)
 	{
 		//delete m_pAudioPacketHeader;
-	}
-	if (m_pAudioPacketizer)
-	{
-		delete m_pAudioPacketizer;
 	}
 
 }

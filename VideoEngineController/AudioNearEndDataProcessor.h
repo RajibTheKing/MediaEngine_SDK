@@ -8,7 +8,6 @@
 #include <vector>
 
 class CAudioCallSession;
-class AudioPacketizer;
 class CCommonElementsBucket;
 class AudioPacketHeader;
 class CAudioShortBuffer;
@@ -85,7 +84,6 @@ private:
 	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
 	unsigned char m_ucaRawDataToSendViewer[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 	std::vector<int> m_vRawFrameLengthViewer;
-	AudioPacketizer* m_pAudioPacketizer = nullptr;
 	long long m_llLastChunkLastFrameRT;
 	long long m_llLastFrameRT;
 	

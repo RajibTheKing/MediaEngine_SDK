@@ -88,7 +88,7 @@ public:
 
 	virtual void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength) = 0;
-	//virtual void SetHeaderAllInByteArray(unsigned char* header, AudioHeaderParams& params) = 0;
+	virtual void SetHeaderAllInByteArray(unsigned char* header, AudioHeaderParams& params) = 0;
 	virtual void CopyHeaderToInformation(unsigned char *Header) = 0;
 	virtual int GetHeaderInByteArray(unsigned char* data) = 0;
 

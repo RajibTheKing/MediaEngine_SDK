@@ -63,7 +63,6 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioCodec;
 class CAac;
-class AudioPacketizer;
 class AudioDePacketizer;
 class CAudioFarEndDataProcessor;
 
