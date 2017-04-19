@@ -59,7 +59,8 @@ m_nOpponentVideoWidth(-1),
 m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
-m_bSelfViewOnly(bSelfViewOnly)
+m_bSelfViewOnly(bSelfViewOnly),
+m_nFrameCount(0)
 
 {
 
@@ -559,6 +560,11 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER)
 		return 1;
+
+	m_nFrameCount++;
+
+	if (m_nFrameCount % 5 == 0)
+		return -20;
     
     m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
     /*if(m_bIsCheckCall==true)
