@@ -15,10 +15,10 @@ public:
 	int CreateAudioEncoder() { return true; }
 	int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 
-	bool SetBitrateOpus(int nBitrate) { return true; }
-	bool SetComplexityOpus(int nComplexity) { return true; }
+	bool SetBitrate(int nBitrate) { return true; }
+	bool SetComplexity(int nComplexity) { return true; }
 
-	int GetCurrentBitrateOpus() { return true; }
+	int GetCurrentBitrate() { return true; }
 
 	void DecideToChangeBitrate(int iNumPacketRecvd) {  }
 	void DecideToChangeComplexity(int iEncodingTime) {  }

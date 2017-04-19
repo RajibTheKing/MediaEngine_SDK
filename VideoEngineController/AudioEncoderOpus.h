@@ -66,10 +66,10 @@ public:
 	int CreateAudioEncoder();
 	int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 
-	bool SetBitrateOpus(int nBitrate);
-	bool SetComplexityOpus(int nComplexity);
+	bool SetBitrate(int nBitrate);
+	bool SetComplexity(int nComplexity);
 
-	int GetCurrentBitrateOpus();
+	int GetCurrentBitrate();
 
 	void DecideToChangeBitrate(int iNumPacketRecvd);
 	void DecideToChangeComplexity(int iEncodingTime);

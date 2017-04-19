@@ -10,10 +10,10 @@ public:
 	virtual int CreateAudioEncoder() = 0;
 	virtual int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer) = 0;
 
-	virtual bool SetBitrateOpus(int nBitrate) = 0;
-	virtual bool SetComplexityOpus(int nComplexity) = 0;
+	virtual bool SetBitrate(int nBitrate) = 0;
+	virtual bool SetComplexity(int nComplexity) = 0;
 
-	virtual int GetCurrentBitrateOpus() = 0;
+	virtual int GetCurrentBitrate() = 0;
 
 	virtual void DecideToChangeBitrate(int iNumPacketRecvd) = 0;
 	virtual void DecideToChangeComplexity(int iEncodingTime) = 0;

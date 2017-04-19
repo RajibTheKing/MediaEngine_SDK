@@ -47,7 +47,7 @@ int AudioEncoderOpus::CreateAudioEncoder()
 		return EXIT_FAILURE;
 	}
 
-	SetBitrateOpus(AUDIO_BITRATE_INIT);
+	SetBitrate(AUDIO_BITRATE_INIT);
 	
 	m_iComplexity = 10;
 	long long encodingTime = 0;
@@ -106,7 +106,7 @@ int AudioEncoderOpus::encodeAudio(short *in_data, unsigned int in_size, unsigned
 }
 
 
-bool AudioEncoderOpus::SetBitrateOpus(int nBitrate)
+bool AudioEncoderOpus::SetBitrate(int nBitrate)
 {
 	PRT("@@@@@@@@@@@@@@@@@@@@Bitrate: %d\n", nBitrate);
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
@@ -116,7 +116,7 @@ bool AudioEncoderOpus::SetBitrateOpus(int nBitrate)
 }
 
 
-bool AudioEncoderOpus::SetComplexityOpus(int nComplexity)
+bool AudioEncoderOpus::SetComplexity(int nComplexity)
 {
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 	m_iComplexity = nComplexity;
@@ -125,7 +125,7 @@ bool AudioEncoderOpus::SetComplexityOpus(int nComplexity)
 }
 
 
-int AudioEncoderOpus::GetCurrentBitrateOpus()
+int AudioEncoderOpus::GetCurrentBitrate()
 {
 	return m_iCurrentBitRate;
 }
@@ -150,7 +150,7 @@ void AudioEncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
 		{
 			m_ihugeLossSlot = 0;
 
-			SetBitrateOpus(nChangedBitRate);
+			SetBitrate(nChangedBitRate);
 
 			if (false == m_bAudioQualityLowNotified)
 			{
@@ -165,7 +165,7 @@ void AudioEncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
 		{
 			m_ihugeLossSlot++;
 
-			SetBitrateOpus(AUDIO_MIN_BITRATE);
+			SetBitrate(AUDIO_MIN_BITRATE);
 
 			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
 			{
@@ -182,7 +182,7 @@ void AudioEncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
 		{
 			m_ihugeLossSlot = 0;
 
-			SetBitrateOpus(nChangedBitRate);
+			SetBitrate(nChangedBitRate);
 
 			if (false == m_bAudioQualityHighNotified)
 			{
@@ -199,11 +199,11 @@ void AudioEncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
 	{
 		if (m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP <= AUDIO_MAX_BITRATE)
 		{
-			SetBitrateOpus(m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP);
+			SetBitrate(m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP);
 		}
 		else
 		{
-			SetBitrateOpus(AUDIO_MAX_BITRATE);
+			SetBitrate(AUDIO_MAX_BITRATE);
 		}
 		m_inoLossSlot = 0;
 	}
@@ -216,11 +216,11 @@ void AudioEncoderOpus::DecideToChangeComplexity(int iEncodingTime)
 {
 	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && m_iComplexity > OPUS_MIN_COMPLEXITY)
 	{
-		SetComplexityOpus(m_iComplexity - 1);
+		SetComplexity(m_iComplexity - 1);
 	}
 	if (iEncodingTime < AUDIO_MAX_TOLERABLE_ENCODING_TIME / 2 && m_iComplexity < OPUS_MAX_COMPLEXITY)
 	{
-		SetComplexityOpus(m_iComplexity + 1);
+		SetComplexity(m_iComplexity + 1);
 	}
 }
 
