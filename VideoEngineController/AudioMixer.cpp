@@ -134,20 +134,23 @@ void AudioMixer::writeValue(unsigned char *uchByteArray, int &iIndexOffset, int 
 	return;
 }
 
-void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
+void AudioMixer::addAudioData(unsigned char* uchCalleeAudio, MuxHeader &header)
 {
 	int indexOffset = 0;
 	int bitOffset = 0;
-	long long iCalleeId = readValue(uchCalleeAudio, indexOffset, bitOffset, m_iCalleeIdLengthInByte * 8);
-	long long iMissingFlag = readValue(uchCalleeAudio, indexOffset, bitOffset, m_iMissingMaskLengthInByte * 8);
-	long long FrameNo = readValue(uchCalleeAudio, indexOffset, bitOffset, m_iFrameNumberLengthInByte * 8);
+	long long iCalleeId = header.getCalleeId();
+	long long iMissingFlag = header.getMissingMask();
+	long long FrameNo = header.getFrameNo();
 
 	LOG18("#18@# ADD AUDIO OF CALLEE %lld WITH FRAME %lld", iCalleeId, FrameNo);
 	int iOffsetForTotalCalleeAndBit = 2;
 
 	int iAudioSamplePerBlock = m_iAudioFrameSize / m_iTotalBlock;
 
-	memcpy(m_uchCalleeBlockInfo + iOffsetForTotalCalleeAndBit + m_iTotalCallee * m_iCalleeFrameInfoSize, uchCalleeAudio, m_iCalleeFrameInfoSize);
+	//memcpy(m_uchCalleeBlockInfo + iOffsetForTotalCalleeAndBit + m_iTotalCallee * m_iCalleeFrameInfoSize, uchCalleeAudio, m_iCalleeFrameInfoSize);
+
+
+	header.getMuxHeader(m_uchCalleeBlockInfo + iOffsetForTotalCalleeAndBit + m_iTotalCallee * m_iCalleeFrameInfoSize);
 
 	m_iTotalCallee++;
 
@@ -156,7 +159,7 @@ void AudioMixer::addAudioData(unsigned char* uchCalleeAudio)
 
 	for (int i = 0; i < m_iAudioFrameSize; i++) 
 	{
-		if (!(iMissingFlag & (1 << (i / iAudioSamplePerBlock))))
+		if (!(iMissingFlag & (1LL << (i / iAudioSamplePerBlock))))
 		{
 			int value = readValue(uchCalleeAudio, iIndexOffset, iBitOffset, 16);
 			m_iMixedData[i] += value;
