@@ -80,7 +80,7 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 	Locker lock(*m_pColorConverterMutex);
 
     m_iDeviceHeight = 1920; //iVideoHeight;
-    m_iDeviceWidth = 1130; //iVideoWidth;
+    m_iDeviceWidth = 1154; //iVideoWidth;
 
 	m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
