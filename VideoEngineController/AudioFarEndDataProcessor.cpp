@@ -335,7 +335,7 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 #ifdef __ANDROID__
 		if (m_bIsLiveStreamingRunning && m_pAudioCallSession->GetRole() != CALL_NOT_RUNNING)
 		{
-			m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize);
+			m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
 		}
 #endif
 		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_llFriendID,

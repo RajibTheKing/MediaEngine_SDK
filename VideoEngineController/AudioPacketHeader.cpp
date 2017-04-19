@@ -1,7 +1,7 @@
 #include "AudioPacketHeader.h"
 #include "AudioHeaderCommon.h"
 
-static SmartPointer<AudioPacketHeader> GetInstance(AudioHeaderTypes type)
+SmartPointer<AudioPacketHeader> AudioPacketHeader::GetInstance(AudioHeaderTypes type)
 {
 	AudioPacketHeader* pPacketHeader = nullptr;
 	switch (type)
