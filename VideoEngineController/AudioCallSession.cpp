@@ -78,7 +78,6 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 #ifdef USE_VAD
 	m_pVoice = new CVoice();
 #endif
-
 	
 	m_iAudioVersionFriend = -1;
 	if(m_bLiveAudioStreamRunning)
@@ -163,9 +162,8 @@ bool CAudioCallSession::getIsAudioLiveStreamRunning(){
 void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
 	return;
-#ifdef USE_AECM
+
 	m_bEchoCancellerEnabled = /*bOn*/ true;
-#endif
 }
 
 
