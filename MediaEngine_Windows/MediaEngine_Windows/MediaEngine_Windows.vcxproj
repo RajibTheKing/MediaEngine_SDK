@@ -154,6 +154,8 @@
     <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioEncoderOpus.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioEncoderProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndDataProcessor.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
@@ -161,6 +163,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioMixer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioGainInstanceProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndDataProcessor.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioNoEncoder.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
@@ -234,6 +237,9 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioEncoderBuffer.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioEncoderInterface.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioEncoderOpus.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioEncoderProvider.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndDataProcessor.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
@@ -243,6 +249,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioMacros.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioMixer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndDataProcessor.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioNoEncoder.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
