@@ -15,7 +15,7 @@ public:
 
 	void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength);
-	virtual void SetHeaderAllInByteArray(unsigned char* header, AudioHeaderParams& params);
+	virtual void SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params);
 
 	void GetHeaderInfoAll(unsigned char* header, int &nHeaderLength, int &nFrameNumber, int &iBlockNumber, int &nNumberOfBlocks, int &nBlockLength, int &iOffsetOfBlock, int &nFrameLength);
 

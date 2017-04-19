@@ -6,21 +6,21 @@
 typedef struct
 {
 	int packetType;
-	int nHeaderLength;
+	int headerLength;
 	int networkType;
 	int slotNumber;
 	int packetNumber;
-	int packetLength;
+	int blockLength;
 	int recvSlotNumber;
 	int numPacketRecv;
 	int channel;
 	int version;
 	long long timestamp;
-	int iBlockNumber;
-	int nTotalBlocksInThisFrame;
-	int nBlockOffset;
-	int nFrameLength;
-} AudioHeaderParams;
+	int blockNumber;
+	int totalBlocksInThisFrame;
+	int blockOffset;
+	int frameLength;
+} AudioHeaderFields;
 
 enum AudioHeaderInfoTypes
 {
@@ -86,9 +86,11 @@ public:
 	AudioPacketHeader(){}
 	virtual ~AudioPacketHeader(){};
 
-	virtual void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength) = 0;
-	virtual void SetHeaderAllInByteArray(unsigned char* header, AudioHeaderParams& params) = 0;
+	/*virtual void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength) = 0;*/
+
+	virtual void SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params) = 0;
+
 	virtual void CopyHeaderToInformation(unsigned char *Header) = 0;
 	virtual int GetHeaderInByteArray(unsigned char* data) = 0;
 
@@ -111,7 +113,7 @@ protected:
 
 	int HeaderBitmap[MAXFIELDSINHEADER];
 
-	AudioHeaderParams m_headerParams;
+	AudioHeaderFields m_headerParams;
 
 	int nNumberOfHeaderElements;
 	unsigned int m_nHeaderSizeInBit;

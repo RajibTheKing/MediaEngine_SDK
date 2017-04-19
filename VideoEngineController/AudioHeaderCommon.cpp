@@ -249,23 +249,23 @@ void AudioHeaderCommon::showDetails(char prefix[])
 		m_arrllInformation[14]);
 }
 
-void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, AudioHeaderParams& params)
+void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params)
 {
 	SetInformation(params.packetType, INF_PACKETTYPE);
-	SetInformation(params.nHeaderLength, INF_HEADERLENGTH);
+	SetInformation(params.headerLength, INF_HEADERLENGTH);
 	SetInformation(params.packetNumber, INF_PACKETNUMBER);
 	SetInformation(params.slotNumber, INF_SLOTNUMBER);
-	SetInformation(params.packetLength, INF_BLOCK_LENGTH);
+	SetInformation(params.blockLength, INF_BLOCK_LENGTH);
 	SetInformation(params.recvSlotNumber, INF_RECVDSLOTNUMBER);
 	SetInformation(params.numPacketRecv, INF_NUMPACKETRECVD);
 	SetInformation(params.version, INF_VERSIONCODE);
 	SetInformation(params.timestamp, INF_TIMESTAMP);
 	SetInformation(params.networkType, INF_NETWORKTYPE);
 	SetInformation(params.channel, INF_CHANNELS);
-	SetInformation(params.iBlockNumber, INF_PACKET_BLOCK_NUMBER);
-	SetInformation(params.nTotalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
-	SetInformation(params.nBlockOffset, INF_BLOCK_OFFSET);
-	SetInformation(params.nFrameLength, INF_FRAME_LENGTH);
+	SetInformation(params.blockNumber, INF_PACKET_BLOCK_NUMBER);
+	SetInformation(params.totalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
+	SetInformation(params.blockOffset, INF_BLOCK_OFFSET);
+	SetInformation(params.frameLength, INF_FRAME_LENGTH);
 
 	showDetails("@#BUILD");
 
