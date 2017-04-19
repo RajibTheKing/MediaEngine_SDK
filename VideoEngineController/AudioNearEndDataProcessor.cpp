@@ -478,7 +478,7 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 		int nMuxHeaderSize = 14;
 
 		MuxHeader oPublisherMuxHeader(iCallId, nPacketNumber, vMissingBlocks);
-
+		LOG18("#18@# -> PUB ID %lld CALLEE ID %lld", oPublisherMuxHeader.getCalleeId(), oCalleeMuxHeader.getCalleeId());
 		m_pAudioMixer->addAudioData((unsigned char*)shMuxedData, oPublisherMuxHeader); // this data should contains only the mux header
 
 		if (nLastDecodedFrameSizeInByte == 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING) //Both must be 800

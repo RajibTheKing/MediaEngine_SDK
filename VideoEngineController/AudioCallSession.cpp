@@ -244,7 +244,6 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 #ifdef LOCAL_SERVER_LIVE_CALL
 		m_clientSocket->InitializeSocket(LOCAL_SERVER_IP, 60001);
 #endif
-		m_AudioDecodedBuffer.ResetBuffer(); //Contains Data From Last Call
 	}
 	else if (m_iRole == VIEWER_IN_CALL)
 	{

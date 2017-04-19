@@ -54,7 +54,7 @@ void AudioShortBufferForPublisherFarEnd::ResetBuffer()
 
 int AudioShortBufferForPublisherFarEnd::EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump, MuxHeader pMuxHeader)
 {
-	LOG18("#18@# ENCO BUFFER SIZE %d", m_nQueueCapacity);
+	LOG18("#18@# ENCO BUFFER SIZE %d -> HEAD %lld", m_nQueueCapacity, pMuxHeader.getCalleeId());
 	Locker lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
 
 	memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);

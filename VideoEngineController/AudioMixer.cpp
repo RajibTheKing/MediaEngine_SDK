@@ -154,7 +154,7 @@ void AudioMixer::addAudioData(unsigned char* uchCalleeAudio, MuxHeader &header)
 
 	m_iTotalCallee++;
 
-	int iIndexOffset = m_iCalleeFrameInfoSize;
+	int iIndexOffset = 0;
 	int iBitOffset = 0;
 
 	for (int i = 0; i < m_iAudioFrameSize; i++) 

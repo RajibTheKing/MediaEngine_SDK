@@ -123,7 +123,7 @@ public:
     int GetServiceType();
 
 	int m_iNextPacketType;
-	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
+	CAudioShortBuffer m_AudioEncodingBuffer;
 	CAudioShortBuffer  m_ViewerInCallSentDataQueue;
 
 	AudioShortBufferForPublisherFarEnd m_PublisherBufferForMuxing;

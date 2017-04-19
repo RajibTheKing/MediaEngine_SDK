@@ -6,7 +6,7 @@
 class MuxHeader
 {
 public:
-	MuxHeader(long long m_llCalleeId, int m_iFrameNumber, std::vector<std::pair<int, int>>&vMissingBlocks);
+	MuxHeader(long long llCalleeId, int iFrameNumber, std::vector<std::pair<int, int>>&vMissingBlocks);
 	MuxHeader();
 	~MuxHeader();
 

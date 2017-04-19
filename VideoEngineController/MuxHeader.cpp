@@ -1,7 +1,8 @@
 #include "MuxHeader.h"
+#include "LogPrinter.h"
 
 MuxHeader::MuxHeader(long long llCalleeId, int iFrameNumber, std::vector<std::pair<int, int>> &vMissingBlocks) :
-m_llCalleeId(m_llCalleeId),
+m_llCalleeId(llCalleeId),
 m_iMissingMask(genMissingMask(vMissingBlocks)),
 m_iFrameNumber(iFrameNumber)
 {
@@ -36,9 +37,11 @@ int MuxHeader::getFrameNo()
 
 void MuxHeader::writeValue(unsigned char *uchData,int &iIndexOffset, int ilengthInByte, long long llValue)
 {
+	LOG18("#18@# WRITE VALUE %lld", llValue);
 	for (int i = 0; i < ilengthInByte; i++) {
 		int value = (int)(llValue & ((1LL << 8) - 1LL));
 		uchData[iIndexOffset] = llValue;
+		llValue >>= 8;
 		iIndexOffset++;
 	}
 	return;
