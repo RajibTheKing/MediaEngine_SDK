@@ -216,8 +216,6 @@ int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideo
 {
 	Locker lock(*m_pColorConverterMutex);
 
-	int i, j, k;
-
 	int YPlaneLength = iVideoHeight*iVideoWidth;
 	int VPlaneLength = YPlaneLength >> 2;
 	int UPlaneLength = YPlaneLength >> 2;
@@ -1086,7 +1084,7 @@ int CColorConverter::DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHei
 	{
 		for (int j = 0; j<iNewWidth; j += 2)
 		{
-			int w, x, y, z, J, avg;
+			int w, x, y, z, avg;
 
 
 			w = p[i*iWidth + j];
@@ -1271,7 +1269,7 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     //int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
     int iOutputHeight, iOutputWidth;
     iOutputHeight = iTargetHeight/3;
-    float ratio = (iHeight*1.0)/(iWidth*1.0);
+    double ratio = (iHeight*1.0)/(iWidth*1.0);
     
     iOutputWidth = (int)(iOutputHeight*1.0/ratio);
     
@@ -1327,7 +1325,7 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth)
 {
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
-    float ratioHeight, ratioWidth;
+    double ratioHeight, ratioWidth;
     
     int YPlaneLength = inHeight*inWidth;
     int UPlaneLength = YPlaneLength >> 2;
@@ -1336,10 +1334,10 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
     ratioHeight = inHeight * (1.0) / outHeight;
     ratioWidth = inWidth * (1.0) / outWidth;
     int MaximumFraction = 10000;
-    int factorH = floor(ratioHeight);
-    int factorW = floor(ratioWidth);
-    int fractionH = (ratioHeight - factorH) * MaximumFraction;
-    int fractionW = (ratioWidth - factorW) * MaximumFraction;
+    int factorH = (int)floor(ratioHeight);
+    int factorW = (int)floor(ratioWidth);
+    int fractionH = (int)((ratioHeight - factorH) * MaximumFraction);
+    int fractionW = (int)((ratioWidth - factorW) * MaximumFraction);
     
     
     
@@ -1641,7 +1639,7 @@ int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, 
 
 			if(j <= centerPointX_1 && i <= centerPointY_1)
 			{
-				int distanse_1 = ceil(sqrt(((centerPointX_1 - j)*(centerPointX_1 - j)) + ((centerPointY_1 - i)*(centerPointY_1 - i))));
+				int distanse_1 = (int)ceil(sqrt(((centerPointX_1 - j)*(centerPointX_1 - j)) + ((centerPointY_1 - i)*(centerPointY_1 - i))));
 				if(distanse_1 <= smallRacRadius)
 				{
 					pInData1[now1] = m_pSmallFrame[now2];
@@ -1650,7 +1648,7 @@ int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, 
 				}
 			}else if(j >= centerPointX_2 && i <= centerPointY_2)
 			{
-				int distanse_2 = ceil(sqrt(((centerPointX_2 - j)*(centerPointX_2 - j)) + ((centerPointY_2 - i)*(centerPointY_2 - i))));
+				int distanse_2 = (int)ceil(sqrt(((centerPointX_2 - j)*(centerPointX_2 - j)) + ((centerPointY_2 - i)*(centerPointY_2 - i))));
 				if(distanse_2 <= smallRacRadius)
 				{
 					pInData1[now1] = m_pSmallFrame[now2];
@@ -1659,7 +1657,7 @@ int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, 
 				}
 			}else if(j <= centerPointX_3 && i >= centerPointY_3)
 			{
-				int distanse_3 = ceil(sqrt(((centerPointX_3 - j)*(centerPointX_3 - j)) + ((centerPointY_3 - i)*(centerPointY_3 - i))));
+				int distanse_3 = (int)ceil(sqrt(((centerPointX_3 - j)*(centerPointX_3 - j)) + ((centerPointY_3 - i)*(centerPointY_3 - i))));
 				if(distanse_3 <= smallRacRadius)
 				{
 					pInData1[now1] = m_pSmallFrame[now2];
@@ -1668,7 +1666,7 @@ int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, 
 				}
 			}else if(j >= centerPointX_4 && i >= centerPointY_4)
 			{
-				int distanse_4 = ceil(sqrt(((centerPointX_4 - j)*(centerPointX_4 - j)) + ((centerPointY_4 - i)*(centerPointY_4 - i))));
+				int distanse_4 = (int)ceil(sqrt(((centerPointX_4 - j)*(centerPointX_4 - j)) + ((centerPointY_4 - i)*(centerPointY_4 - i))));
 				if(distanse_4 <= smallRacRadius)
 				{
 					pInData1[now1] = m_pSmallFrame[now2];
@@ -1759,7 +1757,7 @@ int CColorConverter::Merge_Two_VideoNV21(unsigned char *pInData1, int iPosX, int
 
 void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth)
 {
-    float aspectRatio_Screen, aspectRatio_VideoData;
+    double aspectRatio_Screen, aspectRatio_VideoData;
     
     aspectRatio_Screen = iScreenHeight * 1.0 / iScreenWidth;
     aspectRatio_VideoData = inHeight * 1.0 / inWidth;
@@ -1774,7 +1772,7 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
     else if(aspectRatio_Screen > aspectRatio_VideoData)
     {
         //We have to delete columns [reduce Width]
-        newWidth = floor(inHeight / aspectRatio_Screen);
+        newWidth = (int)floor(inHeight / aspectRatio_Screen);
         
         //
         //int target = floor(inWidth * 0.82);
@@ -1791,7 +1789,7 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
     else
     {
         //We have to delete rows [Reduce Height]
-        newHeight = floor(inWidth * aspectRatio_Screen);
+        newHeight = (int)floor(inWidth * aspectRatio_Screen);
         newHeight = newHeight - newHeight%4;
         newWidth = inWidth;
     }
