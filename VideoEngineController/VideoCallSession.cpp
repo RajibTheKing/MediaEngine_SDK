@@ -679,7 +679,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	if(-1 == m_llFirstFrameCapturingTimeStamp)
 		m_llFirstFrameCapturingTimeStamp = currentTimeStamp;
 
-	int nCaptureTimeDiff = currentTimeStamp - m_llFirstFrameCapturingTimeStamp;
+	int nCaptureTimeDiff = (int)(currentTimeStamp - m_llFirstFrameCapturingTimeStamp);
     
     g_TimeTraceFromCaptureToSend[g_CapturingFrameCounter] = m_Tools.CurrentTimestamp();
 
