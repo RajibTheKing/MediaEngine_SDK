@@ -8,8 +8,8 @@
 
 enum AudioEncoderType
 {
-	Opus,
-	NoEncoder
+	Opus_Encoder,
+	PCM_Encoder
 };
 
 

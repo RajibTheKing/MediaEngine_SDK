@@ -1,6 +1,6 @@
 #include "AudioEncoderProvider.h"
-#include "AudioEncoderOpus.h"
-#include "AudioNoEncoder.h"
+#include "EncoderOpus.h"
+#include "EncoderPCM.h"
 
 
 
@@ -8,11 +8,11 @@ AudioEncoderInterface* AudioEncoderProvider::GetAudioEncoder(AudioEncoderType au
 {
 	switch (audioEncoderType)
 	{
-	case Opus:
-		return new AudioEncoderOpus(sharedObject, AudioCallSession, llfriendID);
+	case Opus_Encoder:
+		return new EncoderOpus(sharedObject, AudioCallSession, llfriendID);
 
-	case NoEncoder:
-		return new AudioNoEncoder();
+	case PCM_Encoder:
+		return new EncoderPCM();
 
 	default:
 		return nullptr;

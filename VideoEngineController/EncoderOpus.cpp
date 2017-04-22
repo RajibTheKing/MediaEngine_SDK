@@ -1,11 +1,11 @@
-#include "AudioEncoderOpus.h"
+#include "EncoderOpus.h"
 #include "AudioCallSession.h"
 #include "CommonElementsBucket.h"
 #include "DefinedDataTypes.h"
 #include "LogPrinter.h"
 
 
-AudioEncoderOpus::AudioEncoderOpus(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID) :
+EncoderOpus::EncoderOpus(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID) :
 m_pCommonElementsBucket(sharedObject),
 m_bAudioQualityLowNotified(false),
 m_bAudioQualityHighNotified(false),
@@ -20,7 +20,7 @@ m_FriendID(llfriendID)
 }
 
 
-AudioEncoderOpus::~AudioEncoderOpus()
+EncoderOpus::~EncoderOpus()
 {
 	opus_encoder_destroy(encoder);
 
@@ -28,7 +28,7 @@ AudioEncoderOpus::~AudioEncoderOpus()
 }
 
 
-int AudioEncoderOpus::CreateAudioEncoder()
+int EncoderOpus::CreateAudioEncoder()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CreateAudioEncoder");
 
@@ -55,7 +55,7 @@ int AudioEncoderOpus::CreateAudioEncoder()
 	{
 		opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(m_iComplexity));
 		encodingTime = m_Tools.CurrentTimestamp();
-		encodeAudio(m_DummyData, dummyDataSize, m_DummyDataOut);
+		EncodeAudio(m_DummyData, dummyDataSize, m_DummyDataOut);
 		encodingTime = m_Tools.CurrentTimestamp() - encodingTime;
 		if (encodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME)
 		{
@@ -69,7 +69,7 @@ int AudioEncoderOpus::CreateAudioEncoder()
 }
 
 
-int AudioEncoderOpus::encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
+int EncoderOpus::EncodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
 	int nbBytes;
 	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize = 0;
@@ -106,7 +106,7 @@ int AudioEncoderOpus::encodeAudio(short *in_data, unsigned int in_size, unsigned
 }
 
 
-bool AudioEncoderOpus::SetBitrate(int nBitrate)
+bool EncoderOpus::SetBitrate(int nBitrate)
 {
 	PRT("@@@@@@@@@@@@@@@@@@@@Bitrate: %d\n", nBitrate);
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
@@ -116,7 +116,7 @@ bool AudioEncoderOpus::SetBitrate(int nBitrate)
 }
 
 
-bool AudioEncoderOpus::SetComplexity(int nComplexity)
+bool EncoderOpus::SetComplexity(int nComplexity)
 {
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 	m_iComplexity = nComplexity;
@@ -125,13 +125,13 @@ bool AudioEncoderOpus::SetComplexity(int nComplexity)
 }
 
 
-int AudioEncoderOpus::GetCurrentBitrate()
+int EncoderOpus::GetCurrentBitrate()
 {
 	return m_iCurrentBitRate;
 }
 
 
-void AudioEncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
+void EncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
 {
 #ifndef AUDIO_FIXED_BITRATE
 	//	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
@@ -212,7 +212,7 @@ void AudioEncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
 }
 
 
-void AudioEncoderOpus::DecideToChangeComplexity(int iEncodingTime)
+void EncoderOpus::DecideToChangeComplexity(int iEncodingTime)
 {
 	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && m_iComplexity > OPUS_MIN_COMPLEXITY)
 	{

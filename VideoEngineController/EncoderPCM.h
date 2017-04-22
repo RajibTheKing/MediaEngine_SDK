@@ -5,15 +5,15 @@
 #include "AudioEncoderInterface.h"
 
 
-class AudioNoEncoder : public AudioEncoderInterface
+class EncoderPCM : public AudioEncoderInterface
 {
 
 public:
-	AudioNoEncoder() { }
-	~AudioNoEncoder() { }
+	EncoderPCM() { }
+	~EncoderPCM() { }
 
 	int CreateAudioEncoder() { return true; }
-	int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
+	int EncodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 
 	bool SetBitrate(int nBitrate) { return true; }
 	bool SetComplexity(int nComplexity) { return true; }

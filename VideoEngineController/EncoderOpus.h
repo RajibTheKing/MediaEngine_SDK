@@ -29,7 +29,7 @@ class CCommonElementsBucket;
 class CAudioCallSession;
 
 
-class AudioEncoderOpus : public AudioEncoderInterface
+class EncoderOpus : public AudioEncoderInterface
 {
 private:
 
@@ -60,11 +60,11 @@ protected:
 
 public:
 
-	AudioEncoderOpus(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID);
-	~AudioEncoderOpus();
+	EncoderOpus(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID);
+	~EncoderOpus();
 
 	int CreateAudioEncoder();
-	int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
+	int EncodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 
 	bool SetBitrate(int nBitrate);
 	bool SetComplexity(int nComplexity);
