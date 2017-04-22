@@ -1,3 +1,4 @@
+
 #ifndef IPV_EVENT_NOTIFIER_H
 #define IPV_EVENT_NOTIFIER_H
 
@@ -6,11 +7,14 @@
 #include "AudioVideoEngineDefinitions.h"
 #include "LogPrinter.h"
 
+
 class CController;
+
 class CEventNotifier
 {
 	
 public:
+
 	CEventNotifier(CController *pController);
 
 	void firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[]);
@@ -75,6 +79,7 @@ public:
 	static const int RESOLUTION_NOT_SUPPORTED = 127;
 
 private:
+
 	CController *m_pController;
 };
 
