@@ -76,7 +76,7 @@ int CSendingBuffer::DeQueue(LongLong &llrFriendID, unsigned char *ucaSendingVide
 
 		memcpy(ucaSendingVideoPacketData, m_uc2aSendingVideoPacketBuffer[m_iPopIndex], nLength);
 
-		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];
+		nrTimeDifferenceInQueue = (int)(m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex]);
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;
