@@ -1,7 +1,7 @@
-#include "AudioAacDecoder.h"
+#include "DecoderAAC.h"
 
 
-AudioAacDecoder::AudioAacDecoder() : m_hDecoder(nullptr)
+DecoderAAC::DecoderAAC() : m_hDecoder(nullptr)
 {
 	LOG_AAC("#aac# Initialize ACC decoder.");
 
@@ -15,7 +15,7 @@ AudioAacDecoder::AudioAacDecoder() : m_hDecoder(nullptr)
 }
 
 
-AudioAacDecoder::~AudioAacDecoder()
+DecoderAAC::~DecoderAAC()
 {
 	LOG_AAC("#aac# De-allocate AAC decoder.");
 
@@ -26,7 +26,7 @@ AudioAacDecoder::~AudioAacDecoder()
 }
 
 
-short AudioAacDecoder::ByteArrayToShortBE(unsigned char *byteArray)
+short DecoderAAC::ByteArrayToShortBE(unsigned char *byteArray)
 {
 	short num;
 
@@ -38,12 +38,12 @@ short AudioAacDecoder::ByteArrayToShortBE(unsigned char *byteArray)
 }
 
 
-int AudioAacDecoder::ThreeBytesIntoIntBE(unsigned char *byteArray){
+int DecoderAAC::ThreeBytesIntoIntBE(unsigned char *byteArray){
 	return (byteArray[2] & 0xFF) | ((byteArray[1] & 0xFF) << 8) | ((byteArray[0] & 0xFF) << 16);
 }
 
 
-void AudioAacDecoder::CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf)
+void DecoderAAC::CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf)
 {
 	short sampleMode = 0;
 
@@ -123,7 +123,7 @@ void AudioAacDecoder::CreateConfBuf(int sampleRate, int numOfChannels, unsigned 
 }
 
 
-bool AudioAacDecoder::SetParameters(int sampleRate, int numberOfChannels)
+bool DecoderAAC::SetParameters(int sampleRate, int numberOfChannels)
 {
 	LOG_AAC("#aac# CAcc::SetParameters(), sampleRate: %d, numberOfChannels: %d", sampleRate, numberOfChannels);
 
@@ -169,7 +169,7 @@ bool AudioAacDecoder::SetParameters(int sampleRate, int numberOfChannels)
 }
 
 
-int AudioAacDecoder::DecodeAudio(unsigned char *inputDataBuffer, unsigned int inputDataSize, short *outputDataBuffer)
+int DecoderAAC::DecodeAudio(unsigned char *inputDataBuffer, unsigned int inputDataSize, short *outputDataBuffer)
 {
 	//	LOG_AAC("#aac# CAcc::DecodeFrame(), inputDataSize: %d", inputDataSize);
 

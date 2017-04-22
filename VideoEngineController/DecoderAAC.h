@@ -13,7 +13,7 @@
 
 
 
-class AudioAacDecoder : public AudioDecoderInterface
+class DecoderAAC : public AudioDecoderInterface
 {
 
 private:
@@ -33,9 +33,9 @@ protected:
 
 public:
 
-	AudioAacDecoder();
+	DecoderAAC();
 
-	~AudioAacDecoder();
+	~DecoderAAC();
 
 	bool SetParameters(int sampleRate, int numberOfChannels);
 	

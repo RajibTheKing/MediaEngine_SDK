@@ -5,7 +5,7 @@
 #include "AudioDecoderInterface.h"
 
 
-class AudioPCMDecoder : public AudioDecoderInterface
+class DecoderPCM : public AudioDecoderInterface
 {
 
 public:
@@ -14,7 +14,7 @@ public:
 
 	int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
 
-	~AudioPCMDecoder() { }
+	~DecoderPCM() { }
 };
 
 

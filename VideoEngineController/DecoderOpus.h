@@ -12,7 +12,7 @@
 #include "LogPrinter.h"
 
 
-class AudioOpusDecoder : public AudioDecoderInterface
+class DecoderOpus : public AudioDecoderInterface
 {
 	int err;
 
@@ -22,9 +22,9 @@ class AudioOpusDecoder : public AudioDecoderInterface
 
 public:
 
-	AudioOpusDecoder();
+	DecoderOpus();
 
-	~AudioOpusDecoder();
+	~DecoderOpus();
 
 	bool SetParameters(int sampleRate, int numberOfChannels) { return true; }
 

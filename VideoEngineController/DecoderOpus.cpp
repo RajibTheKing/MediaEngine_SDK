@@ -1,10 +1,10 @@
-#include "AudioOpusDecoder.h"
+#include "DecoderOpus.h"
 
 
 #define BYTES_TO_STORE_AUDIO_EFRAME_LEN 2
 
 
-AudioOpusDecoder::AudioOpusDecoder()
+DecoderOpus::DecoderOpus()
 {
 	decoder = opus_decoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, &err);
 
@@ -15,13 +15,13 @@ AudioOpusDecoder::AudioOpusDecoder()
 }
 
 
-AudioOpusDecoder::~AudioOpusDecoder()
+DecoderOpus::~DecoderOpus()
 {
 	opus_decoder_destroy(decoder);
 }
 
 
-int AudioOpusDecoder::DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
+int DecoderOpus::DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
 	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0, nProcessedDataSize = 0, nCurrentFrameSize = 0;
 

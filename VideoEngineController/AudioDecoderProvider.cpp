@@ -1,9 +1,9 @@
 #include "AudioDecoderProvider.h"
 #include "AudioDecoderInterface.h"
 
-#include "AudioAacDecoder.h"
-#include "AudioOpusDecoder.h"
-#include "AudioPCMDecoder.h"
+#include "DecoderAAC.h"
+#include "DecoderOpus.h"
+#include "DecoderPCM.h"
 
 
 
@@ -14,15 +14,15 @@ SmartPointer<AudioDecoderInterface> AudioDecoderProvider::GetAudioDecoder(AudioD
 	switch (audioDecoderType)
 	{
 	case AAC_Decoder:
-		audioDecoder = new AudioAacDecoder();
+		audioDecoder = new DecoderAAC();
 		break;
 
 	case Opus_Decoder:
-		audioDecoder = new AudioOpusDecoder();
+		audioDecoder = new DecoderOpus();
 		break;
 
 	case PCM_Decoder:
-		audioDecoder = new AudioPCMDecoder();
+		audioDecoder = new DecoderPCM();
 		break;
 
 	default:
