@@ -1,16 +1,15 @@
-//
-// Created by ipvision on 10/23/2016.
-//
 
 #include "LiveVideoDecodingQueue.h"
 #include "ThreadTools.h"
 #include "LogPrinter.h"
 
 LiveVideoDecodingQueue::LiveVideoDecodingQueue() :
+
         m_iPushIndex(0),
         m_iPopIndex(0),
         m_nQueueSize(0),
         m_nQueueCapacity(LIVE_VIDEO_DECODING_QUEUE_SIZE)
+
 {
     m_pLiveVideoDecodingQueueMutex.reset(new CLockHandler);
 }
@@ -33,13 +32,10 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int n
 {
     Locker lock(*m_pLiveVideoDecodingQueueMutex);
 
-    if(nLength > 30000)
-    {
-        CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + m_Tools.IntegertoStringConvert(nLength));
-    }
     if( nLength < 0 || nLength >= MAX_VIDEO_ENCODED_FRAME_SIZE )
     {
         CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + m_Tools.IntegertoStringConvert(nLength));
+
         return 0;
     }
 
@@ -47,7 +43,6 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int n
 
     m_naBufferDataLength[m_iPushIndex] = nLength;
     
-
     if (m_nQueueSize == m_nQueueCapacity)
     {
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "checked time");
