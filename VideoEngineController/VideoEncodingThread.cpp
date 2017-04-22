@@ -602,7 +602,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 #else
-				long timeStampForEncoding = m_Tools.CurrentTimestamp();
+				long long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
 			if (m_bIsCheckCall)
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, false);
@@ -613,7 +613,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 
-				int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
+				int timediff = (int)(m_Tools.CurrentTimestamp() - timeStampForEncoding);
 				sumOfEncodingTimediff += timeDiff;
 				if (nENCODEDFrameSize == 0)
 				{
