@@ -16,7 +16,7 @@
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
 extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
+CVideoCallSession::CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
@@ -307,12 +307,12 @@ CVideoCallSession::~CVideoCallSession()
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
 }
 
-LongLong CVideoCallSession::GetFriendID()
+long long CVideoCallSession::GetFriendID()
 {
 	return m_lfriendID;
 }
 
-void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
+void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
 {
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
@@ -623,7 +623,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
 
-	LongLong currentTimeStamp = m_Tools.CurrentTimestamp();
+	long long currentTimeStamp = m_Tools.CurrentTimestamp();
 
     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 5");
     //Capturing fps calculation
@@ -1102,7 +1102,7 @@ void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
 	m_nCallInLiveType = nCallInLiveType;
 }
 
-int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
+int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width)
 {
 	if(m_nVideoCallHeight != height || m_nVideoCallWidth != width)
 	{
@@ -1170,7 +1170,7 @@ int CVideoCallSession::GetOponentDeviceType()
 	return m_nOponentDeviceType;
 }
 
-int CVideoCallSession::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)
+int CVideoCallSession::SetDeviceHeightWidth(const long long& lFriendID, int height, int width)
 {
 	m_nDeviceHeight = height;
 	m_nDeviceWidth = width;

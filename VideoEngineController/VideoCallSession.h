@@ -38,11 +38,11 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly);
+	CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly);
 	~CVideoCallSession();
 
-	LongLong GetFriendID();
-	void InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType);
+	long long GetFriendID();
+	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
@@ -115,8 +115,8 @@ public:
 
 	void SetCallInLiveType(int nCallInLiveType);
 
-	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
-	int SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width);
+	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width);
+	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
 	int SetVideoEffect(int nEffectStatus);
 	int TestVideoEffect(int *param, int size);
@@ -149,7 +149,7 @@ public:
 private:
 
 	CFPSController *m_pFPSController;
-	LongLong m_LastTimeStampClientFPS;
+	long long m_LastTimeStampClientFPS;
 	double m_ClientFPSDiffSum;
 	int m_ClientFrameCounter;
 	double m_ClientFPS;
@@ -213,7 +213,7 @@ private:
     int m_nServiceType;
     
 	Tools m_Tools;
-	LongLong m_lfriendID;
+	long long m_lfriendID;
 	CVideoEncoderListHandler sessionMediaList;
 
 	CVideoHeader m_PacketHeader;

@@ -29,7 +29,7 @@ extern CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine;
 #include <dispatch/dispatch.h>
 #endif
 
-CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID, bool bAudioOnlyLive) :
+CSendingThread::CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, long long llfriendID, bool bAudioOnlyLive) :
 m_pCommonElementsBucket(commonElementsBucket),
 m_SendingBuffer(sendingBuffer),
 m_bIsCheckCall(bIsCheckCall),
@@ -205,7 +205,7 @@ void CSendingThread::SendingThreadProcedure()
 
 	Tools toolsObject;
 	int packetSize = 0;
-	LongLong lFriendID = m_lfriendID;
+	long long lFriendID = m_lfriendID;
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
 	int frameNumber, packetNumber;
