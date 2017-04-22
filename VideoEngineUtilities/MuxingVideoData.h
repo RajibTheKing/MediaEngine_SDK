@@ -12,7 +12,6 @@
 
 #include <string>
 
-#define RGB 1
 #define YUV_NV21 2
 #define YUV_NV12 3
 #define YUV_I420 4
