@@ -21,7 +21,7 @@ void(*notifyClientWithVideoDataCallback)(long long, int, unsigned char*, int, in
 void(*notifyClientWithVideoNotificationCallback)(long long, int) = NULL;
 void(*notifyClientWithNetworkStrengthNotificationCallback)(long long, int) = NULL;
 void(*notifyClientWithAudioDataCallback)(long long, int, short*, int) = NULL;
-void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
+void(*notifyClientWithAudioPacketDataCallback)(long long, unsigned char*, int) = NULL;
 void(*notifyClientWithAudioAlarmCallback)(long long, short*, int) = NULL;
 
 
@@ -169,7 +169,7 @@ void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunction
     notifyClientWithAudioDataCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
+void CEventNotifier::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int))
 {
 	notifyClientWithAudioPacketDataCallback = callBackFunctionPointer;
 }
