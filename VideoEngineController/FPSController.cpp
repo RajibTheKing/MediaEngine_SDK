@@ -116,7 +116,7 @@ unsigned char CFPSController::GetFPSSignalByte()
     }
 	else if (m_ClientFPS < m_nCallFPS)
     {
-        int tmp = m_ClientFPS+0.5;
+        int tmp = (int)(m_ClientFPS+0.5);
         if(m_nOwnFPS > tmp)
             ret = tmp;
     }
@@ -154,7 +154,7 @@ void CFPSController::SetFPSSignalByte(unsigned char signalByte)
 	if (m_nOwnFPS > m_ClientFPS)
 	{
 		Locker lock(*m_pMutex);
-		SetOwnFPS(m_ClientFPS);
+		SetOwnFPS((int)m_ClientFPS);
 	}
     else if(m_nOwnFPS < m_ClientFPS && m_nOwnFPS < m_nCallFPS)
     {
@@ -178,7 +178,7 @@ bool CFPSController::IsProcessableFrame()
         m_DropSum+=ratio;
     }
 
-    int indx = floor(m_DropSum + 0.5);
+    int indx = (int)floor(m_DropSum + 0.5);
     m_EncodingFrameCounter++;
 
     if(m_EncodingFrameCounter == indx)
