@@ -2,7 +2,7 @@
 #ifndef IPV_ENCODED_FRAME_PACKETIZER_H
 #define IPV_ENCODED_FRAME_PACKETIZER_H
 
-#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
 
 #include "AudioVideoEngineDefinitions.h"
 #include "SendingBuffer.h"

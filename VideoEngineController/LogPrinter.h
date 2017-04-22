@@ -2,7 +2,7 @@
 #ifndef IPV_LOG_PRINTER_H
 #define IPV_LOG_PRINTER_H
 
-#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
 
 
 //#define __PRINT_LOG__

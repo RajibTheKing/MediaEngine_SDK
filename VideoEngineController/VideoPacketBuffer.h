@@ -2,7 +2,7 @@
 #ifndef IPV_VIDEO_PACKET_BUFFER_H
 #define IPV_VIDEO_PACKET_BUFFER_H
 
-#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
