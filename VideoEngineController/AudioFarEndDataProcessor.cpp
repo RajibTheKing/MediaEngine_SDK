@@ -163,7 +163,7 @@ int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaD
 
 void CAudioFarEndDataProcessor::StartCallInLive(int nEntityType)
 {
-	if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+	if (nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 	{
 		m_vAudioFarEndBufferVector[0]->ResetBuffer(); //Contains Data From Live Stream
 	}
@@ -182,23 +182,23 @@ bool CAudioFarEndDataProcessor::IsQueueEmpty()
 	if (m_bIsLiveStreamingRunning)
 	{
 #ifdef LOCAL_SERVER_LIVE_CALL
-		if ((m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL || m_pAudioCallSession->GetRole() == VIEWER_IN_CALL) && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
+		if ((m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE) && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
 		{
 			Tools::SOSleep(5);
 			return true;
 		}
-		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
+		else if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
 		{
 			Tools::SOSleep(5);
 			return true;
 		}
 #else
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
 		{
 			Tools::SOSleep(5);
 			return true;
 		}
-		else if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
+		else if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
 		{
 			Tools::SOSleep(5);
 			return true;
@@ -218,7 +218,7 @@ void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 	if (m_bIsLiveStreamingRunning)
 	{
 #ifndef LOCAL_SERVER_LIVE_CALL
-		if (m_pAudioCallSession->GetRole() != PUBLISHER_IN_CALL)
+		if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
 		}
@@ -227,7 +227,7 @@ void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 			decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
 		}
 #else
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL || m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 		{
 			decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
 		}
@@ -312,7 +312,7 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 			iPacketNumber, llNow - llLastTime, nSentFrameSize);
 
 		llLastTime = llNow;
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL) {
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER) {
 			LOG18("#18@# PUb enq , packet type %d", iCurrentPacketNumber);
 			int iStartIndex = 0;
 			int iEndIndex = 1599;
@@ -327,7 +327,7 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 
 		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 #ifdef __ANDROID__
-		if (m_bIsLiveStreamingRunning && m_pAudioCallSession->GetRole() != CALL_NOT_RUNNING)
+		if (m_bIsLiveStreamingRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType ) )
 		{
 			m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize);
 		}
@@ -390,7 +390,7 @@ void CAudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nH
 
 bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 {
-	LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_pAudioCallSession->GetRole(), nCurrentAudioPacketType);
+	LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
 	
 	if (SERVICE_TYPE_CHANNEL == m_nServiceType)	//Channel
 	{
@@ -402,7 +402,7 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudi
 	}
 	else if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
 	{
-		if (m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)	//
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)	//
 		{
 			if (nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
 			return true;
@@ -462,7 +462,7 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long
 		{
 			return false;
 		}
-		if ((m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL) || (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL))
+		if ((m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER) || (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE))
 		{
 			return true;
 		}
@@ -737,7 +737,7 @@ void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamViewer()
 			
 			if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType)
 			{
-				if (m_pAudioCallSession->GetRole() == VIEWER_IN_CALL)
+				if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 				{
 					nCalleeId = 1;	//Should be fixed.
 					long long nGetOwnFrameNumber;
