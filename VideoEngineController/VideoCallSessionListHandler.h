@@ -5,10 +5,12 @@
 #include <stdio.h>
 #include <string>
 #include <map>
+
 #include "VideoCallSession.h"
 #include "ThreadTools.h"
 #include "SmartPointer.h"
 #include "LockHandler.h"
+
 
 class CVideoCallSessionListHandler
 {
@@ -18,19 +20,19 @@ public:
 	CVideoCallSessionListHandler();
 	~CVideoCallSessionListHandler();
 
-	void AddToVideoSessionList(LongLong friendName, CVideoCallSession* VideoSession);
-	CVideoCallSession* GetFromVideoSessionList(LongLong friendName);
-	CVideoCallSession* GetFromVideoSessionListinIndex(int index);
-	bool RemoveFromVideoSessionList(LongLong friendName);
+	void AddToVideoSessionList(long long llFriendName, CVideoCallSession* pcVideoSession);
+	CVideoCallSession* GetFromVideoSessionList(long long llFriendName);
+	CVideoCallSession* GetFromVideoSessionListinIndex(int iIndex);
+	bool RemoveFromVideoSessionList(long long llFriendName);
 	int SizeOfVideoSessionList();
-	bool IsVideoSessionExist(LongLong lFriendName, CVideoCallSession* &VideoSession);
-	bool IsVideoSessionExist(LongLong lFriendName);
+	bool IsVideoSessionExist(long long llFriendName, CVideoCallSession* &rpcVideoSession);
+	bool IsVideoSessionExist(long long llFriendName);
 	void ClearAllFromVideoSessionList();
 	void ResetAllInVideoSessionList();
 
 private:
 
-	std::map<LongLong, CVideoCallSession*> m_mVideoSessionList;
+	std::map<long long, CVideoCallSession*> m_mVideoSessionList;
 
 protected:
 

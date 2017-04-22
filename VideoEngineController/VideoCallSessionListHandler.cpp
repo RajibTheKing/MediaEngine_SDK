@@ -1,3 +1,4 @@
+
 #include "VideoCallSessionListHandler.h"
 #include "LogPrinter.h"
 
@@ -11,20 +12,20 @@ CVideoCallSessionListHandler::~CVideoCallSessionListHandler()
 	SHARED_PTR_DELETE(m_pVideoSessionListMutex);
 }
 
-void CVideoCallSessionListHandler::AddToVideoSessionList(LongLong friendName, CVideoCallSession* videoSession)
+void CVideoCallSessionListHandler::AddToVideoSessionList(long long llFriendName, CVideoCallSession* pcVideoSession)
 {
 	Locker lock(*m_pVideoSessionListMutex);
 
-	m_mVideoSessionList.insert(make_pair(friendName, videoSession));
+	m_mVideoSessionList.insert(make_pair(llFriendName, pcVideoSession));
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSessionListHandler::AddToVideoSessionList added video Session");
 }
 
-CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionList(LongLong friendName)
+CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionList(long long llFriendName)
 {
 	Locker lock(*m_pVideoSessionListMutex);
 
-	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.find(friendName);
+	std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.find(llFriendName);
 
 	if (videoSessionSearch == m_mVideoSessionList.end())
 	{
@@ -36,21 +37,24 @@ CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionList(LongLon
 	}
 }
 
-CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionListinIndex(int index)
+CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionListinIndex(int iIndex)
 {
 	Locker lock(*m_pVideoSessionListMutex);
 
-	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
+	std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
 
 	for (int count = 0; videoSessionSearch != m_mVideoSessionList.end(); ++videoSessionSearch, count++)
-		if (count == index)
+	{
+		if (count == iIndex)
 		{
 			return videoSessionSearch->second;
 		}
+	}
+
 	return NULL;
 }
 
-bool CVideoCallSessionListHandler::RemoveFromVideoSessionList(LongLong friendName)
+bool CVideoCallSessionListHandler::RemoveFromVideoSessionList(long long llFriendName)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoCallSessionListHandler::RemoveFromVideoSessionList() called");
 
@@ -58,7 +62,7 @@ bool CVideoCallSessionListHandler::RemoveFromVideoSessionList(LongLong friendNam
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoCallSessionListHandler::RemoveFromVideoSessionList() checking session key");
 
-	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.find(friendName);
+	std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.find(llFriendName);
 
 	if (videoSessionSearch == m_mVideoSessionList.end())
 	{
@@ -82,7 +86,7 @@ bool CVideoCallSessionListHandler::RemoveFromVideoSessionList(LongLong friendNam
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoCallSessionListHandler::RemoveFromVideoSessionList() session deleted");
 
         if(false == m_mVideoSessionList.empty())
-            m_mVideoSessionList.erase(friendName);
+			m_mVideoSessionList.erase(llFriendName);
 
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoCallSessionListHandler::RemoveFromVideoSessionList() session removed from session list");
 
@@ -94,7 +98,7 @@ void CVideoCallSessionListHandler::ClearAllFromVideoSessionList()
 {
 	Locker lock(*m_pVideoSessionListMutex);
 
-	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
+	std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
 
 	if (videoSessionSearch == m_mVideoSessionList.end())
 	{
@@ -125,22 +129,22 @@ int CVideoCallSessionListHandler::SizeOfVideoSessionList()
 	return iSize;
 }
 
-bool CVideoCallSessionListHandler::IsVideoSessionExist(LongLong lFriendName)
+bool CVideoCallSessionListHandler::IsVideoSessionExist(long long llFriendName)
 {
 	Locker lock(*m_pVideoSessionListMutex);
 
-	bool bReturnedValue = !(m_mVideoSessionList.find(lFriendName) == m_mVideoSessionList.end());
+	bool bReturnedValue = !(m_mVideoSessionList.find(llFriendName) == m_mVideoSessionList.end());
 
 	return bReturnedValue;
 }
 
 
-bool CVideoCallSessionListHandler::IsVideoSessionExist(LongLong lFriendName, CVideoCallSession* &videoSession)
+bool CVideoCallSessionListHandler::IsVideoSessionExist(long long llFriendName, CVideoCallSession* &rpcvideoSession)
 {
 	Locker lock(*m_pVideoSessionListMutex);
 
-	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch;
-	videoSessionSearch = m_mVideoSessionList.find(lFriendName);
+	std::map<long long, CVideoCallSession*>::iterator videoSessionSearch;
+	videoSessionSearch = m_mVideoSessionList.find(llFriendName);
 
 	if (videoSessionSearch == m_mVideoSessionList.end())
 	{
@@ -148,7 +152,7 @@ bool CVideoCallSessionListHandler::IsVideoSessionExist(LongLong lFriendName, CVi
 	}
 	else
 	{
-		videoSession = videoSessionSearch->second;
+		rpcvideoSession = videoSessionSearch->second;
 		return true;
 	}
 }
@@ -157,7 +161,7 @@ void CVideoCallSessionListHandler::ResetAllInVideoSessionList()
 {
 	Locker lock(*m_pVideoSessionListMutex);
 
-	std::map<LongLong, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
+	std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
 
 	for (; videoSessionSearch != m_mVideoSessionList.end(); ++videoSessionSearch)
 	{
