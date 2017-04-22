@@ -26,6 +26,26 @@ typedef struct
     
 } VideoQuality;
 
+typedef struct
+{
+	int encoderType;
+	int decoderType;
+	
+	bool enableANR;
+	bool enableECM;
+	bool enableAGC;
+	bool bufferData;
+	bool enableMuxing;
+
+	bool adaptEncoderBitrate;
+	bool adaptEncoderComplexity;
+	bool adaptDecoderBitrate;
+	bool adaptDecoderComplexity;
+	
+	int headerType;
+	int packetType;
+} AudioSessionOptions;
+
 class CController
 {
 

@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\VideoEngineController\DecoderOpus.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketizer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
@@ -198,6 +199,7 @@
     <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\MuxHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\NoiseReducerProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\NaiveGain.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
@@ -261,6 +263,7 @@
     <ClInclude Include="..\..\VideoEngineController\DecoderOpus.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
@@ -299,6 +302,7 @@
     <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
+    <ClInclude Include="..\..\VideoEngineController\MuxHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\NoiseReducerInterface.h" />
     <ClInclude Include="..\..\VideoEngineController\NoiseReducerProvider.h" />
     <ClInclude Include="..\..\VideoEngineController\NaiveGain.h" />

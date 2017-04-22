@@ -59,7 +59,8 @@ m_nOpponentVideoWidth(-1),
 m_bAudioOnlyLive(bAudioOnlyLive),
 m_bVideoOnlyLive(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
-m_bSelfViewOnly(bSelfViewOnly)
+m_bSelfViewOnly(bSelfViewOnly),
+m_nFrameCount(0)
 
 {
 

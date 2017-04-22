@@ -9,6 +9,8 @@
 #include "AudioPacketizer.h"
 #include "AudioCallSession.h"
 #include "AudioMixer.h"
+#include "MuxHeader.h"
+
 #include "AudioEncoderInterface.h"
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"
@@ -454,12 +456,12 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 	bool bIsMuxed = false;
 	int iDataStartIndex, iDataEndIndex;
 	int iCallId = 0, nNumberOfBlocks;
-	std::vector<pair<int, int> > vMissingBlocks;
-
-	if (m_pAudioCallSession->m_AudioDecodedBuffer.GetQueueSize() != 0)
+	std::vector<std::pair<int, int> > vMissingBlocks;
+	MuxHeader oCalleeMuxHeader;
+	if (m_pAudioCallSession->m_PublisherBufferForMuxing.GetQueueSize() != 0)
 	{
 		bIsMuxed = true;
-		nLastDecodedFrameSizeInByte = m_pAudioCallSession->m_AudioDecodedBuffer.DeQueue(m_saAudioPrevDecodedFrame, nFrameNumber) * 2;	//#Magic
+		nLastDecodedFrameSizeInByte = m_pAudioCallSession->m_PublisherBufferForMuxing.DeQueue(m_saAudioPrevDecodedFrame, nFrameNumber, oCalleeMuxHeader) * 2;	//#Magic
 		LOG18("#18@# DEQUE data of size %d", nLastDecodedFrameSizeInByte);
 		m_pAudioMixer->reset(18, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 		
@@ -469,20 +471,13 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 		nNumberOfBlocks = 16;
 		int nMuxHeaderSize = 14;
 
-		memcpy(shMuxedData + (nMuxHeaderSize / 2), shPublisherData, 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	//3 instead of 6. since it is short.
+		MuxHeader oPublisherMuxHeader(iCallId, nPacketNumber, vMissingBlocks);
+		LOG18("#18@# -> PUB ID %lld CALLEE ID %lld", oPublisherMuxHeader.getCalleeId(), oCalleeMuxHeader.getCalleeId());
+		m_pAudioMixer->addAudioData((unsigned char*)shPublisherData, oPublisherMuxHeader); // this data should contains only the mux header
 
-		m_pAudioMixer->genCalleeChunkHeader((unsigned char*)shMuxedData, iDataStartIndex, iDataEndIndex,iCallId, nPacketNumber, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, nNumberOfBlocks, vMissingBlocks);
-
-		m_pAudioMixer->addAudioData((unsigned char*)shMuxedData); // this data should contains only the mux header
-
-		if ((nLastDecodedFrameSizeInByte - nMuxHeaderSize) == 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING) //Both must be 800
+		if (nLastDecodedFrameSizeInByte == 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING) //Both must be 800
 		{			
-			//iDataStartIndex = 0;
-			//iDataEndIndex = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING - 1;
-			//iCallId = 1;	//Callee
-			//nNumberOfBlocks = 16;
-			//AudioMixer::genCalleeChunkHeader((unsigned char*)m_saAudioPrevDecodedFrame, iDataStartIndex, iDataEndIndex, iCallId, nFrameNumber, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, nNumberOfBlocks, vMissingBlocks);
-			m_pAudioMixer->addAudioData((unsigned char*)m_saAudioPrevDecodedFrame); // this data should contains only the mux header
+			m_pAudioMixer->addAudioData((unsigned char*)m_saAudioPrevDecodedFrame, oCalleeMuxHeader); // this data should contains only the mux header
 			
 			nDataSizeInByte = m_pAudioMixer->getAudioData((unsigned char*)shMuxedData);
 		}
