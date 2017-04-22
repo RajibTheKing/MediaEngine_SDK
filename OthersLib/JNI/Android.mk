@@ -180,6 +180,10 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/NaiveGain.cpp \
 			../../../videoengine/VideoEngineController/WebRTCGain.cpp \
 			../../../videoengine/VideoEngineController/AudioGainInstanceProvider.cpp \
+			../../../videoengine/VideoEngineController/AudioAacDecoder.cpp \
+			../../../videoengine/VideoEngineController/AudioOpusDecoder.cpp \
+			../../../videoengine/VideoEngineController/AudioPCMDecoder.cpp \
+			../../../videoengine/VideoEngineController/AudioDecoderProvider.cpp \
 
 			
 
