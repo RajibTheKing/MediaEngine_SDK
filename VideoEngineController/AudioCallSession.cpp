@@ -499,3 +499,8 @@ int CAudioCallSession::GetRole()
 {
 	return m_iRole;
 }
+
+int CAudioCallSession::GetEntityType()
+{
+	return m_nEntityType;
+}

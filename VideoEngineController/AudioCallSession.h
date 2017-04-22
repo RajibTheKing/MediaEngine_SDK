@@ -111,6 +111,7 @@ public:
 	void SetLoudSpeaker(bool bOn);
 	void SetEchoCanceller(bool bOn);
 	bool getIsAudioLiveStreamRunning();
+	int GetEntityType();
 	bool m_bIsPublisher;
 #if 0	
 	void GetAudioSendToData(unsigned char * pAudioRawDataToSendMuxed, int &RawLengthMuxed, std::vector<int> &vRawDataLengthVectorMuxed,
