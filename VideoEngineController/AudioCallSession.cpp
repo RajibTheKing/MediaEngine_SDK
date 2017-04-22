@@ -53,9 +53,6 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
 	m_FriendID = llFriendID;
 
-	m_cAac = new CAac();
-	m_cAac->SetParameters(44100, 2);
-
 	m_iPrevRecvdSlotID = -1;
 	m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
 	m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
@@ -110,11 +107,6 @@ CAudioCallSession::~CAudioCallSession()
 	{
 		delete m_pFarEndProcessor;
 		m_pFarEndProcessor = NULL;
-	}
-	
-	if (m_cAac != nullptr){
-		delete m_cAac;
-		m_cAac = nullptr;
 	}
 
 #ifdef OPUS_ENABLED

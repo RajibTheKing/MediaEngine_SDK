@@ -13,7 +13,7 @@
 #include "LiveAudioDecodingQueue.h"
 #include "AudioNearEndDataProcessor.h"
 #include "AudioFarEndDataProcessor.h"
-
+#include "AudioDecoderInterface.h"
 
 #include <stdio.h>
 #include <string>
@@ -169,8 +169,6 @@ private:
     int m_iAudioVersionSelf;
 
 	int m_nCallInLiveType;
-
-	CAac *m_cAac;
 
 	SmartPointer<EchoCancellerInterface> m_pEcho;
 

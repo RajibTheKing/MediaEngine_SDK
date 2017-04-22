@@ -8,7 +8,7 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioDePacketizer.h"
 #include "AudioCodec.h"
-#include "Aac.h"
+#include "AudioDecoderInterface.h"
 
 class AudioGainInterface;
 class CAudioCallSession;
@@ -76,7 +76,7 @@ private:
 	short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
 	short m_saCalleeSentData[MAX_AUDIO_FRAME_Length];
 
-	CAac *m_cAac = nullptr;
+	SmartPointer<AudioDecoderInterface> m_cAacDecoder;
 
 	void StartDecodingThread();
 	static void* CreateAudioDecodingThread(void* param);

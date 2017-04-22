@@ -7,6 +7,7 @@
 #include "AudioMixer.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
+#include "AudioDecoderProvider.h"
 
 #include "GomGomGain.h"
 #include "AudioGainInstanceProvider.h"
@@ -58,8 +59,12 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 	m_ReceivingHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	m_pAudioDePacketizer = new AudioDePacketizer(m_pAudioCallSession);
 
-	m_cAac = new CAac();
-	m_cAac->SetParameters(44100, 2);
+	m_cAacDecoder = AudioDecoderProvider::GetAudioDecoder(AAC_Decoder);
+	if (m_cAacDecoder.get())
+	{
+		m_cAacDecoder->SetParameters(44100, 2);
+	}
+
 	m_pGomGomGain.reset(new GomGomGain());
 
 	StartDecodingThread();
@@ -90,12 +95,6 @@ CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
 	{
 		delete m_pLiveAudioParser;
 		m_pLiveAudioParser = NULL;
-	}
-
-	if (m_cAac)
-	{
-		delete m_cAac;
-		m_cAac = nullptr;
 	}
 }
 
@@ -275,8 +274,13 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 		if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)	//Only for channel
 		{
 			long long llNow = Tools::CurrentTimestamp();
-			m_cAac->DecodeFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame, m_nDecodedFrameSize);
-			LOG_AAC("$@@@@@@@@@--> AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
+			if (m_cAacDecoder.get()){
+				m_nDecodedFrameSize = m_cAacDecoder->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
+//				LOG_AAC("#aac# AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
+			}
+			else{
+				LOG_AAC("#aac# AAC decoder not exist.");
+			}
 		}
 		else
 		{
