@@ -19,7 +19,7 @@ public:
 
 	int Queue(unsigned char *ucaVideoPacketData, int nLength);
 	int DeQueue(unsigned char *ucaVideoPacketData);
-	void IncreamentIndex(int &irIndex);
+	void IncreamentIndex(int &riIndex);
 	int GetQueueSize();
 	void ResetBuffer();
 
