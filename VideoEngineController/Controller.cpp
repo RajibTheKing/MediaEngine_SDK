@@ -643,7 +643,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 	}
 }
 
-int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
+int CController::SetVideoEffect(const long long llFriendID, int nEffectStatus)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -659,7 +659,7 @@ int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 	}
 }
 
-void CController::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType)
+void CController::SetCallInLiveType(const long long llFriendID, int nCallInLiveType)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -695,7 +695,7 @@ void CController::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiv
 }
 
 
-int CController::TestVideoEffect(const IPVLongType llFriendID, int *param, int size)
+int CController::TestVideoEffect(const long long llFriendID, int *param, int size)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -1094,7 +1094,7 @@ void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFun
 	m_EventNotifier.SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int))
+void CController::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int))
 {
 	m_EventNotifier.SetNotifyClientWithNetworkStrengthNotificationCallback(callBackFunctionPointer);
 }
@@ -1104,7 +1104,7 @@ void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPoi
     m_EventNotifier.SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
+void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int))
 {
 	m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
 }

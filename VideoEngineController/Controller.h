@@ -57,11 +57,11 @@ public:
     int CheckDeviceCapability(const long long& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
     int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
-	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
+	int SetVideoEffect(const long long llFriendID, int nEffectStatus);
 
-	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
+	void SetCallInLiveType(const long long llFriendID, int nCallInLiveType);
 
-	int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
+	int TestVideoEffect(const long long llFriendID, int *param, int size);
 
 	void InterruptOccured(const long long lFriendID);
 	void InterruptOver(const long long lFriendID);
@@ -97,9 +97,9 @@ public:
 #endif
 
 	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
-	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
+	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
-	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
+	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
 
 
