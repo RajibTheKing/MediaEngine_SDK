@@ -6,8 +6,7 @@
 #include "LiveAudioParserForChannel.h"
 #include "AudioMixer.h"
 #include "InterfaceOfAudioVideoEngine.h"
-
-
+#include "MuxHeader.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -329,9 +328,14 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 			int iTotalBlocks = 16;
 			int iFrameSize = 800;
 			int iMuxHeaderSize = 14;
-			m_pAudioMixer->genCalleeChunkHeader((unsigned char*)tmpBuffer, iStartIndex, iEndIndex, iCalleeId, iCurrentPacketNumber, iFrameSize, iTotalBlocks, m_vFrameMissingBlocks);
+			/*m_pAudioMixer->genCalleeChunkHeader((unsigned char*)tmpBuffer, iStartIndex, iEndIndex, iCalleeId, iCurrentPacketNumber, iFrameSize, iTotalBlocks, m_vFrameMissingBlocks);
 			memcpy(tmpBuffer+ (iMuxHeaderSize / 2), pshSentFrame, nSentFrameSize* sizeof(short));
-			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(tmpBuffer, nSentFrameSize + (iMuxHeaderSize / 2), iCurrentPacketNumber);
+			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(tmpBuffer, nSentFrameSize + (iMuxHeaderSize / 2), iCurrentPacketNumber);*/
+
+
+			MuxHeader audioMuxHeader(iCalleeId, iCurrentPacketNumber, m_vFrameMissingBlocks);
+
+			m_pAudioCallSession->m_PublisherBufferForMuxing.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 		}
 
 		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());

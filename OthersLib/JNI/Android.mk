@@ -99,6 +99,8 @@ LOCAL_C_INCLUDES := \
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
 LOCAL_SRC_FILES := \
+			../../../videoengine/VideoEngineController/MuxHeader.cpp \
+			../../../videoengine/VideoEngineController/AudioShortBufferForPublisherFarEnd.cpp \
 			../../../videoengine/VideoEngineController/AudioPacketizer.cpp \
 			../../../videoengine/VideoEngineController/AudioDePacketizer.cpp \
 			../../../videoengine/VideoEngineController/VideoSockets.cpp \
