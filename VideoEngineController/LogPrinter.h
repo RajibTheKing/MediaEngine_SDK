@@ -1,5 +1,6 @@
-#ifndef _LOG_PRINTER_H_
-#define _LOG_PRINTER_H_
+
+#ifndef IPV_LOG_PRINTER_H
+#define IPV_LOG_PRINTER_H
 
 #define _CRT_SECURE_NO_WARNINGS
 

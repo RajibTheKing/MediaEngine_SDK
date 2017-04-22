@@ -1,6 +1,6 @@
 
-#ifndef _SENDING_BUFFER_H_
-#define _SENDING_BUFFER_H_
+#ifndef IPV_SENDING_BUFFER_H
+#define IPV_SENDING_BUFFER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

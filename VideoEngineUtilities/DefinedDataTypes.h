@@ -1,5 +1,6 @@
-#ifndef _DEFINED_DATA_TYPES_H_
-#define _DEFINED_DATA_TYPES_H_
+
+#ifndef IPV_DEFINED_DATA_TYPES_H
+#define IPV_DEFINED_DATA_TYPES_H
 
 #include <stdio.h>
 

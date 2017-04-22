@@ -1,6 +1,6 @@
 
-#ifndef _LOCK_HANDLER_H_
-#define _LOCK_HANDLER_H_
+#ifndef IPV_LOCK_HANDLER_H
+#define IPV_LOCK_HANDLER_H
 
 #include <stdio.h>
 #include <mutex>

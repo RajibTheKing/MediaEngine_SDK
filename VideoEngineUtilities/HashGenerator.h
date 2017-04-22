@@ -1,6 +1,7 @@
 
-#ifndef HASH_GENERATOR_H
-#define HASH_GENERATOR_H
+#ifndef IPV_HASH_GENERATOR_H
+#define IPV_HASH_GENERATOR_H
+
 #include <string>
 
 #include "AudioVideoEngineDefinitions.h"

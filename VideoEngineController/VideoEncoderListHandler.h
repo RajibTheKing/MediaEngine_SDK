@@ -1,5 +1,6 @@
-#ifndef _ENCODER_LIST_HANDLER_H_
-#define _ENCODER_LIST_HANDLER_H_
+
+#ifndef IPV_ENCODER_LIST_HANDLER_H
+#define IPV_ENCODER_LIST_HANDLER_H
 
 #include <stdio.h>
 #include <string>

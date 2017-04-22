@@ -2,8 +2,8 @@
 // Created by Rajib Chandra Das on 26/2/2017.
 //
 
-#ifndef _IDR_FRAME_INTERVAL_CONTROLLER_H_
-#define _IDR_FRAME_INTERVAL_CONTROLLER_H_
+#ifndef IPV_IDR_FRAME_INTERVAL_CONTROLLER_H
+#define IPV_IDR_FRAME_INTERVAL_CONTROLLER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

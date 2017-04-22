@@ -1,5 +1,5 @@
-#ifndef _EVENT_NOTIFIER_H_
-#define _EVENT_NOTIFIER_H_
+#ifndef IPV_EVENT_NOTIFIER_H
+#define IPV_EVENT_NOTIFIER_H
 
 #include <stdio.h>
 

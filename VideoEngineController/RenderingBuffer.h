@@ -1,6 +1,6 @@
 
-#ifndef _RENDERING_BUFFER_H_
-#define _RENDERING_BUFFER_H_
+#ifndef IPV_RENDERING_BUFFER_H
+#define IPV_RENDERING_BUFFER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

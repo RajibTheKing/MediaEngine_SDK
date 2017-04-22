@@ -1,6 +1,6 @@
 
-#ifndef _VIDEO_CALL_SESSION_H_
-#define _VIDEO_CALL_SESSION_H_
+#ifndef IPV_VIDEO_CALL_SESSION_H
+#define IPV_VIDEO_CALL_SESSION_H
 
 #include "Size.h"
 #include "VideoEncoder.h"

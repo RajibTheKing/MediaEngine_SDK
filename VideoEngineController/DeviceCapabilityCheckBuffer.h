@@ -1,6 +1,6 @@
 
-#ifndef _DEVICE_CAPABILITY_CHECK_BUFFER_H_
-#define _DEVICE_CAPABILITY_CHECK_BUFFER_H_
+#ifndef IPV_DEVICE_CAPABILITY_CHECK_BUFFER_H
+#define IPV_DEVICE_CAPABILITY_CHECK_BUFFER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

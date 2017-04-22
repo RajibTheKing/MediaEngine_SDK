@@ -1,5 +1,7 @@
-#ifndef ANDROIDTESTCLIENTVE_FTEST_PACKETHEADER_H
-#define ANDROIDTESTCLIENTVE_FTEST_PACKETHEADER_H
+
+#ifndef IPV_PACKET_HEADER_H
+#define IPV_PACKET_HEADER_H
+
 #include "Tools.h"
 #include "Size.h"
 #include "LogPrinter.h"

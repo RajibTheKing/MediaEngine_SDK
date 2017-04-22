@@ -1,9 +1,6 @@
-//
-// Created by MD MAKSUD HOSSAIN on 12/31/15.
-//
 
-#ifndef ANDROIDTESTCLIENTVE_FTEST_PAIRMAP_H
-#define ANDROIDTESTCLIENTVE_FTEST_PAIRMAP_H
+#ifndef IPV_PAIRMAP_H
+#define IPV_PAIRMAP_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

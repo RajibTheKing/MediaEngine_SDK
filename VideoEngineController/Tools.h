@@ -1,6 +1,6 @@
 
-#ifndef _TOOLS_H_
-#define _TOOLS_H_
+#ifndef IPV_TOOLS_H
+#define IPV_TOOLS_H
 
 #include <string>
 

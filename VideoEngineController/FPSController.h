@@ -1,9 +1,6 @@
-//
-// Created by ipvision on 1/2/2016.
-//
 
-#ifndef ANDROIDTESTCLIENTVE_FTEST_FPSCONTROLLER_H
-#define ANDROIDTESTCLIENTVE_FTEST_FPSCONTROLLER_H
+#ifndef IPV_FPS_CONTROLLER_H
+#define IPV_FPS_CONTROLLER_H
 
 
 #include "SmartPointer.h"

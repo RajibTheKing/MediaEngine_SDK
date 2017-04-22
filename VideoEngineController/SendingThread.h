@@ -1,6 +1,6 @@
 
-#ifndef _SENDING_THREAD_H_
-#define _SENDING_THREAD_H_
+#ifndef IPV_SENDING_THREAD_H
+#define IPV_SENDING_THREAD_H
 
 #include "Tools.h"
 #include "SmartPointer.h"

@@ -1,6 +1,6 @@
 
-#ifndef _VIDEO_ENCODER_H_
-#define _VIDEO_ENCODER_H_
+#ifndef IPV_VIDEO_ENCODER_H
+#define IPV_VIDEO_ENCODER_H
 
 #define _CRT_SECURE_NO_WARNINGS
 

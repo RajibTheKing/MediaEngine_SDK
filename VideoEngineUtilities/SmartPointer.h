@@ -1,5 +1,6 @@
-#ifndef _SAMART_POINTER_H_
-#define _SAMART_POINTER_H_
+
+#ifndef IPV_SAMART_POINTER_H
+#define IPV_SAMART_POINTER_H
 
 #include <boost/utility.hpp>
 #include <boost/smart_ptr.hpp>

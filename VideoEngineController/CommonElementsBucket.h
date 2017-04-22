@@ -1,5 +1,6 @@
-#ifndef _SHARED_BUCKET_H_
-#define _SHARED_BUCKET_H_
+
+#ifndef IPV_COMMON_ELEMENTS_BUCKET_H
+#define IPV_COMMON_ELEMENTS_BUCKET_H
 
 #include <stdio.h>
 

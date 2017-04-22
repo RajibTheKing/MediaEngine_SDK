@@ -1,9 +1,6 @@
-//
-// Created by ipvision on 10/23/2016.
-//
 
-#ifndef LIVESTREAMING_LIVERECEIVER_H
-#define LIVESTREAMING_LIVERECEIVER_H
+#ifndef IPV_LIVE_RECEIVER_H
+#define IPV_LIVE_RECEIVER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

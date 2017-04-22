@@ -1,5 +1,6 @@
-#ifndef VIDEO_HEADER_H
-#define VIDEO_HEADER_H
+
+#ifndef IPV_VIDEO_HEADER_H
+#define IPV_VIDEO_HEADER_H
 
 #define VLOG(a)     //CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 #include <iostream>

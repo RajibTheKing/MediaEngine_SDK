@@ -1,6 +1,6 @@
 
-#ifndef _CONTROLLER_H_
-#define _CONTROLLER_H_
+#ifndef IPV_CONTROLLER_H
+#define IPV_CONTROLLER_H
 
 #include <stdio.h>
 #include <string>

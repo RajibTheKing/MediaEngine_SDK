@@ -1,9 +1,6 @@
-//
-// Created by ipvision on 10/23/2016.
-//
 
-#ifndef LIVESTREAMING_LIVEVIDEODECODINGQUEUE_H
-#define LIVESTREAMING_LIVEVIDEODECODINGQUEUE_H
+#ifndef IPV_LIVE_VIDEO_DECODING_QUEUE_H
+#define IPV_LIVE_VIDEO_DECODING_QUEUE_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

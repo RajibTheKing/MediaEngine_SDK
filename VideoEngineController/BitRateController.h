@@ -1,9 +1,6 @@
-//
-// Created by ipvision on 2/6/2016.
-//
 
-#ifndef _BITRATE_CONTROLLER_H_
-#define _BITRATE_CONTROLLER_H_
+#ifndef IPV_BITRATE_CONTROLLER_H
+#define IPV_BITRATE_CONTROLLER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
