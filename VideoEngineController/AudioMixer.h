@@ -1,11 +1,12 @@
 #include "AudioMacros.h"
-#include "vector"
+#include <vector>
+#include "MuxHeader.h"
 
 class AudioMixer {
 public:
 	AudioMixer(int m_iNumberOfBitsPerSample, int iFrameSize);
 	~AudioMixer();
-	void addAudioData(unsigned char* uchCalleeAudio);
+	void addAudioData(unsigned char* uchCalleeAudio, MuxHeader &header);
 	int getAudioData(unsigned char* uchMixedAudioData);
 	int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, long long calleeId, std::vector<std::pair<int, int>> &vMissingBlock);
 	void reset(int iNumberOfBitsPerSample, int iFrameSize);

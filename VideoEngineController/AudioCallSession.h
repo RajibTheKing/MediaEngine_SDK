@@ -13,6 +13,7 @@
 #include "LiveAudioDecodingQueue.h"
 #include "AudioNearEndDataProcessor.h"
 #include "AudioFarEndDataProcessor.h"
+#include "AudioShortBufferForPublisherFarEnd.h"
 
 
 #include <stdio.h>
@@ -122,8 +123,10 @@ public:
     int GetServiceType();
 
 	int m_iNextPacketType;
-	CAudioShortBuffer m_AudioEncodingBuffer, m_AudioDecodedBuffer;
+	CAudioShortBuffer m_AudioEncodingBuffer;
 	CAudioShortBuffer  m_ViewerInCallSentDataQueue;
+
+	AudioShortBufferForPublisherFarEnd m_PublisherBufferForMuxing;
 	int m_iPrevRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot;
 #ifdef USE_AGC
