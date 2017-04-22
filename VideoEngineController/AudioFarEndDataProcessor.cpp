@@ -243,15 +243,6 @@ void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 	}
 }
 
-bool CAudioFarEndDataProcessor::IsPacketNumberProcessable(int &iPacketNumber)
-{
-	if (false == m_bIsLiveStreamingRunning && m_iLastDecodedPacketNumber >= iPacketNumber) {
-		PRT("@@@@########Skipped Packet: %d", iPacketNumber);
-		return false;
-	}
-	return true;
-}
-
 void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType)
 {
 	m_iLastDecodedPacketNumber = iPacketNumber;
@@ -638,20 +629,6 @@ void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamPublisher()
 			return;
 		}
 
-		if (!IsPacketNumberProcessable(iPacketNumber))
-		{
-			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
-			return;
-		}
-
-		//bool bIs18BitData = true;
-		//
-		////GetCallDatr;
-		//unsigned char *pDataToBeRemoved;
-		//int iTempId = 0;
-
-		//m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, pDataToBeRemoved, iTempId);	//Need To check Casting.
-
 		bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 		llNow = Tools::CurrentTimestamp();
 		bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
@@ -728,33 +705,11 @@ void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamViewer()
 
 		LOG18("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 
-
-		//int iInd = nCurrentPacketHeaderLength;
-		//LOG18("#18#FE#Viewer #beg %d %d %d %d %d", (int)m_ucaDecodingFrame[iInd], (int)m_ucaDecodingFrame[iInd+1],
-		//	(int)m_ucaDecodingFrame[iInd+2], (int)m_ucaDecodingFrame[iInd+3], (int)m_ucaDecodingFrame[iInd+4]);
-		//iInd = nCurrentPacketHeaderLength + nFrameLength - 1;
-		//LOG18("#18#FE#Viewer #end %d %d %d %d %d", (int)m_ucaDecodingFrame[iInd], (int)m_ucaDecodingFrame[iInd - 1],
-		// (int)m_ucaDecodingFrame[iInd - 2], (int)m_ucaDecodingFrame[iInd - 3], (int)m_ucaDecodingFrame[iInd - 4]);
-
 		if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 		{
 			HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
 			return;
 		}
-
-		if (!IsPacketNumberProcessable(iPacketNumber))
-		{
-			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
-			return;
-		}
-
-		//bool bIs18BitData = true;
-		//
-		////GetCallDatr;
-		//unsigned char *pDataToBeRemoved;
-		//int iTempId = 0;
-
-		//m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, pDataToBeRemoved, iTempId);	//Need To check Casting.
 
 		bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 		llNow = Tools::CurrentTimestamp();
@@ -890,20 +845,6 @@ void CAudioFarEndDataProcessor::FarEndProcedureChannel()
 			return;
 		}
 
-		if (!IsPacketNumberProcessable(iPacketNumber))
-		{
-			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
-			return;
-		}
-
-		//bool bIs18BitData = true;
-		//
-		////GetCallDatr;
-		//unsigned char *pDataToBeRemoved;
-		//int iTempId = 0;
-
-		//m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, pDataToBeRemoved, iTempId);	//Need To check Casting.
-
 		bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 		llNow = Tools::CurrentTimestamp();
 		bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
@@ -975,12 +916,6 @@ void CAudioFarEndDataProcessor::FarEndProcedureAudioCall()
 
 		HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 		
-		if (!IsPacketNumberProcessable(iPacketNumber))
-		{
-			HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE ON PACKET NUMBER");
-			return;
-		}
-
 		if (!IsPacketTypeSupported(nCurrentAudioPacketType))
 		{
 			HITLER("XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
