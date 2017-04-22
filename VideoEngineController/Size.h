@@ -42,7 +42,7 @@
 #define LOW_QUALITY_FPS 15
 
 #define LOW_FRAME_RATE 25
-#define HIGH_FRAME_RATE 50
+#define HIGH_FRAME_RATE 45
 
 #define BLANK_DATA_MOOD true
 #define VIDEO_DATA_MOOD false
