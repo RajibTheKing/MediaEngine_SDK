@@ -9,7 +9,7 @@ public:
 
 	virtual bool SetParameters(int sampleRate, int numberOfChannels) = 0;
 
-	virtual int decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer) = 0;
+	virtual int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer) = 0;
 
 	virtual ~AudioDecoderInterface() { }
 };
