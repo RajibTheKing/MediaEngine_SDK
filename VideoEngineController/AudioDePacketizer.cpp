@@ -53,11 +53,7 @@ bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int i
 				return true;
 			}
 		}
-		else if(m_iPreviousPacketNumber < iPacketNumber){
-			if (m_iBlockOkayFlag && m_pAudioCallSession->getIsAudioLiveStreamRunning() && m_pAudioCallSession->GetRole() == PUBLISHER_IN_CALL)
-			{ 
-				SentIncompleteFrame(m_iPreviousPacketNumber, llNow, llLastTime);
-			}				
+		else if(m_iPreviousPacketNumber < iPacketNumber){			
 			m_iBlockOkayFlag = 0;
 			memset(m_uchAudioStorageBuffer, 0, nPacketLength);
 			m_iPreviousPacketNumber = iPacketNumber;
