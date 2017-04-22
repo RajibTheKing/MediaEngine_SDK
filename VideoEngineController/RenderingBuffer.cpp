@@ -30,6 +30,7 @@ int CRenderingBuffer::Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFram
 {
     if(m_nQueueSize>=MAX_VIDEO_RENDERER_BUFFER_SIZE)
         printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
+
 	Locker lock(*m_pRenderingBufferMutex);
     
 	memcpy(m_uc2aDecodedVideoDataBuffer[m_iPushIndex], ucaDecodedVideoFrameData, nLength);
@@ -85,7 +86,7 @@ int CRenderingBuffer::DeQueue(int &irFrameNumber, long long &llrCaptureTimeDiffe
 		memcpy(ucaDecodedVideoFrameData, m_uc2aDecodedVideoDataBuffer[m_iPopIndex], nLength);
 
 		llrCaptureTimeDifference = m_llaBufferCaptureTimeDifferences[m_iPopIndex];
-		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];
+		nrTimeDifferenceInQueue = (int)(m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex]);
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;
