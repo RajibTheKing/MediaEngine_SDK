@@ -326,7 +326,7 @@ void CVideoEncoder::SetNetworkType(int nNetworkType)
 
 int CVideoEncoder::SetMaxBitrate(int nBitRate)
 {
-	nBitRate = nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR;
+	nBitRate = (int)(nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
 
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
     
@@ -336,7 +336,7 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
     if(nTargetBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE) 
 		nTargetBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
 
-	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
+	SBitrateInfo maxEncoderBitRateInfo;
 
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
 	maxEncoderBitRateInfo.iBitrate = nTargetBitRate;
