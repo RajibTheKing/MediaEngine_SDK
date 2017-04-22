@@ -1,10 +1,12 @@
 #ifndef AUDIO_ENCODER_PROVIDER_H
 #define AUDIO_ENCODER_PROVIDER_H
 
+#include "SmartPointer.h"
+#include "AudioVideoEngineDefinitions.h"
 
-#include "AudioEncoderInterface.h"
-#include "AudioCallSession.h"
-
+class CAudioCallSession;
+class CCommonElementsBucket;
+class AudioEncoderInterface;
 
 enum AudioEncoderType
 {
@@ -17,7 +19,7 @@ class AudioEncoderProvider
 {
 public:
 
-	static AudioEncoderInterface* GetAudioEncoder(AudioEncoderType audioEncoderType, CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID);
+	static SmartPointer<AudioEncoderInterface> GetAudioEncoder(AudioEncoderType audioEncoderType, CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID);
 
 };
 

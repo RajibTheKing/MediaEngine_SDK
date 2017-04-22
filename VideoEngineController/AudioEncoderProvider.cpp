@@ -1,23 +1,28 @@
 #include "AudioEncoderProvider.h"
+
 #include "EncoderOpus.h"
 #include "EncoderPCM.h"
 
 
-
-AudioEncoderInterface* AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType, CCommonElementsBucket* sharedObject = nullptr, CAudioCallSession * AudioCallSession = nullptr, LongLong llfriendID = -1)
+SmartPointer<AudioEncoderInterface> AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType, CCommonElementsBucket* sharedObject = nullptr, CAudioCallSession * AudioCallSession = nullptr, LongLong llfriendID = -1)
 {
+	SmartPointer<AudioEncoderInterface> pInstance;
+
 	switch (audioEncoderType)
 	{
 	case Opus_Encoder:
-		return new EncoderOpus(sharedObject, AudioCallSession, llfriendID);
+		pInstance.reset(new EncoderOpus(sharedObject, AudioCallSession, llfriendID));
+		break;
 
 	case PCM_Encoder:
-		return new EncoderPCM();
+		pInstance.reset(new EncoderPCM());
+		break;
 
 	default:
-		return nullptr;
+		break;
 	}
 
+	return pInstance;
 }
 
 

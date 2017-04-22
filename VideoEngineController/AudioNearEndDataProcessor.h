@@ -14,6 +14,7 @@ class CAudioShortBuffer;
 class CAudioCodec;
 class AudioMixer;
 
+class AudioEncoderInterface;
 class NoiseReducerInterface;
 
 class CAudioNearEndDataProcessor
@@ -62,7 +63,7 @@ private:
 	LongLong m_llMaxAudioPacketNumber;
 	LongLong m_llEncodingTimeStampOffset;
 
-	CAudioCodec *m_pAudioCodec;
+	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 	CAudioCallSession *m_pAudioCallSession = nullptr;

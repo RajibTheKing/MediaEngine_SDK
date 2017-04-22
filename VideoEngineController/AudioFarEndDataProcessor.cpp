@@ -8,6 +8,8 @@
 #include "InterfaceOfAudioVideoEngine.h"
 
 #include "AudioDecoderProvider.h"
+#include "AudioEncoderInterface.h"
+#include "AudioDecoderInterface.h"
 
 #include "GomGomGain.h"
 #include "AudioGainInstanceProvider.h"
@@ -255,14 +257,10 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 	LOGEF("Role %d, Before decode", m_iRole);
 	if (!m_bIsLiveStreamingRunning)
 	{
-#ifdef OPUS_ENABLED
-		m_nDecodedFrameSize = m_pAudioCallSession->GetAudioCodec()->decodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
+
+		m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
 		ALOG("#A#DE#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(iPacketNumber));
 		LOGEF("Role %d, done decode", m_iRole);
-
-#else
-		m_nDecodedFrameSize = m_pG729CodecNative->Decode(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
-#endif
 
 		m_pAudioCallSession->m_pRecorderGain.get() ? m_pAudioCallSession->m_pRecorderGain->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize) : 0;
 		
@@ -534,10 +532,10 @@ void CAudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlot
 			m_iReceivedPacketsInCurrentSlot = 0;
 
 			if (m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()) {
-				m_pAudioCallSession->GetAudioCodec()->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+				m_pAudioCallSession->GetAudioEncoder()->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 			}
-			else if (m_pAudioCallSession->GetAudioCodec()->GetCurrentBitrateOpus() != AUDIO_BITRATE_INIT){
-				m_pAudioCallSession->GetAudioCodec()->SetBitrateOpus(AUDIO_BITRATE_INIT);
+			else if (m_pAudioCallSession->GetAudioEncoder()->GetCurrentBitrate() != AUDIO_BITRATE_INIT){
+				m_pAudioCallSession->GetAudioEncoder()->SetBitrate(AUDIO_BITRATE_INIT);
 			}
 		}
 		m_iReceivedPacketsInCurrentSlot++;

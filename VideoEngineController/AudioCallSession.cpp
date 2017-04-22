@@ -20,6 +20,10 @@
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
 
+#include "AudioEncoderProvider.h"
+#include "AudioDecoderProvider.h"
+#include "AudioEncoderInterface.h"
+
 #ifdef USE_VAD
 #include "Voice.h"
 #endif
@@ -109,12 +113,6 @@ CAudioCallSession::~CAudioCallSession()
 		m_pFarEndProcessor = NULL;
 	}
 
-#ifdef OPUS_ENABLED
-	delete m_pAudioCodec;
-#else
-	delete m_pG729CodecNative;
-#endif
-
 #ifdef USE_VAD
 	delete m_pVoice;
 #endif
@@ -134,14 +132,10 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
-	//this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket);
+	this->m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(Opus_Encoder, m_pCommonElementsBucket, this, llFriendID);
+	m_pAudioEncoder->CreateAudioEncoder();
 
-	//m_pAudioCodec->CreateAudioEncoder();
-
-	//m_pAudioDecoder->CreateAudioDecoder();
-
-	this->m_pAudioCodec = new CAudioCodec(m_pCommonElementsBucket, this, llFriendID);
-	m_pAudioCodec->CreateAudioEncoder();
+	this->m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(Opus_Decoder);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
@@ -387,12 +381,6 @@ int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingA
 {
 	return m_pFarEndProcessor->DecodeAudioData(nOffset, pucaDecodingAudioData, unLength, numberOfFrames, frameSizes, vMissingFrames);
 }
-
-CAudioCodec* CAudioCallSession::GetAudioCodec()
-{
-	return m_pAudioCodec;
-}
-
 
 #ifdef FIRE_ENC_TIME
 int encodingtimetimes = 0, cumulitiveenctime = 0;

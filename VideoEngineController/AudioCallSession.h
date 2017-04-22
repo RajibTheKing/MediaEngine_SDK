@@ -2,8 +2,6 @@
 #ifndef _AUDIO_CALL_SESSION_H_
 #define _AUDIO_CALL_SESSION_H_
 
-#define OPUS_ENABLED
-
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
 #include "LockHandler.h"
@@ -13,28 +11,19 @@
 #include "LiveAudioDecodingQueue.h"
 #include "AudioNearEndDataProcessor.h"
 #include "AudioFarEndDataProcessor.h"
-#include "AudioDecoderInterface.h"
 
 #include <stdio.h>
 #include <string>
 #include <map>
 #include <stdlib.h>
 #include <vector>
+#include <thread>
 
 
 //#define LOCAL_SERVER_LIVE_CALL
 #ifdef LOCAL_SERVER_LIVE_CALL
 #include "VideoSockets.h"
 #endif
-
-#include "Aac.h"
-
-#ifdef OPUS_ENABLED
-#include "AudioCodec.h"
-#else
-#include "G729CodecNative.h"
-#endif
-
 
 #define AUDIO_CALL_VERSION  0
 #define AUDIO_LIVE_VERSION  0
@@ -62,13 +51,13 @@ static string colon = "ALOG:";
 class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioCodec;
-class CAac;
 class AudioDePacketizer;
 class CAudioFarEndDataProcessor;
 
+class AudioEncoderInterface;
+class AudioDecoderInterface;
 class EchoCancellerInterface;
 class NoiseReducerInterface;
-
 class AudioGainInterface;
 
 #ifdef USE_VAD
@@ -93,7 +82,15 @@ public:
 	void SetCallInLiveType(int nCallInLiveType);
 	long long GetBaseOfRelativeTime();
 
-    CAudioCodec* GetAudioCodec();
+	SmartPointer<AudioEncoderInterface> CAudioCallSession::GetAudioEncoder()
+	{
+		return m_pAudioEncoder;
+	}
+
+	SmartPointer<AudioDecoderInterface> CAudioCallSession::GetAudioDecoder()
+	{
+		return m_pAudioDecoder;
+	}
 
 	SmartPointer<NoiseReducerInterface> GetNoiseReducer()
 	{
@@ -174,14 +171,11 @@ private:
 
 	SmartPointer<NoiseReducerInterface> m_pNoise;
 
+	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
+	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
+
 #ifdef USE_VAD
 	CVoice *m_pVoice;
-#endif
-
-#ifdef OPUS_ENABLED
-	CAudioCodec *m_pAudioCodec = nullptr;
-#else
-	G729CodecNative *m_pG729CodecNative;
 #endif
 
 public: 

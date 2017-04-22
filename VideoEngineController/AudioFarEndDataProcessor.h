@@ -8,7 +8,6 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioDePacketizer.h"
 #include "AudioCodec.h"
-#include "AudioDecoderInterface.h"
 
 class AudioGainInterface;
 class CAudioCallSession;
@@ -16,12 +15,12 @@ class AudioPacketizer;
 class CCommonElementsBucket;
 class AudioPacketHeader;
 class CAudioShortBuffer;
-//class CAudioCodec;
 class Tools;
 class CAudioByteBuffer;
 class GomGomGain;
 class ILiveAudioParser;
 class AudioMixer;
+class AudioDecoderInterface;
 
 class CAudioFarEndDataProcessor
 {

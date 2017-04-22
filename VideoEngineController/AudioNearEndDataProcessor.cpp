@@ -9,7 +9,7 @@
 #include "AudioPacketizer.h"
 #include "AudioCallSession.h"
 #include "AudioMixer.h"
-
+#include "AudioEncoderInterface.h"
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"
 
@@ -35,7 +35,7 @@ m_llLastChunkLastFrameRT(-1),
 m_llLastFrameRT(0)
 {
 	m_pAudioEncodingMutex.reset(new CLockHandler);
-	m_pAudioCodec = pAudioCallSession->GetAudioCodec();
+	m_pAudioEncoder = pAudioCallSession->GetAudioEncoder();
 
 	//TODO: We shall remove the AudioSession instance from Near End 
 	//and shall pass necessary objects to it, e.g. Codec, Noise, Gain
@@ -255,11 +255,11 @@ void CAudioNearEndDataProcessor::AudioCallNearendProcedure(){
 		}
 
 		long long llEncodingTime, llTimeBeforeEncoding = Tools::CurrentTimestamp();
-		m_nEncodedFrameSize = m_pAudioCodec->encodeAudio(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
+		m_nEncodedFrameSize = m_pAudioEncoder->EncodeAudio(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
 
 		//ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 		llEncodingTime = Tools::CurrentTimestamp() - llTimeBeforeEncoding;
-		m_pAudioCodec->DecideToChangeComplexity(llEncodingTime);
+		m_pAudioEncoder->DecideToChangeComplexity(llEncodingTime);
 
 
 		int iSlotID = 0;
