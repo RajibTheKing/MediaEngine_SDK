@@ -15,11 +15,11 @@ class CVideoEncoder
 {
 public:
 
-	CVideoEncoder(CCommonElementsBucket* pSharedObject, LongLong llfriendID);
+	CVideoEncoder(CCommonElementsBucket* pSharedObject, long long llfriendID);
 	~CVideoEncoder();
 
 	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
-	int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData, bool isForceIFrame);
+	int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData, bool bIsForceIFrame);
 
     int SetBitrate(int nBitRate);
     void SetNetworkType(int nNetworkType);
@@ -35,13 +35,12 @@ private:
 	int m_nMaxBitRate;
 	int m_nBitRate;
     int m_nNetworkType;
+	long long m_llfriendID;
 
 	Tools m_Tools; 
 
-	LongLong m_lfriendID;
-
-	ISVCEncoder* m_pSVCVideoEncoder;
-	CCommonElementsBucket* m_pCommonElementsBucket;
+	ISVCEncoder* m_pcSVCVideoEncoder;
+	CCommonElementsBucket* m_pcCommonElementsBucket;
 
 protected:
 
