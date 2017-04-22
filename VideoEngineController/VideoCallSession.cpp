@@ -400,7 +400,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	m_BitRateController->SetOwnNetworkType(iNetworkType);
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 281");
-	//CreateAndSendMiniPacket(iNetworkType, __NETWORK_INFO_PACKET_TYPE);
+	//CreateAndSendMiniPacket(iNetworkType, NETWORK_INFO_PACKET_TYPE);
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 282");
 
@@ -476,17 +476,17 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 326");
-	unsigned char uchPacketType = in_data[__PACKET_TYPE_INDEX];
-	if(uchPacketType < __MIN_PACKET_TYPE || __MAX_PACKET_TYPE < uchPacketType)
+	unsigned char uchPacketType = in_data[PACKET_TYPE_INDEX];
+	if(uchPacketType < MIN_PACKET_TYPE || MAX_PACKET_TYPE < uchPacketType)
 		return false;
 
 
-	if (__BITRATE_CONTROLL_PACKET_TYPE == uchPacketType || __NETWORK_INFO_PACKET_TYPE == uchPacketType || __IDR_FRAME_CONTROL_INFO_TYPE == uchPacketType) // It is a minipacket
+	if (BITRATE_CONTROLL_PACKET_TYPE == uchPacketType || NETWORK_INFO_PACKET_TYPE == uchPacketType || IDR_FRAME_CONTROL_INFO_TYPE == uchPacketType) // It is a minipacket
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 334");
 		m_pMiniPacketQueue->Queue(in_data, in_size);
 	}	
-	else if (__VIDEO_PACKET_TYPE == uchPacketType)
+	else if (VIDEO_PACKET_TYPE == uchPacketType)
 	{
         /*if(bSelfData == false && m_bResolutionNegotiationDone == false)
         {
@@ -516,7 +516,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 //				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
-				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, __BITRATE_CONTROLL_PACKET_TYPE);
+				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_CONTROLL_PACKET_TYPE);
 			}
 
 			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % m_nCallFPS);
@@ -531,7 +531,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 378  in_size= " + m_Tools.IntegertoStringConvert(in_size));
 	}
-	else if (__NEGOTIATION_PACKET_TYPE == uchPacketType)
+	else if (NEGOTIATION_PACKET_TYPE == uchPacketType)
 	{
 		m_pVideoPacketQueue->Queue(in_data, in_size);
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 383");
@@ -739,11 +739,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
     
 	CVideoHeader PacketHeader;
 
-	if (nMiniPacketType == __BITRATE_CONTROLL_PACKET_TYPE)
+	if (nMiniPacketType == BITRATE_CONTROLL_PACKET_TYPE)
 	{
-		//PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
+		//PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE,			//packetType
+		PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
 									uchVersion,									//VersionCode
 									VIDEO_HEADER_LENGTH,						//HeaderLength
 									0,											//FPSByte
@@ -765,11 +765,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
         PacketHeader.ShowDetails("BtratePacket SendingSide: ");
 	}
-	else if (nMiniPacketType == __NETWORK_INFO_PACKET_TYPE)
+	else if (nMiniPacketType == NETWORK_INFO_PACKET_TYPE)
 	{
-		//PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
+		//PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE,				//packetType
+		PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
 										uchVersion,								//VersionCode
 										VIDEO_HEADER_LENGTH,					//HeaderLength
 										0,										//FPSByte
@@ -805,7 +805,7 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
     CVideoHeader PacketHeader;
     unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
     
-    PacketHeader.setPacketHeader(__IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
+    PacketHeader.setPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
                                  uchVersion,							//VersionCode
                                  VIDEO_HEADER_LENGTH,					//HeaderLength
                                  0,										//FPSByte

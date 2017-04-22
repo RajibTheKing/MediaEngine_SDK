@@ -79,11 +79,11 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
 
     if(bIsDummy) 
 	{
-		/*m_cPacketHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,
+		/*m_cPacketHeader.setPacketHeader(NEGOTIATION_PACKET_TYPE,
                                         uchOwnVersion,
                                         0, 0, 0, unCaptureTimeDifference, 0, 0,
                                         nOwnQualityLevel, 0, nNetworkType);*/
-		m_cVideoHeader.setPacketHeader(__NEGOTIATION_PACKET_TYPE,				//packetType
+		m_cVideoHeader.setPacketHeader(NEGOTIATION_PACKET_TYPE,				//packetType
 										uchOwnVersion,							//VersionCode
 										VIDEO_HEADER_LENGTH,					//HeaderLength
 										0,										//FPSByte
@@ -120,7 +120,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         int nPacketNumber = 0;
         int nNumberOfPackets = 1;
         
-        m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
+        m_cVideoHeader.setPacketHeader(VIDEO_PACKET_TYPE,             //packetType
                                        uchOwnVersion,                   //VersionCode
                                        VIDEO_HEADER_LENGTH,             //HeaderLength
                                        0,                               //FPSByte
@@ -142,7 +142,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         
         m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
         
-        /* m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+        /* m_cPacketHeader.setPacketHeader(VIDEO_PACKET_TYPE,
                                             uchSendVersion,
                                             iFrameNumber,
                                             nNumberOfPackets,
@@ -188,7 +188,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
             if (nPacketizedDataLength + m_nPacketSize > unLength)
                 m_nPacketSize = unLength - nPacketizedDataLength;
             
-            /*m_cPacketHeader.setPacketHeader(__VIDEO_PACKET_TYPE,
+            /*m_cPacketHeader.setPacketHeader(VIDEO_PACKET_TYPE,
                                             uchSendVersion,
                                             iFrameNumber,
                                             nNumberOfPackets,
@@ -201,7 +201,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
                                             nNetworkType);
 											*/
 
-			m_cVideoHeader.setPacketHeader(__VIDEO_PACKET_TYPE,             //packetType
+			m_cVideoHeader.setPacketHeader(VIDEO_PACKET_TYPE,             //packetType
                                            uchSendVersion,                  //VersionCode
 											VIDEO_HEADER_LENGTH,             //HeaderLength
 											0,                               //FPSByte
