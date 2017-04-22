@@ -208,7 +208,7 @@ void CSendingThread::SendingThreadProcedure()
 	LongLong lFriendID = m_lfriendID;
 	int startFraction = SIZE_OF_INT_MINUS_8;
 	int fractionInterval = BYTE_SIZE;
-	int fpsSignal, frameNumber, packetNumber;
+	int frameNumber, packetNumber;
 	//CPacketHeader packetHeader;
 	CVideoHeader packetHeader;
 	std::vector<int> vAudioDataLengthVector;
@@ -491,7 +491,7 @@ void CSendingThread::SendingThreadProcedure()
 					}
 				}
 				
-				int diff = timeNow - m_nTimeStampOfChunck;
+				int diff = (int)(timeNow - m_nTimeStampOfChunck);
 
 				LOGSS("##SS## even m_nTimeStampOfChunck %lld diff %d", m_nTimeStampOfChunck, diff);
 
