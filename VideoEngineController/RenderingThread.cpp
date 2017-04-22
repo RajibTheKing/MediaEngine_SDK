@@ -95,11 +95,10 @@ void CVideoRenderingThread::RenderingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoRenderingThread::RenderingThreadProcedure() started RenderingThreadProcedure method");
 
 	Tools toolsObject;
-	int frameSize, nFrameNumber, intervalTime;
+	int frameSize, nFrameNumber;
 	long long nTimeStampDiff;
-	long long currentFrameTime, decodingTime, firstFrameEncodingTime;
+	long long currentFrameTime, firstFrameEncodingTime;
 	int videoHeight, videoWidth;
-	long long currentTimeStamp;
 	long long prevFrameTimeStamp = 0;
 	int currentTimeGap = 52;
 	int prevTimeStamp = 0;
