@@ -155,11 +155,7 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/AudioPacketHeader.cpp \
 			../../../videoengine/VideoEngineController/AudioHeaderCommon.cpp \
 			../../../videoengine/VideoEngineController/AudioFileCodec.cpp \
-			../../../videoengine/VideoEngineController/Noise.cpp \
 			../../../videoengine/VideoEngineController/Voice.cpp \
-			../../../videoengine/VideoEngineController/Gain.cpp \
-			../../../videoengine/VideoEngineController/Echo.cpp \
-			../../../videoengine/VideoEngineController/GomGomGain.cpp \
 			../../../videoengine/VideoEngineController/AudioMixer.cpp \
 			../../../videoengine/VideoEngineController/LiveAudioParserForCallee.cpp \
 			../../../videoengine/VideoEngineController/LiveAudioParserForChannel.cpp \
@@ -173,19 +169,23 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
 			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
 			../../../videoengine/VideoEngineUtilities/VideoEffects.cpp \
-			../../../videoengine/VideoEngineController/EchoCancellerProvider.cpp \
-			../../../videoengine/VideoEngineController/SpeexEchoCanceller.cpp \
-			../../../videoengine/VideoEngineController/WebRTCEchoCanceller.cpp \
-			../../../videoengine/VideoEngineController/NaiveGain.cpp \
-			../../../videoengine/VideoEngineController/WebRTCGain.cpp \
-			../../../videoengine/VideoEngineController/AudioGainInstanceProvider.cpp \
+			../../../videoengine/VideoEngineController/EncoderOpus.cpp \
+			../../../videoengine/VideoEngineController/EncoderPCM.cpp \
+			../../../videoengine/VideoEngineController/AudioEncoderProvider.cpp \
 			../../../videoengine/VideoEngineController/DecoderAAC.cpp \
 			../../../videoengine/VideoEngineController/DecoderOpus.cpp \
 			../../../videoengine/VideoEngineController/DecoderPCM.cpp \
 			../../../videoengine/VideoEngineController/AudioDecoderProvider.cpp \
-			../../../videoengine/VideoEngineController/EncoderPCM.cpp \
-			../../../videoengine/VideoEngineController/EncoderOpus.cpp \
-			../../../videoengine/VideoEngineController/AudioEncoderProvider.cpp \
+			../../../videoengine/VideoEngineController/WebRTCNoiseReducer.cpp \
+			../../../videoengine/VideoEngineController/NoiseReducerProvider.cpp \
+			../../../videoengine/VideoEngineController/WebRTCGain.cpp \
+			../../../videoengine/VideoEngineController/GomGomGain.cpp \
+			../../../videoengine/VideoEngineController/NaiveGain.cpp \
+			../../../videoengine/VideoEngineController/AudioGainInstanceProvider.cpp \
+			../../../videoengine/VideoEngineController/SpeexEchoCanceller.cpp \
+			../../../videoengine/VideoEngineController/WebRTCEchoCanceller.cpp \
+			../../../videoengine/VideoEngineController/EchoCancellerProvider.cpp \
+
 
 			
 
