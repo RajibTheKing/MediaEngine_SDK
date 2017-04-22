@@ -20,12 +20,12 @@ public:
 
 	int CreateVideoDecoder();
 	int SetDecoderOption(int nKey, int nValue);
-	int DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth);
+	int DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth);
 
 private:
 
-	CCommonElementsBucket* m_pCommonElementsBucket;
-	ISVCDecoder* m_pSVCVideoDecoder;
+	CCommonElementsBucket* m_pcCommonElementsBucket;
+	ISVCDecoder* m_pcSVCVideoDecoder;
 
 };
 

@@ -8,8 +8,8 @@
 
 CVideoDecoder::CVideoDecoder(CCommonElementsBucket* pSharedObject) :
 
-m_pCommonElementsBucket(pSharedObject),
-m_pSVCVideoDecoder(NULL)
+m_pcCommonElementsBucket(pSharedObject),
+m_pcSVCVideoDecoder(NULL)
 
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecoder::CVideoDecoder video decoder created");
@@ -17,11 +17,11 @@ m_pSVCVideoDecoder(NULL)
 
 CVideoDecoder::~CVideoDecoder()
 {
-    if(NULL != m_pSVCVideoDecoder)
+	if (NULL != m_pcSVCVideoDecoder)
     {
-        m_pSVCVideoDecoder->Uninitialize();
+		m_pcSVCVideoDecoder->Uninitialize();
         
-        m_pSVCVideoDecoder = NULL;
+		m_pcSVCVideoDecoder = NULL;
     }
 }
 
@@ -29,9 +29,9 @@ int CVideoDecoder::CreateVideoDecoder()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoDecoder::CreateVideoDecoder");
 
-	long nReturnedValueFromDecoder = WelsCreateDecoder(&m_pSVCVideoDecoder);
+	long nReturnedValueFromDecoder = WelsCreateDecoder(&m_pcSVCVideoDecoder);
 
-	if (nReturnedValueFromDecoder != 0 || NULL == m_pSVCVideoDecoder)
+	if (nReturnedValueFromDecoder != 0 || NULL == m_pcSVCVideoDecoder)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "Unable to create OpenH264 decoder");
 
@@ -39,8 +39,8 @@ int CVideoDecoder::CreateVideoDecoder()
 	}
 
 	SDecodingParam decoderParemeters = { 0 };
-
 	SVideoProperty sVideoProparty;
+
 	sVideoProparty.eVideoBsType = VIDEO_BITSTREAM_AVC;
 
 	decoderParemeters.sVideoProperty.size = sizeof(decoderParemeters.sVideoProperty);
@@ -49,7 +49,7 @@ int CVideoDecoder::CreateVideoDecoder()
 	decoderParemeters.eEcActiveIdc = ERROR_CON_FRAME_COPY;
 	decoderParemeters.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_AVC;
 
-	nReturnedValueFromDecoder = m_pSVCVideoDecoder->Initialize(&decoderParemeters);
+	nReturnedValueFromDecoder = m_pcSVCVideoDecoder->Initialize(&decoderParemeters);
 
 	if (nReturnedValueFromDecoder != 0)
 	{
@@ -74,12 +74,12 @@ int CVideoDecoder::CreateVideoDecoder()
 
 int CVideoDecoder::SetDecoderOption(int nKey, int nValue)
 {
-	return m_pSVCVideoDecoder->SetOption(DECODER_OPTION_END_OF_STREAM, &nValue);
+	return m_pcSVCVideoDecoder->SetOption(DECODER_OPTION_END_OF_STREAM, &nValue);
 }
 
-int CVideoDecoder::DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth)
+int CVideoDecoder::DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth)
 {
-	if (!m_pSVCVideoDecoder)
+	if (!m_pcSVCVideoDecoder)
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecoder::Decode pSVCVideoDecoder == NULL");
 
@@ -88,7 +88,7 @@ int CVideoDecoder::DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, un
 
 	int strides[2] = { 0 };
 	unsigned char *outputPlanes[3] = { NULL };
-	DECODING_STATE decodingState = m_pSVCVideoDecoder->DecodeFrame(ucaDecodingVideoFrameData, unLength, outputPlanes, strides, nrVideoWidth, nrVideoHeight);
+	DECODING_STATE decodingState = m_pcSVCVideoDecoder->DecodeFrame(ucaDecodingVideoFrameData, unLength, outputPlanes, strides, rnVideoWidth, rnVideoHeight);
 
 	if (decodingState != 0)
 	{
@@ -103,11 +103,11 @@ int CVideoDecoder::DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, un
 		unsigned char *outputPlane = outputPlanes[plane];
 		int stride = strides[0];
 
-		for (int row = 0; row < nrVideoHeight; row++)
+		for (int row = 0; row < rnVideoHeight; row++)
 		{
-			memcpy(ucaDecodedVideoFrameData + decodedVideoFrameSize, outputPlane, nrVideoWidth);
+			memcpy(ucaDecodedVideoFrameData + decodedVideoFrameSize, outputPlane, rnVideoWidth);
 
-			decodedVideoFrameSize += nrVideoWidth;
+			decodedVideoFrameSize += rnVideoWidth;
 			outputPlane += stride;
 		}
 	}
@@ -116,8 +116,8 @@ int CVideoDecoder::DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, un
 	{
 		unsigned char *outputPlane = outputPlanes[plane];
 		int stride = strides[1];
-		int halfiVideoHeight = nrVideoHeight >> 1;
-		int halfiVideoWidth = nrVideoWidth >> 1;
+		int halfiVideoHeight = rnVideoHeight >> 1;
+		int halfiVideoWidth = rnVideoWidth >> 1;
 
 		for (int row = 0; row < halfiVideoHeight; row++)
 		{
