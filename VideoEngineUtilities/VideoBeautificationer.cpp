@@ -127,7 +127,7 @@ m_EffectValue(10)
 	{
 		for (int j = 0; j < 2300; j++)
 		{
-			m_precSharpness[i][j] = min(255., max(0., i + (10. * i - j)/8.));
+			m_precSharpness[i][j] = (int)min(255., max(0., i + (10. * i - j)/8.));
 		}
 	}
 
@@ -595,7 +595,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	memset(m_mean, iWidth, 0);
 	memset(m_variance, iWidth, 0);
 
-	int cur_pixel, tmp, tmp2;
+	int tmp, tmp2;
 	int totalYValue = 0;
 	int yLen = iWidth * iHeight;
 #if defined(__ANDROID__)
@@ -748,7 +748,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	//memset(m_mean, iWidth, 0);
 	//memset(m_variance, iWidth, 0);
 
-	int cur_pixel, tmp, tmp2;
+	int tmp, tmp2;
 	int totalYValue = 0;
 	int yLen = iWidth * iHeight;
 
