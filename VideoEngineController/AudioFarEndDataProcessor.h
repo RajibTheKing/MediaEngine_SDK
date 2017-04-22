@@ -75,7 +75,15 @@ private:
 	short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
 	short m_saCalleeSentData[MAX_AUDIO_FRAME_Length];
 
+	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 	SmartPointer<AudioDecoderInterface> m_cAacDecoder;
+
+	int m_inoLossSlot;
+	int m_ihugeLossSlot;
+
+	bool m_bAudioQualityLowNotified;
+	bool m_bAudioQualityHighNotified;
+	bool m_bAudioShouldStopNotified;
 
 	void StartDecodingThread();
 	static void* CreateAudioDecodingThread(void* param);
@@ -99,6 +107,9 @@ private:
 	void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
 	void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		 long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime);
+
+	void DecideToChangeBitrate(int iNumPacketRecvd);
+	
 };
 
 #endif //AUDIO_FAREND_DATA_PROCESSOR_H

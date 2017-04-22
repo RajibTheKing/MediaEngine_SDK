@@ -1,21 +1,14 @@
 #include "EncoderOpus.h"
-#include "AudioCallSession.h"
-#include "CommonElementsBucket.h"
-#include "DefinedDataTypes.h"
+
 #include "LogPrinter.h"
+#include "LockHandler.h"
+#include "Tools.h"
 
 
-EncoderOpus::EncoderOpus(CCommonElementsBucket* sharedObject, CAudioCallSession * AudioCallSession, LongLong llfriendID) :
-m_pCommonElementsBucket(sharedObject),
-m_bAudioQualityLowNotified(false),
-m_bAudioQualityHighNotified(false),
-m_bAudioShouldStopNotified(false),
-m_FriendID(llfriendID)
+EncoderOpus::EncoderOpus()
 {
 	m_pMediaSocketMutex.reset(new CLockHandler);
-	m_pAudioCallSession = AudioCallSession;
-	m_inoLossSlot = 0;
-	m_ihugeLossSlot = 0;
+
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CAudioCodec");
 }
 
@@ -23,8 +16,6 @@ m_FriendID(llfriendID)
 EncoderOpus::~EncoderOpus()
 {
 	opus_encoder_destroy(encoder);
-
-	SHARED_PTR_DELETE(m_pMediaSocketMutex);
 }
 
 
@@ -54,9 +45,9 @@ int EncoderOpus::CreateAudioEncoder()
 	while (m_iComplexity >= 2)
 	{
 		opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(m_iComplexity));
-		encodingTime = m_Tools.CurrentTimestamp();
+		encodingTime = Tools::CurrentTimestamp();
 		EncodeAudio(m_DummyData, dummyDataSize, m_DummyDataOut);
-		encodingTime = m_Tools.CurrentTimestamp() - encodingTime;
+		encodingTime = Tools::CurrentTimestamp() - encodingTime;
 		if (encodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME)
 		{
 			m_iComplexity--;
@@ -123,107 +114,6 @@ bool EncoderOpus::SetComplexity(int nComplexity)
 
 	return ret != 0;
 }
-
-
-int EncoderOpus::GetCurrentBitrate()
-{
-	return m_iCurrentBitRate;
-}
-
-
-void EncoderOpus::DecideToChangeBitrate(int iNumPacketRecvd)
-{
-#ifndef AUDIO_FIXED_BITRATE
-	//	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
-	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
-	{
-		m_inoLossSlot++;
-		m_ihugeLossSlot = 0;
-	}
-	else
-	{
-		m_inoLossSlot = 0;
-		int nChangedBitRate = (iNumPacketRecvd * m_iCurrentBitRate) / AUDIO_SLOT_SIZE;
-		//		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
-		HITLER("@@@@------------------------>Bitrate: %d\n", nChangedBitRate);
-		if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
-		{
-			m_ihugeLossSlot = 0;
-
-			SetBitrate(nChangedBitRate);
-
-			if (false == m_bAudioQualityLowNotified)
-			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
-
-				m_bAudioQualityLowNotified = true;
-				m_bAudioQualityHighNotified = false;
-				m_bAudioShouldStopNotified = false;
-			}
-		}
-		else if (nChangedBitRate < AUDIO_MIN_BITRATE)
-		{
-			m_ihugeLossSlot++;
-
-			SetBitrate(AUDIO_MIN_BITRATE);
-
-			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
-			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_BAD);
-				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
-				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
-
-				m_bAudioShouldStopNotified = true;
-				m_bAudioQualityHighNotified = false;
-				m_bAudioQualityLowNotified = false;
-			}
-		}
-		else if (nChangedBitRate >= AUDIO_LOW_BITRATE)
-		{
-			m_ihugeLossSlot = 0;
-
-			SetBitrate(nChangedBitRate);
-
-			if (false == m_bAudioQualityHighNotified)
-			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
-
-				m_bAudioQualityHighNotified = true;
-				m_bAudioQualityLowNotified = false;
-				m_bAudioShouldStopNotified = false;
-			}
-		}
-	}
-
-	if (m_inoLossSlot == AUDIO_MAX_NO_LOSS_SLOT)
-	{
-		if (m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP <= AUDIO_MAX_BITRATE)
-		{
-			SetBitrate(m_iCurrentBitRate + AUDIO_BITRATE_UP_STEP);
-		}
-		else
-		{
-			SetBitrate(AUDIO_MAX_BITRATE);
-		}
-		m_inoLossSlot = 0;
-	}
-	//	ALOG("#V# E: DecideToChangeBitrate: Done");
-#endif
-}
-
-
-void EncoderOpus::DecideToChangeComplexity(int iEncodingTime)
-{
-	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && m_iComplexity > OPUS_MIN_COMPLEXITY)
-	{
-		SetComplexity(m_iComplexity - 1);
-	}
-	if (iEncodingTime < AUDIO_MAX_TOLERABLE_ENCODING_TIME / 2 && m_iComplexity < OPUS_MAX_COMPLEXITY)
-	{
-		SetComplexity(m_iComplexity + 1);
-	}
-}
-
 
 
 

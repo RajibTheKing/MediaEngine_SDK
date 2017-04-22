@@ -28,7 +28,12 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 	m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
 	m_bAudioDecodingThreadRunning(false),
 	m_bAudioDecodingThreadClosed(true),
-	m_llLastTime(-1)
+	m_llLastTime(-1),
+	m_bAudioQualityLowNotified(false),
+	m_bAudioQualityHighNotified(false),
+	m_bAudioShouldStopNotified(false),
+	m_inoLossSlot(0),
+	m_ihugeLossSlot(0)
 {
 
 	m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING); //Need Remove Magic Numbers.
@@ -68,6 +73,8 @@ CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int n
 	}
 
 	m_pGomGomGain.reset(new GomGomGain());
+
+	m_pAudioEncoder = m_pAudioCallSession->GetAudioEncoder();
 
 	StartDecodingThread();
 }
@@ -532,10 +539,10 @@ void CAudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlot
 			m_iReceivedPacketsInCurrentSlot = 0;
 
 			if (m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()) {
-				m_pAudioCallSession->GetAudioEncoder()->DecideToChangeBitrate(m_iOpponentReceivedPackets);
+				this->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 			}
-			else if (m_pAudioCallSession->GetAudioEncoder()->GetCurrentBitrate() != AUDIO_BITRATE_INIT){
-				m_pAudioCallSession->GetAudioEncoder()->SetBitrate(AUDIO_BITRATE_INIT);
+			else if (m_pAudioEncoder->GetCurrentBitrate() != AUDIO_BITRATE_INIT){
+				m_pAudioEncoder->SetBitrate(AUDIO_BITRATE_INIT);
 			}
 		}
 		m_iReceivedPacketsInCurrentSlot++;
@@ -1022,6 +1029,91 @@ void CAudioFarEndDataProcessor::FarEndProcedureAudioCall()
 			Tools::SOSleep(0);
 		}
 	}
+}
+
+void CAudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
+{
+#ifndef AUDIO_FIXED_BITRATE
+
+	//	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
+
+	int nCurrentBitRate = m_pAudioEncoder->GetCurrentBitrate();
+
+	if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
+	{
+		m_inoLossSlot++;
+		m_ihugeLossSlot = 0;
+	}
+	else
+	{
+		m_inoLossSlot = 0;
+		
+		int nChangedBitRate = (iNumPacketRecvd * nCurrentBitRate) / AUDIO_SLOT_SIZE;
+		//		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
+		HITLER("@@@@------------------------>Bitrate: %d\n", nChangedBitRate);
+		if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
+		{
+			m_ihugeLossSlot = 0;
+
+			m_pAudioEncoder->SetBitrate(nChangedBitRate);
+
+			if (false == m_bAudioQualityLowNotified)
+			{
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
+
+				m_bAudioQualityLowNotified = true;
+				m_bAudioQualityHighNotified = false;
+				m_bAudioShouldStopNotified = false;
+			}
+		}
+		else if (nChangedBitRate < AUDIO_MIN_BITRATE)
+		{
+			m_ihugeLossSlot++;
+
+			m_pAudioEncoder->SetBitrate(AUDIO_MIN_BITRATE);
+
+			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
+			{
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_BAD);
+				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
+				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
+
+				m_bAudioShouldStopNotified = true;
+				m_bAudioQualityHighNotified = false;
+				m_bAudioQualityLowNotified = false;
+			}
+		}
+		else if (nChangedBitRate >= AUDIO_LOW_BITRATE)
+		{
+			m_ihugeLossSlot = 0;
+
+			m_pAudioEncoder->SetBitrate(nChangedBitRate);
+
+			if (false == m_bAudioQualityHighNotified)
+			{
+				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
+
+				m_bAudioQualityHighNotified = true;
+				m_bAudioQualityLowNotified = false;
+				m_bAudioShouldStopNotified = false;
+			}
+		}
+	}
+
+	if (m_inoLossSlot == AUDIO_MAX_NO_LOSS_SLOT)
+	{
+		if (nCurrentBitRate + AUDIO_BITRATE_UP_STEP <= AUDIO_MAX_BITRATE)
+		{
+			m_pAudioEncoder->SetBitrate(nCurrentBitRate + AUDIO_BITRATE_UP_STEP);
+		}
+		else
+		{
+			m_pAudioEncoder->SetBitrate(AUDIO_MAX_BITRATE);
+		}
+		m_inoLossSlot = 0;
+	}
+	//	ALOG("#V# E: DecideToChangeBitrate: Done");
+#endif
 }
 
 

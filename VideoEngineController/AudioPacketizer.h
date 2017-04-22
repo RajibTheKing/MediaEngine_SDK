@@ -6,7 +6,6 @@
 #include "AudioPacketHeader.h"
 
 class CAudioCallSession;
-class CCommonElementsBucket;
 class AudioPacketHeader;
 
 typedef void(*OnDataReadyCallback)(unsigned char*, int);
@@ -31,7 +30,6 @@ private:
 
 	CAudioCallSession* m_pAudioCallSession;
 	SmartPointer<AudioPacketHeader> m_AudioPacketHeader;
-	CCommonElementsBucket* m_pCommonElementsBucket;
 
 	int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;
 

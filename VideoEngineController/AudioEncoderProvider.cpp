@@ -4,14 +4,14 @@
 #include "EncoderPCM.h"
 
 
-SmartPointer<AudioEncoderInterface> AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType, CCommonElementsBucket* sharedObject = nullptr, CAudioCallSession * AudioCallSession = nullptr, LongLong llfriendID = -1)
+SmartPointer<AudioEncoderInterface> AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType)
 {
 	SmartPointer<AudioEncoderInterface> pInstance;
 
 	switch (audioEncoderType)
 	{
 	case Opus_Encoder:
-		pInstance.reset(new EncoderOpus(sharedObject, AudioCallSession, llfriendID));
+		pInstance.reset(new EncoderOpus());
 		break;
 
 	case PCM_Encoder:

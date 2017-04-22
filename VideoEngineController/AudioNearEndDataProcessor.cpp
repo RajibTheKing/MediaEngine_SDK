@@ -259,7 +259,7 @@ void CAudioNearEndDataProcessor::AudioCallNearendProcedure(){
 
 		//ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 		llEncodingTime = Tools::CurrentTimestamp() - llTimeBeforeEncoding;
-		m_pAudioEncoder->DecideToChangeComplexity(llEncodingTime);
+		this->DecideToChangeComplexity(llEncodingTime);
 
 
 		int iSlotID = 0;
@@ -549,4 +549,19 @@ void CAudioNearEndDataProcessor::StopCallInLive(int nEntityType)
 long long CAudioNearEndDataProcessor::GetBaseOfRelativeTime()
 { 
 	return m_llEncodingTimeStampOffset;
+}
+
+void CAudioNearEndDataProcessor::DecideToChangeComplexity(int iEncodingTime)
+{
+	int nComplexity = m_pAudioEncoder->GetComplexity();
+
+	if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && nComplexity > OPUS_MIN_COMPLEXITY)
+	{
+		m_pAudioEncoder->SetComplexity(nComplexity - 1);
+	}
+
+	if (iEncodingTime < AUDIO_MAX_TOLERABLE_ENCODING_TIME / 2 && nComplexity < OPUS_MAX_COMPLEXITY)
+	{
+		m_pAudioEncoder->SetComplexity(nComplexity + 1);
+	}
 }

@@ -48,6 +48,8 @@ private:
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
 	void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte);
 	void SentToNetwork(long long llRelativeTime);
+
+	void DecideToChangeComplexity(int iEncodingTime);
 	
 	std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 

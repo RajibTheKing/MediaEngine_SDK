@@ -132,7 +132,7 @@ void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
-	this->m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(Opus_Encoder, m_pCommonElementsBucket, this, llFriendID);
+	this->m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(Opus_Encoder);
 	m_pAudioEncoder->CreateAudioEncoder();
 
 	this->m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(Opus_Decoder);

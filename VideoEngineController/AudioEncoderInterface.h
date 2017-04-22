@@ -13,10 +13,8 @@ public:
 	virtual bool SetBitrate(int nBitrate) = 0;
 	virtual bool SetComplexity(int nComplexity) = 0;
 
+	virtual int GetComplexity() = 0;
 	virtual int GetCurrentBitrate() = 0;
-
-	virtual void DecideToChangeBitrate(int iNumPacketRecvd) = 0;
-	virtual void DecideToChangeComplexity(int iEncodingTime) = 0;
 
 	~AudioEncoderInterface() { }
 };

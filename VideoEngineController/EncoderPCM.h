@@ -18,7 +18,8 @@ public:
 	bool SetBitrate(int nBitrate) { return true; }
 	bool SetComplexity(int nComplexity) { return true; }
 
-	int GetCurrentBitrate() { return true; }
+	int GetCurrentBitrate() { return -1; }
+	int GetComplexity(){ return -1;	}
 
 	void DecideToChangeBitrate(int iNumPacketRecvd) {  }
 	void DecideToChangeComplexity(int iEncodingTime) {  }
