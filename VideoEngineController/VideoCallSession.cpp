@@ -15,7 +15,6 @@
 
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
-extern long long g_llFirstFrameReceiveTime;
 CVideoCallSession::CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
 
 m_pCommonElementsBucket(sharedObject),
@@ -333,9 +332,6 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
         m_pVersionController->SetCurrentCallVersion(VIDEO_VERSION_CODE);
         m_pVersionController->NotifyFirstVideoPacetReceived();
     }
-    
-    
-    g_llFirstFrameReceiveTime = 0;
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 240");
 
@@ -617,8 +613,6 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 #endif
     
    // CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 4");
-
-    if(g_llFirstFrameReceiveTime == 0) g_llFirstFrameReceiveTime = m_Tools.CurrentTimestamp();
     
 	
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
