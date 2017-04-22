@@ -21,13 +21,6 @@ AudioOpusDecoder::~AudioOpusDecoder()
 }
 
 
-bool AudioOpusDecoder::SetParameters(int sampleRate, int numberOfChannels)
-{
-
-	return true;
-}
-
-
 int AudioOpusDecoder::DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer)
 {
 	int frame_size, nDecodedDataSize = 0, iFrameCounter = 0, nProcessedDataSize = 0, nCurrentFrameSize = 0;

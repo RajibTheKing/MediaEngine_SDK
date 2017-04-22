@@ -169,7 +169,7 @@ bool AudioAacDecoder::SetParameters(int sampleRate, int numberOfChannels)
 }
 
 
-int AudioAacDecoder::DecodeAudio(unsigned char *inputDataBuffer, int inputDataSize, short *outputDataBuffer)
+int AudioAacDecoder::DecodeAudio(unsigned char *inputDataBuffer, unsigned int inputDataSize, short *outputDataBuffer)
 {
 	//	LOG_AAC("#aac# CAcc::DecodeFrame(), inputDataSize: %d", inputDataSize);
 

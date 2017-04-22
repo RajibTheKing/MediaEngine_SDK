@@ -12,11 +12,15 @@
 #include "aacdecoder_lib.h"
 
 
+
 class AudioAacDecoder : public AudioDecoderInterface
 {
+
 private:
+
 	int m_nRC;
 	HANDLE_AACDECODER m_hDecoder;
+
 
 protected:
 
@@ -26,14 +30,16 @@ protected:
 
 	void CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf);
 
+
 public:
+
 	AudioAacDecoder();
 
 	~AudioAacDecoder();
 
 	bool SetParameters(int sampleRate, int numberOfChannels);
 	
-	int DecodeAudio(unsigned char *inputDataBuffer, int inputDataSize, short *outputDataBuffer);
+	int DecodeAudio(unsigned char *inputDataBuffer, unsigned int inputDataSize, short *outputDataBuffer);
 
 };
 

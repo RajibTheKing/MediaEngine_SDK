@@ -26,7 +26,7 @@ public:
 
 	~AudioOpusDecoder();
 
-	bool SetParameters(int sampleRate, int numberOfChannels);
+	bool SetParameters(int sampleRate, int numberOfChannels) { return true; }
 
 	int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
 
