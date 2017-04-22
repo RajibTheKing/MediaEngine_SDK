@@ -167,6 +167,7 @@ private:
 	bool m_bSelfViewOnly;
 
 	int m_nCallInLiveType;
+	int m_nFrameCount;
 
 	int m_iRole;
 

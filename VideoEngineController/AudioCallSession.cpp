@@ -325,7 +325,7 @@ void CAudioCallSession::EndCallInLive()
 	m_iRole = CALL_NOT_RUNNING;
 
 	m_pNearEndProcessor->StopCallInLive(m_nEntityType);
-	m_pFarEndProcessor->StartCallInLive(m_nEntityType);
+	m_pFarEndProcessor->StopCallInLive(m_nEntityType);
 
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();

@@ -690,8 +690,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	if (effectParam[1] != 0)m_radius = effectParam[1];
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
 
-	int startWidth = (iWidth - iNewWidth)/2 - m_rr;
-	int endWidth = iWidth - startWidth + m_rr;
+	int startWidth = (iWidth - iNewWidth)/2 - 0;
+	int endWidth = iWidth - startWidth + 0;
 
 	//for (int i = 0; i <= iHeight; i++) 
 	//{
@@ -783,6 +783,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
             
 #endif
             
+            
+            
 			totalYValue += pBlurConvertingData[iw + j - 1];
 
 
@@ -791,9 +793,13 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 			tmp2 += (pBlurConvertingData[iw + j - 1] * pBlurConvertingData[iw + j - 1]);
 			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
-
-			//pBlurConvertingData[m_pUIndex[iw + j - 1]] -= 1;
-			//pBlurConvertingData[m_pVIndex[iw + j - 1]] += 1;
+            
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+            
+			pBlurConvertingData[m_pUIndex[iw + j - 1]] += 1;
+			pBlurConvertingData[m_pVIndex[iw + j - 1]] -= 1;
+#endif
+            
 		}
 	}
 
