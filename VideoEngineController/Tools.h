@@ -36,18 +36,18 @@ public:
 	~Tools();
 
 	static void SOSleep(int nSleepTimeout);
-	static LongLong CurrentTimestamp();
+	static long long CurrentTimestamp();
     static std::string IntegertoStringConvert(int nConvertingNumber);
-	static std::string LongLongtoStringConvert(LongLong number);
+	static std::string LongLongtoStringConvert(long long number);
 	static std::string DoubleToString(double dConvertingValue);
 	
 	static std::string getText(double dConvertingValue);
 	static std::string getText(int nConvertingNumber);
-	static std::string getText(LongLong number);
+	static std::string getText(long long number);
 	static std::string getText(unsigned long long number);
     
     static int StringToIntegerConvert(std::string strConvertingString);
-	static std::string LongLongToString(LongLong llConvertingValue);
+	static std::string LongLongToString(long long llConvertingValue);
     static int GetEncodedFrameType(unsigned char *pFrame);
 
 	void WriteToFile(short* saDataToWriteToFile, int nLength);

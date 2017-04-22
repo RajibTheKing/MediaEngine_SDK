@@ -34,7 +34,7 @@ private:
 
 	unsigned char m_Buffer[RESENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SIZE];
 	int m_BufferDataLength[RESENDING_BUFFER_SIZE];
-	LongLong m_BufferFrameNumber[RESENDING_BUFFER_SIZE];
+	long long m_BufferFrameNumber[RESENDING_BUFFER_SIZE];
 	int m_BufferPacketNumber[RESENDING_BUFFER_SIZE];
 	long long m_BufferInsertionTime[RESENDING_BUFFER_SIZE];
 
