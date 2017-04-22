@@ -67,17 +67,17 @@ CLockHandler* CCommonElementsBucket::GetSharedMutex()
     return sharedMutex;
 }
 
-void CCommonElementsBucket::SetUserName(const LongLong& username)
+void CCommonElementsBucket::SetUserName(const long long& username)
 {
     userName = username;
 }
 
-LongLong CCommonElementsBucket::GetUsername()
+long long CCommonElementsBucket::GetUsername()
 {
     return userName;
 }
 
-void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
+void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
 {
     
     SendFunctionPointer = callBackFunctionPointer;

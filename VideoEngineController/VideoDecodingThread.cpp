@@ -13,7 +13,7 @@ extern map<long long,long long>g_ArribalTime;
 
 #define MINIMUM_DECODING_TIME_FOR_FORCE_FPS 35
 
-CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, LongLong llFriendID, CCommonElementsBucket *pCommonElementBucket, CRenderingBuffer *renderingBuffer,
+CVideoDecodingThread::CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, long long llFriendID, CCommonElementsBucket *pCommonElementBucket, CRenderingBuffer *renderingBuffer,
                                            LiveVideoDecodingQueue *pLiveVideoDecodingQueue,CVideoDecoder *videoDecoder, CColorConverter *colorConverter,
                                            CVideoCallSession* pVideoCallSession, bool bIsCheckCall, int nFPS) :
 
