@@ -1,3 +1,4 @@
+
 #include "VideoEncoderListHandler.h"
 #include "LogPrinter.h"
 #include "ThreadTools.h"
@@ -12,24 +13,24 @@ CVideoEncoderListHandler::~CVideoEncoderListHandler()
 	SHARED_PTR_DELETE(m_pVideoEncoderListMutex);
 }
 
-void CVideoEncoderListHandler::AddToVideoEncoderList(LongLong lFriendID, CVideoEncoder* cVideoEncoder)
+void CVideoEncoderListHandler::AddToVideoEncoderList(long long llFriendID, CVideoEncoder* pcVideoEncoder)
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoderListHandler::CVideoEncoderListHandler");
 
-	VideoEncoderList.insert(make_pair(lFriendID, cVideoEncoder));
+	m_mVideoEncoderList.insert(make_pair(llFriendID, pcVideoEncoder));
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoderListHandler::CVideoEncoderListHandler 2");
 }
 
-CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderList(LongLong lFriendID)
+CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderList(long long llFriendID)
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	map<LongLong, CVideoEncoder*>::iterator mediaSearch = VideoEncoderList.find(lFriendID);
+	map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.find(llFriendID);
 
-	if (mediaSearch == VideoEncoderList.end())
+	if (mediaSearch == m_mVideoEncoderList.end())
 	{
 		return NULL;
 	}
@@ -39,15 +40,15 @@ CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderList(LongLong lFrien
 	}
 }
 
-CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderListinIndex(int index)
+CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderListinIndex(int iIndex)
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	map<LongLong, CVideoEncoder*>::iterator mediaSearch = VideoEncoderList.begin();
+	map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.begin();
 	
-	for (int count = 0; mediaSearch != VideoEncoderList.end(); ++mediaSearch, count++)
+	for (int count = 0; mediaSearch != m_mVideoEncoderList.end(); ++mediaSearch, count++)
 	{
-		if (count == index)
+		if (count == iIndex)
 		{
 			return mediaSearch->second;
 		}
@@ -60,17 +61,17 @@ void CVideoEncoderListHandler::ClearAllFromVideoEncoderList()
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	if (false == VideoEncoderList.empty())
-		VideoEncoderList.clear();
+	if (false == m_mVideoEncoderList.empty())
+		m_mVideoEncoderList.clear();
 }
 
-bool CVideoEncoderListHandler::RemoveFromVideoEncoderList(LongLong lFriendID)
+bool CVideoEncoderListHandler::RemoveFromVideoEncoderList(long long llFriendID)
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	map<LongLong, CVideoEncoder*>::iterator mediaSearch = VideoEncoderList.find(lFriendID);
+	map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.find(llFriendID);
 
-	if (mediaSearch == VideoEncoderList.end())
+	if (mediaSearch == m_mVideoEncoderList.end())
 	{
 		return false;
 	}
@@ -83,7 +84,7 @@ bool CVideoEncoderListHandler::RemoveFromVideoEncoderList(LongLong lFriendID)
 			return false;
 		}
 
-		VideoEncoderList.erase(lFriendID);
+		m_mVideoEncoderList.erase(llFriendID);
 
 		/*delete cVideoEncoder;
 
@@ -97,23 +98,23 @@ int CVideoEncoderListHandler::SizeOfVideoEncoderList()
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	return (int)VideoEncoderList.size();
+	return (int)m_mVideoEncoderList.size();
 }
 
-bool CVideoEncoderListHandler::IsVideoEncoderExist(LongLong lFriendID)
+bool CVideoEncoderListHandler::IsVideoEncoderExist(long long llFriendID)
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	return !(VideoEncoderList.find(lFriendID) == VideoEncoderList.end());
+	return !(m_mVideoEncoderList.find(llFriendID) == m_mVideoEncoderList.end());
 }
 
-bool CVideoEncoderListHandler::IsVideoEncoderExist(int iVideoHeight, int iVideoWidth)
+bool CVideoEncoderListHandler::IsVideoEncoderExist(int nVideoHeight, int nVideoWidth)
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-/*	map<LongLong, CVideoEncoder*>::iterator mediaSearch = VideoEncoderList.find(friendName);
+/*	map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.find(friendName);
 
-	if (mediaSearch == VideoEncoderList.end())
+	if (mediaSearch == m_mVideoEncoderList.end())
 		return false;
 	else
 	{
@@ -129,9 +130,9 @@ void CVideoEncoderListHandler::ResetAllInVideoEncoderList()
 {
 	Locker lock(*m_pVideoEncoderListMutex);
 
-	map<LongLong, CVideoEncoder*>::iterator mediaSearch = VideoEncoderList.begin();
+	map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.begin();
 
-	for (; mediaSearch != VideoEncoderList.end(); ++mediaSearch)
+	for (; mediaSearch != m_mVideoEncoderList.end(); ++mediaSearch)
 	{
 		CVideoEncoder *cVideoEncoder = mediaSearch->second;
 
