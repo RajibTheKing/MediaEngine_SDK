@@ -183,7 +183,7 @@ bool BitRateController::HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int 
         {
 			int reduceAmount = max(m_nBytesReceivedInMegaSlotInterval, m_nPreviousByteRate / 2);
 
-			m_nOppNotifiedByterate = BITRATE_DECREMENT_FACTOR * reduceAmount;
+			m_nOppNotifiedByterate = (int)(BITRATE_DECREMENT_FACTOR * reduceAmount);
 
             //printf("@@@@@@@@@, BITRATE_CHANGE_DOWN --> %d\n", m_nOppNotifiedByterate);
 
@@ -247,7 +247,7 @@ bool BitRateController::UpdateBitrate()
 	if (m_nFrameCounterBeforeEncoding % m_nCallFPS == 0 && m_nOppNotifiedByterate>0 && m_bSetBitRateCalled == false)
     {
         int nRet = -1, nRet2 = -1;
-        int nCurrentBitRate = m_nOppNotifiedByterate * 8  * m_dFirstTimeBitRateChangeFactor;
+        int nCurrentBitRate = (int)(m_nOppNotifiedByterate * 8  * m_dFirstTimeBitRateChangeFactor);
 
         m_dFirstTimeBitRateChangeFactor = 1;
 
