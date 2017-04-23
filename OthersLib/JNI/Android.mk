@@ -178,8 +178,6 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/DecoderOpus.cpp \
 			../../../videoengine/VideoEngineController/DecoderPCM.cpp \
 			../../../videoengine/VideoEngineController/AudioDecoderProvider.cpp \
-			../../../videoengine/VideoEngineController/WebRTCNoiseReducer.cpp \
-			../../../videoengine/VideoEngineController/NoiseReducerProvider.cpp \
 			../../../videoengine/VideoEngineController/WebRTCGain.cpp \
 			../../../videoengine/VideoEngineController/GomGomGain.cpp \
 			../../../videoengine/VideoEngineController/NaiveGain.cpp \

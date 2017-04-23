@@ -41,7 +41,7 @@ m_llLastFrameRT(0)
 
 	//TODO: We shall remove the AudioSession instance from Near End 
 	//and shall pass necessary objects to it, e.g. Codec, Noise, Gain
-	m_pNoise = m_pAudioCallSession->GetNoiseReducer();
+//	m_pNoise = m_pAudioCallSession->GetNoiseReducer();
 
 	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	
@@ -385,10 +385,10 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 			m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
 		}
 
-		if (m_pNoise.get())
-		{
-			m_pNoise->Denoise(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_saAudioRecorderFrame, m_bIsLiveStreamingRunning);
-		}
+		//if (m_pNoise.get())
+		//{
+		//	m_pNoise->Denoise(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_saAudioRecorderFrame, m_bIsLiveStreamingRunning);
+		//}
 
 	}
 	return true;

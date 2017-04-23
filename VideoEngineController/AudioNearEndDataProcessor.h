@@ -66,7 +66,7 @@ private:
 	LongLong m_llEncodingTimeStampOffset;
 
 	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-	SmartPointer<NoiseReducerInterface> m_pNoise;
+//	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;	
