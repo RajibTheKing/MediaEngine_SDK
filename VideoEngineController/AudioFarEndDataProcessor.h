@@ -94,7 +94,6 @@ private:
 	bool IsQueueEmpty();
 	void DequeueData(int &m_nDecodingFrameSize);
 	void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
-	bool IsPacketNumberProcessable(int &iPacketNumber);
 	void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
 	bool IsPacketTypeSupported(int &nCurrentAudioPacketType);

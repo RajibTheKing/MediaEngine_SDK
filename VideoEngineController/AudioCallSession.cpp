@@ -49,7 +49,7 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 {
 	InitializeAudioCallSession(llFriendID);
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
-	m_iRole = CALL_NOT_RUNNING;
+	m_iRole = nEntityType;
 	m_bLiveAudioStreamRunning = false;
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
@@ -207,11 +207,12 @@ void CAudioCallSession::SetEchoCanceller(bool bOn)
 
 void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 {
-	if (iRole != VIEWER_IN_CALL && iRole != PUBLISHER_IN_CALL)//Unsupported or inaccessible role
+	if (iRole != ENTITY_TYPE_VIEWER_CALLEE && iRole != ENTITY_TYPE_PUBLISHER_CALLER)//Unsupported or inaccessible role
 	{
 		return;
 	}
-	if (m_iRole != CALL_NOT_RUNNING)//Call inside a call
+	
+	if (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole) //Call inside a call
 	{
 		return;
 	}
@@ -239,13 +240,13 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 #endif
 #endif
 
-	if (m_iRole == PUBLISHER_IN_CALL)
+	if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 	{
 #ifdef LOCAL_SERVER_LIVE_CALL
 		m_clientSocket->InitializeSocket(LOCAL_SERVER_IP, 60001);
 #endif
 	}
-	else if (m_iRole == VIEWER_IN_CALL)
+	else if (m_iRole == ENTITY_TYPE_VIEWER_CALLEE)
 	{
 #ifdef LOCAL_SERVER_LIVE_CALL
 		m_clientSocket->InitializeSocket(LOCAL_SERVER_IP, 60002);
@@ -260,7 +261,7 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 	m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 	m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 #ifdef DUMP_FILE
-	if (m_iRole == PUBLISHER_IN_CALL)
+	if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 	{
 		FileInputMuxed= fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
 	}
@@ -270,7 +271,7 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 
 void CAudioCallSession::EndCallInLive()
 {
-	if (m_iRole != VIEWER_IN_CALL && m_iRole != PUBLISHER_IN_CALL)//Call Not Running
+	if (m_iRole != ENTITY_TYPE_VIEWER_CALLEE && m_iRole != ENTITY_TYPE_PUBLISHER_CALLER)//Call Not Running
 	{
 		return;
 	}
@@ -281,7 +282,7 @@ void CAudioCallSession::EndCallInLive()
 	}
 
 #ifdef DUMP_FILE
-	if (m_iRole == PUBLISHER_IN_CALL)
+	if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 	{
 		fclose(FileInputMuxed);
 	}
@@ -322,7 +323,7 @@ void CAudioCallSession::EndCallInLive()
 	}
 
 
-	m_iRole = CALL_NOT_RUNNING;
+	m_iRole = m_nEntityType;
 
 	m_pNearEndProcessor->StopCallInLive(m_nEntityType);
 	m_pFarEndProcessor->StopCallInLive(m_nEntityType);
@@ -356,7 +357,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 #ifdef USE_AECM
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
-		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
+		(m_bLiveAudioStreamRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole) )))
 	{
 		m_bIsAECMNearEndThreadBusy = true;
 #ifdef USE_ECHO2
@@ -391,7 +392,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 #ifdef USE_AECM
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
-		(m_bLiveAudioStreamRunning && m_iRole != CALL_NOT_RUNNING)))
+		(m_bLiveAudioStreamRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole))))
 	{
 		m_bIsAECMFarEndThreadBusy = true;
 #ifdef USE_ECHO2
@@ -497,4 +498,9 @@ int CAudioCallSession::GetServiceType()
 int CAudioCallSession::GetRole()
 {
 	return m_iRole;
+}
+
+int CAudioCallSession::GetEntityType()
+{
+	return m_nEntityType;
 }
