@@ -234,6 +234,12 @@
     <ClCompile Include="..\..\VideoEngineController\IDRFrameIntervalController.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\MuxHeader.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -490,6 +496,12 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\IDRFrameIntervalController.h">
       <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\MuxHeader.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.h">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -16,7 +16,7 @@ int m_sigma = 64;
 
 #elif defined(__ANDROID__)
 
-int m_sigma = 128;
+int m_sigma = 64;
 
 #elif defined(DESKTOP_C_SHARP)
 
@@ -34,7 +34,7 @@ int m_sigmaDigit = 6;
 
 #elif defined(__ANDROID__)
 
-int m_sigmaDigit = 7;
+int m_sigmaDigit = 6;
 
 #elif defined(DESKTOP_C_SHARP)
 
@@ -807,25 +807,20 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 #if defined(__ANDROID__)
 
-	if (m_AvarageValue < 25)
+	if (m_AvarageValue < 50)
 	{
 		m_sigma = 16;
 		m_sigmaDigit = 4;
 	}
-	else if (m_AvarageValue < 50)
+	else if (m_AvarageValue < 75)
 	{
 		m_sigma = 32;
 		m_sigmaDigit = 5;
 	}
-	else if (m_AvarageValue < 75)
+	else
 	{
 		m_sigma = 64;
 		m_sigmaDigit = 6;
-	}
-	else
-	{
-		m_sigma = 128;
-		m_sigmaDigit = 7;
 	}
 
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
