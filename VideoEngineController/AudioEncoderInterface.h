@@ -16,7 +16,7 @@ public:
 	virtual int GetComplexity() = 0;
 	virtual int GetCurrentBitrate() = 0;
 
-	~AudioEncoderInterface() { }
+	virtual ~AudioEncoderInterface() { }
 };
 
 
