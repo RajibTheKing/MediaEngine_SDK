@@ -83,20 +83,20 @@ public:
 	void SetCallInLiveType(int nCallInLiveType);
 	long long GetBaseOfRelativeTime();
 
-	SmartPointer<AudioEncoderInterface> CAudioCallSession::GetAudioEncoder()
+	SmartPointer<AudioEncoderInterface> GetAudioEncoder()
 	{
 		return m_pAudioEncoder;
 	}
 
-	SmartPointer<AudioDecoderInterface> CAudioCallSession::GetAudioDecoder()
+	SmartPointer<AudioDecoderInterface> GetAudioDecoder()
 	{
 		return m_pAudioDecoder;
 	}
 
-	SmartPointer<NoiseReducerInterface> GetNoiseReducer()
-	{
-		return m_pNoise;
-	}
+	//SmartPointer<NoiseReducerInterface> GetNoiseReducer()
+	//{
+	//	return m_pNoise;
+	//}
 
     void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
@@ -172,7 +172,7 @@ private:
 
 	SmartPointer<EchoCancellerInterface> m_pEcho;
 
-	SmartPointer<NoiseReducerInterface> m_pNoise;
+//	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
