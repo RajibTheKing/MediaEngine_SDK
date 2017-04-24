@@ -1,6 +1,6 @@
 
-#ifndef IPV_RENDERING_THREAD_H
-#define IPV_RENDERING_THREAD_H
+#ifndef IPV_RENDERING_THREAD_OF_LIVE_H
+#define IPV_RENDERING_THREAD_OF_LIVE_H
 
 #include "Tools.h"
 #include "SmartPointer.h"
