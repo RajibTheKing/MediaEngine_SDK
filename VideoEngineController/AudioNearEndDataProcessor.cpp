@@ -194,15 +194,15 @@ void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
 
 		int nSendingDataSizeInByte = 1600;	//Or contain 18 bit data with mixed header.
 		bool bIsMuxed = false;
-		
-		bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
-				
-		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
 		if (false == PreProcessAudioBeforeEncoding())
 		{
 			return;
 		}
+		
+		bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
+				
+		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 				
 		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saSendingDataPublisher, nSendingDataSizeInByte);
 
@@ -382,7 +382,12 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 
 #ifdef USE_AGC
 		m_pAudioCallSession->m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
-		m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
+		bool bIsPublisher = (m_nServiceType == SERVICE_TYPE_LIVE_STREAM &&  (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType));
+		
+		if (false == bIsPublisher)
+		{
+			m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
+		}
 #endif
 		 
 
