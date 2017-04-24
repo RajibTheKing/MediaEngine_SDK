@@ -94,7 +94,7 @@ int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLi
 	{
 		if (0 != WebRtcAecm_BufferFarend(AECM_instance, farEndData + i, AECM_SAMPLES_IN_FRAME))
 		{
-			ALOG("WebRtcAec_BufferFarend failed id = " + Tools::IntegertoStringConvert(m_ID) + " err = " + Tools::IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
+			ALOG("WebRtcAec_BufferFarend failed, " + " err = " + Tools::IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
 				+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
 				+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));
 		}
