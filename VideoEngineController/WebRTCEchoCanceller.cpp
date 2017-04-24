@@ -19,22 +19,22 @@ WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInite
 	int iAECERR = WebRtcAecm_Create(&AECM_instance);
 	if (iAECERR)
 	{
-		ALOG("WebRtcAecm_Create failed id = " + Tools::IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Create failed");
 	}
 	else
 	{
-		ALOG("WebRtcAecm_Create successful id = " + Tools::IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Create successful");
 		m_bAecmCreated = true;
 	}
 
 	iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
 	if (iAECERR)
 	{
-		ALOG("WebRtcAecm_Init failed id = " + Tools::IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Init failed");
 	}
 	else
 	{
-		ALOG("WebRtcAecm_Init successful id = " + Tools::IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_Init successful");
 		m_bAecmInited = true;
 	}
 
@@ -44,15 +44,14 @@ WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInite
 
 	if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
 	{
-		ALOG("WebRtcAecm_set_config unsuccessful id = " + Tools::IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_set_config unsuccessful");
 	}
 	else
 	{
-		ALOG("WebRtcAecm_set_config successful id = " + Tools::IntegertoStringConvert(id));
+		ALOG("WebRtcAecm_set_config successful");
 	}
 
 	memset(m_sZeroBuf, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
-	memset(m_sZeroBuf, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 
 	m_llLastFarendTime = 0;
 	iCounter = 0;
