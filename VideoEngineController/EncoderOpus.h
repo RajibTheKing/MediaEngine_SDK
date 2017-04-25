@@ -23,7 +23,7 @@ private:
 	int 		err;
 
 	opus_int16 m_DummyData[MAX_AUDIO_FRAME_SAMPLE_SIZE + 10];
-	unsigned char m_DummyDataOut[MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 + 10];
+	unsigned char m_DummyDataOut[AUDIO_MAX_PACKET_SIZE];
 
 protected:
 
