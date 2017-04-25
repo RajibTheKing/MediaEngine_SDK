@@ -72,7 +72,7 @@ void CAudioCallSessionListHandler::ClearAllFromAudioSessionList()
 {
 	Locker lock(*m_pAudioSessionListMutex);
 
-	for (auto &audioSessionIter = m_mAudioSessionList.begin(); audioSessionIter != m_mAudioSessionList.end(); ++audioSessionIter)
+	for (auto audioSessionIter = m_mAudioSessionList.begin(); audioSessionIter != m_mAudioSessionList.end(); ++audioSessionIter)
 	{
 		CAudioCallSession *AudioSession = audioSessionIter->second;
 
@@ -105,7 +105,7 @@ bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAu
 {
 	Locker lock(*m_pAudioSessionListMutex);
 
-	auto &audioSessionSearch = m_mAudioSessionList.find(lFriendName);
+	auto audioSessionSearch = m_mAudioSessionList.find(lFriendName);
 
 	if (audioSessionSearch != m_mAudioSessionList.end())
 	{
