@@ -27,7 +27,6 @@ public:
 	bool IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &AudioSession);
 	bool IsAudioSessionExist(LongLong lFriendName);
 	void ClearAllFromAudioSessionList();
-	void ResetAllInAudioSessionList();
 
 private:
 
