@@ -24,75 +24,57 @@ CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(LongLon
 {
 	Locker lock(*m_pAudioSessionListMutex);
 
-	std::map<LongLong, CAudioCallSession*>::iterator videoSessionSearch = m_mAudioSessionList.find(friendName);
+	auto audioSessionSearch = m_mAudioSessionList.find(friendName);
 
-	if (videoSessionSearch == m_mAudioSessionList.end())
+	if (audioSessionSearch != m_mAudioSessionList.end())
 	{
-		return NULL;
+		return audioSessionSearch->second;
 	}
-	else
-	{
-		return videoSessionSearch->second;
-	}
+	return NULL;
 }
 
 CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionListinIndex(int index)
 {
 	Locker lock(*m_pAudioSessionListMutex);
 
-	std::map<LongLong, CAudioCallSession*>::iterator videoSessionSearch = m_mAudioSessionList.begin();
+	auto audioSessionSearch = m_mAudioSessionList.begin();
 
-	for (int count = 0; videoSessionSearch != m_mAudioSessionList.end(); ++videoSessionSearch, count++)
+	for (int count = 0; audioSessionSearch != m_mAudioSessionList.end(); ++audioSessionSearch, count++) 
+	{
 		if (count == index)
 		{
-			return videoSessionSearch->second;
+			return audioSessionSearch->second;
 		}
+	}
 	return NULL;
 }
 
 bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(LongLong friendName)
 {
 	Locker lock(*m_pAudioSessionListMutex);
+	auto audioSessionSearch = m_mAudioSessionList.find(friendName);
 
-	std::map<LongLong, CAudioCallSession*>::iterator videoSessionSearch = m_mAudioSessionList.find(friendName);
-
-	if (videoSessionSearch == m_mAudioSessionList.end())
+	if (audioSessionSearch != m_mAudioSessionList.end())
 	{
-		return false;
-	}
-	else
-	{
-		CAudioCallSession *videoSession = videoSessionSearch->second;
-
-		if (NULL == videoSession)
+		CAudioCallSession *videoSession = audioSessionSearch->second;
+		if (NULL != videoSession)
 		{
-			return false;
+			delete videoSession;
 		}
-
-		delete videoSession;
 		videoSession = NULL;
-
-        if( false == m_mAudioSessionList.empty())
-            m_mAudioSessionList.erase(friendName);
-
+		m_mAudioSessionList.erase(audioSessionSearch);
 		return true;
 	}
+	return false;
 }
 
 void CAudioCallSessionListHandler::ClearAllFromAudioSessionList()
 {
 	Locker lock(*m_pAudioSessionListMutex);
 
-	std::map<LongLong, CAudioCallSession*>::iterator videoSessionSearch = m_mAudioSessionList.begin();
-
-	if (videoSessionSearch == m_mAudioSessionList.end())
+	for (auto &audioSessionIter = m_mAudioSessionList.begin(); audioSessionIter != m_mAudioSessionList.end(); ++audioSessionIter)
 	{
-		return;
-	}
-
-	for (; videoSessionSearch != m_mAudioSessionList.end(); ++videoSessionSearch)
-	{
-		CAudioCallSession *AudioSession = videoSessionSearch->second;
+		CAudioCallSession *AudioSession = audioSessionIter->second;
 
 		if (NULL != AudioSession)
 		{
@@ -100,18 +82,13 @@ void CAudioCallSessionListHandler::ClearAllFromAudioSessionList()
 			AudioSession = NULL;
 		}
 	}
-
-	if (false == m_mAudioSessionList.empty())
-		m_mAudioSessionList.clear();
+	m_mAudioSessionList.clear();
 }
 
 int CAudioCallSessionListHandler::SizeOfAudioSessionList()
 {
 	Locker lock(*m_pAudioSessionListMutex);
-
-	int iSize = (int)m_mAudioSessionList.size();
-
-	return iSize;
+	return (int)m_mAudioSessionList.size();
 }
 
 bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName)
@@ -124,29 +101,25 @@ bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName)
 }
 
 
-bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &videoSession)
+bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &audioSession)
 {
 	Locker lock(*m_pAudioSessionListMutex);
 
-	std::map<LongLong, CAudioCallSession*>::iterator videoSessionSearch;
-	videoSessionSearch = m_mAudioSessionList.find(lFriendName);
+	auto &audioSessionSearch = m_mAudioSessionList.find(lFriendName);
 
-	if (videoSessionSearch == m_mAudioSessionList.end())
+	if (audioSessionSearch != m_mAudioSessionList.end())
 	{
-		return false;
-	}
-	else
-	{
-		videoSession = videoSessionSearch->second;
+		audioSession = audioSessionSearch->second;
 		return true;
 	}
+	return false;
 }
 
 void CAudioCallSessionListHandler::ResetAllInAudioSessionList()
 {
 	Locker lock(*m_pAudioSessionListMutex);
 
-	std::map<LongLong, CAudioCallSession*>::iterator videoSessionSearch = m_mAudioSessionList.begin();
+	auto videoSessionSearch = m_mAudioSessionList.begin();
 
 	for (; videoSessionSearch != m_mAudioSessionList.end(); ++videoSessionSearch)
 	{
