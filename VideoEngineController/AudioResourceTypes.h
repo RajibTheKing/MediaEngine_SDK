@@ -4,16 +4,16 @@
 
 enum AudioEntityActionType
 {
-	EntityCaller,
-	EntityCallee,
-
+	EntityInCall,
 	EntityChannel,
 
 	EntityPublisher,
 	EntityPublisherInCall,
 
-	EntityViewr,
-	EntityViewerInCall
+	EntityViewer,
+	EntityViewerInCall, 
+
+	EntityNone
 };
 
 

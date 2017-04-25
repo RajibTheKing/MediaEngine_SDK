@@ -1,4 +1,5 @@
 #include "AudioSessionOptions.h"
+#include "InterfaceOfAudioVideoEngine.h"
 
 
 
@@ -30,14 +31,55 @@ void AudioSessionOptions::ResetOptions()
 }
 
 
-void AudioSessionOptions::SetOptions(AudioEntityActionType entityActionType)
+AudioEntityActionType AudioSessionOptions::GetActionType(int serviceType, int entityType)
 {
-	switch (entityActionType)
+	if (serviceType == SERVICE_TYPE_CALL || serviceType == SERVICE_TYPE_SELF_CALL)
 	{
-	case EntityCaller:
-		break;
+		return EntityInCall;
+	}
+	else if (SERVICE_TYPE_CHANNEL == serviceType)
+	{
+		return EntityChannel;
+	}
+	else if (SERVICE_TYPE_LIVE_STREAM == serviceType || SERVICE_TYPE_SELF_STREAM == serviceType)
+	{
+		if (ENTITY_TYPE_PUBLISHER == entityType)
+		{
+			return EntityPublisher;
+		}
+		else if (ENTITY_TYPE_PUBLISHER_CALLER == entityType)
+		{
+			return EntityPublisherInCall;
+		}
+		else if (ENTITY_TYPE_VIEWER == entityType)
+		{
+			return EntityViewer;
+		}
+		else if (ENTITY_TYPE_VIEWER_CALLEE == entityType)
+		{
+			return EntityViewerInCall;
+		}
+		else
+		{
+			return EntityNone;
+		}
+	}
+	else
+	{
+		return EntityNone;
+	}
+	
+}
 
-	case EntityCallee:
+
+
+void AudioSessionOptions::SetOptions(int serviceType, int entityType)
+{
+	AudioEntityActionType actionType = GetActionType(serviceType, entityType);
+
+	switch (actionType)
+	{
+	case EntityInCall:
 		break;
 
 	case EntityChannel:
@@ -49,13 +91,14 @@ void AudioSessionOptions::SetOptions(AudioEntityActionType entityActionType)
 	case EntityPublisherInCall:
 		break;
 
-	case EntityViewr:
+	case EntityViewer:
 		break;
 
 	case EntityViewerInCall:
 		break;
 
 	default:
+		ResetOptions();
 		break;
 	}
 }

@@ -26,12 +26,16 @@ private:
 	int headerType;
 	int packetType;
 
+	AudioEntityActionType GetActionType(int serviceType, int entityType);
+
+
 public:
 
 	AudioSessionOptions();
-	void ResetOptions();
+	~AudioSessionOptions() { }
 
-	void SetOptions(AudioEntityActionType entityActionType);
+	void ResetOptions();
+	void SetOptions(int serviceType, int entityType);
 };
 
 

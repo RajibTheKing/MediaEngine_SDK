@@ -4,6 +4,10 @@
 #include "VideoCallSession.h"
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
+#include "AudioSessionOptions.h"
+
+
+struct AudioSessionOptions;
 
 //extern int g_StopVideoSending;
 
@@ -170,6 +174,9 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 	if (!bExist)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
+
+		AudioSessionOptions audioSessionOptions;
+		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
 
