@@ -112,7 +112,6 @@ LOCAL_SRC_FILES := \
             ../../../videoengine/VideoEngineUtilities/HashGenerator.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSession.cpp \
             ../../../videoengine/VideoEngineController/AudioCallSessionListHandler.cpp \
-            ../../../videoengine/VideoEngineController/AudioCodec.cpp \
             ../../../videoengine/VideoEngineController/CommonElementsBucket.cpp \
 			../../../videoengine/VideoEngineController/Controller.cpp \
 			../../../videoengine/VideoEngineController/EncodedFramePacketizer.cpp \
