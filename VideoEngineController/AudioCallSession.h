@@ -108,11 +108,8 @@ public:
 	void SetLoudSpeaker(bool bOn);
 	void SetEchoCanceller(bool bOn);
 	bool getIsAudioLiveStreamRunning();
+	int GetEntityType();
 	bool m_bIsPublisher;
-#if 0	
-	void GetAudioSendToData(unsigned char * pAudioRawDataToSendMuxed, int &RawLengthMuxed, std::vector<int> &vRawDataLengthVectorMuxed,
-		std::vector<int> &vRawDataLengthVectorNonMuxed, int &RawLengthNonMuxed, unsigned char * pAudioNonMuxedDataToSend);
-#endif
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);

@@ -1,12 +1,6 @@
 #ifndef AUDIO_MACROS_H
 #define AUDIO_MACROS_H
 
-
-#define PUBLISHER_IN_CALL 1
-#define VIEWER_IN_CALL 2
-//#define VIEWER_NOT_IN_CALL 3 //never used so far
-#define CALL_NOT_RUNNING 4
-
 /*		*VERSION   */
 #define AUDIO_CALL_VERSION				0
 

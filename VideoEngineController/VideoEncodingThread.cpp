@@ -339,9 +339,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(DESKTOP_C_SHARP)
 
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 10, 1);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 10, 0);
 #else
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 10, 1);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 10, 0);
 #endif
 				}
 			}

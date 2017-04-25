@@ -27,8 +27,10 @@ m_lfriendID(lfriendID)
 	m_AverageValue = 0;
 	m_ThresholdValue = 0;
     
-    m_iSmallFrameHeight = iVideoHeight/3;
-    m_iSmallFrameWidth = iVideoWidth/3;
+    //Initially small frame height and width is Zero
+    m_iSmallFrameHeight = 0;
+    m_iSmallFrameWidth = 0;
+    
     if(m_iSmallFrameHeight%2) m_iSmallFrameHeight--;
     if(m_iSmallFrameWidth%2) m_iSmallFrameWidth--;
     
