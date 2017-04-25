@@ -2,16 +2,9 @@
 #define AUDIO_DECODER_PROVIDER_H
 
 
-#include "SmartPointer.h"
+#include "AudioResourceTypes.h"
 #include "AudioDecoderInterface.h"
-
-
-enum AudioDecoderType
-{
-	AAC_Decoder,
-	Opus_Decoder,
-	PCM_Decoder
-};
+#include "SmartPointer.h"
 
 
 class AudioDecoderProvider

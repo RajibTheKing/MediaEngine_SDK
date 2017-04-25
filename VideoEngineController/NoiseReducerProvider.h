@@ -1,14 +1,14 @@
 #ifndef NOISE_REDUCER_PROVIDER_H
 #define NOISE_REDUCER_PROVIDER_H
 
+
+#include "AudioResourceTypes.h"
 #include "SmartPointer.h"
+
+
 
 class NoiseReducerInterface;
 
-enum NoiseReducerType
-{
-	WebRTC_ANR
-};
 
 class NoiseReducerProvider
 {
