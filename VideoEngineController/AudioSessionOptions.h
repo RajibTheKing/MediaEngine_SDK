@@ -31,6 +31,7 @@ public:
 	AudioSessionOptions();
 	void ResetOptions();
 
+	void SetOptions(AudioEntityActionType entityActionType);
 };
 
 

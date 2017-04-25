@@ -2,6 +2,21 @@
 #define AUDIO_RESOURCE_TYPES
 
 
+enum AudioEntityActionType
+{
+	EntityCaller,
+	EntityCallee,
+
+	EntityChannel,
+
+	EntityPublisher,
+	EntityPublisherInCall,
+
+	EntityViewr,
+	EntityViewerInCall
+};
+
+
 enum AudioEncoderType
 {
 	Opus_Encoder,

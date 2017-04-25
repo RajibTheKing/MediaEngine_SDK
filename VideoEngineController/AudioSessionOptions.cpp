@@ -28,3 +28,35 @@ void AudioSessionOptions::ResetOptions()
 	headerType = -1;
 	packetType = -1;
 }
+
+
+void AudioSessionOptions::SetOptions(AudioEntityActionType entityActionType)
+{
+	switch (entityActionType)
+	{
+	case EntityCaller:
+		break;
+
+	case EntityCallee:
+		break;
+
+	case EntityChannel:
+		break;
+
+	case EntityPublisher:
+		break;
+
+	case EntityPublisherInCall:
+		break;
+
+	case EntityViewr:
+		break;
+
+	case EntityViewerInCall:
+		break;
+
+	default:
+		break;
+	}
+}
+
