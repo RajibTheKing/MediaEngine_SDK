@@ -5,23 +5,27 @@
 #include "Tools.h"
 
 
-EncoderOpus::EncoderOpus()
+EncoderOpus::EncoderOpus() : encoder(nullptr)
 {
-	m_pMediaSocketMutex.reset(new CLockHandler);
+	MR_DEBUG("#eo# EncoderOpus::EncoderOpus()");
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CAudioCodec");
+	m_pMediaSocketMutex.reset(new CLockHandler);
 }
 
 
 EncoderOpus::~EncoderOpus()
 {
-	opus_encoder_destroy(encoder);
+	MR_DEBUG("#eo# EncoderOpus::~EncoderOpus()");
+
+	if (encoder != nullptr){
+		opus_encoder_destroy(encoder);
+	}
 }
 
 
 int EncoderOpus::CreateAudioEncoder()
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCodec::CreateAudioEncoder");
+	MR_DEBUG("#eo# EncoderOpus::CreateAudioEncoder()");
 
 	int error = 0;
 	int sampling_rate = AUDIO_SAMPLE_RATE;
@@ -62,6 +66,8 @@ int EncoderOpus::CreateAudioEncoder()
 
 int EncoderOpus::EncodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
+	MR_DEBUG("#eo# EncoderOpus::EncodeAudio()");
+
 	int nbBytes;
 	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize = 0;
 
@@ -99,7 +105,8 @@ int EncoderOpus::EncodeAudio(short *in_data, unsigned int in_size, unsigned char
 
 bool EncoderOpus::SetBitrate(int nBitrate)
 {
-	PRT("@@@@@@@@@@@@@@@@@@@@Bitrate: %d\n", nBitrate);
+	MR_DEBUG("#eo# EncoderOpus::SetBitrate()");
+
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
 
@@ -109,6 +116,8 @@ bool EncoderOpus::SetBitrate(int nBitrate)
 
 bool EncoderOpus::SetComplexity(int nComplexity)
 {
+	MR_DEBUG("#eo# EncoderOpus::SetComplexity()");
+
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 	m_iComplexity = nComplexity;
 
