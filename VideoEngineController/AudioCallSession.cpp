@@ -327,7 +327,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 
 		if (m_pEcho.get())
 		{
-			m_pEcho->CancelEcho(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning());
+			m_pEcho->AddFarEndData(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning());
 		}
 
 		m_bIsAECMFarEndThreadBusy = false;
