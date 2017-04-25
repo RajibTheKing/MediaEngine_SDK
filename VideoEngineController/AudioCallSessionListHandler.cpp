@@ -114,17 +114,3 @@ bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAu
 	}
 	return false;
 }
-
-void CAudioCallSessionListHandler::ResetAllInAudioSessionList()
-{
-	Locker lock(*m_pAudioSessionListMutex);
-
-	auto videoSessionSearch = m_mAudioSessionList.begin();
-
-	for (; videoSessionSearch != m_mAudioSessionList.end(); ++videoSessionSearch)
-	{
-		CAudioCallSession *videoSession = videoSessionSearch->second;
-
-		//		videoSession->ResetAllInMediaList();
-	}
-}
