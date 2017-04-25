@@ -35,7 +35,6 @@
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType) :
 m_nEntityType(nEntityType),
-m_pCommonElementsBucket(pSharedObject),
 m_nServiceType(nServiceType),
 m_llLastPlayTime(0),
 m_bIsAECMFarEndThreadBusy(false),
@@ -44,7 +43,7 @@ m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bIsPublisher(true),
 m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 {
-	InitializeAudioCallSession(llFriendID);
+	InitializeAudioCallSession();
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
 	m_iRole = nEntityType;
 	m_bLiveAudioStreamRunning = false;
@@ -55,7 +54,6 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 	}
 
 	m_pAudioCallSessionMutex.reset(new CLockHandler);
-	m_FriendID = llFriendID;
 
 	m_iPrevRecvdSlotID = -1;
 	m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
@@ -117,7 +115,6 @@ CAudioCallSession::~CAudioCallSession()
 	delete m_pVoice;
 #endif
 
-	m_FriendID = -1;
 #ifdef DUMP_FILE
 	fclose(FileOutput);
 	fclose(FileInput);
@@ -128,7 +125,7 @@ CAudioCallSession::~CAudioCallSession()
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 }
 
-void CAudioCallSession::InitializeAudioCallSession(LongLong llFriendID)
+void CAudioCallSession::InitializeAudioCallSession()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 

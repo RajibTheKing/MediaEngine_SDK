@@ -98,7 +98,7 @@ public:
 	//	return m_pNoise;
 	//}
 
-    void InitializeAudioCallSession(LongLong llFriendID);
+    void InitializeAudioCallSession();
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
     
@@ -148,7 +148,6 @@ private:
 
 	int m_iRole;
     Tools m_Tools;
-    LongLong m_FriendID;
 	bool m_bEchoCancellerEnabled;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
