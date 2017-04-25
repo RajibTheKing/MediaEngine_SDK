@@ -56,12 +56,12 @@ bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(LongLong friendNam
 
 	if (audioSessionSearch != m_mAudioSessionList.end())
 	{
-		CAudioCallSession *videoSession = audioSessionSearch->second;
-		if (NULL != videoSession)
+		CAudioCallSession *audioSession = audioSessionSearch->second;
+		if (NULL != audioSession)
 		{
-			delete videoSession;
+			delete audioSession;
+			audioSession = NULL;
 		}
-		videoSession = NULL;
 		m_mAudioSessionList.erase(audioSessionSearch);
 		return true;
 	}
