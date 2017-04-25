@@ -1,16 +1,13 @@
 #ifndef ECHO_CANCELLER_PROVIDER_H
 #define ECHO_CANCELLER_PROVIDER_H
 
+
+#include "AudioResourceTypes.h"
 #include "SmartPointer.h"
 
+
+
 class EchoCancellerInterface;
-
-enum EchoCancellerType
-{
-	WebRTC_ECM,
-	Speex_ECM
-};
-
 
 class EchoCancellerProvider
 {
