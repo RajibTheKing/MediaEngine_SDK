@@ -20,8 +20,7 @@ public:
 	~CAudioCallSessionListHandler();
 
 	void AddToAudioSessionList(LongLong friendName, CAudioCallSession* AudioSession);
-	CAudioCallSession* GetFromAudioSessionList(LongLong friendName);
-	CAudioCallSession* GetFromAudioSessionListinIndex(int index);
+	CAudioCallSession* GetFromAudioSessionList(LongLong friendName);	
 	bool RemoveFromAudioSessionList(LongLong friendName);
 	int SizeOfAudioSessionList();
 	bool IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &AudioSession);

@@ -33,21 +33,6 @@ CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(LongLon
 	return NULL;
 }
 
-CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionListinIndex(int index)
-{
-	Locker lock(*m_pAudioSessionListMutex);
-
-	auto audioSessionSearch = m_mAudioSessionList.begin();
-
-	for (int count = 0; audioSessionSearch != m_mAudioSessionList.end(); ++audioSessionSearch, count++) 
-	{
-		if (count == index)
-		{
-			return audioSessionSearch->second;
-		}
-	}
-	return NULL;
-}
 
 bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(LongLong friendName)
 {
