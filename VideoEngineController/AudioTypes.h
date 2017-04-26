@@ -1,5 +1,5 @@
-#ifndef AUDIO_RESOURCE_TYPES
-#define AUDIO_RESOURCE_TYPES
+#ifndef AUDIO_TYPES_H
+#define AUDIO_TYPES_H
 
 
 enum AudioEntityRoleType
@@ -66,4 +66,4 @@ enum AudioHeaderTypes
 };
 
 
-#endif
+#endif  // !AUDIO_TYPES_H
