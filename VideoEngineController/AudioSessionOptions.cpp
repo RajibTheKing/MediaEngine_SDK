@@ -192,7 +192,7 @@ void AudioSessionOptions::SetOptionsForPublisherInCall()
 	adaptDecoderComplexity = false;
 
 	enableBufferData = false;
-	enableMuxing = false;
+	enableMuxing = true;
 	enablePacketization = false;
 }
 
