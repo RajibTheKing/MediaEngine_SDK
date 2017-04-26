@@ -2,7 +2,7 @@
 #include <string.h>
 #include <algorithm>
 
-
+#include "AudioMacros.h"
 #include "LogPrinter.h"
 
 AudioMixer::AudioMixer(int iNumberOfBitsPerSample, int iFrameSize) :
@@ -11,7 +11,7 @@ m_iCalleeMaskFlag(0),
 m_iNumberOfBitsPerSample(iNumberOfBitsPerSample),
 m_iAudioFrameSize(iFrameSize),
 m_iTotalBlock(16),
-m_iCalleeFrameInfoSize(14),
+m_iCalleeFrameInfoSize(AUDIO_MUX_HEADER_LENGHT),
 m_iCalleeIdLengthInByte(8),
 m_iMissingMaskLengthInByte(2),
 m_iFrameNumberLengthInByte(4)

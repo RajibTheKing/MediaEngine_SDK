@@ -118,7 +118,7 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 
 					if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 						int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
-						validHeaderLength += (totalCallee * 6 + 2);
+						validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 					}
 
 					HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
