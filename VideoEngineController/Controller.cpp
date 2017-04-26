@@ -178,7 +178,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 
 		AudioSessionOptions audioSessionOptions;
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
-		AudioResources resources(audioSessionOptions);
+		AudioResources audioResources(audioSessionOptions);
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
 

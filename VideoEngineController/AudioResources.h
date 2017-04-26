@@ -11,8 +11,10 @@
 #include "AudioSessionOptions.h"
 
 
-struct AudioResources
+class AudioResources
 {
+private:
+
 	SmartPointer<AudioPacketHeader> m_pAudioHeader;
 
 	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
@@ -24,7 +26,22 @@ struct AudioResources
 	SmartPointer<AudioGainInterface> m_pRecorderGain;
 	SmartPointer<AudioGainInterface> m_pPlayerGain;
 
+
+public:
+
 	AudioResources(AudioSessionOptions audioSessionOptions);
+	~AudioResources() { }
+
+	SmartPointer<AudioPacketHeader> GetPacketHeader() { return m_pAudioHeader; }
+
+	SmartPointer<AudioEncoderInterface> GetEncoder()  { return m_pAudioEncoder; }
+	SmartPointer<AudioDecoderInterface> GetDecoder()  { return m_pAudioDecoder; }
+
+	SmartPointer<EchoCancellerInterface> GetEchoCanceler() { return m_pEchoCanceler; }
+	SmartPointer<NoiseReducerInterface> GetNoiseReducer()  { return m_pNoiseReducer; }
+
+	SmartPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
+	SmartPointer<AudioGainInterface> GetPlayerGain()   { return m_pPlayerGain; }
 };
 
 
