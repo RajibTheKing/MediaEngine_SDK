@@ -7,7 +7,7 @@ SmartPointer<NoiseReducerInterface> NoiseReducerProvider::GetNoiseReducer(NoiseR
 	NoiseReducerInterface* pInstance;
 	switch (noiseReducerType)
 	{
-	case WebRTC_ANR:
+	case WebRTC_NoiseReducer:
 		pInstance = new WebRTCNoiseReducer();
 		break;
 

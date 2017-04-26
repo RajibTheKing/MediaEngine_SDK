@@ -21,7 +21,7 @@ enum AudioEncoderType
 {
 	Opus_Encoder,
 	PCM_Encoder,
-	Disable_Encoder
+	No_Encoder
 };
 
 
@@ -30,16 +30,16 @@ enum AudioDecoderType
 	AAC_Decoder,
 	Opus_Decoder,
 	PCM_Decoder,
-	Disable_Decoder
+	No_Decoder
 };
 
 
 enum AudioGainType
 {
-	WebRTC_AGC,
-	GomGomGain_AGC,
-	Naive_AGC,
-	Disable_Gain
+	WebRTC_Gain,
+	GomGom_Gain,
+	Naive_Gain,
+	No_Gain
 };
 
 
@@ -47,14 +47,14 @@ enum EchoCancelerType
 {
 	WebRTC_ECM,
 	Speex_ECM,
-	Disable_ECM
+	No_ECM
 };
 
 
 enum NoiseReducerType
 {
-	WebRTC_ANR,
-	Disable_ANR
+	WebRTC_NoiseReducer,
+	No_NoiseReducer
 };
 
 

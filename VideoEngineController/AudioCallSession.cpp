@@ -71,8 +71,8 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 
 //	m_pNoise = NoiseReducerProvider::GetNoiseReducer(WebRTC_ANR);
 
-	m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_AGC);
-	m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_AGC);
+	m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+	m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
 
 #ifdef USE_VAD
 	m_pVoice = new CVoice();

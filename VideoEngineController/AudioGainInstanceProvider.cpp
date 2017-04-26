@@ -9,15 +9,15 @@ SmartPointer<AudioGainInterface> AudioGainInstanceProvider::GetAudioGainInstance
 	AudioGainInterface* pInstance = nullptr;
 	switch (audioGainType)
 	{
-	case WebRTC_AGC:
+	case WebRTC_Gain:
 		pInstance = new WebRTCGain();
 		break;
 
-	case GomGomGain_AGC:
+	case GomGom_Gain:
 		pInstance = new GomGomGain();
 		break;
 
-	case Naive_AGC:
+	case Naive_Gain:
 		pInstance = new NaiveGain();
 		break;
 
