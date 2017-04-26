@@ -32,7 +32,7 @@ void AudioSessionOptions::ResetOptions()
 }
 
 
-AudioEntityRoleType AudioSessionOptions::GetActionType(int serviceType, int entityType)
+AudioEntityRoleType AudioSessionOptions::GetEntityRoleType(int serviceType, int entityType)
 {
 	if (serviceType == SERVICE_TYPE_CALL || serviceType == SERVICE_TYPE_SELF_CALL)
 	{
@@ -75,9 +75,9 @@ AudioEntityRoleType AudioSessionOptions::GetActionType(int serviceType, int enti
 
 void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 {
-	AudioEntityRoleType actionType = GetActionType(serviceType, entityType);
+	AudioEntityRoleType entityRoleType = GetEntityRoleType(serviceType, entityType);
 
-	switch (actionType)
+	switch (entityRoleType)
 	{
 	case EntityInCall:
 		SetOptionsForCall();

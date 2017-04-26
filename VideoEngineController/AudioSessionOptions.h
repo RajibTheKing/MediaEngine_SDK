@@ -30,7 +30,7 @@ private:
 
 protected:
 
-	AudioEntityRoleType GetActionType(int serviceType, int entityType);
+	AudioEntityRoleType GetEntityRoleType(int serviceType, int entityType);
 
 	void SetOptionsForCall();
 	void SetOptionsForChannel();
