@@ -25,9 +25,9 @@ void AudioSessionOptions::ResetOptions()
 	adaptDecoderBitrate = false;
 	adaptDecoderComplexity = false;
 
-	bufferData = false;
+	enableBufferData = false;
 	enableMuxing = false;
-	packetizeEnable = false;
+	enablePacketization = false;
 }
 
 
@@ -126,9 +126,9 @@ void AudioSessionOptions::SetOptionsForCall()
 	adaptDecoderBitrate = true;
 	adaptDecoderComplexity = true;
 
-	bufferData = false;
+	enableBufferData = false;
 	enableMuxing = false;
-	packetizeEnable = false;
+	enablePacketization = false;
 }
 
 
@@ -148,9 +148,9 @@ void AudioSessionOptions::SetOptionsForChannel()
 	adaptDecoderBitrate = false;
 	adaptDecoderComplexity = false;
 
-	bufferData = false;
+	enableBufferData = false;
 	enableMuxing = false;
-	packetizeEnable = false;
+	enablePacketization = false;
 }
 
 void AudioSessionOptions::SetOptionsForPublisher()
@@ -169,9 +169,9 @@ void AudioSessionOptions::SetOptionsForPublisher()
 	adaptDecoderBitrate = false;
 	adaptDecoderComplexity = false;
 
-	bufferData = false;
+	enableBufferData = false;
 	enableMuxing = false;
-	packetizeEnable = false;
+	enablePacketization = false;
 }
 
 
@@ -191,9 +191,9 @@ void AudioSessionOptions::SetOptionsForPublisherInCall()
 	adaptDecoderBitrate = false;
 	adaptDecoderComplexity = false;
 
-	bufferData = false;
+	enableBufferData = false;
 	enableMuxing = false;
-	packetizeEnable = false;
+	enablePacketization = false;
 }
 
 
@@ -213,9 +213,9 @@ void AudioSessionOptions::SetOptionsForViewer()
 	adaptDecoderBitrate = false;
 	adaptDecoderComplexity = false;
 
-	bufferData = false;
+	enableBufferData = false;
 	enableMuxing = false;
-	packetizeEnable = false;
+	enablePacketization = false;
 }
 
 
@@ -235,9 +235,9 @@ void AudioSessionOptions::SetOptionsForViewerInCall()
 	adaptDecoderBitrate = false;
 	adaptDecoderComplexity = false;
 
-	bufferData = false;
+	enableBufferData = false;
 	enableMuxing = false;
-	packetizeEnable = false;
+	enablePacketization = false;
 }
 
 

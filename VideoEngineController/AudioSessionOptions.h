@@ -15,7 +15,7 @@ private:
 	AudioDecoderType decoderType;
 
 	NoiseReducerType noiseReducerType;
-	EchoCancellerType echoCancelerType;
+	EchoCancelerType echoCancelerType;
 	AudioGainType gainType;
 
 	bool adaptEncoderBitrate;
@@ -23,9 +23,9 @@ private:
 	bool adaptDecoderBitrate;
 	bool adaptDecoderComplexity;
 
-	bool bufferData;
+	bool enableBufferData;
 	bool enableMuxing;
-	bool packetizeEnable;
+	bool enablePacketization;
 
 
 protected:
@@ -49,6 +49,27 @@ public:
 
 	void ResetOptions();
 	void SetOptions(int serviceType, int entityType);
+
+
+public:
+
+	AudioHeaderTypes GetHeaderType()       { return headerType; }
+
+	AudioEncoderType GetEncoderType()      { return encoderType; }
+	AudioDecoderType GetDecoderType()      { return decoderType; }
+
+	NoiseReducerType GetNoiseReducerType() { return noiseReducerType; }
+	EchoCancelerType GetEchoCancelerType() { return echoCancelerType; }
+	AudioGainType GetGainType()            { return gainType; }
+
+	bool IsAdaptEncoderBitrate()           { return adaptEncoderBitrate; }
+	bool IsAdaptEncoderComplexity()        { return adaptEncoderComplexity; }
+	bool IsAdaptDecoderBitrate()           { return adaptDecoderBitrate; }
+	bool IsAdaptDecoderComplexity()        { return adaptDecoderComplexity; }
+
+	bool IsEnabledBufferData()             { return enableBufferData; }
+	bool IsEnabledMuxing()                 { return enableMuxing; }
+	bool IsEnabledPacketization()          { return enablePacketization; }
 };
 
 
