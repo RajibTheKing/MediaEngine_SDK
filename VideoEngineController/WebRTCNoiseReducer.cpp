@@ -18,7 +18,7 @@ enum ANRMode{
 
 WebRTCNoiseReducer::WebRTCNoiseReducer()
 {
-	int ansret = -1;
+/*	int ansret = -1;
 	if ((ansret = WebRtcNs_Create(&NS_instance)))
 	{
 		ALOG("WebRtcNs_Create failed with error code = " + Tools::IntegertoStringConvert(ansret));
@@ -44,17 +44,19 @@ WebRTCNoiseReducer::WebRTCNoiseReducer()
 	{
 		ALOG("WebRtcNs_set_policy successful");
 	}
+	*/
 }
 
 
 WebRTCNoiseReducer::~WebRTCNoiseReducer()
 {
-	WebRtcNs_Free(NS_instance);
+//	WebRtcNs_Free(NS_instance);
 }
 
 
 int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning)
 {
+	/*
 	long long llNow = Tools::CurrentTimestamp();
 	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += ANS_SAMPLES_IN_FRAME)
 	{
@@ -65,6 +67,7 @@ int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf,
 			return false;
 		}
 	}
+	*/
 
 	/*if (memcmp(sInBuf, sOutBuf, sBufferSize * sizeof(short)) == 0)
 	{

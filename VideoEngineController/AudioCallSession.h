@@ -2,6 +2,7 @@
 #ifndef _AUDIO_CALL_SESSION_H_
 #define _AUDIO_CALL_SESSION_H_
 
+#include "AudioResources.h"
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
 #include "LockHandler.h"
@@ -75,7 +76,7 @@ private:
 
 public:
 	
-	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType);
+	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources);
     ~CAudioCallSession();
 
 	void StartCallInLive(int iRole, int nCallInLiveType);
@@ -134,8 +135,8 @@ public:
 	int m_iPrevRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot;
 
-	SmartPointer<AudioGainInterface> m_pRecorderGain;
-	SmartPointer<AudioGainInterface> m_pPlayerGain;
+//	SmartPointer<AudioGainInterface> m_pRecorderGain;
+//	SmartPointer<AudioGainInterface> m_pPlayerGain;
 
 	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
@@ -178,12 +179,13 @@ private:
 
 	int m_nCallInLiveType;
 
-	SmartPointer<EchoCancellerInterface> m_pEcho;
+
+//	SmartPointer<EchoCancellerInterface> m_pEcho;
 
 //	SmartPointer<NoiseReducerInterface> m_pNoise;
 
-	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
+//	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
+//	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
 
 	static void OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength);
 	static void OnEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer);
@@ -196,11 +198,24 @@ private:
 #endif
 
 public: 
+
+	SmartPointer<AudioPacketHeader> m_pAudioHeader;
+
+	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
+	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
+
+	SmartPointer<EchoCancellerInterface> m_pEcho;
+	SmartPointer<NoiseReducerInterface> m_pNoiseReducer;
+
+	SmartPointer<AudioGainInterface> m_pRecorderGain;
+	SmartPointer<AudioGainInterface> m_pPlayerGain;
+
 	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
 	int GetRole();
 
 protected:
+	void SetResources(AudioResources &audioResources);
 
     SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
     SmartPointer<std::thread> m_pAudioEncodingThread;

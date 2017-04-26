@@ -123,10 +123,10 @@ void AudioSessionOptions::SetOptionsForCall()
 	echoCancelerType = WebRTC_ECM;
 	gainType = WebRTC_Gain;
 
-	adaptEncoderBitrate = true;
-	adaptEncoderComplexity = true;
-	adaptDecoderBitrate = true;
-	adaptDecoderComplexity = true;
+	adaptEncoderBitrate = false;
+	adaptEncoderComplexity = false;
+	adaptDecoderBitrate = false;
+	adaptDecoderComplexity = false;
 
 	enableBufferData = false;
 	enableMuxing = false;
@@ -188,8 +188,8 @@ void AudioSessionOptions::SetOptionsForPublisherInCall()
 
 	headerType = HEADER_COMMON;
 
-	encoderType = Opus_Encoder;
-	decoderType = Opus_Decoder;
+	encoderType = PCM_Encoder;
+	decoderType = PCM_Decoder;
 
 	noiseReducerType = No_NoiseReducer;
 	echoCancelerType = WebRTC_ECM;
@@ -236,8 +236,8 @@ void AudioSessionOptions::SetOptionsForViewerInCall()
 
 	headerType = HEADER_COMMON;
 
-	encoderType = Opus_Encoder;
-	decoderType = Opus_Decoder;
+	encoderType = PCM_Encoder;
+	decoderType = PCM_Decoder;
 
 	noiseReducerType = No_NoiseReducer;
 	echoCancelerType = WebRTC_ECM;

@@ -7,7 +7,7 @@
 
 EncoderOpus::EncoderOpus() : encoder(nullptr)
 {
-	MR_DEBUG("#eo# EncoderOpus::EncoderOpus()");
+	MR_DEBUG("#resorce#encoder#opus# EncoderOpus::EncoderOpus()");
 
 	m_pMediaSocketMutex.reset(new CLockHandler);
 }
@@ -15,7 +15,7 @@ EncoderOpus::EncoderOpus() : encoder(nullptr)
 
 EncoderOpus::~EncoderOpus()
 {
-	MR_DEBUG("#eo# EncoderOpus::~EncoderOpus()");
+	MR_DEBUG("#resorce#encoder#opus# EncoderOpus::~EncoderOpus()");
 
 	if (encoder != nullptr){
 		opus_encoder_destroy(encoder);
@@ -25,7 +25,7 @@ EncoderOpus::~EncoderOpus()
 
 int EncoderOpus::CreateAudioEncoder()
 {
-	MR_DEBUG("#eo# EncoderOpus::CreateAudioEncoder()");
+	MR_DEBUG("#resorce#encoder#opus# EncoderOpus::CreateAudioEncoder()");
 
 	int error = 0;
 	int sampling_rate = AUDIO_SAMPLE_RATE;
@@ -66,7 +66,7 @@ int EncoderOpus::CreateAudioEncoder()
 
 int EncoderOpus::EncodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer)
 {
-	MR_DEBUG("#eo# EncoderOpus::EncodeAudio()");
+	MR_DEBUG("#resorce#encoder#opus# EncoderOpus::EncodeAudio()");
 
 	int nbBytes;
 	int nEncodedSize = 0, iFrameCounter = 0, nProcessedDataSize = 0;
@@ -105,7 +105,7 @@ int EncoderOpus::EncodeAudio(short *in_data, unsigned int in_size, unsigned char
 
 bool EncoderOpus::SetBitrate(int nBitrate)
 {
-	MR_DEBUG("#eo# EncoderOpus::SetBitrate()");
+	MR_DEBUG("#resorce#encoder#opus# EncoderOpus::SetBitrate()");
 
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 	m_iCurrentBitRate = nBitrate;
@@ -116,7 +116,7 @@ bool EncoderOpus::SetBitrate(int nBitrate)
 
 bool EncoderOpus::SetComplexity(int nComplexity)
 {
-	MR_DEBUG("#eo# EncoderOpus::SetComplexity()");
+	MR_DEBUG("#resorce#encoder#opus# EncoderOpus::SetComplexity()");
 
 	int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 	m_iComplexity = nComplexity;
