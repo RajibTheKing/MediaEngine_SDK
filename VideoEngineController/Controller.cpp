@@ -180,7 +180,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -254,8 +254,11 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 	if (!bExist)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session creating");
+		AudioSessionOptions audioSessionOptions;
+		audioSessionOptions.SetOptions(SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
+		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 

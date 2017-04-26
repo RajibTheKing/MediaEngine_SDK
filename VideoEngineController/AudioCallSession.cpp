@@ -33,7 +33,7 @@
 #endif
 
 
-CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType) :
+CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources) :
 m_nEntityType(nEntityType),
 m_nServiceType(nServiceType),
 m_llLastPlayTime(0),
@@ -43,7 +43,8 @@ m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bIsPublisher(true),
 m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 {
-	InitializeAudioCallSession();
+	SetResources(audioResources);
+//	InitializeAudioCallSession();
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
 	m_iRole = nEntityType;
 	m_bLiveAudioStreamRunning = false;
@@ -67,12 +68,12 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 		//m_bEchoCancellerEnabled = false;
 	}
 
-	m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
+//	m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
 
 //	m_pNoise = NoiseReducerProvider::GetNoiseReducer(WebRTC_ANR);
 
-	m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
-	m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+//	m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+//	m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
 
 #ifdef USE_VAD
 	m_pVoice = new CVoice();
@@ -125,16 +126,32 @@ CAudioCallSession::~CAudioCallSession()
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 }
 
+
+void CAudioCallSession::SetResources(AudioResources &audioResources)
+{
+	m_pAudioHeader = audioResources.GetPacketHeader();
+
+	m_pAudioEncoder = audioResources.GetEncoder();
+	m_pAudioDecoder = audioResources.GetDecoder();
+
+	m_pEcho = audioResources.GetEchoCanceler();
+	m_pNoiseReducer = audioResources.GetNoiseReducer();
+
+	m_pRecorderGain = audioResources.GetRecorderGain();
+	m_pPlayerGain = audioResources.GetPlayerGain();
+}
+
+
 void CAudioCallSession::InitializeAudioCallSession()
 {
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
+	//CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
 
-	this->m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(Opus_Encoder);
-	m_pAudioEncoder->CreateAudioEncoder();
+	//this->m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(Opus_Encoder);
+	//m_pAudioEncoder->CreateAudioEncoder();
 
-	this->m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(Opus_Decoder);
+	//this->m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(Opus_Decoder);
 
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
+	//CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
 
 }
 
