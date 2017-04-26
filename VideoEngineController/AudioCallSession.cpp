@@ -49,7 +49,6 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 
 	m_FriendID = llFriendID;
 
-	InitializeAudioCallSession();
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
 	m_iRole = nEntityType;
 	m_bLiveAudioStreamRunning = false;
