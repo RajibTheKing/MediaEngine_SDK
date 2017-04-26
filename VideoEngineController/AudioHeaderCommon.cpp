@@ -5,6 +5,8 @@
 
 AudioHeaderCommon::AudioHeaderCommon()
 {
+	MR_DEBUG("#resorce#header# AudioHeaderCommon::AudioHeaderCommon() - 1");
+
 	InitHeaderBitMap();
 
 	nNumberOfHeaderElements = sizeof(HeaderBitmap) / sizeof(int);
@@ -24,12 +26,16 @@ AudioHeaderCommon::AudioHeaderCommon()
 
 AudioHeaderCommon::AudioHeaderCommon(unsigned int * Information)
 {
+	MR_DEBUG("#resorce#header# AudioHeaderCommon::AudioHeaderCommon() - 2");
+
 	AudioHeaderCommon();
 	CopyInformationToHeader(Information);
 }
 
 AudioHeaderCommon::AudioHeaderCommon(unsigned char *Header)
 {
+	MR_DEBUG("#resorce#header# AudioHeaderCommon::AudioHeaderCommon() - 3");
+
 	AudioHeaderCommon();
 
 	CopyHeaderToInformation(Header);
@@ -37,6 +43,8 @@ AudioHeaderCommon::AudioHeaderCommon(unsigned char *Header)
 
 AudioHeaderCommon::~AudioHeaderCommon()
 {
+	MR_DEBUG("#resorce#header# AudioHeaderCommon::~AudioHeaderCommon()");
+
 	memset(m_arrllInformation, 0, sizeof(m_arrllInformation));
 	memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 }
