@@ -186,6 +186,8 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/WebRTCEchoCanceller.cpp \
 			../../../videoengine/VideoEngineController/WebRTCNoiseReducer.cpp \
 			../../../videoengine/VideoEngineController/NoiseReducerProvider.cpp \
+			../../../videoengine/VideoEngineController/AudioSessionOptions.cpp \
+			../../../videoengine/VideoEngineController/AudioResources.cpp \
 
 
 			
