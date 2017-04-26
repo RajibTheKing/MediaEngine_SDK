@@ -106,9 +106,10 @@ void CLiveAudioParserForCallee::ProcessLiveAudio(int iId, int nOffset, unsigned 
 
 			iLeftRange = max(nFrameLeftRange, iLeftRange);
 			iRightRange = min(nFrameRightRange, iRightRange);
-
+			LOG18("#18 %s # TCallee: %d PT:%d", __FUNCTION__, (int)uchAudioData[nFrameLeftRange + validHeaderLength + 1], (int)uchAudioData[1 + nFrameLeftRange]);
 			if (iLeftRange <= iRightRange)	//The frame is not complete.
 			{
+				LOG18("#18# Fun: Broken %d", iFrameNumber);
 				bCompleteFrame = false;
 				HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
 				if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
@@ -119,7 +120,7 @@ void CLiveAudioParserForCallee::ProcessLiveAudio(int iId, int nOffset, unsigned 
 					validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
 
 
-					if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+					if (uchAudioData[ 1 + nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 						int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
 						validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 					}
@@ -142,7 +143,7 @@ void CLiveAudioParserForCallee::ProcessLiveAudio(int iId, int nOffset, unsigned 
 		++iFrameNumber;
 		HITLER("#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
 
-		if (!bCompleteFrameHeader)
+		if (!bCompleteFrameHeader || !bCompleteFrame)
 		{
 			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
 

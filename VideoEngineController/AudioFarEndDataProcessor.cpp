@@ -566,7 +566,7 @@ void CAudioFarEndDataProcessor::DecodingThreadProcedure()
 #ifdef DUMP_FILE
 	m_pAudioCallSession->FileOutput = fopen("/sdcard/OutputPCMN.pcm", "wb");
 #endif
-		
+	LOG18("#18 #F Flow %s", __FUNCTION__);
 	while (m_bAudioDecodingThreadRunning)
 	{
 		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)							
@@ -771,21 +771,21 @@ void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamViewer()
 					if (bFound)
 					{
 						LOG18("#18@# FOUND REMOVED AUDIO DATA");
-						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
+						m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 					}
 					else
 					{
 						//Do Some thing;
 						LOG18("#18@# FOUND REMOVED AUDIO DATA with -1");
 						nCalleeId = -1;
-						m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
+						m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 					}
 				}
 				else //For Only Viewers
 				{
 					LOG18("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR");
 					nCalleeId = -1;
-					m_nDecodingFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
+					m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 				}
 			}
 			else
