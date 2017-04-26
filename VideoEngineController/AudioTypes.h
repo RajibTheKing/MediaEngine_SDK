@@ -58,7 +58,6 @@ enum NoiseReducerType
 };
 
 
-
 enum AudioHeaderTypes
 {
 	HEADER_COMMON,

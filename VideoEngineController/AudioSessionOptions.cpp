@@ -1,4 +1,5 @@
 #include "AudioSessionOptions.h"
+#include "LogPrinter.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
 
@@ -111,6 +112,8 @@ void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 
 void AudioSessionOptions::SetOptionsForCall()
 {
+	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForCall()");
+
 	headerType = HEADER_COMMON;
 
 	encoderType = Opus_Encoder;
@@ -133,6 +136,8 @@ void AudioSessionOptions::SetOptionsForCall()
 
 void AudioSessionOptions::SetOptionsForChannel()
 {
+	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForChannel()");
+
 	headerType = HEADER_COMMON;
 
 	encoderType = No_Encoder;
@@ -155,6 +160,8 @@ void AudioSessionOptions::SetOptionsForChannel()
 
 void AudioSessionOptions::SetOptionsForPublisher()
 {
+	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisher()");
+
 	headerType = HEADER_COMMON;
 
 	encoderType = PCM_Encoder;
@@ -177,6 +184,8 @@ void AudioSessionOptions::SetOptionsForPublisher()
 
 void AudioSessionOptions::SetOptionsForPublisherInCall()
 {
+	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisherInCall()");
+
 	headerType = HEADER_COMMON;
 
 	encoderType = Opus_Encoder;
@@ -199,6 +208,8 @@ void AudioSessionOptions::SetOptionsForPublisherInCall()
 
 void AudioSessionOptions::SetOptionsForViewer()
 {
+	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewer()");
+
 	headerType = HEADER_COMMON;
 
 	encoderType = No_Encoder;
@@ -221,6 +232,8 @@ void AudioSessionOptions::SetOptionsForViewer()
 
 void AudioSessionOptions::SetOptionsForViewerInCall()
 {
+	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewerInCall()");
+
 	headerType = HEADER_COMMON;
 
 	encoderType = Opus_Encoder;
