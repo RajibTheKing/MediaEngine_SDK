@@ -5,6 +5,7 @@
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 #include "AudioSessionOptions.h"
+#include "AudioResources.h"
 
 
 struct AudioSessionOptions;
@@ -177,6 +178,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 
 		AudioSessionOptions audioSessionOptions;
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
+		AudioResources resources(audioSessionOptions);
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
 
