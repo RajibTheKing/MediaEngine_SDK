@@ -4,7 +4,7 @@
 #include "SpeexEchoCanceller.h"
 
 
-SmartPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancellerType echoCancellerType)
+SmartPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancelerType echoCancellerType)
 {
 	EchoCancellerInterface* pInstance = nullptr;
 

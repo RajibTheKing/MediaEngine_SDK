@@ -43,7 +43,7 @@ enum AudioGainType
 };
 
 
-enum EchoCancellerType
+enum EchoCancelerType
 {
 	WebRTC_ECM,
 	Speex_ECM,

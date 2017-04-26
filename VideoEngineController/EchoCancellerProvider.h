@@ -14,7 +14,7 @@ class EchoCancellerProvider
 	
 public:
 
-	static SmartPointer<EchoCancellerInterface> GetEchoCanceller(EchoCancellerType echoCancellerType);
+	static SmartPointer<EchoCancellerInterface> GetEchoCanceller(EchoCancelerType echoCancellerType);
 
 };
 
