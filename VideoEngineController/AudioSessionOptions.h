@@ -5,7 +5,7 @@
 #include "AudioResourceTypes.h"
 
 
-struct AudioSessionOptions
+class AudioSessionOptions
 {
 private:
 	AudioEncoderType encoderType;
@@ -26,7 +26,19 @@ private:
 	int headerType;
 	int packetType;
 
+
+protected:
+
 	AudioEntityActionType GetActionType(int serviceType, int entityType);
+
+	void SetOptionsForCall();
+	void SetOptionsForChannel();
+
+	void SetOptionsForPublisher();
+	void SetOptionsForPublisherInCall();
+
+	void SetOptionsForViewer();
+	void SetOptionsForViewerInCall();
 
 
 public:

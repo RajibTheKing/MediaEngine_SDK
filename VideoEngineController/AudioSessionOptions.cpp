@@ -80,21 +80,27 @@ void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 	switch (actionType)
 	{
 	case EntityInCall:
+		SetOptionsForCall();
 		break;
 
 	case EntityChannel:
+		SetOptionsForChannel();
 		break;
 
 	case EntityPublisher:
+		SetOptionsForPublisher();
 		break;
 
 	case EntityPublisherInCall:
+		SetOptionsForPublisherInCall();
 		break;
 
 	case EntityViewer:
+		SetOptionsForViewer();
 		break;
 
 	case EntityViewerInCall:
+		SetOptionsForViewerInCall();
 		break;
 
 	default:
@@ -102,4 +108,41 @@ void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 		break;
 	}
 }
+
+
+void AudioSessionOptions::SetOptionsForCall()
+{
+
+}
+
+
+void AudioSessionOptions::SetOptionsForChannel()
+{
+
+}
+
+void AudioSessionOptions::SetOptionsForPublisher()
+{
+
+}
+
+
+void AudioSessionOptions::SetOptionsForPublisherInCall()
+{
+
+}
+
+
+void AudioSessionOptions::SetOptionsForViewer()
+{
+
+}
+
+
+void AudioSessionOptions::SetOptionsForViewerInCall()
+{
+
+}
+
+
 
