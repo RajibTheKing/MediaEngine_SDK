@@ -72,7 +72,6 @@ AudioEntityRoleType AudioSessionOptions::GetActionType(int serviceType, int enti
 }
 
 
-
 void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 {
 	AudioEntityRoleType actionType = GetActionType(serviceType, entityType);
@@ -153,11 +152,12 @@ void AudioSessionOptions::SetOptionsForChannel()
 	enablePacketization = false;
 }
 
+
 void AudioSessionOptions::SetOptionsForPublisher()
 {
 	headerType = HEADER_COMMON;
 
-	encoderType = Disable_Encoder;
+	encoderType = PCM_Encoder;
 	decoderType = Disable_Decoder;
 
 	noiseReducerType = Disable_ANR;
@@ -179,12 +179,12 @@ void AudioSessionOptions::SetOptionsForPublisherInCall()
 {
 	headerType = HEADER_COMMON;
 
-	encoderType = Disable_Encoder;
-	decoderType = Disable_Decoder;
+	encoderType = Opus_Encoder;
+	decoderType = Opus_Decoder;
 
 	noiseReducerType = Disable_ANR;
-	echoCancelerType = Disable_ECM;
-	gainType = Disable_Gain;
+	echoCancelerType = WebRTC_ECM;
+	gainType = WebRTC_AGC;
 
 	adaptEncoderBitrate = false;
 	adaptEncoderComplexity = false;
@@ -202,7 +202,7 @@ void AudioSessionOptions::SetOptionsForViewer()
 	headerType = HEADER_COMMON;
 
 	encoderType = Disable_Encoder;
-	decoderType = Disable_Decoder;
+	decoderType = PCM_Decoder;
 
 	noiseReducerType = Disable_ANR;
 	echoCancelerType = Disable_ECM;
@@ -223,12 +223,12 @@ void AudioSessionOptions::SetOptionsForViewerInCall()
 {
 	headerType = HEADER_COMMON;
 
-	encoderType = Disable_Encoder;
-	decoderType = Disable_Decoder;
+	encoderType = Opus_Encoder;
+	decoderType = Opus_Decoder;
 
 	noiseReducerType = Disable_ANR;
-	echoCancelerType = Disable_ECM;
-	gainType = Disable_Gain;
+	echoCancelerType = WebRTC_ECM;
+	gainType = WebRTC_AGC;
 
 	adaptEncoderBitrate = false;
 	adaptEncoderComplexity = false;
