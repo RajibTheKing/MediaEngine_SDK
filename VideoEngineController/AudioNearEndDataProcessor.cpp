@@ -19,13 +19,11 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CAudioNearEndDataProcessor::CAudioNearEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
+CAudioNearEndDataProcessor::CAudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
 m_bIsReady(false),
-m_llFriendID(llFriendID),
 m_pAudioCallSession(pAudioCallSession),
-m_pCommonElementsBucket(pCommonElementsBucket),
 m_pAudioEncodingBuffer(pAudioEncodingBuffer),
 m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
 m_bAudioEncodingThreadRunning(false),
@@ -318,9 +316,11 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 #endif
 
 #ifndef NO_CONNECTIVITY
-		m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
+		//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
+		(*m_cbDataReady)(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
 #else
-		m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+		//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+		(*m_cbOnEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
 
 #ifdef  DUPLICATE_AUDIO
@@ -328,9 +328,11 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 		{
 			Tools::SOSleep(5);
 #ifndef NO_CONNECTIVITY
-			m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
+			//m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
+			(*m_cbDataReady)(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
 #else
-			m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+			//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+			(*m_cbOnEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
 		}
 #endif

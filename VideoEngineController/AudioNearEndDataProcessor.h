@@ -1,6 +1,7 @@
 #ifndef AUDIO_NEAREND_DATA_PROCESSOR_H
 #define AUDIO_NEAREND_DATA_PROCESSOR_H
 
+#include "AudioTypes.h"
 #include "Size.h"
 #include "LockHandler.h"
 #include "Tools.h"
@@ -21,7 +22,7 @@ class CAudioNearEndDataProcessor
 {
 public:
 
-	CAudioNearEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+	CAudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 	~CAudioNearEndDataProcessor();
 
 	static void *CreateAudioEncodingThread(void* param);
@@ -33,6 +34,16 @@ public:
 	void StopCallInLive(int nEntityType);
 
 	long long GetBaseOfRelativeTime();
+
+	void SetDataReadyCallback(OnDataReadyToSendCB* cbDataReady)
+	{
+		m_cbDataReady = cbDataReady;
+	}
+
+	void SetEventCallback(OnFireEventCB* cbOnEvent)
+	{
+		m_cbOnEvent = cbOnEvent;
+	}
 
 private:
 	void LiveStreamNearendProcedureViewer();
@@ -69,7 +80,6 @@ private:
 //	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 	CAudioCallSession *m_pAudioCallSession = nullptr;
-	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;	
 	CAudioShortBuffer *m_pAudioEncodingBuffer = nullptr;
 	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader = nullptr;
 	AudioMixer *m_pAudioMixer = nullptr;
@@ -92,6 +102,9 @@ private:
 	
 	//SmartPointer<std::thread> m_pAudioEncodingThread;
 	SmartPointer<CLockHandler> m_pAudioEncodingMutex;
+
+	OnDataReadyToSendCB* m_cbDataReady;
+	OnFireEventCB* m_cbOnEvent;
 };
 
 #endif //AUDIO_NEAREND_DATA_PROCESSOR_H

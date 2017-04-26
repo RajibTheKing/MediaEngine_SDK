@@ -1,6 +1,16 @@
 #ifndef AUDIO_TYPES_H
 #define AUDIO_TYPES_H
 
+#include "AudioVideoEngineDefinitions.h"
+#include <vector>
+
+//External Callbacks
+typedef void(*SendFunctionPointerType)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> >);
+
+//Internal Callbacks
+typedef void(*OnDataReadyToSendCB)(int mediaType, unsigned char* data, size_t dataLength);
+typedef void(*OnFireEventCB)(int eventType, size_t dataLenth, unsigned char data[]);
+
 
 enum AudioEntityRoleType
 {

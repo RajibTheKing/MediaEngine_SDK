@@ -182,6 +182,9 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 
 		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
 
+		pAudioSession->SetSendFunction(m_pCommonElementsBucket->GetSendFunctionPointer());
+		pAudioSession->SetEventNotifier(m_pCommonElementsBucket->m_pEventNotifier);
+
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session started");
@@ -1123,7 +1126,7 @@ void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPo
 	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
 }
 
-void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
+void CController::SetSendFunctionPointer(SendFunctionPointerType callBackFunctionPointer)
 {
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }

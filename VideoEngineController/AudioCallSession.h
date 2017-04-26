@@ -60,6 +60,7 @@ class AudioDecoderInterface;
 class EchoCancellerInterface;
 class NoiseReducerInterface;
 class AudioGainInterface;
+class CEventNotifier;
 
 #ifdef USE_VAD
 class CVoice;
@@ -115,6 +116,16 @@ public:
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
     int GetServiceType();
 
+	static void SetSendFunction(SendFunctionPointerType cbClientSendFunc)
+	{
+		m_cbClientSendFunction = cbClientSendFunc;
+	}
+
+	void SetEventNotifier(CEventNotifier *pEventNotifier)
+	{
+		m_pEventNotifier = pEventNotifier;
+	}
+
 	int m_iNextPacketType;
 	CAudioShortBuffer m_AudioEncodingBuffer;
 	CAudioShortBuffer  m_ViewerInCallSentDataQueue;
@@ -148,6 +159,7 @@ private:
 
 	int m_iRole;
     Tools m_Tools;
+	static LongLong m_FriendID;
 	bool m_bEchoCancellerEnabled;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
@@ -172,6 +184,12 @@ private:
 
 	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
+
+	static void OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength);
+	static void OnEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer);
+
+	static SendFunctionPointerType m_cbClientSendFunction;
+	static CEventNotifier* m_pEventNotifier;
 
 #ifdef USE_VAD
 	CVoice *m_pVoice;

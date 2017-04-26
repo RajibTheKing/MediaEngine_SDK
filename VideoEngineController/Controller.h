@@ -104,7 +104,7 @@ public:
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
 
 
-	void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
+	void SetSendFunctionPointer(SendFunctionPointerType callBackFunctionPointer);
 
 	bool StartAudioCallInLive(const LongLong& lFriendID, int iRole, int nCallInLiveType);
 	bool EndAudioCallInLive(const LongLong& lFriendID);
