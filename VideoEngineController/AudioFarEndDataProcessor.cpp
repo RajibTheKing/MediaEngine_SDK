@@ -749,6 +749,9 @@ void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamViewer()
 					long long llLastFrameNumber;
 					int nSize;
 					bool bFound = false;
+
+					LOG18("#18@# m_ViewerInCallSentDataQueue # Queue Size %d", m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize());
+
 					while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize())
 					{
 						nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue.DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);

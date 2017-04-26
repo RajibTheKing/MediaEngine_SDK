@@ -253,6 +253,7 @@ void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 #endif
 	}
 
+	m_ViewerInCallSentDataQueue.ResetBuffer();
 	m_pNearEndProcessor->StartCallInLive(m_nEntityType);
 	m_pFarEndProcessor->StartCallInLive(m_nEntityType);
 
