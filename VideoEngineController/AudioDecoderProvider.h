@@ -2,7 +2,7 @@
 #define AUDIO_DECODER_PROVIDER_H
 
 
-#include "AudioResourceTypes.h"
+#include "AudioTypes.h"
 #include "AudioDecoderInterface.h"
 #include "SmartPointer.h"
 

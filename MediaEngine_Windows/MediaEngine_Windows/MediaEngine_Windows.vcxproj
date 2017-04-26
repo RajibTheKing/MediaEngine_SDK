@@ -238,7 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\Aac.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioResourceTypes.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioTypes.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioSessionOptions.h" />
     <ClInclude Include="..\..\VideoEngineController\DecoderAAC.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />

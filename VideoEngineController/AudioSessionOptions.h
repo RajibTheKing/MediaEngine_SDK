@@ -2,7 +2,7 @@
 #define AUDIO_SESSION_OPTIONS_H
 
 
-#include "AudioResourceTypes.h"
+#include "AudioTypes.h"
 
 
 class AudioSessionOptions

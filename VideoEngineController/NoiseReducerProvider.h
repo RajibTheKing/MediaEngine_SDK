@@ -2,7 +2,7 @@
 #define NOISE_REDUCER_PROVIDER_H
 
 
-#include "AudioResourceTypes.h"
+#include "AudioTypes.h"
 #include "SmartPointer.h"
 
 

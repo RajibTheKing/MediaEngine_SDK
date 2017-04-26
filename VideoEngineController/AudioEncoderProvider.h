@@ -1,7 +1,7 @@
 #ifndef AUDIO_ENCODER_PROVIDER_H
 #define AUDIO_ENCODER_PROVIDER_H
 
-#include "AudioResourceTypes.h"
+#include "AudioTypes.h"
 #include "SmartPointer.h"
 
 
