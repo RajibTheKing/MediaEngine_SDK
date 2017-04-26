@@ -191,6 +191,8 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         {
             m_pIdrFrameIntervalController->Handle_IDRFrame_Control_Packet(m_RcvdPacketHeader, m_pVideoCallSession->GetServiceType());
             
+			toolsObject.SOSleep(1);
+			continue;
         }
 
 
