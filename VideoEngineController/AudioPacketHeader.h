@@ -1,6 +1,7 @@
 #ifndef AUDIO_PACKET_HEADER_H
 #define AUDIO_PACKET_HEADER_H
 
+#include "AudioSessionOptions.h"
 #include "SmartPointer.h"
 
 typedef struct
@@ -62,12 +63,6 @@ static int SupportedPacketTypes[] =
 	AUDIO_VERSION_PACKET_TYPE
 }; //Only for Call
 
-enum AudioHeaderTypes
-{
-	HEADER_COMMON,
-	HEADER_CHANNEL,
-	HEADER_CALL
-};
 
 enum MaxSizes{
 	MAXFIELDSINHEADER = 15,

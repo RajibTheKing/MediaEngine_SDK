@@ -11,6 +11,8 @@ AudioSessionOptions::AudioSessionOptions()
 
 void AudioSessionOptions::ResetOptions()
 {
+	headerType = HEADER_COMMON;
+
 	encoderType = Disable_Encoder;
 	decoderType = Disable_Decoder;
 
@@ -18,20 +20,18 @@ void AudioSessionOptions::ResetOptions()
 	echoCancelerType = Disable_ECM;
 	gainType = Disable_Gain;
 
-	bufferData = false;
-	enableMuxing = false;
-
 	adaptEncoderBitrate = false;
 	adaptEncoderComplexity = false;
 	adaptDecoderBitrate = false;
 	adaptDecoderComplexity = false;
 
-	headerType = -1;
-	packetType = -1;
+	bufferData = false;
+	enableMuxing = false;
+	packetizeEnable = false;
 }
 
 
-AudioEntityActionType AudioSessionOptions::GetActionType(int serviceType, int entityType)
+AudioEntityRoleType AudioSessionOptions::GetActionType(int serviceType, int entityType)
 {
 	if (serviceType == SERVICE_TYPE_CALL || serviceType == SERVICE_TYPE_SELF_CALL)
 	{
@@ -75,7 +75,7 @@ AudioEntityActionType AudioSessionOptions::GetActionType(int serviceType, int en
 
 void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 {
-	AudioEntityActionType actionType = GetActionType(serviceType, entityType);
+	AudioEntityRoleType actionType = GetActionType(serviceType, entityType);
 
 	switch (actionType)
 	{
@@ -112,36 +112,132 @@ void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 
 void AudioSessionOptions::SetOptionsForCall()
 {
+	headerType = HEADER_COMMON;
 
+	encoderType = Opus_Encoder;
+	decoderType = Opus_Decoder;
+
+	noiseReducerType = Disable_ANR;
+	echoCancelerType = WebRTC_ECM;
+	gainType = WebRTC_AGC;
+
+	adaptEncoderBitrate = true;
+	adaptEncoderComplexity = true;
+	adaptDecoderBitrate = true;
+	adaptDecoderComplexity = true;
+
+	bufferData = false;
+	enableMuxing = false;
+	packetizeEnable = false;
 }
 
 
 void AudioSessionOptions::SetOptionsForChannel()
 {
+	headerType = HEADER_COMMON;
 
+	encoderType = Disable_Encoder;
+	decoderType = AAC_Decoder;
+
+	noiseReducerType = Disable_ANR;
+	echoCancelerType = Disable_ECM;
+	gainType = Disable_Gain;
+
+	adaptEncoderBitrate = false;
+	adaptEncoderComplexity = false;
+	adaptDecoderBitrate = false;
+	adaptDecoderComplexity = false;
+
+	bufferData = false;
+	enableMuxing = false;
+	packetizeEnable = false;
 }
 
 void AudioSessionOptions::SetOptionsForPublisher()
 {
+	headerType = HEADER_COMMON;
 
+	encoderType = Disable_Encoder;
+	decoderType = Disable_Decoder;
+
+	noiseReducerType = Disable_ANR;
+	echoCancelerType = Disable_ECM;
+	gainType = Disable_Gain;
+
+	adaptEncoderBitrate = false;
+	adaptEncoderComplexity = false;
+	adaptDecoderBitrate = false;
+	adaptDecoderComplexity = false;
+
+	bufferData = false;
+	enableMuxing = false;
+	packetizeEnable = false;
 }
 
 
 void AudioSessionOptions::SetOptionsForPublisherInCall()
 {
+	headerType = HEADER_COMMON;
 
+	encoderType = Disable_Encoder;
+	decoderType = Disable_Decoder;
+
+	noiseReducerType = Disable_ANR;
+	echoCancelerType = Disable_ECM;
+	gainType = Disable_Gain;
+
+	adaptEncoderBitrate = false;
+	adaptEncoderComplexity = false;
+	adaptDecoderBitrate = false;
+	adaptDecoderComplexity = false;
+
+	bufferData = false;
+	enableMuxing = false;
+	packetizeEnable = false;
 }
 
 
 void AudioSessionOptions::SetOptionsForViewer()
 {
+	headerType = HEADER_COMMON;
 
+	encoderType = Disable_Encoder;
+	decoderType = Disable_Decoder;
+
+	noiseReducerType = Disable_ANR;
+	echoCancelerType = Disable_ECM;
+	gainType = Disable_Gain;
+
+	adaptEncoderBitrate = false;
+	adaptEncoderComplexity = false;
+	adaptDecoderBitrate = false;
+	adaptDecoderComplexity = false;
+
+	bufferData = false;
+	enableMuxing = false;
+	packetizeEnable = false;
 }
 
 
 void AudioSessionOptions::SetOptionsForViewerInCall()
 {
+	headerType = HEADER_COMMON;
 
+	encoderType = Disable_Encoder;
+	decoderType = Disable_Decoder;
+
+	noiseReducerType = Disable_ANR;
+	echoCancelerType = Disable_ECM;
+	gainType = Disable_Gain;
+
+	adaptEncoderBitrate = false;
+	adaptEncoderComplexity = false;
+	adaptDecoderBitrate = false;
+	adaptDecoderComplexity = false;
+
+	bufferData = false;
+	enableMuxing = false;
+	packetizeEnable = false;
 }
 
 

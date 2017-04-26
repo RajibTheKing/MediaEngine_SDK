@@ -8,6 +8,9 @@
 class AudioSessionOptions
 {
 private:
+
+	AudioHeaderTypes headerType;
+
 	AudioEncoderType encoderType;
 	AudioDecoderType decoderType;
 
@@ -15,21 +18,19 @@ private:
 	EchoCancellerType echoCancelerType;
 	AudioGainType gainType;
 
-	bool bufferData;
-	bool enableMuxing;
-
 	bool adaptEncoderBitrate;
 	bool adaptEncoderComplexity;
 	bool adaptDecoderBitrate;
 	bool adaptDecoderComplexity;
 
-	int headerType;
-	int packetType;
+	bool bufferData;
+	bool enableMuxing;
+	bool packetizeEnable;
 
 
 protected:
 
-	AudioEntityActionType GetActionType(int serviceType, int entityType);
+	AudioEntityRoleType GetActionType(int serviceType, int entityType);
 
 	void SetOptionsForCall();
 	void SetOptionsForChannel();

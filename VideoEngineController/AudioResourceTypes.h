@@ -2,7 +2,7 @@
 #define AUDIO_RESOURCE_TYPES
 
 
-enum AudioEntityActionType
+enum AudioEntityRoleType
 {
 	EntityInCall,
 	EntityChannel,
@@ -55,6 +55,15 @@ enum NoiseReducerType
 {
 	WebRTC_ANR,
 	Disable_ANR
+};
+
+
+
+enum AudioHeaderTypes
+{
+	HEADER_COMMON,
+	HEADER_CHANNEL,
+	HEADER_CALL
 };
 
 
