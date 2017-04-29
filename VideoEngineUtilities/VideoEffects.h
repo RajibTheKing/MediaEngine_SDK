@@ -33,7 +33,7 @@ public:
 private:
     
     CAverageCalculator *m_pAverageCalculator;
-	int m_mat[640][640];
+	int m_mat[641][641];
 
 };
 
