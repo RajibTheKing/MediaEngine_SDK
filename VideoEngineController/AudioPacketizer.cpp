@@ -16,7 +16,7 @@ AudioPacketizer::~AudioPacketizer()
 	//delete m_AudioPacketHeader;
 }
 
-void AudioPacketizer::Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnDataReadyCallback callback)
+void AudioPacketizer::Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnPackatizedDataReadyCallback callback)
 {
 
 	int nNumberOfBlocks = ( headerParams.frameLength /*nDataLength*/ + m_nMaxDataSyzeInEachBlock - 1) / m_nMaxDataSyzeInEachBlock;

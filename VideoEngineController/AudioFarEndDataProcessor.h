@@ -33,6 +33,12 @@ public:
 	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
 
+	void SetEventCallback(OnFireDataEventCB* dataCB, OnFireNetworkChangeCB* networkCB, OnFireAudioAlarmCB* alarmEvent)
+	{
+		m_cbOnDataEvent = dataCB;
+		m_cbOnNetworkChange = networkCB;
+		m_cbOnAudioAlarm = alarmEvent;
+	}
 
 	//LiveReceiver *m_pLiveReceiverAudio = nullptr;
 	ILiveAudioParser* m_pLiveAudioParser;
@@ -59,6 +65,9 @@ private:
 	std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 
 	AudioMixer* m_pAudioMixer;
+	OnFireDataEventCB* m_cbOnDataEvent;
+	OnFireNetworkChangeCB* m_cbOnNetworkChange;
+	OnFireAudioAlarmCB* m_cbOnAudioAlarm;
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 	//AudioPacketHeader *m_pAudioPacketHeader = nullptr;

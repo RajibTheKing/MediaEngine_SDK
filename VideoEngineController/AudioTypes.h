@@ -9,8 +9,13 @@ typedef void(*SendFunctionPointerType)(LongLong, int, unsigned char*, int, int, 
 
 //Internal Callbacks
 typedef void(*OnDataReadyToSendCB)(int mediaType, unsigned char* data, size_t dataLength);
-typedef void(*OnFireEventCB)(int eventType, size_t dataLenth, unsigned char data[]);
+typedef void(*OnFirePacketEventCB)(int eventType, size_t dataLenth, unsigned char data[]);
+typedef void(*OnFireDataEventCB)(int eventType, size_t dataLenth, short data[]);
+typedef void(*OnFireNetworkChangeCB)(int eventType);
+typedef void(*OnFireAudioAlarmCB)(int eventType);
 
+typedef void(*OnPackatizedDataReadyCallback)(unsigned char*, int);
+typedef void(*OnDepackatizedDataReadyCallback)(unsigned char*, int);
 
 enum AudioEntityRoleType
 {

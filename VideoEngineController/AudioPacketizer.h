@@ -8,8 +8,6 @@
 class CAudioCallSession;
 class AudioPacketHeader;
 
-typedef void(*OnDataReadyCallback)(unsigned char*, int);
-
 class AudioPacketizer
 {
 public:
@@ -24,7 +22,7 @@ public:
 	@return: Data length of packatized data
 	
 	*/
-	void Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnDataReadyCallback callback);
+	void Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnPackatizedDataReadyCallback callback);
 
 private:
 

@@ -314,13 +314,13 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 		return;
 	}
 #endif
-
+	
 #ifndef NO_CONNECTIVITY
 		//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
 		(*m_cbDataReady)(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
 #else
 		//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-		(*m_cbOnEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+		(*m_cbOnPacketEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
 
 #ifdef  DUPLICATE_AUDIO
@@ -332,7 +332,7 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 			(*m_cbDataReady)(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
 #else
 			//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-			(*m_cbOnEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+			(*m_cbOnPacketEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 #endif
 		}
 #endif

@@ -187,8 +187,11 @@ private:
 //	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 //	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
 
-	static void OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength);
-	static void OnEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer);
+	inline static void OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength);
+	inline static void OnPacketEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer);
+	inline static void OnDataEventCallback(int eventType, size_t dataLength, short* dataBuffer);
+	inline static void OnNetworkChangeCallback(int eventType);
+	inline static void OnAudioAlarmCallback(int eventType);
 
 	static SendFunctionPointerType m_cbClientSendFunction;
 	static CEventNotifier* m_pEventNotifier;

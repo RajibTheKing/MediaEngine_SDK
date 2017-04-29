@@ -344,15 +344,14 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 			m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
 		}
 #endif
-		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_llFriendID,
-			SERVICE_TYPE_LIVE_STREAM,
-			nSentFrameSize,
-			pshSentFrame);
+		//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+		(*m_cbOnDataEvent)(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 	}
 	else
 	{
 		HITLER("*STP -> PN: %d, FS: %d", iCurrentPacketNumber, m_nDecodedFrameSize);
-		m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
+		//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
+		(*m_cbOnDataEvent)(SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
 	}
 
 }
@@ -446,7 +445,8 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAud
 		{
 			//g_StopVideoSending = 1;*/
 			if (false == m_bIsLiveStreamingRunning)
-				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
+				//m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
+				(*m_cbOnAudioAlarm)(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO);
 			return true;
 		}
 		else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
@@ -1000,7 +1000,8 @@ void CAudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioQualityLowNotified)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
+				//m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
+				(*m_cbOnNetworkChange)(CEventNotifier::NETWORK_STRENTH_GOOD);
 
 				m_bAudioQualityLowNotified = true;
 				m_bAudioQualityHighNotified = false;
@@ -1015,8 +1016,12 @@ void CAudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_BAD);
-				m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
+				//m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_BAD);
+				(*m_cbOnNetworkChange)(CEventNotifier::NETWORK_STRENTH_BAD);
+				
+				//m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
+				(*m_cbOnAudioAlarm)(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO);
+
 				m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
 
 				m_bAudioShouldStopNotified = true;
@@ -1032,8 +1037,8 @@ void CAudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
 
 			if (false == m_bAudioQualityHighNotified)
 			{
-				m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
-
+				//m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
+				(*m_cbOnNetworkChange)(CEventNotifier::NETWORK_STRENTH_EXCELLENT);
 				m_bAudioQualityHighNotified = true;
 				m_bAudioQualityLowNotified = false;
 				m_bAudioShouldStopNotified = false;

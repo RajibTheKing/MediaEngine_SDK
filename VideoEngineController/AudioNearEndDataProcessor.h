@@ -40,9 +40,9 @@ public:
 		m_cbDataReady = cbDataReady;
 	}
 
-	void SetEventCallback(OnFireEventCB* cbOnEvent)
+	void SetEventCallback(OnFirePacketEventCB* cbOnEvent)
 	{
-		m_cbOnEvent = cbOnEvent;
+		m_cbOnPacketEvent = cbOnEvent;
 	}
 
 private:
@@ -104,7 +104,7 @@ private:
 	SmartPointer<CLockHandler> m_pAudioEncodingMutex;
 
 	OnDataReadyToSendCB* m_cbDataReady;
-	OnFireEventCB* m_cbOnEvent;
+	OnFirePacketEventCB* m_cbOnPacketEvent;
 };
 
 #endif //AUDIO_NEAREND_DATA_PROCESSOR_H
