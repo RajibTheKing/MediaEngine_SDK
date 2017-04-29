@@ -440,6 +440,20 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 
 #endif
+            
+            int iChangedGotHeight, iChangedGotWidth;
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+            nEncodingFrameSize =  m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
+            memcpy(m_ucaEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
+#else
+            
+            nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
+            memcpy(m_ucaConvertedEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
+#endif
+            
+            iGotHeight = iChangedGotHeight;
+            iGotWidth = iChangedGotWidth;
+            
             if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
 			{
 				MakeBlackScreen(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, YUV420);
