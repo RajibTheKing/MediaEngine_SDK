@@ -160,7 +160,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         //m_cPacketHeader.ShowDetails("JUST");
         
         m_cVideoHeader.GetHeaderInByteArray(m_ucaPacket + 1);
-        m_cVideoHeader.ShowDetails("JUST");
+        //m_cVideoHeader.ShowDetails("JUST");
 
 		memcpy(m_ucaPacket + nPacketHeaderLenghtWithMediaType, ucaEncodedVideoFrameData , unLength);
 
@@ -168,7 +168,7 @@ int CEncodedFramePacketizer::Packetize(LongLong llFriendID, unsigned char *ucaEn
         {
             CVideoHeader pH;
             pH.setPacketHeader(m_ucaPacket+1);
-            pH.ShowDetails("JUST2");
+            //pH.ShowDetails("JUST2");
             m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + unLength, iFrameNumber, nPacketNumber);
             
             //CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_LOSS_INFO_LOG ," &*&*Sending frameNumber: " + toolsObject.IntegertoStringConvert(frameNumber) + " :: PacketNo: " + toolsObject.IntegertoStringConvert(packetNumber));

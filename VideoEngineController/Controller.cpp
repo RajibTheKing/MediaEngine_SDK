@@ -317,6 +317,8 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
         m_Quality[0].iHeight = iVideoHeight;
         m_Quality[0].iWidth = iVideoWidth;
     }
+    
+    printf("TheKing--> CController::StartVideoCall Height = %d, Width = %d\n", iVideoHeight, iVideoWidth);
 
 	long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
 
@@ -646,6 +648,9 @@ int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, in
 		m_Quality[0].iHeight = height;
 		m_Quality[0].iWidth = width;
 	}
+    
+    printf("TheKing--> CController::SetEncoderHeightWidth Height = %d, Width = %d\n", height, width);
+    
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
