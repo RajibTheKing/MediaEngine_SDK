@@ -435,6 +435,18 @@ int CInterfaceOfAudioVideoEngine::SetVideoEffect(const IPVLongType llFriendID, i
 	return iReturnedValue;
 }
 
+/*
+	param array documentation
+	param[0] = sigma
+	param[1] = radius
+	param[2] = effect value (*not in use now)
+	param[3] = to or not to run beautification
+	param[4] = pixel from where intensity should be increased for brightness
+	param[5] = pixel upto where intensity should be increased for brightness
+	param[6] = peak of intesity increase
+	param[7] = peak value of intensity change
+*/
+
 int CInterfaceOfAudioVideoEngine::TestVideoEffect(const IPVLongType llFriendID, int *param, int size)
 {
 	if (NULL == m_pcController)
