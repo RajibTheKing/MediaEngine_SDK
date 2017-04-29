@@ -41,8 +41,20 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
-	m_nVideoWidth = nVideoWidth;
-	m_nVideoHeight = nVideoHeight;
+	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
+	{
+		int nNewHeight;
+		int nNewWidth;
+
+		CalculateAspectRatioWithScreenAndModifyHeightWidth(nVideoHeight, nVideoWidth, nNewHeight, nNewWidth);
+
+		m_nVideoHeight = nNewHeight;
+		m_nVideoWidth = nNewWidth;
+	}else
+	{
+		m_nVideoHeight = nVideoHeight;
+		m_nVideoWidth = nVideoWidth;
+	}
 
 	SEncParamExt encoderParemeters;
 
@@ -162,8 +174,21 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 	long nReturnedValueFromEncoder = WelsCreateSVCEncoder(&m_pSVCVideoEncoder);
 
-	m_nVideoWidth = nVideoWidth;
-	m_nVideoHeight = nVideoHeight;
+	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
+	{
+		int nNewHeight;
+		int nNewWidth;
+
+		CalculateAspectRatioWithScreenAndModifyHeightWidth(nVideoHeight, nVideoWidth, nNewHeight, nNewWidth);
+
+		m_nVideoHeight = nNewHeight;
+		m_nVideoWidth = nNewWidth;
+	}else
+	{
+		m_nVideoWidth = nVideoWidth;
+		m_nVideoHeight = nVideoHeight;
+	}
+
 
 	SEncParamExt encoderParemeters;
 
@@ -438,6 +463,8 @@ int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, un
 		}
 	}
 
+	LOGE("fahad -->> EncodeVideoFrame : iHeight = %d, iWidth = %d", m_nVideoHeight, m_nVideoWidth);
+
 	return nEncodedVideoFrameSize;
 }
 
@@ -449,6 +476,50 @@ int CVideoEncoder::GetMaxBitrate()
 {
 	return m_nMaxBitRate;
 }
+
+void CVideoEncoder::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth)
+{
+	float aspectRatio_Screen, aspectRatio_VideoData;
+
+	int iScreenHeight = 1920;
+	int	iScreenWidth = 1130;
+
+	aspectRatio_Screen = iScreenHeight * 1.0 / iScreenWidth;
+	aspectRatio_VideoData = inHeight * 1.0 / inWidth;
+
+	if (fabs(aspectRatio_Screen - aspectRatio_VideoData) < 0.1)
+	{
+		//Do Nothing
+		newHeight = inHeight;
+		newWidth = inWidth;
+
+	}
+	else if (aspectRatio_Screen > aspectRatio_VideoData)
+	{
+		//We have to delete columns [reduce Width]
+		newWidth = floor(inHeight / aspectRatio_Screen);
+
+		//
+		//int target = floor(inWidth * 0.82);
+		//
+		//if(newWidth < target)
+		//{
+		//    newWidth = target;
+		//}
+		//
+
+		newWidth = newWidth - newWidth % 4;
+		newHeight = inHeight;
+	}
+	else
+	{
+		//We have to delete rows [Reduce Height]
+		newHeight = floor(inWidth * aspectRatio_Screen);
+		newHeight = newHeight - newHeight % 4;
+		newWidth = inWidth;
+	}
+}
+
 
 
 
