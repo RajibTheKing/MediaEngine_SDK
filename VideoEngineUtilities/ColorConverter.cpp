@@ -64,6 +64,14 @@ CColorConverter::~CColorConverter()
 	}
 }
 
+int CColorConverter::TestVideoEffect(int *param, int size)
+{
+	m_VideoBeautificationer->TestVideoEffect(param, size);
+
+	return 1;
+}
+
+
 void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);
