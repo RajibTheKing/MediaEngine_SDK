@@ -141,6 +141,11 @@ void CAudioCallSession::SetResources(AudioResources &audioResources)
 	m_pAudioHeader = audioResources.GetPacketHeader();
 
 	m_pAudioEncoder = audioResources.GetEncoder();
+	if (m_pAudioEncoder.get())
+	{
+		m_pAudioEncoder->CreateAudioEncoder();
+	}
+
 	m_pAudioDecoder = audioResources.GetDecoder();
 
 	m_pEcho = audioResources.GetEchoCanceler();

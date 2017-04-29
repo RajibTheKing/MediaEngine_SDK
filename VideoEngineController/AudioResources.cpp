@@ -12,8 +12,6 @@ AudioResources::AudioResources(AudioSessionOptions audioSessionOptions)
 	m_pAudioHeader = AudioPacketHeader::GetInstance(audioSessionOptions.GetHeaderType());
 	
 	m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(audioSessionOptions.GetEncoderType());
-	m_pAudioEncoder->CreateAudioEncoder();
-
 	m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(audioSessionOptions.GetDecoderType());
 
 	m_pEchoCanceler = EchoCancellerProvider::GetEchoCanceller(audioSessionOptions.GetEchoCancelerType());
@@ -21,5 +19,4 @@ AudioResources::AudioResources(AudioSessionOptions audioSessionOptions)
 
 	m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(audioSessionOptions.GetGainType());
 	m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(audioSessionOptions.GetGainType());
-
 }
