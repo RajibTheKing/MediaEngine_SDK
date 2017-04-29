@@ -33,6 +33,7 @@
 #endif
 
 CEventNotifier* CAudioCallSession::m_pEventNotifier = nullptr;
+SendFunctionPointerType CAudioCallSession::m_cbClientSendFunction = nullptr;
 LongLong CAudioCallSession::m_FriendID = -1;
 
 CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources) :
