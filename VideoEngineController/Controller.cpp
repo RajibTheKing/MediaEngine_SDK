@@ -299,14 +299,6 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 {
 	Locker lock1(*m_pVideoStartMutex);
 
-	int nNewHeight;
-	int nNewWidth;
-
-	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, nNewHeight, nNewWidth);
-
-	iVideoHeight = nNewHeight;
-	iVideoWidth = nNewWidth;
-
     if(iVideoHeight * iVideoWidth > 352 * 288)
     {
         m_Quality[1].iHeight = iVideoHeight;
@@ -629,15 +621,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
 {
 	CVideoCallSession* pVideoSession;
-
-	int nNewHeight;
-	int nNewWidth;
-
-	CalculateAspectRatioWithScreenAndModifyHeightWidth(height, width, nNewHeight, nNewWidth);
-
-	height = nNewHeight;
-	width = nNewWidth;
-
+    
 	if(height * width > 352 * 288)
 	{
 		m_Quality[1].iHeight = height;
@@ -1233,48 +1217,5 @@ int CController::GetDeviceDisplayHeight()
 int CController::GetDeviceDisplayWidth()
 {
 	return m_nDeviceDisplayWidth;
-}
-
-void CController::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth)
-{
-	float aspectRatio_Screen, aspectRatio_VideoData;
-
-	int iScreenHeight = 1920;
-	int	iScreenWidth = 1130;
-
-	aspectRatio_Screen = iScreenHeight * 1.0 / iScreenWidth;
-	aspectRatio_VideoData = inHeight * 1.0 / inWidth;
-
-	if (fabs(aspectRatio_Screen - aspectRatio_VideoData) < 0.1)
-	{
-		//Do Nothing
-		newHeight = inHeight;
-		newWidth = inWidth;
-
-	}
-	else if (aspectRatio_Screen > aspectRatio_VideoData)
-	{
-		//We have to delete columns [reduce Width]
-		newWidth = floor(inHeight / aspectRatio_Screen);
-
-		//
-		//int target = floor(inWidth * 0.82);
-		//
-		//if(newWidth < target)
-		//{
-		//    newWidth = target;
-		//}
-		//
-
-		newWidth = newWidth - newWidth % 4;
-		newHeight = inHeight;
-	}
-	else
-	{
-		//We have to delete rows [Reduce Height]
-		newHeight = floor(inWidth * aspectRatio_Screen);
-		newHeight = newHeight - newHeight % 4;
-		newWidth = inWidth;
-	}
 }
 

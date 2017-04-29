@@ -61,8 +61,6 @@ public:
 
 	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
-	void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth);
-
 	int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
 
 	void InterruptOccured(const LongLong lFriendID);
