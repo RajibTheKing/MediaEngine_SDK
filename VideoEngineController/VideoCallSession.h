@@ -138,6 +138,9 @@ public:
 	void InterruptOver();
     
     bool isDynamicIDR_Mechanism_Enable();
+    
+    void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth);
+    
 
 	bool m_bVideoCallStarted;
     CController *m_pController;
