@@ -34,8 +34,7 @@ m_bSelfViewOnly(bSelfViewOnly)
     m_pCalculatorEncodeTime = new CAverageCalculator();
     m_pCalculateEncodingTimeDiff = new CAverageCalculator();
 
-	m_VideoBeautificationer = new CVideoBeautificationer(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth());
-	//m_VideoBeautificationer->GenerateUVIndex(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), 11);
+	m_VideoBeautificationer = new CVideoBeautificationer(m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth);
     
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
@@ -46,12 +45,12 @@ m_bSelfViewOnly(bSelfViewOnly)
          {
              memset(m_ucaDummmyFrame[k], 0, sizeof(m_ucaDummmyFrame[k]));
              
-             for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
+             for(int i=0;i<m_pVideoCallSession->m_nVideoCallHeight;i++)
              {
                  int color = rand()%255;
-                 for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
+                 for(int j = 0; j <  m_pVideoCallSession->m_nVideoCallWidth; j ++)
                  {
-                     m_ucaDummmyFrame[k][i * this->m_pColorConverter->GetHeight() + j ] = color;
+                     m_ucaDummmyFrame[k][i * m_pVideoCallSession->m_nVideoCallHeight + j ] = color;
                  }
                  
              }
@@ -237,13 +236,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	bool bNeedIDR = false;
 
+	int iGotHeight;
+	int iGotWidth;
+
 #if defined(DESKTOP_C_SHARP)
 
-	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), RGB24);
+	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallHeight,  m_pVideoCallSession->m_nVideoCallWidth, RGB24);
 
 #else
 
-	MakeBlackScreen(m_ucaDummmyStillFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), YUV420);
+	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallHeight,  m_pVideoCallSession->m_nVideoCallWidth, YUV420);
 
 #endif
 
@@ -339,9 +341,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(DESKTOP_C_SHARP)
 
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3, dummyTimeStampCounter * 10, 0);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallWidth *  m_pVideoCallSession->m_nVideoCallHeight * 3,  m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth,  dummyTimeStampCounter * 10, 0);
 #else
-					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame, this->m_pColorConverter->GetWidth() * this->m_pColorConverter->GetHeight() * 3 / 2, dummyTimeStampCounter * 10, 0);
+					m_pEncodingBuffer->Queue(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallWidth *  m_pVideoCallSession->m_nVideoCallHeight * 3 / 2,  m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth, dummyTimeStampCounter * 10, 0);
 #endif
 				}
 			}
@@ -361,7 +363,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
-			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference, nDevice_orientation);
+			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, iGotHeight, iGotWidth, timeDiff, nCaptureTimeDifference, nDevice_orientation);
 
 			//LOGEF("Current bitrate %d", m_pVideoEncoder->GetBitrate());
             
@@ -395,64 +397,64 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame);
+			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame, iGotHeight, iGotWidth);
 
 #elif defined(DESKTOP_C_SHARP)
 
-			int iCurWidth = this->m_pColorConverter->GetWidth();
-			int iCurHeight = this->m_pColorConverter->GetHeight();
+			int iCurWidth = iGotWidth;
+			int iCurHeight = iGotHeight;
 
 			if (nEncodingFrameSize == iCurWidth * iCurHeight * 2)
 			{
-				nEncodingFrameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				nEncodingFrameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iCurHeight, iCurWidth);
 			}
 			else if (nEncodingFrameSize == iCurWidth * iCurHeight * 3)
 			{
-				nEncodingFrameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				nEncodingFrameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iCurHeight, iCurWidth);
 			}
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 
 			if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 			else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 
 #else
 
 			if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 			else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam90(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam90(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 			else if (m_nOrientationType == ORIENTATION_BACK_270_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam270(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam270(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 
 #endif
             if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
 			{
-				MakeBlackScreen(m_ucaConvertedEncodingFrame, this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), YUV420);
+				MakeBlackScreen(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, YUV420);
 			}
 			
             /*if(m_bIsCheckCall == true)
             {
                 memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
                 
-                for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
+                for(int i=0;i<iGotHeight;i++)
                 {
                     int color = rand()%255;
-                    for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
+                    for(int j = 0; j < iGotWidth; j ++)
                     {
-                        m_ucaEncodingFrame[i * this->m_pColorConverter->GetHeight() + j ] = color;
+                        m_ucaEncodingFrame[i * iGotHeight + j ] = color;
                     }
                     
                 }
@@ -463,8 +465,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 			{
-				int iWidth = m_pColorConverter->GetWidth();
-				int iHeight = m_pColorConverter->GetHeight();
+				int iWidth = iGotWidth;
+				int iHeight = iGotHeight;
 
 				int newHeight;
 				int newWidth;
@@ -478,12 +480,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), newHeight, newWidth, m_VideoEffectParam);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, m_VideoEffectParam);
 					
 					}
 					else
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, m_VideoEffectParam);
 
 						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
@@ -498,13 +500,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15 || m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 					{
 						if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, m_VideoEffectParam);
 						else
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), newHeight, newWidth, m_VideoEffectParam);
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, m_VideoEffectParam);
 					}
 					else
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), m_VideoEffectParam);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, m_VideoEffectParam);
 
 						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
@@ -552,7 +554,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				if( m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 				{
                     
-                    int iInsetLowerPadding = (int)((m_pColorConverter->GetHeight()*10)/100);
+                    int iInsetLowerPadding = (int)((iGotHeight*10)/100);
                     
 					iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 					iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
@@ -683,7 +685,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-					this->m_pColorConverter->ConvertI420ToNV12(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					this->m_pColorConverter->ConvertI420ToNV12(m_ucaMirroredFrame, iGotHeight, iGotWidth);
 
 #elif defined(DESKTOP_C_SHARP)
 
@@ -700,18 +702,18 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					}
 					else
 					{
-						m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaMirroredFrame, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+						m_decodedFrameSize = this->m_pColorConverter->ConverterYUV420ToRGB24(m_ucaMirroredFrame, m_RenderingRGBFrame, iGotHeight, iGotWidth);
 					}
 					 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 
-					this->m_pColorConverter->ConvertI420ToYV12(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					this->m_pColorConverter->ConvertI420ToYV12(m_ucaMirroredFrame, iGotHeight, iGotWidth);
 #else
-					this->m_pColorConverter->ConvertI420ToNV21(m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth());
+					this->m_pColorConverter->ConvertI420ToNV21(m_ucaMirroredFrame, iGotHeight, iGotWidth);
 #endif
                     
-                    int iHeight = this->m_pColorConverter->GetHeight();
-                    int iWidth = this->m_pColorConverter->GetWidth();
+                    int iHeight = iGotHeight;
+                    int iWidth = iGotWidth;
                     
                     int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
                     int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
@@ -735,7 +737,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                         iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_RenderingRGBFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, RGB24);
                         
                         if(iScreenWidth == -1 || iScreenHeight == -1)
-                            m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), iSmallHeight, iSmallWidth, nDevice_orientation);
+                            m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, iGotHeight, iGotWidth, iSmallHeight, iSmallWidth, nDevice_orientation);
                         else
 							m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, iSmallHeight, iSmallWidth, nDevice_orientation);
                     }
@@ -763,12 +765,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
                     
                     if(iScreenWidth == -1 || iScreenHeight == -1)
-					    m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+					    m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((iGotHeight * iGotWidth * 3) / 2), m_ucaMirroredFrame, iGotHeight, iGotWidth, nDevice_orientation);
                     else
                         m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nDevice_orientation);
                     
 #else
-					m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((m_pColorConverter->GetHeight() * m_pColorConverter->GetWidth() * 3) / 2), m_ucaMirroredFrame, m_pColorConverter->GetHeight(), m_pColorConverter->GetWidth(), nDevice_orientation);
+					m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((iGotHeight * iGotWidth * 3) / 2), m_ucaMirroredFrame, iGotHeight, iGotWidth, nDevice_orientation);
 #endif
 				}
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);

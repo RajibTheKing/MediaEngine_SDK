@@ -143,8 +143,9 @@ public:
     CController *m_pController;
 	int m_nCallFPS;
     bool m_bLiveVideoStreamRunning;
-    
-    
+
+	int m_nVideoCallHeight;
+	int m_nVideoCallWidth;
 
 private:
 
@@ -187,9 +188,6 @@ private:
 	int m_nEntityType;
 
 	int m_nCapturedFrameCounter;
-
-	int m_nVideoCallHeight;
-	int m_nVideoCallWidth;
 
 	int m_nDeviceHeight;
 	int m_nDeviceWidth;

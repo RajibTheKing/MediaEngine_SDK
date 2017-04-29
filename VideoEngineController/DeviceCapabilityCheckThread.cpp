@@ -193,7 +193,7 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                         i--;
                         continue;
                     }
-					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, now, 0);
+					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, nVideoHeigth, nVideoWidth, now, 0);
 					/*
 					printFile("Push Difference = %lld\n", now - lastFramePushTime);
 					if (i)
