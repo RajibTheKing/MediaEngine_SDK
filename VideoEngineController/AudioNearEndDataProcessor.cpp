@@ -386,16 +386,6 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 		{
 			m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
 		}
-
-#ifdef USE_AGC
-		m_pAudioCallSession->m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
-		bool bIsPublisher = (m_nServiceType == SERVICE_TYPE_LIVE_STREAM &&  (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType));
-		
-		if (false == bIsPublisher)
-		{
-			m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
-		}
-#endif
 		 
 		//if (m_pNoise.get())
 		//{
