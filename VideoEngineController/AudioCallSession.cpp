@@ -450,7 +450,7 @@ int CAudioCallSession::GetEntityType()
 
 void CAudioCallSession::OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength)
 {
-	MR_DEBUG("#ptt# CAudioCallSession::OnDataReadyCallback, %x", m_cbClientSendFunction);
+//	MR_DEBUG("#ptt# CAudioCallSession::OnDataReadyCallback, %x", m_cbClientSendFunction);
 	m_cbClientSendFunction(CAudioCallSession::m_FriendID, mediaType, dataBuffer, dataLength, 0, std::vector< std::pair<int, int> >());
 }
 

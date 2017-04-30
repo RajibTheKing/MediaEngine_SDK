@@ -318,7 +318,7 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 #endif
 
 #ifndef NO_CONNECTIVITY
-	MR_DEBUG("#ptt# SentToNetwork, %x", *m_cbOnDataReady);
+//	MR_DEBUG("#ptt# SentToNetwork, %x", *m_cbOnDataReady);
 	//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
 	if (m_cbOnDataReady != nullptr){
 		(m_cbOnDataReady)(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
