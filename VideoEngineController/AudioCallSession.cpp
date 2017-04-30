@@ -101,7 +101,7 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 
 
 	m_pNearEndProcessor->SetDataReadyCallback((OnDataReadyToSendCB)OnDataReadyCallback);
-	m_pNearEndProcessor->SetEventCallback((OnFireEventCB*)&OnEventCallback);
+	m_pNearEndProcessor->SetEventCallback((OnFirePacketEventCB)OnPacketEventCallback);
 
 	m_pFarEndProcessor = new CAudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
 	m_pFarEndProcessor->SetEventCallback((OnFireDataEventCB*)OnDataEventCallback, (OnFireNetworkChangeCB*)OnNetworkChangeCallback, (OnFireAudioAlarmCB*)OnAudioAlarmCallback);
