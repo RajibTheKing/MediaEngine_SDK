@@ -39,6 +39,9 @@ int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 	}
 	else
 	{
+		if (nLength >= MAX_VIDEO_PACKET_SIZE)
+			return -1;
+
 		memcpy(m_uc2aVideoPacketBuffer[m_iPushIndex], ucaVideoPacketData, nLength);
 
 		m_naBufferDataLengths[m_iPushIndex] = nLength;
