@@ -146,6 +146,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndDataProcessor.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
+    <ClInclude Include="..\..\VideoEngineController\MuxHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\PacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\PairMap.h" />
     <ClInclude Include="..\..\VideoEngineController\RenderingBuffer.h" />
@@ -233,6 +235,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndDataProcessor.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioPacketizer.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\BitRateController.cpp" />
@@ -261,6 +264,7 @@
     <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\MuxHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PacketHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\PairMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\RenderingBuffer.cpp" />

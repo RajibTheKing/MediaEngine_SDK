@@ -62,7 +62,7 @@ CEcho::CEcho(int id)
 		ALOG("WebRtcAecm_set_config successful id = " + m_Tools.IntegertoStringConvert(id));
 	}
 	memset(m_sZeroBuf, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
-	memset(m_sZeroBuf, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+	
 	m_llLastFarendTime = 0;
 	m_ID = id;
 	//m_Tools.SOSleep(100);

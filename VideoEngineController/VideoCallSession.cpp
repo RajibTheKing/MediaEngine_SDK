@@ -147,7 +147,7 @@ m_nFrameCount(0)
 
 	m_BitRateController->SetSharedObject(sharedObject);
     
-    m_bDynamic_IDR_Sending_Mechanism = true;
+    m_bDynamic_IDR_Sending_Mechanism = false;
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
@@ -802,6 +802,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
 void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFrameNumber)
 {
+	if (m_bDynamic_IDR_Sending_Mechanism == false)
+		return;
+
     CVideoHeader PacketHeader;
     unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
     
