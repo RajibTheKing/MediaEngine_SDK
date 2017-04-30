@@ -68,6 +68,13 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);
 
+	int nNewHeight;
+	int nNewWidth;
+
+	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
+
+	m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
+
 	/*m_iVideoHeight = iVideoHeight;
 	m_iVideoWidth = iVideoWidth;
 	m_YPlaneLength = m_iVideoHeight*m_iVideoWidth;
