@@ -1,6 +1,9 @@
-LOCAL_PATH := $(call my-dir)
 
+#START_BUILDING_MEDIAENGINE
+LOCAL_PATH := $(call my-dir)
 ARCHITECTURE := $(TARGET_ARCH_ABI)
+#END_BUILDING_MEDIAENGINE
+
 PRECOMPILED_LIBRARIES := ../../../RingIDSDK/jni/precompiled
 
 $(warning $(ARCHITECTURE))
@@ -82,99 +85,101 @@ include $(PREBUILT_STATIC_LIBRARY)
 # LOCAL_SRC_FILES := $(PRECOMPILED_LIBRARIES)/$(ARCHITECTURE)/libwebrtc_vad.a
 # include $(PREBUILT_STATIC_LIBRARY)
 
+#START_BUILDING_MEDIAENGINE
+
 #  VideoEngineController
 include $(CLEAR_VARS)
 G729    := g729
 LOCAL_MODULE := videoEngineController
 
 LOCAL_C_INCLUDES := \
-            ../../../videoengine/VideoEngineController \
-			../../../videoengine/VideoEngineUtilities \
+            ../../VideoEngineController \
+			../../VideoEngineUtilities \
 			../../../RingIDSDK \
-			../../../videoengine/OthersLib/boost \
-			../../../videoengine/include/ \
-			../../../videoengine/include/aecm \
-			../../../videoengine/include/aecm/webrtc \
+			../../OthersLib/boost \
+			../../include/ \
+			../../include/aecm \
+			../../include/aecm/webrtc \
 
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
 LOCAL_SRC_FILES := \
-			../../../videoengine/VideoEngineController/MuxHeader.cpp \
-			../../../videoengine/VideoEngineController/AudioShortBufferForPublisherFarEnd.cpp \
-			../../../videoengine/VideoEngineController/AudioPacketizer.cpp \
-			../../../videoengine/VideoEngineController/AudioDePacketizer.cpp \
-			../../../videoengine/VideoEngineController/VideoSockets.cpp \
-			../../../videoengine/VideoEngineController/Filt.cpp \
-			../../../videoengine/VideoEngineController/AudioNearEndDataProcessor.cpp \
-			../../../videoengine/VideoEngineController/AudioFarEndDataProcessor.cpp \
-			../../../videoengine/VideoEngineUtilities/LockHandler.cpp \
-            ../../../videoengine/VideoEngineUtilities/ColorConverter.cpp \
-            ../../../videoengine/VideoEngineUtilities/HashGenerator.cpp \
-            ../../../videoengine/VideoEngineController/AudioCallSession.cpp \
-            ../../../videoengine/VideoEngineController/AudioCallSessionListHandler.cpp \
-            ../../../videoengine/VideoEngineController/AudioCodec.cpp \
-            ../../../videoengine/VideoEngineController/CommonElementsBucket.cpp \
-			../../../videoengine/VideoEngineController/Controller.cpp \
-			../../../videoengine/VideoEngineController/EncodedFramePacketizer.cpp \
-			../../../videoengine/VideoEngineController/DecodingBuffer.cpp \
-			../../../videoengine/VideoEngineController/EncodingBuffer.cpp \
-			../../../videoengine/VideoEngineController/EventNotifier.cpp \
-			../../../videoengine/VideoEngineController/InterfaceOFAudioVideoEngine.cpp \
-			../../../videoengine/VideoEngineController/IDRFrameIntervalController.cpp \
-			../../../videoengine/VideoEngineController/LogPrinter.cpp \
-			../../../videoengine/VideoEngineController/Tools.cpp \
-			../../../videoengine/VideoEngineController/VideoCallSession.cpp \
-            ../../../videoengine/VideoEngineController/VideoCallSessionListHandler.cpp \
-            ../../../videoengine/VideoEngineController/VideoDecoder.cpp \
-			../../../videoengine/VideoEngineController/VideoEncoder.cpp \
-			../../../videoengine/VideoEngineController/VideoEncodingThread.cpp \
-			../../../videoengine/VideoEngineController/VideoDecodingThread.cpp \
-			../../../videoengine/VideoEngineController/RenderingThread.cpp \
-			../../../videoengine/VideoEngineController/SendingThread.cpp \
-			../../../videoengine/VideoEngineController/DepacketizationThread.cpp \
-			../../../videoengine/VideoEngineController/SendingBuffer.cpp \
-			../../../videoengine/VideoEngineController/RenderingBuffer.cpp \
-			../../../videoengine/VideoEngineController/VideoPacketQueue.cpp \
-			../../../videoengine/VideoEngineController/SynchronizedMap.cpp \
-			../../../videoengine/VideoEngineController/VideoEncoderListHandler.cpp \
-            ../../../videoengine/VideoEngineController/VideoPacketBuffer.cpp \
-            ../../../videoengine/VideoEngineController/EncodedFrameDepacketizer.cpp \
-            ../../../videoengine/VideoEngineController/AudioEncoderBuffer.cpp \
-            ../../../videoengine/VideoEngineController/AudioDecoderBuffer.cpp \
-            ../../../videoengine/VideoEngineController/ResendingBuffer.cpp \
-            ../../../videoengine/VideoEngineController/PairMap.cpp \
-            ../../../videoengine/VideoEngineController/FPSController.cpp \
-            ../../../videoengine/VideoEngineController/Globals.cpp \
-            ../../../videoengine/VideoEngineController/PacketHeader.cpp \
-			../../../videoengine/VideoEngineController/DepacketizationBufferIndex.cpp \
-			../../../videoengine/VideoEngineController/BandwidthController.cpp \
-			../../../videoengine/VideoEngineController/BitRateController.cpp \
-			../../../videoengine/VideoEngineController/AverageCalculator.cpp \
-			../../../videoengine/VideoEngineController/AudioFileEncodeDecodeSession.cpp \
-			../../../videoengine/VideoEngineController/VersionController.cpp \
-			../../../videoengine/VideoEngineController/DeviceCapabilityCheckBuffer.cpp \
-			../../../videoengine/VideoEngineController/DeviceCapabilityCheckThread.cpp \
-			../../../videoengine/VideoEngineController/AudioPacketHeader.cpp \
-			../../../videoengine/VideoEngineController/AudioFileCodec.cpp \
-			../../../videoengine/VideoEngineController/Noise.cpp \
-			../../../videoengine/VideoEngineController/Voice.cpp \
-			../../../videoengine/VideoEngineController/Gain.cpp \
-			../../../videoengine/VideoEngineController/Echo.cpp \
-			../../../videoengine/VideoEngineController/GomGomGain.cpp \
-			../../../videoengine/VideoEngineController/AudioMixer.cpp \
-			../../../videoengine/VideoEngineController/LiveAudioParserForCallee.cpp \
-			../../../videoengine/VideoEngineController/LiveAudioParserForChannel.cpp \
-			../../../videoengine/VideoEngineController/LiveAudioParserForPublisher.cpp \
-			../../../videoengine/VideoEngineUtilities/VideoBeautificationer.cpp \
-			../../../videoengine/VideoEngineController/LiveReceiver.cpp \
-			../../../videoengine/VideoEngineController/LiveVideoDecodingQueue.cpp \
-			../../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
-			../../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
-			../../../videoengine/VideoEngineController/VideoHeader.cpp \
-			../../../videoengine/VideoEngineController/Aac.cpp \
-			../../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
-			../../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
-			../../../videoengine/VideoEngineUtilities/VideoEffects.cpp \
+			../../VideoEngineController/AudioPacketizer.cpp \
+			../../VideoEngineController/AudioDePacketizer.cpp \
+			../../VideoEngineController/VideoSockets.cpp \
+			../../VideoEngineController/Filt.cpp \
+			../../VideoEngineController/AudioNearEndDataProcessor.cpp \
+			../../VideoEngineController/AudioFarEndDataProcessor.cpp \
+			../../VideoEngineUtilities/LockHandler.cpp \
+            ../../VideoEngineUtilities/ColorConverter.cpp \
+            ../../VideoEngineUtilities/HashGenerator.cpp \
+            ../../VideoEngineController/AudioCallSession.cpp \
+            ../../VideoEngineController/AudioCallSessionListHandler.cpp \
+            ../../VideoEngineController/AudioCodec.cpp \
+            ../../VideoEngineController/CommonElementsBucket.cpp \
+			../../VideoEngineController/Controller.cpp \
+			../../VideoEngineController/EncodedFramePacketizer.cpp \
+			../../VideoEngineController/DecodingBuffer.cpp \
+			../../VideoEngineController/EncodingBuffer.cpp \
+			../../VideoEngineController/EventNotifier.cpp \
+			../../VideoEngineController/InterfaceOFAudioVideoEngine.cpp \
+			../../VideoEngineController/LogPrinter.cpp \
+			../../VideoEngineController/Tools.cpp \
+			../../VideoEngineController/VideoCallSession.cpp \
+            ../../VideoEngineController/VideoCallSessionListHandler.cpp \
+            ../../VideoEngineController/VideoDecoder.cpp \
+			../../VideoEngineController/VideoEncoder.cpp \
+			../../VideoEngineController/VideoEncodingThread.cpp \
+			../../VideoEngineController/VideoDecodingThread.cpp \
+			../../VideoEngineController/RenderingThread.cpp \
+			../../VideoEngineController/SendingThread.cpp \
+			../../VideoEngineController/DepacketizationThread.cpp \
+			../../VideoEngineController/SendingBuffer.cpp \
+			../../VideoEngineController/RenderingBuffer.cpp \
+			../../VideoEngineController/VideoPacketQueue.cpp \
+			../../VideoEngineController/SynchronizedMap.cpp \
+			../../VideoEngineController/VideoEncoderListHandler.cpp \
+            ../../VideoEngineController/VideoPacketBuffer.cpp \
+            ../../VideoEngineController/EncodedFrameDepacketizer.cpp \
+            ../../VideoEngineController/AudioEncoderBuffer.cpp \
+            ../../VideoEngineController/AudioDecoderBuffer.cpp \
+            ../../VideoEngineController/ResendingBuffer.cpp \
+            ../../VideoEngineController/PairMap.cpp \
+            ../../VideoEngineController/FPSController.cpp \
+            ../../VideoEngineController/Globals.cpp \
+            ../../VideoEngineController/PacketHeader.cpp \
+			../../VideoEngineController/DepacketizationBufferIndex.cpp \
+			../../VideoEngineController/BandwidthController.cpp \
+			../../VideoEngineController/BitRateController.cpp \
+			../../VideoEngineController/AverageCalculator.cpp \
+			../../VideoEngineController/AudioFileEncodeDecodeSession.cpp \
+			../../VideoEngineController/VersionController.cpp \
+			../../VideoEngineController/DeviceCapabilityCheckBuffer.cpp \
+			../../VideoEngineController/DeviceCapabilityCheckThread.cpp \
+			../../VideoEngineController/AudioPacketHeader.cpp \
+			../../VideoEngineController/AudioFileCodec.cpp \
+			../../VideoEngineController/Noise.cpp \
+			../../VideoEngineController/Voice.cpp \
+			../../VideoEngineController/Gain.cpp \
+			../../VideoEngineController/Echo.cpp \
+			../../VideoEngineController/GomGomGain.cpp \
+			../../VideoEngineUtilities/VideoBeautificationer.cpp \
+			../../VideoEngineController/LiveReceiver.cpp \
+			../../VideoEngineController/LiveVideoDecodingQueue.cpp \
+			../../VideoEngineController/LiveAudioDecodingQueue.cpp \
+			../../VideoEngineController/VideoMuxingAndEncodeSession.cpp \
+			../../VideoEngineController/VideoHeader.cpp \
+			../../VideoEngineController/Aac.cpp \
+			../../VideoEngineController/LiveStreamingHeader.cpp \
+			../../VideoEngineUtilities/MuxingVideoData.cpp \
+			../../VideoEngineUtilities/VideoEffects.cpp \
+			../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
+			../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
+			../../videoengine/VideoEngineController/VideoHeader.cpp \
+			../../videoengine/VideoEngineController/Aac.cpp \
+			../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
+			../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
+			../../videoengine/VideoEngineUtilities/VideoEffects.cpp \
 
 			
 
@@ -182,45 +187,47 @@ LOCAL_SRC_FILES := \
 include $(BUILD_STATIC_LIBRARY)
 
 
+#END_BUILDING_MEDIAENGINE
+
 #  ringid
 include $(CLEAR_VARS)
 G729    := g729
 LOCAL_MODULE    := ring_codec
 LOCAL_SRC_FILES :=  \
-	../../../videoengine/include/g729/g729a_decoder.c \
-	../../../videoengine/include/g729/g729a_encoder.c \
-	../../../videoengine/include/g729/basic_op.c \
-	../../../videoengine/include/g729/cod_ld8a.c \
-	../../../videoengine/include/g729/bits.c \
-	../../../videoengine/include/g729/oper_32b.c \
-	../../../videoengine/include/g729/tab_ld8a.c \
-	../../../videoengine/include/g729/p_parity.c \
-	../../../videoengine/include/g729/dec_ld8a.c \
-	../../../videoengine/include/g729/postfilt.c \
-	../../../videoengine/include/g729/post_pro.c \
-	../../../videoengine/include/g729/pre_proc.c \
-	../../../videoengine/include/g729/lpc.c \
-	../../../videoengine/include/g729/qua_lsp.c \
-	../../../videoengine/include/g729/lpcfunc.c \
-	../../../videoengine/include/g729/filter.c \
-	../../../videoengine/include/g729/pitch_a.c \
-	../../../videoengine/include/g729/dec_lag3.c \
-	../../../videoengine/include/g729/taming.c \
-	../../../videoengine/include/g729/acelp_ca.c \
-	../../../videoengine/include/g729/cor_func.c \
-	../../../videoengine/include/g729/qua_gain.c \
-	../../../videoengine/include/g729/de_acelp.c \
-	../../../videoengine/include/g729/dec_gain.c \
-	../../../videoengine/include/g729/dspfunc.c \
-	../../../videoengine/include/g729/gainpred.c \
-	../../../videoengine/include/g729/lspdec.c \
-	../../../videoengine/include/g729/lspgetq.c \
-	../../../videoengine/include/g729/round.c \
-	../../../videoengine/include/g729/pred_lt3.c \
-	../../../videoengine/include/g729/util.c \
-	../../../videoengine/include/g729/G729CodecNative.cpp \
+	../../include/g729/g729a_decoder.c \
+	../../include/g729/g729a_encoder.c \
+	../../include/g729/basic_op.c \
+	../../include/g729/cod_ld8a.c \
+	../../include/g729/bits.c \
+	../../include/g729/oper_32b.c \
+	../../include/g729/tab_ld8a.c \
+	../../include/g729/p_parity.c \
+	../../include/g729/dec_ld8a.c \
+	../../include/g729/postfilt.c \
+	../../include/g729/post_pro.c \
+	../../include/g729/pre_proc.c \
+	../../include/g729/lpc.c \
+	../../include/g729/qua_lsp.c \
+	../../include/g729/lpcfunc.c \
+	../../include/g729/filter.c \
+	../../include/g729/pitch_a.c \
+	../../include/g729/dec_lag3.c \
+	../../include/g729/taming.c \
+	../../include/g729/acelp_ca.c \
+	../../include/g729/cor_func.c \
+	../../include/g729/qua_gain.c \
+	../../include/g729/de_acelp.c \
+	../../include/g729/dec_gain.c \
+	../../include/g729/dspfunc.c \
+	../../include/g729/gainpred.c \
+	../../include/g729/lspdec.c \
+	../../include/g729/lspgetq.c \
+	../../include/g729/round.c \
+	../../include/g729/pred_lt3.c \
+	../../include/g729/util.c \
+	../../include/g729/G729CodecNative.cpp \
 LOCAL_ARM_MODE := arm
-LOCAL_C_INCLUDES += ../../../videoengine/include/g729 \
+LOCAL_C_INCLUDES += ../../include/g729 \
 LOCAL_CFLAGS = -O3
 include $(BUILD_STATIC_LIBRARY)
 
@@ -238,13 +245,13 @@ LOCAL_SRC_FILES := \
 
 
 LOCAL_C_INCLUDES := \
-            ../../../videoengine/VideoEngineUtilities \
-			../../../videoengine/VideoEngineController \
-			../../../videoengine/OthersLib/boost \
-			../../../videoengine/OthersLib/WinOpenH264 \
+            ../../VideoEngineUtilities \
+			../../VideoEngineController \
+			../../OthersLib/boost \
+			../../OthersLib/WinOpenH264 \
 			../../../RingIDSDK \
-			../../../videoengine/include/g729 \
-			../../../videoengine/include \
+			../../include/g729 \
+			../../include \
 
 
 LOCAL_CFLAGS := -DANDROID_NDK

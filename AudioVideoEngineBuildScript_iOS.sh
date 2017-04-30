@@ -2,9 +2,15 @@
 
 #Author: Rajib Chandra Das
 #
-SOURCE_DIRECTORY="/Users/RajibTheKing/Desktop/WorkProcedure/Hahaha/IPV-MediaEngine";
-BUILD_DIRECTORY="/Users/RajibTheKing/Desktop/WorkProcedure/Hahaha/newLibs";
-RELEASE_NAME="";
+SOURCE_DIRECTORY="./";
+BUILD_DIRECTORY="./";
+BUILD_NAME="";
+#BUILD_CONFIGURATION="Release";
+#BUILD_CONFIGURATION="Debug";
+BUILD_CONFIGURATION=$1;
+BUILD_NAME=$2;
+XCODE_SDK_VERSION=$3;
+
 #This is a function
 LogOutput()
 {
@@ -29,8 +35,6 @@ LogOutput()
 	#echo "\033[1;39m$1"; #Black
 }
 
-
-
 CreateDirectoryIfNotExist()
 {
 	if [ ! -d "$1" ]; then
@@ -39,10 +43,10 @@ CreateDirectoryIfNotExist()
 	fi
 }
 
-read -p "Please Enter a RELEASE_NAME: " -r RELEASE_NAME;
 
-if [ "$RELEASE_NAME" == "" ]; then
-	LogOutput "TheKing--> You must give a RELEASE_NAME" "RED";
+#read -p "Please Enter a BUILD_NAME: " -r BUILD_NAME;
+if [ "$BUILD_NAME" == "" ]; then
+	LogOutput "TheKing--> You must give a BUILD_NAME" "RED";
 	exit 1;
 fi
 
@@ -50,50 +54,51 @@ LogOutput "\n\nTheKing--> Just Started AudioVideoEngine Build";
 
 LogOutput "TheKing--> Source Path Root = $SOURCE_DIRECTORY" "RED";
 LogOutput "TheKing--> Build Path Root = $BUILD_DIRECTORY" "RED";
-LogOutput "TheKing--> Release Name = $RELEASE_NAME" "RED";
+LogOutput "TheKing--> Release Name = $BUILD_NAME" "RED";
 
 
 CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/";
-CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${RELEASE_NAME}/";
-CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${RELEASE_NAME}/Debug-iphoneos/";
+CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/";
+CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphoneos/";
 
-LogOutput "\n\n\nTheKing--> Creating Library for Debug-iphoneos\n\n\n";
+LogOutput "\n\n\nTheKing--> Creating Library for ${BUILD_CONFIGURATION}-iphoneos\n\n\n";
 
 xcodebuild 	-project "${SOURCE_DIRECTORY}/AudioVideoEngine.xcodeproj" \
 			-scheme AudioVideoEngine \
-			-configuration "Debug" \
-			-sdk iphoneos10.2  \
+			-configuration "${BUILD_CONFIGURATION}" \
+			-sdk iphoneos${XCODE_SDK_VERSION}  \
 			ARCHS="armv7 arm64" \
-			CONFIGURATION_BUILD_DIR="$BUILD_DIRECTORY/${RELEASE_NAME}/Debug-iphoneos/" \
-			ONLY_ACTIVE_ARCH=NO || exit 1;
+			CONFIGURATION_BUILD_DIR="$BUILD_DIRECTORY/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphoneos/" \
+			ONLY_ACTIVE_ARCH=NO;
 
-CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${RELEASE_NAME}/Debug-iphonesimulator/";
+CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphonesimulator/";
 
-LogOutput "\n\n\nTheKing--> Creating Library for Debug-iphonesimulator\n\n\n";
+LogOutput "\n\n\nTheKing--> Creating Library for ${BUILD_CONFIGURATION}-iphonesimulator\n\n\n";
 
 xcodebuild 	-project "$SOURCE_DIRECTORY/AudioVideoEngine.xcodeproj" \
 			-scheme AudioVideoEngine \
-			-configuration "Debug" \
-			-sdk iphonesimulator10.2  \
+			-configuration "${BUILD_CONFIGURATION}" \
+			-sdk iphonesimulator${XCODE_SDK_VERSION}  \
 			ARCHS="i386 x86_64 " \
-			CONFIGURATION_BUILD_DIR="$BUILD_DIRECTORY/${RELEASE_NAME}/Debug-iphonesimulator/" \
-			ONLY_ACTIVE_ARCH=NO || exit 1;
+			CONFIGURATION_BUILD_DIR="$BUILD_DIRECTORY/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphonesimulator/" \
+			ONLY_ACTIVE_ARCH=NO;
 
-CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${RELEASE_NAME}/Debug-universal/";
+CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/${BUILD_CONFIGURATION}-universal/";
 
-LogOutput "\n\n\nTheKing--> Merging Library for Debug-Universal\n\n\n";
+LogOutput "\n\n\nTheKing--> Merging Library for ${BUILD_CONFIGURATION}-Universal\n\n\n";
 
-lipo -create 	"$BUILD_DIRECTORY/${RELEASE_NAME}/Debug-iphoneos/libAudioVideoEngine.a" \
-				"$BUILD_DIRECTORY/${RELEASE_NAME}/Debug-iphonesimulator/libAudioVideoEngine.a" \
-			 	-output "$BUILD_DIRECTORY/${RELEASE_NAME}/Debug-universal/libAudioVideoEngine.a";
+lipo -create 	"$BUILD_DIRECTORY/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphoneos/libAudioVideoEngine.a" \
+				"$BUILD_DIRECTORY/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphonesimulator/libAudioVideoEngine.a" \
+			 	-output "$BUILD_DIRECTORY/${BUILD_NAME}/${BUILD_CONFIGURATION}-universal/libAudioVideoEngine.a";
 
 
-CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${RELEASE_NAME}/include/";
+CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/include/";
 
 LogOutput "\n\n\nTheKing--> Copy Header files related to libAudioVideoEngine..\n\n\n";
 
-cp "$SOURCE_DIRECTORY/VideoEngineController/InterfaceOfAudioVideoEngine.h" "$BUILD_DIRECTORY/${RELEASE_NAME}/include/InterfaceOfAudioVideoEngine.h";
+cp "$SOURCE_DIRECTORY/VideoEngineController/InterfaceOfAudioVideoEngine.h" "$BUILD_DIRECTORY/${BUILD_NAME}/include/InterfaceOfAudioVideoEngine.h";
 
 LogOutput "TheKing--> AudioVideoEngine BuildScript Finished Successfully...";
+
 
 
