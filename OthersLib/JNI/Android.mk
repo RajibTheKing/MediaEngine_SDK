@@ -104,6 +104,8 @@ LOCAL_C_INCLUDES := \
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
 LOCAL_SRC_FILES := \
+			../../VideoEngineController/MuxHeader.cpp \
+			../../VideoEngineController/AudioShortBufferForPublisherFarEnd.cpp \
 			../../VideoEngineController/AudioPacketizer.cpp \
 			../../VideoEngineController/AudioDePacketizer.cpp \
 			../../VideoEngineController/VideoSockets.cpp \
@@ -123,6 +125,7 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/EncodingBuffer.cpp \
 			../../VideoEngineController/EventNotifier.cpp \
 			../../VideoEngineController/InterfaceOFAudioVideoEngine.cpp \
+			../../VideoEngineController/IDRFrameIntervalController.cpp \
 			../../VideoEngineController/LogPrinter.cpp \
 			../../VideoEngineController/Tools.cpp \
 			../../VideoEngineController/VideoCallSession.cpp \
@@ -163,16 +166,13 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/Gain.cpp \
 			../../VideoEngineController/Echo.cpp \
 			../../VideoEngineController/GomGomGain.cpp \
+			../../VideoEngineController/AudioMixer.cpp \
+			../../VideoEngineController/LiveAudioParserForCallee.cpp \
+			../../VideoEngineController/LiveAudioParserForChannel.cpp \
+			../../VideoEngineController/LiveAudioParserForPublisher.cpp \
 			../../VideoEngineUtilities/VideoBeautificationer.cpp \
 			../../VideoEngineController/LiveReceiver.cpp \
 			../../VideoEngineController/LiveVideoDecodingQueue.cpp \
-			../../VideoEngineController/LiveAudioDecodingQueue.cpp \
-			../../VideoEngineController/VideoMuxingAndEncodeSession.cpp \
-			../../VideoEngineController/VideoHeader.cpp \
-			../../VideoEngineController/Aac.cpp \
-			../../VideoEngineController/LiveStreamingHeader.cpp \
-			../../VideoEngineUtilities/MuxingVideoData.cpp \
-			../../VideoEngineUtilities/VideoEffects.cpp \
 			../../VideoEngineController/LiveAudioDecodingQueue.cpp \
 			../../VideoEngineController/VideoMuxingAndEncodeSession.cpp \
 			../../VideoEngineController/VideoHeader.cpp \
