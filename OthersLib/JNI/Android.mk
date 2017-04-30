@@ -173,13 +173,13 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/LiveStreamingHeader.cpp \
 			../../VideoEngineUtilities/MuxingVideoData.cpp \
 			../../VideoEngineUtilities/VideoEffects.cpp \
-			../../videoengine/VideoEngineController/LiveAudioDecodingQueue.cpp \
-			../../videoengine/VideoEngineController/VideoMuxingAndEncodeSession.cpp \
-			../../videoengine/VideoEngineController/VideoHeader.cpp \
-			../../videoengine/VideoEngineController/Aac.cpp \
-			../../videoengine/VideoEngineController/LiveStreamingHeader.cpp \
-			../../videoengine/VideoEngineUtilities/MuxingVideoData.cpp \
-			../../videoengine/VideoEngineUtilities/VideoEffects.cpp \
+			../../VideoEngineController/LiveAudioDecodingQueue.cpp \
+			../../VideoEngineController/VideoMuxingAndEncodeSession.cpp \
+			../../VideoEngineController/VideoHeader.cpp \
+			../../VideoEngineController/Aac.cpp \
+			../../VideoEngineController/LiveStreamingHeader.cpp \
+			../../VideoEngineUtilities/MuxingVideoData.cpp \
+			../../VideoEngineUtilities/VideoEffects.cpp \
 
 			
 
