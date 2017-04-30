@@ -322,6 +322,18 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 		}
 		else if (mediaType == MEDIA_TYPE_AUDIO || mediaType == MEDIA_TYPE_VIDEO)
 		{
+			if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
+			{
+				iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data + 1, unLength - 1, 0, NULL, vMissingFrames); //Skip First byte for Audio Data
+			}
+			else if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+			{
+				iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 1, unLength - 1); //Skip First byte for Video Data
+			}
+			else
+				return 0;
+
+			/*
 			if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
 			{
 				iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 1, unLength - 1); //Skip First byte for Video Data
@@ -332,6 +344,7 @@ int CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector(const IPVLongType l
 			}
 			else
 				return 0;
+			*/
 		}
 		else if (mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO)
 		{
