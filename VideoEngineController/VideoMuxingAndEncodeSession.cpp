@@ -95,7 +95,7 @@ int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char
 
 	//LOGE("fahad -->> CColorConverter after ConvertRGB32ToRGB24 call");
 
-	m_YUV420ConvertedLen = m_ColorConverter->ConvertRGB24ToI420(m_ucaBMP24Frame, m_ucaYUVMuxFrame);
+	m_YUV420ConvertedLen = m_ColorConverter->ConvertRGB24ToI420(m_ucaBMP24Frame, m_ucaYUVMuxFrame, nVideoHeight, nVideoWidth);
 
 	m_CMuxingVideoData->SetBMP32Frame(pBMP32Data+BMP_HEADER_SIZE, iLen - BMP_HEADER_SIZE,nVideoHeight, nVideoWidth);
 
@@ -116,7 +116,7 @@ int CVideoMuxingAndEncodeSession::FrameMuxAndEncode( unsigned char *pVideoYuv, i
 
 	//LOGE("fahad -->> CVideoMuxingAndEncodeSession::FrameMuxAndEncode  processing");
 
-	m_ColorConverter->mirrorRotateAndConvertNV21ToI420( pVideoYuv, m_ucaRotateYUVFrame );
+	m_ColorConverter->mirrorRotateAndConvertNV21ToI420(pVideoYuv, m_ucaRotateYUVFrame, iHeight, iWidth);
 	int iMergedYUVLen = m_CMuxingVideoData->MergeFrameYUV_With_VideoYUV(m_ucaYUVMuxFrame, m_ucaRotateYUVFrame, iHeight, iWidth, m_ucaMergedYUVFrame);
 
 	//m_ColorConverter->ConvertI420ToNV21(m_ucaMergedYUVFrame, iHeight, iWidth);

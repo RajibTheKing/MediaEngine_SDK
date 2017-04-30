@@ -28,7 +28,7 @@ void CEncodingBuffer::ResetBuffer()
 }
 
 
-int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int nCaptureTimeDifference, int device_orientation)
+int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int iHeight, int iWidth, int nCaptureTimeDifference, int device_orientation)
 {
     //printf("EncodingBuffer, QUEUE SIZE = %d\n", m_nQueueSize);
 	Locker lock(*m_pEncodingBufferMutex);
@@ -36,6 +36,8 @@ int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength
 	memcpy(m_uc2aCapturedVideoDataBuffer[m_iPushIndex], ucaCapturedVideoFrameData, nLength);
 
 	m_naBufferDataLengths[m_iPushIndex] = nLength;
+	m_iHeight[m_iPushIndex] = iHeight;
+	m_iWidth[m_iPushIndex] = iWidth;
 
 	m_naBufferCaptureTimeDifferences[m_iPushIndex] = nCaptureTimeDifference;
 	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
@@ -57,7 +59,7 @@ int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength
     return 1;   
 }
 
-int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference, int &device_orientation)
+int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &iHeight, int &iWidth, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference, int &device_orientation)
 {
 	Locker lock(*m_pEncodingBufferMutex);
     //printf("TheKing--> EncodingBuffer m_nQueueSize = %d\n", m_nQueueSize);
@@ -72,6 +74,9 @@ int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &nrTi
 		nLength = m_naBufferDataLengths[m_iPopIndex];
 
 		memcpy(ucaCapturedVideoFrameData, m_uc2aCapturedVideoDataBuffer[m_iPopIndex], nLength);
+
+		iHeight = m_iHeight[m_iPopIndex];
+		iWidth = m_iWidth[m_iPopIndex];
 
 		nrCaptureTimeDifference = m_naBufferCaptureTimeDifferences[m_iPopIndex];
 		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];

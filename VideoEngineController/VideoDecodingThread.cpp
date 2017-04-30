@@ -568,6 +568,7 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
 
 	//printf("#V### Decoded Size -> %d +++E.Size:  %d\n",m_decodedFrameSize,(int)frameSize);
+    printf("TheKing--> Decoded Height:Width = %d:%d, iLen = %d\n", m_decodingHeight, m_decodingWidth, m_decodedFrameSize);
     m_pCalculatorDecodeTime->UpdateData(m_Tools.CurrentTimestamp() - decTime);
 
 	//if (m_decodingHeight > MAX_FRAME_HEIGHT || m_decodingWidth > MAX_FRAME_WIDTH)
@@ -621,8 +622,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
             
-            int iHeight = m_pColorConverter->GetHeight();
-            int iWidth = m_pColorConverter->GetWidth();
+            int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
+            int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
 			this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 		}
 		else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
@@ -667,8 +668,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
 	{
-		int iHeight = this->m_pColorConverter->GetHeight();
-		int iWidth = this->m_pColorConverter->GetWidth();
+		int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
+		int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
 
 		int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
 		int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
@@ -722,8 +723,8 @@ int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned
 
 	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP))
 	{
-		int iHeight = this->m_pColorConverter->GetHeight();
-		int iWidth = this->m_pColorConverter->GetWidth();
+		int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
+		int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
 
 		int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
 		int iScreenWidth = this->m_pColorConverter->GetScreenWidth();

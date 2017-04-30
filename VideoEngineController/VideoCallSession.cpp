@@ -321,6 +321,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
 
+    
     m_pVersionController = new CVersionController();
     
     if(m_bLiveVideoStreamRunning == true)
@@ -690,7 +691,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 504 -- size " + m_Tools.IntegertoStringConvert(in_size) + "  device_orient = "+ m_Tools.IntegertoStringConvert(device_orientation));
 
-	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, nCaptureTimeDiff, device_orientation);
+	int nCroppedHeight;
+	int nCroppedWidth;
+
+	//int nCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(in_data, 352, 288, 1920, 1130, m_CroppedFrame, nCroppedHeight, nCroppedWidth, YUVNV12);
+
+	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
     
     //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " nCaptureTimeDiff = " +  m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - mt_llCapturePrevTime));
     mt_llCapturePrevTime = m_Tools.CurrentTimestamp();
@@ -1111,6 +1117,7 @@ int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int heig
 	{
 		m_nVideoCallHeight = height;
 		m_nVideoCallWidth = width;
+
 
 		this->m_pColorConverter->SetHeightWidth(height, width);
 

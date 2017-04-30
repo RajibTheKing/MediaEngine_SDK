@@ -138,13 +138,15 @@ public:
 	void InterruptOver();
     
     bool isDynamicIDR_Mechanism_Enable();
+    
 
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
     bool m_bLiveVideoStreamRunning;
-    
-    
+
+	int m_nVideoCallHeight;
+	int m_nVideoCallWidth;
 
 private:
 
@@ -187,9 +189,6 @@ private:
 	int m_nEntityType;
 
 	int m_nCapturedFrameCounter;
-
-	int m_nVideoCallHeight;
-	int m_nVideoCallWidth;
 
 	int m_nDeviceHeight;
 	int m_nDeviceWidth;
@@ -236,6 +235,8 @@ private:
 	CSendingBuffer *m_SendingBuffer;
 
 	CColorConverter *m_pColorConverter;
+
+	unsigned char m_CroppedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	unsigned char m_miniPacket[VIDEO_HEADER_LENGTH + 1];
     

@@ -28,6 +28,8 @@ public:
     int GetMaxBitrate();
 	int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
 
+	void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth);
+
 private:
 
 	int m_nVideoHeight;
