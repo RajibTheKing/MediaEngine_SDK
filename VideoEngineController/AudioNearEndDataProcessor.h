@@ -38,13 +38,14 @@ public:
 
 	void SetDataReadyCallback(OnDataReadyToSendCB cbDataReady)
 	{
-		m_cbDataReady = cbDataReady;
-		MR_DEBUG("#ptt# SetDataReadyCallback: %x", m_cbDataReady);
+		m_cbOnDataReady = cbDataReady;
+		MR_DEBUG("#ptt# SetDataReadyCallback: %x", m_cbOnDataReady);
 	}
 
 	void SetEventCallback(OnFirePacketEventCB cbOnEvent)
 	{
 		m_cbOnPacketEvent = cbOnEvent;
+		MR_DEBUG("#ptt# SetEventCallback: %x", m_cbOnPacketEvent);
 	}
 
 private:
@@ -105,8 +106,8 @@ private:
 	//SmartPointer<std::thread> m_pAudioEncodingThread;
 	SmartPointer<CLockHandler> m_pAudioEncodingMutex;
 
-	OnDataReadyToSendCB m_cbDataReady = nullptr;
-	OnFirePacketEventCB m_cbOnPacketEvent = nullptr;
+	OnDataReadyToSendCB m_cbOnDataReady;
+	OnFirePacketEventCB m_cbOnPacketEvent;
 };
 
 #endif //AUDIO_NEAREND_DATA_PROCESSOR_H
