@@ -12,7 +12,9 @@ AudioResources::AudioResources(AudioSessionOptions audioSessionOptions)
 	m_pAudioHeader = AudioPacketHeader::GetInstance(audioSessionOptions.GetHeaderType());
 	
 	m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(audioSessionOptions.GetEncoderType());
-	m_pAudioEncoder->CreateAudioEncoder();
+	if (m_pAudioEncoder.get()){
+		m_pAudioEncoder->CreateAudioEncoder();
+	}
 
 	m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(audioSessionOptions.GetDecoderType());
 

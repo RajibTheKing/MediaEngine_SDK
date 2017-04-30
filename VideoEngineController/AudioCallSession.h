@@ -120,9 +120,10 @@ public:
 	static void SetSendFunction(SendFunctionPointerType cbClientSendFunc)
 	{
 		m_cbClientSendFunction = cbClientSendFunc;
+		MR_DEBUG("#ptt# CAudioCallSession::SetSendFunction, %x", m_cbClientSendFunction);
 	}
 
-	void SetEventNotifier(CEventNotifier *pEventNotifier)
+	static void SetEventNotifier(CEventNotifier *pEventNotifier)
 	{
 		m_pEventNotifier = pEventNotifier;
 	}

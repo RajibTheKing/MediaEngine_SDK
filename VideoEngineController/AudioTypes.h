@@ -3,6 +3,7 @@
 
 #include "AudioVideoEngineDefinitions.h"
 #include <vector>
+#include <cstddef>
 
 //External Callbacks
 typedef void(*SendFunctionPointerType)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> >);
