@@ -6,6 +6,7 @@
 #include "LockHandler.h"
 #include "Tools.h"
 #include "SmartPointer.h"
+#include "LogPrinter.h"
 #include <vector>
 
 class CAudioCallSession;
@@ -35,14 +36,16 @@ public:
 
 	long long GetBaseOfRelativeTime();
 
-	void SetDataReadyCallback(OnDataReadyToSendCB* cbDataReady)
+	void SetDataReadyCallback(OnDataReadyToSendCB cbDataReady)
 	{
-		m_cbDataReady = cbDataReady;
+		m_cbOnDataReady = cbDataReady;
+		MR_DEBUG("#ptt# SetDataReadyCallback: %x", m_cbOnDataReady);
 	}
 
-	void SetEventCallback(OnFirePacketEventCB* cbOnEvent)
+	void SetEventCallback(OnFirePacketEventCB cbOnEvent)
 	{
 		m_cbOnPacketEvent = cbOnEvent;
+		MR_DEBUG("#ptt# SetEventCallback: %x", m_cbOnPacketEvent);
 	}
 
 private:
@@ -103,8 +106,8 @@ private:
 	//SmartPointer<std::thread> m_pAudioEncodingThread;
 	SmartPointer<CLockHandler> m_pAudioEncodingMutex;
 
-	OnDataReadyToSendCB* m_cbDataReady;
-	OnFirePacketEventCB* m_cbOnPacketEvent;
+	OnDataReadyToSendCB m_cbOnDataReady;
+	OnFirePacketEventCB m_cbOnPacketEvent;
 };
 
 #endif //AUDIO_NEAREND_DATA_PROCESSOR_H

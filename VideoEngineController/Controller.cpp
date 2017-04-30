@@ -180,10 +180,10 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources);
+		CAudioCallSession::SetSendFunction(m_pCommonElementsBucket->GetSendFunctionPointer());
+		CAudioCallSession::SetEventNotifier(m_pCommonElementsBucket->m_pEventNotifier);
 
-		pAudioSession->SetSendFunction(m_pCommonElementsBucket->GetSendFunctionPointer());
-		pAudioSession->SetEventNotifier(m_pCommonElementsBucket->m_pEventNotifier);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
