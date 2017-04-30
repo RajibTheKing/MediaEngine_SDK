@@ -401,16 +401,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #elif defined(DESKTOP_C_SHARP)
 
-			int iCurWidth = iGotWidth;
-			int iCurHeight = iGotHeight;
-
-			if (nEncodingFrameSize == iCurWidth * iCurHeight * 2)
+			if (nEncodingFrameSize == iGotWidth * iGotHeight * 2)
 			{
-				nEncodingFrameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iCurHeight, iCurWidth);
+				nEncodingFrameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
-			else if (nEncodingFrameSize == iCurWidth * iCurHeight * 3)
+			else if (nEncodingFrameSize == iGotWidth * iGotHeight * 3)
 			{
-				nEncodingFrameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iCurHeight, iCurWidth);
+				nEncodingFrameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
