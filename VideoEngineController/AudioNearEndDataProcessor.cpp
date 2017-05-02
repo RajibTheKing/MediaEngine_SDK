@@ -66,14 +66,15 @@ m_cNearEndProcessorThread(nullptr)
 	m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");
 #endif	
 
-//	StartEncodingThread();
 	m_cNearEndProcessorThread = new AudioNearEndProcessorThread(this);
-	m_cNearEndProcessorThread->StartNearEndThread();
+	if (m_cNearEndProcessorThread != nullptr)
+	{
+		m_cNearEndProcessorThread->StartNearEndThread();
+	}
 }
 
-AudioNearEndDataProcessor::~AudioNearEndDataProcessor(){
-//	StopEncodingThread();
-	
+AudioNearEndDataProcessor::~AudioNearEndDataProcessor()
+{
 	if (m_cNearEndProcessorThread != nullptr)
 	{
 		delete m_cNearEndProcessorThread;
