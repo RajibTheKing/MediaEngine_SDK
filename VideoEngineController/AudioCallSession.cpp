@@ -24,6 +24,10 @@
 #include "AudioDecoderProvider.h"
 #include "AudioEncoderInterface.h"
 
+#include "AudioNearEndProcessorPublisher.h"
+#include "AudioNearEndProcessorViewerInCall.h"
+#include "AudioNearEndProcessorCall.h"
+
 #ifdef USE_VAD
 #include "Voice.h"
 #endif
@@ -97,9 +101,7 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 	m_clientSocket->SetAudioCallSession(this);
 #endif
 
-	m_pNearEndProcessor = new CAudioNearEndDataProcessor(nServiceType, nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
-	m_pNearEndProcessor->SetDataReadyCallback((OnDataReadyToSendCB)OnDataReadyCallback);
-	m_pNearEndProcessor->SetEventCallback((OnFirePacketEventCB)OnPacketEventCallback);
+	AllocateNearEndDataProcessor();
 
 	m_pFarEndProcessor = new CAudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
 	m_pFarEndProcessor->SetEventCallback((OnFireDataEventCB)OnDataEventCallback, (OnFireNetworkChangeCB)OnNetworkChangeCallback, (OnFireAudioAlarmCB)OnAudioAlarmCallback);
@@ -155,6 +157,29 @@ void CAudioCallSession::SetResources(AudioResources &audioResources)
 	m_pPlayerGain = audioResources.GetPlayerGain();
 }
 
+
+void CAudioCallSession::AllocateNearEndDataProcessor()
+{
+	if (m_bLiveAudioStreamRunning)
+	{
+		if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
+		{
+			m_pNearEndProcessor = new AudioNearEndProcessorPublisher(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+		}
+		else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+		{
+			m_pNearEndProcessor = new AudioNearEndProcessorViewerInCall(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+		}
+	}
+	else
+	{
+		m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+	}
+
+	m_pNearEndProcessor->SetDataReadyCallback((OnDataReadyToSendCB)OnDataReadyCallback);
+	m_pNearEndProcessor->SetEventCallback((OnFirePacketEventCB)OnPacketEventCallback);
+
+}
 
 void CAudioCallSession::InitializeAudioCallSession()
 {

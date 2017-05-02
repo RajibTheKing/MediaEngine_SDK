@@ -139,7 +139,7 @@ public:
 //	SmartPointer<AudioGainInterface> m_pRecorderGain;
 //	SmartPointer<AudioGainInterface> m_pPlayerGain;
 
-	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
+	AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
 
 #ifdef DUMP_FILE
@@ -218,8 +218,11 @@ public:
 	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
 	int GetRole();
 
+
 protected:
+
 	void SetResources(AudioResources &audioResources);
+	void AllocateNearEndDataProcessor();
 
     SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
     SmartPointer<std::thread> m_pAudioEncodingThread;
