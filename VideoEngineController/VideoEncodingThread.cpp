@@ -536,39 +536,72 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
+					/*
+					if (0 == m_filterToApply)
+					{
 
-				if (0 == m_filterToApply) {
-					;
-				} else if (1 == m_filterToApply) {
-					m_VideoEffects->NegetiveColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (2 == m_filterToApply) {
-					m_VideoEffects->BlackAndWhiteColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (3 == m_filterToApply) {
-					m_VideoEffects->SapiaColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (4 == m_filterToApply) {
-					m_VideoEffects->WarmColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (5 == m_filterToApply) {
-					m_VideoEffects->TintColorBlueEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (6 == m_filterToApply) {
-					m_VideoEffects->TintColorPinkEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (7 == m_filterToApply) {
-					m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 0.6);
-				} else if (8 == m_filterToApply) {
-					m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -1.0);
-				} else if (9 == m_filterToApply) {
-					m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 10);
-				} else if (10 == m_filterToApply) {
-					m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -80);
-				} else if (11 == m_filterToApply) {
-					m_VideoEffects->PencilSketchGrayEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (12 == m_filterToApply) {
-					m_VideoEffects->PencilSketchWhiteEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (13 == m_filterToApply) {
-					m_VideoEffects->ColorSketchEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (14 == m_filterToApply) {
-					m_VideoEffects->CartoonEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-				} else if (15 == m_filterToApply) {
-					m_VideoEffects->PlaitEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (1 == m_filterToApply)
+					{
+						m_VideoEffects->NegetiveColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (2 == m_filterToApply)
+					{
+						m_VideoEffects->BlackAndWhiteColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (3 == m_filterToApply)
+					{
+						m_VideoEffects->SapiaColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (4 == m_filterToApply)
+					{
+						m_VideoEffects->WarmColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (5 == m_filterToApply)
+					{
+						m_VideoEffects->TintColorBlueEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (6 == m_filterToApply)
+					{
+						m_VideoEffects->TintColorPinkEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (7 == m_filterToApply)
+					{
+						m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 0.6);
+					}
+					else if (8 == m_filterToApply)
+					{
+						m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -1.0);
+					}
+					else if (9 == m_filterToApply)
+					{
+						m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 10);
+					}
+					else if (10 == m_filterToApply)
+					{
+						m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -80);
+					}
+					else if (11 == m_filterToApply)
+					{
+						m_VideoEffects->PencilSketchGrayEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (12 == m_filterToApply)
+					{
+						m_VideoEffects->PencilSketchWhiteEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (13 == m_filterToApply)
+					{
+						m_VideoEffects->ColorSketchEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (14 == m_filterToApply)
+					{
+						m_VideoEffects->CartoonEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					else if (15 == m_filterToApply)
+					{
+						m_VideoEffects->PlaitEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					}
+					*/
 				}
 
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)
