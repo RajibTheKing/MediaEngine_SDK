@@ -16,7 +16,7 @@ AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEn
 
 void AudioNearEndProcessorPublisher::ProcessNearEndData()
 {
-	MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::ProcessNearEndData()");
+//	MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::ProcessNearEndData()");
 
 	int version = 0;
 	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
