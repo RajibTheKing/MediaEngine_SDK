@@ -22,11 +22,11 @@ class ILiveAudioParser;
 class AudioMixer;
 class AudioDecoderInterface;
 
-class CAudioFarEndDataProcessor
+class AudioFarEndDataProcessor
 {
 public:
-	CAudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
-	~CAudioFarEndDataProcessor();
+	AudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
+	~AudioFarEndDataProcessor();
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 	void StartCallInLive(int nEntityType);
 	void StopCallInLive(int nEntityType);

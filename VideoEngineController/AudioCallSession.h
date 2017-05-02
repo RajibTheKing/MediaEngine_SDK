@@ -54,7 +54,7 @@ class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioCodec;
 class AudioDePacketizer;
-class CAudioFarEndDataProcessor;
+class AudioFarEndDataProcessor;
 
 class AudioEncoderInterface;
 class AudioDecoderInterface;
@@ -145,7 +145,7 @@ public:
 //	SmartPointer<AudioGainInterface> m_pPlayerGain;
 
 	AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
-	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
+	AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
 
 #ifdef DUMP_FILE
 	FILE *FileInput;

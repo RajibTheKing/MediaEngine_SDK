@@ -20,7 +20,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CAudioFarEndDataProcessor::CAudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
+AudioFarEndDataProcessor::AudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
 m_llFriendID(llFriendID),
@@ -83,7 +83,7 @@ m_cbOnAudioAlarm(nullptr)
 	StartDecodingThread();
 }
 
-CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
+AudioFarEndDataProcessor::~AudioFarEndDataProcessor()
 {
 	StopDecodingThread();
 
@@ -111,7 +111,7 @@ CAudioFarEndDataProcessor::~CAudioFarEndDataProcessor()
 	}
 }
 
-void CAudioFarEndDataProcessor::StartDecodingThread()
+void AudioFarEndDataProcessor::StartDecodingThread()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartDecodingThread 1");
 
@@ -138,15 +138,15 @@ void CAudioFarEndDataProcessor::StartDecodingThread()
 	return;
 }
 
-void *CAudioFarEndDataProcessor::CreateAudioDecodingThread(void* param)
+void *AudioFarEndDataProcessor::CreateAudioDecodingThread(void* param)
 {
-	CAudioFarEndDataProcessor *pThis = (CAudioFarEndDataProcessor*)param;
+	AudioFarEndDataProcessor *pThis = (AudioFarEndDataProcessor*)param;
 	pThis->DecodingThreadProcedure();
 
 	return NULL;
 }
 
-void CAudioFarEndDataProcessor::StopDecodingThread()
+void AudioFarEndDataProcessor::StopDecodingThread()
 {
 	m_bAudioDecodingThreadRunning = false;
 
@@ -154,7 +154,7 @@ void CAudioFarEndDataProcessor::StopDecodingThread()
 		Tools::SOSleep(5);
 }
 
-int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames)
+int AudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames)
 {
 	if (m_bIsLiveStreamingRunning)
 	{
@@ -171,7 +171,7 @@ int CAudioFarEndDataProcessor::DecodeAudioData(int nOffset, unsigned char *pucaD
 	return  m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
 }
 
-void CAudioFarEndDataProcessor::StartCallInLive(int nEntityType)
+void AudioFarEndDataProcessor::StartCallInLive(int nEntityType)
 {
 	if (nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 	{
@@ -181,13 +181,13 @@ void CAudioFarEndDataProcessor::StartCallInLive(int nEntityType)
 	m_nEntityType = nEntityType;
 }
 
-void CAudioFarEndDataProcessor::StopCallInLive(int nEntityType)
+void AudioFarEndDataProcessor::StopCallInLive(int nEntityType)
 {
 	m_vAudioFarEndBufferVector[0]->ResetBuffer();
 	m_nEntityType = nEntityType;
 }
 
-bool CAudioFarEndDataProcessor::IsQueueEmpty()
+bool AudioFarEndDataProcessor::IsQueueEmpty()
 {
 	if (m_bIsLiveStreamingRunning)
 	{
@@ -223,7 +223,7 @@ bool CAudioFarEndDataProcessor::IsQueueEmpty()
 	return false;
 }
 
-void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
+void AudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 {
 	if (m_bIsLiveStreamingRunning)
 	{
@@ -253,7 +253,7 @@ void CAudioFarEndDataProcessor::DequeueData(int &decodingFrameSize)
 	}
 }
 
-void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType)
+void AudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType)
 {
 	m_iLastDecodedPacketNumber = iPacketNumber;
 	LOGEF("Role %d, Before decode", m_iRole);
@@ -291,7 +291,7 @@ void CAudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber,
 	}
 }
 
-bool CAudioFarEndDataProcessor::IsPacketTypeSupported(int &nCurrentAudioPacketType)
+bool AudioFarEndDataProcessor::IsPacketTypeSupported(int &nCurrentAudioPacketType)
 {
 	if (!m_bIsLiveStreamingRunning)
 	{
@@ -310,7 +310,7 @@ bool CAudioFarEndDataProcessor::IsPacketTypeSupported(int &nCurrentAudioPacketTy
 	}
 }
 
-void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
+void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
 {
 	long long llNow = 0;
 
@@ -363,14 +363,14 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 
 }
 
-void CAudioFarEndDataProcessor::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize)
+void AudioFarEndDataProcessor::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize)
 {
 #ifdef DUMP_FILE
 	fwrite(psDecodedFrame, 2, nDecodedFrameSize, m_pAudioCallSession->FileOutput);
 #endif
 }
 
-void CAudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
+void AudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
 {
 	m_ReceivingHeader->CopyHeaderToInformation(header);
@@ -406,7 +406,7 @@ void CAudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nH
 	}
 }
 
-bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
+bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 {
 	LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
 	
@@ -438,7 +438,7 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudi
 	return false;
 }
 
-bool CAudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion)
+bool AudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion)
 {
 	if (false == m_bIsLiveStreamingRunning)
 	{
@@ -475,7 +475,7 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableInNormalCall(int &nCurrentAud
 	}
 }
 
-bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType)
+bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType)
 {
 #ifndef LOCAL_SERVER_LIVE_CALL
 	if (m_bIsLiveStreamingRunning)
@@ -529,7 +529,7 @@ bool CAudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long
 #endif
 }
 
-void CAudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
+void AudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 {
 	if (!m_bIsLiveStreamingRunning)
 	{
@@ -556,7 +556,7 @@ void CAudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlot
 	}
 }
 
-void CAudioFarEndDataProcessor::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
+void AudioFarEndDataProcessor::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 	 long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)
 {
 	if (!m_bIsLiveStreamingRunning)
@@ -577,7 +577,7 @@ void CAudioFarEndDataProcessor::PrintDecodingTimeStats(long long &llNow, long lo
 	}
 }
 /**Decoding*/
-void CAudioFarEndDataProcessor::DecodingThreadProcedure()
+void AudioFarEndDataProcessor::DecodingThreadProcedure()
 {
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Started DecodingThreadProcedure method.");	
 
@@ -613,7 +613,7 @@ void CAudioFarEndDataProcessor::DecodingThreadProcedure()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::DecodingThreadProcedure() Stopped DecodingThreadProcedure method.");
 }
 
-void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamPublisher()
+void AudioFarEndDataProcessor::FarEndProcedureLiveStreamPublisher()
 {
 	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
@@ -693,7 +693,7 @@ void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamPublisher()
 	}
 }
 
-void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamViewer()
+void AudioFarEndDataProcessor::FarEndProcedureLiveStreamViewer()
 {
 	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
@@ -832,7 +832,7 @@ void CAudioFarEndDataProcessor::FarEndProcedureLiveStreamViewer()
 	}
 }
 
-void CAudioFarEndDataProcessor::FarEndProcedureChannel()
+void AudioFarEndDataProcessor::FarEndProcedureChannel()
 {
 	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
@@ -912,7 +912,7 @@ void CAudioFarEndDataProcessor::FarEndProcedureChannel()
 	}
 }
 
-void CAudioFarEndDataProcessor::FarEndProcedureAudioCall()
+void AudioFarEndDataProcessor::FarEndProcedureAudioCall()
 {
 	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
@@ -985,7 +985,7 @@ void CAudioFarEndDataProcessor::FarEndProcedureAudioCall()
 	}
 }
 
-void CAudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
+void AudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
 {
 #ifndef AUDIO_FIXED_BITRATE
 
