@@ -188,6 +188,10 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/NoiseReducerProvider.cpp \
 			../../../videoengine/VideoEngineController/AudioSessionOptions.cpp \
 			../../../videoengine/VideoEngineController/AudioResources.cpp \
+			../../../videoengine/VideoEngineController/AudioNearEndProcessorThread.cpp \
+			../../../videoengine/VideoEngineController/AudioNearEndProcessorPublisher.cpp \
+			../../../videoengine/VideoEngineController/AudioNearEndProcessorViewerInCall.cpp \
+			../../../videoengine/VideoEngineController/AudioNearEndProcessorCall.cpp \
 
 
 			
