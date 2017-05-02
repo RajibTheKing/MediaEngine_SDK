@@ -6,6 +6,9 @@
 
 #include "../VideoEngineController/Size.h"
 #include "../videoEngineController/Tools.h"
+#include "SmartPointer.h"
+
+class CLockHandler;
 
 class CVideoBeautificationer
 {
@@ -37,14 +40,19 @@ public:
 	void MakeFrameBright(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, int nPrecision);
 	void IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, unsigned char  nThreshold);
 
+	void setParameters(int *param);
+	int TestVideoEffect(int *param, int size);
+
 	void boxesForGauss(float sigma, int n);
 	void GaussianBlur_4thApproach(unsigned char *scl , unsigned char *tcl, int h, int w, float r);
 	void boxBlur_4 (unsigned char *scl, unsigned char *tcl , int h, int w, int r);
 	void boxBlurH_4 (unsigned char *scl, unsigned char *tcl, int h, int w, int r);
 
-	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, int *effectParam);
-	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
-	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam);
+	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth);
+	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
+	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
+
+	void BrightnessCalculation(int startPix, int endPix, int midPix, int highestChange);
     
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -92,6 +100,13 @@ private:
 
 	int m_precSharpness[256][2300];
 	int m_Multiplication[641][641];
+
+	int m_VideoEffectParam[100];
+
+	int m_skinPixels;
+	int m_skinPixelSum;
+
+	SmartPointer<CLockHandler> m_pVideoBeautificationMutex;
 
 };
 

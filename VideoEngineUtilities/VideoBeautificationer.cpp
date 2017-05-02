@@ -2,10 +2,13 @@
 #include "VideoBeautificationer.h"
 #include <cmath>
 #include "../VideoEngineController/LogPrinter.h"
+#include "LockHandler.h"
 
 
 #define NV21 21
 #define NV12 12
+
+int m_applyBeatification;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -164,6 +167,10 @@ m_EffectValue(10)
 	memset(m_variance, m_nVideoHeight*m_nVideoWidth, 0);
 
 	luminaceHigh = 255;
+
+	m_applyBeatification = 1;
+
+	m_pVideoBeautificationMutex.reset(new CLockHandler);
 }
 
 CVideoBeautificationer::~CVideoBeautificationer()
@@ -474,8 +481,17 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 	//return tcl;
 }
 
-pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam)
+pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
 {
+	Locker lock(*m_pVideoBeautificationMutex);
+
+	if (m_applyBeatification != 1)
+	{
+		pair<int, int> result = { 0, 0 };
+
+		return result;
+	}
+
 	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
 	if (effectParam[1] != 0)m_radius = effectParam[1];
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
@@ -543,8 +559,17 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlu
 	return result;
 }
 
-pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int *effectParam)
+pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
 {
+	Locker lock(*m_pVideoBeautificationMutex);
+
+	if (m_applyBeatification != 1)
+	{
+		pair<int, int> result = { 0, 0 };
+
+		return result;
+	}
+
 	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
 	if (effectParam[1] != 0)m_radius = effectParam[1];
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
@@ -684,8 +709,17 @@ bool CVideoBeautificationer::IsNotSkinPixel(unsigned char UPixel, unsigned char 
 	return (UPixel <= 94 || UPixel >= 126 || VPixel <= 134 || VPixel >= 176);
 }
 
-pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, int *effectParam)
+pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth)
 {
+	Locker lock(*m_pVideoBeautificationMutex);
+
+	if (m_applyBeatification != 1)
+	{
+		pair<int, int> result = { 0, 0 };
+
+		return result;
+	}
+
 	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
 	if (effectParam[1] != 0)m_radius = effectParam[1];
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
@@ -885,6 +919,68 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	pair<int, int> result = { m_mean[iHeight][iWidth] / (iHeight*iWidth), m_variance[iHeight][iWidth] / (iHeight*iWidth) };
 
 	return result;
+}
+
+void CVideoBeautificationer::setParameters(int *param)
+{
+	if (param[0] != 0) m_sigma = param[0];
+
+	if (param[1] != 0) m_radius = param[1];
+
+	m_rr = (m_radius << 1) + 1;
+
+	m_pixels = m_rr * m_rr;
+
+	m_applyBeatification = param[3];
+
+	//m_applyBeatification = 1;
+
+	HITLERSS(">> sigma = %d radius = %d beauty = %d\n", param[0], param[1], param[3]);
+
+	HITLERSS("<< sigma = %d radius = %d beauty = %d\n", m_sigma, m_radius, m_applyBeatification);
+
+	return;
+}
+
+int CVideoBeautificationer::TestVideoEffect(int *param, int size)
+{
+	Locker lock(*m_pVideoBeautificationMutex);
+		
+	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
+
+	if (effectParam[1] != 0)m_radius = effectParam[1];
+
+	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
+		
+	memcpy(m_VideoEffectParam, param, size * sizeof(int));
+
+	BrightnessCalculation(m_VideoEffectParam[4], m_VideoEffectParam[5], m_VideoEffectParam[6], m_VideoEffectParam[7]);
+
+	setParameters(m_VideoEffectParam);
+
+	return 1;
+}
+
+void CVideoBeautificationer::BrightnessCalculation(int startPix, int endPix, int midPix, int highestChange)
+{	
+	int firstDif = midPix - startPix;
+	int secondDif = endPix - midPix;
+	
+	for (int i = 0; i < 256; i++) 
+	{
+		m_preBrightness[i] = i;
+
+		if (i >= startPix && i <= midPix) 
+		{
+			m_preBrightness[i] += (i - startPix) * highestChange / firstDif;
+		}
+		else if (i >= midPix && i <= endPix)
+		{
+			m_preBrightness[i] += (endPix - i) * highestChange / secondDif;
+		}
+	}		
+		
+	return;
 }
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
