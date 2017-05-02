@@ -19,15 +19,17 @@ class AudioMixer;
 class AudioEncoderInterface;
 class NoiseReducerInterface;
 
-class CAudioNearEndDataProcessor
+class AudioNearEndProcessorThread;
+
+class AudioNearEndDataProcessor
 {
 public:
 
-	CAudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
-	~CAudioNearEndDataProcessor();
+	AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+	~AudioNearEndDataProcessor();
 
-	static void *CreateAudioEncodingThread(void* param);
-	void EncodingThreadProcedure();
+	//static void *CreateAudioEncodingThread(void* param);
+	//void EncodingThreadProcedure();
 	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
@@ -48,15 +50,17 @@ public:
 		MR_DEBUG("#ptt# SetEventCallback: %x", m_cbOnPacketEvent);
 	}
 
-	void LiveStreamNearendProcedureViewer();
-	void LiveStreamNearendProcedurePublisher();
-	void AudioCallNearendProcedure();
+	virtual void ProcessNearEndData() = 0;
 
 
 protected:
 
-	void StartEncodingThread();
-	void StopEncodingThread();	
+	//void LiveStreamNearendProcedureViewer();
+	//void LiveStreamNearendProcedurePublisher();
+	//void AudioCallNearendProcedure();
+
+	//void StartEncodingThread();
+	//void StopEncodingThread();	
 	bool MuxIfNeeded(short* shPublisherData, short *shMuxedData, int &nDataSizeInByte, int nPacketNumber);
 	void DumpEncodingFrame();
 	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
@@ -69,23 +73,16 @@ protected:
 	void DecideToChangeComplexity(int iEncodingTime);
 	
 
-public:
+private:
 
 	std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 
 	long long m_llFriendID;
-	bool m_bIsLiveStreamingRunning;
 	bool m_bIsReady;
-	int m_nEncodedFrameSize;
-	int m_nRawFrameSize;
-	int m_MyAudioHeadersize;
-	int m_iPacketNumber;
 	int m_nServiceType;
 	int m_nEntityType;
-	LongLong m_llMaxAudioPacketNumber;
 	LongLong m_llEncodingTimeStampOffset;
 
-	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 //	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 	CAudioCallSession *m_pAudioCallSession = nullptr;
@@ -93,14 +90,10 @@ public:
 	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader = nullptr;
 	AudioMixer *m_pAudioMixer = nullptr;
 
-	short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
-	unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
-	short m_saSendingDataPublisher[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
 
 	bool m_bAudioEncodingThreadRunning;
 	bool m_bAudioEncodingThreadClosed;
 
-	unsigned char m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
 	int m_iRawDataSendIndexViewer;
 
 	short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
@@ -114,6 +107,25 @@ public:
 
 	OnDataReadyToSendCB m_cbOnDataReady;
 	OnFirePacketEventCB m_cbOnPacketEvent;
+
+	AudioNearEndProcessorThread *m_cNearEndProcessorThread;
+
+protected:
+
+	bool m_bIsLiveStreamingRunning;
+
+	int m_MyAudioHeadersize;
+	int m_iPacketNumber;
+	int m_nRawFrameSize;
+	int m_nEncodedFrameSize;
+	LongLong m_llMaxAudioPacketNumber;
+
+	short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];//Always contains UnMuxed Data
+	short m_saSendingDataPublisher[MAX_AUDIO_FRAME_Length];//Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
+	unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
+	unsigned char m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
+
+	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 };
 
 #endif //AUDIO_NEAREND_DATA_PROCESSOR_H

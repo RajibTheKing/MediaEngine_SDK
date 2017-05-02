@@ -15,11 +15,14 @@
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"
 
+#include "AudioNearEndProcessorThread.h"
+
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-CAudioNearEndDataProcessor::CAudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
+AudioNearEndDataProcessor::AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
 m_bIsReady(false),
@@ -34,7 +37,8 @@ m_iRawDataSendIndexViewer(0),
 m_llLastChunkLastFrameRT(-1),
 m_llLastFrameRT(0),
 m_cbOnDataReady(nullptr),
-m_cbOnPacketEvent(nullptr)
+m_cbOnPacketEvent(nullptr),
+m_cNearEndProcessorThread(nullptr)
 {
 	m_pAudioEncodingMutex.reset(new CLockHandler);
 	m_pAudioEncoder = pAudioCallSession->GetAudioEncoder();
@@ -62,11 +66,20 @@ m_cbOnPacketEvent(nullptr)
 	m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");
 #endif	
 
-	StartEncodingThread();
+//	StartEncodingThread();
+	m_cNearEndProcessorThread = new AudioNearEndProcessorThread(this);
+	m_cNearEndProcessorThread->StartNearEndThread();
 }
 
-CAudioNearEndDataProcessor::~CAudioNearEndDataProcessor(){
-	StopEncodingThread();
+AudioNearEndDataProcessor::~AudioNearEndDataProcessor(){
+//	StopEncodingThread();
+	
+	if (m_cNearEndProcessorThread != nullptr)
+	{
+		delete m_cNearEndProcessorThread;
+		m_cNearEndProcessorThread = nullptr;
+	}
+
 	if (m_pAudioPacketHeader)
 	{
 		//delete m_pAudioPacketHeader;
@@ -74,216 +87,8 @@ CAudioNearEndDataProcessor::~CAudioNearEndDataProcessor(){
 
 }
 
-void CAudioNearEndDataProcessor::StartEncodingThread()
-{
-	m_bAudioEncodingThreadRunning = true;
-	m_bAudioEncodingThreadClosed = false;
 
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-	dispatch_queue_t EncodeThreadQ = dispatch_queue_create("EncodeThreadQ", DISPATCH_QUEUE_CONCURRENT);
-	dispatch_async(EncodeThreadQ, ^{
-		this->EncodingThreadProcedure();
-	});
-#else
-	std::thread myThread(CreateAudioEncodingThread, this);
-	myThread.detach();
-#endif
-
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::StartEncodingThread Encoding Thread started");
-
-	return;
-}
-
-void *CAudioNearEndDataProcessor::CreateAudioEncodingThread(void* param)
-{
-	CAudioNearEndDataProcessor *pThis = (CAudioNearEndDataProcessor*)param;
-	pThis->EncodingThreadProcedure();
-
-	return NULL;
-}
-
-					/***Encoding*/
-
-void CAudioNearEndDataProcessor::EncodingThreadProcedure()
-{
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Started EncodingThreadProcedure.");
-		
-	LOGT("##NF## encoder started");
-	while (m_bAudioEncodingThreadRunning)
-	{
-		if (m_bIsLiveStreamingRunning)
-		{
-			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
-			{
-				LiveStreamNearendProcedurePublisher();
-			}
-			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
-			{
-				LiveStreamNearendProcedureViewer();
-			}			
-		}
-		else 
-		{
-			AudioCallNearendProcedure();
-		}
-	}
-
-	m_bAudioEncodingThreadClosed = true;
-
-	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodingThreadProcedure() Stopped EncodingThreadProcedure");
-}
-
-void CAudioNearEndDataProcessor::LiveStreamNearendProcedureViewer(){
-	int version = 0;
-	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
-	if (m_pAudioEncodingBuffer->GetQueueSize() == 0)
-		Tools::SOSleep(10);
-	else
-	{
-		LOG18("#18#NE#Viewer... ");
-		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
-		int nDataLenthInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
-
-		m_pAudioCallSession->m_ViewerInCallSentDataQueue.EnQueue(m_saAudioRecorderFrame, nDataLenthInShort, m_iPacketNumber);
-
-		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);		
-		DumpEncodingFrame();
-		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);		
-
-		if (false == PreProcessAudioBeforeEncoding())
-		{
-			return;
-		}
-
-
-		m_nRawFrameSize = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning) * sizeof(short);
-		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saAudioRecorderFrame, m_nRawFrameSize);
-		
-		int iSlotID = 0;
-		int iPrevRecvdSlotID = 0;
-		int iReceivedPacketsInPrevSlot = 0;
-		int nChannel = 0;
-
-		m_ucaRawFrameNonMuxed[0] = 0;
-		BuildAndGetHeaderInArray(AUDIO_LIVE_CALLEE_PACKET_TYPE, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, m_nRawFrameSize,
-			iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
-		
-		++m_iPacketNumber;
-		if (m_iPacketNumber == m_llMaxAudioPacketNumber)
-		{
-			m_iPacketNumber = 0;
-		}		
-		LOG18("#18#NE#Viewer  StoreDataForChunk");
-		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, 1600);
-		
-		Tools::SOSleep(0);
-	}
-}
-
-void CAudioNearEndDataProcessor::LiveStreamNearendProcedurePublisher(){
-	int version = 0;
-	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
-	if (m_pAudioEncodingBuffer->GetQueueSize() == 0)
-		Tools::SOSleep(10);
-	else
-	{
-		LOG18("#18#NE#Publisher...");
-		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
-		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
-		DumpEncodingFrame();
-
-		int nSendingDataSizeInByte = 1600;	//Or contain 18 bit data with mixed header.
-		bool bIsMuxed = false;
-
-		if (false == PreProcessAudioBeforeEncoding())
-		{
-			return;
-		}
-		
-		bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
-				
-		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
-				
-		memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saSendingDataPublisher, nSendingDataSizeInByte);
-
-		int nSendingFramePacketType = bIsMuxed ? AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED : AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED;
-
-		int iSlotID = 0;
-		int iPrevRecvdSlotID = 0;
-		int iReceivedPacketsInPrevSlot = 0;
-		int nChannel = 0;
-		m_ucaRawFrameNonMuxed[0] = 0;
-		BuildAndGetHeaderInArray(nSendingFramePacketType, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, nSendingDataSizeInByte,
-			iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
-
-		++m_iPacketNumber;
-		if (m_iPacketNumber == m_llMaxAudioPacketNumber)
-		{
-			m_iPacketNumber = 0;
-		}
-		LOG18("#18#NE#Publish  StoreDataForChunk nSendingDataSizeInByte = %d m_MyAudioHeadersize = %d", nSendingDataSizeInByte, m_MyAudioHeadersize);
-		
-		int nSendigFrameSize = nSendingDataSizeInByte + m_MyAudioHeadersize + 1;
-		//for (int i = 0; i < 5; i++)
-		//{
-		//	m_ucaRawFrameNonMuxed[m_MyAudioHeadersize + 1 + i] = 110 + i;
-		//	m_ucaRawFrameNonMuxed[nSendigFrameSize - 1 - i] = 110 + i;
-		//}		
-
-		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendigFrameSize);
-
-		Tools::SOSleep(0);
-	}
-}
-
-
-void CAudioNearEndDataProcessor::AudioCallNearendProcedure(){
-	int version = 0;
-	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;;
-	if (m_pAudioEncodingBuffer->GetQueueSize() == 0)
-		Tools::SOSleep(10);
-	else
-	{
-		LOG18("#18#NE#AudioCall...");
-		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
-		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
-		
-		DumpEncodingFrame();
-		UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);		
-
-		if (false == PreProcessAudioBeforeEncoding())
-		{
-			return;
-		}
-
-		long long llEncodingTime, llTimeBeforeEncoding = Tools::CurrentTimestamp();
-		m_nEncodedFrameSize = m_pAudioEncoder->EncodeAudio(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
-
-		//ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
-		llEncodingTime = Tools::CurrentTimestamp() - llTimeBeforeEncoding;
-		this->DecideToChangeComplexity(llEncodingTime);
-
-
-		int iSlotID = 0;
-		int iPrevRecvdSlotID = 0;
-		int iReceivedPacketsInPrevSlot = 0;
-		int nChannel = 0;
-
-		BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, m_nEncodedFrameSize, iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaEncodedFrame[1]);
-
-		++m_iPacketNumber;
-		if (m_iPacketNumber == m_llMaxAudioPacketNumber)
-		{
-			m_iPacketNumber = 0;
-		}
-
-		SentToNetwork(llRelativeTime);		
-		LOG18("#18#NE#AudioCall Sent");
-		Tools::SOSleep(0);
-	}
-}
-
-void CAudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte)
+void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte)
 {
 	Locker lock(*m_pAudioEncodingMutex);
 
@@ -305,7 +110,7 @@ void CAudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk
 }
 
 
-void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
+void AudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 {
 #ifdef  AUDIO_SELF_CALL //Todo: build while this is enable
 	//Todo: m_AudioReceivedBuffer fix. not member of this class
@@ -349,7 +154,7 @@ void CAudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
 #endif
 }
 
-void CAudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 	int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header)
 {
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
@@ -377,7 +182,7 @@ void CAudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nH
 	m_pAudioPacketHeader->GetHeaderInByteArray(header);
 }
 
-bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
+bool AudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 {
 	//if (!m_bIsLiveStreamingRunning)
 	{
@@ -407,7 +212,7 @@ bool CAudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 	return true;
 }
 
-void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
+void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 	int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 {
 	Locker lock(*m_pAudioEncodingMutex);
@@ -446,14 +251,14 @@ void CAudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombin
 	m_vRawFrameLengthViewer.clear();
 }
 
-void CAudioNearEndDataProcessor::UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime)
+void AudioNearEndDataProcessor::UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime)
 {	
 	llLasstTime = llCapturedTime;	
 	llRelativeTime = llCapturedTime - m_llEncodingTimeStampOffset;
 }
 
 
-void CAudioNearEndDataProcessor::DumpEncodingFrame()
+void AudioNearEndDataProcessor::DumpEncodingFrame()
 {
 #ifdef DUMP_FILE
 	fwrite(m_saAudioRecorderFrame, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_pAudioCallSession->FileInput);
@@ -461,7 +266,7 @@ void CAudioNearEndDataProcessor::DumpEncodingFrame()
 }
 
 
-bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMuxedData ,int &nDataSizeInByte, int nPacketNumber)
+bool AudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMuxedData ,int &nDataSizeInByte, int nPacketNumber)
 {
 	long long nFrameNumber;
 	nDataSizeInByte = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING ;
@@ -526,25 +331,15 @@ bool CAudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMu
 	return bIsMuxed;
 }
 
-void CAudioNearEndDataProcessor::StopEncodingThread()
-{
-	m_bAudioEncodingThreadRunning = false;
+//void AudioNearEndDataProcessor::StopEncodingThread()
+//{
+//	m_bAudioEncodingThreadRunning = false;
+//
+//	while (!m_bAudioEncodingThreadClosed)
+//		Tools::SOSleep(5);
+//}
 
-	while (!m_bAudioEncodingThreadClosed)
-		Tools::SOSleep(5);
-}
-
-void CAudioNearEndDataProcessor::StartCallInLive(int nEntityType)
-{
-	if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
-	{
-		m_llLastChunkLastFrameRT = -1;
-		m_iRawDataSendIndexViewer = 0;
-	}
-	m_nEntityType = nEntityType;
-}
-
-void CAudioNearEndDataProcessor::StopCallInLive(int nEntityType)
+void AudioNearEndDataProcessor::StartCallInLive(int nEntityType)
 {
 	if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 	{
@@ -554,12 +349,22 @@ void CAudioNearEndDataProcessor::StopCallInLive(int nEntityType)
 	m_nEntityType = nEntityType;
 }
 
-long long CAudioNearEndDataProcessor::GetBaseOfRelativeTime()
+void AudioNearEndDataProcessor::StopCallInLive(int nEntityType)
+{
+	if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+	{
+		m_llLastChunkLastFrameRT = -1;
+		m_iRawDataSendIndexViewer = 0;
+	}
+	m_nEntityType = nEntityType;
+}
+
+long long AudioNearEndDataProcessor::GetBaseOfRelativeTime()
 { 
 	return m_llEncodingTimeStampOffset;
 }
 
-void CAudioNearEndDataProcessor::DecideToChangeComplexity(int iEncodingTime)
+void AudioNearEndDataProcessor::DecideToChangeComplexity(int iEncodingTime)
 {
 	int nComplexity = m_pAudioEncoder->GetComplexity();
 
