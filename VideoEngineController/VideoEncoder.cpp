@@ -44,8 +44,8 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 	{
 #if defined(DESKTOP_C_SHARP)
-        m_nVideoHeight = nNewHeight;
-        m_nVideoWidth = nNewWidth;
+		m_nVideoHeight = nVideoHeight;
+		m_nVideoWidth = nVideoWidth;
 #else
 		int nNewHeight;
 		int nNewWidth;
@@ -183,8 +183,8 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 	{
 #if defined(DESKTOP_C_SHARP)
-        m_nVideoHeight = nNewHeight;
-        m_nVideoWidth = nNewWidth;
+		m_nVideoWidth = nVideoWidth;
+		m_nVideoHeight = nVideoHeight;
 #else
 		int nNewHeight;
 		int nNewWidth;

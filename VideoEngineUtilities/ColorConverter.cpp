@@ -70,7 +70,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
     
 #if defined(DESKTOP_C_SHARP)
     
-    m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
+	m_VideoBeautificationer->SetHeightWidth(iVideoHeight, iVideoWidth);
     
 #else
     
