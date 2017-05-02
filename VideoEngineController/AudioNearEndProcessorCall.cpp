@@ -7,12 +7,16 @@
 AudioNearEndProcessorCall::AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
 AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
 {
+	MR_DEBUG("#nearEnd# AudioNearEndProcessorCall::AudioNearEndProcessorCall()");
+
 	m_pAudioEncodingBuffer = pAudioEncodingBuffer;
 }
 
 
 void AudioNearEndProcessorCall::ProcessNearEndData()
 {
+	MR_DEBUG("#nearEnd# AudioNearEndProcessorCall::ProcessNearEndData()");
+
 	int version = 0;
 	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;;
 	if (m_pAudioEncodingBuffer->GetQueueSize() == 0)

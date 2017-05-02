@@ -8,7 +8,7 @@
 AudioNearEndProcessorThread::AudioNearEndProcessorThread(AudioNearEndDataProcessor *pNearEndProcessor) :
 m_pNearEndDataProcessor(pNearEndProcessor)
 {
-	MR_DEBUG("CAudioNearEndThread::CAudioNearEndThread()");
+	MR_DEBUG("#nearEnd# CAudioNearEndThread::CAudioNearEndThread()");
 
 	m_bAudioNearEndThreadRunning = false;
 	m_bAudioNearEndThreadClosed = true;
@@ -17,7 +17,7 @@ m_pNearEndDataProcessor(pNearEndProcessor)
 
 AudioNearEndProcessorThread::~AudioNearEndProcessorThread()
 {
-	MR_DEBUG("CAudioNearEndThread::~CAudioNearEndThread()");
+	MR_DEBUG("#nearEnd# CAudioNearEndThread::~CAudioNearEndThread()");
 
 	StopAudioNearEndThread();
 }
@@ -25,7 +25,7 @@ AudioNearEndProcessorThread::~AudioNearEndProcessorThread()
 
 void AudioNearEndProcessorThread::AudioNearEndProcedure()
 {
-	MR_DEBUG("CAudioNearEndThread::AudioNearEndProcedure()");
+	MR_DEBUG("#nearEnd# CAudioNearEndThread::AudioNearEndProcedure()");
 
 	long long llCapturedTime;
 
@@ -49,7 +49,7 @@ std::thread AudioNearEndProcessorThread::CreateNearEndThread()
 
 void AudioNearEndProcessorThread::StartNearEndThread()
 {
-	MR_DEBUG("AudioNearEndProcessorThread::StartNearEndThread()");
+	MR_DEBUG("#nearEnd# AudioNearEndProcessorThread::StartNearEndThread()");
 
 	std::thread audioNearEndThread = CreateNearEndThread();
 	audioNearEndThread.detach();
@@ -58,7 +58,7 @@ void AudioNearEndProcessorThread::StartNearEndThread()
 
 void AudioNearEndProcessorThread::StopAudioNearEndThread()
 {
-	MR_DEBUG("CAudioNearEndThread::StopAudioNearEndThread()");
+	MR_DEBUG("#nearEnd# CAudioNearEndThread::StopAudioNearEndThread()");
 
 	m_bAudioNearEndThreadRunning = false;
 

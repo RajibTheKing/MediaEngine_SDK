@@ -2,7 +2,7 @@
 #define AUDIO_NEAR_END_PROCESSOR_VIEWER_IN_CALL_H
 
 
-#include "AudioNearEndProcessorViewerInCall.h"
+#include "AudioNearEndDataProcessor.h"
 
 
 class CAudioCallSession;

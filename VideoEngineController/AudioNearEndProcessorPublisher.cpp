@@ -8,14 +8,16 @@
 AudioNearEndProcessorPublisher::AudioNearEndProcessorPublisher(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) : 
 AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
 {
+	MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::AudioNearEndProcessorPublisher()");
+
 	m_pAudioEncodingBuffer = pAudioEncodingBuffer;
 }
 
 
-
-
 void AudioNearEndProcessorPublisher::ProcessNearEndData()
 {
+	MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::ProcessNearEndData()");
+
 	int version = 0;
 	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
 	if (m_pAudioEncodingBuffer->GetQueueSize() == 0)
@@ -59,12 +61,6 @@ void AudioNearEndProcessorPublisher::ProcessNearEndData()
 		LOG18("#18#NE#Publish  StoreDataForChunk nSendingDataSizeInByte = %d m_MyAudioHeadersize = %d", nSendingDataSizeInByte, m_MyAudioHeadersize);
 
 		int nSendigFrameSize = nSendingDataSizeInByte + m_MyAudioHeadersize + 1;
-		//for (int i = 0; i < 5; i++)
-		//{
-		//	m_ucaRawFrameNonMuxed[m_MyAudioHeadersize + 1 + i] = 110 + i;
-		//	m_ucaRawFrameNonMuxed[nSendigFrameSize - 1 - i] = 110 + i;
-		//}		
-
 		StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendigFrameSize);
 
 		Tools::SOSleep(0);

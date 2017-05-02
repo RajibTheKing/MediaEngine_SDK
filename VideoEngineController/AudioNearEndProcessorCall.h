@@ -1,7 +1,7 @@
 #ifndef AUDIO_NEAR_END_PROCESSOR_CALL_H
 #define AUDIO_NEAR_END_PROCESSOR_CALL_H
 
-#include "AudioNearEndProcessorCall.h"
+#include "AudioNearEndDataProcessor.h"
 
 
 class CAudioCallSession;
