@@ -32,16 +32,18 @@ bool CLiveAudioParserForPublisher::IsParsingAudioData(){
 
 void CLiveAudioParserForPublisher::GenMissingBlock(unsigned char* uchAudioData, int nFrameLeftRange, int nFrameRightRange, std::vector<std::pair<int, int>>&vMissingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock)
 {
-	m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+	int mediaByteSize = 1;
+	m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
 	int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
 	// add muxed header lenght with audio header length. 
-	if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
-		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
-		validHeaderLength += (totalCallee * 6 + 2);
+	
+	if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength + mediaByteSize];
+		validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 	}
 	// get audio data left range
 	int nAudioDataWithoutHeaderRightRange = nFrameRightRange;
-	int nAudioDataWithoutHeaderLeftRange = nFrameLeftRange + validHeaderLength;
+	int nAudioDataWithoutHeaderLeftRange = nFrameLeftRange + validHeaderLength + mediaByteSize;
 
 	for (auto &miss : vMissingBlocks) {
 		int leftPos = max(nAudioDataWithoutHeaderLeftRange, miss.first);
@@ -54,7 +56,7 @@ void CLiveAudioParserForPublisher::GenMissingBlock(unsigned char* uchAudioData, 
 }
 
 
-void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
+void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFrameSizeInByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
 	if (m_bIsRoleChanging)
 	{
 		return;
@@ -86,14 +88,16 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 	int numOfMissingFrames = 0;
 	int nProcessedFramsCounter = 0;
 
+	int mediaByteSize = 1;
+
 	while (iFrameNumber < nNumberOfAudioFrames)
 	{
 		bCompleteFrame = true;
 		bCompleteFrameHeader = true;
 
 		nFrameLeftRange = nUsedLength + nOffset;
-		nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[iFrameNumber] - 1;
-		nUsedLength += pAudioFramsStartingByte[iFrameNumber];
+		nFrameRightRange = nFrameLeftRange + pAudioFrameSizeInByte[iFrameNumber] - 1;
+		nUsedLength += pAudioFrameSizeInByte[iFrameNumber];
 
 		while (iMissingIndex < nNumberOfMissingBlocks && vMissingBlocks[iMissingIndex].second <= nFrameLeftRange)
 			++iMissingIndex;
@@ -105,7 +109,7 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 
 			iLeftRange = max(nFrameLeftRange, iLeftRange);
 			iRightRange = min(nFrameRightRange, iRightRange);
-
+			HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
 			if (iLeftRange <= iRightRange)	//The frame is not complete.
 			{
 				bCompleteFrame = false;
@@ -113,11 +117,11 @@ void CLiveAudioParserForPublisher::ProcessLiveAudio(int iId, int nOffset, unsign
 				if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
 				{
 					HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
-					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
+					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
 					int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
 
-					if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
-						int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
+					if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+						int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength + mediaByteSize];
 						validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 					}
 
