@@ -34,7 +34,10 @@ void AudioNearEndProcessorThread::AudioNearEndProcedure()
 	
 	while (m_bAudioNearEndThreadRunning)
 	{
-		m_pNearEndDataProcessor->ProcessNearEndData();
+		if (m_pNearEndDataProcessor != nullptr)
+		{
+			m_pNearEndDataProcessor->ProcessNearEndData();
+		}
 	}
 
 	m_bAudioNearEndThreadClosed = true;

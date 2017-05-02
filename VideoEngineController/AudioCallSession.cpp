@@ -27,6 +27,7 @@
 #include "AudioNearEndProcessorPublisher.h"
 #include "AudioNearEndProcessorViewerInCall.h"
 #include "AudioNearEndProcessorCall.h"
+#include "AudioNearEndProcessorThread.h"
 
 #ifdef USE_VAD
 #include "Voice.h"
@@ -48,7 +49,8 @@ m_bIsAECMFarEndThreadBusy(false),
 m_bIsAECMNearEndThreadBusy(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bIsPublisher(true),
-m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
+m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE), 
+m_cNearEndProcessorThread(nullptr)
 {
 	SetResources(audioResources);
 
@@ -101,7 +103,7 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 	m_clientSocket->SetAudioCallSession(this);
 #endif
 
-	AllocateNearEndDataProcessor();
+	StartNearEndDataProcessing();
 
 	m_pFarEndProcessor = new CAudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
 	m_pFarEndProcessor->SetEventCallback((OnFireDataEventCB)OnDataEventCallback, (OnFireNetworkChangeCB)OnNetworkChangeCallback, (OnFireAudioAlarmCB)OnAudioAlarmCallback);
@@ -111,6 +113,12 @@ m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE)
 
 CAudioCallSession::~CAudioCallSession()
 {
+	if (m_cNearEndProcessorThread != nullptr)
+	{
+		delete m_cNearEndProcessorThread;
+		m_cNearEndProcessorThread = nullptr;
+	}
+
 	if (m_pNearEndProcessor)
 	{
 		delete m_pNearEndProcessor;
@@ -158,7 +166,7 @@ void CAudioCallSession::SetResources(AudioResources &audioResources)
 }
 
 
-void CAudioCallSession::AllocateNearEndDataProcessor()
+void CAudioCallSession::StartNearEndDataProcessing()
 {
 	if (m_bLiveAudioStreamRunning)
 	{
@@ -179,6 +187,11 @@ void CAudioCallSession::AllocateNearEndDataProcessor()
 	m_pNearEndProcessor->SetDataReadyCallback((OnDataReadyToSendCB)OnDataReadyCallback);
 	m_pNearEndProcessor->SetEventCallback((OnFirePacketEventCB)OnPacketEventCallback);
 
+	m_cNearEndProcessorThread = new AudioNearEndProcessorThread(m_pNearEndProcessor);
+	if (m_cNearEndProcessorThread != nullptr)
+	{
+		m_cNearEndProcessorThread->StartNearEndThread();
+	}
 }
 
 void CAudioCallSession::InitializeAudioCallSession()

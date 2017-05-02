@@ -15,8 +15,6 @@
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"
 
-#include "AudioNearEndProcessorThread.h"
-
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -37,8 +35,7 @@ m_iRawDataSendIndexViewer(0),
 m_llLastChunkLastFrameRT(-1),
 m_llLastFrameRT(0),
 m_cbOnDataReady(nullptr),
-m_cbOnPacketEvent(nullptr),
-m_cNearEndProcessorThread(nullptr)
+m_cbOnPacketEvent(nullptr)
 {
 	m_pAudioEncodingMutex.reset(new CLockHandler);
 	m_pAudioEncoder = pAudioCallSession->GetAudioEncoder();
@@ -66,20 +63,10 @@ m_cNearEndProcessorThread(nullptr)
 	m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");
 #endif	
 
-	m_cNearEndProcessorThread = new AudioNearEndProcessorThread(this);
-	if (m_cNearEndProcessorThread != nullptr)
-	{
-		m_cNearEndProcessorThread->StartNearEndThread();
-	}
 }
 
 AudioNearEndDataProcessor::~AudioNearEndDataProcessor()
 {
-	if (m_cNearEndProcessorThread != nullptr)
-	{
-		delete m_cNearEndProcessorThread;
-		m_cNearEndProcessorThread = nullptr;
-	}
 
 	if (m_pAudioPacketHeader)
 	{
@@ -332,13 +319,6 @@ bool AudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMux
 	return bIsMuxed;
 }
 
-//void AudioNearEndDataProcessor::StopEncodingThread()
-//{
-//	m_bAudioEncodingThreadRunning = false;
-//
-//	while (!m_bAudioEncodingThreadClosed)
-//		Tools::SOSleep(5);
-//}
 
 void AudioNearEndDataProcessor::StartCallInLive(int nEntityType)
 {

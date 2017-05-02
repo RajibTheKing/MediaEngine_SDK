@@ -19,7 +19,6 @@ class AudioMixer;
 class AudioEncoderInterface;
 class NoiseReducerInterface;
 
-class AudioNearEndProcessorThread;
 
 class AudioNearEndDataProcessor
 {
@@ -28,8 +27,6 @@ public:
 	AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 	virtual ~AudioNearEndDataProcessor();
 
-	//static void *CreateAudioEncodingThread(void* param);
-	//void EncodingThreadProcedure();
 	void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
@@ -55,12 +52,6 @@ public:
 
 protected:
 
-	//void LiveStreamNearendProcedureViewer();
-	//void LiveStreamNearendProcedurePublisher();
-	//void AudioCallNearendProcedure();
-
-	//void StartEncodingThread();
-	//void StopEncodingThread();	
 	bool MuxIfNeeded(short* shPublisherData, short *shMuxedData, int &nDataSizeInByte, int nPacketNumber);
 	void DumpEncodingFrame();
 	void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
@@ -107,8 +98,6 @@ private:
 
 	OnDataReadyToSendCB m_cbOnDataReady;
 	OnFirePacketEventCB m_cbOnPacketEvent;
-
-	AudioNearEndProcessorThread *m_cNearEndProcessorThread;
 
 protected:
 

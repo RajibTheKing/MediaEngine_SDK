@@ -63,6 +63,9 @@ class NoiseReducerInterface;
 class AudioGainInterface;
 class CEventNotifier;
 
+class AudioNearEndProcessorThread;
+
+
 #ifdef USE_VAD
 class CVoice;
 #endif
@@ -73,6 +76,9 @@ private:
 	bool m_bIsAECMFarEndThreadBusy;
 	bool m_bIsAECMNearEndThreadBusy;
 	long long m_llLastPlayTime;
+
+	AudioNearEndProcessorThread *m_cNearEndProcessorThread;
+
 
 public:
 	
@@ -222,7 +228,7 @@ public:
 protected:
 
 	void SetResources(AudioResources &audioResources);
-	void AllocateNearEndDataProcessor();
+	void StartNearEndDataProcessing();
 
     SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
     SmartPointer<std::thread> m_pAudioEncodingThread;
