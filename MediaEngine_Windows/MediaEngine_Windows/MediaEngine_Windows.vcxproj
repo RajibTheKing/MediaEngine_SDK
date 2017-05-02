@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\Aac.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioNearEndThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioResources.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioSessionOptions.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DecoderAAC.cpp" />
@@ -239,6 +240,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\Aac.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioNearEndThread.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioResources.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioTypes.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioSessionOptions.h" />
