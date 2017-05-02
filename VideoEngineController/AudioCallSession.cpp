@@ -79,13 +79,6 @@ m_cNearEndProcessorThread(nullptr)
 		//m_bEchoCancellerEnabled = false;
 	}
 
-//	m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
-
-//	m_pNoise = NoiseReducerProvider::GetNoiseReducer(WebRTC_ANR);
-
-//	m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
-//	m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
-
 #ifdef USE_VAD
 	m_pVoice = new CVoice();
 #endif
@@ -194,18 +187,6 @@ void CAudioCallSession::StartNearEndDataProcessing()
 	}
 }
 
-void CAudioCallSession::InitializeAudioCallSession()
-{
-	//CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession");
-
-	//this->m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(Opus_Encoder);
-	//m_pAudioEncoder->CreateAudioEncoder();
-
-	//this->m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(Opus_Decoder);
-
-	//CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::InitializeAudioCallSession session initialized, iRet = " + m_Tools.IntegertoStringConvert(iRet));
-
-}
 
 bool CAudioCallSession::getIsAudioLiveStreamRunning(){
 	return m_bLiveAudioStreamRunning;
@@ -418,30 +399,7 @@ void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 
 void CAudioCallSession::SetLoudSpeaker(bool bOn)
 {
-	/*if (m_bUsingLoudSpeaker != bOn)
-	{
 	m_bUsingLoudSpeaker = bOn;
-	if (bOn)
-	{
-	m_iVolume = m_iVolume * 1.0 / LS_RATIO;
-	}
-	else
-	{
-	m_iVolume *= LS_RATIO;
-	}
-	}*/
-	//This method may be used in future.
-
-	m_bUsingLoudSpeaker = bOn;
-	/*
-	#ifdef USE_AECM
-	delete m_pEcho;
-	m_pEcho = new CEcho(66);
-	#ifdef USE_ECHO2
-	delete m_pEcho2;
-	m_pEcho2 = new CEcho(77);
-	#endif
-	#endif*/
 }
 
 int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)

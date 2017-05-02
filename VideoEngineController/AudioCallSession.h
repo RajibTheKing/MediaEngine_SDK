@@ -106,7 +106,6 @@ public:
 	//	return m_pNoise;
 	//}
 
-    void InitializeAudioCallSession();
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
     
