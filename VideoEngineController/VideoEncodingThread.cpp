@@ -35,6 +35,9 @@ m_bSelfViewOnly(bSelfViewOnly)
     m_pCalculateEncodingTimeDiff = new CAverageCalculator();
 
 	m_VideoBeautificationer = new CVideoBeautificationer(m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth);
+	//m_VideoBeautificationer->GenerateUVIndex(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), 11);
+
+	m_VideoEffects = new CVideoEffects();
     
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
@@ -57,9 +60,7 @@ m_bSelfViewOnly(bSelfViewOnly)
          }  
      }
 
-	memset(m_VideoEffectParam, 0, 100 * sizeof(int));
-    
-    
+	m_filterToApply = 0;
 }
 
 CVideoEncodingThread::~CVideoEncodingThread()
@@ -80,6 +81,12 @@ CVideoEncodingThread::~CVideoEncodingThread()
 	{
 		delete m_VideoBeautificationer;
 		m_VideoBeautificationer = NULL;
+	}
+
+	if (NULL != m_VideoEffects)
+	{
+		delete m_VideoEffects;
+		m_VideoEffects = NULL;
 	}
 }
 
@@ -201,13 +208,8 @@ int CVideoEncodingThread::SetVideoEffect(int nEffectStatus)
 		m_bVideoEffectEnabled = true;
 	else if (nEffectStatus == 0)
 		m_bVideoEffectEnabled = false;
-	return 1;
-}
 
-int CVideoEncodingThread::TestVideoEffect(int *param, int size)
-{
-	memcpy(m_VideoEffectParam, param, size * sizeof(int));
-
+	m_filterToApply = nEffectStatus;
 
 	return 1;
 }
@@ -500,12 +502,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, m_VideoEffectParam);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth);
 					
 					}
 					else
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, m_VideoEffectParam);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
 
 						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
@@ -520,13 +522,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15 || m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 					{
 						if(m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, m_VideoEffectParam);
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
 						else
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, m_VideoEffectParam);
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth);
 					}
 					else
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, m_VideoEffectParam);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
 
 						//m_VideoBeautificationer->MakeFrameBlurAndStore(m_ucaConvertedEncodingFrame, iHeight, iWidth);
 						//m_VideoBeautificationer->MakeFrameBeautiful(m_ucaConvertedEncodingFrame);
@@ -534,6 +536,39 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
+
+				if (0 == m_filterToApply) {
+					;
+				} else if (1 == m_filterToApply) {
+					m_VideoEffects->NegetiveColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (2 == m_filterToApply) {
+					m_VideoEffects->BlackAndWhiteColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (3 == m_filterToApply) {
+					m_VideoEffects->SapiaColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (4 == m_filterToApply) {
+					m_VideoEffects->WarmColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (5 == m_filterToApply) {
+					m_VideoEffects->TintColorBlueEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (6 == m_filterToApply) {
+					m_VideoEffects->TintColorPinkEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (7 == m_filterToApply) {
+					m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 0.6);
+				} else if (8 == m_filterToApply) {
+					m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -1.0);
+				} else if (9 == m_filterToApply) {
+					m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 10);
+				} else if (10 == m_filterToApply) {
+					m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -80);
+				} else if (11 == m_filterToApply) {
+					m_VideoEffects->PencilSketchGrayEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (12 == m_filterToApply) {
+					m_VideoEffects->PencilSketchWhiteEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (13 == m_filterToApply) {
+					m_VideoEffects->ColorSketchEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (14 == m_filterToApply) {
+					m_VideoEffects->CartoonEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+				} else if (15 == m_filterToApply) {
+					m_VideoEffects->PlaitEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 				}
 
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)

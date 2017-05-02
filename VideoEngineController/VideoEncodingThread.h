@@ -12,6 +12,7 @@
 #include "EncodedFramePacketizer.h"
 #include "AverageCalculator.h"
 #include "../VideoEngineUtilities/VideoBeautificationer.h"
+#include "../VideoEngineUtilities/VideoEffects.h"
 
 #include <thread>
 
@@ -107,13 +108,14 @@ private:
     CAverageCalculator *m_pCalculatorEncodeTime;
     CAverageCalculator *m_pCalculateEncodingTimeDiff;
 	CVideoBeautificationer *m_VideoBeautificationer;
+	CVideoEffects *m_VideoEffects;
     
     long long m_FPS_TimeDiff;
     int m_FpsCounter;
     bool m_bIsCheckCall;
 
-	int m_VideoEffectParam[100];
-    
+	int m_filterToApply;
+
 	SmartPointer<std::thread> pEncodingThread;
 };
 
