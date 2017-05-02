@@ -19,7 +19,7 @@ class AudioNearEndProcessorViewerInCall : public AudioNearEndDataProcessor
 public:
 
 	AudioNearEndProcessorViewerInCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
-	~AudioNearEndProcessorViewerInCall();
+	~AudioNearEndProcessorViewerInCall() { }
 
 	void ProcessNearEndData();
 
