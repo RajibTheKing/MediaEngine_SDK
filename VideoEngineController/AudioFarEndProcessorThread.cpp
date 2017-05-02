@@ -36,7 +36,7 @@ void AudioFarEndProcessorThread::AudioFarEndProcedure()
 	{
 		if (m_pFarEndDataProcessor != nullptr)
 		{
-//			m_pFarEndDataProcessor->ProcessNearEndData();
+//			m_pFarEndDataProcessor->ProcessFarEndData();
 		}
 	}
 

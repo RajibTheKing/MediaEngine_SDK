@@ -148,6 +148,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\Aac.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorCall.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorViewer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorCall.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorViewerInCall.cpp" />
@@ -243,6 +248,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\Aac.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorCall.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorViewer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorCall.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorViewerInCall.h" />
