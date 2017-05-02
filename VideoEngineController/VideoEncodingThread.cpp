@@ -438,7 +438,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
 			int nServiceType = m_pVideoCallSession->GetServiceType();
-			if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
+			if ( (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL) && m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
 			{
 				int iChangedGotHeight, iChangedGotWidth;
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -451,7 +451,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 				iGotHeight = iChangedGotHeight;
 				iGotWidth = iChangedGotWidth;
-			}else
+			}
+            else
 			{
 				/**Do Nothing**/
 			}

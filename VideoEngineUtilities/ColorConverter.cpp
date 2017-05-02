@@ -67,13 +67,21 @@ CColorConverter::~CColorConverter()
 void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 {
 	Locker lock(*m_pColorConverterMutex);
-
+    
+#if defined(DESKTOP_C_SHARP)
+    
+    m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
+    
+#else
+    
 	int nNewHeight;
 	int nNewWidth;
 
 	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
 
 	m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
+    
+#endif
 
 	/*m_iVideoHeight = iVideoHeight;
 	m_iVideoWidth = iVideoWidth;
