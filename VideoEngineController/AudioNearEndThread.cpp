@@ -1,20 +1,18 @@
 #include "AudioNearEndThread.h"
 #include "LogPrinter.h"
 #include "Tools.h"
-#include "AudioEncoderBuffer.h"
+#include "AudioNearEndDataProcessor.h"
 
 
 
-CAudioNearEndThread::CAudioNearEndThread(CAudioShortBuffer *audioNearEndBuffer) :
-m_pAudioEncodingBuffer(audioNearEndBuffer),
+CAudioNearEndThread::CAudioNearEndThread(CAudioNearEndDataProcessor *pNearEndProcessor, bool isLiveStreamRunning, int nEntityType) :
+m_pNearEndDataProcessor(pNearEndProcessor),
+m_bIsLiveStreamingRunning(isLiveStreamRunning),
+m_nEntityType(nEntityType),
 m_bAudioNearEndThreadRunning(false),
 m_bAudioNearEndThreadClosed(true)
 {
 	MR_DEBUG("CAudioNearEndThread::CAudioNearEndThread()");
-
-#ifdef DUMP_FILE
-	m_fNearEndRawData = fopen("/sdcard/NearEndRawData.pcm", "wb");
-#endif
 
 	std::thread audioNearEndThread = StartAudioNearEndThread();
 	audioNearEndThread.detach();
@@ -26,14 +24,6 @@ CAudioNearEndThread::~CAudioNearEndThread()
 	MR_DEBUG("CAudioNearEndThread::~CAudioNearEndThread()");
 
 	StopAudioNearEndThread();
-
-#ifdef DUMP_FILE
-	if (m_fNearEndRawData != nullptr)
-	{
-		fclose(m_fNearEndRawData);
-		m_fNearEndRawData = nullptr;
-	}
-#endif
 }
 
 
@@ -48,14 +38,20 @@ void CAudioNearEndThread::AudioNearEndProcedure()
 	
 	while (m_bAudioNearEndThreadRunning)
 	{
-		if (m_pAudioEncodingBuffer->GetQueueSize() == 0)
+		if (m_bIsLiveStreamingRunning)
 		{
-			Tools::SOSleep(10);
+			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
+			{
+				m_pNearEndDataProcessor->LiveStreamNearendProcedurePublisher();
+			}
+			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+			{
+				m_pNearEndDataProcessor->LiveStreamNearendProcedureViewer();
+			}
 		}
 		else
 		{
-			m_nNearEndDataLen = m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
-			DumpNearEndData();
+			m_pNearEndDataProcessor->AudioCallNearendProcedure();
 		}
 	}
 
@@ -81,13 +77,5 @@ void CAudioNearEndThread::StopAudioNearEndThread()
 	}
 }
 
-
-void CAudioNearEndThread::DumpNearEndData()
-{
-#ifdef DUMP_FILE
-	MR_DEBUG("CAudioNearEndThread::DumpNearEndData()");
-	fwrite(m_saAudioRecorderFrame, 2, m_nNearEndDataLen, m_fNearEndRawData);
-#endif
-}
 
 

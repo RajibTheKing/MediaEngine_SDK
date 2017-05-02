@@ -48,10 +48,13 @@ public:
 		MR_DEBUG("#ptt# SetEventCallback: %x", m_cbOnPacketEvent);
 	}
 
-private:
 	void LiveStreamNearendProcedureViewer();
 	void LiveStreamNearendProcedurePublisher();
 	void AudioCallNearendProcedure();
+
+
+protected:
+
 	void StartEncodingThread();
 	void StopEncodingThread();	
 	bool MuxIfNeeded(short* shPublisherData, short *shMuxedData, int &nDataSizeInByte, int nPacketNumber);
@@ -65,6 +68,9 @@ private:
 
 	void DecideToChangeComplexity(int iEncodingTime);
 	
+
+public:
+
 	std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 
 	long long m_llFriendID;

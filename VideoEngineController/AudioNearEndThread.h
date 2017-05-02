@@ -6,7 +6,7 @@
 #include "Size.h"
 
 
-class CAudioShortBuffer;
+class CAudioNearEndDataProcessor;
 
 
 class CAudioNearEndThread
@@ -15,15 +15,12 @@ private:
 
 	bool m_bAudioNearEndThreadRunning;
 	bool m_bAudioNearEndThreadClosed;
+	bool m_bIsLiveStreamingRunning;
 
-	int m_nNearEndDataLen;
+	int m_nEntityType;
 
-	short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];      //Always contains UnMuxed Data
-	CAudioShortBuffer *m_pAudioEncodingBuffer = nullptr;
+	CAudioNearEndDataProcessor *m_pNearEndDataProcessor = nullptr;
 
-#ifdef DUMP_FILE
-	FILE *m_fNearEndRawData = nullptr;
-#endif
 
 protected:
 
@@ -31,12 +28,10 @@ protected:
 	std::thread StartAudioNearEndThread();
 	void StopAudioNearEndThread();
 
-	void DumpNearEndData();
-
 
 public:
 
-	CAudioNearEndThread(CAudioShortBuffer *audioNearEndBuffer);
+	CAudioNearEndThread(CAudioNearEndDataProcessor *pNearEndProcessor, bool isLiveStreamRunning, int nEntityType);
 	~CAudioNearEndThread();
 };
 
