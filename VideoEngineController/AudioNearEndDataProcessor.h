@@ -26,7 +26,7 @@ class AudioNearEndDataProcessor
 public:
 
 	AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
-	~AudioNearEndDataProcessor();
+	virtual ~AudioNearEndDataProcessor();
 
 	//static void *CreateAudioEncodingThread(void* param);
 	//void EncodingThreadProcedure();
