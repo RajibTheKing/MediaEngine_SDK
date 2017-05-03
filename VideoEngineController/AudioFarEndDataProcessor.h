@@ -109,16 +109,6 @@ protected:
 
 private:
 
-	void StartDecodingThread();
-	static void* CreateAudioDecodingThread(void* param);
-	void StopDecodingThread();
-	void DecodingThreadProcedure();
-
-	void FarEndProcedureAudioCall();
-	void FarEndProcedureLiveStreamViewer();
-	void FarEndProcedureLiveStreamPublisher();
-	void FarEndProcedureChannel();
-
 	void DecideToChangeBitrate(int iNumPacketRecvd);
 	
 
