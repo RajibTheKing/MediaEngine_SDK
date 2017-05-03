@@ -29,6 +29,12 @@
 #include "AudioNearEndProcessorCall.h"
 #include "AudioNearEndProcessorThread.h"
 
+#include "AudioFarEndProcessorPublisher.h"
+#include "AudioFarEndProcessorViewer.h"
+#include "AudioFarEndProcessorChannel.h"
+#include "AudioFarEndProcessorCall.h"
+#include "AudioFarEndProcessorThread.h"
+
 #ifdef USE_VAD
 #include "Voice.h"
 #endif
@@ -50,7 +56,8 @@ m_bIsAECMNearEndThreadBusy(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bIsPublisher(true),
 m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE), 
-m_cNearEndProcessorThread(nullptr)
+m_cNearEndProcessorThread(nullptr),
+m_cFarEndProcessorThread(nullptr)
 {
 	SetResources(audioResources);
 
@@ -97,9 +104,7 @@ m_cNearEndProcessorThread(nullptr)
 #endif
 
 	StartNearEndDataProcessing();
-
-	m_pFarEndProcessor = new AudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
-	m_pFarEndProcessor->SetEventCallback((OnFireDataEventCB)OnDataEventCallback, (OnFireNetworkChangeCB)OnNetworkChangeCallback, (OnFireAudioAlarmCB)OnAudioAlarmCallback);
+	StartFarEndDataProcessing(pSharedObject);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 }
@@ -110,6 +115,12 @@ CAudioCallSession::~CAudioCallSession()
 	{
 		delete m_cNearEndProcessorThread;
 		m_cNearEndProcessorThread = nullptr;
+	}
+
+	if (m_cFarEndProcessorThread != nullptr)
+	{
+		delete m_cFarEndProcessorThread;
+		m_cFarEndProcessorThread = nullptr;
 	}
 
 	if (m_pNearEndProcessor)
@@ -184,6 +195,38 @@ void CAudioCallSession::StartNearEndDataProcessing()
 	if (m_cNearEndProcessorThread != nullptr)
 	{
 		m_cNearEndProcessorThread->StartNearEndThread();
+	}
+}
+
+
+void CAudioCallSession::StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject)
+{
+	if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
+	{
+		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)		//Is Viewer or Callee.
+		{
+			m_pFarEndProcessor = new FarEndProcessorViewer(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+		}
+		else if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
+		{
+			m_pFarEndProcessor = new FarEndProcessorPublisher(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+		}
+	}
+	else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
+	{
+		m_pFarEndProcessor = new FarEndProcessorChannel(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+	}
+	else if (SERVICE_TYPE_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
+	{
+		m_pFarEndProcessor = new FarEndProcessorCall(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+	}
+
+	m_pFarEndProcessor->SetEventCallback((OnFireDataEventCB)OnDataEventCallback, (OnFireNetworkChangeCB)OnNetworkChangeCallback, (OnFireAudioAlarmCB)OnAudioAlarmCallback);
+
+	m_cFarEndProcessorThread = new AudioFarEndProcessorThread(m_pFarEndProcessor);
+	if (m_cFarEndProcessorThread != nullptr)
+	{
+		m_cFarEndProcessorThread->StartFarEndThread();
 	}
 }
 

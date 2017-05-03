@@ -64,6 +64,7 @@ class AudioGainInterface;
 class CEventNotifier;
 
 class AudioNearEndProcessorThread;
+class AudioFarEndProcessorThread;
 
 
 #ifdef USE_VAD
@@ -78,6 +79,7 @@ private:
 	long long m_llLastPlayTime;
 
 	AudioNearEndProcessorThread *m_cNearEndProcessorThread;
+	AudioFarEndProcessorThread *m_cFarEndProcessorThread;
 
 
 public:
@@ -227,7 +229,9 @@ public:
 protected:
 
 	void SetResources(AudioResources &audioResources);
+
 	void StartNearEndDataProcessing();
+	void StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject);
 
     SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
     SmartPointer<std::thread> m_pAudioEncodingThread;
