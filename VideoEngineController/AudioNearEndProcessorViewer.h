@@ -12,7 +12,7 @@ class CAudioShortBuffer;
 class AudioNearEndProcessorViewer : public AudioNearEndDataProcessor
 {
 
-	CAudioShortBuffer *m_pAudioEncodingBuffer;
+	CAudioShortBuffer *m_pAudioNearEndBuffer;
 	CAudioCallSession *m_pAudioCallSession;
 
 

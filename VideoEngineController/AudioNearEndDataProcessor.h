@@ -77,7 +77,7 @@ private:
 //	SmartPointer<NoiseReducerInterface> m_pNoise;
 
 	CAudioCallSession *m_pAudioCallSession = nullptr;
-	CAudioShortBuffer *m_pAudioEncodingBuffer = nullptr;
+	CAudioShortBuffer *m_pAudioNearEndBuffer = nullptr;
 	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader = nullptr;
 	AudioMixer *m_pAudioMixer = nullptr;
 

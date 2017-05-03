@@ -20,12 +20,12 @@
 #include <dispatch/dispatch.h>
 #endif
 
-AudioNearEndDataProcessor::AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
+AudioNearEndDataProcessor::AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioNearEndBuffer, bool bIsLiveStreamingRunning) :
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
 m_bIsReady(false),
 m_pAudioCallSession(pAudioCallSession),
-m_pAudioEncodingBuffer(pAudioEncodingBuffer),
+m_pAudioNearEndBuffer(pAudioNearEndBuffer),
 m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
 m_bAudioEncodingThreadRunning(false),
 m_bAudioEncodingThreadClosed(true),

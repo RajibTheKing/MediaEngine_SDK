@@ -136,7 +136,7 @@ public:
 	}
 
 	int m_iNextPacketType;
-	CAudioShortBuffer m_AudioEncodingBuffer;
+	CAudioShortBuffer m_AudioNearEndBuffer;
 	CAudioShortBuffer  m_ViewerInCallSentDataQueue;
 
 	AudioShortBufferForPublisherFarEnd m_PublisherBufferForMuxing;

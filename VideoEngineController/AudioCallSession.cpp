@@ -55,7 +55,7 @@ m_bIsAECMFarEndThreadBusy(false),
 m_bIsAECMNearEndThreadBusy(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bIsPublisher(true),
-m_AudioEncodingBuffer(AUDIO_ENCODING_BUFFER_SIZE), 
+m_AudioNearEndBuffer(AUDIO_ENCODING_BUFFER_SIZE), 
 m_cNearEndProcessorThread(nullptr),
 m_cFarEndProcessorThread(nullptr)
 {
@@ -178,16 +178,16 @@ void CAudioCallSession::StartNearEndDataProcessing()
 	{
 		if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 		{
-			m_pNearEndProcessor = new AudioNearEndProcessorPublisher(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+			m_pNearEndProcessor = new AudioNearEndProcessorPublisher(m_nServiceType, m_nEntityType, this, &m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 		}
 		else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
-			m_pNearEndProcessor = new AudioNearEndProcessorViewer(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+			m_pNearEndProcessor = new AudioNearEndProcessorViewer(m_nServiceType, m_nEntityType, this, &m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 		}
 	}
 	else
 	{
-		m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+		m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, &m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 	}
 
 	m_pNearEndProcessor->SetDataReadyCallback((OnDataReadyToSendCB)OnDataReadyCallback);
@@ -404,7 +404,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		m_bIsAECMNearEndThreadBusy = false;
 	}
 
-	int returnedValue = m_AudioEncodingBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
+	int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
 

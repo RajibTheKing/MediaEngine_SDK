@@ -11,7 +11,7 @@ class CAudioShortBuffer;
 class AudioNearEndProcessorCall : public AudioNearEndDataProcessor
 {
 
-	CAudioShortBuffer *m_pAudioEncodingBuffer;
+	CAudioShortBuffer *m_pAudioNearEndBuffer;
 
 
 public:

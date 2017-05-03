@@ -9,7 +9,7 @@ AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEn
 {
 	MR_DEBUG("#nearEnd# AudioNearEndProcessorViewerInCall::AudioNearEndProcessorViewerInCall()");
 
-	m_pAudioEncodingBuffer = pAudioEncodingBuffer;
+	m_pAudioNearEndBuffer = pAudioEncodingBuffer;
 	m_pAudioCallSession = pAudioCallSession;
 }
 
@@ -20,12 +20,12 @@ void AudioNearEndProcessorViewer::ProcessNearEndData()
 
 	int version = 0;
 	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
-	if (m_pAudioEncodingBuffer->GetQueueSize() == 0)
+	if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
 		Tools::SOSleep(10);
 	else
 	{
 		LOG18("#18#NE#Viewer... ");
-		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+		m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 		int nDataLenthInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
 
 		m_pAudioCallSession->m_ViewerInCallSentDataQueue.EnQueue(m_saAudioRecorderFrame, nDataLenthInShort, m_iPacketNumber);

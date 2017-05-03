@@ -4,12 +4,12 @@
 #include "AudioEncoderBuffer.h"
 
 
-AudioNearEndProcessorCall::AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
-AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
+AudioNearEndProcessorCall::AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioNearEndBuffer, bool bIsLiveStreamingRunning) :
+AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioNearEndBuffer, bIsLiveStreamingRunning)
 {
 	MR_DEBUG("#nearEnd# AudioNearEndProcessorCall::AudioNearEndProcessorCall()");
 
-	m_pAudioEncodingBuffer = pAudioEncodingBuffer;
+	m_pAudioNearEndBuffer = pAudioNearEndBuffer;
 }
 
 
@@ -19,12 +19,12 @@ void AudioNearEndProcessorCall::ProcessNearEndData()
 
 	int version = 0;
 	long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;;
-	if (m_pAudioEncodingBuffer->GetQueueSize() == 0)
+	if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
 		Tools::SOSleep(10);
 	else
 	{
 		LOG18("#18#NE#AudioCall...");
-		m_pAudioEncodingBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+		m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 		LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
 
 		DumpEncodingFrame();
