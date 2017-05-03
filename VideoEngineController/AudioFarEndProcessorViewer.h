@@ -10,7 +10,7 @@ class FarEndProcessorViewer : public AudioFarEndDataProcessor
 
 public:
 
-	FarEndProcessorViewer();
+	FarEndProcessorViewer(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
 	~FarEndProcessorViewer() { }
 
 	void ProcessFarEndData();
