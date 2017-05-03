@@ -11,7 +11,7 @@ AudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, pAudioCallSessio
 
 void FarEndProcessorCall::ProcessFarEndData()
 {
-	MR_DEBUG("#farEnd# FarEndProcessorCall::ProcessFarEndData()");
+//	MR_DEBUG("#farEnd# FarEndProcessorCall::ProcessFarEndData()");
 
 	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
