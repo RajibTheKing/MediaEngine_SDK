@@ -192,6 +192,11 @@ LOCAL_SRC_FILES := \
 			../../../videoengine/VideoEngineController/AudioNearEndProcessorPublisher.cpp \
 			../../../videoengine/VideoEngineController/AudioNearEndProcessorViewerInCall.cpp \
 			../../../videoengine/VideoEngineController/AudioNearEndProcessorCall.cpp \
+			../../../videoengine/VideoEngineController/AudioFarEndProcessorThread.cpp \
+			../../../videoengine/VideoEngineController/AudioFarEndProcessorPublisher.cpp \
+			../../../videoengine/VideoEngineController/AudioFarEndProcessorViewer.cpp \
+			../../../videoengine/VideoEngineController/AudioFarEndProcessorChannel.cpp \
+			../../../videoengine/VideoEngineController/AudioFarEndProcessorCall.cpp \
 
 
 			
