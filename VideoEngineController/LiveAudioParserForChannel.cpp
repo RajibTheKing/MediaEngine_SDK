@@ -35,13 +35,13 @@ void CLiveAudioParserForChannel::GenMissingBlock(unsigned char* uchAudioData, in
 	m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
 	int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
 	// add muxed header lenght with audio header length. 
-	if (uchAudioData[nFrameLeftRange] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
-		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength];
-		validHeaderLength += (totalCallee * 6 + 2);
+	if (uchAudioData[nFrameLeftRange + 1] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
+		int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength + 1];
+		validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 	}
 	// get audio data left range
 	int nAudioDataWithoutHeaderRightRange = nFrameRightRange;
-	int nAudioDataWithoutHeaderLeftRange = nFrameLeftRange + validHeaderLength;
+	int nAudioDataWithoutHeaderLeftRange = nFrameLeftRange + validHeaderLength + 1;
 
 	for (auto &miss : vMissingBlocks) {
 		int leftPos = max(nAudioDataWithoutHeaderLeftRange, miss.first);
@@ -53,7 +53,7 @@ void CLiveAudioParserForChannel::GenMissingBlock(unsigned char* uchAudioData, in
 	}
 }
 
-void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
+void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFrameSizeInByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
 	if (m_bIsRoleChanging)
 	{
 		return;
@@ -91,8 +91,8 @@ void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned
 		bCompleteFrameHeader = true;
 
 		nFrameLeftRange = nUsedLength + nOffset;
-		nFrameRightRange = nFrameLeftRange + pAudioFramsStartingByte[iFrameNumber] - 1;
-		nUsedLength += pAudioFramsStartingByte[iFrameNumber];
+		nFrameRightRange = nFrameLeftRange + pAudioFrameSizeInByte[iFrameNumber] - 1;
+		nUsedLength += pAudioFrameSizeInByte[iFrameNumber];
 
 		while (iMissingIndex < nNumberOfMissingBlocks && vMissingBlocks[iMissingIndex].second <= nFrameLeftRange)
 			++iMissingIndex;

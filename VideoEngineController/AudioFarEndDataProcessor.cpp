@@ -319,10 +319,6 @@ void CAudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrame
 			int iTotalBlocks = 16;
 			int iFrameSize = 800;
 			int iMuxHeaderSize = AUDIO_MUX_HEADER_LENGHT;
-			/*m_pAudioMixer->genCalleeChunkHeader((unsigned char*)tmpBuffer, iStartIndex, iEndIndex, iCalleeId, iCurrentPacketNumber, iFrameSize, iTotalBlocks, m_vFrameMissingBlocks);
-			memcpy(tmpBuffer+ (iMuxHeaderSize / 2), pshSentFrame, nSentFrameSize* sizeof(short));
-			m_pAudioCallSession->m_AudioDecodedBuffer.EnQueue(tmpBuffer, nSentFrameSize + (iMuxHeaderSize / 2), iCurrentPacketNumber);*/
-
 
 			MuxHeader audioMuxHeader(iCalleeId, iCurrentPacketNumber, m_vFrameMissingBlocks);
 
