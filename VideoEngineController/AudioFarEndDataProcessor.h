@@ -69,7 +69,7 @@ private:
 
 	CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 	//AudioPacketHeader *m_pAudioPacketHeader = nullptr;
-	SmartPointer<AudioPacketHeader> m_ReceivingHeader = nullptr;
+	SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader = nullptr;
 	SmartPointer<GomGomGain> m_pGomGomGain;
 
 	bool m_bAudioDecodingThreadRunning;

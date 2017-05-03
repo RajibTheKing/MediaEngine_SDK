@@ -15,7 +15,8 @@ class AudioResources
 {
 private:
 
-	SmartPointer<AudioPacketHeader> m_pAudioHeader;
+	SmartPointer<AudioPacketHeader> m_pAudioNearEndHeader;
+	SmartPointer<AudioPacketHeader> m_pAudioFarEndHeader;
 
 	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
@@ -32,7 +33,8 @@ public:
 	AudioResources(AudioSessionOptions audioSessionOptions);
 	~AudioResources() { }
 
-	SmartPointer<AudioPacketHeader> GetPacketHeader() { return m_pAudioHeader; }
+	SmartPointer<AudioPacketHeader> GetNearEndPacketHeader() { return m_pAudioNearEndHeader; }
+	SmartPointer<AudioPacketHeader> GetFarEndPacketHeader() { return m_pAudioFarEndHeader; }
 
 	SmartPointer<AudioEncoderInterface> GetEncoder()  { return m_pAudioEncoder; }
 	SmartPointer<AudioDecoderInterface> GetDecoder()  { return m_pAudioDecoder; }

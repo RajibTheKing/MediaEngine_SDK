@@ -78,7 +78,7 @@ private:
 
 	CAudioCallSession *m_pAudioCallSession = nullptr;
 	CAudioShortBuffer *m_pAudioNearEndBuffer = nullptr;
-	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader = nullptr;
+	SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader = nullptr;
 	AudioMixer *m_pAudioMixer = nullptr;
 
 

@@ -44,11 +44,11 @@ m_cbOnPacketEvent(nullptr)
 	//and shall pass necessary objects to it, e.g. Codec, Noise, Gain
 //	m_pNoise = m_pAudioCallSession->GetNoiseReducer();
 
-	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
+	m_pAudioNearEndPacketHeader = pAudioCallSession->GetAudioNearEndPacketHeader();
 	
-	m_llMaxAudioPacketNumber = (m_pAudioPacketHeader->GetFieldCapacity(INF_PACKETNUMBER) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+	m_llMaxAudioPacketNumber = (m_pAudioNearEndPacketHeader->GetFieldCapacity(INF_PACKETNUMBER) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 
-	m_MyAudioHeadersize = m_pAudioPacketHeader->GetHeaderSize();
+	m_MyAudioHeadersize = m_pAudioNearEndPacketHeader->GetHeaderSize();
 	m_llEncodingTimeStampOffset = Tools::CurrentTimestamp();
 
 	m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
@@ -68,7 +68,7 @@ m_cbOnPacketEvent(nullptr)
 AudioNearEndDataProcessor::~AudioNearEndDataProcessor()
 {
 
-	if (m_pAudioPacketHeader)
+	if (m_pAudioNearEndPacketHeader)
 	{
 		//delete m_pAudioPacketHeader;
 	}
@@ -148,26 +148,26 @@ void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHe
 	//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 	//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
 
-	m_pAudioPacketHeader->SetInformation(packetType, INF_PACKETTYPE);
-	m_pAudioPacketHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
-	m_pAudioPacketHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
-	m_pAudioPacketHeader->SetInformation(slotNumber, INF_SLOTNUMBER);
-	m_pAudioPacketHeader->SetInformation(packetLength, INF_BLOCK_LENGTH);
-	m_pAudioPacketHeader->SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
-	m_pAudioPacketHeader->SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
-	m_pAudioPacketHeader->SetInformation(version, INF_VERSIONCODE);
-	m_pAudioPacketHeader->SetInformation(timestamp, INF_TIMESTAMP);
-	m_pAudioPacketHeader->SetInformation(networkType, INF_NETWORKTYPE);
-	m_pAudioPacketHeader->SetInformation(channel, INF_CHANNELS);
+	m_pAudioNearEndPacketHeader->SetInformation(packetType, INF_PACKETTYPE);
+	m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
+	m_pAudioNearEndPacketHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
+	m_pAudioNearEndPacketHeader->SetInformation(slotNumber, INF_SLOTNUMBER);
+	m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_BLOCK_LENGTH);
+	m_pAudioNearEndPacketHeader->SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
+	m_pAudioNearEndPacketHeader->SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
+	m_pAudioNearEndPacketHeader->SetInformation(version, INF_VERSIONCODE);
+	m_pAudioNearEndPacketHeader->SetInformation(timestamp, INF_TIMESTAMP);
+	m_pAudioNearEndPacketHeader->SetInformation(networkType, INF_NETWORKTYPE);
+	m_pAudioNearEndPacketHeader->SetInformation(channel, INF_CHANNELS);
 
-	m_pAudioPacketHeader->SetInformation(0, INF_PACKET_BLOCK_NUMBER);
-	m_pAudioPacketHeader->SetInformation(1, INF_TOTAL_PACKET_BLOCKS);
-	m_pAudioPacketHeader->SetInformation(0, INF_BLOCK_OFFSET);
-	m_pAudioPacketHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
+	m_pAudioNearEndPacketHeader->SetInformation(0, INF_PACKET_BLOCK_NUMBER);
+	m_pAudioNearEndPacketHeader->SetInformation(1, INF_TOTAL_PACKET_BLOCKS);
+	m_pAudioNearEndPacketHeader->SetInformation(0, INF_BLOCK_OFFSET);
+	m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
 
-	m_pAudioPacketHeader->showDetails("@#BUILD");
+	m_pAudioNearEndPacketHeader->showDetails("@#BUILD");
 
-	m_pAudioPacketHeader->GetHeaderInByteArray(header);
+	m_pAudioNearEndPacketHeader->GetHeaderInByteArray(header);
 }
 
 bool AudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()

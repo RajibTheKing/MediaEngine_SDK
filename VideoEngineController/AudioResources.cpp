@@ -9,8 +9,9 @@
 
 AudioResources::AudioResources(AudioSessionOptions audioSessionOptions)
 {
-	m_pAudioHeader = AudioPacketHeader::GetInstance(audioSessionOptions.GetHeaderType());
-	
+	m_pAudioNearEndHeader = AudioPacketHeader::GetInstance(audioSessionOptions.GetHeaderType());
+	m_pAudioFarEndHeader = AudioPacketHeader::GetInstance(audioSessionOptions.GetHeaderType());
+
 	m_pAudioEncoder = AudioEncoderProvider::GetAudioEncoder(audioSessionOptions.GetEncoderType());
 	m_pAudioDecoder = AudioDecoderProvider::GetAudioDecoder(audioSessionOptions.GetDecoderType());
 

@@ -102,7 +102,6 @@ public:
 	void SetVolume(int iVolume, bool bRecorder);
 	void SetLoudSpeaker(bool bOn);
 	void SetEchoCanceller(bool bOn);
-	bool getIsAudioLiveStreamRunning();
 	bool m_bIsPublisher;
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
@@ -179,7 +178,8 @@ private:
 
 private:
 
-	SmartPointer<AudioPacketHeader> m_pAudioHeader;
+	SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader;
+	SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader;
 
 	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
@@ -209,11 +209,15 @@ public:
 	int GetEntityType()  { return m_nEntityType; }
 	bool getIsAudioLiveStreamRunning() { return m_bLiveAudioStreamRunning; }
 
-	SmartPointer<AudioPacketHeader> GetAudioHeader() { return m_pAudioHeader; }
+	SmartPointer<AudioPacketHeader> GetAudioNearEndPacketHeader() { return m_pAudioNearEndPacketHeader; }
+	SmartPointer<AudioPacketHeader> GetAudioFarEndPacketHeader() { return m_pAudioFarEndPacketHeader; }
+
 	SmartPointer<AudioEncoderInterface> GetAudioEncoder() { return m_pAudioEncoder; }
 	SmartPointer<AudioDecoderInterface> GetAudioDecoder() { return m_pAudioDecoder; }
+
 	SmartPointer<EchoCancellerInterface> GetEchoCanceler() { return m_pEcho; }
 	SmartPointer<NoiseReducerInterface> GetNoiseReducer() { return m_pNoiseReducer; }
+	
 	SmartPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
 	SmartPointer<AudioGainInterface> GetPlayerGain() { return m_pPlayerGain; }
 };

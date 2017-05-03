@@ -67,7 +67,7 @@ m_cbOnAudioAlarm(nullptr)
 		m_pLiveAudioParser = new CLiveAudioParserForChannel(m_vAudioFarEndBufferVector);
 	}
 
-	m_ReceivingHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
+	m_pAudioFarEndPacketHeader = pAudioCallSession->GetAudioFarEndPacketHeader();
 	m_pAudioDePacketizer = new AudioDePacketizer(m_pAudioCallSession);
 
 	m_cAacDecoder = AudioDecoderProvider::GetAudioDecoder(AAC_Decoder);
@@ -248,7 +248,7 @@ bool AudioFarEndDataProcessor::IsPacketTypeSupported(int &nCurrentAudioPacketTyp
 {
 	if (!m_bIsLiveStreamingRunning)
 	{
-		if (m_ReceivingHeader->IsPacketTypeSupported(nCurrentAudioPacketType))
+		if (m_pAudioFarEndPacketHeader->IsPacketTypeSupported(nCurrentAudioPacketType))
 		{
 			return true;
 		}
@@ -326,25 +326,25 @@ void AudioFarEndDataProcessor::DumpDecodedFrame(short * psDecodedFrame, int nDec
 void AudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 	int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
 {
-	m_ReceivingHeader->CopyHeaderToInformation(header);
+	m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
 
-	packetType = m_ReceivingHeader->GetInformation(INF_PACKETTYPE);
-	nHeaderLength = m_ReceivingHeader->GetInformation(INF_HEADERLENGTH);
-	networkType = m_ReceivingHeader->GetInformation(INF_NETWORKTYPE);
-	slotNumber = m_ReceivingHeader->GetInformation(INF_SLOTNUMBER);
-	packetNumber = m_ReceivingHeader->GetInformation(INF_PACKETNUMBER);
-	packetLength = m_ReceivingHeader->GetInformation(INF_BLOCK_LENGTH);
-	recvSlotNumber = m_ReceivingHeader->GetInformation(INF_RECVDSLOTNUMBER);
-	numPacketRecv = m_ReceivingHeader->GetInformation(INF_NUMPACKETRECVD);
-	channel = m_ReceivingHeader->GetInformation(INF_CHANNELS);
-	version = m_ReceivingHeader->GetInformation(INF_VERSIONCODE);
-	timestamp = m_ReceivingHeader->GetInformation(INF_TIMESTAMP);
+	packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETTYPE);
+	nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_HEADERLENGTH);
+	networkType = m_pAudioFarEndPacketHeader->GetInformation(INF_NETWORKTYPE);
+	slotNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_SLOTNUMBER);
+	packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETNUMBER);
+	packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_LENGTH);
+	recvSlotNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_RECVDSLOTNUMBER);
+	numPacketRecv = m_pAudioFarEndPacketHeader->GetInformation(INF_NUMPACKETRECVD);
+	channel = m_pAudioFarEndPacketHeader->GetInformation(INF_CHANNELS);
+	version = m_pAudioFarEndPacketHeader->GetInformation(INF_VERSIONCODE);
+	timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_TIMESTAMP);
 
 
-	iBlockNumber = m_ReceivingHeader->GetInformation(INF_PACKET_BLOCK_NUMBER);
-	nNumberOfBlocks = m_ReceivingHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
-	iOffsetOfBlock = m_ReceivingHeader->GetInformation(INF_BLOCK_OFFSET);
-	nFrameLength = m_ReceivingHeader->GetInformation(INF_FRAME_LENGTH);
+	iBlockNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKET_BLOCK_NUMBER);
+	nNumberOfBlocks = m_pAudioFarEndPacketHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
+	iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_OFFSET);
+	nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_FRAME_LENGTH);
 
 	if (iBlockNumber == -1)
 	{

@@ -154,7 +154,8 @@ void CAudioCallSession::SetResources(AudioResources &audioResources)
 {
 	MR_DEBUG("#resource# CAudioCallSession::SetResources()");
 
-	m_pAudioHeader = audioResources.GetPacketHeader();
+	m_pAudioNearEndPacketHeader = audioResources.GetNearEndPacketHeader();
+	m_pAudioFarEndPacketHeader = audioResources.GetFarEndPacketHeader();
 
 	m_pAudioEncoder = audioResources.GetEncoder();
 	if (m_pAudioEncoder.get())
