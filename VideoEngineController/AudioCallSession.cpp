@@ -172,6 +172,8 @@ void CAudioCallSession::SetResources(AudioResources &audioResources)
 
 void CAudioCallSession::StartNearEndDataProcessing()
 {
+	MR_DEBUG("#farEnd# CAudioCallSession::StartNearEndDataProcessing()");
+
 	if (m_bLiveAudioStreamRunning)
 	{
 		if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
@@ -201,6 +203,8 @@ void CAudioCallSession::StartNearEndDataProcessing()
 
 void CAudioCallSession::StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject)
 {
+	MR_DEBUG("#farEnd# CAudioCallSession::StartFarEndDataProcessing()");
+
 	if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
 	{
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)		//Is Viewer or Callee.
