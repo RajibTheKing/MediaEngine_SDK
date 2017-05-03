@@ -5,12 +5,14 @@
 FarEndProcessorViewer::FarEndProcessorViewer(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) : 
 AudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, pAudioCallSession, pCommonElementsBucket, bIsLiveStreamingRunning)
 {
-
+	MR_DEBUG("#farEnd# FarEndProcessorViewer::FarEndProcessorViewer()");
 }
 
 
 void FarEndProcessorViewer::ProcessFarEndData()
 {
+	MR_DEBUG("#farEnd# FarEndProcessorViewer::ProcessFarEndData()");
+
 	int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 	long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
 	double dbTotalTime = 0; //MeaningLess
