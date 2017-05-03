@@ -9,7 +9,7 @@ class FarEndProcessorChannel : public AudioFarEndDataProcessor
 
 public:
 
-	FarEndProcessorChannel();
+	FarEndProcessorChannel(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
 	~FarEndProcessorChannel() { }
 
 	void ProcessFarEndData();
