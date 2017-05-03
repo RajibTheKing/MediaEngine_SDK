@@ -10,7 +10,7 @@ class FarEndProcessorPublisher : public AudioFarEndDataProcessor
 
 public:
 
-	FarEndProcessorPublisher();
+	FarEndProcessorPublisher(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
 	~FarEndProcessorPublisher() { }
 
 	void ProcessFarEndData();
