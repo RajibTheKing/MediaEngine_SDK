@@ -155,7 +155,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorViewer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorCall.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorViewerInCall.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorViewer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioResources.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioSessionOptions.cpp" />
@@ -255,7 +255,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorViewer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorCall.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorViewerInCall.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorViewer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorThread.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioResources.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioTypes.h" />

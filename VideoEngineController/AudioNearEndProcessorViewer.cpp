@@ -1,10 +1,10 @@
-#include "AudioNearEndProcessorViewerInCall.h"
+#include "AudioNearEndProcessorViewer.h"
 #include "LogPrinter.h"
 #include "AudioCallSession.h"
 #include "AudioEncoderBuffer.h"
 
 
-AudioNearEndProcessorViewerInCall::AudioNearEndProcessorViewerInCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
+AudioNearEndProcessorViewer::AudioNearEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
 AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
 {
 	MR_DEBUG("#nearEnd# AudioNearEndProcessorViewerInCall::AudioNearEndProcessorViewerInCall()");
@@ -14,7 +14,7 @@ AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEn
 }
 
 
-void AudioNearEndProcessorViewerInCall::ProcessNearEndData()
+void AudioNearEndProcessorViewer::ProcessNearEndData()
 {
 //	MR_DEBUG("#nearEnd# AudioNearEndProcessorViewerInCall::ProcessNearEndData()");
 

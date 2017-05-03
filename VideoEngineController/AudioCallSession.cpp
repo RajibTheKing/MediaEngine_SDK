@@ -25,7 +25,7 @@
 #include "AudioEncoderInterface.h"
 
 #include "AudioNearEndProcessorPublisher.h"
-#include "AudioNearEndProcessorViewerInCall.h"
+#include "AudioNearEndProcessorViewer.h"
 #include "AudioNearEndProcessorCall.h"
 #include "AudioNearEndProcessorThread.h"
 
@@ -182,7 +182,7 @@ void CAudioCallSession::StartNearEndDataProcessing()
 		}
 		else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
-			m_pNearEndProcessor = new AudioNearEndProcessorViewerInCall(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
+			m_pNearEndProcessor = new AudioNearEndProcessorViewer(m_nServiceType, m_nEntityType, this, &m_AudioEncodingBuffer, m_bLiveAudioStreamRunning);
 		}
 	}
 	else
