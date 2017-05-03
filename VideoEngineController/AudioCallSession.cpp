@@ -152,6 +152,8 @@ CAudioCallSession::~CAudioCallSession()
 
 void CAudioCallSession::SetResources(AudioResources &audioResources)
 {
+	MR_DEBUG("#resource# CAudioCallSession::SetResources()");
+
 	m_pAudioHeader = audioResources.GetPacketHeader();
 
 	m_pAudioEncoder = audioResources.GetEncoder();
@@ -172,7 +174,7 @@ void CAudioCallSession::SetResources(AudioResources &audioResources)
 
 void CAudioCallSession::StartNearEndDataProcessing()
 {
-	MR_DEBUG("#farEnd# CAudioCallSession::StartNearEndDataProcessing()");
+	MR_DEBUG("#nearEnd# CAudioCallSession::StartNearEndDataProcessing()");
 
 	if (m_bLiveAudioStreamRunning)
 	{
@@ -235,14 +237,8 @@ void CAudioCallSession::StartFarEndDataProcessing(CCommonElementsBucket* pShared
 }
 
 
-bool CAudioCallSession::getIsAudioLiveStreamRunning(){
-	return m_bLiveAudioStreamRunning;
-}
-
 void CAudioCallSession::SetEchoCanceller(bool bOn)
 {
-	return;
-
 	m_bEchoCancellerEnabled = /*bOn*/ true;
 }
 
@@ -476,20 +472,6 @@ void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToS
 	m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthPeer, llAudioChunkDuration, llAudioChunkRelativeTime);
 }
 
-int CAudioCallSession::GetServiceType()
-{
-	return m_nServiceType;
-}
-
-int CAudioCallSession::GetRole()
-{
-	return m_iRole;
-}
-
-int CAudioCallSession::GetEntityType()
-{
-	return m_nEntityType;
-}
 
 void CAudioCallSession::OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength)
 {

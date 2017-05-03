@@ -181,14 +181,14 @@ bool AudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()
 		}
 #endif
 
-		if (m_pAudioCallSession->m_pPlayerGain.get())
+		if (m_pAudioCallSession->GetPlayerGain().get())
 		{
-			m_pAudioCallSession->m_pPlayerGain->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
+			m_pAudioCallSession->GetPlayerGain()->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
 		}
 		
-		if (m_pAudioCallSession->m_pRecorderGain.get())
+		if (m_pAudioCallSession->GetRecorderGain().get())
 		{
-			m_pAudioCallSession->m_pRecorderGain->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
+			m_pAudioCallSession->GetRecorderGain()->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
 		}
 		 
 		//if (m_pNoise.get())

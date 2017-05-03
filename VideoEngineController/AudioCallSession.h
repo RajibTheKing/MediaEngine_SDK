@@ -80,6 +80,7 @@ private:
 
 	AudioNearEndProcessorThread *m_cNearEndProcessorThread;
 	AudioFarEndProcessorThread *m_cFarEndProcessorThread;
+    SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
 
 
 public:
@@ -93,21 +94,6 @@ public:
 	void SetCallInLiveType(int nCallInLiveType);
 	long long GetBaseOfRelativeTime();
 
-	SmartPointer<AudioEncoderInterface> GetAudioEncoder()
-	{
-		return m_pAudioEncoder;
-	}
-
-	SmartPointer<AudioDecoderInterface> GetAudioDecoder()
-	{
-		return m_pAudioDecoder;
-	}
-
-	//SmartPointer<NoiseReducerInterface> GetNoiseReducer()
-	//{
-	//	return m_pNoise;
-	//}
-
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
     
@@ -117,17 +103,14 @@ public:
 	void SetLoudSpeaker(bool bOn);
 	void SetEchoCanceller(bool bOn);
 	bool getIsAudioLiveStreamRunning();
-	int GetEntityType();
 	bool m_bIsPublisher;
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
-    int GetServiceType();
 
 	static void SetSendFunction(SendFunctionPointerType cbClientSendFunc)
 	{
 		m_cbClientSendFunction = cbClientSendFunc;
-		MR_DEBUG("#ptt# CAudioCallSession::SetSendFunction, %x", m_cbClientSendFunction);
 	}
 
 	static void SetEventNotifier(CEventNotifier *pEventNotifier)
@@ -142,9 +125,6 @@ public:
 	AudioShortBufferForPublisherFarEnd m_PublisherBufferForMuxing;
 	int m_iPrevRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot;
-
-//	SmartPointer<AudioGainInterface> m_pRecorderGain;
-//	SmartPointer<AudioGainInterface> m_pPlayerGain;
 
 	AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 	AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
@@ -161,11 +141,6 @@ public:
 
 private:
 
-#ifdef LOCAL_SERVER_LIVE_CALL
-	VideoSockets *m_clientSocket;
-#endif
-
-
 	int m_iRole;
     Tools m_Tools;
 	static LongLong m_FriendID;
@@ -174,8 +149,7 @@ private:
     CCommonElementsBucket* m_pCommonElementsBucket;
 	
 	bool m_bUsingLoudSpeaker;
-
-
+	
     bool m_bLiveAudioStreamRunning;
     int m_nServiceType;
 	int m_nEntityType;
@@ -186,14 +160,6 @@ private:
     int m_iAudioVersionSelf;
 
 	int m_nCallInLiveType;
-
-
-//	SmartPointer<EchoCancellerInterface> m_pEcho;
-
-//	SmartPointer<NoiseReducerInterface> m_pNoise;
-
-//	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-//	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
 
 	inline static void OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength);
 	inline static void OnPacketEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer);
@@ -207,8 +173,11 @@ private:
 #ifdef USE_VAD
 	CVoice *m_pVoice;
 #endif
+#ifdef LOCAL_SERVER_LIVE_CALL
+	VideoSockets *m_clientSocket;
+#endif
 
-public: 
+private:
 
 	SmartPointer<AudioPacketHeader> m_pAudioHeader;
 
@@ -221,10 +190,6 @@ public:
 	SmartPointer<AudioGainInterface> m_pRecorderGain;
 	SmartPointer<AudioGainInterface> m_pPlayerGain;
 
-	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
-	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
-	int GetRole();
-
 
 protected:
 
@@ -233,9 +198,24 @@ protected:
 	void StartNearEndDataProcessing();
 	void StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject);
 
-    SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
-    SmartPointer<std::thread> m_pAudioEncodingThread;
-    SmartPointer<std::thread> m_pAudioDecodingThread;
+
+public:
+
+	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
+	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
+
+	int GetRole()        { return m_iRole; }
+	int GetServiceType() { return m_nServiceType; }
+	int GetEntityType()  { return m_nEntityType; }
+	bool getIsAudioLiveStreamRunning() { return m_bLiveAudioStreamRunning; }
+
+	SmartPointer<AudioPacketHeader> GetAudioHeader() { return m_pAudioHeader; }
+	SmartPointer<AudioEncoderInterface> GetAudioEncoder() { return m_pAudioEncoder; }
+	SmartPointer<AudioDecoderInterface> GetAudioDecoder() { return m_pAudioDecoder; }
+	SmartPointer<EchoCancellerInterface> GetEchoCanceler() { return m_pEcho; }
+	SmartPointer<NoiseReducerInterface> GetNoiseReducer() { return m_pNoiseReducer; }
+	SmartPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
+	SmartPointer<AudioGainInterface> GetPlayerGain() { return m_pPlayerGain; }
 };
 
 

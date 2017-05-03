@@ -218,9 +218,8 @@ void AudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber, 
 		ALOG("#A#DE#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(iPacketNumber));
 		LOGEF("Role %d, done decode", m_iRole);
 
-		m_pAudioCallSession->m_pRecorderGain.get() ? m_pAudioCallSession->m_pRecorderGain->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize) : 0;
-		
-		m_pAudioCallSession->m_pPlayerGain.get() ? m_pAudioCallSession->m_pPlayerGain->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, m_bIsLiveStreamingRunning) : 0;
+		m_pAudioCallSession->GetRecorderGain().get() ? m_pAudioCallSession->GetRecorderGain()->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize) : 0;
+		m_pAudioCallSession->GetPlayerGain().get() ? m_pAudioCallSession->GetPlayerGain()->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, m_bIsLiveStreamingRunning) : 0;
 
 	}
 	else 
