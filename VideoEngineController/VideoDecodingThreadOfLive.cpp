@@ -464,8 +464,8 @@ int CVideoDecodingThreadOfLive::DecodeAndSendToClient(unsigned char *in_data, un
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThreadOfLive::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
             
-            int iHeight = m_pColorConverter->GetHeight();
-            int iWidth = m_pColorConverter->GetWidth();
+			int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
+			int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
 			this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 		}
 		else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
@@ -510,8 +510,8 @@ int CVideoDecodingThreadOfLive::DecodeAndSendToClient(unsigned char *in_data, un
 
 	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
 	{
-		int iHeight = this->m_pColorConverter->GetHeight();
-		int iWidth = this->m_pColorConverter->GetWidth();
+		int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
+		int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
 
 		int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
 		int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
@@ -565,8 +565,8 @@ int CVideoDecodingThreadOfLive::DecodeAndSendToClient(unsigned char *in_data, un
 
 	if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP))
 	{
-		int iHeight = this->m_pColorConverter->GetHeight();
-		int iWidth = this->m_pColorConverter->GetWidth();
+		int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
+		int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
 
 		int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
 		int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
