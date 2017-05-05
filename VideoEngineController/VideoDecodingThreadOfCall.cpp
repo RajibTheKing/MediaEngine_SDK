@@ -173,9 +173,9 @@ void CVideoDecodingThreadOfCall::DecodingThreadProcedure()
 
 	Tools toolsObject;
 
-	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime, nOrientation;
+	int nFrameNumber, nFrameLength, nEncodingTime, nOrientation;
 	unsigned int nTimeStampDiff = 0;
-	long long nTimeStampBeforeDecoding, currentTime;
+	long long currentTime;
 
 	int nExpectedTime;
 
@@ -341,7 +341,7 @@ void CVideoDecodingThreadOfCall::DecodingThreadProcedure()
 	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDecodingThreadOfCall::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 }
 
-int nIDR_Frame_Gap = -1;
+int nIDR_Frame_GapOfCall = -1;
 int CVideoDecodingThreadOfCall::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
@@ -352,8 +352,8 @@ int CVideoDecodingThreadOfCall::DecodeAndSendToClient(unsigned char *in_data, un
 	
     if(nalType == SPS_DATA)
     {
-        printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %d, IDR_FRAME_GAP = %d\n", nFramNumber, nFramNumber - nIDR_Frame_Gap);
-        nIDR_Frame_Gap = nFramNumber;
+        printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %d, IDR_FRAME_GAP = %d\n", nFramNumber, nFramNumber - nIDR_Frame_GapOfCall);
+        nIDR_Frame_GapOfCall = nFramNumber;
     }
 
 #if defined(TARGET_OS_WINDOWS_PHONE)

@@ -216,7 +216,7 @@ int CVideoEncodingThreadOfLive::SetVideoEffect(int nEffectStatus)
 }
 
 
-long long g_PrevEncodeTime = 0;
+long long g_PrevEncodeTimeOfLive = 0;
 
 void CVideoEncodingThreadOfLive::EncodingThreadProcedure()
 {
@@ -348,11 +348,11 @@ void CVideoEncodingThreadOfLive::EncodingThreadProcedure()
 
 			//LOGEF("Current bitrate %d", m_pVideoEncoder->GetBitrate());
 
-			if (g_PrevEncodeTime != 0)
-				m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
+			if (g_PrevEncodeTimeOfLive != 0)
+				m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTimeOfLive);
 
-			//printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
-			g_PrevEncodeTime = m_Tools.CurrentTimestamp();
+			//printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTimeOfLive, m_CalculateEncodingTimeDiff.GetAverage());
+			g_PrevEncodeTimeOfLive = m_Tools.CurrentTimestamp();
 
 			long long startTime = m_Tools.CurrentTimestamp();
 

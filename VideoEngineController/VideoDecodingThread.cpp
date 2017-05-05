@@ -173,9 +173,9 @@ void CVideoDecodingThread::DecodingThreadProcedure()
 
 	Tools toolsObject;
 
-	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime, nOrientation;
+	int nFrameNumber, nFrameLength, nEncodingTime, nOrientation;
 	unsigned int nTimeStampDiff = 0;
-	long long nTimeStampBeforeDecoding, currentTime;
+	long long currentTime;
 
 	int nExpectedTime;
 
