@@ -12,6 +12,7 @@
 #include "EncodedFramePacketizer.h"
 #include "AverageCalculator.h"
 #include "../VideoEngineUtilities/VideoBeautificationer.h"
+#include "../VideoEngineUtilities/VideoEffects.h"
 
 #include <thread>
 
@@ -35,20 +36,18 @@ public:
 	void ResetForPublisherCallerInAudioOnly();
 
 	void SetOrientationType(int nOrientationType);
-    void ResetVideoEncodingThread(BitRateController *pBitRateController);
+	void ResetVideoEncodingThread(BitRateController *pBitRateController);
 
 	void SetCallFPS(int nFPS);
 
 	bool IsThreadStarted();
 
 	void SetNotifierFlag(bool flag);
-    
-    void SetFrameNumber(int nFrameNumber);
+
+	void SetFrameNumber(int nFrameNumber);
 
 	int SetVideoEffect(int nEffectStatus);
 
-	int TestVideoEffect(int *param, int size);
-    
 	void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
 
 	CEncodingBuffer *m_pEncodingBuffer;
@@ -56,9 +55,9 @@ public:
 private:
 
 	CVideoCallSession *m_pVideoCallSession;
-							
+
 	BitRateController *m_pBitRateController;
-    IDRFrameIntervalController *m_pIdrFrameIntervalController;
+	IDRFrameIntervalController *m_pIdrFrameIntervalController;
 	CColorConverter *m_pColorConverter;
 	CVideoEncoder *m_pVideoEncoder;
 	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
@@ -73,11 +72,11 @@ private:
 	unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 	unsigned char m_ucaMirroredFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-    unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+	unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
-    unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
+	unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
 
-    unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+	unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 #if defined(DESKTOP_C_SHARP)
 	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
@@ -85,7 +84,7 @@ private:
 #endif
 
 	int m_iFrameNumber;
-	long long m_llFriendID;		
+	long long m_llFriendID;
 	int m_nOrientationType;
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;
@@ -98,22 +97,23 @@ private:
 	bool m_bIsThisThreadStarted;
 
 	int m_nCallFPS;
-    
-    int mt_nTotalEncodingTimePerFrameRate;
-    int mt_nCheckSlot;
-    
-	Tools m_Tools;
-    
-    CAverageCalculator *m_pCalculatorEncodeTime;
-    CAverageCalculator *m_pCalculateEncodingTimeDiff;
-	CVideoBeautificationer *m_VideoBeautificationer;
-    
-    long long m_FPS_TimeDiff;
-    int m_FpsCounter;
-    bool m_bIsCheckCall;
 
-	int m_VideoEffectParam[100];
-    
+	int mt_nTotalEncodingTimePerFrameRate;
+	int mt_nCheckSlot;
+
+	Tools m_Tools;
+
+	CAverageCalculator *m_pCalculatorEncodeTime;
+	CAverageCalculator *m_pCalculateEncodingTimeDiff;
+	CVideoBeautificationer *m_VideoBeautificationer;
+	CVideoEffects *m_VideoEffects;
+
+	long long m_FPS_TimeDiff;
+	int m_FpsCounter;
+	bool m_bIsCheckCall;
+
+	int m_filterToApply;
+
 	SmartPointer<std::thread> pEncodingThread;
 };
 
