@@ -255,6 +255,27 @@
     <ClCompile Include="..\..\VideoEngineController\CircularBuffer.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\SendingThreadOfCall.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\SendingThreadOfLive.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoDecodingThreadOfCall.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoDecodingThreadOfChannel.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoDecodingThreadOfLive.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoEncodingThreadOfCall.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\VideoEncodingThreadOfLive.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -531,6 +552,27 @@
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\CircularBuffer.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\SendingThreadOfCall.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\SendingThreadOfLive.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoDecodingThreadOfCall.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoDecodingThreadOfChannel.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoDecodingThreadOfLive.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoEncodingThreadOfCall.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\VideoEncodingThreadOfLive.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>
