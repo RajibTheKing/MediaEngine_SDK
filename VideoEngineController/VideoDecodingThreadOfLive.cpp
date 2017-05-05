@@ -173,17 +173,16 @@ void CVideoDecodingThreadOfLive::DecodingThreadProcedure()
 
 	Tools toolsObject;
 
-	int frameSize, nFrameNumber, intervalTime, nFrameLength, nEncodingTime, nOrientation;
+	int nFrameLength;
 	unsigned int nTimeStampDiff = 0;
-	long long nTimeStampBeforeDecoding, currentTime;
+	long long currentTime;
 
 	int nExpectedTime;
 
 	int nDecodingStatus, fps = -1;
 
-	int nOponnentFPS, nMaxProcessableByMine;
 	nExpectedTime = -1;
-	long long maxDecodingTime = 0, framCounter = 0, decodingTime, nBeforeDecodingTime;
+	long long maxDecodingTime = 0, framCounter = 0;
 	double decodingTimeAverage = 0;
     
     long long llFirstFrameTimeStamp = -1;
@@ -399,7 +398,7 @@ int CVideoDecodingThreadOfLive::DecodeAndSendToClient2()
 
 }
 
-int nIDR_Frame_Gap = -1;
+int nIDR_Frame_GapOfLive = -1;
 int CVideoDecodingThreadOfLive::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 {
 	long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
@@ -410,8 +409,8 @@ int CVideoDecodingThreadOfLive::DecodeAndSendToClient(unsigned char *in_data, un
 	
     if(nalType == SPS_DATA)
     {
-        printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %d, IDR_FRAME_GAP = %d\n", nFramNumber, nFramNumber - nIDR_Frame_Gap);
-        nIDR_Frame_Gap = nFramNumber;
+        printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %d, IDR_FRAME_GAP = %d\n", nFramNumber, nFramNumber - nIDR_Frame_GapOfLive);
+        nIDR_Frame_GapOfLive = nFramNumber;
     }
 
 #if defined(TARGET_OS_WINDOWS_PHONE)

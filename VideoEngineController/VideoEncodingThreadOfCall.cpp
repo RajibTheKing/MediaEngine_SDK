@@ -195,7 +195,7 @@ int CVideoEncodingThreadOfCall::SetVideoEffect(int nEffectStatus)
 }
 
 
-long long g_PrevEncodeTime = 0;
+long long g_PrevEncodeTimeOfCall = 0;
 
 void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 {
@@ -306,11 +306,11 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 
 			//LOGEF("Current bitrate %d", m_pVideoEncoder->GetBitrate());
 
-			if (g_PrevEncodeTime != 0)
-				m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
+			if (g_PrevEncodeTimeOfCall != 0)
+				m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTimeOfCall);
 
-			//printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
-			g_PrevEncodeTime = m_Tools.CurrentTimestamp();
+			//printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTimeOfCall, m_CalculateEncodingTimeDiff.GetAverage());
+			g_PrevEncodeTimeOfCall = m_Tools.CurrentTimestamp();
 
 			long long startTime = m_Tools.CurrentTimestamp();
 

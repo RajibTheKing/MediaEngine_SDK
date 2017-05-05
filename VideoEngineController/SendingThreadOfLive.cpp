@@ -141,12 +141,6 @@ void CSendingThreadOfLive::ResetForPublisherCallerCallStartAudioOnly()
 	}
 }
 
-#ifdef PACKET_SEND_STATISTICS_ENABLED
-long long iPrevFrameNumer = 0;
-int iNumberOfPacketsInLastFrame = 0;
-int iNumberOfPacketsActuallySentFromLastFrame = 0;
-#endif
-
 #ifdef CHANNEL_FROM_FILE
 void CSendingThreadOfLive::SendDataFromFile()
 {

@@ -484,7 +484,7 @@ int CVideoEncoder::GetMaxBitrate()
 
 void CVideoEncoder::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth)
 {
-	float aspectRatio_Screen, aspectRatio_VideoData;
+	double aspectRatio_Screen, aspectRatio_VideoData;
 
 	int iScreenHeight = 1920;
 	int	iScreenWidth = 1130;

@@ -101,9 +101,9 @@ void *CSendingThreadOfCall::CreateVideoSendingThread(void* param)
 }
 
 #ifdef PACKET_SEND_STATISTICS_ENABLED
-long long iPrevFrameNumer = 0;
-int iNumberOfPacketsInLastFrame = 0;
-int iNumberOfPacketsActuallySentFromLastFrame = 0;
+long long iPrevFrameNumerOfCall = 0;
+int iNumberOfPacketsInLastFrameOfCall = 0;
+int iNumberOfPacketsSentFromLastFrameOfCall = 0;
 #endif
 
 void CSendingThreadOfCall::SendingThreadProcedure()
@@ -119,7 +119,6 @@ void CSendingThreadOfCall::SendingThreadProcedure()
 	//CPacketHeader packetHeader;
 	CVideoHeader packetHeader;
 	std::vector<int> vAudioDataLengthVector;
-	int videoPacketSizes[30];
 	int numberOfVideoPackets = 0;
 	int frameCounter = 0;
 	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
@@ -191,17 +190,17 @@ void CSendingThreadOfCall::SendingThreadProcedure()
 
 			pair<long long, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
 
-			if (FramePacketPair.first != iPrevFrameNumer)
+			if (FramePacketPair.first != iPrevFrameNumerOfCall)
 			{
-				//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,"iNumberOfPacketsActuallySentFromLastFrame = %d, iNumberOfPacketsInLastFrame = %d, currentframenumber = %d\n",
-				//	iNumberOfPacketsActuallySentFromLastFrame, iNumberOfPacketsInLastFrame, FramePacketPair.first);
+				//CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,"iNumberOfPacketsSentFromLastFrameOfCall = %d, iNumberOfPacketsInLastFrameOfCall = %d, currentframenumber = %d\n",
+				//	iNumberOfPacketsSentFromLastFrameOfCall, iNumberOfPacketsInLastFrameOfCall, FramePacketPair.first);
 
-				if (iNumberOfPacketsActuallySentFromLastFrame != iNumberOfPacketsInLastFrame)
+				if (iNumberOfPacketsSentFromLastFrameOfCall != iNumberOfPacketsInLastFrameOfCall)
 				{
-					CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CSendingThreadOfCall::StartSendingThread() $$-->******* iNumberOfPacketsActuallySentFromLastFrame = "
-						+ m_Tools.IntegertoStringConvert(iNumberOfPacketsActuallySentFromLastFrame)
-						+ " iNumberOfPacketsInLastFrame = "
-						+ m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrame)
+					CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "CSendingThreadOfCall::StartSendingThread() $$-->******* iNumberOfPacketsSentFromLastFrameOfCall = "
+						+ m_Tools.IntegertoStringConvert(iNumberOfPacketsSentFromLastFrameOfCall)
+						+ " iNumberOfPacketsInLastFrameOfCall = "
+						+ m_Tools.IntegertoStringConvert(iNumberOfPacketsInLastFrameOfCall)
 						+ " currentframenumber = "
 						+ m_Tools.IntegertoStringConvert(FramePacketPair.first)
 						+ " m_SendingBuffersize = "
@@ -210,13 +209,13 @@ void CSendingThreadOfCall::SendingThreadProcedure()
 				}
 
 
-				iNumberOfPacketsInLastFrame = iNumberOfPackets;
-				iNumberOfPacketsActuallySentFromLastFrame = 1;
-				iPrevFrameNumer = FramePacketPair.first;
+				iNumberOfPacketsInLastFrameOfCall = iNumberOfPackets;
+				iNumberOfPacketsSentFromLastFrameOfCall = 1;
+				iPrevFrameNumerOfCall = FramePacketPair.first;
 			}
 			else
 			{
-				iNumberOfPacketsActuallySentFromLastFrame++;
+				iNumberOfPacketsSentFromLastFrameOfCall++;
 			}
 #endif
 
