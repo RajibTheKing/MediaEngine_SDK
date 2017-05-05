@@ -1,6 +1,6 @@
 
-#ifndef IPV_VIDEO_DECODING_THREAD_H
-#define IPV_VIDEO_DECODING_THREAD_H
+#ifndef IPV_VIDEO_DECODING_THREAD_OF_CHANNEL_H
+#define IPV_VIDEO_DECODING_THREAD_OF_CHANNEL_H
 
 #include "Tools.h"
 #include "SmartPointer.h"
