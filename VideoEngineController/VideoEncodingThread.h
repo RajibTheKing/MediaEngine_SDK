@@ -47,8 +47,6 @@ public:
     void SetFrameNumber(int nFrameNumber);
 
 	int SetVideoEffect(int nEffectStatus);
-
-	int TestVideoEffect(int *param, int size);
     
 	void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
 
