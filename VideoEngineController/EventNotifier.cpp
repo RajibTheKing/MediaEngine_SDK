@@ -1,3 +1,4 @@
+
 #include "EventNotifier.h"
 #include <string.h>
 #include "LogPrinter.h"
@@ -5,23 +6,23 @@
 #include "Size.h"
 #include "Controller.h"
 
-void(*notifyClientWithPacketCallback)(LongLong, unsigned char*, int) = NULL;
+void(*notifyClientWithPacketCallback)(long long, unsigned char*, int) = NULL;
 
 #if defined(DESKTOP_C_SHARP)
 
-void(*notifyClientWithVideoDataCallback)(LongLong, int, unsigned char*, int, int, int, int, int, int) = NULL;
+void(*notifyClientWithVideoDataCallback)(long long, int, unsigned char*, int, int, int, int, int, int) = NULL;
 
 #else
 
-void(*notifyClientWithVideoDataCallback)(LongLong, int, unsigned char*, int, int, int, int) = NULL;
+void(*notifyClientWithVideoDataCallback)(long long, int, unsigned char*, int, int, int, int) = NULL;
 
 #endif
 
-void(*notifyClientWithVideoNotificationCallback)(LongLong, int) = NULL;
-void(*notifyClientWithNetworkStrengthNotificationCallback)(LongLong, int) = NULL;
-void(*notifyClientWithAudioDataCallback)(LongLong, int, short*, int) = NULL;
-void(*notifyClientWithAudioPacketDataCallback)(IPVLongType, unsigned char*, int) = NULL;
-void(*notifyClientWithAudioAlarmCallback)(LongLong, short*, int) = NULL;
+void(*notifyClientWithVideoNotificationCallback)(long long, int) = NULL;
+void(*notifyClientWithNetworkStrengthNotificationCallback)(long long, int) = NULL;
+void(*notifyClientWithAudioDataCallback)(long long, int, short*, int) = NULL;
+void(*notifyClientWithAudioPacketDataCallback)(long long, unsigned char*, int) = NULL;
+void(*notifyClientWithAudioAlarmCallback)(long long, short*, int) = NULL;
 
 
 CEventNotifier::CEventNotifier(CController *pController)
@@ -131,21 +132,21 @@ void CEventNotifier::fireAudioAlarm(int eventType, int dataLenth, short data[])
 	CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm 2");
 }
 
-void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
+void CEventNotifier::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int))
 {
     notifyClientWithPacketCallback = callBackFunctionPointer;
 }
 
 #if defined(DESKTOP_C_SHARP)
 
-void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int))
+void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int))
 {
     notifyClientWithVideoDataCallback = callBackFunctionPointer;
 }
 
 #else
 
-void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
+void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int))
 {
 	notifyClientWithVideoDataCallback = callBackFunctionPointer;
 }
@@ -153,32 +154,33 @@ void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunction
 
 #endif
 
-void CEventNotifier::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
+void CEventNotifier::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int))
 {
 	notifyClientWithVideoNotificationCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
+void CEventNotifier::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int))
 {
 	notifyClientWithNetworkStrengthNotificationCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int))
+void CEventNotifier::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int))
 {
     notifyClientWithAudioDataCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
+void CEventNotifier::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int))
 {
 	notifyClientWithAudioPacketDataCallback = callBackFunctionPointer;
 }
 
-void CEventNotifier::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+void CEventNotifier::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int))
 {
 	notifyClientWithAudioAlarmCallback = callBackFunctionPointer;
 }
 
-bool CEventNotifier::IsVideoCallRunning(){
+bool CEventNotifier::IsVideoCallRunning()
+{
 	return m_pController->m_bLiveCallRunning;
 }
 

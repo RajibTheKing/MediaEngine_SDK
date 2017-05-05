@@ -1,6 +1,7 @@
 
-#ifndef _AVERAGE_CALCULATOR_
-#define _AVERAGE_CALCULATOR_
+#ifndef IPV_AVERAGE_CALCULATOR_H
+#define IPV_AVERAGE_CALCULATOR_H
+
 #include<iostream>
 #include "Tools.h"
 

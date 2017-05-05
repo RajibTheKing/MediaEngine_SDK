@@ -1,6 +1,6 @@
 
-#ifndef _VIDEO_DECODING_THREAD_H_
-#define _VIDEO_DECODING_THREAD_H_
+#ifndef IPV_VIDEO_DECODING_THREAD_H
+#define IPV_VIDEO_DECODING_THREAD_H
 
 #include "Tools.h"
 #include "SmartPointer.h"
@@ -28,7 +28,7 @@ class CVideoDecodingThread
 public:
 
 	CVideoDecodingThread(CEncodedFrameDepacketizer *encodedFrameDepacketizer, 
-						 LongLong llFriendID,
+						 long long llFriendID,
 						 CCommonElementsBucket *pCommonElementBucket,
                          CRenderingBuffer *renderingBuffer,
                          LiveVideoDecodingQueue *pLiveVideoDecodingQueue,
@@ -66,7 +66,7 @@ private:
 	int m_naInsetWidths[3];
 
 	CCommonElementsBucket *m_pCommonElementBucket;
-	LongLong m_llFriendID;
+	long long m_llFriendID;
 
 	int m_decodingHeight;
 	int m_decodingWidth;

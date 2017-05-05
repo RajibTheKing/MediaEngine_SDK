@@ -1,6 +1,6 @@
 
-#ifndef _CONTROLLER_H_
-#define _CONTROLLER_H_
+#ifndef IPV_CONTROLLER_H
+#define IPV_CONTROLLER_H
 
 #include <stdio.h>
 #include <string>
@@ -35,41 +35,41 @@ public:
 	CController(const char* sLoggerPath, int iLoggerPrintLevel);
 	~CController();
 
-	bool SetUserName(const LongLong& lUserName);
-	bool StartAudioCall(const LongLong& lFriendID, int nServiceType, int nEntityType);
-	bool SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder);
-	bool SetLoudSpeaker(const LongLong& lFriendID, bool bOn);
-	bool SetEchoCanceller(const LongLong& lFriendID, bool bOn);
-	bool StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly);
-	bool StartTestAudioCall(const LongLong& lFriendID);
-	CVideoCallSession* StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
-	int EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size);
-	int PushPacketForDecoding(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
-	int PushPacketForDecodingVector(const LongLong& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
-	int PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
-	int SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
-	int CancelAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size);
-	int SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
-	int SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width);
+	bool SetUserName(const long long& lUserName);
+	bool StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType);
+	bool SetVolume(const long long& lFriendID, int iVolume, bool bRecorder);
+	bool SetLoudSpeaker(const long long& lFriendID, bool bOn);
+	bool SetEchoCanceller(const long long& lFriendID, bool bOn);
+	bool StartVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly);
+	bool StartTestAudioCall(const long long& lFriendID);
+	CVideoCallSession* StartTestVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
+	int EncodeVideoFrame(const long long& lFriendID, unsigned char *in_data, unsigned int in_size);
+	int PushPacketForDecoding(const long long& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+	int PushPacketForDecodingVector(const long long& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
+	int PushAudioForDecoding(const long long& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
+	int SendAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
+	int CancelAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
+	int SendVideoData(const long long& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
+	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width);
 	int SetDeviceDisplayHeightWidth(int height, int width);
-	int SetBitRate(const LongLong& lFriendID, int bitRate);
+	int SetBitRate(const long long& lFriendID, int bitRate);
 
-    int CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
+    int CheckDeviceCapability(const long long& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
     int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
-	int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
+	int SetVideoEffect(const long long llFriendID, int nEffectStatus);
 
-	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
+	void SetCallInLiveType(const long long llFriendID, int nCallInLiveType);
 
-	int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
+	int TestVideoEffect(const long long llFriendID, int *param, int size);
 
-	void InterruptOccured(const LongLong lFriendID);
-	void InterruptOver(const LongLong lFriendID);
+	void InterruptOccured(const long long lFriendID);
+	void InterruptOver(const long long lFriendID);
 
-	bool StopAudioCall(const LongLong& lFriendID);
-	bool StopVideoCall(const LongLong& lFriendID);
-	bool StopTestAudioCall(const LongLong& lFriendID);
-	bool StopTestVideoCall(const LongLong& lFriendID);
+	bool StopAudioCall(const long long& lFriendID);
+	bool StopVideoCall(const long long& lFriendID);
+	bool StopTestAudioCall(const long long& lFriendID);
+	bool StopTestVideoCall(const long long& lFriendID);
 	void initializeEventHandler();
 	void SetLoggerPath(std::string);
     bool SetLoggingState(bool loggingState, int logLevel);
@@ -84,31 +84,31 @@ public:
 	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
 	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
-	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int));
+	void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 
 #if defined(DESKTOP_C_SHARP)
 
-	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int));
+	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
 
 #else
 
-	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int));
+	void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int));
 
 #endif
 
-	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int));
-	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
-	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int));
-	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
-	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int));
+	void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
+	void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int));
+	void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
+	void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
+	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
 
 
-	void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
+	void SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
 
-	bool StartAudioCallInLive(const LongLong& lFriendID, int iRole, int nCallInLiveType);
-	bool EndAudioCallInLive(const LongLong& lFriendID);
-	bool StartVideoCallInLive(const LongLong& lFriendID, int nCallInLiveType);
-	bool EndVideoCallInLive(const LongLong& lFriendID);
+	bool StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType);
+	bool EndAudioCallInLive(const long long& lFriendID);
+	bool StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType);
+	bool EndVideoCallInLive(const long long& lFriendID);
 	bool IsCallInLiveEnabled();
 	void SetCallInLiveEnabled(bool value);
 

@@ -32,7 +32,7 @@ int CVideoEffects::NegetiveColorEffect(unsigned char *pConvertingData, int inHei
         pConvertingData[i] = a - pConvertingData[i];
     }
     
-    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    int timeDiff = (int)(Tools::CurrentTimestamp() - startTime);
     
     printf("TheKing--> NegativeColorEffect timeDiff = %d\n", timeDiff);
     
@@ -47,7 +47,7 @@ int CVideoEffects::BlackAndWhiteColorEffect(unsigned char *pConvertingData, int 
     long long startTime = Tools::CurrentTimestamp();
     unsigned char a = 128;
     memset(pConvertingData + YPlaneLength,a,UVPlaneLength);
-    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    int timeDiff = (int)(Tools::CurrentTimestamp() - startTime);
     
     printf("TheKing--> BlackAndWhiteColorEffect timeDiff = %d\n", timeDiff);
     
@@ -68,7 +68,7 @@ int CVideoEffects::SapiaColorEffect(unsigned char *pConvertingData, int inHeight
     memset(pConvertingData + YPlaneLength,a,UPlaneLength);
     memset(pConvertingData + YPlaneLength + UPlaneLength, b, VPlaneLength);
     
-    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    int timeDiff = (int)(Tools::CurrentTimestamp() - startTime);
     
     printf("TheKing--> SapiaColorEffect timeDiff = %d\n", timeDiff);
     
@@ -106,7 +106,7 @@ int CVideoEffects::WarmColorEffect(unsigned char *pConvertingData, int inHeight,
     }
     
     
-    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    int timeDiff = (int)(Tools::CurrentTimestamp() - startTime);
     
     printf("TheKing--> WarmColorEffect timeDiff = %d\n", timeDiff);
     
@@ -129,7 +129,7 @@ int CVideoEffects::TintColorBlueEffect(unsigned char *pConvertingData, int inHei
      memset(pConvertingData + YPlaneLength + UPlaneLength, v, VPlaneLength);
     
     
-    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    int timeDiff = (int)(Tools::CurrentTimestamp() - startTime);
     
     printf("TheKing--> TintColorEffect timeDiff = %d\n", timeDiff);
     
@@ -152,7 +152,7 @@ int CVideoEffects::TintColorPinkEffect(unsigned char *pConvertingData, int inHei
     memset(pConvertingData + YPlaneLength + UPlaneLength, v, VPlaneLength);
     
     
-    int timeDiff = Tools::CurrentTimestamp() - startTime;
+    int timeDiff = (int)(Tools::CurrentTimestamp() - startTime);
     
     printf("TheKing--> TintColorEffect timeDiff = %d\n", timeDiff);
     
@@ -165,7 +165,7 @@ void CVideoEffects::SaturationChangeEffect(unsigned char *pConvertingData, int i
 	int frameLen = inHeight * inWidth * 3 / 2;
 	for (int i = inHeight * inWidth; i < frameLen; i++) 
 	{
-		pConvertingData[i] = max(0., min(255., (pConvertingData[i] - 128) * scale + 128));
+		pConvertingData[i] = (unsigned char)max(0., min(255., (pConvertingData[i] - 128) * scale + 128));
 	}
 	return;
 }
@@ -176,7 +176,7 @@ void CVideoEffects::ContrastChangeEffect(unsigned char *pConvertingData, int inH
 	int lim = inHeight * inWidth;
 	for (int i = 0; i < lim; i++) 
 	{
-		pConvertingData[i] = min(255., max(0., factor * (pConvertingData[i] - 128) + 128));
+		pConvertingData[i] = (unsigned char)min(255., max(0., factor * (pConvertingData[i] - 128) + 128));
 	}
 	return;
 }
@@ -199,7 +199,7 @@ void CVideoEffects::PencilSketchGrayEffect(unsigned char *pConvertingData, int i
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = 255 - min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)255 - (unsigned char)min(255., max(0.,
 				+ (9. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]
 				- m_mat[i - 1][j]
@@ -244,7 +244,7 @@ void CVideoEffects::PencilSketchWhiteEffect(unsigned char *pConvertingData, int 
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = 255 - min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)255 - (unsigned char)min(255., max(0.,
 				+(9. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]
 				- m_mat[i - 1][j]
@@ -284,7 +284,7 @@ void CVideoEffects::ColorSketchEffect(unsigned char *pConvertingData, int inHeig
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = 255 - min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)255 - (unsigned char)min(255., max(0.,
 				+(9. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]
 				- m_mat[i - 1][j]
@@ -325,7 +325,7 @@ void CVideoEffects::CartoonEffect(unsigned char *pConvertingData, int inHeight, 
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1)*inWidth + j - 1] = 255 - (((m_mat[i - 1][j + 1] + m_mat[i + 1][j - 1] - m_mat[i - 1][j - 1] - m_mat[i + 1][j + 1]) / 4.0)) / 2.;
+			pConvertingData[(i - 1)*inWidth + j - 1] = (unsigned char)255 - (unsigned char)(((m_mat[i - 1][j + 1] + m_mat[i + 1][j - 1] - m_mat[i - 1][j - 1] - m_mat[i + 1][j + 1]) / 4.0) / 2.);
 			//if (bufferr[i *iWidth + j - 1] >= 230)
 			{
 				pConvertingData[(i - 1)*inWidth + j - 1] /= 3;
@@ -355,7 +355,7 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)min(255., max(0.,
 				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
 				+ (0. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]
@@ -384,7 +384,7 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)min(255., max(0.,
 				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
 				+ (0. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]
@@ -413,7 +413,7 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)min(255., max(0.,
 				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
 				+ (0. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]
@@ -442,7 +442,7 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)min(255., max(0.,
 				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
 				+ (0. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]
@@ -471,7 +471,7 @@ void CVideoEffects::PlaitEffect(unsigned char *pConvertingData, int inHeight, in
 	{
 		for (int j = 1; j <= inWidth; j++)
 		{
-			pConvertingData[(i - 1) * inWidth + j - 1] = min(255., max(0.,
+			pConvertingData[(i - 1) * inWidth + j - 1] = (unsigned char)min(255., max(0.,
 				0. + 2 * pConvertingData[(i - 1) * inWidth + j - 1]
 				+ (0. * m_mat[i][j]
 				- m_mat[i - 1][j - 1]

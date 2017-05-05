@@ -9,7 +9,7 @@
 
 //extern unsigned char g_uchSendPacketVersion;						// bring check
 
-CVideoDepacketizationThread::CVideoDepacketizationThread(LongLong friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, IDRFrameIntervalController *pIdrFrameController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession) :
+CVideoDepacketizationThread::CVideoDepacketizationThread(long long friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, IDRFrameIntervalController *pIdrFrameController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession) :
 
 m_FriendID(friendID),
 m_pVideoPacketQueue(VideoPacketQueue),
@@ -168,8 +168,8 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 		//			CLogPrinter_WriteSpecific2(CLogPrinter::INFO, "VC..>>>  FN: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getFrameNumber()) + "  pk: "+ m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getPacketNumber())
 		//														  + " tmDiff : " + m_Tools.IntegertoStringConvert(m_RcvdPacketHeader.getTimeStamp()));
 
-		if (m_RcvdPacketHeader.GetPacketType() == __BITRATE_CONTROLL_PACKET_TYPE) {                    /* Opponent response of data receive. */
-//			VLOG("__BITRATE_CONTROLL_PACKET_TYPE");
+		if (m_RcvdPacketHeader.GetPacketType() == BITRATE_CONTROLL_PACKET_TYPE) {                    /* Opponent response of data receive. */
+//			VLOG("BITRATE_CONTROLL_PACKET_TYPE");
 			m_BitRateController->HandleBitrateMiniPacket(m_RcvdPacketHeader, m_pVideoCallSession->GetServiceType());
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT BITRATE PACKET");
@@ -177,7 +177,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			toolsObject.SOSleep(1);
 			continue;
 		}
-		else if (m_RcvdPacketHeader.GetPacketType() == __NETWORK_INFO_PACKET_TYPE) {        /* Opponent Network type */
+		else if (m_RcvdPacketHeader.GetPacketType() == NETWORK_INFO_PACKET_TYPE) {        /* Opponent Network type */
 			m_BitRateController->HandleNetworkTypeMiniPacket(m_RcvdPacketHeader);
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT NETWORKKKKK packet");
@@ -187,7 +187,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 			toolsObject.SOSleep(1);
 			continue;
 		}
-        else if (m_RcvdPacketHeader.GetPacketType() == __IDR_FRAME_CONTROL_INFO_TYPE)
+        else if (m_RcvdPacketHeader.GetPacketType() == IDR_FRAME_CONTROL_INFO_TYPE)
         {
             m_pIdrFrameIntervalController->Handle_IDRFrame_Control_Packet(m_RcvdPacketHeader, m_pVideoCallSession->GetServiceType());
             
@@ -196,7 +196,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
         }
 
 
-        if(m_RcvdPacketHeader.GetPacketType() == __NEGOTIATION_PACKET_TYPE)
+        if(m_RcvdPacketHeader.GetPacketType() == NEGOTIATION_PACKET_TYPE)
         {
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT NEgotiationNNNNN packet");
 
@@ -233,7 +233,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
             continue;
         }
         
-		if(-1 == m_pVersionController->GetOpponentVersion() && __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())  //It's a VIDEO packet. No dummy packet found before.
+		if(-1 == m_pVersionController->GetOpponentVersion() && VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())  //It's a VIDEO packet. No dummy packet found before.
         {
 			int nCurrentCallQualityLevelSetByOpponent = m_RcvdPacketHeader.GetVideoQualityLevel();
 			bool bIs2GOpponentNetwork = m_RcvdPacketHeader.GetNetworkType();
@@ -258,7 +258,7 @@ void CVideoDepacketizationThread::DepacketizationThreadProcedure()		//Merging Th
 				m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.getSenderDeviceType());
         }
 
-		if( !m_pVersionController->IsFirstVideoPacetReceived() &&  __VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())
+		if( !m_pVersionController->IsFirstVideoPacetReceived() &&  VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())
 			m_pVersionController->NotifyFirstVideoPacetReceived();
 
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() GOTTT VVVVVVVVIDEO data packet");

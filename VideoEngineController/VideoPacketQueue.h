@@ -1,6 +1,6 @@
 
-#ifndef _VIDEO_PACKET_QUEUE_H_
-#define _VIDEO_PACKET_QUEUE_H_
+#ifndef IPV_VIDEO_PACKET_QUEUE_H
+#define IPV_VIDEO_PACKET_QUEUE_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
@@ -19,7 +19,7 @@ public:
 
 	int Queue(unsigned char *ucaVideoPacketData, int nLength);
 	int DeQueue(unsigned char *ucaVideoPacketData);
-	void IncreamentIndex(int &irIndex);
+	void IncreamentIndex(int &riIndex);
 	int GetQueueSize();
 	void ResetBuffer();
 

@@ -27,9 +27,8 @@ void CSendingBuffer::ResetBuffer()
 	m_nQueueSize = 0;
 }
 
-int CSendingBuffer::Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPacketData, int nLength, int iFrameNumber, int iPacketNumber)
+int CSendingBuffer::Queue(long long llFriendID, unsigned char *ucaSendingVideoPacketData, int nLength, int iFrameNumber, int iPacketNumber)
 {
-    //printf("SendingBuffer, QUEUE SIZE = %d\n", m_nQueueSize);
 	Locker lock(*m_pSendingBufferMutex);
     
 	memcpy(m_uc2aSendingVideoPacketBuffer[m_iPushIndex], ucaSendingVideoPacketData, nLength);
@@ -57,10 +56,10 @@ int CSendingBuffer::Queue(LongLong llFriendID, unsigned char *ucaSendingVideoPac
     return 1;
 }
 
-int CSendingBuffer::DeQueue(LongLong &llrFriendID, unsigned char *ucaSendingVideoPacketData, int &nrFrameNumber, int &nrPacketNumber, int &nrTimeDifferenceInQueue)
+int CSendingBuffer::DeQueue(long long &rllFriendID, unsigned char *ucaSendingVideoPacketData, int &rnFrameNumber, int &rnPacketNumber, int &rnTimeDifferenceInQueue)
 {
 	Locker lock(*m_pSendingBufferMutex);
-    //printf("TheKing--> SendingBuffer m_nQueueSize = %d\n", m_nQueueSize);
+
 	if (m_nQueueSize <= 0)
 	{
 		return -1;
@@ -70,13 +69,13 @@ int CSendingBuffer::DeQueue(LongLong &llrFriendID, unsigned char *ucaSendingVide
 		int nLength;
 		
 		nLength = m_naBufferDataLengths[m_iPopIndex];
-		llrFriendID = m_llaBufferFriendIDs[m_iPopIndex];
-		nrFrameNumber = m_naBufferFrameNumbers[m_iPopIndex];
-		nrPacketNumber = m_naBufferPacketNumbers[m_iPopIndex];
+		rllFriendID = m_llaBufferFriendIDs[m_iPopIndex];
+		rnFrameNumber = m_naBufferFrameNumbers[m_iPopIndex];
+		rnPacketNumber = m_naBufferPacketNumbers[m_iPopIndex];
 
 		memcpy(ucaSendingVideoPacketData, m_uc2aSendingVideoPacketBuffer[m_iPopIndex], nLength);
 
-		nrTimeDifferenceInQueue = m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex];
+		rnTimeDifferenceInQueue = (int)(m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex]);
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;

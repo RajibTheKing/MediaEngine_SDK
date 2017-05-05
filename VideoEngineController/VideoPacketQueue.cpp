@@ -2,6 +2,8 @@
 #include "VideoPacketQueue.h"
 #include "ThreadTools.h"
 #include "LogPrinter.h"
+
+
 CVideoPacketQueue::CVideoPacketQueue() :
 
 m_iPushIndex(0),
@@ -29,7 +31,6 @@ void CVideoPacketQueue::ResetBuffer()
 
 int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 {
-    //printf("Depacketization, QUEUE SIZE = %d\n", m_nQueueSize);
 	Locker lock(*m_pVideoPacketQueueMutex);
 
 	if (m_nQueueSize >= m_nQueueCapacity)
@@ -56,7 +57,7 @@ int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 int CVideoPacketQueue::DeQueue(unsigned char *ucaVideoPacketData)
 {
 	Locker lock(*m_pVideoPacketQueueMutex);
-    //printf("TheKing--> VideoPacketQueue m_nQueueSize = %d\n", m_nQueueSize);
+
 	if (m_nQueueSize <= 0)
 	{
 		return -1;
@@ -76,12 +77,12 @@ int CVideoPacketQueue::DeQueue(unsigned char *ucaVideoPacketData)
 	}
 }
 
-void CVideoPacketQueue::IncreamentIndex(int &irIndex)
+void CVideoPacketQueue::IncreamentIndex(int &riIndex)
 {
-	irIndex++;
+	riIndex++;
 
-	if (irIndex >= m_nQueueCapacity)
-		irIndex = 0;
+	if (riIndex >= m_nQueueCapacity)
+		riIndex = 0;
 }
 
 int CVideoPacketQueue::GetQueueSize()

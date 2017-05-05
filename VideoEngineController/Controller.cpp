@@ -147,7 +147,7 @@ CController::~CController()
 	CLogPrinter_Write(CLogPrinter::WARNING, "CController::~CController() removed everything");
 }
 
-bool CController::SetUserName(const LongLong& lUserName)
+bool CController::SetUserName(const long long& lUserName)
 {
 	m_pCommonElementsBucket->SetUserName(lUserName);
 
@@ -156,7 +156,7 @@ bool CController::SetUserName(const LongLong& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, int nEntityType)
+bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType)
 {
 	CAudioCallSession* pAudioSession;
     
@@ -185,7 +185,7 @@ bool CController::StartAudioCall(const LongLong& lFriendID, int nServiceType, in
 	}
 }
 
-bool CController::SetVolume(const LongLong& lFriendID, int iVolume, bool bRecorder)
+bool CController::SetVolume(const long long& lFriendID, int iVolume, bool bRecorder)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -201,7 +201,7 @@ bool CController::SetVolume(const LongLong& lFriendID, int iVolume, bool bRecord
 	}
 }
 
-bool CController::SetLoudSpeaker(const LongLong& lFriendID, bool bOn)
+bool CController::SetLoudSpeaker(const long long& lFriendID, bool bOn)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -217,7 +217,7 @@ bool CController::SetLoudSpeaker(const LongLong& lFriendID, bool bOn)
 	}
 }
 
-bool CController::SetEchoCanceller(const LongLong& lFriendID, bool bOn)
+bool CController::SetEchoCanceller(const long long& lFriendID, bool bOn)
 {
 	CAudioCallSession* pAudioSession;
 	//return false;
@@ -234,7 +234,7 @@ bool CController::SetEchoCanceller(const LongLong& lFriendID, bool bOn)
 	}
 }
 
-bool CController::StartTestAudioCall(const LongLong& lFriendID)
+bool CController::StartTestAudioCall(const long long& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() called");
 
@@ -262,7 +262,7 @@ bool CController::StartTestAudioCall(const LongLong& lFriendID)
 	}
 }
 
-CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
+CVideoCallSession* CController::StartTestVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType)
 {
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() called");
@@ -295,7 +295,7 @@ CVideoCallSession* CController::StartTestVideoCall(const LongLong& lFriendID, in
 	}
 }
 
-bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly)
+bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly)
 {
 	Locker lock1(*m_pVideoStartMutex);
 
@@ -363,7 +363,7 @@ bool CController::StartVideoCall(const LongLong& lFriendID, int iVideoHeight, in
 	}	
 }
 
-int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size)
+int CController::EncodeVideoFrame(const long long& lFriendID, unsigned char *in_data, unsigned int in_size)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -392,7 +392,7 @@ int CController::EncodeVideoFrame(const LongLong& lFriendID, unsigned char *in_d
 	}
 }
 
-int CController::PushPacketForDecodingVector(const LongLong& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+int CController::PushPacketForDecodingVector(const long long& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	CVideoCallSession* pVideoSession = NULL;
 
@@ -426,7 +426,7 @@ int CController::PushPacketForDecodingVector(const LongLong& lFriendID, int offs
 	}
 }
 
-int CController::PushPacketForDecoding(const LongLong& lFriendID,unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
+int CController::PushPacketForDecoding(const long long& lFriendID,unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
 	CVideoCallSession* pVideoSession = NULL;
 
@@ -460,7 +460,7 @@ int CController::PushPacketForDecoding(const LongLong& lFriendID,unsigned char *
 	}
 }
 
-int CController::PushAudioForDecoding(const LongLong& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+int CController::PushAudioForDecoding(const long long& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -503,7 +503,7 @@ long long g_lPrevAudioFrame = 0;
 
 int iDataSentInCurrentSec = 0;
 long long llTimeStamp = 0;
-int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
+int CController::SendAudioData(const long long& lFriendID, short *in_data, unsigned int in_size)
 {
 	//if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
 	//	return -5;
@@ -554,7 +554,7 @@ int CController::SendAudioData(const LongLong& lFriendID, short *in_data, unsign
 	}
 }
 
-int CController::CancelAudioData(const LongLong& lFriendID, short *in_data, unsigned int in_size)
+int CController::CancelAudioData(const long long& lFriendID, short *in_data, unsigned int in_size)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -576,7 +576,7 @@ int CController::CancelAudioData(const LongLong& lFriendID, short *in_data, unsi
 }
 
 
-int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
+int CController::SendVideoData(const long long& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation)
 {
 	/*if (g_StopVideoSending)
 	{
@@ -618,7 +618,7 @@ int CController::SendVideoData(const LongLong& lFriendID, unsigned char *in_data
 	}
 }
 
-int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
+int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, int width)
 {
 	CVideoCallSession* pVideoSession;
     
@@ -648,7 +648,7 @@ int CController::SetEncoderHeightWidth(const LongLong& lFriendID, int height, in
 	}
 }
 
-int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
+int CController::SetVideoEffect(const long long llFriendID, int nEffectStatus)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -664,7 +664,7 @@ int CController::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 	}
 }
 
-void CController::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType)
+void CController::SetCallInLiveType(const long long llFriendID, int nCallInLiveType)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -700,7 +700,7 @@ void CController::SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiv
 }
 
 
-int CController::TestVideoEffect(const IPVLongType llFriendID, int *param, int size)
+int CController::TestVideoEffect(const long long llFriendID, int *param, int size)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -727,12 +727,12 @@ int CController::SetDeviceDisplayHeightWidth(int height, int width)
 	return 1;
 }
 
-int CController::SetBitRate(const LongLong& lFriendID, int bitRate)
+int CController::SetBitRate(const long long& lFriendID, int bitRate)
 {
 	return -1;
 }
 
-int CController::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
+int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 {
 
 	Locker lock1(*m_pVideoStartMutex);
@@ -818,7 +818,7 @@ int CController::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, 
     return 1;
 }
 
-void CController::InterruptOccured(const LongLong lFriendID)
+void CController::InterruptOccured(const long long lFriendID)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -839,7 +839,7 @@ void CController::InterruptOccured(const LongLong lFriendID)
 	}
 }
 
-void CController::InterruptOver(const LongLong lFriendID)
+void CController::InterruptOver(const long long lFriendID)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -867,7 +867,7 @@ void CController::initializeEventHandler()
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::initializeEventHandler() EventHandler Initialized");
 }
 
-bool CController::StopAudioCall(const LongLong& lFriendID)
+bool CController::StopAudioCall(const long long& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() called.");
     
@@ -891,7 +891,7 @@ bool CController::StopAudioCall(const LongLong& lFriendID)
     return bReturnedValue;
 }
 
-bool CController::StopTestAudioCall(const LongLong& lFriendID)
+bool CController::StopTestAudioCall(const long long& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() called");
 
@@ -918,7 +918,7 @@ bool CController::StopTestAudioCall(const LongLong& lFriendID)
 	return bReturnedValue;
 }
 
-bool CController::StopTestVideoCall(const LongLong& lFriendID)
+bool CController::StopTestVideoCall(const long long& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() called -> friendID = " + m_Tools.getText(lFriendID));
 
@@ -947,7 +947,7 @@ bool CController::StopTestVideoCall(const LongLong& lFriendID)
 	return bReturnedValue;
 }
 
-bool CController::StopVideoCall(const LongLong& lFriendID)
+bool CController::StopVideoCall(const long long& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called. --> friendID = " + m_Tools.getText(lFriendID));
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
@@ -1073,58 +1073,58 @@ void CController::UninitializeLibrary()
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();
 }
 
-void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
+void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int))
 {
     m_EventNotifier.SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 }
 
 #if defined(DESKTOP_C_SHARP)
 
-void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int))
+void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }
 
 #else
 
-void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
+void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }
 
 #endif
 
-void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
+void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoNotificationCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int))
+void CController::SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int))
 {
 	m_EventNotifier.SetNotifyClientWithNetworkStrengthNotificationCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(LongLong, int, short*, int))
+void CController::SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int))
 {
     m_EventNotifier.SetNotifyClientWithAudioDataCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int))
+void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int))
 {
 	m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int))
 {
 	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
 }
 
-void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
+void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
 {
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
 
-bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole, int nCallInLiveType)
+bool CController::StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -1140,7 +1140,7 @@ bool CController::StartAudioCallInLive(const LongLong& lFriendID, int iRole, int
 	}
 }
 
-bool CController::EndAudioCallInLive(const LongLong& lFriendID)
+bool CController::EndAudioCallInLive(const long long& lFriendID)
 {
 	CAudioCallSession* pAudioSession;
 
@@ -1156,7 +1156,7 @@ bool CController::EndAudioCallInLive(const LongLong& lFriendID)
 	}
 }
 
-bool CController::StartVideoCallInLive(const LongLong& lFriendID, int nCallInLiveType)
+bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -1177,7 +1177,7 @@ bool CController::StartVideoCallInLive(const LongLong& lFriendID, int nCallInLiv
 	}
 }
 
-bool CController::EndVideoCallInLive(const LongLong& lFriendID)
+bool CController::EndVideoCallInLive(const long long& lFriendID)
 {
 	CVideoCallSession* pVideoSession;
 

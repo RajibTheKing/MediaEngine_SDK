@@ -1,6 +1,6 @@
 
-#ifndef _RESENDING_BUFFER_H_
-#define _RESENDING_BUFFER_H_
+#ifndef IPV_RESENDING_BUFFER_H
+#define IPV_RESENDING_BUFFER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
@@ -34,7 +34,7 @@ private:
 
 	unsigned char m_Buffer[RESENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SIZE];
 	int m_BufferDataLength[RESENDING_BUFFER_SIZE];
-	LongLong m_BufferFrameNumber[RESENDING_BUFFER_SIZE];
+	long long m_BufferFrameNumber[RESENDING_BUFFER_SIZE];
 	int m_BufferPacketNumber[RESENDING_BUFFER_SIZE];
 	long long m_BufferInsertionTime[RESENDING_BUFFER_SIZE];
 

@@ -1,9 +1,5 @@
-//
-// Created by ipvision on 10/23/2016.
-//
 
 #include "LiveReceiver.h"
-//#include "PacketHeader.h"
 #include "VideoHeader.h"
 #include "Tools.h"
 #include "ThreadTools.h"
@@ -12,28 +8,26 @@
 
 LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject) :
 m_pCommonElementsBucket(sharedObject)
+
 {
-    //m_pAudioDecoderBuffer = pAudioDecoderBuffer;
     m_pLiveVideoDecodingQueue = NULL;
     m_pLiveReceiverMutex.reset(new CLockHandler);
-	
-
-	// logFile = fopen("/sdcard/LiveAudioMissing.txt", "w");
 }
 
-LiveReceiver::~LiveReceiver(){
+LiveReceiver::~LiveReceiver()
+{
     SHARED_PTR_DELETE(m_pLiveReceiverMutex);
-	// fclose(logFile);
 }
+
 void LiveReceiver::SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue)
 {
     m_pLiveVideoDecodingQueue = pQueue;
 }
 
-
 void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
     Locker lock(*m_pLiveReceiverMutex);
+
     int iUsedLen = 0, nFrames = 0;
 	int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
 	int offset = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
@@ -122,12 +116,6 @@ void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numb
 //    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
 }
 
-bool LiveReceiver::GetVideoFrame(unsigned char* uchVideoFrame,int iLen)
-{
-    Locker lock(*m_pLiveReceiverMutex);
-    return false;
-}
-
 void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 {
 	Locker lock(*m_pLiveReceiverMutex);
@@ -176,27 +164,6 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 
 			return;
 		}
-
-
-		/*
-		if (j == 0)
-		{
-		if (0 < numberOfMissingFrames &&  endOfThisFrame >= missingFrames[0] * packetSizeOfNetwork && missingFrames[0] >= NUMBER_OF_HEADER_FOR_STREAMING)
-		return;
-		}
-		else
-		{
-		for (int i = 0; i < numberOfMissingFrames-1; i++)
-		{
-		if (endOfThisFrame >= missingFrames[i] * packetSizeOfNetwork && endOfThisFrame < missingFrames[i+1] * packetSizeOfNetwork)
-		continue;
-		}
-
-		if (numberOfMissingFrames > 0 && endOfThisFrame >= missingFrames[numberOfMissingFrames - 1] * packetSizeOfNetwork && endOfThisFrame < (iLen + offset))
-		continue;
-		}
-		*/
-		//      packetHeaderObj.setPacketHeader(uchVideoData + iUsedLen);
 
 		if (!bBroken)	//If the current frame is not broken.
 		{

@@ -15,8 +15,7 @@
 
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
-extern long long g_llFirstFrameReceiveTime;
-CVideoCallSession::CVideoCallSession(CController *pController, LongLong fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
+CVideoCallSession::CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
 
 m_pCommonElementsBucket(sharedObject),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
@@ -307,12 +306,12 @@ CVideoCallSession::~CVideoCallSession()
 	SHARED_PTR_DELETE(m_pVideoCallSessionMutex);
 }
 
-LongLong CVideoCallSession::GetFriendID()
+long long CVideoCallSession::GetFriendID()
 {
 	return m_lfriendID;
 }
 
-void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
+void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
 {
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
@@ -334,9 +333,6 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
         m_pVersionController->SetCurrentCallVersion(VIDEO_VERSION_CODE);
         m_pVersionController->NotifyFirstVideoPacetReceived();
     }
-    
-    
-    g_llFirstFrameReceiveTime = 0;
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 240");
 
@@ -401,7 +397,7 @@ void CVideoCallSession::InitializeVideoSession(LongLong lFriendID, int iVideoHei
 
 	m_BitRateController->SetOwnNetworkType(iNetworkType);
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 281");
-	//CreateAndSendMiniPacket(iNetworkType, __NETWORK_INFO_PACKET_TYPE);
+	//CreateAndSendMiniPacket(iNetworkType, NETWORK_INFO_PACKET_TYPE);
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 282");
 
@@ -477,17 +473,17 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 326");
-	unsigned char uchPacketType = in_data[__PACKET_TYPE_INDEX];
-	if(uchPacketType < __MIN_PACKET_TYPE || __MAX_PACKET_TYPE < uchPacketType)
+	unsigned char uchPacketType = in_data[PACKET_TYPE_INDEX];
+	if(uchPacketType < MIN_PACKET_TYPE || MAX_PACKET_TYPE < uchPacketType)
 		return false;
 
 
-	if (__BITRATE_CONTROLL_PACKET_TYPE == uchPacketType || __NETWORK_INFO_PACKET_TYPE == uchPacketType || __IDR_FRAME_CONTROL_INFO_TYPE == uchPacketType) // It is a minipacket
+	if (BITRATE_CONTROLL_PACKET_TYPE == uchPacketType || NETWORK_INFO_PACKET_TYPE == uchPacketType || IDR_FRAME_CONTROL_INFO_TYPE == uchPacketType) // It is a minipacket
 	{
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 334");
 		m_pMiniPacketQueue->Queue(in_data, in_size);
 	}	
-	else if (__VIDEO_PACKET_TYPE == uchPacketType)
+	else if (VIDEO_PACKET_TYPE == uchPacketType)
 	{
         /*if(bSelfData == false && m_bResolutionNegotiationDone == false)
         {
@@ -517,7 +513,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 //				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
-				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, __BITRATE_CONTROLL_PACKET_TYPE);
+				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_CONTROLL_PACKET_TYPE);
 			}
 
 			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % m_nCallFPS);
@@ -532,7 +528,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 378  in_size= " + m_Tools.IntegertoStringConvert(in_size));
 	}
-	else if (__NEGOTIATION_PACKET_TYPE == uchPacketType)
+	else if (NEGOTIATION_PACKET_TYPE == uchPacketType)
 	{
 		m_pVideoPacketQueue->Queue(in_data, in_size);
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 383");
@@ -618,13 +614,11 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 #endif
     
    // CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 4");
-
-    if(g_llFirstFrameReceiveTime == 0) g_llFirstFrameReceiveTime = m_Tools.CurrentTimestamp();
     
 	
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::PushIntoBufferForEncoding");
 
-	LongLong currentTimeStamp = m_Tools.CurrentTimestamp();
+	long long currentTimeStamp = m_Tools.CurrentTimestamp();
 
     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 5");
     //Capturing fps calculation
@@ -680,7 +674,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	if(-1 == m_llFirstFrameCapturingTimeStamp)
 		m_llFirstFrameCapturingTimeStamp = currentTimeStamp;
 
-	int nCaptureTimeDiff = currentTimeStamp - m_llFirstFrameCapturingTimeStamp;
+	int nCaptureTimeDiff = (int)(currentTimeStamp - m_llFirstFrameCapturingTimeStamp);
     
     g_TimeTraceFromCaptureToSend[g_CapturingFrameCounter] = m_Tools.CurrentTimestamp();
 
@@ -745,11 +739,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
     
 	CVideoHeader PacketHeader;
 
-	if (nMiniPacketType == __BITRATE_CONTROLL_PACKET_TYPE)
+	if (nMiniPacketType == BITRATE_CONTROLL_PACKET_TYPE)
 	{
-		//PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
+		//PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(__BITRATE_CONTROLL_PACKET_TYPE,			//packetType
+		PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
 									uchVersion,									//VersionCode
 									VIDEO_HEADER_LENGTH,						//HeaderLength
 									0,											//FPSByte
@@ -771,11 +765,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
         PacketHeader.ShowDetails("BtratePacket SendingSide: ");
 	}
-	else if (nMiniPacketType == __NETWORK_INFO_PACKET_TYPE)
+	else if (nMiniPacketType == NETWORK_INFO_PACKET_TYPE)
 	{
-		//PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
+		//PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(__NETWORK_INFO_PACKET_TYPE,				//packetType
+		PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
 										uchVersion,								//VersionCode
 										VIDEO_HEADER_LENGTH,					//HeaderLength
 										0,										//FPSByte
@@ -814,7 +808,7 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
     CVideoHeader PacketHeader;
     unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
     
-    PacketHeader.setPacketHeader(__IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
+    PacketHeader.setPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
                                  uchVersion,							//VersionCode
                                  VIDEO_HEADER_LENGTH,					//HeaderLength
                                  0,										//FPSByte
@@ -1111,7 +1105,7 @@ void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
 	m_nCallInLiveType = nCallInLiveType;
 }
 
-int CVideoCallSession::SetEncoderHeightWidth(const LongLong& lFriendID, int height, int width)
+int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width)
 {
 	if(m_nVideoCallHeight != height || m_nVideoCallWidth != width)
 	{
@@ -1180,7 +1174,7 @@ int CVideoCallSession::GetOponentDeviceType()
 	return m_nOponentDeviceType;
 }
 
-int CVideoCallSession::SetDeviceHeightWidth(const LongLong& lFriendID, int height, int width)
+int CVideoCallSession::SetDeviceHeightWidth(const long long& lFriendID, int height, int width)
 {
 	m_nDeviceHeight = height;
 	m_nDeviceWidth = width;

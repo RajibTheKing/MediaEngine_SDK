@@ -214,9 +214,9 @@ void Tools::SOSleep(int nSleepTimeout)
 
 }
 
-LongLong  Tools::CurrentTimestamp()
+long long  Tools::CurrentTimestamp()
 {
-	LongLong currentTime;
+	long long currentTime;
 
 #if	defined(DESKTOP_C_SHARP)
 	auto timeEpoch = std::chrono::system_clock::now().time_since_epoch();

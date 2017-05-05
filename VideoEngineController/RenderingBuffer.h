@@ -1,12 +1,13 @@
 
-#ifndef _RENDERING_BUFFER_H_
-#define _RENDERING_BUFFER_H_
+#ifndef IPV_RENDERING_BUFFER_H
+#define IPV_RENDERING_BUFFER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
 #include "Tools.h"
 #include "Size.h"
 #include "LogPrinter.h"
+
 
 class CRenderingBuffer
 {
@@ -16,9 +17,9 @@ public:
 	CRenderingBuffer();
 	~CRenderingBuffer();
 
-	int Queue(int iFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation, int nInsetHeight, int nInsetWidth);
-	int DeQueue(int &irFrameNumber, long long &llrCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth, int &nrTimeDifferenceInQueue, int &nOrientation, int &nInsetHeight, int &nInsetWidth);
-	void IncreamentIndex(int &irIndex);
+	int Queue(int nFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation, int nInsetHeight, int nInsetWidth);
+	int DeQueue(int &rnFrameNumber, long long &rllCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth, int &rnTimeDifferenceInQueue, int &nOrientation, int &nInsetHeight, int &nInsetWidth);
+	void IncreamentIndex(int &riIndex);
 	int GetQueueSize();
 	void ResetBuffer();
 
@@ -29,8 +30,6 @@ private:
 	int m_nQueueCapacity;
 	int m_nQueueSize;
 
-	Tools m_Tools;
-
 	unsigned char m_uc2aDecodedVideoDataBuffer[MAX_VIDEO_RENDERER_BUFFER_SIZE][MAX_VIDEO_RENDERER_FRAME_SIZE];
 
 	int m_naBufferDataLengths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
@@ -40,10 +39,10 @@ private:
 	int m_naBufferVideoOrientations[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	int m_naBufferInsetHeights[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	int m_naBufferInsetWidths[MAX_VIDEO_RENDERER_BUFFER_SIZE];
-	
 	long long m_llaBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_llaBufferCaptureTimeDifferences[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
+	Tools m_Tools;
 	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
 };
 

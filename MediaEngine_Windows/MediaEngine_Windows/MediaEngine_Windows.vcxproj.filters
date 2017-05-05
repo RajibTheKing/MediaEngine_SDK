@@ -240,6 +240,21 @@
     <ClCompile Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\RenderingThreadOfCall.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\RenderingThreadOfChannel.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\RenderingThreadOfLive.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\IPVThread.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\CircularBuffer.cpp">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -502,6 +517,21 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.h">
       <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\RenderingThreadOfCall.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\RenderingThreadOfChannel.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\RenderingThreadOfLive.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\IPVThread.h">
+      <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\CircularBuffer.h">
+      <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

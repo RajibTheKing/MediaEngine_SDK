@@ -1,14 +1,12 @@
 
-#ifndef _VIDEO_RENDERING_THREAD_H_
-#define _VIDEO_RENDERING_THREAD_H_
+#ifndef IPV_RENDERING_THREAD_H
+#define IPV_RENDERING_THREAD_H
 
 #include "Tools.h"
 #include "SmartPointer.h"
 #include "LogPrinter.h"
 #include "RenderingBuffer.h"
-
 #include "AverageCalculator.h"
-
 
 #include <thread>
 
@@ -20,39 +18,36 @@ class CVideoRenderingThread
 
 public:
 
-	CVideoRenderingThread(LongLong friendID, CRenderingBuffer *renderingBuffer, CCommonElementsBucket* commonElementsBucket, CVideoCallSession *pVideoCallSession, bool bIsCheckCall);
+	CVideoRenderingThread(long long llFriendID, CRenderingBuffer *pcRenderingBuffer, CCommonElementsBucket* pcCommonElementsBucket, CVideoCallSession *pcVideoCallSession, bool bIsCheckCall);
 	~CVideoRenderingThread();
 
 	void StartRenderingThread();
 	void StopRenderingThread();
 	void RenderingThreadProcedure();
-	static void *CreateVideoRenderingThread(void* param);
+	static void *CreateVideoRenderingThread(void* pParam);
     void CalculateFPS();
 
 private:
 
-	bool bRenderingThreadRunning;
-	bool bRenderingThreadClosed;
-
-	CRenderingBuffer *m_RenderingBuffer;					
-	CCommonElementsBucket* m_pCommonElementsBucket;		
-
-	LongLong m_FriendID;								
-
-	unsigned char m_RenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
-
-	Tools m_Tools;
-    int m_nRenderFrameCount;
-    long long m_lRenderCallTime;
+	bool m_bRenderingThreadRunning;
+	bool m_bRenderingThreadClosed;
+	bool m_bIsCheckCall;
+	int m_nRenderFrameCount;
 	int m_nInsetHeight;
 	int m_nInsetWidth;
+	long long m_llFriendID;
+	long long m_lRenderCallTime;
+	long long m_llRenderFrameCounter;
 
-	bool m_bIsCheckCall;
-    
-    CVideoCallSession *m_pVideoCallSession;
-    
-    CAverageCalculator m_RenderTimeCalculator;
-    long long m_llRenderFrameCounter;
+	unsigned char m_ucaRenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+
+	Tools m_Tools;
+	CAverageCalculator m_cRenderTimeCalculator;
+
+	CRenderingBuffer *m_pcRenderingBuffer;
+	CCommonElementsBucket* m_pcCommonElementsBucket;
+    CVideoCallSession *m_pcVideoCallSession;
+
 	SmartPointer<std::thread> pRenderingThread;
 };
 

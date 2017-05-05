@@ -1,6 +1,6 @@
 
-#ifndef _ENCODING_BUFFER_H_
-#define _ENCODING_BUFFER_H_
+#ifndef IPV_ENCODING_BUFFER_H
+#define IPV_ENCODING_BUFFER_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
@@ -32,9 +32,7 @@ private:
 	Tools m_Tools;
 
 	unsigned char m_uc2aCapturedVideoDataBuffer[MAX_VIDEO_ENCODER_BUFFER_SIZE][MAX_VIDEO_ENCODER_FRAME_SIZE];
-
 	int m_naBufferDataLengths[MAX_VIDEO_ENCODER_BUFFER_SIZE];
-
 	int m_naBufferCaptureTimeDifferences[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 	long long m_llaBufferInsertionTimes[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 	int m_naDevice_orientation[MAX_VIDEO_ENCODER_BUFFER_SIZE];

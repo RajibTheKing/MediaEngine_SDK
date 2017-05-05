@@ -6,8 +6,8 @@
 //  Copyright © 2016 ipvision. All rights reserved.
 //
 
-#ifndef VersionController_h
-#define VersionController_h
+#ifndef IPV_VERSION_CONTROLLER_H
+#define IPV_VERSION_CONTROLLER_H
 
 #include <stdio.h>
 

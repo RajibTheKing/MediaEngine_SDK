@@ -1,6 +1,6 @@
 
-#ifndef _VIDEO_ENCODING_THREAD_H_
-#define _VIDEO_ENCODING_THREAD_H_
+#ifndef IPV_VIDEO_ENCODING_THREAD_H
+#define IPV_VIDEO_ENCODING_THREAD_H
 
 #include "Tools.h"
 #include "SmartPointer.h"
@@ -24,7 +24,7 @@ class CVideoEncodingThread
 
 public:
 
-	CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
+	CVideoEncodingThread(long long llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
 	~CVideoEncodingThread();
 
 	void StartEncodingThread();
@@ -86,7 +86,7 @@ private:
 #endif
 
 	int m_iFrameNumber;
-	LongLong m_llFriendID;		
+	long long m_llFriendID;		
 	int m_nOrientationType;
 	bool bEncodingThreadRunning;
 	bool bEncodingThreadClosed;

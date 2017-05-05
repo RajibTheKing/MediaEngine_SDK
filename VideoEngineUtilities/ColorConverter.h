@@ -1,6 +1,6 @@
 
-#ifndef _COLOR_CONVERTER_H_
-#define _COLOR_CONVERTER_H_
+#ifndef IPV_COLOR_CONVERTER_H
+#define IPV_COLOR_CONVERTER_H
 
 #include "AudioVideoEngineDefinitions.h"
 #include "SmartPointer.h"

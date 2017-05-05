@@ -1,8 +1,8 @@
 
-#ifndef _VIDEO_DECODER_H_
-#define _VIDEO_DECODER_H_
+#ifndef IPV_VIDEO_DECODER_H
+#define IPV_VIDEO_DECODER_H
 
-#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
 
 #include "SmartPointer.h"
 #include "LockHandler.h"
@@ -20,12 +20,12 @@ public:
 
 	int CreateVideoDecoder();
 	int SetDecoderOption(int nKey, int nValue);
-	int DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &nrVideoHeight, int &nrVideoWidth);
+	int DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth);
 
 private:
 
-	CCommonElementsBucket* m_pCommonElementsBucket;
-	ISVCDecoder* m_pSVCVideoDecoder;
+	CCommonElementsBucket* m_pcCommonElementsBucket;
+	ISVCDecoder* m_pcSVCVideoDecoder;
 
 };
 

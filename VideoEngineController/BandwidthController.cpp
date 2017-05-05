@@ -48,7 +48,7 @@ bool BandwidthController::IsSendeablePacket(int nPacketLen){
     long long CurrentTime = m_Tools.CurrentTimestamp();
     long long timeDiff = CurrentTime - m_LastTimeStamp;
     m_LastTimeStamp=CurrentTime;
-    int decrease =  timeDiff * m_BandWidth / 1000.0;
+    int decrease = (int)(timeDiff * m_BandWidth / 1000.0);
     m_nDataToSendInByte -=  decrease;
 
 //    CLogPrinter_WriteSpecific2(CLogPrinter::DEBUGS, "$$$!@# DataToSend: "+Tools::IntegertoStringConvert(m_nDataToSendInByte)+ " Tdif: "+Tools::IntegertoStringConvert(timeDiff)

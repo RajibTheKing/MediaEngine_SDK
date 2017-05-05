@@ -58,7 +58,7 @@ int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int 
 	resendingMap.erase(resendingMapIterator);
 	memcpy(decodeBuffer, m_Buffer[m_iPopIndex], m_BufferDataLength[m_iPopIndex]);
 
-	timeStampDiff = m_Tools.CurrentTimestamp() - m_BufferInsertionTime[m_iPopIndex];
+	timeStampDiff = (int)(m_Tools.CurrentTimestamp() - m_BufferInsertionTime[m_iPopIndex]);
 
 	return m_BufferDataLength[m_iPopIndex];
 }

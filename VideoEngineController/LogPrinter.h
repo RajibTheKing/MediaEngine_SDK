@@ -1,7 +1,8 @@
-#ifndef _LOG_PRINTER_H_
-#define _LOG_PRINTER_H_
 
-#define _CRT_SECURE_NO_WARNINGS
+#ifndef IPV_LOG_PRINTER_H
+#define IPV_LOG_PRINTER_H
+
+//#define _CRT_SECURE_NO_WARNINGS
 
 
 //#define __PRINT_LOG__
@@ -118,15 +119,17 @@ typedef long long IPVLongType;
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 static FILE *logfp = NULL;
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
+
+#ifdef LOG_ENABLED
 #define printf(...) printg(__VA_ARGS__,"")
+#else
+#define printf(...)
+#endif
+
 #define printk(...) printg(__VA_ARGS__,"")
 //#define printf(...)
 #define printFile(...) if(!logfp) {logfp = fopen("log.txt", "wb");} fprintf(logfp, __VA_ARGS__);
 #define printfiledone() fclose(logfp);
-#endif
-
-#ifndef LOG_ENABLED
-#define printf(...)
 #endif
 
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);

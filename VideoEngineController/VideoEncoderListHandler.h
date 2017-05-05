@@ -1,5 +1,6 @@
-#ifndef _ENCODER_LIST_HANDLER_H_
-#define _ENCODER_LIST_HANDLER_H_
+
+#ifndef IPV_ENCODER_LIST_HANDLER_H
+#define IPV_ENCODER_LIST_HANDLER_H
 
 #include <stdio.h>
 #include <string>
@@ -19,19 +20,19 @@ public:
 	CVideoEncoderListHandler();
 	~CVideoEncoderListHandler();
 
-	void AddToVideoEncoderList(LongLong lFriendID, CVideoEncoder* media);
-	CVideoEncoder* GetFromVideoEncoderList(LongLong lFriendID);
-	CVideoEncoder* GetFromVideoEncoderListinIndex(int index);
-	bool RemoveFromVideoEncoderList(LongLong lFriendID);
+	void AddToVideoEncoderList(long long llFriendID, CVideoEncoder* pcMedia);
+	CVideoEncoder* GetFromVideoEncoderList(long long llFriendID);
+	CVideoEncoder* GetFromVideoEncoderListinIndex(int iIndex);
+	bool RemoveFromVideoEncoderList(long long llFriendID);
 	int SizeOfVideoEncoderList();
-	bool IsVideoEncoderExist(int iVideoHeight, int iVideoWidth);
-	bool IsVideoEncoderExist(LongLong lFriendID);
+	bool IsVideoEncoderExist(int nVideoHeight, int nVideoWidth);
+	bool IsVideoEncoderExist(long long llFriendID);
 	void ClearAllFromVideoEncoderList();
 	void ResetAllInVideoEncoderList();
 
 private:
 
-	std::map<LongLong, CVideoEncoder*> VideoEncoderList;
+	std::map<long long, CVideoEncoder*> m_mVideoEncoderList;
 
 protected:
 

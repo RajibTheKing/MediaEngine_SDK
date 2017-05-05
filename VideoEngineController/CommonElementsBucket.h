@@ -1,5 +1,6 @@
-#ifndef _SHARED_BUCKET_H_
-#define _SHARED_BUCKET_H_
+
+#ifndef IPV_COMMON_ELEMENTS_BUCKET_H
+#define IPV_COMMON_ELEMENTS_BUCKET_H
 
 #include <stdio.h>
 
@@ -16,10 +17,10 @@ public:
 	CCommonElementsBucket();
 	~CCommonElementsBucket();
     
-	void(*SendFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> >) = NULL;
+	void(*SendFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> >) = NULL;
     
-    void SetUserName(const LongLong& username);
-    LongLong GetUsername();
+    void SetUserName(const long long& username);
+    long long GetUsername();
    
 	CEventNotifier *m_pEventNotifier;
 	CVideoCallSessionListHandler *m_pVideoCallSessionList;
@@ -27,7 +28,7 @@ public:
 	CVideoEncoderListHandler *m_pVideoEncoderList;
 	CLockHandler* GetSharedMutex();
     
-	void SetSendFunctionPointer(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
+	void SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
 
 	void SetPacketSizeOfNetwork(int packetSizeOfNetwork);
 	int GetPacketSizeOfNetwork();
@@ -37,8 +38,8 @@ private:
     void InstantiateSharedMutex();
 	
 	int m_nPacketSizeOfNetwork;
-    LongLong m_friendID;
-	LongLong userName;
+    long long m_friendID;
+	long long userName;
 	CLockHandler* sharedMutex;
 };
 

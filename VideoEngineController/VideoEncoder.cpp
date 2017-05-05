@@ -6,14 +6,14 @@
 
 #include <string>
 
-CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject, LongLong llfriendID) :
+CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject, long long llfriendID) :
 
-m_pCommonElementsBucket(pSharedObject),
+m_pcCommonElementsBucket(pSharedObject),
 m_nMaxBitRate(BITRATE_MAX),
 m_nBitRate(BITRATE_MAX - 25000),
 m_nNetworkType(NETWORK_TYPE_NOT_2G),
-m_pSVCVideoEncoder(NULL),
-m_lfriendID(llfriendID)
+m_pcSVCVideoEncoder(NULL),
+m_llfriendID(llfriendID)
 
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CVideoEncoder");
@@ -25,11 +25,11 @@ m_lfriendID(llfriendID)
 
 CVideoEncoder::~CVideoEncoder()
 {
-	if(NULL != m_pSVCVideoEncoder)
+	if(NULL != m_pcSVCVideoEncoder)
     {
-        m_pSVCVideoEncoder->Uninitialize();
+        m_pcSVCVideoEncoder->Uninitialize();
         
-        m_pSVCVideoEncoder = NULL;
+        m_pcSVCVideoEncoder = NULL;
     }
 
 	SHARED_PTR_DELETE(m_pVideoEncoderMutex);
@@ -66,7 +66,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 	memset(&encoderParemeters, 0, sizeof(SEncParamExt));
 
-	m_pSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
+	m_pcSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
 
 	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encoderParemeters.iTemporalLayerNum = 0;
@@ -80,9 +80,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 	encoderParemeters.iMultipleThreadIdc = 0;
     encoderParemeters.iEntropyCodingModeFlag = true;
     
-    
-    
-    
+
     if(!bCheckDeviceCapability)
     {        
 		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
@@ -103,12 +101,8 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
     {
         encoderParemeters.iRCMode = RC_OFF_MODE;
     }
-    
-    
-    
-    
-    
-    
+
+
 	encoderParemeters.bEnableDenoise = false;
 	encoderParemeters.bEnableSceneChangeDetect = false;
 	encoderParemeters.bEnableBackgroundDetection = true;
@@ -158,7 +152,7 @@ int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, i
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder encoder initializing");
 
-	long nReturnedValueFromEncoder = m_pSVCVideoEncoder->InitializeExt(&encoderParemeters);
+	long nReturnedValueFromEncoder = m_pcSVCVideoEncoder->InitializeExt(&encoderParemeters);
 
 	if (nReturnedValueFromEncoder != 0)
 	{
@@ -178,7 +172,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
-	long nReturnedValueFromEncoder = WelsCreateSVCEncoder(&m_pSVCVideoEncoder);
+	long nReturnedValueFromEncoder = WelsCreateSVCEncoder(&m_pcSVCVideoEncoder);
 
 	if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 	{
@@ -205,7 +199,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 	memset(&encoderParemeters, 0, sizeof(SEncParamExt));
 
-	m_pSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
+	m_pcSVCVideoEncoder->GetDefaultParams(&encoderParemeters);
 
 	encoderParemeters.iUsageType = CAMERA_VIDEO_REAL_TIME;
 	encoderParemeters.iTemporalLayerNum = 0;
@@ -294,7 +288,7 @@ int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFP
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder encoder initializing");
 
-	nReturnedValueFromEncoder = m_pSVCVideoEncoder->InitializeExt(&encoderParemeters);
+	nReturnedValueFromEncoder = m_pcSVCVideoEncoder->InitializeExt(&encoderParemeters);
 
 	if (nReturnedValueFromEncoder != 0)
 	{
@@ -332,9 +326,9 @@ int CVideoEncoder::SetBitrate(int nBitRate)
 	LOGEF("fahad -->> VideoEncoder::SetBitrate -- nTargetBitRate = %d", nTargetBitRate);
 	int nReturnedValueFromEncoder;
 
-	if(m_pSVCVideoEncoder)
+	if(m_pcSVCVideoEncoder)
 	{
-		nReturnedValueFromEncoder = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
+		nReturnedValueFromEncoder = m_pcSVCVideoEncoder->SetOption(ENCODER_OPTION_BITRATE, &targetEncoderBitrateInfo);
 
 		if (nReturnedValueFromEncoder != 0)
 		{
@@ -362,7 +356,7 @@ void CVideoEncoder::SetNetworkType(int nNetworkType)
 
 int CVideoEncoder::SetMaxBitrate(int nBitRate)
 {
-	nBitRate = nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR;
+	nBitRate = (int)(nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
 
 	int nTargetBitRate = nBitRate - (nBitRate % 25000);
     
@@ -372,7 +366,7 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
     if(nTargetBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE) 
 		nTargetBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
 
-	SBitrateInfo maxEncoderBitRateInfo, targetEncoderBitrateInfo;
+	SBitrateInfo maxEncoderBitRateInfo;
 
 	maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
 	maxEncoderBitRateInfo.iBitrate = nTargetBitRate;
@@ -380,9 +374,9 @@ int CVideoEncoder::SetMaxBitrate(int nBitRate)
 	LOGEF("fahad -->> VideoEncoder::SetMaxBitrate -- nTargetBitRate = %d", nTargetBitRate);
 	int nReturnedValueFromEncoder;
 
-	if(m_pSVCVideoEncoder)
+	if(m_pcSVCVideoEncoder)
 	{
-		nReturnedValueFromEncoder = m_pSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
+		nReturnedValueFromEncoder = m_pcSVCVideoEncoder->SetOption(ENCODER_OPTION_MAX_BITRATE, &maxEncoderBitRateInfo);
 
 		if (nReturnedValueFromEncoder != 0)
 		{
@@ -410,7 +404,7 @@ int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, un
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
 
-	if (NULL == m_pSVCVideoEncoder)
+	if (NULL == m_pcSVCVideoEncoder)
 	{
 		CLogPrinter_Write("OpenH264 encoder NULL!");
 
@@ -435,10 +429,10 @@ int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, un
     if(isForceIFrame)
     {
         printf("TheKing--> Forcing IDR Frame\n");
-        m_pSVCVideoEncoder->ForceIntraFrame(true);
+        m_pcSVCVideoEncoder->ForceIntraFrame(true);
     }
 
-	int nReturnedValueFromEncoder = m_pSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
+	int nReturnedValueFromEncoder = m_pcSVCVideoEncoder->EncodeFrame(&sourcePicture, &frameBSInfo);
 
 	if (nReturnedValueFromEncoder != 0)
 	{

@@ -1,6 +1,6 @@
 
-#ifndef _SYNCHRONIZED_MAP_H_
-#define _SYNCHRONIZED_MAP_H_
+#ifndef IPV_SYNCHRONIZED_MAP_H
+#define IPV_SYNCHRONIZED_MAP_H
 
 #include "SmartPointer.h"
 #include "LockHandler.h"

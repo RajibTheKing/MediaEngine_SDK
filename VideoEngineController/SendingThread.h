@@ -1,6 +1,6 @@
 
-#ifndef _SENDING_THREAD_H_
-#define _SENDING_THREAD_H_
+#ifndef IPV_SENDING_THREAD_H
+#define IPV_SENDING_THREAD_H
 
 #include "Tools.h"
 #include "SmartPointer.h"
@@ -21,7 +21,7 @@ class CSendingThread
 {
 public:
 
-	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, LongLong llfriendID, bool bAudioOnlyLive);
+	CSendingThread(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, long long llfriendID, bool bAudioOnlyLive);
 	~CSendingThread();
 
 	void StartSendingThread();
@@ -64,7 +64,7 @@ private:
 
 	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
     
-	LongLong m_lfriendID;
+	long long m_lfriendID;
 
 	bool m_bResetForViewerCallerCallEnd;
 	long long m_llBaseRelativeTimeOfAudio;

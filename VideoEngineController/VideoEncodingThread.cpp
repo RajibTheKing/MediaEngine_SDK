@@ -9,7 +9,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-CVideoEncodingThread::CVideoEncodingThread(LongLong llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
+CVideoEncodingThread::CVideoEncodingThread(long long llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
 
 m_pVideoCallSession(pVideoCallSession),
 m_iFrameNumber(nFPS),
@@ -692,7 +692,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 #else
-				long timeStampForEncoding = m_Tools.CurrentTimestamp();
+				long long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
 			if (m_bIsCheckCall)
 				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, false);
@@ -703,7 +703,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 
-				int timediff = m_Tools.CurrentTimestamp() - timeStampForEncoding;
+				int timediff = (int)(m_Tools.CurrentTimestamp() - timeStampForEncoding);
 				sumOfEncodingTimediff += timeDiff;
 				if (nENCODEDFrameSize == 0)
 				{

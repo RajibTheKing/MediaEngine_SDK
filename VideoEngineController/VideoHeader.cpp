@@ -207,10 +207,10 @@ int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
     data[index++] = (unsigned char)m_iFPS;
 
 	//FrameNumber
-	data[index++] = (m_llFrameNumber >> 24);
-    data[index++] = (m_llFrameNumber >> 16);
-    data[index++] = (m_llFrameNumber >> 8);
-    data[index++] = (m_llFrameNumber >> 0);
+	data[index++] = (unsigned char)(m_llFrameNumber >> 24);
+	data[index++] = (unsigned char)(m_llFrameNumber >> 16);
+	data[index++] = (unsigned char)(m_llFrameNumber >> 8);
+	data[index++] = (unsigned char)(m_llFrameNumber >> 0);
 
     //CallInfoByte
     data[index] = 0;
@@ -226,11 +226,11 @@ int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
     data[index++] = m_iPacketNumber;
 
 	//TimeStamp
-	data[index++] = (m_llTimeStamp >> 32);
-    data[index++] = (m_llTimeStamp >> 24);
-    data[index++] = (m_llTimeStamp >> 16);
-    data[index++] = (m_llTimeStamp >> 8);
-    data[index++] = (m_llTimeStamp >> 0);
+	data[index++] = (unsigned char)(m_llTimeStamp >> 32);
+	data[index++] = (unsigned char)(m_llTimeStamp >> 24);
+	data[index++] = (unsigned char)(m_llTimeStamp >> 16);
+	data[index++] = (unsigned char)(m_llTimeStamp >> 8);
+	data[index++] = (unsigned char)(m_llTimeStamp >> 0);
 
 	//Packet Starting Index
 	data[index++] = (m_iPacketStartingIndex >> 16);
