@@ -28,40 +28,39 @@ m_FpsCounter(0),
 m_nCallFPS(nFPS),
 m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket),
-m_bResetForViewerCallerCallEnd(false),
 m_bVideoEffectEnabled(true),
 m_bSelfViewOnly(bSelfViewOnly)
 {
-    m_pCalculatorEncodeTime = new CAverageCalculator();
-    m_pCalculateEncodingTimeDiff = new CAverageCalculator();
+	m_pCalculatorEncodeTime = new CAverageCalculator();
+	m_pCalculateEncodingTimeDiff = new CAverageCalculator();
 
-	m_VideoBeautificationer = new CVideoBeautificationer(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth());
+	m_VideoBeautificationer = new CVideoBeautificationer(m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth);
 	//m_VideoBeautificationer->GenerateUVIndex(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), 11);
-    
-    m_pVideoCallSession = pVideoCallSession;
-    m_bIsCheckCall = bIsCheckCall;
-    
-	if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD)
-     {
-         for(int k=0;k<3;k++)
-         {
-             memset(m_ucaDummmyFrame[k], 0, sizeof(m_ucaDummmyFrame[k]));
-             
-             for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
-             {
-                 int color = rand()%255;
-                 for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
-                 {
-                     m_ucaDummmyFrame[k][i * this->m_pColorConverter->GetHeight() + j ] = color;
-                 }
-                 
-             }
-         }  
-     }
 
-	memset(m_VideoEffectParam, 0, 100 * sizeof(int));
-    
-    
+	m_VideoEffects = new CVideoEffects();
+
+	m_pVideoCallSession = pVideoCallSession;
+	m_bIsCheckCall = bIsCheckCall;
+
+	if (m_bIsCheckCall == DEVICE_ABILITY_CHECK_MOOD)
+	{
+		for (int k = 0; k<3; k++)
+		{
+			memset(m_ucaDummmyFrame[k], 0, sizeof(m_ucaDummmyFrame[k]));
+
+			for (int i = 0; i<m_pVideoCallSession->m_nVideoCallHeight; i++)
+			{
+				int color = rand() % 255;
+				for (int j = 0; j < m_pVideoCallSession->m_nVideoCallWidth; j++)
+				{
+					m_ucaDummmyFrame[k][i * m_pVideoCallSession->m_nVideoCallHeight + j] = color;
+				}
+
+			}
+		}
+	}
+
+	m_filterToApply = 0;
 }
 
 CVideoEncodingThreadOfCall::~CVideoEncodingThreadOfCall()
@@ -83,6 +82,12 @@ CVideoEncodingThreadOfCall::~CVideoEncodingThreadOfCall()
 		delete m_VideoBeautificationer;
 		m_VideoBeautificationer = NULL;
 	}
+
+	if (NULL != m_VideoEffects)
+	{
+		delete m_VideoEffects;
+		m_VideoEffects = NULL;
+	}
 }
 
 void CVideoEncodingThreadOfCall::SetCallFPS(int nFPS)
@@ -92,8 +97,8 @@ void CVideoEncodingThreadOfCall::SetCallFPS(int nFPS)
 
 void CVideoEncodingThreadOfCall::ResetVideoEncodingThread(BitRateController *pBitRateController)
 {
-    m_iFrameNumber = 0;
-    m_pBitRateController = pBitRateController; 
+	m_iFrameNumber = 0;
+	m_pBitRateController = pBitRateController;
 }
 
 void CVideoEncodingThreadOfCall::StopEncodingThread()
@@ -118,15 +123,15 @@ void CVideoEncodingThreadOfCall::StopEncodingThread()
 
 void CVideoEncodingThreadOfCall::StartEncodingThread()
 {
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThreadOfCall::StartEncodingThread called");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::StartEncodingThread called");
 
 	if (pEncodingThread.get())
 	{
 		pEncodingThread.reset();
-		
+
 		return;
 	}
-	
+
 	bEncodingThreadRunning = true;
 	bEncodingThreadClosed = false;
 
@@ -144,7 +149,7 @@ void CVideoEncodingThreadOfCall::StartEncodingThread()
 
 #endif
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThreadOfCall::StartEncodingThread Encoding Thread started");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::StartEncodingThread Encoding Thread started");
 
 	return;
 }
@@ -155,26 +160,6 @@ void *CVideoEncodingThreadOfCall::CreateVideoEncodingThread(void* param)
 	pThis->EncodingThreadProcedure();
 
 	return NULL;
-}
-
-void CVideoEncodingThreadOfCall::ResetForViewerCallerCallEnd()
-{
-	m_bResetForViewerCallerCallEnd = true;
-
-	while (m_bResetForViewerCallerCallEnd)
-	{
-		m_Tools.SOSleep(5);
-	}
-}
-
-void CVideoEncodingThreadOfCall::ResetForPublisherCallerInAudioOnly()
-{
-	m_ResetForPublisherCallerInAudioOnly = true;
-
-	while (m_ResetForPublisherCallerInAudioOnly)
-	{
-		m_Tools.SOSleep(5);
-	}
 }
 
 void CVideoEncodingThreadOfCall::SetOrientationType(int nOrientationType)
@@ -194,7 +179,7 @@ void CVideoEncodingThreadOfCall::SetNotifierFlag(bool flag)
 
 void CVideoEncodingThreadOfCall::SetFrameNumber(int nFrameNumber)
 {
-    m_iFrameNumber = nFrameNumber;
+	m_iFrameNumber = nFrameNumber;
 }
 
 int CVideoEncodingThreadOfCall::SetVideoEffect(int nEffectStatus)
@@ -203,12 +188,8 @@ int CVideoEncodingThreadOfCall::SetVideoEffect(int nEffectStatus)
 		m_bVideoEffectEnabled = true;
 	else if (nEffectStatus == 0)
 		m_bVideoEffectEnabled = false;
-	return 1;
-}
 
-int CVideoEncodingThreadOfCall::TestVideoEffect(int *param, int size)
-{
-	memcpy(m_VideoEffectParam, param, size * sizeof(int));
+	m_filterToApply = nEffectStatus;
 
 	return 1;
 }
@@ -218,7 +199,7 @@ long long g_PrevEncodeTime = 0;
 
 void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 {
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThreadOfCall::EncodingThreadProcedure() started EncodingThreadProcedure method");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() started EncodingThreadProcedure method");
 
 	Tools toolsObject;
 	int nEncodingFrameSize, nENCODEDFrameSize, nCaptureTimeDifference, nDevice_orientation;
@@ -227,27 +208,30 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 	int sumOfZeroLengthEncodingTimediff = 0;
 	int countZeroLengthFrame = 0;
 	bool bIsBitrateInitialized = false;
-    long long llPacketizePrevTime = 0;
+	long long llPacketizePrevTime = 0;
 
 	int sum = 0;
 	int sum2 = 0;
 	int sum3 = 0;
 	int countNumber = 1;
-	int dummyTimeStampCounter = 0;
 
 	bool bNeedIDR = false;
 
+	int iGotHeight;
+	int iGotWidth;
+
 	/*for(int i = 0; i < 200; i++)
 	{
-		if (m_pBitRateController->IsNetworkTypeMiniPacketReceived())
-		{
-			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() m_pBitRateController->m_iNetworkType after waiting = " + toolsObject.IntegertoStringConvert(m_pBitRateController->GetOpponentNetworkType()));
-			break;
-		}
+	if (m_pBitRateController->IsNetworkTypeMiniPacketReceived())
+	{
+	CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() m_pBitRateController->m_iNetworkType after waiting = " + toolsObject.IntegertoStringConvert(m_pBitRateController->GetOpponentNetworkType()));
+	break;
+	}
 
-		toolsObject.SOSleep(10);
+	toolsObject.SOSleep(10);
 	}*/
-	if (m_bIsCheckCall && (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)) 
+
+	if (m_bIsCheckCall)
 	{
 		m_pBitRateController->SetInitialBitrate();
 		bIsBitrateInitialized = true;
@@ -258,23 +242,6 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThreadOfCall::EncodingThreadProcedure() RUNNING EncodingThreadProcedure method");
 
 		bNeedIDR = false;
-
-		if (m_bResetForViewerCallerCallEnd == true)
-		{
-			m_pEncodingBuffer->ResetBuffer();
-
-			m_iFrameNumber = m_nCallFPS;
-			bNeedIDR = true;
-
-			m_bResetForViewerCallerCallEnd = false;
-		}
-
-		if (m_ResetForPublisherCallerInAudioOnly == true)
-		{
-			dummyTimeStampCounter = 0;
-
-			m_ResetForPublisherCallerInAudioOnly = false;
-		}
 
 		m_bIsThisThreadStarted = true;
 
@@ -292,42 +259,42 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 			m_pVideoCallSession->m_bVideoCallStarted = true;
 		}
 
-        
-        //printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
 
-        if( m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1  && m_bIsCheckCall == false)
-        {
+		//printf("TheVersion--> CurrentCallVersion = %d\n", m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
+
+		if (m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
+		{
 			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, /*SIZE*/ 0, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() Negotiation uncomplete");
 
-            toolsObject.SOSleep(20);
-            continue;
-        }
-        
+			toolsObject.SOSleep(20);
+			continue;
+		}
+
 		if (m_pEncodingBuffer->GetQueueSize() == 0)
 		{
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() got NOTHING for encoding");
 
-//			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time buffer size 0");
-			if( !m_pVideoCallSession->GetVersionController()->IsFirstVideoPacetReceived() && m_bIsCheckCall == false) {
-//			toolsObject.SOSleep(10000);
-//				VLOG("--------------------------------------------------------------> NOT RECEIVED");
+			//			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time buffer size 0");
+			if (!m_pVideoCallSession->GetVersionController()->IsFirstVideoPacetReceived() && m_bIsCheckCall == false) {
+				//			toolsObject.SOSleep(10000);
+				//				VLOG("--------------------------------------------------------------> NOT RECEIVED");
 				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame,
-													 2, /*m_iFrameNumber*/
-													 0, /*nCaptureTimeDifference*/0, 0,
-													 BLANK_DATA_MOOD);
+					2, /*m_iFrameNumber*/
+					0, /*nCaptureTimeDifference*/0, 0,
+					BLANK_DATA_MOOD);
 
 			}
-			
+
 			toolsObject.SOSleep(10);
 		}
 		else
 		{
-            CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThreadOfCall::EncodingThreadProcedure() GOT packet for Encoding");
+			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() GOT packet for Encoding");
 			int timeDiff;
 
-			if (!bIsBitrateInitialized && (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_CALL))
+			if (!bIsBitrateInitialized)
 			{
 				m_pBitRateController->SetInitialBitrate();
 				bIsBitrateInitialized = true;
@@ -335,101 +302,93 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
-			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, timeDiff, nCaptureTimeDifference, nDevice_orientation);
+			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, iGotHeight, iGotWidth, timeDiff, nCaptureTimeDifference, nDevice_orientation);
 
 			//LOGEF("Current bitrate %d", m_pVideoEncoder->GetBitrate());
-            
-            if(g_PrevEncodeTime!=0)
-                m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
-            
-            //printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
-            g_PrevEncodeTime = m_Tools.CurrentTimestamp();
+
+			if (g_PrevEncodeTime != 0)
+				m_pCalculateEncodingTimeDiff->UpdateData(m_Tools.CurrentTimestamp() - g_PrevEncodeTime);
+
+			//printf("TheVampireEngg --> EncodingTime Diff = %lld, Average = %lf\n", m_Tools.CurrentTimestamp() - g_PrevEncodeTime, m_CalculateEncodingTimeDiff.GetAverage());
+			g_PrevEncodeTime = m_Tools.CurrentTimestamp();
 
 			long long startTime = m_Tools.CurrentTimestamp();
-            
-            
-			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG ," &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
 
-			if (! m_pVideoCallSession->GetFPSController()->IsProcessableFrame() && m_bIsCheckCall == false)
+
+			CLogPrinter_WriteLog(CLogPrinter::INFO, QUEUE_TIME_LOG, " &*&*&* m_pEncodingBuffer ->" + toolsObject.IntegertoStringConvert(timeDiff));
+
+			if (!m_pVideoCallSession->GetFPSController()->IsProcessableFrame() && m_bIsCheckCall == false)
 			{
-				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThreadOfCall::EncodingThreadProcedure() not processable for FPS");
+				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() not processable for FPS");
 
 				toolsObject.SOSleep(10);
 
 				continue;
 			}
-//			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG ," Client FPS: " + Tools::DoubleToString(m_pVideoCallSession->GetFPSController()->GetClientFPS()));
+			//			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG ," Client FPS: " + Tools::DoubleToString(m_pVideoCallSession->GetFPSController()->GetClientFPS()));
 
-			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)
-			{
-				m_pBitRateController->UpdateBitrate();
-			}
+			m_pBitRateController->UpdateBitrate();
 
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame);
+			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame, iGotHeight, iGotWidth);
 
 #elif defined(DESKTOP_C_SHARP)
 
-			int iCurWidth = this->m_pColorConverter->GetWidth();
-			int iCurHeight = this->m_pColorConverter->GetHeight();
-
-			if (nEncodingFrameSize == iCurWidth * iCurHeight * 2)
+			if (nEncodingFrameSize == iGotWidth * iGotHeight * 2)
 			{
-				nEncodingFrameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				nEncodingFrameSize = this->m_pColorConverter->ConvertYUY2ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
-			else if (nEncodingFrameSize == iCurWidth * iCurHeight * 3)
+			else if (nEncodingFrameSize == iGotWidth * iGotHeight * 3)
 			{
-				nEncodingFrameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				nEncodingFrameSize = this->m_pColorConverter->ConvertRGB24ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 
 #elif defined(TARGET_OS_WINDOWS_PHONE)
 
 			if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 			else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV12ToI420ForBackCam(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 
 #else
 
 			if (m_nOrientationType == ORIENTATION_90_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 			else if (m_nOrientationType == ORIENTATION_0_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam90(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam90(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 			else if (m_nOrientationType == ORIENTATION_BACK_270_MIRRORED)
 			{
-				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam270(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame);
+				this->m_pColorConverter->mirrorRotateAndConvertNV21ToI420ForBackCam270(m_ucaEncodingFrame, m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 			}
 
 #endif
-			
-            /*if(m_bIsCheckCall == true)
-            {
-                memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
-                
-                for(int i=0;i<this->m_pColorConverter->GetHeight();i++)
-                {
-                    int color = rand()%255;
-                    for(int j = 0; j < this->m_pColorConverter->GetWidth(); j ++)
-                    {
-                        m_ucaEncodingFrame[i * this->m_pColorConverter->GetHeight() + j ] = color;
-                    }
-                    
-                }
-            }*/
+			int nServiceType = m_pVideoCallSession->GetServiceType();
 
-			int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
-			int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+			/*if(m_bIsCheckCall == true)
+			{
+			memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
+
+			for(int i=0;i<iGotHeight;i++)
+			{
+			int color = rand()%255;
+			for(int j = 0; j < iGotWidth; j ++)
+			{
+			m_ucaEncodingFrame[i * iGotHeight + j ] = color;
+			}
+
+			}
+			}*/
 
 			if (m_bSelfViewOnly == false)
 			{
@@ -437,18 +396,18 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 
 				llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
-            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
-            {
-                bNeedIDR = m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
-            }
-            
+				if (m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+				{
+					bNeedIDR = m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
+				}
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 				llCalculatingTime = m_Tools.CurrentTimestamp();
 
-            if(m_bIsCheckCall)
-                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber%2], nEncodingFrameSize, m_ucaEncodedFrame, false);
-            else
-                nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
+				if (m_bIsCheckCall)
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 2], nEncodingFrameSize, m_ucaEncodedFrame, false);
+				else
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 
 				//printf("The encoder returned , nENCODEDFrameSize = %d, frameNumber = %d\n", nENCODEDFrameSize, m_iFrameNumber);
 
@@ -456,10 +415,10 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 #else
 				long long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-			if (m_bIsCheckCall)
-				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, false);
-			else
-				nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
+				if (m_bIsCheckCall)
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, false);
+				else
+					nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 
 				//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
@@ -490,11 +449,11 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 				//            CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, "VideoEncoding Time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - llCalculatingTime));
 
 				m_pBitRateController->NotifyEncodedFrame(nENCODEDFrameSize);
-            
-            if(m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
-            {
-                m_pIdrFrameIntervalController->NotifyEncodedFrame(m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber);
-            }
+
+				if (m_pVideoCallSession->isDynamicIDR_Mechanism_Enable())
+				{
+					m_pIdrFrameIntervalController->NotifyEncodedFrame(m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber);
+				}
 
 				//llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, "" ,true);
 
@@ -521,14 +480,14 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() Sending for packetization nENCODEDFrameSize " + m_Tools.getText(nENCODEDFrameSize));
 			}
 
-			
+
 			//if (nENCODEDFrameSize > 0)
 			{
 
 				if (m_bSelfViewOnly == false)
 				{
 					m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
-				}	
+				}
 
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
 
@@ -550,14 +509,14 @@ void CVideoEncodingThreadOfCall::EncodingThreadProcedure()
 #endif
 
 			countNumber++;
-		
+
 			toolsObject.SOSleep(0);
 		}
 	}
 
 	bEncodingThreadClosed = true;
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoEncodingThreadOfCall::EncodingThreadProcedure() stopped EncodingThreadProcedure method.");
+	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() stopped EncodingThreadProcedure method.");
 }
 
 
