@@ -1165,7 +1165,7 @@ bool CController::EndAudioCallInLive(const long long& lFriendID)
 	}
 }
 
-bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType)
+bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType, int nCalleeID)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -1176,7 +1176,7 @@ bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLi
 	
 	if (bExist)
 	{
-		pVideoSession->StartCallInLive(nCallInLiveType);
+		pVideoSession->StartCallInLive(nCallInLiveType, nCalleeID);
 
 		return true;
 	}
@@ -1186,7 +1186,7 @@ bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLi
 	}
 }
 
-bool CController::EndVideoCallInLive(const long long& lFriendID)
+bool CController::EndVideoCallInLive(const long long& lFriendID, int nCalleeID)
 {
 	CVideoCallSession* pVideoSession;
 

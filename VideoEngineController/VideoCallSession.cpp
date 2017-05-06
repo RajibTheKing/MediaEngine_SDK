@@ -72,7 +72,8 @@ m_pRenderingThreadOfChannel(NULL),
 m_pVideoDecodingThread(NULL),
 m_pVideoDecodingThreadOfCall(NULL),
 m_pVideoDecodingThreadOfLive(NULL),
-m_pVideoDecodingThreadOfChannel(NULL)
+m_pVideoDecodingThreadOfChannel(NULL),
+m_nPublisherInsetNumber(0)
 
 {
 
@@ -1602,7 +1603,7 @@ int CVideoCallSession::GetEntityType()
 	return m_nEntityType;
 }
 
-void CVideoCallSession::StartCallInLive(int nCallInLiveType)
+void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID)
 {
 	if (m_iRole != 0)
 		return;
@@ -1634,6 +1635,8 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 			if (m_bAudioOnlyLive == true && nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_VIDEO)
 				m_pSendingThreadOfLive->ResetForPublisherCallerCallStartAudioOnly();
 #endif
+
+			m_nPublisherInsetNumber = 1;
 
 			m_nEntityType = ENTITY_TYPE_PUBLISHER_CALLER;
 		}
@@ -1668,12 +1671,25 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType)
 
 			m_nEntityType = ENTITY_TYPE_VIEWER_CALLEE;
 		}
+		else if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		{
+			if (m_nPublisherInsetNumber == 1)
+			{
+				m_pVideoDecoderForSecondInset = new CVideoDecoder(m_pCommonElementsBucket);
+				m_pVideoDecodingThreadForSecondInset = new CVideoDecodingThreadOfLive(m_pEncodedFrameDepacketizer, nCalleeID, m_pCommonElementsBucket, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoderForSecondInset, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
+			}
+			else if (m_nPublisherInsetNumber == 2)
+			{
+				m_pVideoDecoderForThirdInset = new CVideoDecoder(m_pCommonElementsBucket);
+				m_pVideoDecodingThreadForSecondInset = new CVideoDecodingThreadOfLive(m_pEncodedFrameDepacketizer, nCalleeID, m_pCommonElementsBucket, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoderForThirdInset, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
+			}
+		}
 
 		m_iRole = 1;
 	}
 }
 
-void CVideoCallSession::EndCallInLive()
+void CVideoCallSession::EndCallInLive(int nCalleeID)
 {
 	if (m_iRole != 1)
 		return;

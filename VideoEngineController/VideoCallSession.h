@@ -69,8 +69,8 @@ public:
     
 	CFPSController* GetFPSController();
 
-	void StartCallInLive(int nCallInLiveType);
-	void EndCallInLive();
+	void StartCallInLive(int nCallInLiveType, int nCalleeID);
+	void EndCallInLive(int nCalleeID);
 
 	CSendingThreadOfCall *m_pSendingThreadOfCall;
 	CSendingThreadOfLive *m_pSendingThreadOfLive;
@@ -171,10 +171,17 @@ public:
 
 private:
 
+	int m_nPublisherInsetNumber;
+
 	CSendingThread *m_pSendingThread;
 	
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
+	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
+	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
+
+	CVideoDecoder *m_pVideoDecoderForSecondInset;
+	CVideoDecoder *m_pVideoDecoderForThirdInset;
 
 	CFPSController *m_pFPSController;
 	long long m_LastTimeStampClientFPS;

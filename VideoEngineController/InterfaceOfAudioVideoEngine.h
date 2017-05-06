@@ -60,8 +60,8 @@ public:
 	bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 	int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 
-	bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType);
-	bool EndCallInLive(const IPVLongType llFriendID);
+	bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nCalleeID);
+	bool EndCallInLive(const IPVLongType llFriendID, int nCalleeID);
 
 	void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
