@@ -118,7 +118,6 @@ LOCAL_SRC_FILES := \
             ../../VideoEngineUtilities/HashGenerator.cpp \
             ../../VideoEngineController/AudioCallSession.cpp \
             ../../VideoEngineController/AudioCallSessionListHandler.cpp \
-            ../../VideoEngineController/AudioCodec.cpp \
             ../../VideoEngineController/CommonElementsBucket.cpp \
 			../../VideoEngineController/Controller.cpp \
 			../../VideoEngineController/EncodedFramePacketizer.cpp \
@@ -162,11 +161,7 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/DeviceCapabilityCheckThread.cpp \
 			../../VideoEngineController/AudioPacketHeader.cpp \
 			../../VideoEngineController/AudioFileCodec.cpp \
-			../../VideoEngineController/Noise.cpp \
 			../../VideoEngineController/Voice.cpp \
-			../../VideoEngineController/Gain.cpp \
-			../../VideoEngineController/Echo.cpp \
-			../../VideoEngineController/GomGomGain.cpp \
 			../../VideoEngineController/AudioMixer.cpp \
 			../../VideoEngineController/LiveAudioParserForCallee.cpp \
 			../../VideoEngineController/LiveAudioParserForChannel.cpp \
@@ -177,7 +172,6 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/LiveAudioDecodingQueue.cpp \
 			../../VideoEngineController/VideoMuxingAndEncodeSession.cpp \
 			../../VideoEngineController/VideoHeader.cpp \
-			../../VideoEngineController/Aac.cpp \
 			../../VideoEngineController/LiveStreamingHeader.cpp \
 			../../VideoEngineUtilities/MuxingVideoData.cpp \
 			../../VideoEngineUtilities/VideoEffects.cpp \
@@ -203,6 +197,12 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/AudioFarEndProcessorViewer.cpp \
 			../../VideoEngineController/AudioFarEndProcessorChannel.cpp \
 			../../VideoEngineController/AudioFarEndProcessorCall.cpp \
+			../../VideoEngineController/AudioEncoderProvider.cpp \
+			../../VideoEngineController/AudioHeaderCommon.cpp \
+			../../VideoEngineController/DecoderAAC.cpp \
+			../../VideoEngineController/DecoderOpus.cpp \
+			../../VideoEngineController/EncoderPCM.cpp \
+			../../VideoEngineController/EncoderOpus.cpp \
 
 
 			
