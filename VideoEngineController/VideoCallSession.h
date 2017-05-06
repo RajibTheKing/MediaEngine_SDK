@@ -167,10 +167,12 @@ public:
 	int m_nVideoCallHeight;
 	int m_nVideoCallWidth;
 
+	CVideoEncodingThread *m_pVideoEncodingThread;
+
 private:
 
 	CSendingThread *m_pSendingThread;
-	CVideoEncodingThread *m_pVideoEncodingThread;
+	
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
 
