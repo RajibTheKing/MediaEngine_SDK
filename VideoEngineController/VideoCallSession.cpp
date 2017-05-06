@@ -194,6 +194,11 @@ CVideoCallSession::~CVideoCallSession()
 	else if (m_pVideoDecodingThreadOfChannel != NULL)
 		m_pVideoDecodingThreadOfChannel->StopDecodingThread();
 
+	if (m_pVideoDecodingThreadForSecondInset != NULL)
+		m_pVideoDecodingThreadForSecondInset->StopDecodingThread();
+	if (m_pVideoDecodingThreadForThirdInset != NULL)
+		m_pVideoDecodingThreadForThirdInset->StopDecodingThread();
+
 	if (m_pVideoRenderingThread != NULL)
 		m_pVideoRenderingThread->StopRenderingThread();
 	else if (m_pRenderingThreadOfCall != NULL)
@@ -249,6 +254,18 @@ CVideoCallSession::~CVideoCallSession()
 	{
 		delete m_pVideoDecodingThreadOfChannel;
 		m_pVideoDecodingThreadOfChannel = NULL;
+	}
+
+	if (NULL != m_pVideoDecodingThreadForSecondInset)
+	{
+		delete m_pVideoDecodingThreadForSecondInset;
+		m_pVideoDecodingThreadForSecondInset = NULL;
+	}
+
+	if (NULL != m_pVideoDecodingThreadForThirdInset)
+	{
+		delete m_pVideoDecodingThreadForThirdInset;
+		m_pVideoDecodingThreadForThirdInset = NULL;
 	}
 
 	if (NULL != m_pVideoRenderingThread)
@@ -334,6 +351,20 @@ CVideoCallSession::~CVideoCallSession()
 		delete m_pVideoDecoder;
 
 		m_pVideoDecoder = NULL;
+	}
+
+	if (NULL != m_pVideoDecoderForSecondInset)
+	{
+		delete m_pVideoDecoderForSecondInset;
+
+		m_pVideoDecoderForSecondInset = NULL;
+	}
+
+	if (NULL != m_pVideoDecoderForThirdInset)
+	{
+		delete m_pVideoDecoderForThirdInset;
+
+		m_pVideoDecoderForThirdInset = NULL;
 	}
 
 	if (NULL != m_pColorConverter)
@@ -1675,11 +1706,15 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID)
 		{
 			if (m_nPublisherInsetNumber == 1)
 			{
+				m_nPublisherInsetNumber = 2;
+
 				m_pVideoDecoderForSecondInset = new CVideoDecoder(m_pCommonElementsBucket);
 				m_pVideoDecodingThreadForSecondInset = new CVideoDecodingThreadOfLive(m_pEncodedFrameDepacketizer, nCalleeID, m_pCommonElementsBucket, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoderForSecondInset, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
 			}
 			else if (m_nPublisherInsetNumber == 2)
 			{
+				m_nPublisherInsetNumber = 3;
+
 				m_pVideoDecoderForThirdInset = new CVideoDecoder(m_pCommonElementsBucket);
 				m_pVideoDecodingThreadForSecondInset = new CVideoDecodingThreadOfLive(m_pEncodedFrameDepacketizer, nCalleeID, m_pCommonElementsBucket, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoderForThirdInset, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
 			}
@@ -1695,7 +1730,41 @@ void CVideoCallSession::EndCallInLive(int nCalleeID)
 		return;
 	else
 	{
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_nPublisherInsetNumber == 3)
+		{
+			m_pVideoDecodingThreadForThirdInset->StartDecodingThread();
+
+			if (NULL != m_pVideoDecodingThreadForThirdInset)
+			{
+				delete m_pVideoDecodingThreadForThirdInset;
+				m_pVideoDecodingThreadForThirdInset = NULL;
+			}
+
+			if (NULL != m_pVideoDecoderForThirdInset)
+			{
+				delete m_pVideoDecoderForThirdInset;
+
+				m_pVideoDecoderForThirdInset = NULL;
+			}
+		}
+		else if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_nPublisherInsetNumber == 2)
+		{
+			m_pVideoDecodingThreadForSecondInset->StartDecodingThread();
+
+			if (NULL != m_pVideoDecodingThreadForSecondInset)
+			{
+				delete m_pVideoDecodingThreadForSecondInset;
+				m_pVideoDecodingThreadForSecondInset = NULL;
+			}
+
+			if (NULL != m_pVideoDecoderForSecondInset)
+			{
+				delete m_pVideoDecoderForSecondInset;
+
+				m_pVideoDecoderForSecondInset = NULL;
+			}
+		}
+		else if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			//m_pVideoDepacketizationThread->ResetForPublisherCallerCallEnd();
 
