@@ -765,7 +765,7 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID, i
 
 	if (bReturnedValue)
 	{
-		bReturnedValue = m_pcController->EndVideoCallInLive(llFriendID);
+		bReturnedValue = m_pcController->EndVideoCallInLive(llFriendID, nCalleeID);
 	}
 	
 	return bReturnedValue;

@@ -1197,7 +1197,7 @@ bool CController::EndVideoCallInLive(const long long& lFriendID, int nCalleeID)
 
 	if (bExist)
 	{
-		pVideoSession->EndCallInLive();
+		pVideoSession->EndCallInLive(nCalleeID);
 
 		return true;
 	}
