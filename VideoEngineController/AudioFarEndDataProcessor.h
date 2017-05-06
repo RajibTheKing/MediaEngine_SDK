@@ -7,7 +7,6 @@
 #include "AudioPacketHeader.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioDePacketizer.h"
-#include "AudioCodec.h"
 
 class AudioGainInterface;
 class CAudioCallSession;
