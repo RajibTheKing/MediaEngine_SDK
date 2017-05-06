@@ -2,8 +2,12 @@
 #include "Controller.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "LogPrinter.h"
+#include "Tools.h"
 
 CInterfaceOfAudioVideoEngine *G_pInterfaceOfAudioVideoEngine = NULL;
+
+CController* m_pcController = nullptr;
+Tools m_Tools;
 
 CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 {

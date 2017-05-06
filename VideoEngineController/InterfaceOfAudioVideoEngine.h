@@ -2,11 +2,7 @@
 #ifndef IPV_INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H
 #define IPV_INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H
 
-#include <string>
 #include <vector>
-
-#include "Tools.h"
-
 
 #define CALL_IN_LIVE_TYPE_AUDIO_ONLY 1
 #define CALL_IN_LIVE_TYPE_VIDEO_ONLY 2
@@ -38,8 +34,6 @@
 typedef long long IPVLongType;
 
 //#define NO_CONNECTIVITY
-
-class CController;
 
 class CInterfaceOfAudioVideoEngine
 {
@@ -124,11 +118,7 @@ public:
 
 private:
 
-	Tools m_Tools;
-
 	long long m_llTimeOffset;
-
-	CController* m_pcController;
 };
 
 #endif

@@ -1,6 +1,6 @@
 
-#ifndef IPV_CONTROLLER_H
-#define IPV_CONTROLLER_H
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
 #include <stdio.h>
 #include <string>
@@ -25,6 +25,7 @@ typedef struct
     int iWidth;
     
 } VideoQuality;
+
 
 class CController
 {
@@ -103,7 +104,7 @@ public:
 	void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
 
 
-	void SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
+	void SetSendFunctionPointer(SendFunctionPointerType callBackFunctionPointer);
 
 	bool StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType);
 	bool EndAudioCallInLive(const long long& lFriendID);

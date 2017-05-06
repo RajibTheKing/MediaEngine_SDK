@@ -10,12 +10,12 @@ CLiveAudioParserForChannel::CLiveAudioParserForChannel(std::vector<LiveAudioDeco
 	m_bIsCurrentlyParsingAudioData = false;
 	m_bIsRoleChanging = false;
 
-	m_pAudioPacketHeader = new CAudioPacketHeader();
+	m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 }
 
 CLiveAudioParserForChannel::~CLiveAudioParserForChannel(){
 	SHARED_PTR_DELETE(m_pLiveReceiverMutex);
-	delete m_pAudioPacketHeader;
+	//delete m_pAudioPacketHeader;
 }
 
 void CLiveAudioParserForChannel::SetRoleChanging(bool bFlah){
@@ -72,7 +72,7 @@ void CLiveAudioParserForChannel::ProcessLiveAudio(int iId, int nOffset, unsigned
 	m_bIsCurrentlyParsingAudioData = true;
 
 	Locker lock(*m_pLiveReceiverMutex);
-	CAudioPacketHeader g_LiveReceiverHeader;
+	SmartPointer<AudioPacketHeader> g_LiveReceiverHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 	size_t nNumberOfMissingBlocks = vMissingBlocks.size();
 	size_t iMissingIndex = 0;
 

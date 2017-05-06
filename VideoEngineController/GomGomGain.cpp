@@ -1,5 +1,5 @@
 #include "GomGomGain.h"
-#include "math.h"
+#include "filt.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -7,25 +7,27 @@
 
 #endif
 
-#define MAX_GAIN 2
+#define GOMGOM_MAX_GAIN 2
 
-CGomGomGain::CGomGomGain(int id)
+GomGomGain::GomGomGain()
 {
-	m_ID = id;
 	mFilter = new Filter(BPF, 51, 8.0, 0.5, 2.0);
+
 	memset(m_daMovingAvg, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(double));
 	memset(m_naMultFactor, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(unsigned int));
 	memset(m_sLastFilteredFrame, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+
 	b1stFrame = true;
 	m_nMovingSum = 0;
 }
 
-CGomGomGain::~CGomGomGain()
+
+GomGomGain::~GomGomGain()
 {
 	delete mFilter;
 }
 
-int CGomGomGain::AddGain(short *sInBuf, int sBufferSize)
+int GomGomGain::AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning)
 {
 	for (int i = 0; i < sBufferSize; i++)
 	{
@@ -71,7 +73,10 @@ int CGomGomGain::AddGain(short *sInBuf, int sBufferSize)
 		}
 		sInBuf[i] = iTemp;
 	}
+
 	memcpy(m_sLastFilteredFrame, m_sFilteredFrame, sBufferSize * sizeof(short));
+	
 	b1stFrame = false;
+	
 	return true;
 }

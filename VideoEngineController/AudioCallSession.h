@@ -2,8 +2,7 @@
 #ifndef _AUDIO_CALL_SESSION_H_
 #define _AUDIO_CALL_SESSION_H_
 
-#define OPUS_ENABLED
-
+#include "AudioResources.h"
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
 #include "LockHandler.h"
@@ -15,27 +14,18 @@
 #include "AudioFarEndDataProcessor.h"
 #include "AudioShortBufferForPublisherFarEnd.h"
 
-
 #include <stdio.h>
 #include <string>
 #include <map>
 #include <stdlib.h>
 #include <vector>
+#include <thread>
 
 
 //#define LOCAL_SERVER_LIVE_CALL
 #ifdef LOCAL_SERVER_LIVE_CALL
 #include "VideoSockets.h"
 #endif
-
-#include "Aac.h"
-
-#ifdef OPUS_ENABLED
-#include "AudioCodec.h"
-#else
-#include "G729CodecNative.h"
-#endif
-
 
 #define AUDIO_CALL_VERSION  0
 #define AUDIO_LIVE_VERSION  0
@@ -63,24 +53,23 @@ static string colon = "ALOG:";
 class CCommonElementsBucket;
 class CVideoEncoder;
 class CAudioCodec;
-class CAac;
-class AudioPacketizer;
 class AudioDePacketizer;
-class CAudioFarEndDataProcessor;
+class AudioFarEndDataProcessor;
 
-#ifdef USE_AECM
-class CEcho;
-#endif
-#ifdef USE_ANS
-class CNoise;
-#endif
-#ifdef USE_AGC
-class CGain;
-#endif
+class AudioEncoderInterface;
+class AudioDecoderInterface;
+class EchoCancellerInterface;
+class NoiseReducerInterface;
+class AudioGainInterface;
+class CEventNotifier;
+
+class AudioNearEndProcessorThread;
+class AudioFarEndProcessorThread;
+
+
 #ifdef USE_VAD
 class CVoice;
 #endif
-class CGomGomGain;
 
 class CAudioCallSession
 {
@@ -89,9 +78,14 @@ private:
 	bool m_bIsAECMNearEndThreadBusy;
 	long long m_llLastPlayTime;
 
+	AudioNearEndProcessorThread *m_cNearEndProcessorThread;
+	AudioFarEndProcessorThread *m_cFarEndProcessorThread;
+    SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
+
+
 public:
 	
-	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType);
+	CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources);
     ~CAudioCallSession();
 
 	void StartCallInLive(int iRole, int nCallInLiveType);
@@ -100,9 +94,6 @@ public:
 	void SetCallInLiveType(int nCallInLiveType);
 	long long GetBaseOfRelativeTime();
 
-    CAudioCodec* GetAudioCodec();
-
-    void InitializeAudioCallSession(LongLong llFriendID);
     int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 	int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
     
@@ -111,28 +102,31 @@ public:
 	void SetVolume(int iVolume, bool bRecorder);
 	void SetLoudSpeaker(bool bOn);
 	void SetEchoCanceller(bool bOn);
-	bool getIsAudioLiveStreamRunning();
-	int GetEntityType();
 	bool m_bIsPublisher;
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
-    int GetServiceType();
+
+	static void SetSendFunction(SendFunctionPointerType cbClientSendFunc)
+	{
+		m_cbClientSendFunction = cbClientSendFunc;
+	}
+
+	static void SetEventNotifier(CEventNotifier *pEventNotifier)
+	{
+		m_pEventNotifier = pEventNotifier;
+	}
 
 	int m_iNextPacketType;
-	CAudioShortBuffer m_AudioEncodingBuffer;
+	CAudioShortBuffer m_AudioNearEndBuffer;
 	CAudioShortBuffer  m_ViewerInCallSentDataQueue;
 
 	AudioShortBufferForPublisherFarEnd m_PublisherBufferForMuxing;
 	int m_iPrevRecvdSlotID;
 	int m_iReceivedPacketsInPrevSlot;
-#ifdef USE_AGC
-	CGain * m_pRecorderGain;
-	CGain * m_pPlayerGain;
-#endif
 
-	CAudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
-	CAudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
+	AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
+	AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
 
 #ifdef DUMP_FILE
 	FILE *FileInput;
@@ -146,21 +140,15 @@ public:
 
 private:
 
-#ifdef LOCAL_SERVER_LIVE_CALL
-	VideoSockets *m_clientSocket;
-#endif
-
-
 	int m_iRole;
     Tools m_Tools;
-    LongLong m_FriendID;
+	static LongLong m_FriendID;
 	bool m_bEchoCancellerEnabled;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
 	
 	bool m_bUsingLoudSpeaker;
-
-
+	
     bool m_bLiveAudioStreamRunning;
     int m_nServiceType;
 	int m_nEntityType;
@@ -172,44 +160,66 @@ private:
 
 	int m_nCallInLiveType;
 
-	CAac *m_cAac;
+	inline static void OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength);
+	inline static void OnPacketEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer);
+	inline static void OnDataEventCallback(int eventType, size_t dataLength, short* dataBuffer);
+	inline static void OnNetworkChangeCallback(int eventType);
+	inline static void OnAudioAlarmCallback(int eventType);
 
-#ifdef USE_ANS
-	short m_saAudioEncodingDenoisedFrame[MAX_AUDIO_FRAME_Length];
-#endif
-
-#if defined(USE_AECM) || defined(USE_ANS) || defined(USE_AGC)
-	short m_saAudioEncodingTempFrame[MAX_AUDIO_FRAME_Length];
-#endif
-
-#ifdef USE_AECM
-	CEcho *m_pEcho, *m_pEcho2;
-#endif
-
-#ifdef USE_ANS
-	CNoise *m_pNoise;
-#endif
+	static SendFunctionPointerType m_cbClientSendFunction;
+	static CEventNotifier* m_pEventNotifier;
 
 #ifdef USE_VAD
 	CVoice *m_pVoice;
 #endif
-
-#ifdef OPUS_ENABLED
-	CAudioCodec *m_pAudioCodec = nullptr;
-#else
-	G729CodecNative *m_pG729CodecNative;
+#ifdef LOCAL_SERVER_LIVE_CALL
+	VideoSockets *m_clientSocket;
 #endif
 
-public: 
-	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
-	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
-	int GetRole();
+private:
+
+	SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader;
+	SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader;
+
+	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
+	SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
+
+	SmartPointer<EchoCancellerInterface> m_pEcho;
+	SmartPointer<NoiseReducerInterface> m_pNoiseReducer;
+
+	SmartPointer<AudioGainInterface> m_pRecorderGain;
+	SmartPointer<AudioGainInterface> m_pPlayerGain;
+
 
 protected:
 
-    SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
-    SmartPointer<std::thread> m_pAudioEncodingThread;
-    SmartPointer<std::thread> m_pAudioDecodingThread;
+	void SetResources(AudioResources &audioResources);
+
+	void StartNearEndDataProcessing();
+	void StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject);
+
+
+public:
+
+	void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
+	void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
+
+	int GetRole()        { return m_iRole; }
+	int GetServiceType() { return m_nServiceType; }
+	int GetEntityType()  { return m_nEntityType; }
+	bool getIsAudioLiveStreamRunning() { return m_bLiveAudioStreamRunning; }
+
+	SmartPointer<AudioPacketHeader> GetAudioNearEndPacketHeader() { return m_pAudioNearEndPacketHeader; }
+	SmartPointer<AudioPacketHeader> GetAudioFarEndPacketHeader() { return m_pAudioFarEndPacketHeader; }
+
+	SmartPointer<AudioEncoderInterface> GetAudioEncoder() { return m_pAudioEncoder; }
+	SmartPointer<AudioDecoderInterface> GetAudioDecoder() { return m_pAudioDecoder; }
+
+	SmartPointer<EchoCancellerInterface> GetEchoCanceler() { return m_pEcho; }
+	SmartPointer<NoiseReducerInterface> GetNoiseReducer() { return m_pNoiseReducer; }
+	
+	SmartPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
+	SmartPointer<AudioGainInterface> GetPlayerGain() { return m_pPlayerGain; }
 };
 
 

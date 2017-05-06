@@ -2,24 +2,33 @@
 #define _AUDIO_PACKETIZER_H_
 
 #include "AudioMacros.h"
-#include "Tools.h"
+#include "SmartPointer.h"
+#include "AudioPacketHeader.h"
 
 class CAudioCallSession;
-class CCommonElementsBucket;
-class CAudioPacketHeader;
+class AudioPacketHeader;
 
 class AudioPacketizer
 {
 public:
-	AudioPacketizer(CAudioCallSession* audioCallSession, CCommonElementsBucket* pCommonElementsBucket);
+	AudioPacketizer();
 	~AudioPacketizer();
-	void Packetize(bool bShouldPacketize, unsigned char* uchData, int nDataLength, int nFrameNumber, int packetType, int networkType, int version, long long llRelativeTime, int channel,
-		int iPrevRecvdSlotID, int nReceivedPacketsInPrevSlot, long long llFriendID);
+
+	/*
+	Packatize audio data
+
+	@param uchData: Data to be packatized 
+	@param packatizeData: Output buffer with packatized data
+	@return: Data length of packatized data
+	
+	*/
+	void Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnPackatizedDataReadyCallback callback);
+
 private:
+
 	CAudioCallSession* m_pAudioCallSession;
-	CAudioPacketHeader* m_AudioPacketHeader;
-	CCommonElementsBucket* m_pCommonElementsBucket;
-	Tools m_Tools;
+	SmartPointer<AudioPacketHeader> m_AudioPacketHeader;
+
 	int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;
 
 	unsigned char m_uchAudioBlock[MAX_AUDIO_DECODER_FRAME_SIZE + 10];

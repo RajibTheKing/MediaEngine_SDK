@@ -4,10 +4,12 @@
 
 #include <stdio.h>
 
-#include "EventNotifier.h"
+#include "AudioTypes.h"
 #include "VideoEncoderListHandler.h"
 #include "VideoCallSessionListHandler.h"
 #include "AudioCallSessionListHandler.h"
+
+class CEventNotifier;
 
 class CCommonElementsBucket
 {
@@ -17,7 +19,7 @@ public:
 	CCommonElementsBucket();
 	~CCommonElementsBucket();
     
-	void(*SendFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> >) = NULL;
+	SendFunctionPointerType SendFunctionPointer = NULL;
     
     void SetUserName(const long long& username);
     long long GetUsername();
@@ -28,7 +30,15 @@ public:
 	CVideoEncoderListHandler *m_pVideoEncoderList;
 	CLockHandler* GetSharedMutex();
     
-	void SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
+	void SetSendFunctionPointer(SendFunctionPointerType sendFunc)
+	{
+		SendFunctionPointer = sendFunc;
+	}
+
+	SendFunctionPointerType GetSendFunctionPointer()
+	{		
+		return SendFunctionPointer;
+	}
 
 	void SetPacketSizeOfNetwork(int packetSizeOfNetwork);
 	int GetPacketSizeOfNetwork();

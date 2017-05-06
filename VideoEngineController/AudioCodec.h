@@ -19,11 +19,6 @@
 #define OPUS_MAX_COMPLEXITY 10
 
 
-namespace IPV
-{
-	class thread;
-}
-
 class CCommonElementsBucket;
 class CAudioCallSession;
 

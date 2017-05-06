@@ -1,6 +1,8 @@
 #include "CommonElementsBucket.h"
 #include "LockHandler.h"
 #include "LogPrinter.h"
+#include "EventNotifier.h"
+#include "AudioCallSessionListHandler.h"
 
 CCommonElementsBucket::CCommonElementsBucket() :
 userName(-1),
@@ -75,12 +77,5 @@ void CCommonElementsBucket::SetUserName(const long long& username)
 long long CCommonElementsBucket::GetUsername()
 {
     return userName;
-}
-
-void CCommonElementsBucket::SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
-{
-    
-    SendFunctionPointer = callBackFunctionPointer;
-    
 }
 

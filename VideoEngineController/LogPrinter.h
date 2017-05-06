@@ -25,7 +25,7 @@
 #define ON 1
 #define OFF 0
 
-//#define LOG_ENABLED
+#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 
@@ -64,7 +64,7 @@
 #define LOGSS(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOG18(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define HITLERSS(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
+#define MR_DEBUG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
@@ -80,6 +80,7 @@
 #define LOGSS(...)
 #define LOG18(...) 
 #define HITLERSS(...)
+#define MR_DEBUG(...)
 #endif
 
 

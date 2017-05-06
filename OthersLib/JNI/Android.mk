@@ -1,6 +1,7 @@
 
 #START_BUILDING_MEDIAENGINE
 LOCAL_PATH := $(call my-dir)
+
 ARCHITECTURE := $(TARGET_ARCH_ABI)
 #END_BUILDING_MEDIAENGINE
 
@@ -180,6 +181,29 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/LiveStreamingHeader.cpp \
 			../../VideoEngineUtilities/MuxingVideoData.cpp \
 			../../VideoEngineUtilities/VideoEffects.cpp \
+			../../VideoEngineController/DecoderPCM.cpp \
+			../../VideoEngineController/AudioDecoderProvider.cpp \
+			../../VideoEngineController/WebRTCGain.cpp \
+			../../VideoEngineController/GomGomGain.cpp \
+			../../VideoEngineController/NaiveGain.cpp \
+			../../VideoEngineController/AudioGainInstanceProvider.cpp \
+			../../VideoEngineController/EchoCancellerProvider.cpp \
+			../../VideoEngineController/SpeexEchoCanceller.cpp \
+			../../VideoEngineController/WebRTCEchoCanceller.cpp \
+			../../VideoEngineController/WebRTCNoiseReducer.cpp \
+			../../VideoEngineController/NoiseReducerProvider.cpp \
+			../../VideoEngineController/AudioSessionOptions.cpp \
+			../../VideoEngineController/AudioResources.cpp \
+			../../VideoEngineController/AudioNearEndProcessorThread.cpp \
+			../../VideoEngineController/AudioNearEndProcessorPublisher.cpp \
+			../../VideoEngineController/AudioNearEndProcessorViewer.cpp \
+			../../VideoEngineController/AudioNearEndProcessorCall.cpp \
+			../../VideoEngineController/AudioFarEndProcessorThread.cpp \
+			../../VideoEngineController/AudioFarEndProcessorPublisher.cpp \
+			../../VideoEngineController/AudioFarEndProcessorViewer.cpp \
+			../../VideoEngineController/AudioFarEndProcessorChannel.cpp \
+			../../VideoEngineController/AudioFarEndProcessorCall.cpp \
+
 
 			
 

@@ -4,6 +4,11 @@
 #include "VideoCallSession.h"
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
+#include "AudioSessionOptions.h"
+#include "AudioResources.h"
+
+
+struct AudioSessionOptions;
 
 //extern int g_StopVideoSending;
 
@@ -171,7 +176,14 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType);
+		AudioSessionOptions audioSessionOptions;
+		audioSessionOptions.SetOptions(nServiceType, nEntityType);
+		AudioResources audioResources(audioSessionOptions);
+
+		CAudioCallSession::SetSendFunction(m_pCommonElementsBucket->GetSendFunctionPointer());
+		CAudioCallSession::SetEventNotifier(m_pCommonElementsBucket->m_pEventNotifier);
+
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -245,8 +257,11 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 	if (!bExist)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session creating");
+		AudioSessionOptions audioSessionOptions;
+		audioSessionOptions.SetOptions(SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
+		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -1119,7 +1134,7 @@ void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPo
 	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
 }
 
-void CController::SetSendFunctionPointer(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks))
+void CController::SetSendFunctionPointer(SendFunctionPointerType callBackFunctionPointer)
 {
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
