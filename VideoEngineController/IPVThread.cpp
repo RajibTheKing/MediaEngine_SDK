@@ -1,7 +1,13 @@
 
 #include "IPVThread.h"
+#include <thread>
+
 #include "CommonElementsBucket.h"
+#include "AverageCalculator.h"
 #include "VideoCallSession.h"
+#include "Tools.h"
+#include "LogPrinter.h"
+#include "RenderingBuffer.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -21,6 +27,8 @@ m_nInsetWidth(-1)
 {
     m_llRenderFrameCounter = 0;
 	m_pcVideoCallSession = pcVideoCallSession;
+
+	m_cRenderTimeCalculator.reset(new CAverageCalculator());
 }
 
 CIPVThread::~CIPVThread()
@@ -39,7 +47,7 @@ void CIPVThread::StopThread()
 
 		while (!m_bThreadClosed)
 		{
-			m_Tools.SOSleep(5);
+			Tools::SOSleep(5);
 		}
 	}
 

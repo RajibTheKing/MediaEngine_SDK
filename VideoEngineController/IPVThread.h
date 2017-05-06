@@ -2,16 +2,17 @@
 #ifndef IPV_THREAD_H
 #define IPV_THREAD_H
 
-#include "Tools.h"
 #include "SmartPointer.h"
-#include "LogPrinter.h"
-#include "RenderingBuffer.h"
-#include "AverageCalculator.h"
+#include "Size.h"
 
-#include <thread>
-
+namespace std
+{
+	class thread;
+};
 class CCommonElementsBucket;
 class CVideoCallSession;
+class CRenderingBuffer;
+class CAverageCalculator;
 
 class CIPVThread
 {
@@ -41,8 +42,7 @@ private:
 
 	unsigned char m_ucaRenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-	Tools m_Tools;
-	CAverageCalculator m_cRenderTimeCalculator;
+	SmartPointer<CAverageCalculator> m_cRenderTimeCalculator;
 
 	CRenderingBuffer *m_pcRenderingBuffer;
 	CCommonElementsBucket* m_pcCommonElementsBucket;
