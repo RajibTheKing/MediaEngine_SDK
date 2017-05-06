@@ -478,6 +478,12 @@ int CInterfaceOfAudioVideoEngine::CheckDeviceCapability(const LongLong& lFriendI
 		return false;
 	}
 
+#ifdef OLD_ENCODING_THREAD
+
+	return false;
+
+#endif
+
 	int iReturnedValue = m_pcController->CheckDeviceCapability(lFriendID, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 
 	return iReturnedValue;

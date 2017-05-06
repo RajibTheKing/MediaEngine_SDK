@@ -6,11 +6,6 @@
 #include "Controller.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
-//#define OLD_SENDING_THREAD
-#define OLD_ENCODING_THREAD
-//#define OLD_DECODING_THREAD
-//#define OLD_RENDERING_THREAD
-
 //PairMap g_timeInt;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)

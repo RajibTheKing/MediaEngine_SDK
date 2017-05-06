@@ -606,7 +606,16 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 			if (in_size > MAX_VIDEO_ENCODER_FRAME_SIZE)
 				return -1;
 
-			pVideoSession->m_pVideoEncodingThread->SetOrientationType(orientation_type);
+#ifdef OLD_ENCODING_THREAD
+
+				pVideoSession->m_pVideoEncodingThread->SetOrientationType(orientation_type);
+#else
+			if (pVideoSession->GetServiceType() == SERVICE_TYPE_CALL || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)
+				pVideoSession->m_pVideoEncodingThreadOfCall->SetOrientationType(orientation_type);
+			else if (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+				pVideoSession->m_pVideoEncodingThreadOfLive->SetOrientationType(orientation_type);
+#endif
+
 			return pVideoSession->PushIntoBufferForEncoding(in_data, in_size, device_orientation);
 		}
 		else

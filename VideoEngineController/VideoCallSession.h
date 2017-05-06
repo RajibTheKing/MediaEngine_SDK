@@ -72,23 +72,15 @@ public:
 	void StartCallInLive(int nCallInLiveType);
 	void EndCallInLive();
 
-	CSendingThread *m_pSendingThread;
-
 	CSendingThreadOfCall *m_pSendingThreadOfCall;
 	CSendingThreadOfLive *m_pSendingThreadOfLive;
-
-	CVideoEncodingThread *m_pVideoEncodingThread;
 
 	CVideoEncodingThreadOfCall *m_pVideoEncodingThreadOfCall;
 	CVideoEncodingThreadOfLive *m_pVideoEncodingThreadOfLive;
 
-	CVideoRenderingThread *m_pVideoRenderingThread;
-
 	CRenderingThreadOfCall *m_pRenderingThreadOfCall;
 	CRenderingThreadOfLive *m_pRenderingThreadOfLive;
 	CRenderingThreadOfChannel *m_pRenderingThreadOfChannel;
-
-	CVideoDecodingThread *m_pVideoDecodingThread;
 
 	CVideoDecodingThreadOfCall *m_pVideoDecodingThreadOfCall;
 	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadOfLive;
@@ -176,6 +168,11 @@ public:
 	int m_nVideoCallWidth;
 
 private:
+
+	CSendingThread *m_pSendingThread;
+	CVideoEncodingThread *m_pVideoEncodingThread;
+	CVideoRenderingThread *m_pVideoRenderingThread;
+	CVideoDecodingThread *m_pVideoDecodingThread;
 
 	CFPSController *m_pFPSController;
 	long long m_LastTimeStampClientFPS;
