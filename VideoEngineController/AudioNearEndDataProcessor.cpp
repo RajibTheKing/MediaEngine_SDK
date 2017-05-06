@@ -11,6 +11,7 @@
 #include "AudioMixer.h"
 #include "MuxHeader.h"
 
+#include "EncoderOpus.h"
 #include "AudioEncoderInterface.h"
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"

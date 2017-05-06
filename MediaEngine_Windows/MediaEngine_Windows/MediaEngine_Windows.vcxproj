@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\VideoEngineController\Aac.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorCall.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.cpp" />
@@ -163,7 +162,6 @@
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioDePacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioEncoderBuffer.cpp" />
@@ -192,7 +190,6 @@
     <ClCompile Include="..\..\VideoEngineController\DepacketizationThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.cpp" />
-    <ClCompile Include="..\..\VideoEngineController\Echo.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EchoCancellerProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFrameDepacketizer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\EncodedFramePacketizer.cpp" />
@@ -259,7 +256,6 @@
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\VideoEngineController\Aac.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorCall.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.h" />
@@ -276,7 +272,6 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioCodec.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderInterface.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderProvider.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioDePacketizer.h" />
@@ -314,7 +309,6 @@
     <ClInclude Include="..\..\VideoEngineController\DepacketizationThread.h" />
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\DeviceCapabilityCheckThread.h" />
-    <ClInclude Include="..\..\VideoEngineController\Echo.h" />
     <ClInclude Include="..\..\VideoEngineController\EchoCancellerInterface.h" />
     <ClInclude Include="..\..\VideoEngineController\EchoCancellerProvider.h" />
     <ClInclude Include="..\..\VideoEngineController\EncodedFrameDepacketizer.h" />
