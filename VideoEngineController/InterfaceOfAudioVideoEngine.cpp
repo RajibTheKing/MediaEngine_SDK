@@ -731,13 +731,17 @@ void CInterfaceOfAudioVideoEngine::SetSendFunctionPointer(void(*callBackFunction
     }
 }
 
-bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nCalleeID)
+bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType)
 {
 	if (NULL == m_pcController)
 	{
 		return false;
 	}
+
 	m_llTimeOffset = -1;
+
+	int nCalleeID = 1;
+
 	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
 	
 	m_pcController->SetCallInLiveEnabled(true);
@@ -750,7 +754,7 @@ bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID,
 	return bReturnedValue;
 }
 
-bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID, int nCalleeID)
+bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
 {
 	if (NULL == m_pcController)
 	{
@@ -758,11 +762,13 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID, i
 	}
 
 	m_llTimeOffset = -1;
+
+	int nCalleeID = 1;
+
 	bool bReturnedValue = m_pcController->EndAudioCallInLive(llFriendID);
 	
 	m_pcController->SetCallInLiveEnabled(false);
 	
-
 	if (bReturnedValue)
 	{
 		bReturnedValue = m_pcController->EndVideoCallInLive(llFriendID, nCalleeID);

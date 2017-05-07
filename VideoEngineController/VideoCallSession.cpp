@@ -1702,7 +1702,7 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID)
 
 			m_nEntityType = ENTITY_TYPE_VIEWER_CALLEE;
 		}
-		else if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		/*else if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			if (m_nPublisherInsetNumber == 1)
 			{
@@ -1718,7 +1718,7 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID)
 				m_pVideoDecoderForThirdInset = new CVideoDecoder(m_pCommonElementsBucket);
 				m_pVideoDecodingThreadForSecondInset = new CVideoDecodingThreadOfLive(m_pEncodedFrameDepacketizer, nCalleeID, m_pCommonElementsBucket, m_RenderingBuffer, m_pLiveVideoDecodingQueue, m_pVideoDecoderForThirdInset, m_pColorConverter, this, m_bIsCheckCall, m_nCallFPS);
 			}
-		}
+		}*/
 
 		m_iRole = 1;
 	}
@@ -1730,7 +1730,7 @@ void CVideoCallSession::EndCallInLive(int nCalleeID)
 		return;
 	else
 	{
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_nPublisherInsetNumber == 3)
+		/*if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_nPublisherInsetNumber == 3)
 		{
 			m_pVideoDecodingThreadForThirdInset->StartDecodingThread();
 
@@ -1764,7 +1764,7 @@ void CVideoCallSession::EndCallInLive(int nCalleeID)
 				m_pVideoDecoderForSecondInset = NULL;
 			}
 		}
-		else if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		else */if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 			//m_pVideoDepacketizationThread->ResetForPublisherCallerCallEnd();
 
