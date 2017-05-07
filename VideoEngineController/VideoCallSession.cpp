@@ -160,7 +160,7 @@ m_nPublisherInsetNumber(0)
 
 	m_BitRateController->SetSharedObject(sharedObject);
     
-    m_bDynamic_IDR_Sending_Mechanism = false;
+    m_bDynamic_IDR_Sending_Mechanism = true;
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
