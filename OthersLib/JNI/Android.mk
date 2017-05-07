@@ -133,9 +133,19 @@ LOCAL_SRC_FILES := \
             ../../VideoEngineController/VideoDecoder.cpp \
 			../../VideoEngineController/VideoEncoder.cpp \
 			../../VideoEngineController/VideoEncodingThread.cpp \
+			../../VideoEngineController/VideoEncodingThreadOfCall.cpp \
+			../../VideoEngineController/VideoEncodingThreadOfLive.cpp \
 			../../VideoEngineController/VideoDecodingThread.cpp \
+			../../VideoEngineController/VideoDecodingThreadOfCall.cpp \
+			../../VideoEngineController/VideoDecodingThreadOfLive.cpp \
+			../../VideoEngineController/VideoDecodingThreadOfChannel.cpp \
 			../../VideoEngineController/RenderingThread.cpp \
+			../../VideoEngineController/RenderingThreadOfCall.cpp \
+			../../VideoEngineController/RenderingThreadOfLive.cpp \
+			../../VideoEngineController/RenderingThreadOfChannel.cpp \
 			../../VideoEngineController/SendingThread.cpp \
+			../../VideoEngineController/SendingThreadOfCall.cpp \
+			../../VideoEngineController/SendingThreadOfLive.cpp \
 			../../VideoEngineController/DepacketizationThread.cpp \
 			../../VideoEngineController/SendingBuffer.cpp \
 			../../VideoEngineController/RenderingBuffer.cpp \

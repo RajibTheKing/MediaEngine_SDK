@@ -741,14 +741,18 @@ bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID,
 	{
 		return false;
 	}
+
 	m_llTimeOffset = -1;
+
+	int nCalleeID = 1;
+
 	bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
 	
 	m_pcController->SetCallInLiveEnabled(true);
 	
 	if (bReturnedValue)
 	{
-		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, nCallInLiveType);
+		bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, nCallInLiveType, nCalleeID);
 	}
 	
 	return bReturnedValue;
@@ -762,14 +766,16 @@ bool CInterfaceOfAudioVideoEngine::EndCallInLive(const IPVLongType llFriendID)
 	}
 
 	m_llTimeOffset = -1;
+
+	int nCalleeID = 1;
+
 	bool bReturnedValue = m_pcController->EndAudioCallInLive(llFriendID);
 	
 	m_pcController->SetCallInLiveEnabled(false);
 	
-
 	if (bReturnedValue)
 	{
-		bReturnedValue = m_pcController->EndVideoCallInLive(llFriendID);
+		bReturnedValue = m_pcController->EndVideoCallInLive(llFriendID, nCalleeID);
 	}
 	
 	return bReturnedValue;
