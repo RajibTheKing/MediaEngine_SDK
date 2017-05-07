@@ -3,11 +3,15 @@
 
 #include "NoiseReducerInterface.h"
 
+#ifdef USE_ANS
 #include "noise_suppression.h"
+#endif
 
 class WebRTCNoiseReducer : public NoiseReducerInterface
 {
+#ifdef USE_ANS
 	NsHandle* NS_instance;
+#endif
 
 public:
 	

@@ -3,9 +3,11 @@
 
 
 #include "EchoCancellerInterface.h"
-#include "echo_control_mobile.h"
-
 #include "AudioMacros.h"
+
+#ifdef USE_AECM
+#include "echo_control_mobile.h"
+#endif
 
 //#define ECHO_ANALYSIS
 

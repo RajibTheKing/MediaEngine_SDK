@@ -3,10 +3,11 @@
 
 
 #include "EchoCancellerInterface.h"
+#include "AudioMacros.h"
+#ifdef USE_AECM
 #include "speex/speex_echo.h"
 #include "speex/speex_preprocess.h"
-#include "AudioMacros.h"
-
+#endif
 
 class SpeexEchoCanceller : public EchoCancellerInterface
 {
@@ -15,9 +16,11 @@ private:
 	bool m_bReadingFarend, m_bWritingFarend;
 
 	short m_sSpeexFarendBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-
+#ifdef USE_AECM
 	SpeexEchoState *st;
 	SpeexPreprocessState *den;
+#endif
+
 
 public:
 
