@@ -5,6 +5,7 @@
 #include "ThreadTools.h"
 
 #include <string>
+#include <cmath>
 
 CVideoEncoder::CVideoEncoder(CCommonElementsBucket* pSharedObject, long long llfriendID) :
 

@@ -61,6 +61,8 @@ int EncoderOpus::CreateAudioEncoder()
 			break;
 		}
 	}
+    
+    return EXIT_SUCCESS;
 }
 
 

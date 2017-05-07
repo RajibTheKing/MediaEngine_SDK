@@ -1,7 +1,9 @@
 #include "WebRTCGain.h"
 
 #include "LogPrinter.h"
+#ifdef USE_AGC
 #include "gain_control.h"
+#endif
 #include "AudioMacros.h"
 
 #ifndef ALOG
