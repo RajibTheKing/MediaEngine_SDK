@@ -8,6 +8,7 @@
 
 SpeexEchoCanceller::SpeexEchoCanceller() : m_bFarendArrived(false), m_bReadingFarend(false), m_bWritingFarend(false)
 {
+#ifdef USE_AECM
 	int sampleRate = AUDIO_SAMPLE_RATE;
 	st = speex_echo_state_init(AECM_SAMPLES_IN_FRAME, 1024);
 	int db = -60;
@@ -30,18 +31,22 @@ SpeexEchoCanceller::SpeexEchoCanceller() : m_bFarendArrived(false), m_bReadingFa
 
 
 	// NOTE: Speex gain has been removed from here
+#endif
 }
 
 
 SpeexEchoCanceller::~SpeexEchoCanceller()
 {
+#ifdef USE_AECM
 	speex_echo_state_destroy(st);
 	speex_preprocess_state_destroy(den);
+#endif
 }
 
 
 int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning)
 {
+#ifdef USE_AECM
 	while (m_bReadingFarend)
 	{
 		Tools::SOSleep(1);
@@ -49,6 +54,7 @@ int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiv
 	m_bWritingFarend = true;
 	memcpy(m_sSpeexFarendBuf, farEndData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
 	m_bWritingFarend = false;
+#endif
 
 	return true;
 }
@@ -56,6 +62,8 @@ int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiv
 
 int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning)
 {
+#ifdef USE_AECM
+
 	if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 	{
 		ALOG("aec nearend Invalid size");
@@ -77,6 +85,7 @@ int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveS
 
 	m_bReadingFarend = false;
 	m_bFarendArrived = false;
+#endif 
 
 	return true;
 }

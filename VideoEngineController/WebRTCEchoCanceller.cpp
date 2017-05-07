@@ -11,6 +11,7 @@
 WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInited(false)
 {
 
+#ifdef USE_AECM
 #ifdef ECHO_ANALYSIS
 	m_bWritingDump = false;
 	EchoFile = fopen("/sdcard/endSignal.pcma", "wb");
@@ -56,22 +57,26 @@ WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInite
 	m_llLastFarendTime = 0;
 	iCounter = 0;
 	iCounter2 = 0;
+#endif
 }
 
 
 WebRTCEchoCanceller::~WebRTCEchoCanceller()
 {
+#ifdef USE_AECM
 	ALOG("WebRtcAec_destructor called");
 	WebRtcAecm_Free(AECM_instance);
 
 #ifdef ECHO_ANALYSIS
 	fclose(EchoFile);
 #endif
+#endif
 }
 
 
 int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning)
 {
+#ifdef USE_AECM
 	if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 	{
 		ALOG("aec farend Invalid size");
@@ -106,6 +111,7 @@ int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLi
 			+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));*/
 		}
 	}
+#endif
 
 	return true;
 }
@@ -113,6 +119,8 @@ int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLi
 
 int WebRTCEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning)
 {
+#ifdef USE_AECM
+
 	if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 	{
 		ALOG("aec nearend Invalid size");
@@ -157,6 +165,7 @@ int WebRTCEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLive
 			+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));*/
 		}
 	}
+#endif
 
 	return true;
 }

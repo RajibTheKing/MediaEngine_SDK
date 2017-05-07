@@ -11,6 +11,7 @@
 
 GomGomGain::GomGomGain()
 {
+#ifdef USE_AGC
 	mFilter = new Filter(BPF, 51, 8.0, 0.5, 2.0);
 
 	memset(m_daMovingAvg, 0, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(double));
@@ -19,16 +20,21 @@ GomGomGain::GomGomGain()
 
 	b1stFrame = true;
 	m_nMovingSum = 0;
+#endif
 }
 
 
 GomGomGain::~GomGomGain()
 {
+#ifdef USE_AGC
 	delete mFilter;
+#endif
 }
 
 int GomGomGain::AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning)
 {
+#ifdef USE_AGC
+
 	for (int i = 0; i < sBufferSize; i++)
 	{
 		//m_sFilteredFrame[i] = (short)(mFilter->do_sample((double)sInBuf[i]));
@@ -77,6 +83,7 @@ int GomGomGain::AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning
 	memcpy(m_sLastFilteredFrame, m_sFilteredFrame, sBufferSize * sizeof(short));
 	
 	b1stFrame = false;
-	
+#endif
+
 	return true;
 }
