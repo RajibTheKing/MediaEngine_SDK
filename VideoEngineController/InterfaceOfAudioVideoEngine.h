@@ -32,6 +32,7 @@
 #define SESSION_ID_FOR_SELF_VIEW -1000
 
 typedef long long IPVLongType;
+typedef long long LongLong;
 
 //#define NO_CONNECTIVITY
 
