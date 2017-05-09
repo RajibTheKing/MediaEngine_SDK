@@ -11,40 +11,46 @@
 
 #include <stdio.h>
 
-class CVersionController
+namespace MediaSDK
 {
-public:
-    CVersionController();
-    ~CVersionController();
-    
-    void SetCurrentCallVersion(int  uchVersion);
-    int GetCurrentCallVersion();
-    
-    
-    unsigned char GetOwnVersion();
-    void SetOpponentVersion(int iVersion);
-    int  GetOpponentVersion();
 
-//    void SetOpponentVersionCompatibleFlag(bool bValue);
-    bool GetOpponentVersionCompatibleFlag();
-    
-    bool IsFirstVideoPacetReceived();
-    void NotifyFirstVideoPacetReceived();
-    
-    
-private:
-    
-    unsigned char m_uchOwnVersion;
-    
-    int m_iOppVersion;
-    int m_iCurrentCallVersion;
-    bool m_bFirstVideoPacketReceivedFlag;
-    
-    bool m_bIsOpponentVersionDetectable;
-    
-    
-    
-    
-};
+	class CVersionController
+	{
+	public:
+		CVersionController();
+		~CVersionController();
+
+		void SetCurrentCallVersion(int  uchVersion);
+		int GetCurrentCallVersion();
+
+
+		unsigned char GetOwnVersion();
+		void SetOpponentVersion(int iVersion);
+		int  GetOpponentVersion();
+
+		//    void SetOpponentVersionCompatibleFlag(bool bValue);
+		bool GetOpponentVersionCompatibleFlag();
+
+		bool IsFirstVideoPacetReceived();
+		void NotifyFirstVideoPacetReceived();
+
+
+	private:
+
+		unsigned char m_uchOwnVersion;
+
+		int m_iOppVersion;
+		int m_iCurrentCallVersion;
+		bool m_bFirstVideoPacketReceivedFlag;
+
+		bool m_bIsOpponentVersionDetectable;
+
+
+
+
+	};
+
+} //namespace MediaSDK
+
 
 #endif /* VersionController_hpp */

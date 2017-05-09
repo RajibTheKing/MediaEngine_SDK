@@ -8,25 +8,30 @@
 #include "LockHandler.h"
 #include "codec_api.h"
 
-class CCommonElementsBucket;
-
-class CVideoDecoder
+namespace MediaSDK
 {
 
-public:
+	class CCommonElementsBucket;
 
-	CVideoDecoder(CCommonElementsBucket* pSharedObject);
-	~CVideoDecoder();
+	class CVideoDecoder
+	{
 
-	int CreateVideoDecoder();
-	int SetDecoderOption(int nKey, int nValue);
-	int DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth);
+	public:
 
-private:
+		CVideoDecoder(CCommonElementsBucket* pSharedObject);
+		~CVideoDecoder();
 
-	CCommonElementsBucket* m_pcCommonElementsBucket;
-	ISVCDecoder* m_pcSVCVideoDecoder;
+		int CreateVideoDecoder();
+		int SetDecoderOption(int nKey, int nValue);
+		int DecodeVideoFrame(unsigned char *ucaDecodingVideoFrameData, unsigned int unLength, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth);
 
-};
+	private:
+
+		CCommonElementsBucket* m_pcCommonElementsBucket;
+		ISVCDecoder* m_pcSVCVideoDecoder;
+
+	};
+
+} //namespace MediaSDK
 
 #endif

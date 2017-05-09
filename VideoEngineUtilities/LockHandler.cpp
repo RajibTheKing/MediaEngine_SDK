@@ -1,45 +1,50 @@
 
 #include "LockHandler.h"
 
-CLockHandler::CLockHandler() :
-m_pMutex(NULL)
-
+namespace MediaSDK
 {
-	m_pMutex = new std::mutex;
-}
 
-CLockHandler::~CLockHandler()
-{
-	
-	if (m_pMutex != NULL)
+	CLockHandler::CLockHandler() :
+		m_pMutex(NULL)
+
 	{
-		delete m_pMutex;
-
-		m_pMutex = NULL;
+		m_pMutex = new std::mutex;
 	}
 
-}
+	CLockHandler::~CLockHandler()
+	{
 
-std::mutex* CLockHandler::GetMutex()
-{
-	if (NULL == m_pMutex)
-		return NULL;
+		if (m_pMutex != NULL)
+		{
+			delete m_pMutex;
 
-	return m_pMutex;
-}
+			m_pMutex = NULL;
+		}
 
-void CLockHandler::Lock()
-{
-	if (NULL == m_pMutex)
-		return;
+	}
 
-	m_pMutex->lock();
-}
+	std::mutex* CLockHandler::GetMutex()
+	{
+		if (NULL == m_pMutex)
+			return NULL;
 
-void CLockHandler::UnLock()
-{
-	if (NULL == m_pMutex)
-		return;
+		return m_pMutex;
+	}
 
-	m_pMutex->unlock();
-}
+	void CLockHandler::Lock()
+	{
+		if (NULL == m_pMutex)
+			return;
+
+		m_pMutex->lock();
+	}
+
+	void CLockHandler::UnLock()
+	{
+		if (NULL == m_pMutex)
+			return;
+
+		m_pMutex->unlock();
+	}
+
+} //namespace MediaSDK

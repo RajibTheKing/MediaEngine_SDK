@@ -10,33 +10,36 @@
 #include "SmartPointer.h"
 #include "LockHandler.h"
 
-using namespace std;
-
-class CVideoEncoderListHandler
+namespace MediaSDK
 {
 
-public:
+	class CVideoEncoderListHandler
+	{
 
-	CVideoEncoderListHandler();
-	~CVideoEncoderListHandler();
+	public:
 
-	void AddToVideoEncoderList(long long llFriendID, CVideoEncoder* pcMedia);
-	CVideoEncoder* GetFromVideoEncoderList(long long llFriendID);
-	CVideoEncoder* GetFromVideoEncoderListinIndex(int iIndex);
-	bool RemoveFromVideoEncoderList(long long llFriendID);
-	int SizeOfVideoEncoderList();
-	bool IsVideoEncoderExist(int nVideoHeight, int nVideoWidth);
-	bool IsVideoEncoderExist(long long llFriendID);
-	void ClearAllFromVideoEncoderList();
-	void ResetAllInVideoEncoderList();
+		CVideoEncoderListHandler();
+		~CVideoEncoderListHandler();
 
-private:
+		void AddToVideoEncoderList(long long llFriendID, CVideoEncoder* pcMedia);
+		CVideoEncoder* GetFromVideoEncoderList(long long llFriendID);
+		CVideoEncoder* GetFromVideoEncoderListinIndex(int iIndex);
+		bool RemoveFromVideoEncoderList(long long llFriendID);
+		int SizeOfVideoEncoderList();
+		bool IsVideoEncoderExist(int nVideoHeight, int nVideoWidth);
+		bool IsVideoEncoderExist(long long llFriendID);
+		void ClearAllFromVideoEncoderList();
+		void ResetAllInVideoEncoderList();
 
-	std::map<long long, CVideoEncoder*> m_mVideoEncoderList;
+	private:
 
-protected:
+		std::map<long long, CVideoEncoder*> m_mVideoEncoderList;
 
-	SmartPointer<CLockHandler> m_pVideoEncoderListMutex;
-};
+	protected:
+
+		SmartPointer<CLockHandler> m_pVideoEncoderListMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif

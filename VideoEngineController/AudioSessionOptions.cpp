@@ -2,256 +2,259 @@
 #include "LogPrinter.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
-
-
-AudioSessionOptions::AudioSessionOptions()
+namespace MediaSDK
 {
-	ResetOptions();
-}
 
 
-void AudioSessionOptions::ResetOptions()
-{
-	headerType = HEADER_COMMON;
-
-	encoderType = No_Encoder;
-	decoderType = No_Decoder;
-
-	noiseReducerType = No_NoiseReducer;
-	echoCancelerType = No_ECM;
-	gainType = No_Gain;
-
-	adaptEncoderBitrate = false;
-	adaptEncoderComplexity = false;
-	adaptDecoderBitrate = false;
-	adaptDecoderComplexity = false;
-
-	enableBufferData = false;
-	enableMuxing = false;
-	enablePacketization = false;
-}
-
-
-AudioEntityRoleType AudioSessionOptions::GetEntityRoleType(int serviceType, int entityType)
-{
-	if (serviceType == SERVICE_TYPE_CALL || serviceType == SERVICE_TYPE_SELF_CALL)
+	AudioSessionOptions::AudioSessionOptions()
 	{
-		return EntityInCall;
+		ResetOptions();
 	}
-	else if (SERVICE_TYPE_CHANNEL == serviceType)
+
+
+	void AudioSessionOptions::ResetOptions()
 	{
-		return EntityChannel;
+		headerType = HEADER_COMMON;
+
+		encoderType = No_Encoder;
+		decoderType = No_Decoder;
+
+		noiseReducerType = No_NoiseReducer;
+		echoCancelerType = No_ECM;
+		gainType = No_Gain;
+
+		adaptEncoderBitrate = false;
+		adaptEncoderComplexity = false;
+		adaptDecoderBitrate = false;
+		adaptDecoderComplexity = false;
+
+		enableBufferData = false;
+		enableMuxing = false;
+		enablePacketization = false;
 	}
-	else if (SERVICE_TYPE_LIVE_STREAM == serviceType || SERVICE_TYPE_SELF_STREAM == serviceType)
+
+
+	AudioEntityRoleType AudioSessionOptions::GetEntityRoleType(int serviceType, int entityType)
 	{
-		if (ENTITY_TYPE_PUBLISHER == entityType)
+		if (serviceType == SERVICE_TYPE_CALL || serviceType == SERVICE_TYPE_SELF_CALL)
 		{
-			return EntityPublisher;
+			return EntityInCall;
 		}
-		else if (ENTITY_TYPE_PUBLISHER_CALLER == entityType)
+		else if (SERVICE_TYPE_CHANNEL == serviceType)
 		{
-			return EntityPublisherInCall;
+			return EntityChannel;
 		}
-		else if (ENTITY_TYPE_VIEWER == entityType)
+		else if (SERVICE_TYPE_LIVE_STREAM == serviceType || SERVICE_TYPE_SELF_STREAM == serviceType)
 		{
-			return EntityViewer;
-		}
-		else if (ENTITY_TYPE_VIEWER_CALLEE == entityType)
-		{
-			return EntityViewerInCall;
+			if (ENTITY_TYPE_PUBLISHER == entityType)
+			{
+				return EntityPublisher;
+			}
+			else if (ENTITY_TYPE_PUBLISHER_CALLER == entityType)
+			{
+				return EntityPublisherInCall;
+			}
+			else if (ENTITY_TYPE_VIEWER == entityType)
+			{
+				return EntityViewer;
+			}
+			else if (ENTITY_TYPE_VIEWER_CALLEE == entityType)
+			{
+				return EntityViewerInCall;
+			}
+			else
+			{
+				return EntityNone;
+			}
 		}
 		else
 		{
 			return EntityNone;
 		}
+
 	}
-	else
+
+
+	void AudioSessionOptions::SetOptions(int serviceType, int entityType)
 	{
-		return EntityNone;
+		AudioEntityRoleType entityRoleType = GetEntityRoleType(serviceType, entityType);
+
+		switch (entityRoleType)
+		{
+		case EntityInCall:
+			SetOptionsForCall();
+			break;
+
+		case EntityChannel:
+			SetOptionsForChannel();
+			break;
+
+		case EntityPublisher:
+			SetOptionsForPublisher();
+			break;
+
+		case EntityPublisherInCall:
+			SetOptionsForPublisherInCall();
+			break;
+
+		case EntityViewer:
+			SetOptionsForViewer();
+			break;
+
+		case EntityViewerInCall:
+			SetOptionsForViewerInCall();
+			break;
+
+		default:
+			ResetOptions();
+			break;
+		}
 	}
-	
-}
 
 
-void AudioSessionOptions::SetOptions(int serviceType, int entityType)
-{
-	AudioEntityRoleType entityRoleType = GetEntityRoleType(serviceType, entityType);
-
-	switch (entityRoleType)
+	void AudioSessionOptions::SetOptionsForCall()
 	{
-	case EntityInCall:
-		SetOptionsForCall();
-		break;
+		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForCall()");
 
-	case EntityChannel:
-		SetOptionsForChannel();
-		break;
+		headerType = HEADER_COMMON;
 
-	case EntityPublisher:
-		SetOptionsForPublisher();
-		break;
+		encoderType = Opus_Encoder;
+		decoderType = Opus_Decoder;
 
-	case EntityPublisherInCall:
-		SetOptionsForPublisherInCall();
-		break;
+		noiseReducerType = No_NoiseReducer;
+		echoCancelerType = WebRTC_ECM;
+		gainType = WebRTC_Gain;
 
-	case EntityViewer:
-		SetOptionsForViewer();
-		break;
+		adaptEncoderBitrate = false;
+		adaptEncoderComplexity = false;
+		adaptDecoderBitrate = false;
+		adaptDecoderComplexity = false;
 
-	case EntityViewerInCall:
-		SetOptionsForViewerInCall();
-		break;
-
-	default:
-		ResetOptions();
-		break;
+		enableBufferData = false;
+		enableMuxing = false;
+		enablePacketization = false;
 	}
-}
 
 
-void AudioSessionOptions::SetOptionsForCall()
-{
-	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForCall()");
+	void AudioSessionOptions::SetOptionsForChannel()
+	{
+		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForChannel()");
 
-	headerType = HEADER_COMMON;
+		headerType = HEADER_COMMON;
 
-	encoderType = Opus_Encoder;
-	decoderType = Opus_Decoder;
+		encoderType = No_Encoder;
+		decoderType = AAC_Decoder;
 
-	noiseReducerType = No_NoiseReducer;
-	echoCancelerType = WebRTC_ECM;
-	gainType = WebRTC_Gain;
+		noiseReducerType = No_NoiseReducer;
+		echoCancelerType = No_ECM;
+		gainType = No_Gain;
 
-	adaptEncoderBitrate = false;
-	adaptEncoderComplexity = false;
-	adaptDecoderBitrate = false;
-	adaptDecoderComplexity = false;
+		adaptEncoderBitrate = false;
+		adaptEncoderComplexity = false;
+		adaptDecoderBitrate = false;
+		adaptDecoderComplexity = false;
 
-	enableBufferData = false;
-	enableMuxing = false;
-	enablePacketization = false;
-}
-
-
-void AudioSessionOptions::SetOptionsForChannel()
-{
-	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForChannel()");
-
-	headerType = HEADER_COMMON;
-
-	encoderType = No_Encoder;
-	decoderType = AAC_Decoder;
-
-	noiseReducerType = No_NoiseReducer;
-	echoCancelerType = No_ECM;
-	gainType = No_Gain;
-
-	adaptEncoderBitrate = false;
-	adaptEncoderComplexity = false;
-	adaptDecoderBitrate = false;
-	adaptDecoderComplexity = false;
-
-	enableBufferData = false;
-	enableMuxing = false;
-	enablePacketization = false;
-}
+		enableBufferData = false;
+		enableMuxing = false;
+		enablePacketization = false;
+	}
 
 
-void AudioSessionOptions::SetOptionsForPublisher()
-{
-	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisher()");
+	void AudioSessionOptions::SetOptionsForPublisher()
+	{
+		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisher()");
 
-	headerType = HEADER_COMMON;
+		headerType = HEADER_COMMON;
 
-	encoderType = PCM_Encoder;
-	decoderType = No_Decoder;
+		encoderType = PCM_Encoder;
+		decoderType = No_Decoder;
 
-	noiseReducerType = No_NoiseReducer;
-	echoCancelerType = No_ECM;
-	gainType = No_Gain;
+		noiseReducerType = No_NoiseReducer;
+		echoCancelerType = No_ECM;
+		gainType = No_Gain;
 
-	adaptEncoderBitrate = false;
-	adaptEncoderComplexity = false;
-	adaptDecoderBitrate = false;
-	adaptDecoderComplexity = false;
+		adaptEncoderBitrate = false;
+		adaptEncoderComplexity = false;
+		adaptDecoderBitrate = false;
+		adaptDecoderComplexity = false;
 
-	enableBufferData = false;
-	enableMuxing = false;
-	enablePacketization = false;
-}
-
-
-void AudioSessionOptions::SetOptionsForPublisherInCall()
-{
-	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisherInCall()");
-
-	headerType = HEADER_COMMON;
-
-	encoderType = PCM_Encoder;
-	decoderType = PCM_Decoder;
-
-	noiseReducerType = No_NoiseReducer;
-	echoCancelerType = WebRTC_ECM;
-	gainType = WebRTC_Gain;
-
-	adaptEncoderBitrate = false;
-	adaptEncoderComplexity = false;
-	adaptDecoderBitrate = false;
-	adaptDecoderComplexity = false;
-
-	enableBufferData = false;
-	enableMuxing = true;
-	enablePacketization = false;
-}
+		enableBufferData = false;
+		enableMuxing = false;
+		enablePacketization = false;
+	}
 
 
-void AudioSessionOptions::SetOptionsForViewer()
-{
-	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewer()");
+	void AudioSessionOptions::SetOptionsForPublisherInCall()
+	{
+		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisherInCall()");
 
-	headerType = HEADER_COMMON;
+		headerType = HEADER_COMMON;
 
-	encoderType = No_Encoder;
-	decoderType = PCM_Decoder;
+		encoderType = PCM_Encoder;
+		decoderType = PCM_Decoder;
 
-	noiseReducerType = No_NoiseReducer;
-	echoCancelerType = No_ECM;
-	gainType = No_Gain;
+		noiseReducerType = No_NoiseReducer;
+		echoCancelerType = WebRTC_ECM;
+		gainType = WebRTC_Gain;
 
-	adaptEncoderBitrate = false;
-	adaptEncoderComplexity = false;
-	adaptDecoderBitrate = false;
-	adaptDecoderComplexity = false;
+		adaptEncoderBitrate = false;
+		adaptEncoderComplexity = false;
+		adaptDecoderBitrate = false;
+		adaptDecoderComplexity = false;
 
-	enableBufferData = false;
-	enableMuxing = false;
-	enablePacketization = false;
-}
+		enableBufferData = false;
+		enableMuxing = true;
+		enablePacketization = false;
+	}
 
 
-void AudioSessionOptions::SetOptionsForViewerInCall()
-{
-	MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewerInCall()");
+	void AudioSessionOptions::SetOptionsForViewer()
+	{
+		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewer()");
 
-	headerType = HEADER_COMMON;
+		headerType = HEADER_COMMON;
 
-	encoderType = PCM_Encoder;
-	decoderType = PCM_Decoder;
+		encoderType = No_Encoder;
+		decoderType = PCM_Decoder;
 
-	noiseReducerType = No_NoiseReducer;
-	echoCancelerType = WebRTC_ECM;
-	gainType = WebRTC_Gain;
+		noiseReducerType = No_NoiseReducer;
+		echoCancelerType = No_ECM;
+		gainType = No_Gain;
 
-	adaptEncoderBitrate = false;
-	adaptEncoderComplexity = false;
-	adaptDecoderBitrate = false;
-	adaptDecoderComplexity = false;
+		adaptEncoderBitrate = false;
+		adaptEncoderComplexity = false;
+		adaptDecoderBitrate = false;
+		adaptDecoderComplexity = false;
 
-	enableBufferData = false;
-	enableMuxing = false;
-	enablePacketization = false;
-}
+		enableBufferData = false;
+		enableMuxing = false;
+		enablePacketization = false;
+	}
 
+
+	void AudioSessionOptions::SetOptionsForViewerInCall()
+	{
+		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewerInCall()");
+
+		headerType = HEADER_COMMON;
+
+		encoderType = PCM_Encoder;
+		decoderType = PCM_Decoder;
+
+		noiseReducerType = No_NoiseReducer;
+		echoCancelerType = WebRTC_ECM;
+		gainType = WebRTC_Gain;
+
+		adaptEncoderBitrate = false;
+		adaptEncoderComplexity = false;
+		adaptDecoderBitrate = false;
+		adaptDecoderComplexity = false;
+
+		enableBufferData = false;
+		enableMuxing = false;
+		enablePacketization = false;
+	}
+
+} //namespace MediaSDK
 
 

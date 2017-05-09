@@ -1,15 +1,20 @@
 #ifndef NOISE_REDUCER_INTERFACE_H
 #define NOISE_REDUCER_INTERFACE_H
 
-
-class NoiseReducerInterface
+namespace MediaSDK
 {
-public:
 
-	virtual int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning) = 0;
+	class NoiseReducerInterface
+	{
+	public:
 
-	virtual	~NoiseReducerInterface() { }
-};
+		virtual int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning) = 0;
+
+		virtual	~NoiseReducerInterface() { }
+	};
+
+
+} //namespace MediaSDK
 
 #endif // !NOISE_REDUCER_INTERFACE_H
 

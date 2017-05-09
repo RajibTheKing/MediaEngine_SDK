@@ -10,89 +10,94 @@
 #include "BandwidthController.h"
 #include <thread>
 
-class CVideoCallSession;
-class CCommonElementsBucket;
-class CFPSController;
-//class CVideoHeader;
-
-//#define CHANNEL_FROM_FILE
-
-class CSendingThreadOfLive
+namespace MediaSDK
 {
-public:
 
-	CSendingThreadOfLive(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, long long llfriendID, bool bAudioOnlyLive);
-	~CSendingThreadOfLive();
+	class CVideoCallSession;
+	class CCommonElementsBucket;
+	class CFPSController;
+	//class CVideoHeader;
 
-	void StartSendingThread();
-	void StopSendingThread();
-	void SendingThreadProcedure();
-	static void *CreateVideoSendingThread(void* param);
-    
-    int ParseChunk(unsigned char *in_data, unsigned int unLength);
+	//#define CHANNEL_FROM_FILE
 
-	void ResetForViewerCallerCallEnd();
-	void ResetForPublisherCallerCallStartAudioOnly();
+	class CSendingThreadOfLive
+	{
+	public:
 
-	void InterruptOccured();
-	void InterruptOver();
+		CSendingThreadOfLive(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, long long llfriendID, bool bAudioOnlyLive);
+		~CSendingThreadOfLive();
 
-private:
+		void StartSendingThread();
+		void StopSendingThread();
+		void SendingThreadProcedure();
+		static void *CreateVideoSendingThread(void* param);
+
+		int ParseChunk(unsigned char *in_data, unsigned int unLength);
+
+		void ResetForViewerCallerCallEnd();
+		void ResetForPublisherCallerCallStartAudioOnly();
+
+		void InterruptOccured();
+		void InterruptOver();
+
+	private:
 
 #ifdef CHANNEL_FROM_FILE
-	void SendDataFromFile();
+		void SendDataFromFile();
 #endif
-	long long m_nTimeStampOfChunck;
-	int m_nTimeStampOfChunckSend;
+		long long m_nTimeStampOfChunck;
+		int m_nTimeStampOfChunckSend;
 
-	CVideoCallSession* m_pVideoCallSession;
+		CVideoCallSession* m_pVideoCallSession;
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-    std::vector<int>m_TimePeriodInterval;
-    std::vector<int>m_BandWidthList;
-    BandwidthController m_BandWidthController;
+		std::vector<int>m_TimePeriodInterval;
+		std::vector<int>m_BandWidthList;
+		BandwidthController m_BandWidthController;
 #endif
-    
-	bool bSendingThreadRunning;
-	bool bSendingThreadClosed;
 
-	CCommonElementsBucket* m_pCommonElementsBucket;		
-	CSendingBuffer *m_SendingBuffer;
+		bool bSendingThreadRunning;
+		bool bSendingThreadClosed;
 
-	bool m_bIsCheckCall;
+		CCommonElementsBucket* m_pCommonElementsBucket;
+		CSendingBuffer *m_SendingBuffer;
 
-	bool m_bPassOnlyAudio;
+		bool m_bIsCheckCall;
 
-	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
-    
-	long long m_lfriendID;
+		bool m_bPassOnlyAudio;
 
-	bool m_bResetForViewerCallerCallEnd;
-	long long m_llBaseRelativeTimeOfAudio;
+		unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
 
-	bool m_bResetForPublisherCallerCallStartAudioOnly;
+		long long m_lfriendID;
 
-	bool m_bInterruptHappened;
-	bool m_bInterruptRunning;
+		bool m_bResetForViewerCallerCallEnd;
+		long long m_llBaseRelativeTimeOfAudio;
 
-//	CVideoHeader m_cVH;
+		bool m_bResetForPublisherCallerCallStartAudioOnly;
 
-	bool m_bAudioOnlyLive;
-	bool m_bVideoOnlyLive;
+		bool m_bInterruptHappened;
+		bool m_bInterruptRunning;
 
-	unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
-	unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
-	unsigned char m_AudioVideoDataToSend[MAX_AUDIO_VIDEO_DATA_TO_SEND_SIZE];
-	int m_iAudioDataToSendIndex;
+		//	CVideoHeader m_cVH;
 
-	bool firstFrame;
-	int m_iDataToSendIndex;
-	long long int llPrevTime;
-    long long m_llPrevTimeWhileSendingToLive;
+		bool m_bAudioOnlyLive;
+		bool m_bVideoOnlyLive;
+
+		unsigned char m_VideoDataToSend[MAX_VIDEO_DATA_TO_SEND_SIZE];
+		unsigned char m_AudioDataToSend[MAX_AUDIO_DATA_TO_SEND_SIZE];
+		unsigned char m_AudioVideoDataToSend[MAX_AUDIO_VIDEO_DATA_TO_SEND_SIZE];
+		int m_iAudioDataToSendIndex;
+
+		bool firstFrame;
+		int m_iDataToSendIndex;
+		long long int llPrevTime;
+		long long m_llPrevTimeWhileSendingToLive;
 
 
-	Tools m_Tools;
+		Tools m_Tools;
 
-	SmartPointer<std::thread> pSendingThread;
-};
+		SmartPointer<std::thread> pSendingThread;
+	};
+
+} //namespace MediaSDK
 
 #endif 

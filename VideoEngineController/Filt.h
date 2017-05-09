@@ -131,9 +131,12 @@
 #include <string.h>
 #include <inttypes.h>
 
-enum filterType {LPF, HPF, BPF};
+namespace MediaSDK
+{
 
-class Filter{
+	enum filterType { LPF, HPF, BPF };
+
+	class Filter{
 	private:
 		filterType m_filt_t;
 		int m_num_taps;
@@ -153,13 +156,15 @@ class Filter{
 	public:
 		Filter(filterType filt_t, int num_taps, double Fs, double Fx);
 		Filter(filterType filt_t, int num_taps, double Fs, double Fl, double Fu);
-		~Filter( );
+		~Filter();
 		void init();
 		double do_sample(double data_sample);
-		int get_error_flag(){return m_error_flag;};
-		void get_taps( double *taps );
-		int write_taps_to_file( char* filename );
-		int write_freqres_to_file( char* filename );
-};
+		int get_error_flag(){ return m_error_flag; };
+		void get_taps(double *taps);
+		int write_taps_to_file(char* filename);
+		int write_freqres_to_file(char* filename);
+	};
+
+} //namespace MediaSDK
 
 #endif

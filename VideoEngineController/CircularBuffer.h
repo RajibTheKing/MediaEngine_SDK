@@ -5,29 +5,34 @@
 #include "SmartPointer.h"
 #include "Tools.h"
 
-class CLockHandler;
-
-class CCircularBuffer
+namespace MediaSDK
 {
 
-public:
+	class CLockHandler;
 
-	CCircularBuffer(int nBufferSize);
-	~CCircularBuffer();
+	class CCircularBuffer
+	{
 
-	void IncreamentIndex(int &riIndex);
-	int GetQueueSize();
-	void ResetBuffer();
+	public:
 
-private:
+		CCircularBuffer(int nBufferSize);
+		~CCircularBuffer();
 
-	int m_iPushIndex;
-	int m_iPopIndex;
-	int m_nQueueCapacity;
-	int m_nQueueSize;
+		void IncreamentIndex(int &riIndex);
+		int GetQueueSize();
+		void ResetBuffer();
 
-	Tools m_Tools;
-	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
-};
+	private:
+
+		int m_iPushIndex;
+		int m_iPopIndex;
+		int m_nQueueCapacity;
+		int m_nQueueSize;
+
+		Tools m_Tools;
+		SmartPointer<CLockHandler> m_pRenderingBufferMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif 

@@ -5,20 +5,24 @@
 #define MAX_GAIN 10
 #define DEFAULT_GAIN 3
 
-class AudioGainInterface
+namespace MediaSDK
 {
 
-public:
+	class AudioGainInterface
+	{
 
-	virtual int SetGain(int iGain) = 0;
+	public:
 
-	virtual int AddFarEnd(short *sInBuf, int nBufferSize) = 0;
+		virtual int SetGain(int iGain) = 0;
 
-	virtual int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning) = 0;
+		virtual int AddFarEnd(short *sInBuf, int nBufferSize) = 0;
 
-	virtual ~AudioGainInterface() { }
-};
+		virtual int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning) = 0;
 
+		virtual ~AudioGainInterface() { }
+	};
+
+} //namespace MediaSDK
 
 #endif  // !AUDIO_GAIN_INTERFACE_H
 

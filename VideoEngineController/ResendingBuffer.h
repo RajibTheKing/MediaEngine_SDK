@@ -8,37 +8,42 @@
 #include "Tools.h"
 #include <map>
 
-class CResendingBuffer
+namespace MediaSDK
 {
 
-public:
+	class CResendingBuffer
+	{
 
-	CResendingBuffer();
-	~CResendingBuffer();
+	public:
 
-	void Queue(unsigned char *frame, int length, int frameNumber, int packetNumber);
-	int DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber, int &timeStampDiff);
-	void IncreamentIndex(int &index);
-	void Reset();
+		CResendingBuffer();
+		~CResendingBuffer();
 
-private:
+		void Queue(unsigned char *frame, int length, int frameNumber, int packetNumber);
+		int DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber, int &timeStampDiff);
+		void IncreamentIndex(int &index);
+		void Reset();
 
-	int m_iPushIndex;
-	int m_iPopIndex;
-	int m_iQueueCapacity;
+	private:
 
-	Tools m_Tools;
+		int m_iPushIndex;
+		int m_iPopIndex;
+		int m_iQueueCapacity;
 
-	std::map< std::pair<int, int>, int> resendingMap;
-	std::map< std::pair<int, int>, int>::iterator resendingMapIterator;
+		Tools m_Tools;
 
-	unsigned char m_Buffer[RESENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SIZE];
-	int m_BufferDataLength[RESENDING_BUFFER_SIZE];
-	long long m_BufferFrameNumber[RESENDING_BUFFER_SIZE];
-	int m_BufferPacketNumber[RESENDING_BUFFER_SIZE];
-	long long m_BufferInsertionTime[RESENDING_BUFFER_SIZE];
+		std::map< std::pair<int, int>, int> resendingMap;
+		std::map< std::pair<int, int>, int>::iterator resendingMapIterator;
 
-	SmartPointer<CLockHandler> m_pChannelMutex;
-};
+		unsigned char m_Buffer[RESENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SIZE];
+		int m_BufferDataLength[RESENDING_BUFFER_SIZE];
+		long long m_BufferFrameNumber[RESENDING_BUFFER_SIZE];
+		int m_BufferPacketNumber[RESENDING_BUFFER_SIZE];
+		long long m_BufferInsertionTime[RESENDING_BUFFER_SIZE];
+
+		SmartPointer<CLockHandler> m_pChannelMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif 

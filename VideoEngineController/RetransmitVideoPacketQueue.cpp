@@ -1,75 +1,80 @@
 
 #include "RetransmitVideoPacketQueue.h"
 
-CRetransmitVideoPacketQueue::CRetransmitVideoPacketQueue() :
-m_iPushIndex(0),
-m_iPopIndex(0),
-m_iQueueSize(0),
-m_iQueueCapacity(MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE)
-{
-	m_pChannelMutex.reset(new CLockHandler);
-}
-
-CRetransmitVideoPacketQueue::~CRetransmitVideoPacketQueue()
+namespace MediaSDK
 {
 
-}
-
-int CRetransmitVideoPacketQueue::Queue(unsigned char *frame, int length)
-{
-	Locker lock(*m_pChannelMutex);
-
-	if (m_iQueueSize >= m_iQueueCapacity)
+	CRetransmitVideoPacketQueue::CRetransmitVideoPacketQueue() :
+		m_iPushIndex(0),
+		m_iPopIndex(0),
+		m_iQueueSize(0),
+		m_iQueueCapacity(MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE)
 	{
-		return -1;
+		m_pChannelMutex.reset(new CLockHandler);
 	}
-	else
+
+	CRetransmitVideoPacketQueue::~CRetransmitVideoPacketQueue()
 	{
-		memcpy(m_Buffer[m_iPushIndex], frame, length);
 
-		m_BufferDataLength[m_iPushIndex] = length;
-
-		IncreamentIndex(m_iPushIndex);
-
-		m_iQueueSize++;
-
-		return 1;
 	}
-}
 
-int CRetransmitVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
-{
-	Locker lock(*m_pChannelMutex);
-
-	if (m_iQueueSize <= 0)
+	int CRetransmitVideoPacketQueue::Queue(unsigned char *frame, int length)
 	{
-		return -1;
+		Locker lock(*m_pChannelMutex);
+
+		if (m_iQueueSize >= m_iQueueCapacity)
+		{
+			return -1;
+		}
+		else
+		{
+			memcpy(m_Buffer[m_iPushIndex], frame, length);
+
+			m_BufferDataLength[m_iPushIndex] = length;
+
+			IncreamentIndex(m_iPushIndex);
+
+			m_iQueueSize++;
+
+			return 1;
+		}
 	}
-	else
+
+	int CRetransmitVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
 	{
-		int length = m_BufferDataLength[m_iPopIndex];
+		Locker lock(*m_pChannelMutex);
 
-		memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
+		if (m_iQueueSize <= 0)
+		{
+			return -1;
+		}
+		else
+		{
+			int length = m_BufferDataLength[m_iPopIndex];
 
-		IncreamentIndex(m_iPopIndex);
+			memcpy(decodeBuffer, m_Buffer[m_iPopIndex], length);
 
-		m_iQueueSize--;
+			IncreamentIndex(m_iPopIndex);
 
-		return length;
+			m_iQueueSize--;
+
+			return length;
+		}
 	}
-}
 
-void CRetransmitVideoPacketQueue::IncreamentIndex(int &index)
-{
-	index++;
+	void CRetransmitVideoPacketQueue::IncreamentIndex(int &index)
+	{
+		index++;
 
-	if (index >= m_iQueueCapacity)
-		index = 0;
-}
+		if (index >= m_iQueueCapacity)
+			index = 0;
+	}
 
-int CRetransmitVideoPacketQueue::GetQueueSize()
-{
-	Locker lock(*m_pChannelMutex);
+	int CRetransmitVideoPacketQueue::GetQueueSize()
+	{
+		Locker lock(*m_pChannelMutex);
 
-	return m_iQueueSize;
-}
+		return m_iQueueSize;
+	}
+
+} //namespace MediaSDK

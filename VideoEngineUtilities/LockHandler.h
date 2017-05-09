@@ -9,50 +9,51 @@
 #include <pthread.h>
 #endif
 
-#include "AudioVideoEngineDefinitions.h"
-
-class Locker;
-
-class CLockHandler
+namespace MediaSDK
 {
+	class Locker;
 
-public:
+	class CLockHandler
+	{
 
-	CLockHandler();
-	~CLockHandler();
+	public:
 
-	std::mutex* GetMutex();
-	void Lock();
-	void UnLock();
+		CLockHandler();
+		~CLockHandler();
 
-private:
+		std::mutex* GetMutex();
+		void Lock();
+		void UnLock();
 
-	std::mutex *m_pMutex;
-};
+	private:
 
-class Locker
-{
+		std::mutex *m_pMutex;
+	};
 
-public:
+	class Locker
+	{
 
-	Locker(CLockHandler& m):
+	public:
 
-	mutex(m) 
+		Locker(CLockHandler& m) :
 
-	{ 
-		mutex.Lock(); 
-	}
+			mutex(m)
 
-	~Locker()
-	{ 
-		mutex.UnLock(); 
-	}
+		{
+			mutex.Lock();
+		}
 
-private:
+		~Locker()
+		{
+			mutex.UnLock();
+		}
 
-	CLockHandler& mutex;
-};
+	private:
 
+		CLockHandler& mutex;
+	};
+
+} //namespace MediaSDK
 
 #endif
 

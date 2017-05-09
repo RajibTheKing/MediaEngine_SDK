@@ -5,81 +5,84 @@
 #include <vector>
 #include <cstddef>
 
-//External Callbacks
-typedef void(*SendFunctionPointerType)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> >);
-
-//Internal Callbacks
-typedef void(*OnDataReadyToSendCB)(int mediaType, unsigned char* data, size_t dataLength);
-typedef void(*OnFirePacketEventCB)(int eventType, size_t dataLenth, unsigned char data[]);
-typedef void(*OnFireDataEventCB)(int eventType, size_t dataLenth, short data[]);
-typedef void(*OnFireNetworkChangeCB)(int eventType);
-typedef void(*OnFireAudioAlarmCB)(int eventType);
-
-typedef void(*OnPackatizedDataReadyCallback)(unsigned char*, int);
-typedef void(*OnDepackatizedDataReadyCallback)(unsigned char*, int);
-
-enum AudioEntityRoleType
+namespace MediaSDK
 {
-	EntityInCall,
-	EntityChannel,
+	//External Callbacks
+	typedef void(*SendFunctionPointerType)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> >);
 
-	EntityPublisher,
-	EntityPublisherInCall,
+	//Internal Callbacks
+	typedef void(*OnDataReadyToSendCB)(int mediaType, unsigned char* data, size_t dataLength);
+	typedef void(*OnFirePacketEventCB)(int eventType, size_t dataLenth, unsigned char data[]);
+	typedef void(*OnFireDataEventCB)(int eventType, size_t dataLenth, short data[]);
+	typedef void(*OnFireNetworkChangeCB)(int eventType);
+	typedef void(*OnFireAudioAlarmCB)(int eventType);
 
-	EntityViewer,
-	EntityViewerInCall, 
+	typedef void(*OnPackatizedDataReadyCallback)(unsigned char*, int);
+	typedef void(*OnDepackatizedDataReadyCallback)(unsigned char*, int);
 
-	EntityNone
-};
+	enum AudioEntityRoleType
+	{
+		EntityInCall,
+		EntityChannel,
 
+		EntityPublisher,
+		EntityPublisherInCall,
 
-enum AudioEncoderType
-{
-	Opus_Encoder,
-	PCM_Encoder,
-	No_Encoder
-};
+		EntityViewer,
+		EntityViewerInCall,
 
-
-enum AudioDecoderType
-{
-	AAC_Decoder,
-	Opus_Decoder,
-	PCM_Decoder,
-	No_Decoder
-};
+		EntityNone
+	};
 
 
-enum AudioGainType
-{
-	WebRTC_Gain,
-	GomGom_Gain,
-	Naive_Gain,
-	No_Gain
-};
+	enum AudioEncoderType
+	{
+		Opus_Encoder,
+		PCM_Encoder,
+		No_Encoder
+	};
 
 
-enum EchoCancelerType
-{
-	WebRTC_ECM,
-	Speex_ECM,
-	No_ECM
-};
+	enum AudioDecoderType
+	{
+		AAC_Decoder,
+		Opus_Decoder,
+		PCM_Decoder,
+		No_Decoder
+	};
 
 
-enum NoiseReducerType
-{
-	WebRTC_NoiseReducer,
-	No_NoiseReducer
-};
+	enum AudioGainType
+	{
+		WebRTC_Gain,
+		GomGom_Gain,
+		Naive_Gain,
+		No_Gain
+	};
 
 
-enum AudioHeaderTypes
-{
-	HEADER_COMMON,
-	HEADER_CHANNEL,
-	HEADER_CALL
-};
+	enum EchoCancelerType
+	{
+		WebRTC_ECM,
+		Speex_ECM,
+		No_ECM
+	};
 
+
+	enum NoiseReducerType
+	{
+		WebRTC_NoiseReducer,
+		No_NoiseReducer
+	};
+
+
+	enum AudioHeaderTypes
+	{
+		HEADER_COMMON,
+		HEADER_CHANNEL,
+		HEADER_CALL
+	};
+
+} //namespace MediaSDK
 
 #endif  // !AUDIO_TYPES_H

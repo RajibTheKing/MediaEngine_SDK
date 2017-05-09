@@ -16,21 +16,26 @@
 #define DEFAULT_SEED 23232323
 #define SEED_MOD_VALUE 100000000
 
-class CHashGenerator
+namespace MediaSDK
 {
-public:
-    CHashGenerator();
-    ~CHashGenerator();
-    
-    
-    void SetSeedNumber(unsigned int nSeed);
-    int GetHashedPacketSize(unsigned int nframeNumber, unsigned int nPacketNumber);
-    unsigned long long HashSeedPair(unsigned int nSeed, unsigned int nframeNumber, unsigned int nPacketNumber);
-    int CalculateNumberOfPackets(int nFrameNumber, int iLen);
-    
-private:
-    unsigned int m_nSeed;
-	SmartPointer<CLockHandler> m_pHashGeneratorMutex;
-};
+
+	class CHashGenerator
+	{
+	public:
+		CHashGenerator();
+		~CHashGenerator();
+
+
+		void SetSeedNumber(unsigned int nSeed);
+		int GetHashedPacketSize(unsigned int nframeNumber, unsigned int nPacketNumber);
+		unsigned long long HashSeedPair(unsigned int nSeed, unsigned int nframeNumber, unsigned int nPacketNumber);
+		int CalculateNumberOfPackets(int nFrameNumber, int iLen);
+
+	private:
+		unsigned int m_nSeed;
+		SmartPointer<CLockHandler> m_pHashGeneratorMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif  //End of HASH_GENERATOR_H

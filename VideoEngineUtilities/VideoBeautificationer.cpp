@@ -4,6 +4,8 @@
 #include "../VideoEngineController/LogPrinter.h"
 #include "LockHandler.h"
 
+namespace MediaSDK
+{
 
 #define NV21 21
 #define NV12 12
@@ -1144,3 +1146,6 @@ std::string  CVideoBeautificationer::getDeviceModel()
 }
 
 #endif
+
+} //namespace MediaSDK
+

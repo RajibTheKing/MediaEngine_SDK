@@ -25,7 +25,7 @@
 #define ON 1
 #define OFF 0
 
-//#define LOG_ENABLED
+	//#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 
@@ -94,11 +94,6 @@
 
 #define PRIORITY CLogPrinter::DEBUGS
 
-#ifdef TARGET_OS_WINDOWS_PHONE
-typedef __int64 IPVLongType;
-#else
-typedef long long IPVLongType;
-#endif
 
 #include "../VideoEngineUtilities/SmartPointer.h"
 
@@ -117,8 +112,21 @@ typedef long long IPVLongType;
 #include <sys/time.h>
 #endif 
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#ifdef LOG_ENABLED
+	//Do Nothing
+#else
+#define printf(...)
+#endif
+#endif
+
+#define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+
+namespace MediaSDK
+{
+
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
-static FILE *logfp = NULL;
+	static FILE *logfp = NULL;
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
 
 #ifdef LOG_ENABLED
@@ -128,79 +136,75 @@ static FILE *logfp = NULL;
 #endif
 
 #define printk(...) printg(__VA_ARGS__,"")
-//#define printf(...)
+	//#define printf(...)
 #define printFile(...) if(!logfp) {logfp = fopen("log.txt", "wb");} fprintf(logfp, __VA_ARGS__);
 #define printfiledone() fclose(logfp);
 #endif
 
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    #ifdef LOG_ENABLED
-        //Do Nothing
-    #else
-        #define printf(...)
-    #endif
+#ifdef TARGET_OS_WINDOWS_PHONE
+	typedef __int64 IPVLongType;
+#else
+	typedef long long IPVLongType;
 #endif
 
-#define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+	using namespace std;
 
-using namespace std;
+	class CLockHandler;
 
-class CLockHandler;
-
-class CLogPrinter
-{
-
-public:
-
-	enum Priority
+	class CLogPrinter
 	{
-		NONE,
-		DEBUGS,
-		CONFIG,
-		INFO,
-		WARNING,
-		ERRORS
+
+	public:
+
+		enum Priority
+		{
+			NONE,
+			DEBUGS,
+			CONFIG,
+			INFO,
+			WARNING,
+			ERRORS
+		};
+
+		CLogPrinter();
+		~CLogPrinter();
+
+		static void Start(Priority maxPriority, const char* logFile);
+		static void Stop();
+		static void SetPriority(Priority maxPriority);
+		static void SetExactness(bool exact);
+		static std::string GetDateTime();
+
+		static void Log(const char *format, ...);
+		static void Argument_to_String(string &dst, const char *format, va_list ap);
+
+		static void Write(Priority priority, const std::string message);
+		static void SetLoggerPath(std::string location);
+		static void WriteSpecific(Priority priority, const std::string message);
+		static void WriteSpecific2(Priority priority, const std::string message);
+		static bool SetLoggingState(bool loggingState, int logLevel);
+		static long long WriteForOperationTime(Priority priority, const std::string message, long long prevTime = 0);
+		static void WriteForQueueTime(Priority priority, const std::string message);
+		static void WriteForPacketLossInfo(Priority priority, const std::string message);
+
+		static long long WriteLog(Priority priority, int isLogEnabled, const std::string message = "", bool calculatedTime = false, long long prevTime = 0);
+		static void WriteFileLog(Priority priority, int isLogEnabled, const std::string message);
+
+		static long long GetTimeDifference(long long prevTime);
+
+	private:
+
+		ofstream    fileStream;
+		Priority    maxPriority;
+		std::string		logFile;
+
+		static const std::string PRIORITY_NAMES[];
+		static CLogPrinter instance;
+		static bool isLogEnable;
+
+		//static SmartPointer<CLockHandler> m_pLogPrinterMutex;
+
 	};
-
-	CLogPrinter();
-	~CLogPrinter();
-
-	static void Start(Priority maxPriority, const char* logFile);
-	static void Stop();
-	static void SetPriority(Priority maxPriority);
-	static void SetExactness(bool exact);
-	static std::string GetDateTime();
-    
-    static void Log(const char *format, ...);
-    static void Argument_to_String(string &dst, const char *format, va_list ap);
-    
-	static void Write(Priority priority, const std::string message);
-	static void SetLoggerPath(std::string location);
-    static void WriteSpecific(Priority priority, const std::string message);
-    static void WriteSpecific2(Priority priority, const std::string message);
-    static bool SetLoggingState(bool loggingState, int logLevel);
-	static long long WriteForOperationTime(Priority priority, const std::string message, long long prevTime = 0);
-	static void WriteForQueueTime(Priority priority, const std::string message);
-	static void WriteForPacketLossInfo(Priority priority, const std::string message);
-
-	static long long WriteLog(Priority priority, int isLogEnabled, const std::string message = "", bool calculatedTime = false, long long prevTime = 0);
-	static void WriteFileLog(Priority priority, int isLogEnabled, const std::string message);
-
-	static long long GetTimeDifference(long long prevTime);
-
-private:
-
-	ofstream    fileStream;
-	Priority    maxPriority;
-	std::string		logFile;
-
-	static const std::string PRIORITY_NAMES[];
-	static CLogPrinter instance;
-    static bool isLogEnable;
-
-	//static SmartPointer<CLockHandler> m_pLogPrinterMutex;
-
-};
 
 
 
@@ -295,5 +299,8 @@ private:
 #else
 #define CLogPrinter_WriteBitrateChangeInfo(...)
 #endif
+
+} //namespace MediaSDK
+
 
 #endif

@@ -4,96 +4,101 @@
 #include "LogPrinter.h"
 #include "LockHandler.h"
 
-LiveVideoDecodingQueue::LiveVideoDecodingQueue() :
-
-        m_iPushIndex(0),
-        m_iPopIndex(0),
-        m_nQueueSize(0),
-        m_nQueueCapacity(LIVE_VIDEO_DECODING_QUEUE_SIZE)
-
+namespace MediaSDK
 {
-    m_pLiveVideoDecodingQueueMutex.reset(new CLockHandler);
-}
 
-LiveVideoDecodingQueue::~LiveVideoDecodingQueue()
-{
-    SHARED_PTR_DELETE(m_pLiveVideoDecodingQueueMutex);
-}
+	LiveVideoDecodingQueue::LiveVideoDecodingQueue() :
 
-void LiveVideoDecodingQueue::ResetBuffer()
-{
-    Locker lock(*m_pLiveVideoDecodingQueueMutex);
+		m_iPushIndex(0),
+		m_iPopIndex(0),
+		m_nQueueSize(0),
+		m_nQueueCapacity(LIVE_VIDEO_DECODING_QUEUE_SIZE)
 
-    m_iPushIndex = 0;
-    m_iPopIndex = 0;
-    m_nQueueSize = 0;
-}
+	{
+		m_pLiveVideoDecodingQueueMutex.reset(new CLockHandler);
+	}
 
-int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int nLength)
-{
-    Locker lock(*m_pLiveVideoDecodingQueueMutex);
+	LiveVideoDecodingQueue::~LiveVideoDecodingQueue()
+	{
+		SHARED_PTR_DELETE(m_pLiveVideoDecodingQueueMutex);
+	}
 
-    if( nLength < 0 || nLength >= MAX_VIDEO_ENCODED_FRAME_SIZE )
-    {
-        CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + Tools::IntegertoStringConvert(nLength));
+	void LiveVideoDecodingQueue::ResetBuffer()
+	{
+		Locker lock(*m_pLiveVideoDecodingQueueMutex);
 
-        return 0;
-    }
+		m_iPushIndex = 0;
+		m_iPopIndex = 0;
+		m_nQueueSize = 0;
+	}
 
-    memcpy(m_uchBuffer[m_iPushIndex], saReceivedVideoFrameData, nLength);
+	int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int nLength)
+	{
+		Locker lock(*m_pLiveVideoDecodingQueueMutex);
 
-    m_naBufferDataLength[m_iPushIndex] = nLength;
-    
-    if (m_nQueueSize == m_nQueueCapacity)
-    {
-		//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "checked time");
-		LOG_AAC("#aac#b4q# LiveVideoDecodingQueueOverflow, Couldn't push!!!");
+		if (nLength < 0 || nLength >= MAX_VIDEO_ENCODED_FRAME_SIZE)
+		{
+			CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + Tools::IntegertoStringConvert(nLength));
 
-        IncreamentIndex(m_iPopIndex);
-    }
-    else
-    {
-        m_nQueueSize++;
-    }
+			return 0;
+		}
 
-    IncreamentIndex(m_iPushIndex);
+		memcpy(m_uchBuffer[m_iPushIndex], saReceivedVideoFrameData, nLength);
 
-    return 1;
-}
+		m_naBufferDataLength[m_iPushIndex] = nLength;
 
-int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedVideoFrameData)
-{
-    Locker lock(*m_pLiveVideoDecodingQueueMutex);
+		if (m_nQueueSize == m_nQueueCapacity)
+		{
+			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "checked time");
+			LOG_AAC("#aac#b4q# LiveVideoDecodingQueueOverflow, Couldn't push!!!");
 
-    if (m_nQueueSize == 0)
-    {
-        return -1;
-    }
-    else
-    {
-        int length = m_naBufferDataLength[m_iPopIndex];
+			IncreamentIndex(m_iPopIndex);
+		}
+		else
+		{
+			m_nQueueSize++;
+		}
 
-        memcpy(saReceivedVideoFrameData, m_uchBuffer[m_iPopIndex], length);
+		IncreamentIndex(m_iPushIndex);
 
-        IncreamentIndex(m_iPopIndex);
+		return 1;
+	}
 
-        m_nQueueSize--;
+	int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedVideoFrameData)
+	{
+		Locker lock(*m_pLiveVideoDecodingQueueMutex);
 
-        return length;
-    }
-}
+		if (m_nQueueSize == 0)
+		{
+			return -1;
+		}
+		else
+		{
+			int length = m_naBufferDataLength[m_iPopIndex];
 
-void LiveVideoDecodingQueue::IncreamentIndex(int &irIndex)
-{
-    irIndex++;
+			memcpy(saReceivedVideoFrameData, m_uchBuffer[m_iPopIndex], length);
 
-    if (irIndex >= m_nQueueCapacity)
-        irIndex = 0;
-}
+			IncreamentIndex(m_iPopIndex);
 
-int LiveVideoDecodingQueue::GetQueueSize()
-{
-    Locker lock(*m_pLiveVideoDecodingQueueMutex);
+			m_nQueueSize--;
 
-    return m_nQueueSize;
-}
+			return length;
+		}
+	}
+
+	void LiveVideoDecodingQueue::IncreamentIndex(int &irIndex)
+	{
+		irIndex++;
+
+		if (irIndex >= m_nQueueCapacity)
+			irIndex = 0;
+	}
+
+	int LiveVideoDecodingQueue::GetQueueSize()
+	{
+		Locker lock(*m_pLiveVideoDecodingQueueMutex);
+
+		return m_nQueueSize;
+	}
+
+} //namespace MediaSDK

@@ -3,19 +3,22 @@
 
 #include "AudioFarEndDataProcessor.h"
 
-
-class FarEndProcessorChannel : public AudioFarEndDataProcessor
+namespace MediaSDK
 {
 
-public:
+	class FarEndProcessorChannel : public AudioFarEndDataProcessor
+	{
 
-	FarEndProcessorChannel(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
-	~FarEndProcessorChannel() { }
+	public:
 
-	void ProcessFarEndData();
+		FarEndProcessorChannel(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
+		~FarEndProcessorChannel() { }
 
-};
+		void ProcessFarEndData();
 
+	};
+
+} //namespace MediaSDK
 
 
 #endif  // !AUDIO_FAR_END_PROCESSOR_CHANNEL_H

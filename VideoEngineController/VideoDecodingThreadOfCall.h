@@ -19,121 +19,126 @@
 //#include "Helper_IOS.hpp"
 #include <thread>
 
-class CVideoCallSession;
-class CCommonElementsBucket;
-
-class CVideoDecodingThreadOfCall
+namespace MediaSDK
 {
 
-public:
+	class CVideoCallSession;
+	class CCommonElementsBucket;
 
-	CVideoDecodingThreadOfCall(CEncodedFrameDepacketizer *encodedFrameDepacketizer, 
-						 long long llFriendID,
-						 CCommonElementsBucket *pCommonElementBucket,
-                         CRenderingBuffer *renderingBuffer,
-                         LiveVideoDecodingQueue *pLiveVideoDecodingQueue,
-                         CVideoDecoder *videoDecoder,
-                         CColorConverter *colorConverter,
-                         CVideoCallSession* pVideoCallSession,
-                         bool bIsCheckCall,
-                         int nFPS
-                         );
-    
-	~CVideoDecodingThreadOfCall();
-    void Reset();
-	void StartDecodingThread();
-	void StopDecodingThread();
-	void DecodingThreadProcedure();
-	static void *CreateDecodingThread(void* param);
+	class CVideoDecodingThreadOfCall
+	{
 
-	void ResetForPublisherCallerCallEnd();
-	void ResetForViewerCallerCallStartEnd();
+	public:
 
-	void InstructionToStop();
+		CVideoDecodingThreadOfCall(CEncodedFrameDepacketizer *encodedFrameDepacketizer,
+			long long llFriendID,
+			CCommonElementsBucket *pCommonElementBucket,
+			CRenderingBuffer *renderingBuffer,
+			LiveVideoDecodingQueue *pLiveVideoDecodingQueue,
+			CVideoDecoder *videoDecoder,
+			CColorConverter *colorConverter,
+			CVideoCallSession* pVideoCallSession,
+			bool bIsCheckCall,
+			int nFPS
+			);
 
-	void SetCallFPS(int nFPS);
+		~CVideoDecodingThreadOfCall();
+		void Reset();
+		void StartDecodingThread();
+		void StopDecodingThread();
+		void DecodingThreadProcedure();
+		static void *CreateDecodingThread(void* param);
 
-	int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth);
+		void ResetForPublisherCallerCallEnd();
+		void ResetForViewerCallerCallStartEnd();
 
-private:
+		void InstructionToStop();
 
-	CVideoCallSession* m_pVideoCallSession;
-	bool bDecodingThreadRunning;
-	bool bDecodingThreadClosed;
+		void SetCallFPS(int nFPS);
 
-	int m_naInsetHeights[3];
-	int m_naInsetWidths[3];
+		int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth);
 
-	CCommonElementsBucket *m_pCommonElementBucket;
-	long long m_llFriendID;
+	private:
 
-	int m_decodingHeight;
-	int m_decodingWidth;
-	int m_decodedFrameSize;
+		CVideoCallSession* m_pVideoCallSession;
+		bool bDecodingThreadRunning;
+		bool bDecodingThreadClosed;
 
-	int m_previousDecodedFrameSize;
-	int m_PreviousDecodingHeight;
-	int m_nPreviousInsetHeight;
-	int m_nPreviousInsetWidth;
-	int m_PreviousDecodingWidth;
-	int m_PreviousFrameNumber;
-	int m_PreviousOrientation;
+		int m_naInsetHeights[3];
+		int m_naInsetWidths[3];
 
-	bool m_HasPreviousValues;
-    
-    int m_Counter;
+		CCommonElementsBucket *m_pCommonElementBucket;
+		long long m_llFriendID;
 
-	int m_nCallFPS;
+		int m_decodingHeight;
+		int m_decodingWidth;
+		int m_decodedFrameSize;
 
-	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
-	CRenderingBuffer *m_RenderingBuffer;						
-	CVideoDecoder *m_pVideoDecoder;								
-	CColorConverter *m_pColorConverter;
+		int m_previousDecodedFrameSize;
+		int m_PreviousDecodingHeight;
+		int m_nPreviousInsetHeight;
+		int m_nPreviousInsetWidth;
+		int m_PreviousDecodingWidth;
+		int m_PreviousFrameNumber;
+		int m_PreviousOrientation;
 
-	bool m_bResetForPublisherCallerCallEnd;
-	bool m_bResetForViewerCallerCallStartEnd;
+		bool m_HasPreviousValues;
 
-	bool m_bIsCheckCall;
+		int m_Counter;
 
-	unsigned char m_PreviousDecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
-	unsigned char m_PreviousDecodedFrameConvertedData[MAX_VIDEO_DECODER_FRAME_SIZE];
+		int m_nCallFPS;
 
-	unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;
+		CRenderingBuffer *m_RenderingBuffer;
+		CVideoDecoder *m_pVideoDecoder;
+		CColorConverter *m_pColorConverter;
+
+		bool m_bResetForPublisherCallerCallEnd;
+		bool m_bResetForViewerCallerCallStartEnd;
+
+		bool m_bIsCheckCall;
+
+		unsigned char m_PreviousDecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_PreviousDecodedFrameConvertedData[MAX_VIDEO_DECODER_FRAME_SIZE];
+
+		unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 #if defined(TARGET_OS_WINDOWS_PHONE)
 
-	unsigned char m_TempDecodedFrame[ULTRA_MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_TempDecodedFrame[ULTRA_MAX_VIDEO_DECODER_FRAME_SIZE];
 
 #endif
 
-    unsigned char m_CropedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
-	unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
-	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_CropedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-	Tools m_Tools;
-    CAverageCalculator *m_pCalculatorDecodeTime;
-	SmartPointer<std::thread> pDecodingThread;
-    
-    
-    
-    double m_dbAverageDecodingTime = 0, m_dbTotalDecodingTime = 0;
-    int m_nOponnentFPS, m_nMaxProcessableByMine;
-    int m_iDecodedFrameCounter = 0;
-  	long long m_nMaxDecodingTime = 0;
-    
-    
-    int m_FpsCounter;
-    long long m_FPS_TimeDiff;
-    long long llQueuePrevTime;
-    LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
-    CVideoEffects *m_pVideoEffect;
-    int m_iMaxLen;
-    //int m_iEffectSelection;
-    //int m_iNumberOfEffect;
-    //int m_iNumberOfEffectedFrame;
-    
-    
-    
-};
+		Tools m_Tools;
+		CAverageCalculator *m_pCalculatorDecodeTime;
+		SmartPointer<std::thread> pDecodingThread;
+
+
+
+		double m_dbAverageDecodingTime = 0, m_dbTotalDecodingTime = 0;
+		int m_nOponnentFPS, m_nMaxProcessableByMine;
+		int m_iDecodedFrameCounter = 0;
+		long long m_nMaxDecodingTime = 0;
+
+
+		int m_FpsCounter;
+		long long m_FPS_TimeDiff;
+		long long llQueuePrevTime;
+		LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+		CVideoEffects *m_pVideoEffect;
+		int m_iMaxLen;
+		//int m_iEffectSelection;
+		//int m_iNumberOfEffect;
+		//int m_iNumberOfEffectedFrame;
+
+
+
+	};
+
+} //namespace MediaSDK
 
 #endif 

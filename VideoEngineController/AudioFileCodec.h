@@ -23,38 +23,42 @@
 
 #define AFLOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
 
-class CAudioFileCodec
+namespace MediaSDK
 {
 
-public:
+	class CAudioFileCodec
+	{
 
-    CAudioFileCodec();
-    ~CAudioFileCodec();
+	public:
 
-    int CreateAudioEncoder();
+		CAudioFileCodec();
+		~CAudioFileCodec();
 
-    int decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
-    int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
+		int CreateAudioEncoder();
 
-    bool SetBitrateOpus(int nBitrate);
-    bool SetComplexityOpus(int nComplexity);
+		int decodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
+		int encodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 
-private:
+		bool SetBitrateOpus(int nBitrate);
+		bool SetComplexityOpus(int nComplexity);
 
-    OpusEncoder	*encoder;
-    OpusDecoder	*decoder;
-    opus_int32	length;
-    int 		err;
+	private:
 
-    opus_int16 in[AUDIO_FRAME_SIZE * AUDIO_CHANNELS];
-    opus_int16 out[AUDIO_MAX_FRAME_SIZE * AUDIO_CHANNELS];
+		OpusEncoder	*encoder;
+		OpusDecoder	*decoder;
+		opus_int32	length;
+		int 		err;
 
-    int nbBytes;
+		opus_int16 in[AUDIO_FRAME_SIZE * AUDIO_CHANNELS];
+		opus_int16 out[AUDIO_MAX_FRAME_SIZE * AUDIO_CHANNELS];
 
-    Tools m_Tools;
+		int nbBytes;
 
-};
+		Tools m_Tools;
 
+	};
+
+} //namespace MediaSDK
 
 
 #endif //FAHADOPUS_AUDIOFILECODEC_H

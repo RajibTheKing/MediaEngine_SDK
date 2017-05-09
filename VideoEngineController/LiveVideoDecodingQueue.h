@@ -4,7 +4,10 @@
 
 #include "SmartPointer.h"
 
-class CLockHandler;
+namespace MediaSDK
+{
+
+	class CLockHandler;
 
 #define LIVE_VIDEO_DECODING_QUEUE_SIZE 75
 
@@ -19,31 +22,33 @@ class CLockHandler;
 #endif
 
 
-class LiveVideoDecodingQueue 
-{
+	class LiveVideoDecodingQueue
+	{
 
-public:
+	public:
 
-    LiveVideoDecodingQueue();
-    ~LiveVideoDecodingQueue();
+		LiveVideoDecodingQueue();
+		~LiveVideoDecodingQueue();
 
-    int Queue(unsigned char *saReceivedVideoFrameData, int nLength);
-    int DeQueue(unsigned char *saReceivedVideoFrameData);
-    void IncreamentIndex(int &irIndex);
-    int GetQueueSize();
-    void ResetBuffer();
+		int Queue(unsigned char *saReceivedVideoFrameData, int nLength);
+		int DeQueue(unsigned char *saReceivedVideoFrameData);
+		void IncreamentIndex(int &irIndex);
+		int GetQueueSize();
+		void ResetBuffer();
 
-private:
+	private:
 
-    int m_iPushIndex;
-    int m_iPopIndex;
-    int m_nQueueCapacity;
-    int m_nQueueSize;
+		int m_iPushIndex;
+		int m_iPopIndex;
+		int m_nQueueCapacity;
+		int m_nQueueSize;
 
-    unsigned char m_uchBuffer[LIVE_VIDEO_DECODING_QUEUE_SIZE][MAX_VIDEO_ENCODED_FRAME_SIZE];
-    int m_naBufferDataLength[LIVE_VIDEO_DECODING_QUEUE_SIZE];
+		unsigned char m_uchBuffer[LIVE_VIDEO_DECODING_QUEUE_SIZE][MAX_VIDEO_ENCODED_FRAME_SIZE];
+		int m_naBufferDataLength[LIVE_VIDEO_DECODING_QUEUE_SIZE];
 
-    SmartPointer<CLockHandler> m_pLiveVideoDecodingQueueMutex;
-};
+		SmartPointer<CLockHandler> m_pLiveVideoDecodingQueueMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif 

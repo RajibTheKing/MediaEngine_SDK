@@ -5,29 +5,33 @@
 #include "SmartPointer.h"
 #include<vector>
 
-class CCommonElementsBucket;
-class LiveVideoDecodingQueue;
-class CLockHandler;
-
-class LiveReceiver 
+namespace MediaSDK
 {
 
-public:
+	class CCommonElementsBucket;
+	class LiveVideoDecodingQueue;
+	class CLockHandler;
 
-	LiveReceiver(CCommonElementsBucket* sharedObject);
-    ~LiveReceiver();
+	class LiveReceiver
+	{
 
-    void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);    
-	void PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
-	void PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
-	
-private:
+	public:
 
-    SmartPointer<CLockHandler> m_pLiveReceiverMutex;
+		LiveReceiver(CCommonElementsBucket* sharedObject);
+		~LiveReceiver();
 
-    LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;    
-	CCommonElementsBucket* m_pCommonElementsBucket;
-};
+		void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);
+		void PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+		void PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
+	private:
+
+		SmartPointer<CLockHandler> m_pLiveReceiverMutex;
+
+		LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+		CCommonElementsBucket* m_pCommonElementsBucket;
+	};
+
+} //namespace MediaSDK
 
 #endif 

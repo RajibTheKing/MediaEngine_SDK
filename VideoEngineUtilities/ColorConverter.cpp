@@ -8,6 +8,9 @@
 typedef unsigned char byte;
 #endif
 
+namespace MediaSDK
+{
+
 CColorConverter::CColorConverter(int iVideoHeight, int iVideoWidth, CCommonElementsBucket* commonElementsBucket, LongLong lfriendID) :
 
 /*m_iVideoHeight(iVideoHeight),
@@ -2009,3 +2012,4 @@ void CColorConverter::GetSmallFrame(unsigned char *pSmallFrame)
 	memcpy(pSmallFrame, m_pSmallFrame, m_iSmallFrameSize);
 }
 
+} //namespace MediaSDK

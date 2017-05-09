@@ -7,20 +7,24 @@
 #include "noise_suppression.h"
 #endif
 
-class WebRTCNoiseReducer : public NoiseReducerInterface
+namespace MediaSDK
 {
+
+	class WebRTCNoiseReducer : public NoiseReducerInterface
+	{
 #ifdef USE_ANS
-	NsHandle* NS_instance;
+		NsHandle* NS_instance;
 #endif
 
-public:
-	
-	WebRTCNoiseReducer();
-	~WebRTCNoiseReducer();
-	
-	int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning);
-};
+	public:
 
+		WebRTCNoiseReducer();
+		~WebRTCNoiseReducer();
+
+		int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning);
+	};
+
+} //namespace MediaSDK
 
 #endif // !WEBRTC_NOISE_REDUCER_H
 

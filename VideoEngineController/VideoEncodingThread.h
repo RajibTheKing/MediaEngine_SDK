@@ -16,105 +16,110 @@
 
 #include <thread>
 
-class CVideoCallSession;
-class CCommonElementsBucket;
-
-class CVideoEncodingThread
+namespace MediaSDK
 {
 
-public:
+	class CVideoCallSession;
+	class CCommonElementsBucket;
 
-	CVideoEncodingThread(long long llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
-	~CVideoEncodingThread();
+	class CVideoEncodingThread
+	{
 
-	void StartEncodingThread();
-	void StopEncodingThread();
-	void EncodingThreadProcedure();
-	static void *CreateVideoEncodingThread(void* param);
+	public:
 
-	void ResetForViewerCallerCallEnd();
-	void ResetForPublisherCallerInAudioOnly();
+		CVideoEncodingThread(long long llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
+		~CVideoEncodingThread();
 
-	void SetOrientationType(int nOrientationType);
-    void ResetVideoEncodingThread(BitRateController *pBitRateController);
+		void StartEncodingThread();
+		void StopEncodingThread();
+		void EncodingThreadProcedure();
+		static void *CreateVideoEncodingThread(void* param);
 
-	void SetCallFPS(int nFPS);
+		void ResetForViewerCallerCallEnd();
+		void ResetForPublisherCallerInAudioOnly();
 
-	bool IsThreadStarted();
+		void SetOrientationType(int nOrientationType);
+		void ResetVideoEncodingThread(BitRateController *pBitRateController);
 
-	void SetNotifierFlag(bool flag);
-    
-    void SetFrameNumber(int nFrameNumber);
+		void SetCallFPS(int nFPS);
 
-	int SetVideoEffect(int nEffectStatus);
-    
-	void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
+		bool IsThreadStarted();
 
-	CEncodingBuffer *m_pEncodingBuffer;
+		void SetNotifierFlag(bool flag);
 
-private:
+		void SetFrameNumber(int nFrameNumber);
 
-	CVideoCallSession *m_pVideoCallSession;
-							
-	BitRateController *m_pBitRateController;
-    IDRFrameIntervalController *m_pIdrFrameIntervalController;
-	CColorConverter *m_pColorConverter;
-	CVideoEncoder *m_pVideoEncoder;
-	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
+		int SetVideoEffect(int nEffectStatus);
 
-	bool m_bVideoEffectEnabled;
+		void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
 
-	bool m_bResetForViewerCallerCallEnd;
-	bool m_ResetForPublisherCallerInAudioOnly;
+		CEncodingBuffer *m_pEncodingBuffer;
 
-	unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-	unsigned char m_ucaConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-	unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+	private:
 
-	unsigned char m_ucaMirroredFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-    unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		CVideoCallSession *m_pVideoCallSession;
 
-    unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
+		BitRateController *m_pBitRateController;
+		IDRFrameIntervalController *m_pIdrFrameIntervalController;
+		CColorConverter *m_pColorConverter;
+		CVideoEncoder *m_pVideoEncoder;
+		CEncodedFramePacketizer *m_pEncodedFramePacketizer;
 
-    unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		bool m_bVideoEffectEnabled;
+
+		bool m_bResetForViewerCallerCallEnd;
+		bool m_ResetForPublisherCallerInAudioOnly;
+
+		unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+
+		unsigned char m_ucaMirroredFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+
+		unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
+
+		unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 #if defined(DESKTOP_C_SHARP)
-	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
-	unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
+		unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
 #endif
 
-	int m_iFrameNumber;
-	long long m_llFriendID;		
-	int m_nOrientationType;
-	bool bEncodingThreadRunning;
-	bool bEncodingThreadClosed;
-	bool m_bNotifyToClientVideoQuality;
+		int m_iFrameNumber;
+		long long m_llFriendID;
+		int m_nOrientationType;
+		bool bEncodingThreadRunning;
+		bool bEncodingThreadClosed;
+		bool m_bNotifyToClientVideoQuality;
 
-	CCommonElementsBucket *m_pCommonElementBucket;
+		CCommonElementsBucket *m_pCommonElementBucket;
 
-	bool m_bSelfViewOnly;
+		bool m_bSelfViewOnly;
 
-	bool m_bIsThisThreadStarted;
+		bool m_bIsThisThreadStarted;
 
-	int m_nCallFPS;
-    
-    int mt_nTotalEncodingTimePerFrameRate;
-    int mt_nCheckSlot;
-    
-	Tools m_Tools;
-    
-    CAverageCalculator *m_pCalculatorEncodeTime;
-    CAverageCalculator *m_pCalculateEncodingTimeDiff;
-	CVideoBeautificationer *m_VideoBeautificationer;
-	CVideoEffects *m_VideoEffects;
-    
-    long long m_FPS_TimeDiff;
-    int m_FpsCounter;
-    bool m_bIsCheckCall;
+		int m_nCallFPS;
 
-	int m_filterToApply;
+		int mt_nTotalEncodingTimePerFrameRate;
+		int mt_nCheckSlot;
 
-	SmartPointer<std::thread> pEncodingThread;
-};
+		Tools m_Tools;
+
+		CAverageCalculator *m_pCalculatorEncodeTime;
+		CAverageCalculator *m_pCalculateEncodingTimeDiff;
+		CVideoBeautificationer *m_VideoBeautificationer;
+		CVideoEffects *m_VideoEffects;
+
+		long long m_FPS_TimeDiff;
+		int m_FpsCounter;
+		bool m_bIsCheckCall;
+
+		int m_filterToApply;
+
+		SmartPointer<std::thread> pEncodingThread;
+	};
+
+} //namespace MediaSDK
 
 #endif 

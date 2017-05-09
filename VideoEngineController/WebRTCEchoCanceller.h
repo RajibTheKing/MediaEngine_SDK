@@ -18,32 +18,35 @@ FILE *EchoFile;
 #define NEAREND 3
 #endif
 
-
-class WebRTCEchoCanceller : public EchoCancellerInterface
+namespace MediaSDK
 {
 
-public:
-	WebRTCEchoCanceller();
+	class WebRTCEchoCanceller : public EchoCancellerInterface
+	{
 
-	virtual ~WebRTCEchoCanceller();
+	public:
+		WebRTCEchoCanceller();
 
-	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
+		virtual ~WebRTCEchoCanceller();
 
-	int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning);
+		int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
 
-private:
-	void* AECM_instance;
+		int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning);
 
-	bool m_bAecmCreated;
-	bool m_bAecmInited;
-	bool m_bWritingDump;
+	private:
+		void* AECM_instance;
 
-	long long m_llLastFarendTime;
-	int iCounter, iCounter2;
+		bool m_bAecmCreated;
+		bool m_bAecmInited;
+		bool m_bWritingDump;
 
-	short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
+		long long m_llLastFarendTime;
+		int iCounter, iCounter2;
 
-};
+		short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
 
+	};
+
+} //namespace MediaSDK
 
 #endif  // !WEBRTC_ECHO_CANCELLER_H

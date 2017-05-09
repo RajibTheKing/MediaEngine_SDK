@@ -10,60 +10,65 @@
 #include "BandwidthController.h"
 #include <thread>
 
-class CVideoCallSession;
-class CCommonElementsBucket;
-class CFPSController;
-//class CVideoHeader;
-
-//#define CHANNEL_FROM_FILE
-
-class CSendingThreadOfCall
+namespace MediaSDK
 {
-public:
 
-	CSendingThreadOfCall(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, long long llfriendID, bool bAudioOnlyLive);
-	~CSendingThreadOfCall();
+	class CVideoCallSession;
+	class CCommonElementsBucket;
+	class CFPSController;
+	//class CVideoHeader;
 
-	void StartSendingThread();
-	void StopSendingThread();
-	void SendingThreadProcedure();
-	static void *CreateVideoSendingThread(void* param);
+	//#define CHANNEL_FROM_FILE
 
-private:
-	int GetSleepTime();
+	class CSendingThreadOfCall
+	{
+	public:
 
-	long long m_nTimeStampOfChunck;
-	int m_nTimeStampOfChunckSend;
+		CSendingThreadOfCall(CCommonElementsBucket* commonElementsBucket, CSendingBuffer *sendingBuffer, CVideoCallSession* pVideoCallSession, bool bIsCheckCall, long long llfriendID, bool bAudioOnlyLive);
+		~CSendingThreadOfCall();
 
-	CVideoCallSession* m_pVideoCallSession;
+		void StartSendingThread();
+		void StopSendingThread();
+		void SendingThreadProcedure();
+		static void *CreateVideoSendingThread(void* param);
+
+	private:
+		int GetSleepTime();
+
+		long long m_nTimeStampOfChunck;
+		int m_nTimeStampOfChunckSend;
+
+		CVideoCallSession* m_pVideoCallSession;
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
-    std::vector<int>m_TimePeriodInterval;
-    std::vector<int>m_BandWidthList;
-    BandwidthController m_BandWidthController;
+		std::vector<int>m_TimePeriodInterval;
+		std::vector<int>m_BandWidthList;
+		BandwidthController m_BandWidthController;
 #endif
-    
-	bool bSendingThreadRunning;
-	bool bSendingThreadClosed;
 
-	CCommonElementsBucket* m_pCommonElementsBucket;		
-	CSendingBuffer *m_SendingBuffer;
+		bool bSendingThreadRunning;
+		bool bSendingThreadClosed;
 
-	bool m_bIsCheckCall;
+		CCommonElementsBucket* m_pCommonElementsBucket;
+		CSendingBuffer *m_SendingBuffer;
 
-	unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
-    
-	long long m_lfriendID;
+		bool m_bIsCheckCall;
 
-//	CVideoHeader m_cVH;
+		unsigned char m_EncodedFrame[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
 
-	long long int llPrevTime;
-    long long m_llPrevTimeWhileSendingToLive;
+		long long m_lfriendID;
+
+		//	CVideoHeader m_cVH;
+
+		long long int llPrevTime;
+		long long m_llPrevTimeWhileSendingToLive;
 
 
-	Tools m_Tools;
+		Tools m_Tools;
 
-	SmartPointer<std::thread> pSendingThread;
-};
+		SmartPointer<std::thread> pSendingThread;
+	};
+
+} //namespace MediaSDK
 
 #endif 

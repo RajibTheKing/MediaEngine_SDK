@@ -4,74 +4,77 @@
 
 #include "AudioTypes.h"
 
-
-class AudioSessionOptions
+namespace MediaSDK
 {
-private:
 
-	AudioHeaderTypes headerType;
+	class AudioSessionOptions
+	{
+	private:
 
-	AudioEncoderType encoderType;
-	AudioDecoderType decoderType;
+		AudioHeaderTypes headerType;
 
-	NoiseReducerType noiseReducerType;
-	EchoCancelerType echoCancelerType;
-	AudioGainType gainType;
+		AudioEncoderType encoderType;
+		AudioDecoderType decoderType;
 
-	bool adaptEncoderBitrate;
-	bool adaptEncoderComplexity;
-	bool adaptDecoderBitrate;
-	bool adaptDecoderComplexity;
+		NoiseReducerType noiseReducerType;
+		EchoCancelerType echoCancelerType;
+		AudioGainType gainType;
 
-	bool enableBufferData;
-	bool enableMuxing;
-	bool enablePacketization;
+		bool adaptEncoderBitrate;
+		bool adaptEncoderComplexity;
+		bool adaptDecoderBitrate;
+		bool adaptDecoderComplexity;
 
-
-protected:
-
-	AudioEntityRoleType GetEntityRoleType(int serviceType, int entityType);
-
-	void SetOptionsForCall();
-	void SetOptionsForChannel();
-
-	void SetOptionsForPublisher();
-	void SetOptionsForPublisherInCall();
-
-	void SetOptionsForViewer();
-	void SetOptionsForViewerInCall();
+		bool enableBufferData;
+		bool enableMuxing;
+		bool enablePacketization;
 
 
-public:
+	protected:
 
-	AudioSessionOptions();
-	~AudioSessionOptions() { }
+		AudioEntityRoleType GetEntityRoleType(int serviceType, int entityType);
 
-	void ResetOptions();
-	void SetOptions(int serviceType, int entityType);
+		void SetOptionsForCall();
+		void SetOptionsForChannel();
+
+		void SetOptionsForPublisher();
+		void SetOptionsForPublisherInCall();
+
+		void SetOptionsForViewer();
+		void SetOptionsForViewerInCall();
 
 
-public:
+	public:
 
-	AudioHeaderTypes GetHeaderType()       { return headerType; }
+		AudioSessionOptions();
+		~AudioSessionOptions() { }
 
-	AudioEncoderType GetEncoderType()      { return encoderType; }
-	AudioDecoderType GetDecoderType()      { return decoderType; }
+		void ResetOptions();
+		void SetOptions(int serviceType, int entityType);
 
-	NoiseReducerType GetNoiseReducerType() { return noiseReducerType; }
-	EchoCancelerType GetEchoCancelerType() { return echoCancelerType; }
-	AudioGainType GetGainType()            { return gainType; }
 
-	bool IsAdaptEncoderBitrate()           { return adaptEncoderBitrate; }
-	bool IsAdaptEncoderComplexity()        { return adaptEncoderComplexity; }
-	bool IsAdaptDecoderBitrate()           { return adaptDecoderBitrate; }
-	bool IsAdaptDecoderComplexity()        { return adaptDecoderComplexity; }
+	public:
 
-	bool IsEnabledBufferData()             { return enableBufferData; }
-	bool IsEnabledMuxing()                 { return enableMuxing; }
-	bool IsEnabledPacketization()          { return enablePacketization; }
-};
+		AudioHeaderTypes GetHeaderType()       { return headerType; }
 
+		AudioEncoderType GetEncoderType()      { return encoderType; }
+		AudioDecoderType GetDecoderType()      { return decoderType; }
+
+		NoiseReducerType GetNoiseReducerType() { return noiseReducerType; }
+		EchoCancelerType GetEchoCancelerType() { return echoCancelerType; }
+		AudioGainType GetGainType()            { return gainType; }
+
+		bool IsAdaptEncoderBitrate()           { return adaptEncoderBitrate; }
+		bool IsAdaptEncoderComplexity()        { return adaptEncoderComplexity; }
+		bool IsAdaptDecoderBitrate()           { return adaptDecoderBitrate; }
+		bool IsAdaptDecoderComplexity()        { return adaptDecoderComplexity; }
+
+		bool IsEnabledBufferData()             { return enableBufferData; }
+		bool IsEnabledMuxing()                 { return enableMuxing; }
+		bool IsEnabledPacketization()          { return enablePacketization; }
+	};
+
+} //namespace MediaSDK
 
 
 #endif  // AUDIO_SESSION_OPTIONS_H

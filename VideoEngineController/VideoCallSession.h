@@ -35,265 +35,268 @@
 #include "LiveVideoDecodingQueue.h"
 #include "IDRFrameIntervalController.h"
 
-
-
-using namespace std;
-
-class CCommonElementsBucket;
-class CVideoEncoder;
-class CController;
-
-class CVideoCallSession
+namespace MediaSDK
 {
 
-public:
 
-	CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly);
-	~CVideoCallSession();
+	using namespace std;
 
-	long long GetFriendID();
-	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType);
-	CVideoEncoder* GetVideoEncoder();
-	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
-	CVideoDecoder* GetVideoDecoder();
-	CColorConverter* GetColorConverter();
+	class CCommonElementsBucket;
+	class CVideoEncoder;
+	class CController;
 
-	bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
-	bool PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
-	CEncodedFrameDepacketizer * GetEncodedFrameDepacketizer();
+	class CVideoCallSession
+	{
 
-	void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
+	public:
 
-	void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
-    void CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFrameNumber);
-    
-	CFPSController* GetFPSController();
+		CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly);
+		~CVideoCallSession();
 
-	void StartCallInLive(int nCallInLiveType, int nCalleeID);
-	void EndCallInLive(int nCalleeID);
+		long long GetFriendID();
+		void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType);
+		CVideoEncoder* GetVideoEncoder();
+		int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
+		CVideoDecoder* GetVideoDecoder();
+		CColorConverter* GetColorConverter();
 
-	CSendingThreadOfCall *m_pSendingThreadOfCall;
-	CSendingThreadOfLive *m_pSendingThreadOfLive;
+		bool PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
+		bool PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
+		CEncodedFrameDepacketizer * GetEncodedFrameDepacketizer();
 
-	CVideoEncodingThreadOfCall *m_pVideoEncodingThreadOfCall;
-	CVideoEncodingThreadOfLive *m_pVideoEncodingThreadOfLive;
+		void PushFrameForDecoding(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int timeStampDiff);
 
-	CRenderingThreadOfCall *m_pRenderingThreadOfCall;
-	CRenderingThreadOfLive *m_pRenderingThreadOfLive;
-	CRenderingThreadOfChannel *m_pRenderingThreadOfChannel;
+		void CreateAndSendMiniPacket(int resendFrameNumber, int resendPacketNumber);
+		void CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFrameNumber);
 
-	CVideoDecodingThreadOfCall *m_pVideoDecodingThreadOfCall;
-	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadOfLive;
-	CVideoDecodingThreadOfChannel *m_pVideoDecodingThreadOfChannel;
+		CFPSController* GetFPSController();
 
-	CVideoDepacketizationThread *m_pVideoDepacketizationThread;
+		void StartCallInLive(int nCallInLiveType, int nCalleeID);
+		void EndCallInLive(int nCalleeID);
 
-	long long GetFirstVideoPacketTime();
-	void SetFirstVideoPacketTime(long long llTimeStamp);
+		CSendingThreadOfCall *m_pSendingThreadOfCall;
+		CSendingThreadOfLive *m_pSendingThreadOfLive;
 
-	void SetFirstFrameEncodingTime(long long time);
-	long long GetFirstFrameEncodingTime();
-	void SetShiftedTime(long long llTime);
-	long long GetShiftedTime();	
+		CVideoEncodingThreadOfCall *m_pVideoEncodingThreadOfCall;
+		CVideoEncodingThreadOfLive *m_pVideoEncodingThreadOfLive;
 
-	void SetOwnFPS(int nOwnFPS);
-	void SetOpponentFPS(int nOpponentFPS);
-    bool GetResolationCheck();
-    void SetCalculationStartMechanism(bool s7);
-    long long GetCalculationStartTime();
-    bool GetCalculationStatus();
-    void DecideHighResolatedVideo(bool bValue);
-    bool GetHighResolutionSupportStatus();
-    
-    void SetOpponentHighResolutionSupportStatus(bool bValue);
-    bool GetOpponentHighResolutionSupportStatus();
-    
-    void ReInitializeVideoLibrary(int iHeight, int iWidth);
-    bool GetReinitializationStatus();
-    void OperationForResolutionControl(unsigned char* in_data, int in_size);
-    bool GetResolutionNegotiationStatus();
-    CVersionController* GetVersionController();
+		CRenderingThreadOfCall *m_pRenderingThreadOfCall;
+		CRenderingThreadOfLive *m_pRenderingThreadOfLive;
+		CRenderingThreadOfChannel *m_pRenderingThreadOfChannel;
 
-	void FirstFrameCapturingTimeStamp();
+		CVideoDecodingThreadOfCall *m_pVideoDecodingThreadOfCall;
+		CVideoDecodingThreadOfLive *m_pVideoDecodingThreadOfLive;
+		CVideoDecodingThreadOfChannel *m_pVideoDecodingThreadOfChannel;
 
-	void StopDeviceAbilityChecking();
-    
-	int GetOwnVideoCallQualityLevel();
-	void SetOwnVideoCallQualityLevel(int nVideoCallQualityLevel);
+		CVideoDepacketizationThread *m_pVideoDepacketizationThread;
 
-	int GetOpponentVideoCallQualityLevel();
-	void SetOpponentVideoCallQualityLevel(int nVideoCallQualityLevel);
-	
-	int GetCurrentVideoCallQualityLevel();
-	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel);
-    int GetServiceType();
-	int GetEntityType();
+		long long GetFirstVideoPacketTime();
+		void SetFirstVideoPacketTime(long long llTimeStamp);
 
-	BitRateController* GetBitRateController();
-    bool isLiveVideoStreamRunning();
+		void SetFirstFrameEncodingTime(long long time);
+		long long GetFirstFrameEncodingTime();
+		void SetShiftedTime(long long llTime);
+		long long GetShiftedTime();
 
-	void SetCallInLiveType(int nCallInLiveType);
+		void SetOwnFPS(int nOwnFPS);
+		void SetOpponentFPS(int nOpponentFPS);
+		bool GetResolationCheck();
+		void SetCalculationStartMechanism(bool s7);
+		long long GetCalculationStartTime();
+		bool GetCalculationStatus();
+		void DecideHighResolatedVideo(bool bValue);
+		bool GetHighResolutionSupportStatus();
 
-	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width);
-	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
+		void SetOpponentHighResolutionSupportStatus(bool bValue);
+		bool GetOpponentHighResolutionSupportStatus();
 
-	int SetVideoEffect(int nEffectStatus);
-	int TestVideoEffect(int *param, int size);
+		void ReInitializeVideoLibrary(int iHeight, int iWidth);
+		bool GetReinitializationStatus();
+		void OperationForResolutionControl(unsigned char* in_data, int in_size);
+		bool GetResolutionNegotiationStatus();
+		CVersionController* GetVersionController();
 
-	void SetOwnDeviceType(int deviceType);
-	int GetOwnDeviceType();
+		void FirstFrameCapturingTimeStamp();
 
-	void SetOponentDeviceType(int deviceType);
-	int GetOponentDeviceType();
-    
-    void SetOpponentVideoHeightWidth(int iHight, int iWidth);
-    int GetOpponentVideoHeight();
-    int GetOpponentVideoWidth();
+		void StopDeviceAbilityChecking();
 
-	bool GetAudioOnlyLiveStatus();
-	int GetCallInLiveType();
+		int GetOwnVideoCallQualityLevel();
+		void SetOwnVideoCallQualityLevel(int nVideoCallQualityLevel);
 
-	void InterruptOccured();
-	void InterruptOver();
-    
-    bool isDynamicIDR_Mechanism_Enable();
-    
+		int GetOpponentVideoCallQualityLevel();
+		void SetOpponentVideoCallQualityLevel(int nVideoCallQualityLevel);
 
-	bool m_bVideoCallStarted;
-    CController *m_pController;
-	int m_nCallFPS;
-    bool m_bLiveVideoStreamRunning;
+		int GetCurrentVideoCallQualityLevel();
+		void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel);
+		int GetServiceType();
+		int GetEntityType();
 
-	int m_nVideoCallHeight;
-	int m_nVideoCallWidth;
+		BitRateController* GetBitRateController();
+		bool isLiveVideoStreamRunning();
 
-	CVideoEncodingThread *m_pVideoEncodingThread;
+		void SetCallInLiveType(int nCallInLiveType);
 
-private:
+		int SetEncoderHeightWidth(const long long& lFriendID, int height, int width);
+		int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
-	int m_nPublisherInsetNumber;
+		int SetVideoEffect(int nEffectStatus);
+		int TestVideoEffect(int *param, int size);
 
-	CSendingThread *m_pSendingThread;
-	
-	CVideoRenderingThread *m_pVideoRenderingThread;
-	CVideoDecodingThread *m_pVideoDecodingThread;
-	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
-	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
+		void SetOwnDeviceType(int deviceType);
+		int GetOwnDeviceType();
 
-	CVideoDecoder *m_pVideoDecoderForSecondInset;
-	CVideoDecoder *m_pVideoDecoderForThirdInset;
+		void SetOponentDeviceType(int deviceType);
+		int GetOponentDeviceType();
 
-	CFPSController *m_pFPSController;
-	long long m_LastTimeStampClientFPS;
-	double m_ClientFPSDiffSum;
-	int m_ClientFrameCounter;
-	double m_ClientFPS;
-	int m_EncodingFrameCounter;
-	bool m_bSkipFirstByteCalculation;
+		void SetOpponentVideoHeightWidth(int iHight, int iWidth);
+		int GetOpponentVideoHeight();
+		int GetOpponentVideoWidth();
 
-	bool m_bVideoEffectEnabled;
+		bool GetAudioOnlyLiveStatus();
+		int GetCallInLiveType();
 
-	int m_nOwnVideoCallQualityLevel;
-	int m_nOpponentVideoCallQualityLevel;
-	int m_nCurrentVideoCallQualityLevel;
+		void InterruptOccured();
+		void InterruptOver();
 
-	bool m_bAudioOnlyLive;
-	bool m_bVideoOnlyLive;
-	bool m_bSelfViewOnly;
+		bool isDynamicIDR_Mechanism_Enable();
 
-	int m_nCallInLiveType;
-	int m_nFrameCount;
 
-	int m_iRole;
+		bool m_bVideoCallStarted;
+		CController *m_pController;
+		int m_nCallFPS;
+		bool m_bLiveVideoStreamRunning;
 
-	long long m_llShiftedTime;
-	long long m_llTimeStampOfFirstPacketRcvd;
-	long long m_nFirstFrameEncodingTimeDiff;
-	int m_ByteRcvInBandSlot;
-	long long m_llFirstFrameCapturingTimeStamp;
+		int m_nVideoCallHeight;
+		int m_nVideoCallWidth;
 
-	unsigned int m_miniPacketBandCounter;
+		CVideoEncodingThread *m_pVideoEncodingThread;
 
-	int m_nOwnDeviceType;
-	int m_nOponentDeviceType;
+	private:
 
-	CVideoHeader m_cVH;
+		int m_nPublisherInsetNumber;
 
-	int m_nEntityType;
+		CSendingThread *m_pSendingThread;
 
-	int m_nCapturedFrameCounter;
+		CVideoRenderingThread *m_pVideoRenderingThread;
+		CVideoDecodingThread *m_pVideoDecodingThread;
+		CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
+		CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
 
-	int m_nDeviceHeight;
-	int m_nDeviceWidth;
+		CVideoDecoder *m_pVideoDecoderForSecondInset;
+		CVideoDecoder *m_pVideoDecoderForThirdInset;
 
-	int m_SlotResetLeftRange;
-	int m_SlotResetRightRange;
+		CFPSController *m_pFPSController;
+		long long m_LastTimeStampClientFPS;
+		double m_ClientFPSDiffSum;
+		int m_ClientFrameCounter;
+		double m_ClientFPS;
+		int m_EncodingFrameCounter;
+		bool m_bSkipFirstByteCalculation;
 
-	bool m_bIsCheckCall;
+		bool m_bVideoEffectEnabled;
 
-	int *pnDeviceSupportedFPS;
-    
-    long long mt_llCapturePrevTime;
-    bool m_bResolationCheck;
-    bool m_bShouldStartCalculation;
-    long long m_bCaclculationStartTime;
-    bool m_bHighResolutionSupportedForOwn;
-    bool m_bHighResolutionSupportedForOpponent;
-    bool m_bReinitialized;
-    bool m_bResolutionNegotiationDone;
-    
-    int m_nServiceType;
-    
-	Tools m_Tools;
-	long long m_lfriendID;
-	CVideoEncoderListHandler sessionMediaList;
+		int m_nOwnVideoCallQualityLevel;
+		int m_nOpponentVideoCallQualityLevel;
+		int m_nCurrentVideoCallQualityLevel;
 
-	CVideoHeader m_PacketHeader;
+		bool m_bAudioOnlyLive;
+		bool m_bVideoOnlyLive;
+		bool m_bSelfViewOnly;
 
-	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;
-	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
-	CCommonElementsBucket* m_pCommonElementsBucket;
-	CVideoEncoder *m_pVideoEncoder;
-	CVideoDecoder *m_pVideoDecoder;
+		int m_nCallInLiveType;
+		int m_nFrameCount;
 
-	BitRateController *m_BitRateController;
-    IDRFrameIntervalController *m_pIdrFrameIntervalController;
-    
+		int m_iRole;
 
-	CEncodingBuffer *m_EncodingBuffer;
-	CVideoPacketQueue *m_pVideoPacketQueue;
-	CVideoPacketQueue *m_pRetransVideoPacketQueue;
-	CVideoPacketQueue *m_pMiniPacketQueue;
-	CRenderingBuffer *m_RenderingBuffer;
-	CSendingBuffer *m_SendingBuffer;
+		long long m_llShiftedTime;
+		long long m_llTimeStampOfFirstPacketRcvd;
+		long long m_nFirstFrameEncodingTimeDiff;
+		int m_ByteRcvInBandSlot;
+		long long m_llFirstFrameCapturingTimeStamp;
 
-	CColorConverter *m_pColorConverter;
+		unsigned int m_miniPacketBandCounter;
 
-	unsigned char m_CroppedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		int m_nOwnDeviceType;
+		int m_nOponentDeviceType;
 
-	unsigned char m_miniPacket[VIDEO_HEADER_LENGTH + 1];
-    
-    CVersionController *m_pVersionController;
-    CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;
-    
-    int m_nDeviceCheckFrameCounter;
-    long long m_llClientFrameFPSTimeStamp;
-    CAverageCalculator *m_VideoFpsCalculator;
-    
-    LiveReceiver *m_pLiveReceiverVideo;
-    LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
-    
-    int m_nOpponentVideoHeight;
-    int m_nOpponentVideoWidth;
+		CVideoHeader m_cVH;
 
-    bool m_bDynamic_IDR_Sending_Mechanism;
-    
-    
+		int m_nEntityType;
 
-protected:
+		int m_nCapturedFrameCounter;
 
-	SmartPointer<CLockHandler> m_pVideoCallSessionMutex;
-};
+		int m_nDeviceHeight;
+		int m_nDeviceWidth;
 
+		int m_SlotResetLeftRange;
+		int m_SlotResetRightRange;
+
+		bool m_bIsCheckCall;
+
+		int *pnDeviceSupportedFPS;
+
+		long long mt_llCapturePrevTime;
+		bool m_bResolationCheck;
+		bool m_bShouldStartCalculation;
+		long long m_bCaclculationStartTime;
+		bool m_bHighResolutionSupportedForOwn;
+		bool m_bHighResolutionSupportedForOpponent;
+		bool m_bReinitialized;
+		bool m_bResolutionNegotiationDone;
+
+		int m_nServiceType;
+
+		Tools m_Tools;
+		long long m_lfriendID;
+		CVideoEncoderListHandler sessionMediaList;
+
+		CVideoHeader m_PacketHeader;
+
+		CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;
+		CEncodedFramePacketizer *m_pEncodedFramePacketizer;
+		CCommonElementsBucket* m_pCommonElementsBucket;
+		CVideoEncoder *m_pVideoEncoder;
+		CVideoDecoder *m_pVideoDecoder;
+
+		BitRateController *m_BitRateController;
+		IDRFrameIntervalController *m_pIdrFrameIntervalController;
+
+
+		CEncodingBuffer *m_EncodingBuffer;
+		CVideoPacketQueue *m_pVideoPacketQueue;
+		CVideoPacketQueue *m_pRetransVideoPacketQueue;
+		CVideoPacketQueue *m_pMiniPacketQueue;
+		CRenderingBuffer *m_RenderingBuffer;
+		CSendingBuffer *m_SendingBuffer;
+
+		CColorConverter *m_pColorConverter;
+
+		unsigned char m_CroppedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+
+		unsigned char m_miniPacket[VIDEO_HEADER_LENGTH + 1];
+
+		CVersionController *m_pVersionController;
+		CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;
+
+		int m_nDeviceCheckFrameCounter;
+		long long m_llClientFrameFPSTimeStamp;
+		CAverageCalculator *m_VideoFpsCalculator;
+
+		LiveReceiver *m_pLiveReceiverVideo;
+		LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
+
+		int m_nOpponentVideoHeight;
+		int m_nOpponentVideoWidth;
+
+		bool m_bDynamic_IDR_Sending_Mechanism;
+
+
+
+	protected:
+
+		SmartPointer<CLockHandler> m_pVideoCallSessionMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif
