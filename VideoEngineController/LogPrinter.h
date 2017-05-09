@@ -134,11 +134,11 @@ static FILE *logfp = NULL;
 #endif
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#ifdef LOG_ENABLED
-#define printf(...) printg(__VA_ARGS__,"")
-#else
-#define printf(...)
-#endif
+    #ifdef LOG_ENABLED
+        //Do Nothing
+    #else
+        #define printf(...)
+    #endif
 #endif
 
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
