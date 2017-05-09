@@ -3,6 +3,9 @@
 #define IPV_RENDERING_BUFFER_H
 
 #include "SmartPointer.h"
+#include "Size.h"
+
+class CLockHandler;
 
 class CRenderingBuffer
 {
@@ -37,7 +40,6 @@ private:
 	long long m_llaBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_llaBufferCaptureTimeDifferences[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
-	//Tools m_Tools;
 	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
 };
 
