@@ -25,7 +25,7 @@
 #define ON 1
 #define OFF 0
 
-#define LOG_ENABLED
+//#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 
@@ -131,6 +131,14 @@ static FILE *logfp = NULL;
 //#define printf(...)
 #define printFile(...) if(!logfp) {logfp = fopen("log.txt", "wb");} fprintf(logfp, __VA_ARGS__);
 #define printfiledone() fclose(logfp);
+#endif
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#ifdef LOG_ENABLED
+#define printf(...) printg(__VA_ARGS__,"")
+#else
+#define printf(...)
+#endif
 #endif
 
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
