@@ -3,11 +3,11 @@
 #define IPV_LIVE_RECEIVER_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
-#include "LiveVideoDecodingQueue.h"
-
 #include<vector>
+
 class CCommonElementsBucket;
+class LiveVideoDecodingQueue;
+class CLockHandler;
 
 class LiveReceiver 
 {
@@ -23,7 +23,6 @@ public:
 	
 private:
 
-	Tools m_Tools;
     SmartPointer<CLockHandler> m_pLiveReceiverMutex;
 
     LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;    

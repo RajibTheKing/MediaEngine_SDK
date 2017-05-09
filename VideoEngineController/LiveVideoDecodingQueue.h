@@ -3,8 +3,8 @@
 #define IPV_LIVE_VIDEO_DECODING_QUEUE_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
-#include "Tools.h"
+
+class CLockHandler;
 
 #define LIVE_VIDEO_DECODING_QUEUE_SIZE 75
 
@@ -43,7 +43,6 @@ private:
     unsigned char m_uchBuffer[LIVE_VIDEO_DECODING_QUEUE_SIZE][MAX_VIDEO_ENCODED_FRAME_SIZE];
     int m_naBufferDataLength[LIVE_VIDEO_DECODING_QUEUE_SIZE];
 
-	Tools m_Tools;
     SmartPointer<CLockHandler> m_pLiveVideoDecodingQueueMutex;
 };
 

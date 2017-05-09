@@ -2,6 +2,7 @@
 #include "LiveVideoDecodingQueue.h"
 #include "ThreadTools.h"
 #include "LogPrinter.h"
+#include "LockHandler.h"
 
 LiveVideoDecodingQueue::LiveVideoDecodingQueue() :
 
@@ -34,7 +35,7 @@ int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int n
 
     if( nLength < 0 || nLength >= MAX_VIDEO_ENCODED_FRAME_SIZE )
     {
-        CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + m_Tools.IntegertoStringConvert(nLength));
+        CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + Tools::IntegertoStringConvert(nLength));
 
         return 0;
     }

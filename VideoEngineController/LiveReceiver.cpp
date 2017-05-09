@@ -3,7 +3,9 @@
 #include "VideoHeader.h"
 #include "Tools.h"
 #include "ThreadTools.h"
+#include "LockHandler.h"
 #include "CommonElementsBucket.h"
+#include "LiveVideoDecodingQueue.h"
 
 
 LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject) :
@@ -160,7 +162,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 		if (bBroken && j == 0)	//If I frame is missing.
 		{
 			LOG_AAC("#aac#b4q# Missing iFrames: %d", frameSizes[0]);
-			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frome broken j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frome broken j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
 
 			return;
 		}
@@ -178,9 +180,9 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 			int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
 			
 			if (nalType == 7) 
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
 			else
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
+				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
 
 			//m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
             m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
@@ -188,7 +190,7 @@ void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, 
 		else
 		{
 			numOfMissingFrames++;
-			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken j = " + m_Tools.getText(j) + " size " + m_Tools.getText(frameSizes[j]));
+			CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
 			//LOGEF("THeKing--> receive #####  [%d] Broken## UsedLen: %d iLen = %d\n",j, iUsedLen, iLen);
 		}
 

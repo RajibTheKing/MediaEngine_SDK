@@ -1,6 +1,10 @@
 
 #include "RenderingBuffer.h"
 #include "LogPrinter.h"
+#include "LockHandler.h"
+#include "Tools.h"
+#include "Size.h"
+#include "LogPrinter.h"
 
 
 CRenderingBuffer::CRenderingBuffer() :
@@ -46,7 +50,7 @@ int CRenderingBuffer::Queue(int nFrameNumber, unsigned char *ucaDecodedVideoFram
 	m_naBufferInsetWidths[m_iPushIndex] = nInsetWidth;
 
 	m_llaBufferCaptureTimeDifferences[m_iPushIndex] = llCaptureTimeDifference;
-	m_llaBufferInsertionTimes[m_iPushIndex] = m_Tools.CurrentTimestamp();
+	m_llaBufferInsertionTimes[m_iPushIndex] = Tools::CurrentTimestamp();
     
 	if (m_nQueueSize == m_nQueueCapacity)
     {
@@ -87,7 +91,7 @@ int CRenderingBuffer::DeQueue(int &rnFrameNumber, long long &rllCaptureTimeDiffe
 		memcpy(ucaDecodedVideoFrameData, m_uc2aDecodedVideoDataBuffer[m_iPopIndex], nLength);
 
 		rllCaptureTimeDifference = m_llaBufferCaptureTimeDifferences[m_iPopIndex];
-		rnTimeDifferenceInQueue = (int)(m_Tools.CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex]);
+		rnTimeDifferenceInQueue = (int)(Tools::CurrentTimestamp() - m_llaBufferInsertionTimes[m_iPopIndex]);
 
 		IncreamentIndex(m_iPopIndex);
 		m_nQueueSize--;
