@@ -159,9 +159,6 @@
     <ClCompile Include="..\..\VideoEngineController\AudioCallSessionListHandler.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioCodec.cpp">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioDecoderBuffer.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
@@ -190,12 +187,6 @@
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioPacketHeader.cpp">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\Aac.cpp">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\Echo.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\Filt.cpp">
@@ -275,6 +266,87 @@
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\VideoEncodingThreadOfLive.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioDecoderProvider.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioEncoderProvider.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorCall.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorThread.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorViewer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioGainInstanceProvider.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioHeaderCommon.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorCall.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorThread.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorViewer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioResources.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioSessionOptions.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DecoderAAC.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DecoderOpus.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\DecoderPCM.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\EchoCancellerProvider.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\EncoderOpus.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\EncoderPCM.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\NaiveGain.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\NoiseReducerProvider.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\SpeexEchoCanceller.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\WebRTCEchoCanceller.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\WebRTCGain.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -449,9 +521,6 @@
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\AudioCodec.h">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioDecoderBuffer.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
@@ -485,13 +554,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\Aac.h">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\AudioMacros.h">
-      <Filter>Source Files\AudioEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\VideoEngineController\Echo.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\Filt.h">
@@ -574,6 +637,105 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\VideoEncodingThreadOfLive.h">
       <Filter>Source Files\VideoEngineController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\WebRTCNoiseReducer.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioDecoderInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioDecoderProvider.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioEncoderInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioEncoderProvider.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorCall.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorThread.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorViewer.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioGainInstanceProvider.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioGainInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioHeaderCommon.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorCall.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorThread.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorViewer.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioResources.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioSessionOptions.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioTypes.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DecoderAAC.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DecoderOpus.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\DecoderPCM.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\EchoCancellerInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\EchoCancellerProvider.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\EncoderOpus.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\EncoderPCM.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\NaiveGain.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\NoiseReducerInterface.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\NoiseReducerProvider.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\SpeexEchoCanceller.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\WebRTCEchoCanceller.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\WebRTCGain.h">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

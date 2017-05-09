@@ -2,7 +2,6 @@
 #define GOMGOM_GAIN_H
 
 #include "AudioGainInterface.h"
-
 #include "AudioMacros.h"
 
 class Filter;

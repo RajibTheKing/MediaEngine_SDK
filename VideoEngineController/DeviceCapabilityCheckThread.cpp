@@ -162,10 +162,18 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
                 
                 m_Tools.SOSleep(1000);
 
+#ifdef OLD_ENCODING_THREAD
+
 				while (pVideoSession->m_pVideoEncodingThread->IsThreadStarted() == false)
 				{
 					m_Tools.SOSleep(10);
 				}
+#else
+				while (pVideoSession->m_pVideoEncodingThreadOfCall->IsThreadStarted() == false)
+				{
+					m_Tools.SOSleep(10);
+				}
+#endif
                 
 #if defined(SOUL_SELF_DEVICE_CHECK)
 
@@ -186,14 +194,27 @@ void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 					CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() pushed sample data " + m_Tools.getText(i));
 
 					long long now = m_Tools.CurrentTimestamp();
+
+#ifdef OLD_ENCODING_THREAD
+
                     int nowQueueSize = pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->GetQueueSize();
+#else
+					int nowQueueSize = pVideoSession->m_pVideoEncodingThreadOfCall->m_pEncodingBuffer->GetQueueSize();
+#endif
                     if(nowQueueSize == MAX_VIDEO_ENCODER_BUFFER_SIZE)
                     {
                         m_Tools.SOSleep(1);
                         i--;
                         continue;
                     }
+
+#ifdef OLD_ENCODING_THREAD
+
 					pVideoSession->m_pVideoEncodingThread->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, nVideoHeigth, nVideoWidth, now, 0);
+#else
+					pVideoSession->m_pVideoEncodingThreadOfCall->m_pEncodingBuffer->Queue(m_ucaDummmyFrame[i % 3], nVideoWidth * nVideoHeigth * 3 / 2, nVideoHeigth, nVideoWidth, now, 0);
+#endif
+			
 					/*
 					printFile("Push Difference = %lld\n", now - lastFramePushTime);
 					if (i)

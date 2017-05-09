@@ -20,6 +20,7 @@ NaiveGain::~NaiveGain()
 
 int NaiveGain::SetGain(int iGain)
 {
+#ifdef USE_AGC
 	if (iGain < 0)
 	{
 		m_bGainEnabled = false;
@@ -39,12 +40,14 @@ int NaiveGain::SetGain(int iGain)
 	{
 		m_iVolume = DEFAULT_GAIN;
 	}
+#endif
 
 	return true;
 }
 
 int NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 {
+#ifdef USE_AGC
 	if (!m_bGainEnabled)
 	{
 		return false;
@@ -63,6 +66,7 @@ int NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 		}
 		sInBuf[i] = temp;
 	}
+#endif
 
 	return true;
 }

@@ -1,7 +1,9 @@
 #include "WebRTCGain.h"
 
 #include "LogPrinter.h"
+#ifdef USE_AGC
 #include "gain_control.h"
+#endif
 #include "AudioMacros.h"
 
 #ifndef ALOG
@@ -10,6 +12,7 @@
 
 WebRTCGain::WebRTCGain() : m_bGainEnabled(false)
 {
+#ifdef USE_AGC
 	LOG_AAC("#gain# WebRTCGain::WebRTCGain()");
 
 	m_iVolume = DEFAULT_GAIN;
@@ -46,19 +49,23 @@ WebRTCGain::WebRTCGain() : m_bGainEnabled(false)
 	{
 		ALOG("WebRtcAgc_Create successful");
 	}
+#endif
 }
 
 
 WebRTCGain::~WebRTCGain()
 {
+#ifdef USE_AGC
 	LOG_AAC("#gain# WebRTCGain::~WebRTCGain()");
 
 	WebRtcAgc_Free(AGC_instance);
+#endif
 }
 
 
 int WebRTCGain::SetGain(int iGain)
 {
+#ifdef USE_AGC
 	LOG_AAC("#gain#Set# WebRTCGain::SetGain(), %d", iGain);
 
 	if (iGain < 0)
@@ -86,6 +93,7 @@ int WebRTCGain::SetGain(int iGain)
 	{
 		ALOG("WebRtcAgc_set_config successful");
 	}
+#endif
 
 	return true;
 }
@@ -93,6 +101,7 @@ int WebRTCGain::SetGain(int iGain)
 
 int WebRTCGain::AddFarEnd(short *sInBuf, int nBufferSize)
 {
+#ifdef USE_AGC
 	LOG_AAC("#gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
 
 	if (!m_bGainEnabled)
@@ -107,13 +116,14 @@ int WebRTCGain::AddFarEnd(short *sInBuf, int nBufferSize)
 			ALOG("WebRtcAgc_AddFarend failed");
 		}
 	}
-
+#endif
 	return true;
 }
 
 
 int WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 {
+#ifdef USE_AGC
 	LOG_AAC("#gain# WebRTCGain::AddGain(), %d", nBufferSize);
 
 	if (!m_bGainEnabled)
@@ -176,4 +186,7 @@ int WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning
 	memcpy(sInBuf, m_sTempBuf, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
 
 	return bSucceeded;;
+#endif
+
+	return true;
 }

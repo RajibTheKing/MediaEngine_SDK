@@ -64,7 +64,7 @@ int CVideoDecoder::CreateVideoDecoder()
 
 	if (SetDecoderOption(DECODER_OPTION_END_OF_STREAM, 0) != 0)
 	{
-		cout << "Error in setting option " << DECODER_OPTION_END_OF_STREAM << " to OpenH264 decoder\n";
+		//cout << "Error in setting option " << DECODER_OPTION_END_OF_STREAM << " to OpenH264 decoder\n";
 	}
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CVideoDecoder::CreateVideoDecoder open h264 video decoder initialized");

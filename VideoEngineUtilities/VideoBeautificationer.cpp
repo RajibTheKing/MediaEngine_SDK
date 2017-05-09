@@ -23,7 +23,7 @@ int m_sigma = 64;
 
 #elif defined(DESKTOP_C_SHARP)
 
-int m_sigma = 100;
+int m_sigma = 32;
 
 #else 
 
@@ -41,7 +41,7 @@ int m_sigmaDigit = 6;
 
 #elif defined(DESKTOP_C_SHARP)
 
-int m_sigmaDigit = 7;
+int m_sigmaDigit = 5;
 
 #else 
 
@@ -49,7 +49,15 @@ int m_sigmaDigit = 5;
 
 #endif
 
+#if defined(DESKTOP_C_SHARP)
+
+int m_radius = 8;
+
+#else
+
 int m_radius = 5;
+
+#endif
 
 int m_rr = (m_radius << 1) + 1;
 double m_pixels = m_rr * m_rr;

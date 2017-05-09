@@ -108,8 +108,8 @@ public:
 
 	bool StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType);
 	bool EndAudioCallInLive(const long long& lFriendID);
-	bool StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType);
-	bool EndVideoCallInLive(const long long& lFriendID);
+	bool StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType, int nCalleeID);
+	bool EndVideoCallInLive(const long long& lFriendID, int nCalleeID);
 	bool IsCallInLiveEnabled();
 	void SetCallInLiveEnabled(bool value);
 

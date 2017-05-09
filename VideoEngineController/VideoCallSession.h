@@ -14,10 +14,20 @@
 #include "Tools.h"
 #include "BitRateController.h"
 #include "VideoEncodingThread.h"
+#include "VideoEncodingThreadOfCall.h"
+#include "VideoEncodingThreadOfLive.h"
 #include "RenderingThread.h"
+#include "RenderingThreadOfCall.h"
+#include "RenderingThreadOfLive.h"
+#include "RenderingThreadOfChannel.h"
 #include "VideoDecodingThread.h"
+#include "VideoDecodingThreadOfCall.h"
+#include "VideoDecodingThreadOfLive.h"
+#include "VideoDecodingThreadOfChannel.h"
 #include "DepacketizationThread.h"
 #include "SendingThread.h"
+#include "SendingThreadOfCall.h"
+#include "SendingThreadOfLive.h"
 #include "VersionController.h"
 #include "DeviceCapabilityCheckBuffer.h"
 #include "FPSController.h"
@@ -59,14 +69,23 @@ public:
     
 	CFPSController* GetFPSController();
 
-	void StartCallInLive(int nCallInLiveType);
-	void EndCallInLive();
+	void StartCallInLive(int nCallInLiveType, int nCalleeID);
+	void EndCallInLive(int nCalleeID);
 
-	CSendingThread *m_pSendingThread;
-	CVideoEncodingThread *m_pVideoEncodingThread;
+	CSendingThreadOfCall *m_pSendingThreadOfCall;
+	CSendingThreadOfLive *m_pSendingThreadOfLive;
 
-	CVideoRenderingThread *m_pVideoRenderingThread;
-	CVideoDecodingThread *m_pVideoDecodingThread;
+	CVideoEncodingThreadOfCall *m_pVideoEncodingThreadOfCall;
+	CVideoEncodingThreadOfLive *m_pVideoEncodingThreadOfLive;
+
+	CRenderingThreadOfCall *m_pRenderingThreadOfCall;
+	CRenderingThreadOfLive *m_pRenderingThreadOfLive;
+	CRenderingThreadOfChannel *m_pRenderingThreadOfChannel;
+
+	CVideoDecodingThreadOfCall *m_pVideoDecodingThreadOfCall;
+	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadOfLive;
+	CVideoDecodingThreadOfChannel *m_pVideoDecodingThreadOfChannel;
+
 	CVideoDepacketizationThread *m_pVideoDepacketizationThread;
 
 	long long GetFirstVideoPacketTime();
@@ -148,7 +167,21 @@ public:
 	int m_nVideoCallHeight;
 	int m_nVideoCallWidth;
 
+	CVideoEncodingThread *m_pVideoEncodingThread;
+
 private:
+
+	int m_nPublisherInsetNumber;
+
+	CSendingThread *m_pSendingThread;
+	
+	CVideoRenderingThread *m_pVideoRenderingThread;
+	CVideoDecodingThread *m_pVideoDecodingThread;
+	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
+	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
+
+	CVideoDecoder *m_pVideoDecoderForSecondInset;
+	CVideoDecoder *m_pVideoDecoderForThirdInset;
 
 	CFPSController *m_pFPSController;
 	long long m_LastTimeStampClientFPS;
