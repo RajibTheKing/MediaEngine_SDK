@@ -26,10 +26,6 @@ namespace MediaSDK
 	{
 		Locker lock(*m_pVideoPacketQueueMutex);
 
-		if (nLength >= MAX_VIDEO_PACKET_SIZE)
-			return -1;
-
-
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
 		m_nQueueSize = 0;
