@@ -36,8 +36,21 @@ m_lfriendID(lfriendID)
     
     m_iDeviceHeight = -1;
     m_iDeviceWidth = -1;
-    
+
+#if defined(DESKTOP_C_SHARP)
+
 	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
+
+#else
+
+	int nNewHeight;
+	int nNewWidth;
+
+	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
+
+	m_VideoBeautificationer = new CVideoBeautificationer(nNewHeight, nNewWidth);
+
+#endif
 
 	for (int i = 0; i < 641; i++)
 		for (int j = 0; j < 641; j++)
