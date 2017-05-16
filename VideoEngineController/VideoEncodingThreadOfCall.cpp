@@ -29,12 +29,13 @@ m_nCallFPS(nFPS),
 m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket),
 m_bVideoEffectEnabled(true),
+m_VideoBeautificationer(NULL),
 m_bSelfViewOnly(bSelfViewOnly)
 {
 	m_pCalculatorEncodeTime = new CAverageCalculator();
 	m_pCalculateEncodingTimeDiff = new CAverageCalculator();
 
-	m_VideoBeautificationer = new CVideoBeautificationer(m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth);
+	//m_VideoBeautificationer = new CVideoBeautificationer(m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth);
 	//m_VideoBeautificationer->GenerateUVIndex(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), 11);
 
 	m_VideoEffects = new CVideoEffects();

@@ -36,8 +36,21 @@ m_lfriendID(lfriendID)
     
     m_iDeviceHeight = -1;
     m_iDeviceWidth = -1;
-    
-	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
+
+#if defined(DESKTOP_C_SHARP)
+
+	//m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
+
+#else
+
+	int nNewHeight;
+	int nNewWidth;
+
+	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
+
+	//m_VideoBeautificationer = new CVideoBeautificationer(nNewHeight, nNewWidth);
+
+#endif
 
 	for (int i = 0; i < 641; i++)
 		for (int j = 0; j < 641; j++)
@@ -57,16 +70,16 @@ m_lfriendID(lfriendID)
 
 CColorConverter::~CColorConverter()
 {
-	if (NULL != m_VideoBeautificationer)
+	/*if (NULL != m_VideoBeautificationer)
 	{
 		delete m_VideoBeautificationer;
 		m_VideoBeautificationer = NULL;
-	}
+	}*/
 }
 
 int CColorConverter::TestVideoEffect(int *param, int size)
 {
-	m_VideoBeautificationer->TestVideoEffect(param, size);
+	//m_VideoBeautificationer->TestVideoEffect(param, size);
 
 	return 1;
 }
@@ -78,7 +91,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
     
 #if defined(DESKTOP_C_SHARP)
     
-	m_VideoBeautificationer->SetHeightWidth(iVideoHeight, iVideoWidth);
+	//m_VideoBeautificationer->SetHeightWidth(iVideoHeight, iVideoWidth);
     
 #else
     
@@ -87,7 +100,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 
 	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
 
-	m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
+	//m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
     
 #endif
 
@@ -107,7 +120,7 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
     m_iDeviceHeight = 1920; //iVideoHeight;
     m_iDeviceWidth = 1130; //iVideoWidth;
 
-	m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
+	//m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
 
 int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
