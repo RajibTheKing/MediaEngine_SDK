@@ -39,7 +39,7 @@ m_lfriendID(lfriendID)
 
 #if defined(DESKTOP_C_SHARP)
 
-	m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
+	//m_VideoBeautificationer = new CVideoBeautificationer(iVideoHeight, iVideoWidth);
 
 #else
 
@@ -91,7 +91,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
     
 #if defined(DESKTOP_C_SHARP)
     
-	m_VideoBeautificationer->SetHeightWidth(iVideoHeight, iVideoWidth);
+	//m_VideoBeautificationer->SetHeightWidth(iVideoHeight, iVideoWidth);
     
 #else
     
