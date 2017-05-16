@@ -48,7 +48,7 @@ m_lfriendID(lfriendID)
 
 	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
 
-	m_VideoBeautificationer = new CVideoBeautificationer(nNewHeight, nNewWidth);
+	//m_VideoBeautificationer = new CVideoBeautificationer(nNewHeight, nNewWidth);
 
 #endif
 
@@ -70,16 +70,16 @@ m_lfriendID(lfriendID)
 
 CColorConverter::~CColorConverter()
 {
-	if (NULL != m_VideoBeautificationer)
+	/*if (NULL != m_VideoBeautificationer)
 	{
 		delete m_VideoBeautificationer;
 		m_VideoBeautificationer = NULL;
-	}
+	}*/
 }
 
 int CColorConverter::TestVideoEffect(int *param, int size)
 {
-	m_VideoBeautificationer->TestVideoEffect(param, size);
+	//m_VideoBeautificationer->TestVideoEffect(param, size);
 
 	return 1;
 }
@@ -100,7 +100,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 
 	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
 
-	m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
+	//m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
     
 #endif
 
@@ -120,7 +120,7 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
     m_iDeviceHeight = 1920; //iVideoHeight;
     m_iDeviceWidth = 1130; //iVideoWidth;
 
-	m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
+	//m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
 
 int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
