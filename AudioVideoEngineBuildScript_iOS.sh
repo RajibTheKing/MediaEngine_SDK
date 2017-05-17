@@ -69,6 +69,7 @@ xcodebuild 	-project "${SOURCE_DIRECTORY}/AudioVideoEngine.xcodeproj" \
 			-sdk iphoneos${XCODE_SDK_VERSION}  \
 			ARCHS="armv7 arm64" \
 			CONFIGURATION_BUILD_DIR="$BUILD_DIRECTORY/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphoneos/" \
+			GCC_PREPROCESSOR_DEFINITIONS="" \
 			ONLY_ACTIVE_ARCH=NO;
 
 CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphonesimulator/";
@@ -81,6 +82,7 @@ xcodebuild 	-project "$SOURCE_DIRECTORY/AudioVideoEngine.xcodeproj" \
 			-sdk iphonesimulator${XCODE_SDK_VERSION}  \
 			ARCHS="i386 x86_64 " \
 			CONFIGURATION_BUILD_DIR="$BUILD_DIRECTORY/${BUILD_NAME}/${BUILD_CONFIGURATION}-iphonesimulator/" \
+			GCC_PREPROCESSOR_DEFINITIONS="" \
 			ONLY_ACTIVE_ARCH=NO;
 
 CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/${BUILD_CONFIGURATION}-universal/";
