@@ -1,6 +1,7 @@
 #ifndef ECHO_CANCELLER_INTERFACE_H
 #define ECHO_CANCELLER_INTERFACE_H
 
+#include "AudioMacros.h"
 
 #define AECM_SAMPLES_IN_FRAME 80
 

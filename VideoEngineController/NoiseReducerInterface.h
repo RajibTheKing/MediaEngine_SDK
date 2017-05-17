@@ -1,6 +1,7 @@
 #ifndef NOISE_REDUCER_INTERFACE_H
 #define NOISE_REDUCER_INTERFACE_H
 
+#include "AudioMacros.h"
 
 class NoiseReducerInterface
 {

@@ -13,6 +13,7 @@
 #include "AudioNearEndDataProcessor.h"
 #include "AudioFarEndDataProcessor.h"
 #include "AudioShortBufferForPublisherFarEnd.h"
+#include "AudioMacros.h"
 
 #include <stdio.h>
 #include <string>
@@ -29,13 +30,6 @@
 
 #define AUDIO_CALL_VERSION  0
 #define AUDIO_LIVE_VERSION  0
-
-#ifdef __ANDROID__
-#define USE_AECM
-// #define USE_ANS
-#define USE_AGC
-//#define USE_VAD
-#endif
 
 static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);

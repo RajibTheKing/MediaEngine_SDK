@@ -1,6 +1,7 @@
 #ifndef AUDIO_GAIN_INTERFACE_H
 #define AUDIO_GAIN_INTERFACE_H
 
+#include "AudioMacros.h"
 
 #define MAX_GAIN 10
 #define DEFAULT_GAIN 3

@@ -72,4 +72,12 @@
 #define CONSECUTIVE_AUDIO_PACKET_DELY 25
 #define OPUS_ENABLED
 
+#ifdef __ANDROID__
+#define USE_AECM
+// #define USE_ANS
+#define USE_AGC
+//#define USE_VAD
+#endif
+
+
 #endif
