@@ -789,5 +789,11 @@ void CInterfaceOfAudioVideoEngine::SetCallInLiveType(const IPVLongType llFriendI
 	}
 }
 
+std::string CInterfaceOfAudioVideoEngine::getMediaEngineVersion()
+{
+    
+    return "MediaEngine Version--> "+ std::string(MEDIA_ENGINE_VERSION)+" (compiled "+string(__TIME__)+", "+string(__DATE__)+")";
+}
+
 
 
