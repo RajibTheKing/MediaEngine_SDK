@@ -9,7 +9,6 @@
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 
-//class CLockHandler;
 
 class CVideoBeautificationer
 {

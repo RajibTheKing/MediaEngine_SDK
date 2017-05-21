@@ -11,7 +11,6 @@
 #define OPUS_MAX_COMPLEXITY 10
 #define BYTES_TO_STORE_AUDIO_EFRAME_LEN 2
 
-//class CLockHandler;
 
 class EncoderOpus : public AudioEncoderInterface
 {

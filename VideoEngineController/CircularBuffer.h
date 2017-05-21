@@ -6,7 +6,6 @@
 #include "CommonTypes.h"
 #include "Tools.h"
 
-//class CLockHandler;
 
 class CCircularBuffer
 {

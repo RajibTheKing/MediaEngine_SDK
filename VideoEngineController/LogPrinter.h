@@ -145,7 +145,6 @@ static FILE *logfp = NULL;
 
 using namespace std;
 
-//class CLockHandler;
 
 class CLogPrinter
 {
