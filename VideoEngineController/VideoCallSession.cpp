@@ -59,20 +59,53 @@ m_bVideoOnlyLive(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bSelfViewOnly(bSelfViewOnly),
 m_nFrameCount(0),
+
+#ifdef OLD_SENDING_THREAD
+
 m_pSendingThread(NULL),
+
+#else
+
 m_pSendingThreadOfCall(NULL),
 m_pSendingThreadOfLive(NULL),
+
+#endif
+
+#ifdef OLD_ENCODING_THREAD
+
 m_pVideoEncodingThread(NULL),
+
+#else
+
 m_pVideoEncodingThreadOfCall(NULL),
 m_pVideoEncodingThreadOfLive(NULL),
+
+#endif
+
+#ifdef OLD_RENDERING_THREAD
+
 m_pVideoRenderingThread(NULL),
+
+#else
+
 m_pRenderingThreadOfCall(NULL),
 m_pRenderingThreadOfLive(NULL),
 m_pRenderingThreadOfChannel(NULL),
+
+#endif
+
+#ifdef OLD_DECODING_THREAD
+
 m_pVideoDecodingThread(NULL),
+
+#else
+
 m_pVideoDecodingThreadOfCall(NULL),
 m_pVideoDecodingThreadOfLive(NULL),
 m_pVideoDecodingThreadOfChannel(NULL),
+
+#endif
+
 m_pVideoDecodingThreadForSecondInset(NULL),
 m_pVideoDecodingThreadForThirdInset(NULL),
 m_pVideoDecoderForSecondInset(NULL),
@@ -173,50 +206,82 @@ CVideoCallSession::~CVideoCallSession()
 {
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::~~~CVideoCallSession 95");
 
+#ifdef	OLD_ENCODING_THREAD
+
 	if (m_pVideoEncodingThread != NULL)
 		m_pVideoEncodingThread->StopEncodingThread();
-	else if (m_pVideoEncodingThreadOfCall != NULL)
+
+#else
+
+	if (m_pVideoEncodingThreadOfCall != NULL)
 		m_pVideoEncodingThreadOfCall->StopEncodingThread();
 	else if (m_pVideoEncodingThreadOfLive != NULL)
 		m_pVideoEncodingThreadOfLive->StopEncodingThread();
 
+#endif
+
+#ifdef	OLD_SENDING_THREAD
+
 	if (m_pSendingThread != NULL)
 		m_pSendingThread->StopSendingThread();
-	else if (m_pSendingThreadOfCall != NULL)
+
+#else
+
+	if (m_pSendingThreadOfCall != NULL)
 		m_pSendingThreadOfCall->StopSendingThread();
 	else if(m_pSendingThreadOfLive != NULL)
 		m_pSendingThreadOfLive->StopSendingThread();
 
+#endif
+
 	m_pVideoDepacketizationThread->StopDepacketizationThread();
+
+#ifdef	OLD_DECODING_THREAD
 
 	if (m_pVideoDecodingThread != NULL)
 		m_pVideoDecodingThread->StopDecodingThread();
-	else if (m_pVideoDecodingThreadOfCall != NULL)
+	
+#else
+
+	if (m_pVideoDecodingThreadOfCall != NULL)
 		m_pVideoDecodingThreadOfCall->StopDecodingThread();
 	else if (m_pVideoDecodingThreadOfLive != NULL)
 		m_pVideoDecodingThreadOfLive->StopDecodingThread();
 	else if (m_pVideoDecodingThreadOfChannel != NULL)
 		m_pVideoDecodingThreadOfChannel->StopDecodingThread();
 
+#endif
+
 	if (m_pVideoDecodingThreadForSecondInset != NULL)
 		m_pVideoDecodingThreadForSecondInset->StopDecodingThread();
 	if (m_pVideoDecodingThreadForThirdInset != NULL)
 		m_pVideoDecodingThreadForThirdInset->StopDecodingThread();
 
+#ifdef OLD_RENDERING_THREAD
+
 	if (m_pVideoRenderingThread != NULL)
 		m_pVideoRenderingThread->StopRenderingThread();
-	else if (m_pRenderingThreadOfCall != NULL)
+	
+#else
+
+	if (m_pRenderingThreadOfCall != NULL)
 		m_pRenderingThreadOfCall->StopRenderingThread();
 	else if (m_pRenderingThreadOfLive != NULL)
 		m_pRenderingThreadOfLive->StopRenderingThread();
 	else if (m_pRenderingThreadOfChannel != NULL)
 		m_pRenderingThreadOfChannel->StopRenderingThread();
 
+#endif
+
+#ifdef	OLD_ENCODING_THREAD
+
 	if (NULL != m_pVideoEncodingThread)
 	{
 		delete m_pVideoEncodingThread;
 		m_pVideoEncodingThread = NULL;
 	}
+
+#else
 
 	if (NULL != m_pVideoEncodingThreadOfCall)
 	{
@@ -230,17 +295,23 @@ CVideoCallSession::~CVideoCallSession()
 		m_pVideoEncodingThreadOfLive = NULL;
 	}
 
+#endif
+
 	if (NULL != m_pVideoDepacketizationThread)
 	{
 		delete m_pVideoDepacketizationThread;
 		m_pVideoDepacketizationThread = NULL;
 	}
 
+#ifdef	OLD_DECODING_THREAD
+
 	if (NULL != m_pVideoDecodingThread)
 	{
 		delete m_pVideoDecodingThread;
 		m_pVideoDecodingThread = NULL;
 	}
+
+#else
 
 	if (NULL != m_pVideoDecodingThreadOfCall)
 	{
@@ -260,6 +331,8 @@ CVideoCallSession::~CVideoCallSession()
 		m_pVideoDecodingThreadOfChannel = NULL;
 	}
 
+#endif
+
 	if (NULL != m_pVideoDecodingThreadForSecondInset)
 	{
 		delete m_pVideoDecodingThreadForSecondInset;
@@ -272,11 +345,15 @@ CVideoCallSession::~CVideoCallSession()
 		m_pVideoDecodingThreadForThirdInset = NULL;
 	}
 
+#ifdef OLD_RENDERING_THREAD
+
 	if (NULL != m_pVideoRenderingThread)
 	{
 		delete m_pVideoRenderingThread;
 		m_pVideoRenderingThread = NULL;
 	}
+
+#else
 
 	if (NULL != m_pRenderingThreadOfCall)
 	{
@@ -295,6 +372,8 @@ CVideoCallSession::~CVideoCallSession()
 		delete m_pRenderingThreadOfChannel;
 		m_pRenderingThreadOfChannel = NULL;
 	}
+
+#endif
 
 	if (NULL != m_BitRateController)
 	{
@@ -378,11 +457,15 @@ CVideoCallSession::~CVideoCallSession()
 		m_pColorConverter = NULL;
 	}
 
+#ifdef OLD_SENDING_THREAD
+
 	if (NULL != m_pSendingThread)
 	{
 		delete m_pSendingThread;
 		m_pSendingThread = NULL;
 	}
+
+#else
 
 	if (NULL != m_pSendingThreadOfCall)
 	{
@@ -395,6 +478,8 @@ CVideoCallSession::~CVideoCallSession()
 		delete m_pSendingThreadOfLive;
 		m_pSendingThreadOfLive = NULL;
 	}
+
+#endif
 
 	if (NULL != m_SendingBuffer)
 	{
