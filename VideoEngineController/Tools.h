@@ -17,6 +17,8 @@
 #define SPS_DATA 7
 #define PPS_DATA 8
 
+#define MEDIA_ENGINE_VERSION "9.25"
+
 namespace MediaSDK
 {
 #ifdef WIN32

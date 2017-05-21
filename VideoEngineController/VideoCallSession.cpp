@@ -78,6 +78,8 @@ m_pVideoDecodingThreadOfLive(NULL),
 m_pVideoDecodingThreadOfChannel(NULL),
 m_pVideoDecodingThreadForSecondInset(NULL),
 m_pVideoDecodingThreadForThirdInset(NULL),
+m_pVideoDecoderForSecondInset(NULL),
+m_pVideoDecoderForThirdInset(NULL),
 m_nPublisherInsetNumber(0)
 
 {

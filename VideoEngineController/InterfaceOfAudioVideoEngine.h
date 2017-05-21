@@ -3,6 +3,7 @@
 #define IPV_INTERFACE_OF_AUDIO_VIDEO_ENGINEE_H
 
 #include <vector>
+#include <string>
 
 #define CALL_IN_LIVE_TYPE_AUDIO_ONLY 1
 #define CALL_IN_LIVE_TYPE_VIDEO_ONLY 2
@@ -119,6 +120,8 @@ namespace MediaSDK
 		int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 		void InterruptOccured(const LongLong lFriendID);
 		void InterruptOver(const LongLong lFriendID);
+
+    std::string getMediaEngineVersion();
 
 	private:
 

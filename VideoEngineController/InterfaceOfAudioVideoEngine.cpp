@@ -792,6 +792,12 @@ namespace MediaSDK
 		}
 	}
 
+std::string CInterfaceOfAudioVideoEngine::getMediaEngineVersion()
+{
+    
+    return "MediaEngine Version--> "+ std::string(MEDIA_ENGINE_VERSION)+" (compiled "+string(__TIME__)+", "+string(__DATE__)+")";
+}
+
 
 } //namespace MediaSDK
 

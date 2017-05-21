@@ -144,7 +144,7 @@ namespace MediaSDK
 
 		int m_Multiplication[641][641];
 
-		CVideoBeautificationer *m_VideoBeautificationer;
+	//CVideoBeautificationer *m_VideoBeautificationer;
 
 		SmartPointer<CLockHandler> m_pColorConverterMutex;
 	};
