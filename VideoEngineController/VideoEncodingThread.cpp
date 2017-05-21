@@ -29,12 +29,13 @@ m_bNotifyToClientVideoQuality(false),
 m_pCommonElementBucket(commonElementsBucket),
 m_bResetForViewerCallerCallEnd(false),
 m_bVideoEffectEnabled(true),
-m_bSelfViewOnly(bSelfViewOnly)
+m_bSelfViewOnly(bSelfViewOnly),
+m_VideoBeautificationer(NULL)
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
     m_pCalculateEncodingTimeDiff = new CAverageCalculator();
 
-	m_VideoBeautificationer = new CVideoBeautificationer(m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth);
+	//m_VideoBeautificationer = new CVideoBeautificationer(m_pVideoCallSession->m_nVideoCallHeight, m_pVideoCallSession->m_nVideoCallWidth);
 	//m_VideoBeautificationer->GenerateUVIndex(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), 11);
 
 	m_VideoEffects = new CVideoEffects();
@@ -460,7 +461,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 
             
-
+			if (m_VideoBeautificationer == NULL)
+			{
+				m_VideoBeautificationer = new CVideoBeautificationer(iGotHeight, iGotWidth);
+			}
             
             if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
 			{
