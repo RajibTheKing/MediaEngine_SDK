@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "ThreadTools.h"
 #include "VideoPacketBuffer.h"
 #include "AudioVideoEngineDefinitions.h"

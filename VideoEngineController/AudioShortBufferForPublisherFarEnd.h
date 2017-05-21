@@ -2,7 +2,7 @@
 #define _AUDIO_SHORT_BUFFER_FOR_PUBLISHER_H_
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include "AudioMacros.h"
 #include "MuxHeader.h"

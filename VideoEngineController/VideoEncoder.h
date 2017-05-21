@@ -5,7 +5,7 @@
 //#define _CRT_SECURE_NO_WARNINGS
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "codec_api.h"
 #include "Tools.h"
 

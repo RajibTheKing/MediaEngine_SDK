@@ -5,7 +5,7 @@
 #include "AudioVideoEngineDefinitions.h"
 #include "ColorConverter.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
 #define MAX_FRAME_HEIGHT_MUXING_SESSION 640
 #define MAX_FRAME_WIDTH_MUXING_SESSION 480

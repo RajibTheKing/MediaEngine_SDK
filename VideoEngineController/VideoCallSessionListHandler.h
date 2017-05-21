@@ -9,7 +9,7 @@
 #include "VideoCallSession.h"
 #include "ThreadTools.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
 
 class CVideoCallSessionListHandler

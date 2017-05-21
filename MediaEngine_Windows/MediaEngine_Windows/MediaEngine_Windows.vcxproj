@@ -250,7 +250,6 @@
     <ClCompile Include="..\..\VideoEngineController\WebRTCGain.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\HashGenerator.cpp" />
-    <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />
@@ -333,6 +332,7 @@
     <ClInclude Include="..\..\VideoEngineController\LiveVideoDecodingQueue.h" />
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
+    <ClInclude Include="..\..\VideoEngineController\CommonTypes.h" />
     <ClInclude Include="..\..\VideoEngineController\MuxHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\NoiseReducerInterface.h" />
     <ClInclude Include="..\..\VideoEngineController\NoiseReducerProvider.h" />
@@ -380,7 +380,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\HashGenerator.h" />
-    <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />

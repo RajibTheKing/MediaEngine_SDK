@@ -3,7 +3,7 @@
 #define IPV_PAIRMAP_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include <map>
 

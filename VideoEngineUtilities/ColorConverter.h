@@ -4,7 +4,7 @@
 
 #include "AudioVideoEngineDefinitions.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "../VideoEngineController/Size.h"
 #include "VideoBeautificationer.h"
 

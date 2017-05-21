@@ -3,7 +3,7 @@
 #define IPV_LIVE_VIDEO_DECODING_QUEUE_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 
 #define LIVE_VIDEO_DECODING_QUEUE_SIZE 75

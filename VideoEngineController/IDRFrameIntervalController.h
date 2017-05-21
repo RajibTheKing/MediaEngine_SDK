@@ -6,7 +6,7 @@
 #define IPV_IDR_FRAME_INTERVAL_CONTROLLER_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include "VideoEncoder.h"
 #include "VideoHeader.h"

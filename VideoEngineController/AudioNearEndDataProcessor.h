@@ -3,7 +3,7 @@
 
 #include "AudioTypes.h"
 #include "Size.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include "SmartPointer.h"
 #include "LogPrinter.h"

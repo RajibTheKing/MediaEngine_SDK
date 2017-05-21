@@ -7,7 +7,7 @@
 #include "VideoEncoder.h"
 #include "CommonElementsBucket.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
 #define BMP_HEADER_SIZE 54
 

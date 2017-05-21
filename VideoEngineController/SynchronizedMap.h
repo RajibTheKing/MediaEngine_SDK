@@ -3,7 +3,7 @@
 #define IPV_SYNCHRONIZED_MAP_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
 #include <map>
 

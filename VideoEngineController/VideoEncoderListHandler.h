@@ -8,7 +8,7 @@
 
 #include "VideoEncoder.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
 using namespace std;
 

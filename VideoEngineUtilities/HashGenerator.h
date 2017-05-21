@@ -6,7 +6,7 @@
 
 #include "AudioVideoEngineDefinitions.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
 
 #define MAX_PACKET_SIZE 480

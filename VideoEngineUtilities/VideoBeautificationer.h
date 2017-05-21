@@ -7,8 +7,9 @@
 #include "../VideoEngineController/Size.h"
 #include "../videoEngineController/Tools.h"
 #include "SmartPointer.h"
+#include "CommonTypes.h"
 
-class CLockHandler;
+//class CLockHandler;
 
 class CVideoBeautificationer
 {

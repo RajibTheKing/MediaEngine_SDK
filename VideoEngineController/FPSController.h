@@ -6,7 +6,7 @@
 #include "SmartPointer.h"
 #include "EventNotifier.h"
 #include "ThreadTools.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include "VideoEncoder.h"
 

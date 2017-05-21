@@ -3,7 +3,7 @@
 #define IPV_RETRANSMISSION_VIDEO_PACKET_QUEUE_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Size.h"
 
 using namespace std;

@@ -1,6 +1,6 @@
 
 #include "CircularBuffer.h"
-#include "../VideoEngineUtilities/LockHandler.h"
+#include "CommonTypes.h"
 #include "LogPrinter.h"
 
 

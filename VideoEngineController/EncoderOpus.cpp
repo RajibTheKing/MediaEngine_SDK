@@ -1,7 +1,7 @@
 #include "EncoderOpus.h"
 
 #include "LogPrinter.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 
 

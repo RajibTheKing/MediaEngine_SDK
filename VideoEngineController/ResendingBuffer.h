@@ -3,7 +3,7 @@
 #define IPV_RESENDING_BUFFER_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Size.h"
 #include "Tools.h"
 #include <map>

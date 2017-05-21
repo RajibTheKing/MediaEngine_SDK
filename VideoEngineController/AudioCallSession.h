@@ -5,7 +5,7 @@
 #include "AudioResources.h"
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"

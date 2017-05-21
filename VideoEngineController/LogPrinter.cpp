@@ -1,5 +1,4 @@
 #include "LogPrinter.h"
-#include "../VideoEngineUtilities/LockHandler.h"
 #include "ThreadTools.h"
 
 const std::string CLogPrinter::PRIORITY_NAMES[] =

@@ -3,9 +3,10 @@
 #define IPV_CIRCULAR_BUFFER_H
 
 #include "SmartPointer.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 
-class CLockHandler;
+//class CLockHandler;
 
 class CCircularBuffer
 {

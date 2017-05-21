@@ -10,7 +10,7 @@
 #include "SmartPointer.h"
 #include "EventNotifier.h"
 #include "ThreadTools.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "DeviceCapabilityCheckThread.h"
 #include "DeviceCapabilityCheckBuffer.h"
 #include "AudioFileEncodeDecodeSession.h"
