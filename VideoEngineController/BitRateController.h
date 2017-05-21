@@ -3,7 +3,6 @@
 #define IPV_BITRATE_CONTROLLER_H
 
 #include "SmartPointer.h"
-#include "CommonTypes.h"
 #include "Tools.h"
 #include "VideoEncoder.h"
 #include "SynchronizedMap.h"

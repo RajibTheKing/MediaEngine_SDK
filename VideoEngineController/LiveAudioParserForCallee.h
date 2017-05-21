@@ -3,7 +3,6 @@
 
 #include "LiveAudioParser.h"
 #include "SmartPointer.h"
-#include "CommonTypes.h"
 
 class AudioPacketHeader;
 

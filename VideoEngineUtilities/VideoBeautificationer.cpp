@@ -2,8 +2,6 @@
 #include "VideoBeautificationer.h"
 #include <cmath>
 #include "../VideoEngineController/LogPrinter.h"
-#include "CommonTypes.h"
-
 
 #define NV21 21
 #define NV12 12

@@ -1,6 +1,5 @@
 
 #include "CircularBuffer.h"
-#include "CommonTypes.h"
 #include "LogPrinter.h"
 
 

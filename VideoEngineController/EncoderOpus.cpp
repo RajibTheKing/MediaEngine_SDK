@@ -1,7 +1,6 @@
 #include "EncoderOpus.h"
 
 #include "LogPrinter.h"
-#include "CommonTypes.h"
 #include "Tools.h"
 
 
