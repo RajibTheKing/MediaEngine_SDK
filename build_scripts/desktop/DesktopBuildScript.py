@@ -8,7 +8,7 @@ import time
 callsdk = r'D:\Work\Project\callsdk_v2'
 mediaEngine = r'D:\Work\Project\IPV-MediaEngine';
 ringidSDK = r'D:\Work\Project\IPV-RingIDSDK'
-ringidDesktop = r'D:\Work\Project\RingID-Desktop\ringID'
+ringidDesktop = r'D:\Work\Project\RingID-Desktop\ringID_WPF'
 libraryPath = r'E:\OnlyForDesktop\123\desktop'
 
 
@@ -21,6 +21,7 @@ call_build = 0
 clean_ringid = 0
 ringid_build = 0
 libraryRelease = 0
+log_enabled = 0
 
 def check():
 	global ret
@@ -32,19 +33,27 @@ def check():
 def buildEngine():
 	global ret
 	os.chdir(mediaEngine + r'\MediaEngine_Windows')
-	if clean_videoEngine == 1: 
+	if log_enabled == 1:
 		if debugOrRelease == 0: 
-			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/t:Clean", "/p:configuration=debug"], shell=True)
+			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/t:Rebuild", "/p:DefineConstants=LOG_ENABLED", "/p:configuration=debug"], shell=True)
 			check()
 		else: 
-			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/t:Clean", "/p:configuration=release"], shell=True)
+			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/t:Rebuild", "/p:DefineConstants=LOG_ENABLED", "/p:configuration=release"], shell=True)
 			check()
-	if debugOrRelease == 0: 
-		ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/p:configuration=debug"], shell=True)
-		check()
-	else: 
-		ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/p:configuration=release"], shell=True)
-		check()
+	else:
+		if clean_videoEngine == 1: 
+			if debugOrRelease == 0: 
+				ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/t:Clean", "/p:configuration=debug"], shell=True)
+				check()
+			else: 
+				ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/t:Clean", "/p:configuration=release"], shell=True)
+				check()
+		if debugOrRelease == 0: 
+			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/p:configuration=debug"], shell=True)
+			check()
+		else: 
+			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/p:configuration=release"], shell=True)
+			check()
 	if debugOrRelease == 0: 
 		shutil.copy2( ringidSDK + r'\RingIDSDK_Windows\Libs_Windows\MediaEngine_Windows.lib', callsdk + r'\libs\media\desktop\libs\Debug')
 	else: 
@@ -113,68 +122,20 @@ def buildCallSDK():
 def buildRingID():
 	global ret
 	if clean_ringid == 1:
-		os.chdir(ringidDesktop + r'\Auth')
+		os.chdir(ringidDesktop)
 		if debugOrRelease == 0: 
-			ret = subprocess.call(["msbuild.exe", "Auth.csproj", "/t:Clean", "/p:configuration=debug"], shell=True)
+			ret = subprocess.call(["msbuild.exe", "ringID.sln", "/t:Clean", "/p:configuration=debug"], shell=True)
 			check()
 		else: 
-			ret = subprocess.call(["msbuild.exe", "Auth.csproj", "/t:Clean", "/p:configuration=release"], shell=True)
+			ret = subprocess.call(["msbuild.exe", "ringID.sln", "/t:Clean", "/p:configuration=release"], shell=True)
 			check()
 		
-		os.chdir(ringidDesktop + r'\Call')
-		if debugOrRelease == 0: 
-			ret = subprocess.call(["msbuild.exe", "Call.csproj", "/t:Clean", "/p:configuration=debug"], shell=True)
-			check()
-		else:
-			ret = subprocess.call(["msbuild.exe", "Call.csproj", "/t:Clean", "/p:configuration=release"], shell=True)
-			check()
-		
-		os.chdir(ringidDesktop + r'\Models')
-		if debugOrRelease == 0: 
-			ret = subprocess.call(["msbuild.exe", "Models.csproj", "/t:Clean", "/p:configuration=debug"], shell=True)
-			check()
-		else: 
-			ret = subprocess.call(["msbuild.exe", "Models.csproj", "/t:Clean", "/p:configuration=release"], shell=True)
-			check()
-			
-		os.chdir(ringidDesktop + r'\View')
-		if debugOrRelease == 0: 
-			ret = subprocess.call(["msbuild.exe", "View.csproj", "/t:Clean", "/p:configuration=debug"], shell=True)
-			check()
-		else: 
-			ret = subprocess.call(["msbuild.exe", "View.csproj", "/t:Clean", "/p:configuration=release"], shell=True)
-			check()
-		
-	os.chdir(ringidDesktop + r'\Auth')
+	os.chdir(ringidDesktop)
 	if debugOrRelease == 0: 
-		ret = subprocess.call(["msbuild.exe", "Auth.csproj", "/p:configuration=debug"], shell=True)
+		ret = subprocess.call(["msbuild.exe", "ringID.sln", "/p:configuration=debug"], shell=True)
 		check()
 	else: 
-		ret = subprocess.call(["msbuild.exe", "Auth.csproj", "/p:configuration=release"], shell=True)
-		check()
-	
-	os.chdir(ringidDesktop + r'\Call')
-	if debugOrRelease == 0: 
-		ret = subprocess.call(["msbuild.exe", "Call.csproj", "/p:configuration=debug"], shell=True)
-		check()
-	else:
-		ret = subprocess.call(["msbuild.exe", "Call.csproj", "/p:configuration=release"], shell=True)
-		check()
-	
-	os.chdir(ringidDesktop + r'\Models')
-	if debugOrRelease == 0: 
-		ret = subprocess.call(["msbuild.exe", "Models.csproj", "/p:configuration=debug"], shell=True)
-		check()
-	else: 
-		ret = subprocess.call(["msbuild.exe", "Models.csproj", "/p:configuration=release"], shell=True)
-		check()
-		
-	os.chdir(ringidDesktop + r'\View')
-	if debugOrRelease == 0: 
-		ret = subprocess.call(["msbuild.exe", "View.csproj", "/p:configuration=debug"], shell=True)
-		check()
-	else: 
-		ret = subprocess.call(["msbuild.exe", "View.csproj", "/p:configuration=release"], shell=True)
+		ret = subprocess.call(["msbuild.exe", "ringID.sln", "/p:configuration=release"], shell=True)
 		check()
 	
 ln = 60
@@ -195,6 +156,15 @@ while True:
 		break
 	elif str[0] == 'n' or str[0] == 'N':
 		libraryRelease = 0
+		break
+		
+while True:
+	str = raw_input("Want to enable log? (Y/n)   ")
+	if str[0] == 'y' or str[0] == 'Y':
+		log_enabled = 1
+		break
+	elif str[0] == 'n' or str[0] == 'N':
+		log_enabled = 0
 		break
 
 while True:
