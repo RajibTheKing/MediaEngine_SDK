@@ -177,11 +177,12 @@ private:
 	
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
-	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
-	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
 
-	CVideoDecoder *m_pVideoDecoderForSecondInset;
-	CVideoDecoder *m_pVideoDecoderForThirdInset;
+	//CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
+	//CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
+
+	//CVideoDecoder *m_pVideoDecoderForSecondInset;
+	//CVideoDecoder *m_pVideoDecoderForThirdInset;
 
 	CFPSController *m_pFPSController;
 	long long m_LastTimeStampClientFPS;

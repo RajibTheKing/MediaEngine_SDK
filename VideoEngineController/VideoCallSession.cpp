@@ -106,10 +106,6 @@ m_pVideoDecodingThreadOfChannel(NULL),
 
 #endif
 
-m_pVideoDecodingThreadForSecondInset(NULL),
-m_pVideoDecodingThreadForThirdInset(NULL),
-m_pVideoDecoderForSecondInset(NULL),
-m_pVideoDecoderForThirdInset(NULL),
 m_nPublisherInsetNumber(0)
 
 {
@@ -252,10 +248,6 @@ CVideoCallSession::~CVideoCallSession()
 
 #endif
 
-	if (m_pVideoDecodingThreadForSecondInset != NULL)
-		m_pVideoDecodingThreadForSecondInset->StopDecodingThread();
-	if (m_pVideoDecodingThreadForThirdInset != NULL)
-		m_pVideoDecodingThreadForThirdInset->StopDecodingThread();
 
 #ifdef OLD_RENDERING_THREAD
 
@@ -333,17 +325,6 @@ CVideoCallSession::~CVideoCallSession()
 
 #endif
 
-	if (NULL != m_pVideoDecodingThreadForSecondInset)
-	{
-		delete m_pVideoDecodingThreadForSecondInset;
-		m_pVideoDecodingThreadForSecondInset = NULL;
-	}
-
-	if (NULL != m_pVideoDecodingThreadForThirdInset)
-	{
-		delete m_pVideoDecodingThreadForThirdInset;
-		m_pVideoDecodingThreadForThirdInset = NULL;
-	}
 
 #ifdef OLD_RENDERING_THREAD
 
@@ -434,20 +415,6 @@ CVideoCallSession::~CVideoCallSession()
 		delete m_pVideoDecoder;
 
 		m_pVideoDecoder = NULL;
-	}
-
-	if (NULL != m_pVideoDecoderForSecondInset)
-	{
-		delete m_pVideoDecoderForSecondInset;
-
-		m_pVideoDecoderForSecondInset = NULL;
-	}
-
-	if (NULL != m_pVideoDecoderForThirdInset)
-	{
-		delete m_pVideoDecoderForThirdInset;
-
-		m_pVideoDecoderForThirdInset = NULL;
 	}
 
 	if (NULL != m_pColorConverter)
