@@ -11,32 +11,36 @@
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 
-
-class CVideoCallSessionListHandler
+namespace MediaSDK
 {
 
-public:
+	class CVideoCallSessionListHandler
+	{
 
-	CVideoCallSessionListHandler();
-	~CVideoCallSessionListHandler();
+	public:
 
-	void AddToVideoSessionList(long long llFriendName, CVideoCallSession* pcVideoSession);
-	CVideoCallSession* GetFromVideoSessionList(long long llFriendName);
-	CVideoCallSession* GetFromVideoSessionListinIndex(int iIndex);
-	bool RemoveFromVideoSessionList(long long llFriendName);
-	int SizeOfVideoSessionList();
-	bool IsVideoSessionExist(long long llFriendName, CVideoCallSession* &rpcVideoSession);
-	bool IsVideoSessionExist(long long llFriendName);
-	void ClearAllFromVideoSessionList();
-	void ResetAllInVideoSessionList();
+		CVideoCallSessionListHandler();
+		~CVideoCallSessionListHandler();
 
-private:
+		void AddToVideoSessionList(long long llFriendName, CVideoCallSession* pcVideoSession);
+		CVideoCallSession* GetFromVideoSessionList(long long llFriendName);
+		CVideoCallSession* GetFromVideoSessionListinIndex(int iIndex);
+		bool RemoveFromVideoSessionList(long long llFriendName);
+		int SizeOfVideoSessionList();
+		bool IsVideoSessionExist(long long llFriendName, CVideoCallSession* &rpcVideoSession);
+		bool IsVideoSessionExist(long long llFriendName);
+		void ClearAllFromVideoSessionList();
+		void ResetAllInVideoSessionList();
 
-	std::map<long long, CVideoCallSession*> m_mVideoSessionList;
+	private:
 
-protected:
+		std::map<long long, CVideoCallSession*> m_mVideoSessionList;
 
-	SmartPointer<CLockHandler> m_pVideoSessionListMutex;
-};
+	protected:
+
+		SmartPointer<CLockHandler> m_pVideoSessionListMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif

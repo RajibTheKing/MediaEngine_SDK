@@ -19,69 +19,73 @@
 //#include "PacketHeader.h"
 #include "VideoHeader.h"
 
-
-namespace IPV
-{
-	class thread;
-}
-
-class CCommonElementsBucket;
-class CVideoCallSession;
-
-class CEncodedFrameDepacketizer
+namespace MediaSDK
 {
 
-public:
+	namespace IPV
+	{
+		class thread;
+	}
 
-	CEncodedFrameDepacketizer(CCommonElementsBucket* sharedObject, CVideoCallSession *pVideoCallSession);
-	~CEncodedFrameDepacketizer();
+	class CCommonElementsBucket;
+	class CVideoCallSession;
 
-	void ResetEncodedFrameDepacketizer();
+	class CEncodedFrameDepacketizer
+	{
 
-	//int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader);
-	int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader);
-	void MoveForward(int frame);
-	int CreateNewIndex(int frame);
-	void ClearFrame(int index, int frame);
-	int GetReceivedFrame(unsigned char* data,int &nFramNumber,int &nEcodingTime,int nExpectedTime,int nRight, int &nOrientation);
+	public:
 
-	map<long long, long long> m_mFrameTimeStamp;
-	map<long long, int> m_mFrameOrientation;
+		CEncodedFrameDepacketizer(CCommonElementsBucket* sharedObject, CVideoCallSession *pVideoCallSession);
+		~CEncodedFrameDepacketizer();
 
-	Tools m_Tools;
+		void ResetEncodedFrameDepacketizer();
 
-private:
-	int ProcessFrame(unsigned char *data,int index,int frameNumber,int &nFramNumber);
-	int GetEncodingTime(int nFrameNumber);
-	int GetOrientation(int nFrameNumber);
-	bool m_bIsDpkgBufferFilledUp;
-	int m_iFirstFrameReceived;
+		//int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader);
+		int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader);
+		void MoveForward(int frame);
+		int CreateNewIndex(int frame);
+		void ClearFrame(int index, int frame);
+		int GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight, int &nOrientation);
 
-	int SafeFinder(int Data);
+		map<long long, long long> m_mFrameTimeStamp;
+		map<long long, int> m_mFrameOrientation;
 
-	long long m_iMaxFrameNumRecvd;
-	long long m_FirstFrameEncodingTime;
+		Tools m_Tools;
 
-	std::map<int, int> m_FrameTracker;
-	long long m_FrontFrame;
-	long long m_BackFrame;
-	int m_Counter;
-	int m_BufferSize;
-	std::set<int> m_AvailableIndexes;
+	private:
+		int ProcessFrame(unsigned char *data, int index, int frameNumber, int &nFramNumber);
+		int GetEncodingTime(int nFrameNumber);
+		int GetOrientation(int nFrameNumber);
+		bool m_bIsDpkgBufferFilledUp;
+		int m_iFirstFrameReceived;
 
-	CCommonElementsBucket* m_pCommonElementsBucket;
-	CVideoCallSession* m_VideoCallSession;
+		int SafeFinder(int Data);
 
-	CVideoPacketBuffer m_CVideoPacketBuffer[DEPACKETIZATION_BUFFER_SIZE + 1];
+		long long m_iMaxFrameNumRecvd;
+		long long m_FirstFrameEncodingTime;
 
-	//CVideoHeader PacketHeader;	// use to hoy na
+		std::map<int, int> m_FrameTracker;
+		long long m_FrontFrame;
+		long long m_BackFrame;
+		int m_Counter;
+		int m_BufferSize;
+		std::set<int> m_AvailableIndexes;
 
-	unsigned char * m_pPacketToResend;
+		CCommonElementsBucket* m_pCommonElementsBucket;
+		CVideoCallSession* m_VideoCallSession;
 
-protected:
+		CVideoPacketBuffer m_CVideoPacketBuffer[DEPACKETIZATION_BUFFER_SIZE + 1];
 
-	SmartPointer<CLockHandler> m_pEncodedFrameDepacketizerMutex;
+		//CVideoHeader PacketHeader;	// use to hoy na
 
-};
+		unsigned char * m_pPacketToResend;
+
+	protected:
+
+		SmartPointer<CLockHandler> m_pEncodedFrameDepacketizerMutex;
+
+	};
+
+} //namespace MediaSDK
 
 #endif

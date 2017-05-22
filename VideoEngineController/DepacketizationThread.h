@@ -13,61 +13,64 @@
 #include "VersionController.h"
 #include "IDRFrameIntervalController.h"
 
-
-
 #include <thread>
 
-class CCommonElementsBucket;
-
-class CVideoDepacketizationThread
+namespace MediaSDK
 {
 
-public:
+	class CCommonElementsBucket;
 
-	CVideoDepacketizationThread(long long friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, IDRFrameIntervalController *pIdrFrameController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession);
-	~CVideoDepacketizationThread();
+	class CVideoDepacketizationThread
+	{
 
-	void StartDepacketizationThread();
-	void StopDepacketizationThread();
-	void DepacketizationThreadProcedure();
-	static void *CreateVideoDepacketizationThread(void* param);
+	public:
 
-	void ResetForPublisherCallerCallEnd();
+		CVideoDepacketizationThread(long long friendID, CVideoPacketQueue *VideoPacketQueue, CVideoPacketQueue *RetransVideoPacketQueue, CVideoPacketQueue *MiniPacketQueue, BitRateController *BitRateController, IDRFrameIntervalController *pIdrFrameController, CEncodedFrameDepacketizer *EncodedFrameDepacketizer, CCommonElementsBucket* CommonElementsBucket, unsigned int *miniPacketBandCounter, CVersionController *pVersionController, CVideoCallSession* pVideoCallSession);
+		~CVideoDepacketizationThread();
 
-private:
+		void StartDepacketizationThread();
+		void StopDepacketizationThread();
+		void DepacketizationThreadProcedure();
+		static void *CreateVideoDepacketizationThread(void* param);
 
-	void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
-	void ExpectedPacket();
+		void ResetForPublisherCallerCallEnd();
 
-	bool bDepacketizationThreadRunning;
-	bool bDepacketizationThreadClosed;
+	private:
 
-	CVideoCallSession *m_pVideoCallSession;
-	CVideoPacketQueue *m_pVideoPacketQueue;						
-	CVideoPacketQueue *m_pRetransVideoPacketQueue;				
-	CVideoPacketQueue *m_pMiniPacketQueue;						
-	CVideoHeader m_RcvdPacketHeader;							
-	BitRateController *m_BitRateController;
-    IDRFrameIntervalController *m_pIdrFrameIntervalController;
-	CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;		
-	CCommonElementsBucket* m_pCommonElementsBucket;
-    
-    
+		void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
+		void ExpectedPacket();
 
-	bool m_bResetForPublisherCallerCallEnd;
+		bool bDepacketizationThreadRunning;
+		bool bDepacketizationThreadClosed;
 
-	pair<int, int> ExpectedFramePacketPair;						
-	int iNumberOfPacketsInCurrentFrame;
+		CVideoCallSession *m_pVideoCallSession;
+		CVideoPacketQueue *m_pVideoPacketQueue;
+		CVideoPacketQueue *m_pRetransVideoPacketQueue;
+		CVideoPacketQueue *m_pMiniPacketQueue;
+		CVideoHeader m_RcvdPacketHeader;
+		BitRateController *m_BitRateController;
+		IDRFrameIntervalController *m_pIdrFrameIntervalController;
+		CEncodedFrameDepacketizer *m_pEncodedFrameDepacketizer;
+		CCommonElementsBucket* m_pCommonElementsBucket;
 
-	unsigned int *m_miniPacketBandCounter;								
-	long long m_FriendID;										
 
-	unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-	Tools m_Tools;
-    CVersionController *m_pVersionController;
-    
-    SmartPointer<std::thread> pDepacketizationThread;
-};
+		bool m_bResetForPublisherCallerCallEnd;
+
+		pair<int, int> ExpectedFramePacketPair;
+		int iNumberOfPacketsInCurrentFrame;
+
+		unsigned int *m_miniPacketBandCounter;
+		long long m_FriendID;
+
+		unsigned char m_PacketToBeMerged[MAX_VIDEO_DECODER_FRAME_SIZE];
+
+		Tools m_Tools;
+		CVersionController *m_pVersionController;
+
+		SmartPointer<std::thread> pDepacketizationThread;
+	};
+
+} //namespace MediaSDK
 
 #endif 

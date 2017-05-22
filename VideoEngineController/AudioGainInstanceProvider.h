@@ -5,17 +5,20 @@
 #include "AudioTypes.h"
 #include "SmartPointer.h"
 
-
-class AudioGainInterface;
-
-class AudioGainInstanceProvider
+namespace MediaSDK
 {
 
-public:
+	class AudioGainInterface;
 
-	static SmartPointer<AudioGainInterface> GetAudioGainInstance(AudioGainType audioGainType);
+	class AudioGainInstanceProvider
+	{
 
-};
+	public:
 
+		static SmartPointer<AudioGainInterface> GetAudioGainInstance(AudioGainType audioGainType);
+
+	};
+
+} //namespace MediaSDK
 
 #endif  // !AUDIO_GAIN_INSTANCE_PROVIDER_H

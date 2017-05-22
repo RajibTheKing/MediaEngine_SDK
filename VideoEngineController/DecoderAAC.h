@@ -11,38 +11,41 @@
 #include "LogPrinter.h"
 #include "aacdecoder_lib.h"
 
-
-
-class DecoderAAC : public AudioDecoderInterface
+namespace MediaSDK
 {
 
-private:
 
-	int m_nRC;
-	HANDLE_AACDECODER m_hDecoder;
+	class DecoderAAC : public AudioDecoderInterface
+	{
 
+	private:
 
-protected:
-
-	short ByteArrayToShortBE(unsigned char *byteArray);
-
-	int ThreeBytesIntoIntBE(unsigned char *byteArray);
-
-	void CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf);
+		int m_nRC;
+		HANDLE_AACDECODER m_hDecoder;
 
 
-public:
+	protected:
 
-	DecoderAAC();
+		short ByteArrayToShortBE(unsigned char *byteArray);
 
-	~DecoderAAC();
+		int ThreeBytesIntoIntBE(unsigned char *byteArray);
 
-	bool SetParameters(int sampleRate, int numberOfChannels);
-	
-	int DecodeAudio(unsigned char *inputDataBuffer, unsigned int inputDataSize, short *outputDataBuffer);
+		void CreateConfBuf(int sampleRate, int numOfChannels, unsigned char *conf);
 
-};
 
+	public:
+
+		DecoderAAC();
+
+		~DecoderAAC();
+
+		bool SetParameters(int sampleRate, int numberOfChannels);
+
+		int DecodeAudio(unsigned char *inputDataBuffer, unsigned int inputDataSize, short *outputDataBuffer);
+
+	};
+
+} //namespace MediaSDK
 
 #endif  // !AUDIO_AAC_DECODER_H
 

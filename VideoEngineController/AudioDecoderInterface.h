@@ -1,19 +1,22 @@
 #ifndef AUDIO_DECODER_INTERFACE_H
 #define AUDIO_DECODER_INTERFACE_H
 
-
-class AudioDecoderInterface
+namespace MediaSDK
 {
 
-public:
+	class AudioDecoderInterface
+	{
 
-	virtual bool SetParameters(int sampleRate, int numberOfChannels) = 0;
+	public:
 
-	virtual int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer) = 0;
+		virtual bool SetParameters(int sampleRate, int numberOfChannels) = 0;
 
-	virtual ~AudioDecoderInterface() { }
-};
+		virtual int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer) = 0;
 
+		virtual ~AudioDecoderInterface() { }
+	};
+
+} //namespace MediaSDK
 
 #endif  // !AUDIO_DECODER_INTERFACE_H 
 

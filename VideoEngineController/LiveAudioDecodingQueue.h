@@ -13,35 +13,39 @@
 #define LIVE_AUDIO_DECODING_QUEUE_SIZE 150
 #define MAX_AUDIO_ENCODED_FRAME_LEN 2048
 
-using PI = std::pair < int, int > ;
-using VP = std::vector < PI > ;
-
-class LiveAudioDecodingQueue
+namespace MediaSDK
 {
-public:
 
-    LiveAudioDecodingQueue();
-    ~LiveAudioDecodingQueue();
+	using PI = std::pair < int, int > ;
+	using VP = std::vector < PI > ;
 
-    int EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP vMissing);
-	int DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing);
-    void IncreamentIndex(int &irIndex);
-    int GetQueueSize();
-    void ResetBuffer();
+	class LiveAudioDecodingQueue
+	{
+	public:
 
-private:
+		LiveAudioDecodingQueue();
+		~LiveAudioDecodingQueue();
 
-    int m_iPushIndex;
-    int m_iPopIndex;
-    int m_nQueueCapacity;
-    int m_nQueueSize;
-    Tools m_Tools;
+		int EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP vMissing);
+		int DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing);
+		void IncreamentIndex(int &irIndex);
+		int GetQueueSize();
+		void ResetBuffer();
 
-    unsigned char m_uchBuffer[LIVE_AUDIO_DECODING_QUEUE_SIZE][MAX_AUDIO_ENCODED_FRAME_LEN];
-    int m_naBufferDataLength[LIVE_AUDIO_DECODING_QUEUE_SIZE];
-	VP m_vMissingBuffer[LIVE_AUDIO_DECODING_QUEUE_SIZE];
-    SmartPointer<CLockHandler> m_pLiveAudioDecodingQueueMutex;
-};
+	private:
 
+		int m_iPushIndex;
+		int m_iPopIndex;
+		int m_nQueueCapacity;
+		int m_nQueueSize;
+		Tools m_Tools;
+
+		unsigned char m_uchBuffer[LIVE_AUDIO_DECODING_QUEUE_SIZE][MAX_AUDIO_ENCODED_FRAME_LEN];
+		int m_naBufferDataLength[LIVE_AUDIO_DECODING_QUEUE_SIZE];
+		VP m_vMissingBuffer[LIVE_AUDIO_DECODING_QUEUE_SIZE];
+		SmartPointer<CLockHandler> m_pLiveAudioDecodingQueueMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif //LIVESTREAMING_LIVEAUDIODECODINGQUEUE_H

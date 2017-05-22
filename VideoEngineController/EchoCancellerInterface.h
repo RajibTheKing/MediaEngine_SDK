@@ -4,18 +4,21 @@
 
 #define AECM_SAMPLES_IN_FRAME 80
 
-
-class EchoCancellerInterface
+namespace MediaSDK
 {
 
-public:
+	class EchoCancellerInterface
+	{
 
-	virtual int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning) = 0;
+	public:
 
-	virtual int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning) = 0;
+		virtual int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning) = 0;
 
-	virtual ~EchoCancellerInterface() {	}
-};
+		virtual int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning) = 0;
 
+		virtual ~EchoCancellerInterface() {	}
+	};
+
+} //namespace MediaSDK
 
 #endif // !ECHO_CANCELLER_INTERFACE_H

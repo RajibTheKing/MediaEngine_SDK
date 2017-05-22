@@ -4,26 +4,31 @@
 #include "LiveAudioParser.h"
 #include "SmartPointer.h"
 
-class AudioPacketHeader;
+namespace MediaSDK
+{
 
-class CLiveAudioParserForChannel : public ILiveAudioParser{
-private:
-	std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
-	SmartPointer<CLockHandler> m_pLiveReceiverMutex;
-	SmartPointer<AudioPacketHeader> m_pAudioPacketHeader;
-	bool m_bIsCurrentlyParsingAudioData;
-	bool m_bIsRoleChanging;
+	class AudioPacketHeader;
 
-public:
-	CLiveAudioParserForChannel(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector);
+	class CLiveAudioParserForChannel : public ILiveAudioParser{
+	private:
+		std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
+		SmartPointer<CLockHandler> m_pLiveReceiverMutex;
+		SmartPointer<AudioPacketHeader> m_pAudioPacketHeader;
+		bool m_bIsCurrentlyParsingAudioData;
+		bool m_bIsRoleChanging;
 
-	virtual ~CLiveAudioParserForChannel();
+	public:
+		CLiveAudioParserForChannel(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector);
 
-	virtual void ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks);
-	virtual void SetRoleChanging(bool bFlag);
-	virtual bool GetRoleChanging();
-	virtual bool IsParsingAudioData();
-	virtual void GenMissingBlock(unsigned char* uchAudioData, int iFrameLeftRange, int iFrameRightRange, std::vector<std::pair<int, int>>&missingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock);
-};
+		virtual ~CLiveAudioParserForChannel();
+
+		virtual void ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks);
+		virtual void SetRoleChanging(bool bFlag);
+		virtual bool GetRoleChanging();
+		virtual bool IsParsingAudioData();
+		virtual void GenMissingBlock(unsigned char* uchAudioData, int iFrameLeftRange, int iFrameRightRange, std::vector<std::pair<int, int>>&missingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock);
+	};
+
+} //namespace MediaSDK
 
 #endif

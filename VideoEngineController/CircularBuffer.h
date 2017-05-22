@@ -6,6 +6,8 @@
 #include "CommonTypes.h"
 #include "Tools.h"
 
+namespace MediaSDK
+{
 
 class CCircularBuffer
 {
@@ -29,5 +31,7 @@ private:
 	Tools m_Tools;
 	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
 };
+
+} //namespace MediaSDK
 
 #endif 

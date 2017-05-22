@@ -8,41 +8,46 @@
 #include "DeviceCapabilityCheckBuffer.h"
 #include <thread>
 
-class CController;
-class CCommonElementsBucket;
-
-class CDeviceCapabilityCheckThread
+namespace MediaSDK
 {
-public:
 
-	CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer, CCommonElementsBucket *pCommonElementBucket);
-	~CDeviceCapabilityCheckThread();
+	class CController;
+	class CCommonElementsBucket;
 
-	int StartDeviceCapabilityCheckThread(int iHeight, int iWidth);
-	void StopDeviceCapabilityCheckThread();
-	void DeviceCapabilityCheckThreadProcedure();
-	static void *CreateVideoDeviceCapabilityCheckThread(void* param);
+	class CDeviceCapabilityCheckThread
+	{
+	public:
 
-private:
+		CDeviceCapabilityCheckThread(CController *pCController, CDeviceCapabilityCheckBuffer *pDeviceCapabilityCheckBuffer, CCommonElementsBucket *pCommonElementBucket);
+		~CDeviceCapabilityCheckThread();
 
-	bool bDeviceCapabilityCheckThreadRunning;
-	bool bDeviceCapabilityCheckThreadClosed;
+		int StartDeviceCapabilityCheckThread(int iHeight, int iWidth);
+		void StopDeviceCapabilityCheckThread();
+		void DeviceCapabilityCheckThreadProcedure();
+		static void *CreateVideoDeviceCapabilityCheckThread(void* param);
 
-	unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
+	private:
 
-	int m_nIdolCounter;
+		bool bDeviceCapabilityCheckThreadRunning;
+		bool bDeviceCapabilityCheckThreadClosed;
 
-	CDeviceCapabilityCheckBuffer *m_pDeviceCapabilityCheckBuffer;
+		unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
 
-	CController *m_pCController;
+		int m_nIdolCounter;
 
-	unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		CDeviceCapabilityCheckBuffer *m_pDeviceCapabilityCheckBuffer;
 
-	Tools m_Tools;
-    CCommonElementsBucket *m_pCommonElementBucket;
-	bool m_bThreadAllreadyStarted;
+		CController *m_pCController;
 
-	SmartPointer<std::thread> pDeviceCapabilityCheckThread;
-};
+		unsigned char m_EncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
-#endif 
+		Tools m_Tools;
+		CCommonElementsBucket *m_pCommonElementBucket;
+		bool m_bThreadAllreadyStarted;
+
+		SmartPointer<std::thread> pDeviceCapabilityCheckThread;
+	};
+
+} //namespace MediaSDK
+
+#endif

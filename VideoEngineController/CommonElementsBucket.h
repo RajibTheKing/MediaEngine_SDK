@@ -9,48 +9,53 @@
 #include "VideoCallSessionListHandler.h"
 #include "AudioCallSessionListHandler.h"
 
-class CEventNotifier;
-
-class CCommonElementsBucket
+namespace MediaSDK
 {
 
-public:
+	class CEventNotifier;
 
-	CCommonElementsBucket();
-	~CCommonElementsBucket();
-    
-	SendFunctionPointerType SendFunctionPointer = NULL;
-    
-    void SetUserName(const long long& username);
-    long long GetUsername();
-   
-	CEventNotifier *m_pEventNotifier;
-	CVideoCallSessionListHandler *m_pVideoCallSessionList;
-	CAudioCallSessionListHandler *m_pAudioCallSessionList;
-	CVideoEncoderListHandler *m_pVideoEncoderList;
-	CLockHandler* GetSharedMutex();
-    
-	void SetSendFunctionPointer(SendFunctionPointerType sendFunc)
+	class CCommonElementsBucket
 	{
-		SendFunctionPointer = sendFunc;
-	}
 
-	SendFunctionPointerType GetSendFunctionPointer()
-	{		
-		return SendFunctionPointer;
-	}
+	public:
 
-	void SetPacketSizeOfNetwork(int packetSizeOfNetwork);
-	int GetPacketSizeOfNetwork();
-    
-private:
+		CCommonElementsBucket();
+		~CCommonElementsBucket();
 
-    void InstantiateSharedMutex();
-	
-	int m_nPacketSizeOfNetwork;
-    long long m_friendID;
-	long long userName;
-	CLockHandler* sharedMutex;
-};
+		SendFunctionPointerType SendFunctionPointer = NULL;
+
+		void SetUserName(const long long& username);
+		long long GetUsername();
+
+		CEventNotifier *m_pEventNotifier;
+		CVideoCallSessionListHandler *m_pVideoCallSessionList;
+		CAudioCallSessionListHandler *m_pAudioCallSessionList;
+		CVideoEncoderListHandler *m_pVideoEncoderList;
+		CLockHandler* GetSharedMutex();
+
+		void SetSendFunctionPointer(SendFunctionPointerType sendFunc)
+		{
+			SendFunctionPointer = sendFunc;
+		}
+
+		SendFunctionPointerType GetSendFunctionPointer()
+		{
+			return SendFunctionPointer;
+		}
+
+		void SetPacketSizeOfNetwork(int packetSizeOfNetwork);
+		int GetPacketSizeOfNetwork();
+
+	private:
+
+		void InstantiateSharedMutex();
+
+		int m_nPacketSizeOfNetwork;
+		long long m_friendID;
+		long long userName;
+		CLockHandler* sharedMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif

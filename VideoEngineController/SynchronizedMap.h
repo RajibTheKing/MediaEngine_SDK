@@ -7,27 +7,32 @@
 
 #include <map>
 
-class CSynchronizedMap
+namespace MediaSDK
 {
 
-public:
+	class CSynchronizedMap
+	{
 
-	CSynchronizedMap();
-	~CSynchronizedMap();
+	public:
 
-	void clear();
-	int find(int iIndex);
-	int getElementAt(int iIndex);
-	int end();
-	void insert(int iIndex, int nElement);
-	void erase(int iIndex);
-	void eraseAllSmallerEqual(int iIndex);
+		CSynchronizedMap();
+		~CSynchronizedMap();
 
-private:
+		void clear();
+		int find(int iIndex);
+		int getElementAt(int iIndex);
+		int end();
+		void insert(int iIndex, int nElement);
+		void erase(int iIndex);
+		void eraseAllSmallerEqual(int iIndex);
 
-	std::map<int, int> m_STLMapSynchronizedMap;
+	private:
 
-	SmartPointer<CLockHandler> m_pSynchronizedMapMutex;
-};
+		std::map<int, int> m_STLMapSynchronizedMap;
+
+		SmartPointer<CLockHandler> m_pSynchronizedMapMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif 

@@ -11,6 +11,8 @@
 #define OPUS_MAX_COMPLEXITY 10
 #define BYTES_TO_STORE_AUDIO_EFRAME_LEN 2
 
+namespace MediaSDK
+{
 
 class EncoderOpus : public AudioEncoderInterface
 {
@@ -51,5 +53,6 @@ public:
 	}
 };
 
+} //namespace MediaSDK
 
 #endif  // !AUDIO_ENCODER_OPUS_H

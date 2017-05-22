@@ -9,6 +9,9 @@
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 
+namespace MediaSDK
+{
+	using namespace std;
 
 class CVideoBeautificationer
 {
@@ -109,5 +112,7 @@ private:
 	SmartPointer<CLockHandler> m_pVideoBeautificationMutex;
 
 };
+
+} //namespace MediaSDK
 
 #endif 

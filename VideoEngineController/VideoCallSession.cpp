@@ -14,6 +14,9 @@
 
 #define MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS 10
 
+namespace MediaSDK
+{
+
 CVideoCallSession::CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
 
 m_pCommonElementsBucket(sharedObject),
@@ -1863,3 +1866,7 @@ bool CVideoCallSession::isDynamicIDR_Mechanism_Enable()
 {
     return m_bDynamic_IDR_Sending_Mechanism;
 }
+
+} //namespace MediaSDK
+
+

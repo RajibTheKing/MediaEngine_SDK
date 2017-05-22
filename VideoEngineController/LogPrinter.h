@@ -94,11 +94,6 @@
 
 #define PRIORITY CLogPrinter::DEBUGS
 
-#ifdef TARGET_OS_WINDOWS_PHONE
-typedef __int64 IPVLongType;
-#else
-typedef long long IPVLongType;
-#endif
 
 #include "../VideoEngineUtilities/SmartPointer.h"
 
@@ -117,6 +112,19 @@ typedef long long IPVLongType;
 #include <sys/time.h>
 #endif 
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#ifdef LOG_ENABLED
+	//Do Nothing
+#else
+#define printf(...)
+#endif
+#endif
+
+#define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
+
+namespace MediaSDK
+{
+
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 static FILE *logfp = NULL;
 #define printg(X,...) _RPT1(0,X,__VA_ARGS__)
@@ -133,15 +141,11 @@ static FILE *logfp = NULL;
 #define printfiledone() fclose(logfp);
 #endif
 
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    #ifdef LOG_ENABLED
-        //Do Nothing
+#ifdef TARGET_OS_WINDOWS_PHONE
+	typedef __int64 IPVLongType;
     #else
-        #define printf(...)
+	typedef long long IPVLongType;
     #endif
-#endif
-
-#define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 using namespace std;
 
@@ -294,5 +298,8 @@ private:
 #else
 #define CLogPrinter_WriteBitrateChangeInfo(...)
 #endif
+
+} //namespace MediaSDK
+
 
 #endif

@@ -1,99 +1,109 @@
 
 #include "IPVThread.h"
+
 #include "CommonElementsBucket.h"
+#include "AverageCalculator.h"
 #include "VideoCallSession.h"
+#include "Tools.h"
+#include "LogPrinter.h"
+#include "RenderingBuffer.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
-
-CIPVThread::CIPVThread(long long llFriendID, CRenderingBuffer *pcRenderingBuffer, CCommonElementsBucket *pcCommonElementsBucket, CVideoCallSession *pcVideoCallSession, bool bIsCheckCall) :
-
-m_pcRenderingBuffer(pcRenderingBuffer),
-m_pcCommonElementsBucket(pcCommonElementsBucket),
-m_llFriendID(llFriendID),
-m_lRenderCallTime(0),
-m_bIsCheckCall(bIsCheckCall),
-m_nInsetHeight(-1),
-m_nInsetWidth(-1)
-
-{
-    m_llRenderFrameCounter = 0;
-	m_pcVideoCallSession = pcVideoCallSession;
-}
-
-CIPVThread::~CIPVThread()
+namespace MediaSDK
 {
 
-}
+	CIPVThread::CIPVThread(long long llFriendID, CRenderingBuffer *pcRenderingBuffer, CCommonElementsBucket *pcCommonElementsBucket, CVideoCallSession *pcVideoCallSession, bool bIsCheckCall) :
 
-void CIPVThread::StopThread()
-{
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CIPVThread::StopThread() called");
+		m_pcRenderingBuffer(pcRenderingBuffer),
+		m_pcCommonElementsBucket(pcCommonElementsBucket),
+		m_llFriendID(llFriendID),
+		m_lRenderCallTime(0),
+		m_bIsCheckCall(bIsCheckCall),
+		m_nInsetHeight(-1),
+		m_nInsetWidth(-1)
 
-	//if (pInternalThread.get())
+	{
+		m_llRenderFrameCounter = 0;
+		m_pcVideoCallSession = pcVideoCallSession;
+
+		m_cRenderTimeCalculator.reset(new CAverageCalculator());
+	}
+
+	CIPVThread::~CIPVThread()
 	{
 
-		m_bThreadRunning = false;
+	}
 
-		while (!m_bThreadClosed)
+	void CIPVThread::StopThread()
+	{
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CIPVThread::StopThread() called");
+
+		//if (pInternalThread.get())
 		{
-			m_Tools.SOSleep(5);
+
+			m_bThreadRunning = false;
+
+			while (!m_bThreadClosed)
+			{
+				Tools::SOSleep(5);
+			}
 		}
+
+		//pInternalThread.reset();
+
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CIPVThread::StopThread() Rendering Thread STOPPPP");
 	}
 
-	//pInternalThread.reset();
-
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CIPVThread::StopThread() Rendering Thread STOPPPP");
-}
-
-void CIPVThread::StartThread()
-{
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CIPVThread::StartThread() called");
-
-	if (pThreadPointer.get())
+	void CIPVThread::StartThread()
 	{
-		pThreadPointer.reset();
-		return;
-	}
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CIPVThread::StartThread() called");
 
-	m_bThreadRunning = true;
-	m_bThreadClosed = false;
+		if (pThreadPointer.get())
+		{
+			pThreadPointer.reset();
+			return;
+		}
+
+		m_bThreadRunning = true;
+		m_bThreadClosed = false;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	dispatch_queue_t IPVThreadQ = dispatch_queue_create("IPVThreadQ", DISPATCH_QUEUE_CONCURRENT);
-	dispatch_async(IPVThreadQ, ^{
-		this->ThreadRunProcedure();
-	});
+		dispatch_queue_t IPVThreadQ = dispatch_queue_create("IPVThreadQ", DISPATCH_QUEUE_CONCURRENT);
+		dispatch_async(IPVThreadQ, ^{
+			this->ThreadRunProcedure();
+		});
 
 #else
 
-	std::thread myThread(CreateThread, this);
-	myThread.detach();
+		std::thread myThread(CreateThread, this);
+		myThread.detach();
 
 #endif
 
-	CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CIPVThread::StartThread() Rendering Thread started");
+		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CIPVThread::StartThread() Rendering Thread started");
 
-	return;
-}
+		return;
+	}
 
-void *CIPVThread::CreateThread(void* pParam)
-{
-	CIPVThread *pThis = (CIPVThread*)pParam;
-	pThis->ThreadRunProcedure();
+	void *CIPVThread::CreateThread(void* pParam)
+	{
+		CIPVThread *pThis = (CIPVThread*)pParam;
+		pThis->ThreadRunProcedure();
 
-	return NULL;
-}
-
-
-void CIPVThread::ThreadRunProcedure()
-{
-	
-}
+		return NULL;
+	}
 
 
+	void CIPVThread::ThreadRunProcedure()
+	{
+
+	}
+
+
+} //namespace MediaSDK
 
 

@@ -12,26 +12,30 @@
 
 #define OPUS_ENABLED
 
-class CAudioFileEncodeDecodeSession
+namespace MediaSDK
 {
 
-public:
+	class CAudioFileEncodeDecodeSession
+	{
 
-	CAudioFileEncodeDecodeSession();
-	~CAudioFileEncodeDecodeSession();
+	public:
 
-	int StartAudioEncodeDecodeSession();
-	int EncodeAudioFile(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer);
-	int DecodeAudioFile(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
-	int StopAudioEncodeDecodeSession();
+		CAudioFileEncodeDecodeSession();
+		~CAudioFileEncodeDecodeSession();
 
-private:
+		int StartAudioEncodeDecodeSession();
+		int EncodeAudioFile(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer);
+		int DecodeAudioFile(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer);
+		int StopAudioEncodeDecodeSession();
+
+	private:
 #ifdef OPUS_ENABLED
-	CAudioFileCodec *m_pAudioCodec;
+		CAudioFileCodec *m_pAudioCodec;
 #else
-	G729CodecNative *m_pG729CodecNative;
+		G729CodecNative *m_pG729CodecNative;
 #endif
-};
+	};
 
+} //namespace MediaSDK
 
 #endif

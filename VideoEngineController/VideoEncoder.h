@@ -9,44 +9,49 @@
 #include "codec_api.h"
 #include "Tools.h"
 
-class CCommonElementsBucket;
-
-class CVideoEncoder
+namespace MediaSDK
 {
-public:
 
-	CVideoEncoder(CCommonElementsBucket* pSharedObject, long long llfriendID);
-	~CVideoEncoder();
+	class CCommonElementsBucket;
 
-	int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
-	int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData, bool bIsForceIFrame);
+	class CVideoEncoder
+	{
+	public:
 
-    int SetBitrate(int nBitRate);
-    void SetNetworkType(int nNetworkType);
-	int SetMaxBitrate(int nBitRate);
-    int GetBitrate();
-    int GetMaxBitrate();
-	int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
+		CVideoEncoder(CCommonElementsBucket* pSharedObject, long long llfriendID);
+		~CVideoEncoder();
 
-	void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth);
+		int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
+		int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData, bool bIsForceIFrame);
 
-private:
+		int SetBitrate(int nBitRate);
+		void SetNetworkType(int nNetworkType);
+		int SetMaxBitrate(int nBitRate);
+		int GetBitrate();
+		int GetMaxBitrate();
+		int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
 
-	int m_nVideoHeight;
-	int m_nVideoWidth;
-	int m_nMaxBitRate;
-	int m_nBitRate;
-    int m_nNetworkType;
-	long long m_llfriendID;
+		void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth);
 
-	Tools m_Tools; 
+	private:
 
-	ISVCEncoder* m_pcSVCVideoEncoder;
-	CCommonElementsBucket* m_pcCommonElementsBucket;
+		int m_nVideoHeight;
+		int m_nVideoWidth;
+		int m_nMaxBitRate;
+		int m_nBitRate;
+		int m_nNetworkType;
+		long long m_llfriendID;
 
-protected:
+		Tools m_Tools;
 
-	SmartPointer<CLockHandler> m_pVideoEncoderMutex;
-};
+		ISVCEncoder* m_pcSVCVideoEncoder;
+		CCommonElementsBucket* m_pcCommonElementsBucket;
+
+	protected:
+
+		SmartPointer<CLockHandler> m_pVideoEncoderMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif

@@ -6,89 +6,94 @@
 #include "ThreadTools.h"
 #include "LogPrinter.h"
 
-LiveAudioDecodingQueue::LiveAudioDecodingQueue() :
-        m_iPushIndex(0),
-        m_iPopIndex(0),
-        m_nQueueSize(0),
-        m_nQueueCapacity(LIVE_AUDIO_DECODING_QUEUE_SIZE)
+namespace MediaSDK
 {
-    m_pLiveAudioDecodingQueueMutex.reset(new CLockHandler);
-}
 
-LiveAudioDecodingQueue::~LiveAudioDecodingQueue()
-{
-    SHARED_PTR_DELETE(m_pLiveAudioDecodingQueueMutex);
-}
+	LiveAudioDecodingQueue::LiveAudioDecodingQueue() :
+		m_iPushIndex(0),
+		m_iPopIndex(0),
+		m_nQueueSize(0),
+		m_nQueueCapacity(LIVE_AUDIO_DECODING_QUEUE_SIZE)
+	{
+		m_pLiveAudioDecodingQueueMutex.reset(new CLockHandler);
+	}
 
-void LiveAudioDecodingQueue::ResetBuffer()
-{
-    Locker lock(*m_pLiveAudioDecodingQueueMutex);
+	LiveAudioDecodingQueue::~LiveAudioDecodingQueue()
+	{
+		SHARED_PTR_DELETE(m_pLiveAudioDecodingQueueMutex);
+	}
 
-    m_iPushIndex = 0;
-    m_iPopIndex = 0;
-    m_nQueueSize = 0;
-}
+	void LiveAudioDecodingQueue::ResetBuffer()
+	{
+		Locker lock(*m_pLiveAudioDecodingQueueMutex);
 
-int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP vMissing)
-{
-    Locker lock(*m_pLiveAudioDecodingQueueMutex);
+		m_iPushIndex = 0;
+		m_iPopIndex = 0;
+		m_nQueueSize = 0;
+	}
 
-    memcpy(m_uchBuffer[m_iPushIndex], saReceivedAudioFrameData, nLength);
+	int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP vMissing)
+	{
+		Locker lock(*m_pLiveAudioDecodingQueueMutex);
 
-    m_naBufferDataLength[m_iPushIndex] = nLength;
-    
-	m_vMissingBuffer[m_iPushIndex] = vMissing;
+		memcpy(m_uchBuffer[m_iPushIndex], saReceivedAudioFrameData, nLength);
 
-    if (m_nQueueSize == m_nQueueCapacity)
-    {
-		LOG_AAC("#aac#b4q# LiveAudioDecodingQueueOverflow, Couldn't push!!!");
+		m_naBufferDataLength[m_iPushIndex] = nLength;
 
-        IncreamentIndex(m_iPopIndex);
-        __LOG("@@@@@@@@@@@@@@@@@-->  %s : %s # Overflow!", __FILE__, __FUNCTION__);
-    }
-    else
-    {
-        m_nQueueSize++;
-    }
+		m_vMissingBuffer[m_iPushIndex] = vMissing;
 
-    IncreamentIndex(m_iPushIndex);
+		if (m_nQueueSize == m_nQueueCapacity)
+		{
+			LOG_AAC("#aac#b4q# LiveAudioDecodingQueueOverflow, Couldn't push!!!");
 
-    return 1;
-}
+			IncreamentIndex(m_iPopIndex);
+			__LOG("@@@@@@@@@@@@@@@@@-->  %s : %s # Overflow!", __FILE__, __FUNCTION__);
+		}
+		else
+		{
+			m_nQueueSize++;
+		}
 
-int LiveAudioDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing)
-{
-    Locker lock(*m_pLiveAudioDecodingQueueMutex);
+		IncreamentIndex(m_iPushIndex);
 
-    if (m_nQueueSize == 0)
-    {
-        return -1;
-    }
-    else
-    {
-        int length = m_naBufferDataLength[m_iPopIndex];
+		return 1;
+	}
 
-        memcpy(saReceivedAudioFrameData, m_uchBuffer[m_iPopIndex], length);
-		vMissing = m_vMissingBuffer[m_iPopIndex];
-        IncreamentIndex(m_iPopIndex);
+	int LiveAudioDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing)
+	{
+		Locker lock(*m_pLiveAudioDecodingQueueMutex);
 
-        m_nQueueSize--;
+		if (m_nQueueSize == 0)
+		{
+			return -1;
+		}
+		else
+		{
+			int length = m_naBufferDataLength[m_iPopIndex];
 
-        return length;
-    }
-}
+			memcpy(saReceivedAudioFrameData, m_uchBuffer[m_iPopIndex], length);
+			vMissing = m_vMissingBuffer[m_iPopIndex];
+			IncreamentIndex(m_iPopIndex);
 
-void LiveAudioDecodingQueue::IncreamentIndex(int &irIndex)
-{
-    irIndex++;
+			m_nQueueSize--;
 
-    if (irIndex >= m_nQueueCapacity)
-        irIndex = 0;
-}
+			return length;
+		}
+	}
 
-int LiveAudioDecodingQueue::GetQueueSize()
-{
-    Locker lock(*m_pLiveAudioDecodingQueueMutex);
+	void LiveAudioDecodingQueue::IncreamentIndex(int &irIndex)
+	{
+		irIndex++;
 
-    return m_nQueueSize;
-}
+		if (irIndex >= m_nQueueCapacity)
+			irIndex = 0;
+	}
+
+	int LiveAudioDecodingQueue::GetQueueSize()
+	{
+		Locker lock(*m_pLiveAudioDecodingQueueMutex);
+
+		return m_nQueueSize;
+	}
+
+} //namespace MediaSDK

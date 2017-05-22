@@ -10,38 +10,42 @@
 #include "VideoEncoder.h"
 #include "VideoHeader.h"
 
-class CCommonElementsBucket;
-
-class IDRFrameIntervalController
+namespace MediaSDK
 {
-public:
 
-	IDRFrameIntervalController();
-    ~IDRFrameIntervalController();
+	class CCommonElementsBucket;
 
-    void SetSharedObject(CCommonElementsBucket* pcSharedObject);
-	void SetEncoder(CVideoEncoder* pcVideEnocder);
-	bool Handle_IDRFrame_Control_Packet(CVideoHeader &crTempHeader, int nServiceType);
-    void NotifyEncodedFrame(unsigned char *ucaEncodedFrame, int nEncodedFrameSize, long long nFrameNumber);
-    bool NeedToGenerateIFrame(int nServiceType);
-	
-private:
-	int NeedToCalculate();
-    CCommonElementsBucket *m_pCommonElementsBucket;
-    CVideoEncoder *m_pVideoEncoder;
-    
-    Tools m_Tools;
-	LongLong m_FriendID;
-    
-    long long m_llLastSentIDRFrameNumber;
-    long long m_llLastSentPFrameNumber;
-    long long m_llLastFrameNumber;
-    
-    long long m_llFirstMissedFrameNumber;
-    long long m_llLastMissedFrameNumber;
-    
-    int m_nRelativePframeCounter;
-};
+	class IDRFrameIntervalController
+	{
+	public:
 
+		IDRFrameIntervalController();
+		~IDRFrameIntervalController();
+
+		void SetSharedObject(CCommonElementsBucket* pcSharedObject);
+		void SetEncoder(CVideoEncoder* pcVideEnocder);
+		bool Handle_IDRFrame_Control_Packet(CVideoHeader &crTempHeader, int nServiceType);
+		void NotifyEncodedFrame(unsigned char *ucaEncodedFrame, int nEncodedFrameSize, long long nFrameNumber);
+		bool NeedToGenerateIFrame(int nServiceType);
+
+	private:
+		int NeedToCalculate();
+		CCommonElementsBucket *m_pCommonElementsBucket;
+		CVideoEncoder *m_pVideoEncoder;
+
+		Tools m_Tools;
+		LongLong m_FriendID;
+
+		long long m_llLastSentIDRFrameNumber;
+		long long m_llLastSentPFrameNumber;
+		long long m_llLastFrameNumber;
+
+		long long m_llFirstMissedFrameNumber;
+		long long m_llLastMissedFrameNumber;
+
+		int m_nRelativePframeCounter;
+	};
+
+} //namespace MediaSDK
 
 #endif

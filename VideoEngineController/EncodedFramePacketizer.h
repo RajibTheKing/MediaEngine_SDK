@@ -12,35 +12,39 @@
 #include "VideoHeader.h"
 #include "HashGenerator.h"
 
-
-class CVideoCallSession;
-class CCommonElementsBucket;
-
-class CEncodedFramePacketizer
+namespace MediaSDK
 {
 
-public:
+	class CVideoCallSession;
+	class CCommonElementsBucket;
 
-	CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession);
-	~CEncodedFramePacketizer();
+	class CEncodedFramePacketizer
+	{
 
-	int Packetize(long long llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy);
+	public:
 
-private:
+		CEncodedFramePacketizer(CCommonElementsBucket* pcSharedObject, CSendingBuffer* pcSendingBuffer, CVideoCallSession *pVideoCallSession);
+		~CEncodedFramePacketizer();
 
-	int m_nOwnDeviceType;
-	int m_nPacketSize;
+		int Packetize(long long llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy);
 
-	unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
+	private:
 
-	Tools m_Tools;
-	//CPacketHeader m_cPacketHeader;
+		int m_nOwnDeviceType;
+		int m_nPacketSize;
 
-    CVideoCallSession *m_pcVideoCallSession;
-    CVideoHeader m_cVideoHeader;
-	CSendingBuffer *m_pcSendingBuffer;
-	CCommonElementsBucket* m_pcCommonElementsBucket;
-    CHashGenerator *m_pcHashGenerator;
-};
+		unsigned char m_ucaPacket[MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
+
+		Tools m_Tools;
+		//CPacketHeader m_cPacketHeader;
+
+		CVideoCallSession *m_pcVideoCallSession;
+		CVideoHeader m_cVideoHeader;
+		CSendingBuffer *m_pcSendingBuffer;
+		CCommonElementsBucket* m_pcCommonElementsBucket;
+		CHashGenerator *m_pcHashGenerator;
+	};
+
+} //namespace MediaSDK
 
 #endif

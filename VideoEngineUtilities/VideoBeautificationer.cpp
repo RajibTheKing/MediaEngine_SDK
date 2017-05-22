@@ -3,6 +3,9 @@
 #include <cmath>
 #include "../VideoEngineController/LogPrinter.h"
 
+namespace MediaSDK
+{
+
 #define NV21 21
 #define NV12 12
 
@@ -1142,3 +1145,6 @@ std::string  CVideoBeautificationer::getDeviceModel()
 }
 
 #endif
+
+} //namespace MediaSDK
+
