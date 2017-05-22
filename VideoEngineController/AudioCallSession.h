@@ -111,6 +111,10 @@ public:
 	bool m_bDeleteNextRecordedData;
 	int m_nFramesRecvdSinceTraceSent;
 	bool m_b1stRecordedData;
+	long long m_ll1stRecordedDataTime;
+	long long m_llnextRecordedDataTime;
+	CAudioShortBuffer  m_FarendBuffer;
+	short m_saFarendData[MAX_AUDIO_FRAME_Length];
 
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);

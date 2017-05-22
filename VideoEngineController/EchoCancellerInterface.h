@@ -12,7 +12,7 @@ public:
 
 	virtual int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning) = 0;
 
-	virtual int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning) = 0;
+	virtual int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay) = 0;
 
 	virtual ~EchoCancellerInterface() {	}
 };

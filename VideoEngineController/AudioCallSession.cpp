@@ -394,20 +394,80 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 	long long llCurrentTime = Tools::CurrentTimestamp();
 	LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
+	//Sleep to maintain 100 ms recording time diff
+	if (m_b1stRecordedData)
+	{
+		Tools::SOSleep(200);
+		m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
+		m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
+		m_b1stRecordedData = false;
+	}
+	else
+	{
+		long long llNOw = Tools::CurrentTimestamp();
+		if (llNOw < m_llnextRecordedDataTime)
+		{
+			Tools::SOSleep(m_llnextRecordedDataTime - llNOw);
+		}
+		m_llnextRecordedDataTime += 100;
+	}
+
+	//If trace is received, current and next frames are deleted
+	if (m_bDeleteNextRecordedData)
+	{
+		memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+		m_bDeleteNextRecordedData = false;
+	}
+	//Handle Trace
+	if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+	{
+		m_nFramesRecvdSinceTraceSent++;
+		if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+		{
+			m_FarendBuffer.ResetBuffer();
+			m_bTraceWillNotBeReceived = true; // 8-(
+		}
+		else
+		{
+			if (CTrace::DetectTrace(psaEncodingAudioData, unLength, 80))
+			{
+				m_llTraceReceivingTime = Tools::CurrentTimestamp();
+				m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+				m_llDelayFraction = m_llDelay % 100;
+				memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+				m_bDeleteNextRecordedData = true;
+				m_bTraceRecieved = true;
+			}
+		}
+
+	}
+	LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
+
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
 		(m_bLiveAudioStreamRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole) )))
 	{
+		LOG18("b4 farnear");
 		m_bIsAECMNearEndThreadBusy = true;
 
 #ifdef DUMP_FILE
 		fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
 #endif //DUMP_FILE
 
-		if (m_pEcho.get())
+		if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
 		{
-			//m_pEcho->AddFarEndData(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
-			m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning());
+			long long llTS;
+			int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
+			if (iFarendDataLength > 0)
+			{
+				m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
+				m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
+				LOG18("Successful farnear");
+			}
+			else
+			{
+				LOG18("UnSuccessful farnear");
+			}
 
 #ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
@@ -426,7 +486,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 
 int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 {
-	LOG_50MS("_+_+ FarEnd Time= %lld", Tools::CurrentTimestamp());
+	/*LOG_50MS("_+_+ FarEnd Time= %lld", Tools::CurrentTimestamp());
 
 	if (m_bEchoCancellerEnabled && 
 		(!m_bLiveAudioStreamRunning || 
@@ -440,7 +500,7 @@ int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int 
 		}
 
 		m_bIsAECMFarEndThreadBusy = false;
-	}
+	}*/
 
 	return true;
 }

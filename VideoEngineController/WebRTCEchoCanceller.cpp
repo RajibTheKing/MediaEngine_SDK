@@ -74,7 +74,7 @@ WebRTCEchoCanceller::~WebRTCEchoCanceller()
 }
 
 
-int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveStreamRunning)
+int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveStreamRunning, long long llDelay)
 {
 #ifdef USE_AECM
 	if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
@@ -83,7 +83,6 @@ int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveS
 		return false;
 	}
 	LOG18("Nearending2");
-	short iDelay = 0;
 
 
 	iCounter++;
@@ -109,9 +108,9 @@ int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveS
 		fwrite(sInBuf + i, sizeof(short), AECM_SAMPLES_IN_FRAME, EchoFile);
 #endif
 		bool bFailed = false, bZeroed = false;
-		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, 50))
+		if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay))
 		{
-			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)delay)
+			ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)llDelay)
 				+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
 				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
 				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));

@@ -60,7 +60,7 @@ int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiv
 }
 
 
-int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning)
+int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay)
 {
 #ifdef USE_AECM
 
