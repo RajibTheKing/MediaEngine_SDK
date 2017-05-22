@@ -103,6 +103,15 @@ public:
 	void SetEchoCanceller(bool bOn);
 	bool m_bIsPublisher;
 
+	bool m_bRecordingStarted;
+	long long m_llTraceSendingTime;
+	long long m_llTraceReceivingTime;
+	bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
+	long long m_llDelay, m_llDelayFraction;
+	bool m_bDeleteNextRecordedData;
+	int m_nFramesRecvdSinceTraceSent;
+	bool m_b1stRecordedData;
+
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 

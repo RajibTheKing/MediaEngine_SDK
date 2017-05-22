@@ -35,6 +35,9 @@
 #include "AudioFarEndProcessorChannel.h"
 #include "AudioFarEndProcessorCall.h"
 #include "AudioFarEndProcessorThread.h"
+#include "Trace.h"
+
+#define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
 
 #ifdef USE_VAD
 #include "Voice.h"
@@ -43,6 +46,7 @@
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
+
 
 CEventNotifier* CAudioCallSession::m_pEventNotifier = nullptr;
 SendFunctionPointerType CAudioCallSession::m_cbClientSendFunction = nullptr;
@@ -63,10 +67,21 @@ m_cFarEndProcessorThread(nullptr)
 	SetResources(audioResources);
 
 	m_FriendID = llFriendID;
+	m_bRecordingStarted = false;
+	m_llTraceSendingTime = 0;
+	m_llTraceReceivingTime = 0;
 
 	//m_pAudioDePacketizer = new AudioDePacketizer(this);
 	m_iRole = nEntityType;
+
+	//Trace and Delay Related
 	m_bLiveAudioStreamRunning = false;
+	m_b1stRecordedData = true;
+	m_llDelayFraction = 0;
+	m_llDelay = 0;
+	m_bDeleteNextRecordedData = false;
+	m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
+	m_nFramesRecvdSinceTraceSent = 0;
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 	{
