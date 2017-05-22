@@ -465,7 +465,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		(!m_bLiveAudioStreamRunning || 
 		(m_bLiveAudioStreamRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole) )))
 	{
-		LOG18("b4 farnear");
+		LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
 		m_bIsAECMNearEndThreadBusy = true;
 
 #ifdef DUMP_FILE
