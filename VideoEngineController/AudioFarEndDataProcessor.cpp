@@ -15,6 +15,7 @@
 #include "GomGomGain.h"
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
+#include "Trace.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -304,7 +305,8 @@ void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameS
 		HITLER("*STP -> PN: %d, FS: %d", iCurrentPacketNumber, m_nDecodedFrameSize);
 		//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
 		if (m_cbOnDataEvent != nullptr){
-			(m_cbOnDataEvent)(SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
+			//(m_cbOnDataEvent)(SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
+			m_AudioPlayingBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);
 		}
 	}
 
@@ -622,6 +624,66 @@ void AudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
 	}
 	//	ALOG("#V# E: DecideToChangeBitrate: Done");
 #endif
+}
+
+void AudioFarEndDataProcessor::ProcessPlayingData()
+{
+	if (m_AudioPlayingBuffer.GetQueueSize() == 0)
+	{
+		long long llb4Time = Tools::CurrentTimestamp();
+		memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
+
+		long long llAfterTime = Tools::CurrentTimestamp();
+
+		if (m_pAudioCallSession->m_bRecordingStarted && !m_pAudioCallSession->m_bTraceSent)
+		{
+			m_iPlayedSinceRecordingStarted++;
+			m_pAudioCallSession->m_bRecordingStarted = false;
+			CTrace::GenerateTrace(m_saPlayingData, 200);
+			m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
+			m_pAudioCallSession->m_bTraceSent = true;
+		}
+		(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+		if (m_pAudioCallSession->m_bTraceSent)
+		{
+			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, 800, 0);
+			LOG18("ppplaying 0 data");
+		}
+		else
+		{
+			LOG18("ppplaying 0 data, trace not sent");
+		}
+		Tools::SOSleep(100 - (llAfterTime - llb4Time));
+		return;
+	}
+	else
+	{
+		long long llb4Time = Tools::CurrentTimestamp();
+		long long llFrameNumber = 0;
+		int nPlayingSize = m_AudioPlayingBuffer.DeQueue(m_saPlayingData, llFrameNumber);
+
+		if (m_pAudioCallSession->m_bRecordingStarted && !m_pAudioCallSession->m_bTraceSent)
+		{
+			m_iPlayedSinceRecordingStarted++;
+			m_pAudioCallSession->m_bRecordingStarted = false;
+			CTrace::GenerateTrace(m_saPlayingData, nPlayingSize / 4);
+			m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
+			m_pAudioCallSession->m_bTraceSent = true;
+		}
+		if (m_pAudioCallSession->m_bTraceSent)
+		{
+			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, 800, 0);
+		}
+
+		LOG18("ppplaying proper data");
+		LOG18("nPlayingSize = %d FrameNumber = %lld", nPlayingSize, llFrameNumber);
+		(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+		//m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nPlayingSize, m_saPlayingData);
+
+		long long llAfterTime = Tools::CurrentTimestamp();
+		LOG18("SleepTime = %lld\n", 100 - (llAfterTime - llb4Time));
+		Tools::SOSleep(100 - (llAfterTime - llb4Time));
+	}
 }
 
 

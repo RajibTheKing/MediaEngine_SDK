@@ -35,6 +35,7 @@
 #include "AudioFarEndProcessorChannel.h"
 #include "AudioFarEndProcessorCall.h"
 #include "AudioFarEndProcessorThread.h"
+#include "AudioPlayingThread.h"
 #include "Trace.h"
 
 #define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
@@ -62,7 +63,8 @@ m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bIsPublisher(true),
 m_AudioNearEndBuffer(AUDIO_ENCODING_BUFFER_SIZE), 
 m_cNearEndProcessorThread(nullptr),
-m_cFarEndProcessorThread(nullptr)
+m_cFarEndProcessorThread(nullptr),
+m_cPlayingThread(nullptr)
 {
 	SetResources(audioResources);
 
@@ -137,6 +139,12 @@ CAudioCallSession::~CAudioCallSession()
 	{
 		delete m_cFarEndProcessorThread;
 		m_cFarEndProcessorThread = nullptr;
+	}
+
+	if (m_cPlayingThread!= nullptr)
+	{
+		delete m_cPlayingThread;
+		m_cPlayingThread = nullptr;
 	}
 
 	if (m_pNearEndProcessor)
@@ -250,6 +258,15 @@ void CAudioCallSession::StartFarEndDataProcessing(CCommonElementsBucket* pShared
 	if (m_cFarEndProcessorThread != nullptr)
 	{
 		m_cFarEndProcessorThread->StartFarEndThread();
+	}
+
+	if (!m_bLiveAudioStreamRunning)
+	{
+		m_cPlayingThread = new AudioPlayingThread(m_pFarEndProcessor);
+		if (m_cPlayingThread != nullptr)
+		{
+			m_cPlayingThread->StartPlayingThread();
+		}
 	}
 }
 

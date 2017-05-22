@@ -28,7 +28,7 @@ public:
 	~AudioFarEndDataProcessor();
 
 	virtual	void ProcessFarEndData() = 0;
-	virtual	void ProcessPlayingData() = 0;
+	void ProcessPlayingData();
 
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 	void StartCallInLive(int nEntityType);
@@ -48,6 +48,9 @@ public:
 	long long m_llDecodingTimeStampOffset = -1;
 	AudioDePacketizer* m_pAudioDePacketizer = nullptr;
 	CAudioByteBuffer m_AudioReceivedBuffer;
+	CAudioShortBuffer m_AudioPlayingBuffer;
+	short m_saPlayingData[MAX_AUDIO_FRAME_Length];
+	int m_iPlayedSinceRecordingStarted;
 
 	short tmpBuffer[2048];
 

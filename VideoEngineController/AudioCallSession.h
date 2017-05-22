@@ -64,6 +64,7 @@ class CEventNotifier;
 
 class AudioNearEndProcessorThread;
 class AudioFarEndProcessorThread;
+class AudioPlayingThread;
 
 
 #ifdef USE_VAD
@@ -79,6 +80,8 @@ private:
 
 	AudioNearEndProcessorThread *m_cNearEndProcessorThread;
 	AudioFarEndProcessorThread *m_cFarEndProcessorThread;
+	AudioPlayingThread *m_cPlayingThread;
+	
     SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
 
 
