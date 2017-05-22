@@ -3,46 +3,51 @@
 
 #include "AudioPacketHeader.h"
 
-class AudioHeaderCommon : public AudioPacketHeader
+namespace MediaSDK
 {
-public:
 
-	AudioHeaderCommon();
-	AudioHeaderCommon(unsigned int * Information);
-	AudioHeaderCommon(unsigned char *Header);
+	class AudioHeaderCommon : public AudioPacketHeader
+	{
+	public:
 
-	~AudioHeaderCommon();
+		AudioHeaderCommon();
+		AudioHeaderCommon(unsigned int * Information);
+		AudioHeaderCommon(unsigned char *Header);
 
-	void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength);
-	virtual void SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params);
+		~AudioHeaderCommon();
 
-	void GetHeaderInfoAll(unsigned char* header, int &nHeaderLength, int &nFrameNumber, int &iBlockNumber, int &nNumberOfBlocks, int &nBlockLength, int &iOffsetOfBlock, int &nFrameLength);
+		void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
+			int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength);
+		virtual void SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params);
 
-	void CopyHeaderToInformation(unsigned char *Header);
-	int GetHeaderInByteArray(unsigned char* data);
+		void GetHeaderInfoAll(unsigned char* header, int &nHeaderLength, int &nFrameNumber, int &iBlockNumber, int &nNumberOfBlocks, int &nBlockLength, int &iOffsetOfBlock, int &nFrameLength);
 
-	int GetHeaderSize();
+		void CopyHeaderToInformation(unsigned char *Header);
+		int GetHeaderInByteArray(unsigned char* data);
 
-	void SetInformation(long long Information, int InfoType);
-	long long GetInformation(int InfoType);
+		int GetHeaderSize();
 
-	long long GetFieldCapacity(int InfoType);
+		void SetInformation(long long Information, int InfoType);
+		long long GetInformation(int InfoType);
 
-	bool IsPacketTypeSupported(unsigned int PacketType);
-	bool IsPacketTypeSupported();
+		long long GetFieldCapacity(int InfoType);
 
-	void showDetails(char prefix[]);
+		bool IsPacketTypeSupported(unsigned int PacketType);
+		bool IsPacketTypeSupported();
 
-	bool PutInformationToArray(int InfoType);
+		void showDetails(char prefix[]);
 
-protected:
-	int CopyInformationToHeader(unsigned int * Information);
+		bool PutInformationToArray(int InfoType);
 
-private:
-	void InitHeaderBitMap();
+	protected:
+		int CopyInformationToHeader(unsigned int * Information);
 
-};
+	private:
+		void InitHeaderBitMap();
+
+	};
+
+} //namespace MediaSDK
 
 #endif
 

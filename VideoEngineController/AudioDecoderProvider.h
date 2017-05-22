@@ -6,16 +6,19 @@
 #include "AudioDecoderInterface.h"
 #include "SmartPointer.h"
 
-
-class AudioDecoderProvider
+namespace MediaSDK
 {
 
-public:
+	class AudioDecoderProvider
+	{
 
-	static SmartPointer<AudioDecoderInterface> GetAudioDecoder(AudioDecoderType audioDecoderType);
+	public:
 
-};
+		static SmartPointer<AudioDecoderInterface> GetAudioDecoder(AudioDecoderType audioDecoderType);
 
+	};
+
+} //namespace MediaSDK
 
 
 #endif  // !AUDIO_DECODER_PROVIDER_H

@@ -7,8 +7,10 @@
 #include "AudioSessionOptions.h"
 #include "AudioResources.h"
 
+namespace MediaSDK
+{
 
-struct AudioSessionOptions;
+class AudioSessionOptions;
 
 //extern int g_StopVideoSending;
 
@@ -1243,3 +1245,4 @@ int CController::GetDeviceDisplayWidth()
 	return m_nDeviceDisplayWidth;
 }
 
+} //namespace MediaSDK

@@ -4,27 +4,30 @@
 
 #include "AudioNearEndDataProcessor.h"
 
-
-class CAudioCallSession;
-class CAudioShortBuffer;
-
-
-class AudioNearEndProcessorViewer : public AudioNearEndDataProcessor
+namespace MediaSDK
 {
 
-	CAudioShortBuffer *m_pAudioNearEndBuffer;
-	CAudioCallSession *m_pAudioCallSession;
+	class CAudioCallSession;
+	class CAudioShortBuffer;
 
 
-public:
+	class AudioNearEndProcessorViewer : public AudioNearEndDataProcessor
+	{
 
-	AudioNearEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
-	~AudioNearEndProcessorViewer() { }
+		CAudioShortBuffer *m_pAudioNearEndBuffer;
+		CAudioCallSession *m_pAudioCallSession;
 
-	void ProcessNearEndData();
 
-};
+	public:
 
+		AudioNearEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+		~AudioNearEndProcessorViewer() { }
+
+		void ProcessNearEndData();
+
+	};
+
+} //namespace MediaSDK
 
 
 #endif  // !AUDIO_NEAR_END_PROCESSOR_VIEWER_IN_CALL_H

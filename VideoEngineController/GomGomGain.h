@@ -4,33 +4,38 @@
 #include "AudioGainInterface.h"
 #include "AudioMacros.h"
 
-class Filter;
-
-class GomGomGain : public AudioGainInterface
+namespace MediaSDK
 {
 
-public:
-	GomGomGain();
+	class Filter;
 
-	virtual ~GomGomGain();
-	
-	int SetGain(int iGain) { return true; };
+	class GomGomGain : public AudioGainInterface
+	{
 
-	int AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
+	public:
+		GomGomGain();
 
-	int AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning);
+		virtual ~GomGomGain();
 
-private:
+		int SetGain(int iGain) { return true; };
 
-	Filter *mFilter;
+		int AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
 
-	double m_daMovingAvg[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-	unsigned int m_naMultFactor[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-	short m_sFilteredFrame[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-	short m_sLastFilteredFrame[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		int AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning);
 
-	bool b1stFrame;
-	int m_nMovingSum;
-};
+	private:
+
+		Filter *mFilter;
+
+		double m_daMovingAvg[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		unsigned int m_naMultFactor[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short m_sFilteredFrame[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short m_sLastFilteredFrame[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+
+		bool b1stFrame;
+		int m_nMovingSum;
+	};
+
+} //namespace MediaSDK
 
 #endif

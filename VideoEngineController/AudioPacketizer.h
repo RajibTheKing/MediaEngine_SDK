@@ -5,33 +5,38 @@
 #include "SmartPointer.h"
 #include "AudioPacketHeader.h"
 
-class CAudioCallSession;
-class AudioPacketHeader;
-
-class AudioPacketizer
+namespace MediaSDK
 {
-public:
-	AudioPacketizer();
-	~AudioPacketizer();
 
-	/*
-	Packatize audio data
+	class CAudioCallSession;
+	class AudioPacketHeader;
 
-	@param uchData: Data to be packatized 
-	@param packatizeData: Output buffer with packatized data
-	@return: Data length of packatized data
-	
-	*/
-	void Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnPackatizedDataReadyCallback callback);
+	class AudioPacketizer
+	{
+	public:
+		AudioPacketizer();
+		~AudioPacketizer();
 
-private:
+		/*
+		Packatize audio data
 
-	CAudioCallSession* m_pAudioCallSession;
-	SmartPointer<AudioPacketHeader> m_AudioPacketHeader;
+		@param uchData: Data to be packatized
+		@param packatizeData: Output buffer with packatized data
+		@return: Data length of packatized data
 
-	int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;
+		*/
+		void Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnPackatizedDataReadyCallback callback);
 
-	unsigned char m_uchAudioBlock[MAX_AUDIO_DECODER_FRAME_SIZE + 10];
-};
+	private:
+
+		CAudioCallSession* m_pAudioCallSession;
+		SmartPointer<AudioPacketHeader> m_AudioPacketHeader;
+
+		int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;
+
+		unsigned char m_uchAudioBlock[MAX_AUDIO_DECODER_FRAME_SIZE + 10];
+	};
+
+} //namespace MediaSDK
 
 #endif

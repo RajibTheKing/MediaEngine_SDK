@@ -5,7 +5,7 @@
 #include "AudioResources.h"
 #include "AudioEncoderBuffer.h"
 #include "AudioDecoderBuffer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
@@ -30,6 +30,9 @@
 
 #define AUDIO_CALL_VERSION  0
 #define AUDIO_LIVE_VERSION  0
+
+namespace MediaSDK
+{
 
 static string colon = "ALOG:";
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
@@ -216,5 +219,6 @@ public:
 	SmartPointer<AudioGainInterface> GetPlayerGain() { return m_pPlayerGain; }
 };
 
+} //namespace MediaSDK
 
 #endif

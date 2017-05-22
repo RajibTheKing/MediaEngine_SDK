@@ -6,7 +6,7 @@
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 #include "VideoEncoderListHandler.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "ColorConverter.h"
 #include "EncodingBuffer.h"
 #include "RenderingBuffer.h"
@@ -35,6 +35,8 @@
 #include "LiveVideoDecodingQueue.h"
 #include "IDRFrameIntervalController.h"
 
+namespace MediaSDK
+{
 
 
 using namespace std;
@@ -296,5 +298,6 @@ protected:
 	SmartPointer<CLockHandler> m_pVideoCallSessionMutex;
 };
 
+} //namespace MediaSDK
 
 #endif

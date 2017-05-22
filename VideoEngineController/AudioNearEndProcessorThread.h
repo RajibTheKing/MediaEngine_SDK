@@ -4,35 +4,38 @@
 
 #include <thread>
 
-
-class AudioNearEndDataProcessor;
-
-class AudioNearEndProcessorThread
+namespace MediaSDK
 {
-private:
 
-	bool m_bAudioNearEndThreadRunning;
-	bool m_bAudioNearEndThreadClosed;
+	class AudioNearEndDataProcessor;
 
-	AudioNearEndDataProcessor *m_pNearEndDataProcessor = nullptr;
+	class AudioNearEndProcessorThread
+	{
+	private:
+
+		bool m_bAudioNearEndThreadRunning;
+		bool m_bAudioNearEndThreadClosed;
+
+		AudioNearEndDataProcessor *m_pNearEndDataProcessor = nullptr;
 
 
-protected:
+	protected:
 
-	void AudioNearEndProcedure();
-	std::thread CreateNearEndThread();
+		void AudioNearEndProcedure();
+		std::thread CreateNearEndThread();
 
 
-public:
+	public:
 
-	AudioNearEndProcessorThread(AudioNearEndDataProcessor *pNearEndProcessor);
-	~AudioNearEndProcessorThread();
+		AudioNearEndProcessorThread(AudioNearEndDataProcessor *pNearEndProcessor);
+		~AudioNearEndProcessorThread();
 
-	void StartNearEndThread();
-	void StopAudioNearEndThread();
+		void StartNearEndThread();
+		void StopAudioNearEndThread();
 
-};
+	};
 
+} //namespace MediaSDK
 
 
 #endif  // !AUDIO_NEAR_END_THREAD_H

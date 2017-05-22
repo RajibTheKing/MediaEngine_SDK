@@ -2,6 +2,8 @@
 #define NOISE_REDUCER_INTERFACE_H
 
 #include "AudioMacros.h"
+namespace MediaSDK
+{
 
 class NoiseReducerInterface
 {
@@ -11,6 +13,9 @@ public:
 
 	virtual	~NoiseReducerInterface() { }
 };
+
+
+} //namespace MediaSDK
 
 #endif // !NOISE_REDUCER_INTERFACE_H
 

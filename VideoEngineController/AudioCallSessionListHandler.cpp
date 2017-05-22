@@ -1,101 +1,107 @@
 #include "AudioCallSessionListHandler.h"
 #include "LogPrinter.h"
 
-CAudioCallSessionListHandler::CAudioCallSessionListHandler()
+namespace MediaSDK
 {
-	m_pAudioSessionListMutex.reset(new CLockHandler);
-}
 
-CAudioCallSessionListHandler::~CAudioCallSessionListHandler()
-{
-	SHARED_PTR_DELETE(m_pAudioSessionListMutex);
-}
-
-void CAudioCallSessionListHandler::AddToAudioSessionList(LongLong friendName, CAudioCallSession* videoSession)
-{
-	Locker lock(*m_pAudioSessionListMutex);
-
-	m_mAudioSessionList.insert(make_pair(friendName, videoSession));
-
-	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSessionListHandler::AddToAudioSessionList added video Session");
-}
-
-CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(LongLong friendName)
-{
-	Locker lock(*m_pAudioSessionListMutex);
-
-	auto audioSessionSearch = m_mAudioSessionList.find(friendName);
-
-	if (audioSessionSearch != m_mAudioSessionList.end())
+	CAudioCallSessionListHandler::CAudioCallSessionListHandler()
 	{
-		return audioSessionSearch->second;
+		m_pAudioSessionListMutex.reset(new CLockHandler);
 	}
-	return NULL;
-}
 
-
-bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(LongLong friendName)
-{
-	Locker lock(*m_pAudioSessionListMutex);
-	auto audioSessionSearch = m_mAudioSessionList.find(friendName);
-
-	if (audioSessionSearch != m_mAudioSessionList.end())
+	CAudioCallSessionListHandler::~CAudioCallSessionListHandler()
 	{
-		CAudioCallSession *audioSession = audioSessionSearch->second;
-		if (NULL != audioSession)
+		SHARED_PTR_DELETE(m_pAudioSessionListMutex);
+	}
+
+	void CAudioCallSessionListHandler::AddToAudioSessionList(LongLong friendName, CAudioCallSession* videoSession)
+	{
+		Locker lock(*m_pAudioSessionListMutex);
+
+		m_mAudioSessionList.insert(make_pair(friendName, videoSession));
+
+		CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSessionListHandler::AddToAudioSessionList added video Session");
+	}
+
+	CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(LongLong friendName)
+	{
+		Locker lock(*m_pAudioSessionListMutex);
+
+		auto audioSessionSearch = m_mAudioSessionList.find(friendName);
+
+		if (audioSessionSearch != m_mAudioSessionList.end())
 		{
-			delete audioSession;
-			audioSession = NULL;
+			return audioSessionSearch->second;
 		}
-		m_mAudioSessionList.erase(audioSessionSearch);
-		return true;
+		return NULL;
 	}
-	return false;
-}
 
-void CAudioCallSessionListHandler::ClearAllFromAudioSessionList()
-{
-	Locker lock(*m_pAudioSessionListMutex);
 
-	for (auto audioSessionIter = m_mAudioSessionList.begin(); audioSessionIter != m_mAudioSessionList.end(); ++audioSessionIter)
+	bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(LongLong friendName)
 	{
-		CAudioCallSession *AudioSession = audioSessionIter->second;
+		Locker lock(*m_pAudioSessionListMutex);
+		auto audioSessionSearch = m_mAudioSessionList.find(friendName);
 
-		if (NULL != AudioSession)
+		if (audioSessionSearch != m_mAudioSessionList.end())
 		{
-			delete AudioSession;
-			AudioSession = NULL;
+			CAudioCallSession *audioSession = audioSessionSearch->second;
+			if (NULL != audioSession)
+			{
+				delete audioSession;
+				audioSession = NULL;
+			}
+			m_mAudioSessionList.erase(audioSessionSearch);
+			return true;
 		}
+		return false;
 	}
-	m_mAudioSessionList.clear();
-}
 
-int CAudioCallSessionListHandler::SizeOfAudioSessionList()
-{
-	Locker lock(*m_pAudioSessionListMutex);
-	return (int)m_mAudioSessionList.size();
-}
-
-bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName)
-{
-	Locker lock(*m_pAudioSessionListMutex);
-
-	bool bReturnedValue = !(m_mAudioSessionList.find(lFriendName) == m_mAudioSessionList.end());
-
-	return bReturnedValue;
-}
-
-
-bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &audioSession)
-{
-	Locker lock(*m_pAudioSessionListMutex);
-
-	auto audioSessionSearch = m_mAudioSessionList.find(lFriendName);
-
-	if (audioSessionSearch != m_mAudioSessionList.end())
+	void CAudioCallSessionListHandler::ClearAllFromAudioSessionList()
 	{
-		audioSession = audioSessionSearch->second;
-		return true;
+		Locker lock(*m_pAudioSessionListMutex);
+
+		for (auto audioSessionIter = m_mAudioSessionList.begin(); audioSessionIter != m_mAudioSessionList.end(); ++audioSessionIter)
+		{
+			CAudioCallSession *AudioSession = audioSessionIter->second;
+
+			if (NULL != AudioSession)
+			{
+				delete AudioSession;
+				AudioSession = NULL;
+			}
+		}
+		m_mAudioSessionList.clear();
 	}
-	return false;
-}
+
+	int CAudioCallSessionListHandler::SizeOfAudioSessionList()
+	{
+		Locker lock(*m_pAudioSessionListMutex);
+		return (int)m_mAudioSessionList.size();
+	}
+
+	bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName)
+	{
+		Locker lock(*m_pAudioSessionListMutex);
+
+		bool bReturnedValue = !(m_mAudioSessionList.find(lFriendName) == m_mAudioSessionList.end());
+
+		return bReturnedValue;
+	}
+
+
+	bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &audioSession)
+	{
+		Locker lock(*m_pAudioSessionListMutex);
+
+		auto audioSessionSearch = m_mAudioSessionList.find(lFriendName);
+
+		if (audioSessionSearch != m_mAudioSessionList.end())
+		{
+			audioSession = audioSessionSearch->second;
+			return true;
+		}
+		return false;
+	}
+
+} //namespace MediaSDK
+

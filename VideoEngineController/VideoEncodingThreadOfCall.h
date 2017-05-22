@@ -16,97 +16,102 @@
 
 #include <thread>
 
-class CVideoCallSession;
-class CCommonElementsBucket;
-
-class CVideoEncodingThreadOfCall
+namespace MediaSDK
 {
 
-public:
+	class CVideoCallSession;
+	class CCommonElementsBucket;
 
-	CVideoEncodingThreadOfCall(long long llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
-	~CVideoEncodingThreadOfCall();
+	class CVideoEncodingThreadOfCall
+	{
 
-	void StartEncodingThread();
-	void StopEncodingThread();
-	void EncodingThreadProcedure();
-	static void *CreateVideoEncodingThread(void* param);
+	public:
 
-	void SetOrientationType(int nOrientationType);
-	void ResetVideoEncodingThread(BitRateController *pBitRateController);
+		CVideoEncodingThreadOfCall(long long llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly);
+		~CVideoEncodingThreadOfCall();
 
-	void SetCallFPS(int nFPS);
+		void StartEncodingThread();
+		void StopEncodingThread();
+		void EncodingThreadProcedure();
+		static void *CreateVideoEncodingThread(void* param);
 
-	bool IsThreadStarted();
+		void SetOrientationType(int nOrientationType);
+		void ResetVideoEncodingThread(BitRateController *pBitRateController);
 
-	void SetNotifierFlag(bool flag);
+		void SetCallFPS(int nFPS);
 
-	void SetFrameNumber(int nFrameNumber);
+		bool IsThreadStarted();
 
-	int SetVideoEffect(int nEffectStatus);
+		void SetNotifierFlag(bool flag);
 
-	CEncodingBuffer *m_pEncodingBuffer;
+		void SetFrameNumber(int nFrameNumber);
 
-private:
+		int SetVideoEffect(int nEffectStatus);
 
-	CVideoCallSession *m_pVideoCallSession;
+		CEncodingBuffer *m_pEncodingBuffer;
 
-	BitRateController *m_pBitRateController;
-	IDRFrameIntervalController *m_pIdrFrameIntervalController;
-	CColorConverter *m_pColorConverter;
-	CVideoEncoder *m_pVideoEncoder;
-	CEncodedFramePacketizer *m_pEncodedFramePacketizer;
+	private:
 
-	bool m_bVideoEffectEnabled;
+		CVideoCallSession *m_pVideoCallSession;
 
-	unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-	unsigned char m_ucaConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-	unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		BitRateController *m_pBitRateController;
+		IDRFrameIntervalController *m_pIdrFrameIntervalController;
+		CColorConverter *m_pColorConverter;
+		CVideoEncoder *m_pVideoEncoder;
+		CEncodedFramePacketizer *m_pEncodedFramePacketizer;
 
-	unsigned char m_ucaMirroredFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
-	unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		bool m_bVideoEffectEnabled;
 
-	unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaConvertedEncodingFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
-	unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaMirroredFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+
+		unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
+
+		unsigned char m_ucaDummmyStillFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 #if defined(DESKTOP_C_SHARP)
-	unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
-	unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
+		unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
 #endif
 
-	int m_iFrameNumber;
-	long long m_llFriendID;
-	int m_nOrientationType;
-	bool bEncodingThreadRunning;
-	bool bEncodingThreadClosed;
-	bool m_bNotifyToClientVideoQuality;
+		int m_iFrameNumber;
+		long long m_llFriendID;
+		int m_nOrientationType;
+		bool bEncodingThreadRunning;
+		bool bEncodingThreadClosed;
+		bool m_bNotifyToClientVideoQuality;
 
-	CCommonElementsBucket *m_pCommonElementBucket;
+		CCommonElementsBucket *m_pCommonElementBucket;
 
-	bool m_bSelfViewOnly;
+		bool m_bSelfViewOnly;
 
-	bool m_bIsThisThreadStarted;
+		bool m_bIsThisThreadStarted;
 
-	int m_nCallFPS;
+		int m_nCallFPS;
 
-	int mt_nTotalEncodingTimePerFrameRate;
-	int mt_nCheckSlot;
+		int mt_nTotalEncodingTimePerFrameRate;
+		int mt_nCheckSlot;
 
-	Tools m_Tools;
+		Tools m_Tools;
 
-	CAverageCalculator *m_pCalculatorEncodeTime;
-	CAverageCalculator *m_pCalculateEncodingTimeDiff;
-	CVideoBeautificationer *m_VideoBeautificationer;
-	CVideoEffects *m_VideoEffects;
+		CAverageCalculator *m_pCalculatorEncodeTime;
+		CAverageCalculator *m_pCalculateEncodingTimeDiff;
+		CVideoBeautificationer *m_VideoBeautificationer;
+		CVideoEffects *m_VideoEffects;
 
-	long long m_FPS_TimeDiff;
-	int m_FpsCounter;
-	bool m_bIsCheckCall;
+		long long m_FPS_TimeDiff;
+		int m_FpsCounter;
+		bool m_bIsCheckCall;
 
-	int m_filterToApply;
+		int m_filterToApply;
 
-	SmartPointer<std::thread> pEncodingThread;
-};
+		SmartPointer<std::thread> pEncodingThread;
+	};
+
+} //namespace MediaSDK
 
 #endif 

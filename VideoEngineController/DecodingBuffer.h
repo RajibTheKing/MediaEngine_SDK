@@ -3,42 +3,47 @@
 #define IPV_DECODING_BUFFER_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 #include "Size.h"
 #include "LogPrinter.h"
 
-class CDecodingBuffer
+namespace MediaSDK
 {
 
-public:
+	class CDecodingBuffer
+	{
 
-	CDecodingBuffer();
-	~CDecodingBuffer();
+	public:
 
-	int Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrameData, int nLength, unsigned int unCaptureTimeDifference);
-	int DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDifference, unsigned char *ucaEncodedVideoFrameData, int &nrTimeDifferenceInQueue);
-	void IncreamentIndex(int &irIndex);
-	int GetQueueSize();
+		CDecodingBuffer();
+		~CDecodingBuffer();
 
-private:
+		int Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrameData, int nLength, unsigned int unCaptureTimeDifference);
+		int DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDifference, unsigned char *ucaEncodedVideoFrameData, int &nrTimeDifferenceInQueue);
+		void IncreamentIndex(int &irIndex);
+		int GetQueueSize();
 
-	int m_iPushIndex;
-	int m_iPopIndex;
-	int m_nQueueCapacity;
-	int m_nQueueSize;
+	private:
 
-	Tools m_Tools;
+		int m_iPushIndex;
+		int m_iPopIndex;
+		int m_nQueueCapacity;
+		int m_nQueueSize;
 
-	unsigned char m_uc2aEncodedVideoDataBuffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
+		Tools m_Tools;
 
-	int m_naBufferDataLengths[MAX_VIDEO_DECODER_BUFFER_SIZE];
-	int m_naBufferFrameNumbers[MAX_VIDEO_DECODER_BUFFER_SIZE];
+		unsigned char m_uc2aEncodedVideoDataBuffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
 
-	unsigned int m_unaBufferCaptureTimeDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
-	long long m_llaBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
+		int m_naBufferDataLengths[MAX_VIDEO_DECODER_BUFFER_SIZE];
+		int m_naBufferFrameNumbers[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
-	SmartPointer<CLockHandler> m_pDecodingBufferMutex;
-};
+		unsigned int m_unaBufferCaptureTimeDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
+		long long m_llaBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
+
+		SmartPointer<CLockHandler> m_pDecodingBufferMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif 

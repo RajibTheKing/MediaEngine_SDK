@@ -5,6 +5,11 @@
 #include <boost/utility.hpp>
 #include <boost/smart_ptr.hpp>
 
+namespace MediaSDK
+{
+
 #define SmartPointer   boost::shared_ptr
+
+} //namespace
 
 #endif

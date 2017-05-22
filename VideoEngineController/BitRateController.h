@@ -3,7 +3,6 @@
 #define IPV_BITRATE_CONTROLLER_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
 #include "Tools.h"
 #include "VideoEncoder.h"
 #include "SynchronizedMap.h"
@@ -12,98 +11,102 @@
 
 #define STOP_VIDEO_FOR_BITRATE_COUNTER 10
 
-class CCommonElementsBucket;
-
-class BitRateController 
+namespace MediaSDK
 {
 
-public:
+	class CCommonElementsBucket;
 
-	BitRateController(int nFPS, LongLong llfriendID);
-    ~BitRateController();
+	class BitRateController
+	{
 
-    void SetSharedObject(CCommonElementsBucket* pcSharedObject);
-	void SetEncoder(CVideoEncoder* pcVideEnocder);
+	public:
 
-	//bool HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType);
-	//bool HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader);
+		BitRateController(int nFPS, LongLong llfriendID);
+		~BitRateController();
 
-	bool HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType);
-	bool HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader);
+		void SetSharedObject(CCommonElementsBucket* pcSharedObject);
+		void SetEncoder(CVideoEncoder* pcVideEnocder);
+
+		//bool HandleBitrateMiniPacket(CPacketHeader &crTempHeader, int nServiceType);
+		//bool HandleNetworkTypeMiniPacket(CPacketHeader &crTempHeader);
+
+		bool HandleBitrateMiniPacket(CVideoHeader &crTempHeader, int nServiceType);
+		bool HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader);
 
 
-    bool UpdateBitrate();
-    void NotifyEncodedFrame(int &nrFrameSize);
-	void SetInitialBitrate();
+		bool UpdateBitrate();
+		void NotifyEncodedFrame(int &nrFrameSize);
+		void SetInitialBitrate();
 
-	void SetCallFPS(int nFPS);
-	
-	int GetOpponentNetworkType();
-	void SetOpponentNetworkType(int nNetworkType);
+		void SetCallFPS(int nFPS);
 
-	int GetOwnNetworkType();
-	void SetOwnNetworkType(int nNetworkType);
+		int GetOpponentNetworkType();
+		void SetOpponentNetworkType(int nNetworkType);
 
-	bool IsNetworkTypeMiniPacketReceived();
-	void ResetVideoController();
-	
-private:
+		int GetOwnNetworkType();
+		void SetOwnNetworkType(int nNetworkType);
 
-	int NeedToChangeBitRate(double dDataReceivedRatio);
-	int NeedToNotifyClient(int nCurrentByte);
+		bool IsNetworkTypeMiniPacketReceived();
+		void ResetVideoController();
 
-    Tools m_Tools;
+	private:
 
-	LongLong m_FriendID;
+		int NeedToChangeBitRate(double dDataReceivedRatio);
+		int NeedToNotifyClient(int nCurrentByte);
 
-	int m_nOppNotifiedByterate;
-	int m_nOpponentNetworkType;
-	int m_nOwnNetworkType;
-	bool m_bNetworkTypeMiniPacketReceived;
+		Tools m_Tools;
 
-	int m_nCallFPS;
+		LongLong m_FriendID;
 
-	map<int, long long>  m_TimeDiffMapHelper;
+		int m_nOppNotifiedByterate;
+		int m_nOpponentNetworkType;
+		int m_nOwnNetworkType;
+		bool m_bNetworkTypeMiniPacketReceived;
 
-    int m_nGoodSlotCounter;
-    int m_nNormalSlotCounter;
-    int m_nSlotCounterToUp;
-	int m_nGoodSlotCounterToUp;
-    double m_dPreviousMegaSlotStatus;
+		int m_nCallFPS;
 
-    int m_nFrameCounterBeforeEncoding;
-    int m_nLastSendingSlot;
-    int m_nPreviousByteRate;				// Will be changed based on side
+		map<int, long long>  m_TimeDiffMapHelper;
 
-    int m_nSlotIntervalCounter;				// Will be changed based on side
-    double m_dTotalDataByteInSlots;			// Will be changed based on side
-    double m_dAverageDataByteInSlots;		// Will be changed based on side
+		int m_nGoodSlotCounter;
+		int m_nNormalSlotCounter;
+		int m_nSlotCounterToUp;
+		int m_nGoodSlotCounterToUp;
+		double m_dPreviousMegaSlotStatus;
 
-	bool m_bVideoQualityLowNotified;
-	bool m_bVideoQualityHighNotified;
-	bool m_bVideoShouldStopNotified;
-    
-    CCommonElementsBucket* m_pCommonElementsBucket;
+		int m_nFrameCounterBeforeEncoding;
+		int m_nLastSendingSlot;
+		int m_nPreviousByteRate;				// Will be changed based on side
 
-    int m_nBytesSendInSlotInverval;
-    int m_nBytesSendInMegaSlotInverval;
-    int m_nBytesReceivedInMegaSlotInterval;
-    double m_dFirstTimeBitRateChangeFactor;
-    bool m_bMegSlotCounterShouldStop;
-    bool m_bSetBitRateCalled;
-    int m_nStopNotificationCounter;
-	int m_nVideoShouldStopCounter;
+		int m_nSlotIntervalCounter;				// Will be changed based on side
+		double m_dTotalDataByteInSlots;			// Will be changed based on side
+		double m_dAverageDataByteInSlots;		// Will be changed based on side
 
-    CSynchronizedMap m_BandWidthRatioHelper;
-    CVideoEncoder *m_pVideoEncoder;
+		bool m_bVideoQualityLowNotified;
+		bool m_bVideoQualityHighNotified;
+		bool m_bVideoShouldStopNotified;
 
-    int m_nLastState;
-    int m_nSpiralCounter;
-	int m_nContinuousUpCounter;
-	int m_nContinuousUpCounterLimitToJump;
-    int m_nUpCheckLimit;
-    int m_nMostRecentRespondedSlotNumber;
-};
+		CCommonElementsBucket* m_pCommonElementsBucket;
 
+		int m_nBytesSendInSlotInverval;
+		int m_nBytesSendInMegaSlotInverval;
+		int m_nBytesReceivedInMegaSlotInterval;
+		double m_dFirstTimeBitRateChangeFactor;
+		bool m_bMegSlotCounterShouldStop;
+		bool m_bSetBitRateCalled;
+		int m_nStopNotificationCounter;
+		int m_nVideoShouldStopCounter;
+
+		CSynchronizedMap m_BandWidthRatioHelper;
+		CVideoEncoder *m_pVideoEncoder;
+
+		int m_nLastState;
+		int m_nSpiralCounter;
+		int m_nContinuousUpCounter;
+		int m_nContinuousUpCounterLimitToJump;
+		int m_nUpCheckLimit;
+		int m_nMostRecentRespondedSlotNumber;
+	};
+
+} //namespace MediaSDK
 
 #endif

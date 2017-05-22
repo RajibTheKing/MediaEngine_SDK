@@ -3,24 +3,28 @@
 #include "WebRTCEchoCanceller.h"
 #include "SpeexEchoCanceller.h"
 
-
-SmartPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancelerType echoCancellerType)
+namespace MediaSDK
 {
-	EchoCancellerInterface* pInstance = nullptr;
 
-	switch (echoCancellerType)
+	SmartPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancelerType echoCancellerType)
 	{
-	case WebRTC_ECM:
-		pInstance = new WebRTCEchoCanceller();
-		break;
+		EchoCancellerInterface* pInstance = nullptr;
 
-	case Speex_ECM:
-		pInstance =  new SpeexEchoCanceller();
-		break;
-	
-	default:
-		pInstance = nullptr;
+		switch (echoCancellerType)
+		{
+		case WebRTC_ECM:
+			pInstance = new WebRTCEchoCanceller();
+			break;
+
+		case Speex_ECM:
+			pInstance = new SpeexEchoCanceller();
+			break;
+
+		default:
+			pInstance = nullptr;
+		}
+
+		return SmartPointer<EchoCancellerInterface>(pInstance);
 	}
 
-	return SmartPointer<EchoCancellerInterface>(pInstance);
-}
+} //namespace MediaSDK

@@ -8,32 +8,36 @@
 #include "AudioCallSession.h"
 #include "ThreadTools.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
-
-class CAudioCallSessionListHandler
+namespace MediaSDK
 {
 
-public:
+	class CAudioCallSessionListHandler
+	{
 
-	CAudioCallSessionListHandler();
-	~CAudioCallSessionListHandler();
+	public:
 
-	void AddToAudioSessionList(LongLong friendName, CAudioCallSession* AudioSession);
-	CAudioCallSession* GetFromAudioSessionList(LongLong friendName);	
-	bool RemoveFromAudioSessionList(LongLong friendName);
-	int SizeOfAudioSessionList();
-	bool IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &AudioSession);
-	bool IsAudioSessionExist(LongLong lFriendName);
-	void ClearAllFromAudioSessionList();
+		CAudioCallSessionListHandler();
+		~CAudioCallSessionListHandler();
 
-private:
+		void AddToAudioSessionList(LongLong friendName, CAudioCallSession* AudioSession);
+		CAudioCallSession* GetFromAudioSessionList(LongLong friendName);
+		bool RemoveFromAudioSessionList(LongLong friendName);
+		int SizeOfAudioSessionList();
+		bool IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &AudioSession);
+		bool IsAudioSessionExist(LongLong lFriendName);
+		void ClearAllFromAudioSessionList();
 
-	std::map<LongLong, CAudioCallSession*> m_mAudioSessionList;
+	private:
 
-protected:
+		std::map<LongLong, CAudioCallSession*> m_mAudioSessionList;
 
-	SmartPointer<CLockHandler> m_pAudioSessionListMutex;
-};
+	protected:
+
+		SmartPointer<CLockHandler> m_pAudioSessionListMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif

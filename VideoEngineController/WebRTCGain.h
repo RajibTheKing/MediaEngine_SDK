@@ -9,35 +9,39 @@
 #define WEBRTC_AGC_MIN_LEVEL 1
 #define WEBRTC_AGC_MAX_LEVEL 255
 
-enum AGCMode
+namespace MediaSDK
 {
-	MODE_UNCHANGED = 0,
-	MODE_ADAPTIVE_ANALOG = 1,
-	MODE_ADAPTIVE_DIGITAL = 2,
-	MODE_FIXED_DIGITAL = 3
-};
 
-class WebRTCGain : public AudioGainInterface
-{
-	bool m_bGainEnabled;
-	short *m_sTempBuf;
-	int m_iVolume;
+	enum AGCMode
+	{
+		MODE_UNCHANGED = 0,
+		MODE_ADAPTIVE_ANALOG = 1,
+		MODE_ADAPTIVE_DIGITAL = 2,
+		MODE_FIXED_DIGITAL = 3
+	};
 
-	void* AGC_instance;
+	class WebRTCGain : public AudioGainInterface
+	{
+		bool m_bGainEnabled;
+		short *m_sTempBuf;
+		int m_iVolume;
 
-public:
+		void* AGC_instance;
 
-	WebRTCGain();
+	public:
 
-	virtual ~WebRTCGain();
+		WebRTCGain();
 
-	int SetGain(int iGain);
+		virtual ~WebRTCGain();
 
-	int AddFarEnd(short *sInBuf, int nBufferSize);
+		int SetGain(int iGain);
 
-	int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning);
+		int AddFarEnd(short *sInBuf, int nBufferSize);
 
-};
+		int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning);
 
+	};
+
+} //namespace MediaSDK
 
 #endif  // !WEBRTC_GAIN_H

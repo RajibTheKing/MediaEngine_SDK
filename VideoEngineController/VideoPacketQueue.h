@@ -3,37 +3,42 @@
 #define IPV_VIDEO_PACKET_QUEUE_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Size.h"
 #include "LogPrinter.h"
 
-using namespace std;
-
-class CVideoPacketQueue
+namespace MediaSDK
 {
 
-public:
+	using namespace std;
 
-	CVideoPacketQueue();
-	~CVideoPacketQueue();
+	class CVideoPacketQueue
+	{
 
-	int Queue(unsigned char *ucaVideoPacketData, int nLength);
-	int DeQueue(unsigned char *ucaVideoPacketData);
-	void IncreamentIndex(int &riIndex);
-	int GetQueueSize();
-	void ResetBuffer();
+	public:
 
-private:
+		CVideoPacketQueue();
+		~CVideoPacketQueue();
 
-	int m_iPushIndex;
-	int m_iPopIndex;
-	int m_nQueueCapacity;
-	int m_nQueueSize;
+		int Queue(unsigned char *ucaVideoPacketData, int nLength);
+		int DeQueue(unsigned char *ucaVideoPacketData);
+		void IncreamentIndex(int &riIndex);
+		int GetQueueSize();
+		void ResetBuffer();
 
-	unsigned char m_uc2aVideoPacketBuffer[MAX_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
-	int m_naBufferDataLengths[MAX_VIDEO_PACKET_QUEUE_SIZE];
+	private:
 
-	SmartPointer<CLockHandler> m_pVideoPacketQueueMutex;
-};
+		int m_iPushIndex;
+		int m_iPopIndex;
+		int m_nQueueCapacity;
+		int m_nQueueSize;
+
+		unsigned char m_uc2aVideoPacketBuffer[MAX_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
+		int m_naBufferDataLengths[MAX_VIDEO_PACKET_QUEUE_SIZE];
+
+		SmartPointer<CLockHandler> m_pVideoPacketQueueMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif

@@ -3,35 +3,40 @@
 #define IPV_RETRANSMISSION_VIDEO_PACKET_QUEUE_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "Size.h"
 
-using namespace std;
-
-class CRetransmitVideoPacketQueue
+namespace MediaSDK
 {
 
-public:
+	using namespace std;
 
-	CRetransmitVideoPacketQueue();
-	~CRetransmitVideoPacketQueue();
+	class CRetransmitVideoPacketQueue
+	{
 
-	int Queue(unsigned char *frame, int length);
-	int DeQueue(unsigned char *decodeBuffer);
-	void IncreamentIndex(int &index);
-	int GetQueueSize();
+	public:
 
-private:
+		CRetransmitVideoPacketQueue();
+		~CRetransmitVideoPacketQueue();
 
-	int m_iPushIndex;
-	int m_iPopIndex;
-	int m_iQueueCapacity;
-	int m_iQueueSize;
+		int Queue(unsigned char *frame, int length);
+		int DeQueue(unsigned char *decodeBuffer);
+		void IncreamentIndex(int &index);
+		int GetQueueSize();
 
-	unsigned char m_Buffer[MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
-	int m_BufferDataLength[MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE];
+	private:
 
-	SmartPointer<CLockHandler> m_pChannelMutex;
-};
+		int m_iPushIndex;
+		int m_iPopIndex;
+		int m_iQueueCapacity;
+		int m_iQueueSize;
+
+		unsigned char m_Buffer[MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
+		int m_BufferDataLength[MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE];
+
+		SmartPointer<CLockHandler> m_pChannelMutex;
+	};
+
+} //namespace MediaSDK
 
 #endif

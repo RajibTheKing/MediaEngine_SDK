@@ -4,17 +4,20 @@
 #include "AudioTypes.h"
 #include "SmartPointer.h"
 
-
-class AudioEncoderInterface;
-
-class AudioEncoderProvider
+namespace MediaSDK
 {
-public:
 
-	static SmartPointer<AudioEncoderInterface> GetAudioEncoder(AudioEncoderType audioEncoderType);
+	class AudioEncoderInterface;
 
-};
+	class AudioEncoderProvider
+	{
+	public:
 
+		static SmartPointer<AudioEncoderInterface> GetAudioEncoder(AudioEncoderType audioEncoderType);
+
+	};
+
+} //namespace MediaSDK
 
 
 

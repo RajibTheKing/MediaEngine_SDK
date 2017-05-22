@@ -10,45 +10,50 @@
 
 #include <thread>
 
-class CCommonElementsBucket;
-class CVideoCallSession;
-
-class CVideoRenderingThread
+namespace MediaSDK
 {
 
-public:
+	class CCommonElementsBucket;
+	class CVideoCallSession;
 
-	CVideoRenderingThread(long long llFriendID, CRenderingBuffer *pcRenderingBuffer, CCommonElementsBucket* pcCommonElementsBucket, CVideoCallSession *pcVideoCallSession, bool bIsCheckCall);
-	~CVideoRenderingThread();
+	class CVideoRenderingThread
+	{
 
-	void StartRenderingThread();
-	void StopRenderingThread();
-	void RenderingThreadProcedure();
-	static void *CreateVideoRenderingThread(void* pParam);
-    void CalculateFPS();
+	public:
 
-private:
+		CVideoRenderingThread(long long llFriendID, CRenderingBuffer *pcRenderingBuffer, CCommonElementsBucket* pcCommonElementsBucket, CVideoCallSession *pcVideoCallSession, bool bIsCheckCall);
+		~CVideoRenderingThread();
 
-	bool m_bRenderingThreadRunning;
-	bool m_bRenderingThreadClosed;
-	bool m_bIsCheckCall;
-	int m_nRenderFrameCount;
-	int m_nInsetHeight;
-	int m_nInsetWidth;
-	long long m_llFriendID;
-	long long m_lRenderCallTime;
-	long long m_llRenderFrameCounter;
+		void StartRenderingThread();
+		void StopRenderingThread();
+		void RenderingThreadProcedure();
+		static void *CreateVideoRenderingThread(void* pParam);
+		void CalculateFPS();
 
-	unsigned char m_ucaRenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+	private:
 
-	Tools m_Tools;
-	CAverageCalculator m_cRenderTimeCalculator;
+		bool m_bRenderingThreadRunning;
+		bool m_bRenderingThreadClosed;
+		bool m_bIsCheckCall;
+		int m_nRenderFrameCount;
+		int m_nInsetHeight;
+		int m_nInsetWidth;
+		long long m_llFriendID;
+		long long m_lRenderCallTime;
+		long long m_llRenderFrameCounter;
 
-	CRenderingBuffer *m_pcRenderingBuffer;
-	CCommonElementsBucket* m_pcCommonElementsBucket;
-    CVideoCallSession *m_pcVideoCallSession;
+		unsigned char m_ucaRenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-	SmartPointer<std::thread> pRenderingThread;
-};
+		Tools m_Tools;
+		CAverageCalculator m_cRenderTimeCalculator;
+
+		CRenderingBuffer *m_pcRenderingBuffer;
+		CCommonElementsBucket* m_pcCommonElementsBucket;
+		CVideoCallSession *m_pcVideoCallSession;
+
+		SmartPointer<std::thread> pRenderingThread;
+	};
+
+} //namespace MediaSDK
 
 #endif 
