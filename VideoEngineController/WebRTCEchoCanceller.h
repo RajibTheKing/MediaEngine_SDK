@@ -4,6 +4,7 @@
 
 #include "EchoCancellerInterface.h"
 #include "AudioMacros.h"
+#include "AudioCallSession.h"
 
 #ifdef USE_AECM
 #include "echo_control_mobile.h"
@@ -15,6 +16,7 @@
 FILE *EchoFile;
 #define HEADER_SIZE 1
 #define WEBRTC_FAREND 1
+#define SPEEX_FAREND 2
 #define NEAREND 3
 #endif
 
@@ -42,6 +44,7 @@ private:
 	int iCounter, iCounter2;
 
 	short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
+	bool m_bNearEndingOrFarEnding;
 
 };
 

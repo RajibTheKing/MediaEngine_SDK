@@ -42,8 +42,7 @@ static string colon = "ALOG:";
 
 
 
-
-//#define AUDIO_SELF_CALL
+#define AUDIO_SELF_CALL
 //#define DUMP_FILE
 
 
