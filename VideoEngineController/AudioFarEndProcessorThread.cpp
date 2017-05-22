@@ -27,8 +27,6 @@ void AudioFarEndProcessorThread::AudioFarEndProcedure()
 {
 	MR_DEBUG("#farEnd# AudioFarEndProcessorThread::AudioFarEndProcedure()");
 
-	long long llCapturedTime;
-
 	m_bAudioFarEndThreadRunning = true;
 	m_bAudioFarEndThreadClosed = false;
 

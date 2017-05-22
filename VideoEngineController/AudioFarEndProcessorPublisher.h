@@ -14,6 +14,7 @@ public:
 	~FarEndProcessorPublisher() { }
 
 	void ProcessFarEndData();
+	void ProcessPlayingData();
 };
 
 

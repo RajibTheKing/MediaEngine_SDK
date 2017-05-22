@@ -13,6 +13,7 @@ public:
 	~FarEndProcessorChannel() { }
 
 	void ProcessFarEndData();
+	void ProcessPlayingData();
 
 };
 

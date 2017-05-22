@@ -28,6 +28,7 @@ public:
 	~AudioFarEndDataProcessor();
 
 	virtual	void ProcessFarEndData() = 0;
+	virtual	void ProcessPlayingData() = 0;
 
 	int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 	void StartCallInLive(int nEntityType);

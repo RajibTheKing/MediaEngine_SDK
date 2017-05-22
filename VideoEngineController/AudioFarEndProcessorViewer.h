@@ -14,6 +14,7 @@ public:
 	~FarEndProcessorViewer() { }
 
 	void ProcessFarEndData();
+	void ProcessPlayingData();
 
 };
 
