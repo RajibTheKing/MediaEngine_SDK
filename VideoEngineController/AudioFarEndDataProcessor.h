@@ -71,9 +71,6 @@ private:
 	SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader = nullptr;
 	SmartPointer<GomGomGain> m_pGomGomGain;
 
-	bool m_bAudioDecodingThreadRunning;
-	bool m_bAudioDecodingThreadClosed;
-
 
 	SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 	SmartPointer<AudioDecoderInterface> m_cAacDecoder;
