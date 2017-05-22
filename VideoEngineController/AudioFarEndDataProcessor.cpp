@@ -304,10 +304,8 @@ void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameS
 	{
 		HITLER("*STP -> PN: %d, FS: %d", iCurrentPacketNumber, m_nDecodedFrameSize);
 		//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
-		if (m_cbOnDataEvent != nullptr){
-			//(m_cbOnDataEvent)(SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
-			m_AudioPlayingBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);
-		}
+		LOG18("Pushing to q");
+		m_AudioPlayingBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);	
 	}
 
 }
@@ -630,6 +628,7 @@ void AudioFarEndDataProcessor::ProcessPlayingData()
 {
 	if (m_AudioPlayingBuffer.GetQueueSize() == 0)
 	{
+		LOG18("pushing GetQueueSize 0");
 		long long llb4Time = Tools::CurrentTimestamp();
 		memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 
@@ -643,7 +642,10 @@ void AudioFarEndDataProcessor::ProcessPlayingData()
 			m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
 			m_pAudioCallSession->m_bTraceSent = true;
 		}
-		(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+		if (m_cbOnDataEvent != nullptr)
+		{
+			(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+		}
 		if (m_pAudioCallSession->m_bTraceSent)
 		{
 			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, 800, 0);
@@ -658,6 +660,7 @@ void AudioFarEndDataProcessor::ProcessPlayingData()
 	}
 	else
 	{
+		LOG18("pushing popping");
 		long long llb4Time = Tools::CurrentTimestamp();
 		long long llFrameNumber = 0;
 		int nPlayingSize = m_AudioPlayingBuffer.DeQueue(m_saPlayingData, llFrameNumber);
@@ -675,9 +678,12 @@ void AudioFarEndDataProcessor::ProcessPlayingData()
 			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, 800, 0);
 		}
 
-		LOG18("ppplaying proper data");
 		LOG18("nPlayingSize = %d FrameNumber = %lld", nPlayingSize, llFrameNumber);
-		(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+		if (m_cbOnDataEvent != nullptr)
+		{
+			LOG18("ppplaying proper data");
+			(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+		}
 		//m_pCommonElementsBucket->m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nPlayingSize, m_saPlayingData);
 
 		long long llAfterTime = Tools::CurrentTimestamp();

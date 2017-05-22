@@ -408,6 +408,7 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		return -1;
 	}
 	//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+	m_bRecordingStarted = true;
 	long long llCurrentTime = Tools::CurrentTimestamp();
 	LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
