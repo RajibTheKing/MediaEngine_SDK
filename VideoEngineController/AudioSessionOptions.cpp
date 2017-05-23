@@ -195,7 +195,7 @@ namespace MediaSDK
 
 		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
-		gainType = WebRTC_Gain;
+		gainType = GomGom_Gain;
 
 		adaptEncoderBitrate = false;
 		adaptEncoderComplexity = false;
@@ -243,7 +243,7 @@ namespace MediaSDK
 
 		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
-		gainType = WebRTC_Gain;
+		gainType = GomGom_Gain;
 
 		adaptEncoderBitrate = false;
 		adaptEncoderComplexity = false;

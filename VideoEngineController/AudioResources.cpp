@@ -20,7 +20,6 @@ namespace MediaSDK
 		m_pEchoCanceler = EchoCancellerProvider::GetEchoCanceller(audioSessionOptions.GetEchoCancelerType());
 		m_pNoiseReducer = NoiseReducerProvider::GetNoiseReducer(audioSessionOptions.GetNoiseReducerType());
 
-		m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(audioSessionOptions.GetGainType());
 		m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(audioSessionOptions.GetGainType());
 	}
 

@@ -15,11 +15,11 @@ namespace MediaSDK
 
 		virtual ~NaiveGain();
 
-		int SetGain(int iGain);
+		bool SetGain(int iGain);
 
-		int AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
+		bool AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
 
-		int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning);
+		bool AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning);
 
 	private:
 		bool m_bGainEnabled;

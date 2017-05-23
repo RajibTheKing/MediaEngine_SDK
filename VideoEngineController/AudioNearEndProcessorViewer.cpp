@@ -32,7 +32,6 @@ namespace MediaSDK
 
 			m_pAudioCallSession->m_ViewerInCallSentDataQueue.EnQueue(m_saAudioRecorderFrame, nDataLenthInShort, m_iPacketNumber);
 
-			LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
 			DumpEncodingFrame();
 			UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 

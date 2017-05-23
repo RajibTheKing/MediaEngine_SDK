@@ -23,7 +23,7 @@ namespace MediaSDK
 	class WebRTCGain : public AudioGainInterface
 	{
 		bool m_bGainEnabled;
-		short *m_sTempBuf;
+		short *m_sTempBuf = nullptr;
 		int m_iVolume;
 
 		void* AGC_instance;
@@ -34,11 +34,11 @@ namespace MediaSDK
 
 		virtual ~WebRTCGain();
 
-		int SetGain(int iGain);
+		bool SetGain(int iGain);
 
-		int AddFarEnd(short *sInBuf, int nBufferSize);
+		bool AddFarEnd(short *sInBuf, int nBufferSize);
 
-		int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning);
+		bool AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning);
 
 	};
 

@@ -171,7 +171,6 @@ namespace MediaSDK
 		m_pEcho = audioResources.GetEchoCanceler();
 		m_pNoiseReducer = audioResources.GetNoiseReducer();
 
-		m_pRecorderGain = audioResources.GetRecorderGain();
 		m_pPlayerGain = audioResources.GetPlayerGain();
 	}
 
@@ -434,14 +433,7 @@ namespace MediaSDK
 
 	void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 	{
-		if (bRecorder)
-		{
-			m_pRecorderGain.get() ? m_pRecorderGain->SetGain(iVolume) : 0;
-		}
-		else
-		{
-			m_pPlayerGain.get() ? m_pPlayerGain->SetGain(iVolume) : 0;
-		}
+		m_pPlayerGain.get() ? m_pPlayerGain->SetGain(iVolume) : 0;
 	}
 
 	void CAudioCallSession::SetLoudSpeaker(bool bOn)

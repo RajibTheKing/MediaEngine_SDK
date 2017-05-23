@@ -185,15 +185,7 @@ namespace MediaSDK
 			}
 #endif
 
-			if (m_pAudioCallSession->GetPlayerGain().get())
-			{
-				m_pAudioCallSession->GetPlayerGain()->AddFarEnd(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning));
-			}
 
-			if (m_pAudioCallSession->GetRecorderGain().get())
-			{
-				m_pAudioCallSession->GetRecorderGain()->AddGain(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), m_bIsLiveStreamingRunning);
-			}
 
 			//if (m_pNoise.get())
 			//{

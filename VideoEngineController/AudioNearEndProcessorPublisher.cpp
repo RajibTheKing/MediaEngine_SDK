@@ -28,7 +28,6 @@ namespace MediaSDK
 		{
 			LOG18("#18#NE#Publisher...");
 			m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
-			LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
 			DumpEncodingFrame();
 
 			int nSendingDataSizeInByte = 1600;	//Or contain 18 bit data with mixed header.

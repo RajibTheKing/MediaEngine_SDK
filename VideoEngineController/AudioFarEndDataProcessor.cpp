@@ -216,14 +216,9 @@ namespace MediaSDK
 		LOGEF("Role %d, Before decode", m_iRole);
 		if (!m_bIsLiveStreamingRunning)
 		{
-
 			m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
 			ALOG("#A#DE#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(iPacketNumber));
 			LOGEF("Role %d, done decode", m_iRole);
-
-			m_pAudioCallSession->GetRecorderGain().get() ? m_pAudioCallSession->GetRecorderGain()->AddFarEnd(m_saDecodedFrame, m_nDecodedFrameSize) : 0;
-			m_pAudioCallSession->GetPlayerGain().get() ? m_pAudioCallSession->GetPlayerGain()->AddGain(m_saDecodedFrame, m_nDecodedFrameSize, m_bIsLiveStreamingRunning) : 0;
-
 		}
 		else
 		{
@@ -291,28 +286,29 @@ namespace MediaSDK
 
 				m_pAudioCallSession->m_PublisherBufferForMuxing.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 			}
-
-			HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
+		}
+		HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 #ifdef __ANDROID__
-			if (m_bIsLiveStreamingRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType ) )
+		if (m_bIsLiveStreamingRunning)
+		{
+			if(ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 			{
 				m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
 			}
-#endif
-			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-			if (m_cbOnDataEvent != nullptr){
-				(m_cbOnDataEvent)(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-			}
 		}
-		else
+		else if (m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL)
 		{
-			HITLER("*STP -> PN: %d, FS: %d", iCurrentPacketNumber, m_nDecodedFrameSize);
-			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
-			if (m_cbOnDataEvent != nullptr){
-				(m_cbOnDataEvent)(SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
+			if (m_pAudioCallSession->GetPlayerGain().get())
+			{
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
 			}
 		}
+#endif
 
+		if (m_cbOnDataEvent != nullptr){
+			(m_cbOnDataEvent)(m_bIsLiveStreamingRunning ? SERVICE_TYPE_LIVE_STREAM : SERVICE_TYPE_CALL,
+				nSentFrameSize, pshSentFrame);
+		}
 	}
 
 	void AudioFarEndDataProcessor::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize)

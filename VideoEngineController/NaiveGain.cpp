@@ -21,7 +21,7 @@ namespace MediaSDK
 
 	}
 
-	int NaiveGain::SetGain(int iGain)
+	bool NaiveGain::SetGain(int iGain)
 	{
 #ifdef USE_AGC
 		if (iGain < 0)
@@ -48,7 +48,7 @@ namespace MediaSDK
 		return true;
 	}
 
-	int NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
+	bool NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 	{
 #ifdef USE_AGC
 		if (!m_bGainEnabled)
