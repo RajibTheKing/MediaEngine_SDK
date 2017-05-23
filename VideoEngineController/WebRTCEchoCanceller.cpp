@@ -94,11 +94,6 @@ int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveS
 
 
 	iCounter++;
-#if 0
-	long long llNow = m_Tools.CurrentTimestamp();
-#endif
-	//ALOG("aec sBufferSize = " + m_Tools.IntegertoStringConvert((int)sBufferSize));
-
 
 	for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
 	{
