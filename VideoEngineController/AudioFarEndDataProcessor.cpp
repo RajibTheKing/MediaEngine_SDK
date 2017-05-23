@@ -307,6 +307,12 @@ void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameS
 		LOG18("Pushing to q");
 		m_AudioPlayingBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);	
 	}
+#ifdef PCM_DUMP
+	if (m_pAudioCallSession->PlayedFile)
+	{
+		fwrite(pshSentFrame, 2, nSentFrameSize, m_pAudioCallSession->PlayedFile);
+	}
+#endif
 
 }
 

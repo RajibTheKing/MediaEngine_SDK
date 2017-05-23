@@ -44,6 +44,7 @@ static string colon = "ALOG:";
 
 //#define AUDIO_SELF_CALL
 //#define DUMP_FILE
+#define PCM_DUMP
 
 
 //#define FIRE_ENC_TIME
@@ -142,6 +143,13 @@ public:
 
 	AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 	AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
+
+#ifdef PCM_DUMP
+	FILE* RecordedFile;
+	FILE* EchoCancelledFile;
+	FILE* AfterEchoCancellationFile;
+	FILE* PlayedFile;
+#endif
 
 #ifdef DUMP_FILE
 	FILE *FileInput;

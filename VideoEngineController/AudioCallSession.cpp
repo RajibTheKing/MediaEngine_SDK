@@ -38,6 +38,8 @@
 #include "AudioPlayingThread.h"
 #include "Trace.h"
 
+#include <sstream>
+
 #define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
 
 #ifdef USE_VAD
@@ -121,6 +123,30 @@ m_cPlayingThread(nullptr)
 	m_clientSocket->SetAudioCallSession(this);
 #endif
 
+#ifdef PCM_DUMP
+	long long llcurrentTime;
+	std::string sCurrentTime;
+	std::stringstream ss;
+
+	ss.clear();
+	llcurrentTime = (Tools::CurrentTimestamp() / 10000) % 100000;
+	ss << llcurrentTime;
+	ss >> sCurrentTime;
+
+	std::string filePrefix = "/sdcard/";
+	std::string fileExtension = ".pcm";
+
+	std::string RecordedFileName = filePrefix + sCurrentTime + "-Recorded" + fileExtension;
+	std::string EchoCancelledFileName = filePrefix + sCurrentTime + "-Cancelled" + fileExtension;
+	std::string PlayedFileName = filePrefix + sCurrentTime + "-Played" + fileExtension;
+	std::string AfterEchoCancellationFileName = filePrefix + sCurrentTime + "-AfterCancellation" + fileExtension;
+
+	RecordedFile = fopen(RecordedFileName.c_str(), "wb");
+	EchoCancelledFile = fopen(EchoCancelledFileName.c_str(), "wb");
+	PlayedFile = fopen(PlayedFileName.c_str(), "wb");
+	AfterEchoCancellationFile = fopen(AfterEchoCancellationFileName.c_str(), "wb");
+#endif 
+
 	StartNearEndDataProcessing();
 	StartFarEndDataProcessing(pSharedObject);
 
@@ -168,6 +194,13 @@ CAudioCallSession::~CAudioCallSession()
 	fclose(FileInput);
 	fclose(FileInputWithEcho);
 	fclose(FileInputPreGain);
+#endif
+
+#ifdef PCM_DUMP
+	if (RecordedFile) fclose(RecordedFile);
+	if (EchoCancelledFile) fclose(EchoCancelledFile);
+	if (AfterEchoCancellationFile) fclose(AfterEchoCancellationFile);
+	if (PlayedFile) fclose(PlayedFile);
 #endif
 
 	SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
@@ -468,6 +501,13 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 		LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
 		m_bIsAECMNearEndThreadBusy = true;
 
+#ifdef PCM_DUMP
+		if (RecordedFile)
+		{
+			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
+		}
+#endif
+
 #ifdef DUMP_FILE
 		fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
 #endif //DUMP_FILE
@@ -481,6 +521,12 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 				m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 				m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 				LOG18("Successful farnear");
+#ifdef PCM_DUMP
+				if (EchoCancelledFile)
+				{
+					fwrite(psaEncodingAudioData, 2, unLength, EchoCancelledFile);
+				}				
+#endif
 			}
 			else
 			{
@@ -491,6 +537,12 @@ int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int
 			fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
 #endif
 		}
+#ifdef PCM_DUMP
+		if (AfterEchoCancellationFile)
+		{
+			fwrite(psaEncodingAudioData, 2, unLength, AfterEchoCancellationFile);
+		}
+#endif
 
 		m_bIsAECMNearEndThreadBusy = false;
 	}
