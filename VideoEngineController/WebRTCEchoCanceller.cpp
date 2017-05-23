@@ -7,7 +7,15 @@
 //#include "Filt.h"
 //#define USE_LOW_PASS
 
+#define ECHO_ANALYSIS
 
+#ifdef ECHO_ANALYSIS
+FILE *EchoFile;
+#define HEADER_SIZE 1
+#define WEBRTC_FAREND 1
+#define SPEEX_FAREND 2
+#define NEAREND 3
+#endif
 
 #ifndef ALOG
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
@@ -104,7 +112,7 @@ int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveS
 
 		short temp = NEAREND;
 		fwrite(&temp, sizeof(short), 1, EchoFile);
-		fwrite(&iDelay, sizeof(short), 1, EchoFile);
+		fwrite(&llDelay, sizeof(short), 1, EchoFile);
 		fwrite(sInBuf + i, sizeof(short), AECM_SAMPLES_IN_FRAME, EchoFile);
 #endif
 		bool bFailed = false, bZeroed = false;

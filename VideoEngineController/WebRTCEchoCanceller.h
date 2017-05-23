@@ -10,15 +10,6 @@
 #include "echo_control_mobile.h"
 #endif
 
-//#define ECHO_ANALYSIS
-
-#ifdef ECHO_ANALYSIS
-FILE *EchoFile;
-#define HEADER_SIZE 1
-#define WEBRTC_FAREND 1
-#define SPEEX_FAREND 2
-#define NEAREND 3
-#endif
 
 
 class WebRTCEchoCanceller : public EchoCancellerInterface
