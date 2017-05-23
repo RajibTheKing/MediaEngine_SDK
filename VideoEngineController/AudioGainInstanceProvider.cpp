@@ -4,27 +4,32 @@
 #include "GomGomGain.h"
 #include "NaiveGain.h"
 
-SmartPointer<AudioGainInterface> AudioGainInstanceProvider::GetAudioGainInstance(AudioGainType audioGainType)
+namespace MediaSDK
 {
-	AudioGainInterface* pInstance = nullptr;
-	switch (audioGainType)
+
+	SmartPointer<AudioGainInterface> AudioGainInstanceProvider::GetAudioGainInstance(AudioGainType audioGainType)
 	{
-	case WebRTC_Gain:
-		pInstance = new WebRTCGain();
-		break;
+		AudioGainInterface* pInstance = nullptr;
+		switch (audioGainType)
+		{
+		case WebRTC_Gain:
+			pInstance = new WebRTCGain();
+			break;
 
-	case GomGom_Gain:
-		pInstance = new GomGomGain();
-		break;
+		case GomGom_Gain:
+			pInstance = new GomGomGain();
+			break;
 
-	case Naive_Gain:
-		pInstance = new NaiveGain();
-		break;
+		case Naive_Gain:
+			pInstance = new NaiveGain();
+			break;
 
-	default:
-		//Do nothing;
-		break;
+		default:
+			//Do nothing;
+			break;
+		}
+
+		return SmartPointer<AudioGainInterface>(pInstance);
 	}
 
-	return SmartPointer<AudioGainInterface>(pInstance);
-}
+} // namespace MediaSDK

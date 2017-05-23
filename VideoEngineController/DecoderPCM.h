@@ -4,18 +4,21 @@
 
 #include "AudioDecoderInterface.h"
 
-
-class DecoderPCM : public AudioDecoderInterface
+namespace MediaSDK
 {
 
-public:
+	class DecoderPCM : public AudioDecoderInterface
+	{
 
-	bool SetParameters(int sampleRate, int numberOfChannels) { return true; }
+	public:
 
-	int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
+		bool SetParameters(int sampleRate, int numberOfChannels) { return true; }
 
-	~DecoderPCM() { }
-};
+		int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
 
+		~DecoderPCM() { }
+	};
+
+} //namespace MediaSDK
 
 #endif  // !AUDIO_NO_DECODER_H

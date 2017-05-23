@@ -5,19 +5,22 @@
 #include "AudioTypes.h"
 #include "SmartPointer.h"
 
-
-
-class NoiseReducerInterface;
-
-
-class NoiseReducerProvider
+namespace MediaSDK
 {
 
-public:
 
-	static SmartPointer<NoiseReducerInterface> GetNoiseReducer(NoiseReducerType noiseReducerType);
+	class NoiseReducerInterface;
 
-};
 
+	class NoiseReducerProvider
+	{
+
+	public:
+
+		static SmartPointer<NoiseReducerInterface> GetNoiseReducer(NoiseReducerType noiseReducerType);
+
+	};
+
+} //namespace MediaSDK
 
 #endif  // !NOISE_REDUCER_PROVIDER_H

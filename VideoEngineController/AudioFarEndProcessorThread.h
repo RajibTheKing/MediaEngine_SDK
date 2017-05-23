@@ -4,35 +4,38 @@
 
 #include <thread>
 
-
-class AudioFarEndDataProcessor;
-
-class AudioFarEndProcessorThread
+namespace MediaSDK
 {
-private:
 
-	bool m_bAudioFarEndThreadRunning;
-	bool m_bAudioFarEndThreadClosed;
+	class AudioFarEndDataProcessor;
 
-	AudioFarEndDataProcessor *m_pFarEndDataProcessor = nullptr;
+	class AudioFarEndProcessorThread
+	{
+	private:
+
+		bool m_bAudioFarEndThreadRunning;
+		bool m_bAudioFarEndThreadClosed;
+
+		AudioFarEndDataProcessor *m_pFarEndDataProcessor = nullptr;
 
 
-protected:
+	protected:
 
-	void AudioFarEndProcedure();
-	std::thread CreateFarEndThread();
+		void AudioFarEndProcedure();
+		std::thread CreateFarEndThread();
 
 
-public:
+	public:
 
-	AudioFarEndProcessorThread(AudioFarEndDataProcessor *pFarEndProcessor);
-	~AudioFarEndProcessorThread();
+		AudioFarEndProcessorThread(AudioFarEndDataProcessor *pFarEndProcessor);
+		~AudioFarEndProcessorThread();
 
-	void StartFarEndThread();
-	void StopFarEndThread();
+		void StartFarEndThread();
+		void StopFarEndThread();
 
-};
+	};
 
+} // namespace MediaSDK
 
 
 

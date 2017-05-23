@@ -9,6 +9,9 @@
 #include <dispatch/dispatch.h>
 #endif
 
+namespace MediaSDK
+{
+
 CVideoEncodingThread::CVideoEncodingThread(long long llFriendID, CEncodingBuffer *pEncodingBuffer, CCommonElementsBucket *commonElementsBucket, BitRateController *pBitRateController, IDRFrameIntervalController *pIdrFrameController, CColorConverter *pColorConverter, CVideoEncoder *pVideoEncoder, CEncodedFramePacketizer *pEncodedFramePacketizer, CVideoCallSession *pVideoCallSession, int nFPS, bool bIsCheckCall, bool bSelfViewOnly) :
 
 m_pVideoCallSession(pVideoCallSession),
@@ -957,3 +960,5 @@ dbTotalEncodingTime += encodingTime;
 ++iEncodedFrameCounter;
 nMaxEncodingTime = max(nMaxEncodingTime, encodingTime);
 */
+
+} //namespace MediaSDK

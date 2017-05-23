@@ -1,44 +1,49 @@
 #include "Trace.h"
 
-void CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
+namespace MediaSDK
 {
-	for (int i = 0; i < iTraceLength; i++)
-	{
-		if (i % 8 < 4)
-		{
-			sBuffer[i] = 30000;
-		}
-		else
-		{
-			sBuffer[i] = -30000;
-		}
-	}
-}
 
-bool CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)
-{
-	for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
+	void CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
 	{
-		if (sBuffer[i] > 0 && sBuffer[i + 1] > 0 && sBuffer[i + 2] > 0 && sBuffer[i + 3] > 0) //maybe trace started
+		for (int i = 0; i < iTraceLength; i++)
 		{
-			int j = 0;
-			for (; j < iTraceDetectionLength; j++)
+			if (i % 8 < 4)
 			{
-				if (j % 8 < 4 && sBuffer[i + j] < 0)
-				{
-					break;
-				}
-				if (j % 8 >= 4 && sBuffer[i + j] > 0)
-				{
-					break;
-				}
-
+				sBuffer[i] = 30000;
 			}
-			if (j == iTraceDetectionLength)
+			else
 			{
-				return true;
+				sBuffer[i] = -30000;
 			}
 		}
 	}
-	return false;
-}
+
+	bool CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)
+	{
+		for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
+		{
+			if (sBuffer[i] > 0 && sBuffer[i + 1] > 0 && sBuffer[i + 2] > 0 && sBuffer[i + 3] > 0) //maybe trace started
+			{
+				int j = 0;
+				for (; j < iTraceDetectionLength; j++)
+				{
+					if (j % 8 < 4 && sBuffer[i + j] < 0)
+					{
+						break;
+					}
+					if (j % 8 >= 4 && sBuffer[i + j] > 0)
+					{
+						break;
+					}
+
+				}
+				if (j == iTraceDetectionLength)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+} //namespace MediaSDK

@@ -93,9 +93,6 @@
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp">
-      <Filter>Source Files\VideoEngineUtilities</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\RenderingBuffer.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
@@ -461,9 +458,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h">
-      <Filter>Source Files\VideoEngineUtilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h">
       <Filter>Source Files\VideoEngineUtilities</Filter>
     </ClInclude>
@@ -742,6 +736,9 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\WebRTCGain.h">
       <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\CommonTypes.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\Trace.h">
       <Filter>Source Files\AudioEngine</Filter>

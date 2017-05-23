@@ -113,7 +113,6 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/Filt.cpp \
 			../../VideoEngineController/AudioNearEndDataProcessor.cpp \
 			../../VideoEngineController/AudioFarEndDataProcessor.cpp \
-			../../VideoEngineUtilities/LockHandler.cpp \
             ../../VideoEngineUtilities/ColorConverter.cpp \
             ../../VideoEngineUtilities/HashGenerator.cpp \
             ../../VideoEngineController/AudioCallSession.cpp \

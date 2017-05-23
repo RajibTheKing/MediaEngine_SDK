@@ -1,45 +1,49 @@
 
 #include "CircularBuffer.h"
-#include "../VideoEngineUtilities/LockHandler.h"
 #include "LogPrinter.h"
 
 
-CCircularBuffer::CCircularBuffer(int nBufferSize) :
-
-m_iPushIndex(0),
-m_iPopIndex(0),
-m_nQueueSize(0),
-m_nQueueCapacity(nBufferSize)
-
-{
-	m_pRenderingBufferMutex.reset(new CLockHandler);
-}
-
-CCircularBuffer::~CCircularBuffer()
+namespace MediaSDK
 {
 
-}
+	CCircularBuffer::CCircularBuffer(int nBufferSize) :
 
-void CCircularBuffer::ResetBuffer()
-{
-	Locker lock(*m_pRenderingBufferMutex);
+		m_iPushIndex(0),
+		m_iPopIndex(0),
+		m_nQueueSize(0),
+		m_nQueueCapacity(nBufferSize)
 
-	m_iPushIndex = 0;
-	m_iPopIndex = 0;
-	m_nQueueSize = 0;
-}
+	{
+		m_pRenderingBufferMutex.reset(new CLockHandler);
+	}
 
-void CCircularBuffer::IncreamentIndex(int &riIndex)
-{
-	riIndex++;
+	CCircularBuffer::~CCircularBuffer()
+	{
 
-	if (riIndex >= m_nQueueCapacity)
-		riIndex = 0;
-}
+	}
 
-int CCircularBuffer::GetQueueSize()
-{
-	Locker lock(*m_pRenderingBufferMutex);
+	void CCircularBuffer::ResetBuffer()
+	{
+		Locker lock(*m_pRenderingBufferMutex);
 
-	return m_nQueueSize;
-}
+		m_iPushIndex = 0;
+		m_iPopIndex = 0;
+		m_nQueueSize = 0;
+	}
+
+	void CCircularBuffer::IncreamentIndex(int &riIndex)
+	{
+		riIndex++;
+
+		if (riIndex >= m_nQueueCapacity)
+			riIndex = 0;
+	}
+
+	int CCircularBuffer::GetQueueSize()
+	{
+		Locker lock(*m_pRenderingBufferMutex);
+
+		return m_nQueueSize;
+	}
+
+} //namespace MediaSDK

@@ -3,11 +3,11 @@
 #define IPV_RENDERING_BUFFER_H
 
 #include "SmartPointer.h"
-#include "LockHandler.h"
-#include "Tools.h"
+#include "CommonTypes.h"
 #include "Size.h"
-#include "LogPrinter.h"
 
+namespace MediaSDK
+{
 
 class CRenderingBuffer
 {
@@ -42,8 +42,9 @@ private:
 	long long m_llaBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_llaBufferCaptureTimeDifferences[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
-	Tools m_Tools;
 	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
 };
+
+} //namespace MediaSDK
 
 #endif 

@@ -9,30 +9,34 @@
 #include "speex/speex_preprocess.h"
 #endif
 
-class SpeexEchoCanceller : public EchoCancellerInterface
+namespace MediaSDK
 {
-private:
-	bool m_bFarendArrived;
-	bool m_bReadingFarend, m_bWritingFarend;
 
-	short m_sSpeexFarendBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+	class SpeexEchoCanceller : public EchoCancellerInterface
+	{
+	private:
+		bool m_bFarendArrived;
+		bool m_bReadingFarend, m_bWritingFarend;
+
+		short m_sSpeexFarendBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 #ifdef USE_AECM
-	SpeexEchoState *st;
-	SpeexPreprocessState *den;
+		SpeexEchoState *st;
+		SpeexPreprocessState *den;
 #endif
 
 
-public:
+	public:
 
-	SpeexEchoCanceller();
+		SpeexEchoCanceller();
+
+		~SpeexEchoCanceller();
+
+		int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
 	
-	~SpeexEchoCanceller();
+		int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay);
 
-	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
-	
-	int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay);
+	};
 
-};
-
+} //namespace MediaSDK
 
 #endif  // !SPEEX_ECHO_CANCELLER_H

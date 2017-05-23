@@ -110,7 +110,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;$(DefineConstants);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +123,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;$(DefineConstants);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -248,7 +248,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\ColorConverter.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\HashGenerator.h" />
-    <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\MuxingVideoData.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h" />
     <ClInclude Include="..\..\VideoEngineUtilities\VideoBeautificationer.h" />
@@ -359,7 +358,6 @@
     <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\HashGenerator.cpp" />
-    <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\MuxingVideoData.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoBeautificationer.cpp" />
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />

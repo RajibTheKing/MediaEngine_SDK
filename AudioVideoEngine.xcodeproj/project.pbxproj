@@ -26,7 +26,6 @@
 		188587FB1C0AEEAC00B1F435 /* VideoPacketBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587E51C0AEEAC00B1F435 /* VideoPacketBuffer.cpp */; };
 		188587FC1C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587E71C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp */; };
 		188588031C0AEEBC00B1F435 /* ColorConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587FD1C0AEEBC00B1F435 /* ColorConverter.cpp */; };
-		188588041C0AEEBC00B1F435 /* LockHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188588001C0AEEBC00B1F435 /* LockHandler.cpp */; };
 		1887672F1C0ACD5500899605 /* libG729Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1887672E1C0ACD5500899605 /* libG729Library.a */; };
 		18EB836E1C0ED768006738CB /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836A1C0ED768006738CB /* libcommon.a */; };
 		18EB836F1C0ED768006738CB /* libprocessing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836B1C0ED768006738CB /* libprocessing.a */; };
@@ -185,8 +184,6 @@
 		188587FD1C0AEEBC00B1F435 /* ColorConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorConverter.cpp; path = VideoEngineUtilities/ColorConverter.cpp; sourceTree = "<group>"; };
 		188587FE1C0AEEBC00B1F435 /* ColorConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorConverter.h; path = VideoEngineUtilities/ColorConverter.h; sourceTree = "<group>"; };
 		188587FF1C0AEEBC00B1F435 /* DefinedDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefinedDataTypes.h; path = VideoEngineUtilities/DefinedDataTypes.h; sourceTree = "<group>"; };
-		188588001C0AEEBC00B1F435 /* LockHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LockHandler.cpp; path = VideoEngineUtilities/LockHandler.cpp; sourceTree = "<group>"; };
-		188588011C0AEEBC00B1F435 /* LockHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LockHandler.h; path = VideoEngineUtilities/LockHandler.h; sourceTree = "<group>"; };
 		188588021C0AEEBC00B1F435 /* SmartPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SmartPointer.h; path = VideoEngineUtilities/SmartPointer.h; sourceTree = "<group>"; };
 		1887672E1C0ACD5500899605 /* libG729Library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libG729Library.a; sourceTree = "<group>"; };
 		18EB836A1C0ED768006738CB /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcommon.a; sourceTree = "<group>"; };
@@ -203,6 +200,7 @@
 		6A4C25421E152F9900679D74 /* libaac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaac.a; sourceTree = "<group>"; };
 		6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoBeautificationer.cpp; path = VideoEngineUtilities/VideoBeautificationer.cpp; sourceTree = "<group>"; };
 		6A4F57861E0A3D8000C48ACC /* VideoBeautificationer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoBeautificationer.h; path = VideoEngineUtilities/VideoBeautificationer.h; sourceTree = "<group>"; };
+		6A583FC51ED1B81D0044205A /* CommonTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommonTypes.h; path = VideoEngineController/CommonTypes.h; sourceTree = "<group>"; };
 		6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoHeader.cpp; path = VideoEngineController/VideoHeader.cpp; sourceTree = "<group>"; };
 		6AAEC53C1E07EF9E001525FE /* VideoHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoHeader.h; path = VideoEngineController/VideoHeader.h; sourceTree = "<group>"; };
 		6AFFA2D11E9CE8CA00BDDC63 /* AudioMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioMacros.h; path = VideoEngineController/AudioMacros.h; sourceTree = "<group>"; };
@@ -430,8 +428,6 @@
 				188587FF1C0AEEBC00B1F435 /* DefinedDataTypes.h */,
 				DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */,
 				DA3B79201DED86D20061BEFC /* HashGenerator.h */,
-				188588001C0AEEBC00B1F435 /* LockHandler.cpp */,
-				188588011C0AEEBC00B1F435 /* LockHandler.h */,
 				DA9CFEAA1DFBC7E2004112C4 /* MuxingVideoData.cpp */,
 				DA9CFEAB1DFBC7E2004112C4 /* MuxingVideoData.h */,
 				188588021C0AEEBC00B1F435 /* SmartPointer.h */,
@@ -446,6 +442,7 @@
 		18AAB7741C0059320069154C /* VideoEngineController */ = {
 			isa = PBXGroup;
 			children = (
+				6A583FC51ED1B81D0044205A /* CommonTypes.h */,
 				6A4C253C1E152F8E00679D74 /* aacdecoder_lib.h */,
 				6A4C253D1E152F8E00679D74 /* aacdecoder.h */,
 				188587B71C0AEEAC00B1F435 /* AudioCallSession.cpp */,
@@ -847,7 +844,6 @@
 				DA988E921EBF4D3600B5B782 /* WebRTCGain.cpp in Sources */,
 				DA988EE41EBF5D9300B5B782 /* SpeexEchoCanceller.cpp in Sources */,
 				DA5D38981EB07D1E00304B6D /* AudioShortBufferForPublisherFarEnd.cpp in Sources */,
-				188588041C0AEEBC00B1F435 /* LockHandler.cpp in Sources */,
 				DA3C0FFF1E78395700155A52 /* Filt.cpp in Sources */,
 				188587F51C0AEEAC00B1F435 /* Tools.cpp in Sources */,
 				DA988E7C1EBF4CA300B5B782 /* AudioHeaderCommon.cpp in Sources */,

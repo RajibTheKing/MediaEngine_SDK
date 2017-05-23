@@ -137,9 +137,6 @@
     <ClInclude Include="..\..\VideoEngineUtilities\DefinedDataTypes.h">
       <Filter>VideoEngineUtilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\VideoEngineUtilities\LockHandler.h">
-      <Filter>VideoEngineUtilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineUtilities\SmartPointer.h">
       <Filter>VideoEngineUtilities</Filter>
     </ClInclude>
@@ -464,9 +461,6 @@
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineUtilities\ColorConverter.cpp">
-      <Filter>VideoEngineUtilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\VideoEngineUtilities\LockHandler.cpp">
       <Filter>VideoEngineUtilities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\BandwidthController.cpp">

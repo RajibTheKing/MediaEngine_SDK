@@ -3,64 +3,68 @@
 #include "Tools.h"
 #include "AudioFarEndDataProcessor.h"
 
-AudioPlayingThread::AudioPlayingThread(AudioFarEndDataProcessor *pFarEndProcessor) :
-m_pFarEndDataProcessor(pFarEndProcessor)
+namespace MediaSDK
 {
-	MR_DEBUG("#farEnd# AudioFarEndProcessorThread::AudioFarEndProcessorThread()");
 
-	m_bAudioPlayingThreadRunning = false;
-	m_bAudioPlayingThreadClosed = true;
-}
-
-
-AudioPlayingThread::~AudioPlayingThread()
-{
-	MR_DEBUG("#farEnd# AudioFarEndProcessorThread::~AudioFarEndProcessorThread()");
-
-	StopPlayingThread();
-}
-
-void AudioPlayingThread::AudioPlayingProcedure()
-{
-	MR_DEBUG("#farEnd# AudioFarEndProcessorThread::AudioFarEndProcedure()");
-
-	m_bAudioPlayingThreadRunning = true;
-	m_bAudioPlayingThreadClosed = false;
-
-	while (m_bAudioPlayingThreadRunning)
+	AudioPlayingThread::AudioPlayingThread(AudioFarEndDataProcessor *pFarEndProcessor) :
+		m_pFarEndDataProcessor(pFarEndProcessor)
 	{
-		if (m_pFarEndDataProcessor != nullptr)
-		{
-			m_pFarEndDataProcessor->ProcessPlayingData();
-		}
+		MR_DEBUG("#farEnd# AudioFarEndProcessorThread::AudioFarEndProcessorThread()");
+
+		m_bAudioPlayingThreadRunning = false;
+		m_bAudioPlayingThreadClosed = true;
 	}
 
-	m_bAudioPlayingThreadClosed = true;
-}
 
-std::thread AudioPlayingThread::CreatePlayingThread()
-{
-	return std::thread([=] { AudioPlayingProcedure(); });
-}
-
-
-void AudioPlayingThread::StartPlayingThread()
-{
-	MR_DEBUG("#farEnd# AudioFarEndProcessorThread::StartFarEndThread()");
-
-	std::thread audioPlayingThread = CreatePlayingThread();
-	audioPlayingThread.detach();
-}
-
-
-void AudioPlayingThread::StopPlayingThread()
-{
-	MR_DEBUG("#farEnd# AudioFarEndProcessorThread::StopFarEndThread()");
-
-	m_bAudioPlayingThreadRunning = false;
-
-	while (!m_bAudioPlayingThreadClosed)
+	AudioPlayingThread::~AudioPlayingThread()
 	{
-		Tools::SOSleep(1);
+		MR_DEBUG("#farEnd# AudioFarEndProcessorThread::~AudioFarEndProcessorThread()");
+
+		StopPlayingThread();
+	}
+
+	void AudioPlayingThread::AudioPlayingProcedure()
+	{
+		MR_DEBUG("#farEnd# AudioFarEndProcessorThread::AudioFarEndProcedure()");
+
+		m_bAudioPlayingThreadRunning = true;
+		m_bAudioPlayingThreadClosed = false;
+
+		while (m_bAudioPlayingThreadRunning)
+		{
+			if (m_pFarEndDataProcessor != nullptr)
+			{
+				m_pFarEndDataProcessor->ProcessPlayingData();
+			}
+		}
+
+		m_bAudioPlayingThreadClosed = true;
+	}
+
+	std::thread AudioPlayingThread::CreatePlayingThread()
+	{
+		return std::thread([=] { AudioPlayingProcedure(); });
+	}
+
+
+	void AudioPlayingThread::StartPlayingThread()
+	{
+		MR_DEBUG("#farEnd# AudioFarEndProcessorThread::StartFarEndThread()");
+
+		std::thread audioPlayingThread = CreatePlayingThread();
+		audioPlayingThread.detach();
+	}
+
+
+	void AudioPlayingThread::StopPlayingThread()
+	{
+		MR_DEBUG("#farEnd# AudioFarEndProcessorThread::StopFarEndThread()");
+
+		m_bAudioPlayingThreadRunning = false;
+
+		while (!m_bAudioPlayingThreadClosed)
+		{
+			Tools::SOSleep(1);
+		}
 	}
 }

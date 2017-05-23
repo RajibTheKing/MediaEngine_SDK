@@ -6,7 +6,7 @@
 #include "VideoEncoder.h"
 #include "VideoDecoder.h"
 #include "VideoEncoderListHandler.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 #include "ColorConverter.h"
 #include "EncodingBuffer.h"
 #include "RenderingBuffer.h"
@@ -35,6 +35,8 @@
 #include "LiveVideoDecodingQueue.h"
 #include "IDRFrameIntervalController.h"
 
+namespace MediaSDK
+{
 
 
 using namespace std;
@@ -177,11 +179,12 @@ private:
 	
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
-	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
-	CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
 
-	CVideoDecoder *m_pVideoDecoderForSecondInset;
-	CVideoDecoder *m_pVideoDecoderForThirdInset;
+	//CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
+	//CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
+
+	//CVideoDecoder *m_pVideoDecoderForSecondInset;
+	//CVideoDecoder *m_pVideoDecoderForThirdInset;
 
 	CFPSController *m_pFPSController;
 	long long m_LastTimeStampClientFPS;
@@ -295,5 +298,6 @@ protected:
 	SmartPointer<CLockHandler> m_pVideoCallSessionMutex;
 };
 
+} //namespace MediaSDK
 
 #endif

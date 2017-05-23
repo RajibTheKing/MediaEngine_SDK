@@ -11,33 +11,35 @@
 #endif
 
 
-
-class WebRTCEchoCanceller : public EchoCancellerInterface
+namespace MediaSDK
 {
-
-public:
-	WebRTCEchoCanceller();
-
-	virtual ~WebRTCEchoCanceller();
-
-	int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
-
-	int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay);
-
-private:
-	void* AECM_instance;
-
-	bool m_bAecmCreated;
-	bool m_bAecmInited;
-	bool m_bWritingDump;
-
-	long long m_llLastFarendTime;
-	int iCounter, iCounter2;
-
-	short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
-	bool m_bNearEndingOrFarEnding;
-
-};
+	class WebRTCEchoCanceller : public EchoCancellerInterface
+	{
+	
+	public:
+		WebRTCEchoCanceller();
+	
+		virtual ~WebRTCEchoCanceller();
+	
+		int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
+	
+		int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay);
+	
+	private:
+		void* AECM_instance;
+	
+		bool m_bAecmCreated;
+		bool m_bAecmInited;
+		bool m_bWritingDump;
+	
+		long long m_llLastFarendTime;
+		int iCounter, iCounter2;
+	
+		short m_sZeroBuf[AECM_SAMPLES_IN_FRAME];
+		bool m_bNearEndingOrFarEnding;
+	
+	};
+} //namespace MediaSDK
 
 
 #endif  // !WEBRTC_ECHO_CANCELLER_H

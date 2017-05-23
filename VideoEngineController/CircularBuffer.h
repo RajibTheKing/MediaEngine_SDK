@@ -3,9 +3,11 @@
 #define IPV_CIRCULAR_BUFFER_H
 
 #include "SmartPointer.h"
+#include "CommonTypes.h"
 #include "Tools.h"
 
-class CLockHandler;
+namespace MediaSDK
+{
 
 class CCircularBuffer
 {
@@ -29,5 +31,7 @@ private:
 	Tools m_Tools;
 	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
 };
+
+} //namespace MediaSDK
 
 #endif 

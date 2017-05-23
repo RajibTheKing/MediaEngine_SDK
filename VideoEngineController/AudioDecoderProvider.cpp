@@ -5,34 +5,37 @@
 #include "DecoderOpus.h"
 #include "DecoderPCM.h"
 
-
-
-SmartPointer<AudioDecoderInterface> AudioDecoderProvider::GetAudioDecoder(AudioDecoderType audioDecoderType)
+namespace MediaSDK
 {
-	AudioDecoderInterface *audioDecoder = nullptr;
 
-	switch (audioDecoderType)
+
+	SmartPointer<AudioDecoderInterface> AudioDecoderProvider::GetAudioDecoder(AudioDecoderType audioDecoderType)
 	{
-	case AAC_Decoder:
-		audioDecoder = new DecoderAAC();
-		break;
+		AudioDecoderInterface *audioDecoder = nullptr;
 
-	case Opus_Decoder:
-		audioDecoder = new DecoderOpus();
-		break;
+		switch (audioDecoderType)
+		{
+		case AAC_Decoder:
+			audioDecoder = new DecoderAAC();
+			break;
 
-	case PCM_Decoder:
-		audioDecoder = new DecoderPCM();
-		break;
+		case Opus_Decoder:
+			audioDecoder = new DecoderOpus();
+			break;
 
-	default:
-		//Do nothing;
-		break;
+		case PCM_Decoder:
+			audioDecoder = new DecoderPCM();
+			break;
+
+		default:
+			//Do nothing;
+			break;
+		}
+
+		return SmartPointer<AudioDecoderInterface>(audioDecoder);
 	}
 
-	return SmartPointer<AudioDecoderInterface>(audioDecoder);
-}
-
+} //namespace MediaSDK
 
 
 

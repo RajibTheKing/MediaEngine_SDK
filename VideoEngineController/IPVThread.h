@@ -2,53 +2,54 @@
 #ifndef IPV_THREAD_H
 #define IPV_THREAD_H
 
-#include "Tools.h"
 #include "SmartPointer.h"
-#include "LogPrinter.h"
-#include "RenderingBuffer.h"
-#include "AverageCalculator.h"
-
+#include "Size.h"
 #include <thread>
 
-class CCommonElementsBucket;
-class CVideoCallSession;
-
-class CIPVThread
+namespace MediaSDK
 {
+	class CCommonElementsBucket;
+	class CVideoCallSession;
+	class CRenderingBuffer;
+	class CAverageCalculator;
 
-public:
+	class CIPVThread
+	{
 
-	CIPVThread(long long llFriendID, CRenderingBuffer *pcRenderingBuffer, CCommonElementsBucket* pcCommonElementsBucket, CVideoCallSession *pcVideoCallSession, bool bIsCheckCall);
-	~CIPVThread();
+	public:
 
-	void StartThread();
-	void StopThread();
-	void ThreadRunProcedure();
-	static void *CreateThread(void* pParam);
+		CIPVThread(long long llFriendID, CRenderingBuffer *pcRenderingBuffer, CCommonElementsBucket* pcCommonElementsBucket, CVideoCallSession *pcVideoCallSession, bool bIsCheckCall);
+		~CIPVThread();
 
-private:
+		void StartThread();
+		void StopThread();
+		void ThreadRunProcedure();
+		static void *CreateThread(void* pParam);
 
-	bool m_bThreadRunning;
-	bool m_bThreadClosed;
+	private:
 
-	bool m_bIsCheckCall;
-	int m_nRenderFrameCount;
-	int m_nInsetHeight;
-	int m_nInsetWidth;
-	long long m_llFriendID;
-	long long m_lRenderCallTime;
-	long long m_llRenderFrameCounter;
+		bool m_bThreadRunning;
+		bool m_bThreadClosed;
 
-	unsigned char m_ucaRenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		bool m_bIsCheckCall;
+		int m_nRenderFrameCount;
+		int m_nInsetHeight;
+		int m_nInsetWidth;
+		long long m_llFriendID;
+		long long m_lRenderCallTime;
+		long long m_llRenderFrameCounter;
 
-	Tools m_Tools;
-	CAverageCalculator m_cRenderTimeCalculator;
+		unsigned char m_ucaRenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-	CRenderingBuffer *m_pcRenderingBuffer;
-	CCommonElementsBucket* m_pcCommonElementsBucket;
-    CVideoCallSession *m_pcVideoCallSession;
+		SmartPointer<CAverageCalculator> m_cRenderTimeCalculator;
 
-	SmartPointer<std::thread> pThreadPointer;
-};
+		CRenderingBuffer *m_pcRenderingBuffer;
+		CCommonElementsBucket* m_pcCommonElementsBucket;
+		CVideoCallSession *m_pcVideoCallSession;
+
+		SmartPointer<std::thread> pThreadPointer;
+	};
+
+} //namespace MediaSDK
 
 #endif 

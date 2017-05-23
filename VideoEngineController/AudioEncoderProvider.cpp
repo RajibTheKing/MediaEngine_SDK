@@ -3,26 +3,29 @@
 #include "EncoderOpus.h"
 #include "EncoderPCM.h"
 
-
-SmartPointer<AudioEncoderInterface> AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType)
+namespace MediaSDK
 {
-	SmartPointer<AudioEncoderInterface> pInstance;
 
-	switch (audioEncoderType)
+	SmartPointer<AudioEncoderInterface> AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType)
 	{
-	case Opus_Encoder:
-		pInstance.reset(new EncoderOpus());
-		break;
+		SmartPointer<AudioEncoderInterface> pInstance;
 
-	case PCM_Encoder:
-		pInstance.reset(new EncoderPCM());
-		break;
+		switch (audioEncoderType)
+		{
+		case Opus_Encoder:
+			pInstance.reset(new EncoderOpus());
+			break;
 
-	default:
-		break;
+		case PCM_Encoder:
+			pInstance.reset(new EncoderPCM());
+			break;
+
+		default:
+			break;
+		}
+
+		return pInstance;
 	}
 
-	return pInstance;
-}
-
+} //namespace MediaSDK
 

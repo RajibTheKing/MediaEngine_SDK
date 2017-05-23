@@ -5,18 +5,21 @@
 #include "AudioTypes.h"
 #include "SmartPointer.h"
 
-
-
-class EchoCancellerInterface;
-
-class EchoCancellerProvider
+namespace MediaSDK
 {
-	
-public:
 
-	static SmartPointer<EchoCancellerInterface> GetEchoCanceller(EchoCancelerType echoCancellerType);
 
-};
+	class EchoCancellerInterface;
 
+	class EchoCancellerProvider
+	{
+
+	public:
+
+		static SmartPointer<EchoCancellerInterface> GetEchoCanceller(EchoCancelerType echoCancellerType);
+
+	};
+
+} //namespace MediaSDK
 
 #endif // !ECHO_CANCELLER_PROVIDER_H

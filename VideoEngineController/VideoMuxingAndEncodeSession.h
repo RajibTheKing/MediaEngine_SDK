@@ -7,48 +7,51 @@
 #include "VideoEncoder.h"
 #include "CommonElementsBucket.h"
 #include "SmartPointer.h"
-#include "LockHandler.h"
+#include "CommonTypes.h"
 
 #define BMP_HEADER_SIZE 54
 
 #define FINAL_ENCODED_FRAME_BUFFER_LEN 1024*1024*10
 
-
-class CVideoMuxingAndEncodeSession
+namespace MediaSDK
 {
 
-public:
+	class CVideoMuxingAndEncodeSession
+	{
 
-	CVideoMuxingAndEncodeSession(CCommonElementsBucket *pCommonElementsBucket);
-	~CVideoMuxingAndEncodeSession();
+	public:
 
-	int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int iLen, int nVideoHeight, int nVideoWidth);
-	int FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth);
-	int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
+		CVideoMuxingAndEncodeSession(CCommonElementsBucket *pCommonElementsBucket);
+		~CVideoMuxingAndEncodeSession();
 
-private:
+		int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data, int iLen, int nVideoHeight, int nVideoWidth);
+		int FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth);
+		int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
-	CCommonElementsBucket *m_pCommonElementsBucket;
-	CMuxingVideoData *m_CMuxingVideoData;
-	CVideoEncoder *m_VideoEncoder;
-	CColorConverter *m_ColorConverter;
+	private:
 
-	unsigned char m_ucaBMP32Frame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 4];
-	unsigned char m_ucaBMP24Frame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 3];
-	unsigned char m_ucaYUVMuxFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
-	unsigned char m_ucaMergedYUVFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
-	unsigned char m_ucaRotateYUVFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
-	unsigned char m_ucaEncodedFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
-	unsigned char m_ucaMergedData[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
-	unsigned char m_ucaFinalEncodedFrameBuffer[FINAL_ENCODED_FRAME_BUFFER_LEN];
+		CCommonElementsBucket *m_pCommonElementsBucket;
+		CMuxingVideoData *m_CMuxingVideoData;
+		CVideoEncoder *m_VideoEncoder;
+		CColorConverter *m_ColorConverter;
+
+		unsigned char m_ucaBMP32Frame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 4];
+		unsigned char m_ucaBMP24Frame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 3];
+		unsigned char m_ucaYUVMuxFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
+		unsigned char m_ucaMergedYUVFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
+		unsigned char m_ucaRotateYUVFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
+		unsigned char m_ucaEncodedFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
+		unsigned char m_ucaMergedData[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH * 2];
+		unsigned char m_ucaFinalEncodedFrameBuffer[FINAL_ENCODED_FRAME_BUFFER_LEN];
 
 
 
-	int m_YUV420ConvertedLen;
-	int m_iFinalEncodedFrameBufferIndx;
+		int m_YUV420ConvertedLen;
+		int m_iFinalEncodedFrameBufferIndx;
 
-	SmartPointer<CLockHandler> m_pVideoMuxingEncodeSessionMutex;
-};
+		SmartPointer<CLockHandler> m_pVideoMuxingEncodeSessionMutex;
+	};
 
+} //namespace MediaSDK
 
 #endif
