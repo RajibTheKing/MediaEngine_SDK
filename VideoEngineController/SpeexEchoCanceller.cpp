@@ -45,7 +45,7 @@ namespace MediaSDK
 #endif
 	}
 
-
+	
 	int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning)
 	{
 #ifdef USE_AECM
@@ -62,8 +62,8 @@ namespace MediaSDK
 	}
 
 
-	int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning)
-	{
+int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay)
+{
 #ifdef USE_AECM
 
 		if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))

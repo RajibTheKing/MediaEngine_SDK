@@ -345,6 +345,12 @@
     <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\Trace.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioPlayingThread.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
@@ -733,6 +739,12 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\CommonTypes.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\Trace.h">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioPlayingThread.h">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

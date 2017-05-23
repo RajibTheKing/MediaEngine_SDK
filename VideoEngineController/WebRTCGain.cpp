@@ -16,7 +16,7 @@ namespace MediaSDK
 	WebRTCGain::WebRTCGain() : m_bGainEnabled(true)
 	{
 #ifdef USE_AGC
-		LOGT("###GN## #gain# WebRTCGain::WebRTCGain()");
+		LOGT("###GN##55 #gain# WebRTCGain::WebRTCGain()");
 
 		m_iVolume = DEFAULT_GAIN;
 		m_sTempBuf = new short[MAX_AUDIO_FRAME_SAMPLE_SIZE];

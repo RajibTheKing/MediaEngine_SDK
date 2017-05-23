@@ -212,6 +212,8 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/DecoderOpus.cpp \
 			../../VideoEngineController/EncoderPCM.cpp \
 			../../VideoEngineController/EncoderOpus.cpp \
+			../../VideoEngineController/Trace.cpp \
+			../../VideoEngineController/AudioPlayingThread.cpp \
 
 
 			

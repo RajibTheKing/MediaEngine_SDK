@@ -156,6 +156,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorViewer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioPlayingThread.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioResources.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioSessionOptions.cpp" />
     <ClCompile Include="..\..\VideoEngineController\DecoderAAC.cpp" />
@@ -223,6 +224,7 @@
     <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Trace.cpp" />
     <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SpeexEchoCanceller.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingThreadOfCall.cpp" />
@@ -264,6 +266,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorPublisher.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorViewer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorThread.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioPlayingThread.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioResources.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioTypes.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioSessionOptions.h" />
@@ -355,6 +358,7 @@
     <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h" />
     <ClInclude Include="..\..\VideoEngineController\ThreadTools.h" />
     <ClInclude Include="..\..\VideoEngineController\Tools.h" />
+    <ClInclude Include="..\..\VideoEngineController\Trace.h" />
     <ClInclude Include="..\..\VideoEngineController\typedef.h" />
     <ClInclude Include="..\..\VideoEngineController\typedefs.h" />
     <ClInclude Include="..\..\VideoEngineController\VersionController.h" />
