@@ -393,7 +393,7 @@ namespace MediaSDK
 
 #else
 
-		m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_PreviousDecodedFrameConvertedData, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation, 0, 0);
+		m_RenderingBuffer->Queue(m_PreviousFrameNumber, m_PreviousDecodedFrameConvertedData, m_previousDecodedFrameSize, 0, m_PreviousDecodingHeight, m_PreviousDecodingWidth, m_PreviousOrientation, m_naInsetHeights[0], m_naInsetWidths[0]);
 
 		return m_previousDecodedFrameSize;
 
