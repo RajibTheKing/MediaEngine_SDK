@@ -88,6 +88,7 @@
 #define LOG18(...) 
 #define HITLERSS(...)
 #define MR_DEBUG(...)
+#define LOGE_MAIN(...)
 #endif
 
 
