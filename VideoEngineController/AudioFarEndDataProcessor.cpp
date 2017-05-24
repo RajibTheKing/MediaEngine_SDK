@@ -303,10 +303,13 @@ namespace MediaSDK
 		else
 		{
 #ifdef __ANDROID__
-			if (m_pAudioCallSession->GetPlayerGain().get())
+			/*if (m_pAudioCallSession->GetPlayerGain().get())
 			{
-				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
-			}
+				if(m_pAudioCallSession->m_bTraceWillNotBeReceived)
+				{
+					m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
+				}
+			}*/
 #endif
 			HITLER("*STP -> PN: %d, FS: %d", iCurrentPacketNumber, m_nDecodedFrameSize);
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);

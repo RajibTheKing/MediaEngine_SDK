@@ -134,7 +134,7 @@ namespace MediaSDK
 	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 	{
 #ifdef USE_AGC
-		LOGT("###GN## #gain# WebRTCGain::AddGain(), %d", nBufferSize);
+		LOG18("###GN## #gain# WebRTCGain::AddGain(), %d", nBufferSize);
 
 		if (!m_bGainEnabled)
 		{
@@ -159,7 +159,7 @@ namespace MediaSDK
 			
 			//total += outMicLevel; counter++;
 			if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
-				(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 0, &saturationWarning))
+				(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
 			{
 				LOGT("###GN## WebRtcAgc_Process failed");
 				bSucceeded = false;

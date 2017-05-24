@@ -529,9 +529,27 @@ namespace MediaSDK
 				int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
 				{
-					
+					if (GetPlayerGain().get())
+					{
+						//if (m_pAudioCallSession->m_bTraceWillNotBeReceived)
+						{
+							GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
+						}
+					}
+
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
+
+
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
+
+					if (GetPlayerGain().get())
+					{
+						//if (m_pAudioCallSession->m_bTraceWillNotBeReceived)
+						{
+							GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+						}
+					}
+
 					LOG18("Successful farnear");
 #ifdef PCM_DUMP
 					if (EchoCancelledFile)
