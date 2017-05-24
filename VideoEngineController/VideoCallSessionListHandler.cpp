@@ -160,6 +160,13 @@ namespace MediaSDK
 		}
 	}
 
+	int CVideoCallSessionListHandler::GetSessionListSize()
+	{
+		Locker lock(*m_pVideoSessionListMutex);
+
+		return m_mVideoSessionList.size();
+	}
+
 	void CVideoCallSessionListHandler::ResetAllInVideoSessionList()
 	{
 		Locker lock(*m_pVideoSessionListMutex);
