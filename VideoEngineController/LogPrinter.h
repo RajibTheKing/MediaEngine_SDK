@@ -211,7 +211,7 @@ private:
 	static CLogPrinter instance;
     static bool isLogEnable;
 
-	static SmartPointer<CLockHandler> m_pLogPrinterMutex;
+	//static SmartPointer<CLockHandler> m_pLogPrinterMutex;
 
 };
 
