@@ -431,7 +431,7 @@ namespace MediaSDK
 	{
 		return m_pNearEndProcessor->GetBaseOfRelativeTime();
 	}
-
+	int iStartingBufferSize = -1;
 	int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
@@ -448,7 +448,6 @@ namespace MediaSDK
 		//Sleep to maintain 100 ms recording time diff
 		if (m_b1stRecordedData)
 		{
-			Tools::SOSleep(200);
 			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
 			m_b1stRecordedData = false;
@@ -480,11 +479,14 @@ namespace MediaSDK
 			}
 			else
 			{
-				if (CTrace::DetectTrace(psaEncodingAudioData, unLength, 80))
+				m_llDelayFraction = CTrace::DetectTrace(psaEncodingAudioData, unLength, 80);
+				LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
+				if (m_llDelayFraction != -1)
 				{
-					m_llTraceReceivingTime = Tools::CurrentTimestamp();
-					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
-					m_llDelayFraction = m_llDelay % 100;
+					//m_llTraceReceivingTime = Tools::CurrentTimestamp();
+					//m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+					//m_llDelayFraction = m_llDelay % 100;
+					m_llDelayFraction /= 8;
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 					m_bDeleteNextRecordedData = true;
 					m_bTraceRecieved = true;
@@ -492,7 +494,7 @@ namespace MediaSDK
 			}
 
 		}
-		LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
+		//LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||
@@ -515,9 +517,19 @@ namespace MediaSDK
 			if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
 			{
 				long long llTS;
+				if (iStartingBufferSize == -1)
+				{
+					iStartingBufferSize = m_FarendBuffer.GetQueueSize();
+				}
+				LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
+				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+				LOG18("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
+					m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
+
 				int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
 				{
+					
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 					LOG18("Successful farnear");

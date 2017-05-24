@@ -18,7 +18,7 @@ namespace MediaSDK
 		}
 	}
 
-	bool CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)
+	int CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)
 	{
 		for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
 		{
@@ -39,11 +39,11 @@ namespace MediaSDK
 				}
 				if (j == iTraceDetectionLength)
 				{
-					return true;
+					return i;
 				}
 			}
 		}
-		return false;
+		return -1;
 	}
 
 } //namespace MediaSDK
