@@ -30,6 +30,8 @@ namespace MediaSDK
 		m_bAudioPlayingThreadRunning = true;
 		m_bAudioPlayingThreadClosed = false;
 
+		Tools::SOSleep(200);
+
 		while (m_bAudioPlayingThreadRunning)
 		{
 			if (m_pFarEndDataProcessor != nullptr)

@@ -520,7 +520,9 @@ namespace MediaSDK
 				{
 					iStartingBufferSize = m_FarendBuffer.GetQueueSize();
 				}
-				LOG18("m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d", m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved);
+				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+				LOG18("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
+					m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
 
 				int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)

@@ -658,6 +658,8 @@ namespace MediaSDK
 			}
 			if (m_pAudioCallSession->m_bTraceSent)
 			{
+				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+				LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
 				m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, 800, 0);
 				LOG18("ppplaying 0 data");
 			}
@@ -665,7 +667,7 @@ namespace MediaSDK
 			{
 				LOG18("ppplaying 0 data, trace not sent");
 			}
-			Tools::SOSleep(100 - (llAfterTime - llb4Time));
+			Tools::SOSleep(99 - (llAfterTime - llb4Time));
 			return;
 		}
 		else
@@ -685,6 +687,8 @@ namespace MediaSDK
 			}
 			if (m_pAudioCallSession->m_bTraceSent)
 			{
+				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+				LOG18("qpushpop pushing real llCurrentTimeStamp = %lld", llCurrentTimeStamp);
 				m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, 800, 0);
 			}
 
