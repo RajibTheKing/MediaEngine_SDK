@@ -22,15 +22,9 @@ namespace MediaSDK
 
 		void firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[]);
 
-#if defined(DESKTOP_C_SHARP)
 
 		void fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iOrientation);
 
-#else
-
-		void fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iOrientation);
-
-#endif
 
 		void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);
 		void fireAudioEvent(long long friendID, int eventType, int dataLenth, short data[]);
@@ -40,15 +34,9 @@ namespace MediaSDK
 
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 
-#if defined(DESKTOP_C_SHARP)
 
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
 
-#else
-
-		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int));
-
-#endif
 
 		void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int));

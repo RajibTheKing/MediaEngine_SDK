@@ -720,7 +720,7 @@ namespace MediaSDK
 		}
 	}
 
-#if defined(DESKTOP_C_SHARP)
+
 
 	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int))
 	{
@@ -730,17 +730,6 @@ namespace MediaSDK
 		}
 	}
 
-#else
-
-	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
-	{
-		if (NULL != m_pcController)
-		{
-			m_pcController->SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
-		}
-	}
-
-#endif
 
 	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
 	{
