@@ -659,6 +659,8 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, int width)
 {
 	CVideoCallSession* pVideoSession;
+
+	Locker lock(*m_pVideoSendMutex);
     
 	if(height * width > 352 * 288)
 	{
@@ -757,8 +759,8 @@ int CController::TestVideoEffect(const long long llFriendID, int *param, int siz
 
 int CController::SetDeviceDisplayHeightWidth(int height, int width)
 {
-	Locker lock(*m_pVideoSendMutex);
-	Locker lock2(*m_pVideoReceiveMutex);
+	//Locker lock(*m_pVideoSendMutex);
+	//Locker lock2(*m_pVideoReceiveMutex);
 
 	m_nDeviceDisplayHeight = height;
 	m_nDeviceDisplayWidth = width;
@@ -1153,6 +1155,9 @@ void CController::UninitializeLibrary()
 
 		m_pDeviceCapabilityCheckThread->StopDeviceCapabilityCheckThread();
 	}
+
+	Locker lock1(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary remoging sessions");
 
