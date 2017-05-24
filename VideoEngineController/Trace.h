@@ -9,7 +9,7 @@ namespace MediaSDK
 	{
 	public:
 		static void GenerateTrace(short *sBuffer, int iTraceLength);
-		static bool DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength);
+		static int DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength);
 	};
 } //namespace MediaSDK
 

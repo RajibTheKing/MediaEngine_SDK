@@ -480,11 +480,14 @@ namespace MediaSDK
 			}
 			else
 			{
-				if (CTrace::DetectTrace(psaEncodingAudioData, unLength, 80))
+				m_llDelayFraction = CTrace::DetectTrace(psaEncodingAudioData, unLength, 80);
+				LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
+				if (m_llDelayFraction != -1)
 				{
-					m_llTraceReceivingTime = Tools::CurrentTimestamp();
-					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
-					m_llDelayFraction = m_llDelay % 100;
+					//m_llTraceReceivingTime = Tools::CurrentTimestamp();
+					//m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+					//m_llDelayFraction = m_llDelay % 100;
+					m_llDelayFraction /= 8;
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 					m_bDeleteNextRecordedData = true;
 					m_bTraceRecieved = true;
@@ -492,7 +495,7 @@ namespace MediaSDK
 			}
 
 		}
-		LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
+		//LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||
@@ -519,6 +522,7 @@ namespace MediaSDK
 				{
 					iStartingBufferSize = m_FarendBuffer.GetQueueSize();
 				}
+				LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
 				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 				LOG18("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
 					m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
