@@ -449,7 +449,6 @@ namespace MediaSDK
 		//Sleep to maintain 100 ms recording time diff
 		if (m_b1stRecordedData)
 		{
-			Tools::SOSleep(200);
 			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
 			m_b1stRecordedData = false;

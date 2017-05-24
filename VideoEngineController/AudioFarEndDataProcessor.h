@@ -33,6 +33,9 @@ namespace MediaSDK
 		virtual	void ProcessFarEndData() = 0;
 		void ProcessPlayingData();
 
+		bool m_b1stPlaying;
+		long long m_llNextPlayingTime;
+
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 		void StartCallInLive(int nEntityType);
 		void StopCallInLive(int nEntityType);
