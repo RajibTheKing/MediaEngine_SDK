@@ -432,7 +432,7 @@ namespace MediaSDK
 	{
 		return m_pNearEndProcessor->GetBaseOfRelativeTime();
 	}
-
+	int iStartingBufferSize = -1;
 	int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
@@ -516,9 +516,16 @@ namespace MediaSDK
 			if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
 			{
 				long long llTS;
+				if (iStartingBufferSize == -1)
+				{
+					iStartingBufferSize = m_FarendBuffer.GetQueueSize();
+				}
+				LOG18("m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d", m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved);
+
 				int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
 				{
+					
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 					LOG18("Successful farnear");
