@@ -10,7 +10,7 @@
 #define ECHO_ANALYSIS
 
 #ifdef ECHO_ANALYSIS
-FILE *EchoFile;
+FILE *EchoFile = nullptr;
 #define HEADER_SIZE 1
 #define WEBRTC_FAREND 1
 #define SPEEX_FAREND 2
@@ -78,7 +78,11 @@ namespace MediaSDK
 #endif
 
 #ifdef ECHO_ANALYSIS
-		fclose(EchoFile);
+		if (EchoFile)
+		{
+			fclose(EchoFile);
+			EchoFile = nullptr;
+		}
 #endif
 
 	}

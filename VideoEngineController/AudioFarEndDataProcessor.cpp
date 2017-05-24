@@ -304,7 +304,7 @@ namespace MediaSDK
 #ifdef __ANDROID__
 			if (m_pAudioCallSession->GetPlayerGain().get())
 			{
-				//m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
 			}
 #endif
 			HITLER("*STP -> PN: %d, FS: %d", iCurrentPacketNumber, m_nDecodedFrameSize);
