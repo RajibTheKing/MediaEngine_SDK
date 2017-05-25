@@ -25,6 +25,8 @@ namespace MediaSDK
 		bool m_bGainEnabled;
 		short *m_sTempBuf = nullptr;
 		int m_iVolume;
+		int m_iSkipFrames;
+
 
 		void* AGC_instance;
 

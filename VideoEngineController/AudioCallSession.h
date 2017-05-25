@@ -41,7 +41,7 @@ namespace MediaSDK
 
 //#define AUDIO_SELF_CALL
 //#define DUMP_FILE
-#define PCM_DUMP
+//#define PCM_DUMP
 
 
 //#define FIRE_ENC_TIME

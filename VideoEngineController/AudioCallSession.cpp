@@ -531,10 +531,7 @@ namespace MediaSDK
 				{
 					if (GetPlayerGain().get())
 					{
-						//if (m_pAudioCallSession->m_bTraceWillNotBeReceived)
-						{
-							GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
-						}
+						GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
 					}
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
@@ -544,10 +541,7 @@ namespace MediaSDK
 
 					if (GetPlayerGain().get())
 					{
-						//if (m_pAudioCallSession->m_bTraceWillNotBeReceived)
-						{
-							GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-						}
+						GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 					}
 
 					LOG18("Successful farnear");

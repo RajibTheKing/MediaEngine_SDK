@@ -7,7 +7,7 @@
 //#include "Filt.h"
 //#define USE_LOW_PASS
 
-#define ECHO_ANALYSIS
+//#define ECHO_ANALYSIS
 
 #ifdef ECHO_ANALYSIS
 FILE *EchoFile = nullptr;

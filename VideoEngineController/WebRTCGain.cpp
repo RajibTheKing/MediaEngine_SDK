@@ -10,11 +10,23 @@
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 #endif
 
+
 namespace MediaSDK
 {
+#ifdef GAIN_DUMP
+	FILE* gainIn = nullptr;
+	FILE* gainOut = nullptr;
+#endif
 
 	WebRTCGain::WebRTCGain() : m_bGainEnabled(true)
 	{
+#ifdef GAIN_DUMP
+		gainIn = fopen("/sdcard/gain.input.pcm", "wb");
+		gainOut = fopen("/sdcard/gain.output.pcm", "wb");
+#endif
+
+		m_iSkipFrames = 20; //don't add gain for first 20 frames.
+
 #ifdef USE_AGC
 		LOGT("###GN##55 #gain# WebRTCGain::WebRTCGain()");
 
@@ -48,6 +60,11 @@ namespace MediaSDK
 		{
 			delete m_sTempBuf;
 		}
+#endif
+		m_iSkipFrames = 0;
+#ifdef GAIN_DUMP
+		fclose(gainIn);
+		fclose(gainOut);
 #endif
 	}
 
@@ -113,10 +130,16 @@ namespace MediaSDK
 	{
 #ifdef USE_AGC
 
+
 		if (!m_bGainEnabled)
 		{
 			return false;
 		}
+
+		if(m_iSkipFrames > 0){
+			return true;
+		}
+
 		LOGT("###GN## #gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
 
 		for (int i = 0; i < nBufferSize; i += AGC_SAMPLES_IN_FRAME)
@@ -139,7 +162,11 @@ namespace MediaSDK
 		{
 			return false;
 		}
-		LOGT("###GN## #gain# WebRTCGain::AddGain(), %d", nBufferSize);
+
+		if(m_iSkipFrames > 0){
+			m_iSkipFrames--;
+			return true;
+		}
 
 		uint8_t saturationWarning;
 		int32_t inMicLevel;
@@ -166,7 +193,17 @@ namespace MediaSDK
 			}
 		}
 
+#ifdef GAIN_DUMP
+		fwrite(sInBuf, 2, nBufferSize, gainIn);
+#endif
+
 		memcpy(sInBuf, m_sTempBuf, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
+
+#ifdef GAIN_DUMP
+		fwrite(sInBuf, 2, nBufferSize, gainOut);
+#endif
+
+		LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d", nBufferSize, m_iVolume);
 
 		//LOGT("###GN## addgain done with : %d volumeaverage:%d", bSucceeded, (int)(total/counter));
 		return bSucceeded;

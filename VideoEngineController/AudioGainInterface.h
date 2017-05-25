@@ -4,7 +4,7 @@
 #include "AudioMacros.h"
 
 #define MAX_GAIN 10
-#define DEFAULT_GAIN 3
+#define DEFAULT_GAIN 5
 
 namespace MediaSDK
 {
