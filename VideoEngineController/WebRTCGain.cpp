@@ -112,12 +112,12 @@ namespace MediaSDK
 	bool WebRTCGain::AddFarEnd(short *sInBuf, int nBufferSize)
 	{
 #ifdef USE_AGC
-		LOGT("###GN## #gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
 
 		if (!m_bGainEnabled)
 		{
 			return false;
 		}
+		LOGT("###GN## #gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
 
 		for (int i = 0; i < nBufferSize; i += AGC_SAMPLES_IN_FRAME)
 		{
@@ -134,12 +134,12 @@ namespace MediaSDK
 	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 	{
 #ifdef USE_AGC
-		LOG18("###GN## #gain# WebRTCGain::AddGain(), %d", nBufferSize);
 
 		if (!m_bGainEnabled)
 		{
 			return false;
 		}
+		LOGT("###GN## #gain# WebRTCGain::AddGain(), %d", nBufferSize);
 
 		uint8_t saturationWarning;
 		int32_t inMicLevel;
