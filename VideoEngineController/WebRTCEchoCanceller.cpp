@@ -29,10 +29,9 @@ namespace MediaSDK
 
 #ifdef USE_AECM
 #ifdef ECHO_ANALYSIS
-		m_bNearEndingOrFarEnding = false;
 		EchoFile = fopen("/sdcard/endSignal.pcma3", "wb");
 #endif
-
+		m_bNearEndingOrFarEnding = false;
 
 		int iAECERR = -1;
 
