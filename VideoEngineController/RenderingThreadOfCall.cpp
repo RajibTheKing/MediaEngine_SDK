@@ -200,13 +200,9 @@ namespace MediaSDK
 
 						m_cRenderTimeCalculator.CalculateFPS("renderingFPs: ");
 
-#if defined(DESKTOP_C_SHARP)
 
 						m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, 0, 0, orientation);
 
-#else
-						m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, orientation);
-#endif
 
 					}
 				}

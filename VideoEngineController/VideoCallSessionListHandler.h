@@ -31,6 +31,7 @@ namespace MediaSDK
 		bool IsVideoSessionExist(long long llFriendName);
 		void ClearAllFromVideoSessionList();
 		void ResetAllInVideoSessionList();
+		int GetSessionListSize();
 
 	private:
 

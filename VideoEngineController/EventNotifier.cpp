@@ -11,15 +11,8 @@ namespace MediaSDK
 
 	void(*notifyClientWithPacketCallback)(long long, unsigned char*, int) = NULL;
 
-#if defined(DESKTOP_C_SHARP)
-
 	void(*notifyClientWithVideoDataCallback)(long long, int, unsigned char*, int, int, int, int, int, int) = NULL;
 
-#else
-
-	void(*notifyClientWithVideoDataCallback)(long long, int, unsigned char*, int, int, int, int) = NULL;
-
-#endif
 
 	void(*notifyClientWithVideoNotificationCallback)(long long, int) = NULL;
 	void(*notifyClientWithNetworkStrengthNotificationCallback)(long long, int) = NULL;
@@ -42,7 +35,6 @@ namespace MediaSDK
 		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent 2");
 	}
 
-#if defined(DESKTOP_C_SHARP)
 
 	void CEventNotifier::fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iDeviceOrientation)
 	{
@@ -51,16 +43,6 @@ namespace MediaSDK
 		notifyClientWithVideoDataCallback(friendID, eventType, data, dataLenth, iVideoHeight, iVideoWidth, nInsetHeight, nInsetWidth, iDeviceOrientation);
 	}
 
-#else
-
-	void CEventNotifier::fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int iDeviceOrientation)
-	{
-		//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber) + " iOrientation --> " + Tools::IntegertoStringConvert(iDeviceOrientation));
-
-		notifyClientWithVideoDataCallback(friendID, eventType, data, dataLenth, iVideoHeight, iVideoWidth, iDeviceOrientation);
-	}
-
-#endif
 
 	void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
 	{
@@ -140,22 +122,12 @@ namespace MediaSDK
 		notifyClientWithPacketCallback = callBackFunctionPointer;
 	}
 
-#if defined(DESKTOP_C_SHARP)
 
 	void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int))
 	{
 		notifyClientWithVideoDataCallback = callBackFunctionPointer;
 	}
 
-#else
-
-	void CEventNotifier::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int))
-	{
-		notifyClientWithVideoDataCallback = callBackFunctionPointer;
-	}
-
-
-#endif
 
 	void CEventNotifier::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int))
 	{

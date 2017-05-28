@@ -314,7 +314,11 @@ CVideoCallSession* CController::StartTestVideoCall(const long long& lFriendID, i
 
 bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly)
 {
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called 1 ID %lld", lFriendID);
+
 	Locker lock1(*m_pVideoStartMutex);
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called 2 ID %lld", lFriendID);
 
     if(iVideoHeight * iVideoWidth > 352 * 288)
     {
@@ -353,7 +357,11 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
     //Locker lock1(*m_pVideoSendMutex);
     //Locker lock2(*m_pVideoReceiveMutex);
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called checking session ID %lld", lFriendID);
+
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall session size %d bExist %d ID %lld", m_pCommonElementsBucket->m_pVideoCallSessionList->GetSessionListSize(), bExist, lFriendID);
 
 	if (!bExist)
 	{
@@ -369,15 +377,19 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
         
-        
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called session created ID %lld", lFriendID);
 
 		return true;
 	}
 	else
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called create failed ID %lld", lFriendID);
+
        // pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
 		return false;
-	}	
+	}
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall done ID %lld", lFriendID);
 }
 
 int CController::EncodeVideoFrame(const long long& lFriendID, unsigned char *in_data, unsigned int in_size)
@@ -647,6 +659,8 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, int width)
 {
 	CVideoCallSession* pVideoSession;
+
+	Locker lock(*m_pVideoSendMutex);
     
 	if(height * width > 352 * 288)
 	{
@@ -745,8 +759,8 @@ int CController::TestVideoEffect(const long long llFriendID, int *param, int siz
 
 int CController::SetDeviceDisplayHeightWidth(int height, int width)
 {
-	Locker lock(*m_pVideoSendMutex);
-	Locker lock2(*m_pVideoReceiveMutex);
+	//Locker lock(*m_pVideoSendMutex);
+	//Locker lock2(*m_pVideoReceiveMutex);
 
 	m_nDeviceDisplayHeight = height;
 	m_nDeviceDisplayWidth = width;
@@ -760,8 +774,11 @@ int CController::SetBitRate(const long long& lFriendID, int bitRate)
 
 int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 {
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability called 1 ID %lld", lFriendID);
 
 	Locker lock1(*m_pVideoStartMutex);
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability called 2 ID %lld", lFriendID);
 
 	if (m_bDeviceCapabilityRunning == true) return -1;
 	m_bDeviceCapabilityRunning = true;
@@ -809,8 +826,12 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
 		}
 	}
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability queueing ID %lld", lFriendID);
+
 	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability done ID %lld", lFriendID);
+	
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability start instruction queued");
     
     return 1;
@@ -850,19 +871,31 @@ void CController::InterruptOccured(const long long lFriendID)
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::InterruptOccured called");
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured called 1 ID %lld", lFriendID);
+
 	Locker lock(*m_pVideoSendMutex);
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured called 2 ID %lld", lFriendID);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured size of ID %lld list size %d bExist %d", lFriendID, m_pCommonElementsBucket->m_pVideoCallSessionList->GetSessionListSize(), bExist);
+
 	if (bExist)
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "CController::InterruptOccured got session");
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured called 3 ID %lld", lFriendID);
 
 		if (pVideoSession)
 		{
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured called 4 ID %lld", lFriendID);
+
 			pVideoSession->InterruptOccured();
+
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured called 5 ID %lld", lFriendID);
 		}
 	}
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured done ID %lld", lFriendID);
 }
 
 void CController::InterruptOver(const long long lFriendID)
@@ -871,19 +904,33 @@ void CController::InterruptOver(const long long lFriendID)
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::InterruptOver called");
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver called 1 ID %lld", lFriendID);
+
 	Locker lock(*m_pVideoSendMutex);
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver called 2 ID %lld", lFriendID);
+
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver size of ID %lld list size %d bExist %d", lFriendID, m_pCommonElementsBucket->m_pVideoCallSessionList->GetSessionListSize(), bExist);
 
 	if (bExist)
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::InterruptOver got session");
 
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver called 3 ID %lld", lFriendID);
+
 		if (pVideoSession)
 		{
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver called 4 ID %lld", lFriendID);
+
 			pVideoSession->InterruptOver();
+
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver called 5ID %lld", lFriendID);
 		}
 	}
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver done ID %lld", lFriendID);
 }
 
 void CController::initializeEventHandler()
@@ -977,6 +1024,8 @@ bool CController::StopVideoCall(const long long& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called. --> friendID = " + m_Tools.getText(lFriendID));
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall called 1 ID %lld", lFriendID);
     
     Locker lock1(*m_pVideoSendMutex);
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
@@ -984,8 +1033,12 @@ bool CController::StopVideoCall(const long long& lFriendID)
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
     
     CVideoCallSession *m_pSession;
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall called 2 ID %lld", lFriendID);
     
     m_pSession = m_pCommonElementsBucket->m_pVideoCallSessionList->GetFromVideoSessionList(lFriendID);
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall session got %d, size of list %d", m_pSession, m_pCommonElementsBucket->m_pVideoCallSessionList->GetSessionListSize());
 
     if (NULL == m_pSession)
     {
@@ -993,12 +1046,17 @@ bool CController::StopVideoCall(const long long& lFriendID)
         return false;
     }
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall removing session ID %lld", lFriendID);
+
     bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
 
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
     
     
     m_bLiveCallRunning = false;
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall session removed ID %lld", lFriendID);
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall done ID %lld", lFriendID);
     
     return bReturnedValue;
 }
@@ -1089,36 +1147,39 @@ int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 void CController::UninitializeLibrary()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary called 1");
 
 	if (NULL != m_pDeviceCapabilityCheckThread)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary called 2");
+
 		m_pDeviceCapabilityCheckThread->StopDeviceCapabilityCheckThread();
 	}
 
+	Locker lock1(*m_pVideoSendMutex);
+	Locker lock2(*m_pVideoReceiveMutex);
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary remoging sessions");
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary number of sessions %d", m_pCommonElementsBucket->m_pVideoCallSessionList->GetSessionListSize());
+
 	m_pCommonElementsBucket->m_pVideoCallSessionList->ClearAllFromVideoSessionList();
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary sessions removed");
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary done");
 }
 
 void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int))
 {
     m_EventNotifier.SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 }
-
-#if defined(DESKTOP_C_SHARP)
-
+    
 void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }
 
-#else
-
-void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int))
-{
-	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
-}
-
-#endif
 
 void CController::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int))
 {

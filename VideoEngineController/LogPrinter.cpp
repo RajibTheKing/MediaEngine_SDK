@@ -18,6 +18,8 @@ namespace MediaSDK
 
 	bool CLogPrinter::isLogEnable;
 
+	//SmartPointer<CLockHandler> CLogPrinter::m_pLogPrinterMutex;
+
 	CLogPrinter::CLogPrinter()
 	{
 		Priority maxPriority = CLogPrinter::NONE;
@@ -129,6 +131,27 @@ namespace MediaSDK
 		}
 	}
 
+	void CLogPrinter::LogWithCheck(int isLogEnabled, const char *format, ...)
+	{
+		//Locker lock(*m_pLogPrinterMutex);
+
+		if (isLogEnabled)
+		{
+			std::string str;
+			va_list vargs;
+			va_start(vargs, format);
+			Argument_to_String(str, format, vargs);
+			va_end(vargs);
+
+
+#if defined(__ANDROID__)
+			LOGE_MAIN("%s", str.c_str());
+#elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP) || defined(TARGET_OS_IPHONE)
+			printf("%s\n", str.c_str());
+#endif
+		}	
+	}
+
 	void CLogPrinter::Log(const char *format, ...)
 	{
 		std::string str;
@@ -139,7 +162,7 @@ namespace MediaSDK
 
 
 #if defined(__ANDROID__)
-		LOGE("%s", str.c_str());
+		LOGE_MAIN("%s", str.c_str());
 #elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP) || defined(TARGET_OS_IPHONE)
 		printf("%s\n", str.c_str());
 #endif
@@ -287,7 +310,7 @@ namespace MediaSDK
 
 #elif defined(__ANDROID__)
 
-			LOGE("OperatTime: %lld ---> %s ", timeDiff, message.c_str());
+			LOGE_MAIN("OperatTime: %lld ---> %s ", timeDiff, message.c_str());
 #elif defined(DESKTOP_C_SHARP)
 			printf("OperatTimeLog: %lld %s\n", timeDiff, message.c_str());
 #endif
@@ -329,7 +352,7 @@ namespace MediaSDK
 
 #if defined(__ANDROID__)
 
-				LOGE("%s :: %s", PRIORITY_NAMES[priority].c_str(), message.c_str());
+				LOGE_MAIN("%s :: %s", PRIORITY_NAMES[priority].c_str(), message.c_str());
 
 #elif defined(TARGET_OS_WINDOWS_PHONE) || defined(DESKTOP_C_SHARP) || defined(TARGET_OS_IPHONE)
 
@@ -361,6 +384,24 @@ namespace MediaSDK
 
 	}
 
+	void CLogPrinter::WriteFileLogNew(int isLogEnabled, const std::string message)
+	{
+		//Locker lock(*m_pLogPrinterMutex);
+
+#ifdef __ANDROID__
+
+		if (isLogEnabled)
+		{
+
+			ostream& stream = instance.fileStream.is_open() ? instance.fileStream : std::cout;
+			stream << GetDateTime() << ": " << message << endl;
+
+		}
+
+#endif
+
+	}
+
 	void CLogPrinter::WriteForQueueTime(Priority priority, const std::string message)
 	{
 		if (isLogEnable)
@@ -375,7 +416,7 @@ namespace MediaSDK
 
 #elif defined(__ANDROID__)
 
-			LOGE("QueueTime: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
+			LOGE_MAIN("QueueTime: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
 
 #elif defined(DESKTOP_C_SHARP)
 			printf("QueueTime:  %s\n", message.c_str());
@@ -399,7 +440,7 @@ namespace MediaSDK
 
 #elif defined(__ANDROID__)
 
-			LOGE("PacketLoss: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
+			LOGE_MAIN("PacketLoss: %s ---> %s ",PRIORITY_NAMES[priority].c_str(), message.c_str());
 #elif defined(DESKTOP_C_SHARP)
 			printf("PacketLoss: %s\n", message.c_str());
 

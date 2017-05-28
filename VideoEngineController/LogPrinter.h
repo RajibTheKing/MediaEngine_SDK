@@ -2,6 +2,8 @@
 #ifndef IPV_LOG_PRINTER_H
 #define IPV_LOG_PRINTER_H
 
+#include "CommonTypes.h"
+
 //#define _CRT_SECURE_NO_WARNINGS
 
 
@@ -29,6 +31,7 @@
 
 #define WRITE_TO_LOG_FILE		OFF
 
+#define API_FLOW_CHECK_LOG		OFF
 #define PACKET_DETAILS_LOG		OFF
 #define INSTENT_TEST_LOG_2		OFF
 #define INSTENT_TEST_LOG		OFF
@@ -51,6 +54,9 @@
 #include <android/log.h>
 
 #define LOG_TAG "LibraryLog"
+
+#define LOGE_MAIN(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
 #define LOGF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGEF(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -65,6 +71,7 @@
 #define LOG18(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define HITLERSS(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define MR_DEBUG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
 #else
 
 #define LOG_AAC(...)  
@@ -81,6 +88,7 @@
 #define LOG18(...) 
 #define HITLERSS(...)
 #define MR_DEBUG(...)
+#define LOGE_MAIN(...)
 #endif
 
 
@@ -175,6 +183,7 @@ public:
 	static std::string GetDateTime();
     
     static void Log(const char *format, ...);
+	static void LogWithCheck(int isLogEnabled, const char *format, ...);
     static void Argument_to_String(string &dst, const char *format, va_list ap);
     
 	static void Write(Priority priority, const std::string message);
@@ -188,6 +197,7 @@ public:
 
 	static long long WriteLog(Priority priority, int isLogEnabled, const std::string message = "", bool calculatedTime = false, long long prevTime = 0);
 	static void WriteFileLog(Priority priority, int isLogEnabled, const std::string message);
+	static void WriteFileLogNew(int isLogEnabled, const std::string message);
 
 	static long long GetTimeDifference(long long prevTime);
 
@@ -211,6 +221,12 @@ private:
 #define CLogPrinter_WriteLog(...) CLogPrinter::WriteLog(__VA_ARGS__)
 #else
 #define CLogPrinter_WriteLog(...) 0
+#endif
+
+#ifdef LOG_ENABLED
+#define CLogPrinter_LOG(...) CLogPrinter::LogWithCheck(__VA_ARGS__)
+#else
+#define CLogPrinter_LOG(...) 0
 #endif
 
 #ifdef LOG_ENABLED

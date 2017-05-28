@@ -738,7 +738,7 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\CommonTypes.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\Trace.h">
       <Filter>Source Files\AudioEngine</Filter>

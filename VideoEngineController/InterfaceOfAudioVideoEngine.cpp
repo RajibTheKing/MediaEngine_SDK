@@ -113,6 +113,8 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 1 ID %lld", llFriendID);
+
 		m_llTimeOffset = -1;
 
 		if (NULL == m_pcController)
@@ -120,16 +122,24 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
+
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType);
 
 		if (bReturnedValue)
-			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType);
+			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming StartVideoCall completed ID %lld", llFriendID);
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming done ID %lld", llFriendID);
 
 		return bReturnedValue;
 	}
 
 	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 1 ID %lld", llFriendID);
+
 		m_llTimeOffset = -1;
 
 		if (NULL == m_pcController)
@@ -137,16 +147,24 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
+
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER);
 
 		if (bReturnedValue)
-			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER);
+			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
 
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView StartVideoCall completed ID %lld", llFriendID);
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView done ID %lld", llFriendID);
+			
 		return bReturnedValue;
 	}
 
 	bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork, int nNetworkType, bool bAudioOnlyLive)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall called 1 ID %lld", llFriendID);
+
 		m_llTimeOffset = -1;
 		bool bSelfViewOnly = false;
 
@@ -155,6 +173,8 @@ namespace MediaSDK
 			return false;
 		}
 
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall called 2 ID %lld", llFriendID);
+
 		m_pcController->m_pCommonElementsBucket->SetPacketSizeOfNetwork(packetSizeOfNetwork);
 
 		if (llFriendID == SESSION_ID_FOR_SELF_VIEW)
@@ -162,6 +182,8 @@ namespace MediaSDK
 
 		bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, bAudioOnlyLive, bSelfViewOnly);
 
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall done ID %lld", llFriendID);
+		
 		return bReturnedValue;
 	}
 
@@ -339,30 +361,6 @@ namespace MediaSDK
 				}
 				else
 					return 0;
-
-				/*
-				if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
-				{
-				iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 1, unLength - 1); //Skip First byte for Video Data
-				}
-				else if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
-				{
-				iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data + 1, unLength - 1, 0, NULL, vMissingFrames); //Skip First byte for Audio Data
-				}
-				else
-				return 0;
-				*/
-			}
-			else if (mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO)
-			{
-				if (VIDEO_PACKET_MEDIA_TYPE == (int)in_data[1])
-				{
-					iReturnedValue = m_pcController->PushPacketForDecoding(llFriendID, in_data + 2, unLength - 2); //Skip First byte for Video Data
-				}
-				else
-				{
-					iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data + 1, unLength - 1, 0, NULL, vMissingFrames); //Skip First byte for Audio Data
-				}
 			}
 		}
 
@@ -480,13 +478,19 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability called 1 ID %lld", lFriendID);
+
 		if (NULL == m_pcController)
 		{
 			return false;
 		}
 
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability called 2 ID %lld", lFriendID);
+
 		int iReturnedValue = m_pcController->CheckDeviceCapability(lFriendID, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability done ID %lld", lFriendID);
+		
 		return iReturnedValue;
 	}
 
@@ -517,12 +521,18 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StopVideoCall(const IPVLongType llFriendID)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StopVideoCall called 1 ID %lld", llFriendID);
+
 		if (NULL == m_pcController)
 		{
 			return false;
 		}
 
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StopVideoCall called 2 ID %lld", llFriendID);
+
 		bool bReturnedValue = m_pcController->StopVideoCall(llFriendID);
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StopVideoCall done ID %lld", llFriendID);
 
 		return bReturnedValue;
 	}
@@ -541,10 +551,16 @@ namespace MediaSDK
 
 	void CInterfaceOfAudioVideoEngine::UninitializeLibrary()
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::UninitializeLibrary called 1");
+
 		if (NULL != m_pcController)
 		{
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::UninitializeLibrary called 2");
+
 			m_pcController->UninitializeLibrary();
 		}
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::UninitializeLibrary done");
 	}
 
 	void CInterfaceOfAudioVideoEngine::SetLoggerPath(std::string strLoggerPath)
@@ -646,18 +662,30 @@ namespace MediaSDK
 
 	void CInterfaceOfAudioVideoEngine::InterruptOccured(const LongLong lFriendID)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::InterruptOccured called 1 ID %lld", lFriendID);
+
 		if (NULL != m_pcController)
 		{
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::InterruptOccured called 2 ID %lld", lFriendID);
+
 			m_pcController->InterruptOccured(lFriendID);
 		}
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::InterruptOccured done ID %lld", lFriendID);
 	}
 
 	void CInterfaceOfAudioVideoEngine::InterruptOver(const LongLong lFriendID)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::InterruptOver called 1 ID %lld", lFriendID);
+
 		if (NULL != m_pcController)
 		{
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::InterruptOver called 2 ID %lld", lFriendID);
+
 			m_pcController->InterruptOver(lFriendID);
 		}
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::InterruptOver done ID %lld", lFriendID);
 	}
 
 	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(LongLong, unsigned char*, int))
@@ -668,7 +696,7 @@ namespace MediaSDK
 		}
 	}
 
-#if defined(DESKTOP_C_SHARP)
+
 
 	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int, int, int))
 	{
@@ -678,17 +706,6 @@ namespace MediaSDK
 		}
 	}
 
-#else
-
-	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(LongLong, int, unsigned char*, int, int, int, int))
-	{
-		if (NULL != m_pcController)
-		{
-			m_pcController->SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
-		}
-	}
-
-#endif
 
 	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(LongLong, int))
 	{

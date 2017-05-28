@@ -208,12 +208,7 @@ namespace MediaSDK
 						if (m_pcVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
 						{
 
-#if defined(DESKTOP_C_SHARP)
-
 							m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, insetHeight, insetWidth, orientation);
-#else
-							m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, orientation);
-#endif
 						}
 
 						//                    llPrevTimeStamp = m_Tools.CurrentTimestamp();
@@ -226,13 +221,9 @@ namespace MediaSDK
 
 						m_cRenderTimeCalculator.CalculateFPS("renderingFPs: ");
 
-#if defined(DESKTOP_C_SHARP)
 
 						m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, 0, 0, orientation);
 
-#else
-						m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_CALL, nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, orientation);
-#endif
 
 					}
 
