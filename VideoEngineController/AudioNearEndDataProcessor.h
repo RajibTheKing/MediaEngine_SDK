@@ -38,16 +38,14 @@ namespace MediaSDK
 
 		long long GetBaseOfRelativeTime();
 
-		void SetDataReadyCallback(OnDataReadyToSendCB cbDataReady)
+		void SetDataReadyCallback(DataReadyListenerInterface* pDataReady)
 		{
-			m_cbOnDataReady = cbDataReady;
-			MR_DEBUG("#ptt# SetDataReadyCallback: %x", m_cbOnDataReady);
+			m_pDataReadyListener = pDataReady;
 		}
 
-		void SetEventCallback(OnFirePacketEventCB cbOnEvent)
+		void SetEventCallback(PacketEventListener* pEventListener)
 		{
-			m_cbOnPacketEvent = cbOnEvent;
-			MR_DEBUG("#ptt# SetEventCallback: %x", m_cbOnPacketEvent);
+			m_pPacketEventListener = pEventListener;
 		}
 
 		virtual void ProcessNearEndData() = 0;
@@ -99,8 +97,8 @@ namespace MediaSDK
 		//SmartPointer<std::thread> m_pAudioEncodingThread;
 		SmartPointer<CLockHandler> m_pAudioEncodingMutex;
 
-		OnDataReadyToSendCB m_cbOnDataReady;
-		OnFirePacketEventCB m_cbOnPacketEvent;
+		DataReadyListenerInterface* m_pDataReadyListener;
+		PacketEventListener* m_pPacketEventListener;
 
 	protected:
 

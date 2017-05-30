@@ -68,7 +68,11 @@ class AudioFarEndProcessorThread;
 class CVoice;
 #endif
 
-class CAudioCallSession
+class CAudioCallSession : public DataReadyListenerInterface,
+						  public PacketEventListener,
+						  public DataEventListener,
+						  public NetworkChangeListener,
+						  public AudioAlarmListener
 {
 private:
 	bool m_bIsAECMFarEndThreadBusy;
@@ -104,12 +108,12 @@ public:
 	void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
 
-	static void SetSendFunction(SendFunctionPointerType cbClientSendFunc)
+	void SetSendFunction(SendFunctionPointerType cbClientSendFunc)
 	{
 		m_cbClientSendFunction = cbClientSendFunc;
 	}
 
-	static void SetEventNotifier(CEventNotifier *pEventNotifier)
+	void SetEventNotifier(CEventNotifier *pEventNotifier)
 	{
 		m_pEventNotifier = pEventNotifier;
 	}
@@ -139,7 +143,7 @@ private:
 
 	int m_iRole;
     Tools m_Tools;
-	static LongLong m_FriendID;
+	LongLong m_FriendID;
 	bool m_bEchoCancellerEnabled;
 
     CCommonElementsBucket* m_pCommonElementsBucket;
@@ -157,14 +161,15 @@ private:
 
 	int m_nCallInLiveType;
 
-	inline static void OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength);
-	inline static void OnPacketEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer);
-	inline static void OnDataEventCallback(int eventType, size_t dataLength, short* dataBuffer);
-	inline static void OnNetworkChangeCallback(int eventType);
-	inline static void OnAudioAlarmCallback(int eventType);
+	void OnDataReadyToSend(int mediaType, unsigned char* dataBuffer, size_t dataLength);
 
-	static SendFunctionPointerType m_cbClientSendFunction;
-	static CEventNotifier* m_pEventNotifier;
+	void FirePacketEvent(int eventType, size_t dataLength, unsigned char* dataBuffer);
+	void FireDataEvent(int eventType, size_t dataLength, short* dataBuffer);
+	void FireNetworkChange(int eventType);
+	void FireAudioAlarm(int eventType);
+
+	SendFunctionPointerType m_cbClientSendFunction;
+	CEventNotifier* m_pEventNotifier;
 
 #ifdef USE_VAD
 	CVoice *m_pVoice;

@@ -46,10 +46,6 @@
 namespace MediaSDK
 {
 
-	CEventNotifier* CAudioCallSession::m_pEventNotifier = nullptr;
-	SendFunctionPointerType CAudioCallSession::m_cbClientSendFunction = nullptr;
-	LongLong CAudioCallSession::m_FriendID = -1;
-
 	CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources) :
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
@@ -63,6 +59,9 @@ namespace MediaSDK
 		m_cFarEndProcessorThread(nullptr)
 	{
 		SetResources(audioResources);
+
+		SetSendFunction(pSharedObject->GetSendFunctionPointer());
+		SetEventNotifier(pSharedObject->m_pEventNotifier);
 
 		m_FriendID = llFriendID;
 
@@ -196,8 +195,8 @@ namespace MediaSDK
 			m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, &m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 		}
 
-		m_pNearEndProcessor->SetDataReadyCallback((OnDataReadyToSendCB)OnDataReadyCallback);
-		m_pNearEndProcessor->SetEventCallback((OnFirePacketEventCB)OnPacketEventCallback);
+		m_pNearEndProcessor->SetDataReadyCallback(this);
+		m_pNearEndProcessor->SetEventCallback(this);
 
 		m_cNearEndProcessorThread = new AudioNearEndProcessorThread(m_pNearEndProcessor);
 		if (m_cNearEndProcessorThread != nullptr)
@@ -231,7 +230,7 @@ namespace MediaSDK
 			m_pFarEndProcessor = new FarEndProcessorCall(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
 		}
 
-		m_pFarEndProcessor->SetEventCallback((OnFireDataEventCB)OnDataEventCallback, (OnFireNetworkChangeCB)OnNetworkChangeCallback, (OnFireAudioAlarmCB)OnAudioAlarmCallback);
+		m_pFarEndProcessor->SetEventCallback(this, this, this);
 
 		m_cFarEndProcessorThread = new AudioFarEndProcessorThread(m_pFarEndProcessor);
 		if (m_cFarEndProcessorThread != nullptr)
@@ -477,28 +476,27 @@ namespace MediaSDK
 	}
 
 
-	void CAudioCallSession::OnDataReadyCallback(int mediaType, unsigned char* dataBuffer, size_t dataLength)
+	void CAudioCallSession::OnDataReadyToSend(int mediaType, unsigned char* dataBuffer, size_t dataLength)
 	{
-		//	MR_DEBUG("#ptt# CAudioCallSession::OnDataReadyCallback, %x", m_cbClientSendFunction);
 		m_cbClientSendFunction(CAudioCallSession::m_FriendID, mediaType, dataBuffer, dataLength, 0, std::vector< std::pair<int, int> >());
 	}
 
-	void CAudioCallSession::OnPacketEventCallback(int eventType, size_t dataLength, unsigned char* dataBuffer)
+	void CAudioCallSession::FirePacketEvent(int eventType, size_t dataLength, unsigned char* dataBuffer)
 	{
 		m_pEventNotifier->fireAudioPacketEvent(eventType, dataLength, dataBuffer);
 	}
 
-	void CAudioCallSession::OnDataEventCallback(int eventType, size_t dataLength, short* dataBuffer)
+	void CAudioCallSession::FireDataEvent(int eventType, size_t dataLength, short* dataBuffer)
 	{
 		m_pEventNotifier->fireAudioEvent(m_FriendID, eventType, dataLength, dataBuffer);
 	}
 
-	void CAudioCallSession::OnNetworkChangeCallback(int eventType)
+	void CAudioCallSession::FireNetworkChange(int eventType)
 	{
 		m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, eventType);
 	}
 
-	void CAudioCallSession::OnAudioAlarmCallback(int eventType)
+	void CAudioCallSession::FireAudioAlarm(int eventType)
 	{
 		m_pEventNotifier->fireAudioAlarm(eventType, 0, 0);
 	}
