@@ -32,13 +32,13 @@ namespace MediaSDK
 
 		Tools::SOSleep(200);
 
-		while (m_bAudioPlayingThreadRunning)
+		/*while (m_bAudioPlayingThreadRunning)
 		{
 			if (m_pFarEndDataProcessor != nullptr)
 			{
 				m_pFarEndDataProcessor->ProcessPlayingData();
 			}
-		}
+		}*/
 
 		m_bAudioPlayingThreadClosed = true;
 	}

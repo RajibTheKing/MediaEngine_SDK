@@ -34,7 +34,6 @@
 #include "AudioFarEndProcessorChannel.h"
 #include "AudioFarEndProcessorCall.h"
 #include "AudioFarEndProcessorThread.h"
-#include "AudioPlayingThread.h"
 #include "Trace.h"
 
 #include <sstream>
@@ -66,8 +65,7 @@ namespace MediaSDK
 		m_bIsPublisher(true),
 		m_AudioNearEndBuffer(AUDIO_ENCODING_BUFFER_SIZE),
 		m_cNearEndProcessorThread(nullptr),
-		m_cFarEndProcessorThread(nullptr),
-		m_cPlayingThread(nullptr)
+		m_cFarEndProcessorThread(nullptr)
 	{
 		SetResources(audioResources);
 
@@ -166,12 +164,6 @@ namespace MediaSDK
 		{
 			delete m_cFarEndProcessorThread;
 			m_cFarEndProcessorThread = nullptr;
-		}
-
-		if (m_cPlayingThread != nullptr)
-		{
-			delete m_cPlayingThread;
-			m_cPlayingThread = nullptr;
 		}
 
 		if (m_pNearEndProcessor)
@@ -293,14 +285,6 @@ namespace MediaSDK
 			m_cFarEndProcessorThread->StartFarEndThread();
 		}
 
-		if (!m_bLiveAudioStreamRunning)
-		{
-			m_cPlayingThread = new AudioPlayingThread(m_pFarEndProcessor);
-			if (m_cPlayingThread != nullptr)
-			{
-				m_cPlayingThread->StartPlayingThread();
-			}
-		}
 	}
 
 
@@ -483,8 +467,8 @@ namespace MediaSDK
 				LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)
 				{
-					//m_llTraceReceivingTime = Tools::CurrentTimestamp();
-					//m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+					m_llTraceReceivingTime = Tools::CurrentTimestamp();
+					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
 					//m_llDelayFraction = m_llDelay % 100;
 					m_llDelayFraction /= 8;
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
@@ -494,7 +478,7 @@ namespace MediaSDK
 			}
 
 		}
-		//LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
+		LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||

@@ -43,6 +43,7 @@ namespace MediaSDK
 		m_b1stPlaying = true;
 		m_llNextPlayingTime = -1;
 		m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING); //Need Remove Magic Numbers.
+		memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 
 		for (int i = 0; i < MAX_NUMBER_OF_CALLEE; i++){
 			m_vAudioFarEndBufferVector.push_back(new LiveAudioDecodingQueue());	//Need to delete.
@@ -173,7 +174,7 @@ namespace MediaSDK
 		}
 		else if (m_AudioReceivedBuffer.GetQueueSize() == 0)
 		{
-			Tools::SOSleep(10);
+			//Tools::SOSleep(10);
 			return true;
 		}
 		return false;
@@ -302,19 +303,8 @@ namespace MediaSDK
 		}
 		else
 		{
-#ifdef __ANDROID__
-			/*if (m_pAudioCallSession->GetPlayerGain().get())
-			{
-				if(m_pAudioCallSession->m_bTraceWillNotBeReceived)
-				{
-					m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
-				}
-			}*/
-#endif
-			HITLER("*STP -> PN: %d, FS: %d", iCurrentPacketNumber, m_nDecodedFrameSize);
-			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_CALL, nSentFrameSize, pshSentFrame);
 			LOG18("Pushing to q");
-			m_AudioPlayingBuffer.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber);
+			memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
 		}
 #ifdef PCM_DUMP
 		if (m_pAudioCallSession->PlayedFile)
@@ -641,24 +631,11 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::ProcessPlayingData()
 	{
-		if (m_AudioPlayingBuffer.GetQueueSize() == 0)
-		{
-			LOG18("pushing GetQueueSize 0");			
-			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
-			
-		}
-		else
-		{
-			LOG18("pushing popping");
-			long long llFrameNumber = 0;
-			int nPlayingSize = m_AudioPlayingBuffer.DeQueue(m_saPlayingData, llFrameNumber);
-		}
-
 		if (m_pAudioCallSession->m_bRecordingStarted && !m_pAudioCallSession->m_bTraceSent)
 		{
 			m_iPlayedSinceRecordingStarted++;
 			m_pAudioCallSession->m_bRecordingStarted = false;
-			CTrace::GenerateTrace(m_saPlayingData, 200);
+			CTrace::GenerateTrace(m_saPlayingData, 800);
 			m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
 			m_pAudioCallSession->m_bTraceSent = true;
 		}
@@ -679,11 +656,18 @@ namespace MediaSDK
 			{
 				if (llCurrentTimeStamp + 20 < m_llNextPlayingTime)
 				{
+					LOG18("processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
 					Tools::SOSleep(m_llNextPlayingTime - llCurrentTimeStamp - 20);
 				}
+				else
+				{
+					LOG18("processplayingdata sleeping time = %d", 0);
+				}
+				LOG18("processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
 				m_llNextPlayingTime += 100;
 			}
-			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);		
+			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
+			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 			LOG18("ppplaying 0 data");
 		}
 		else

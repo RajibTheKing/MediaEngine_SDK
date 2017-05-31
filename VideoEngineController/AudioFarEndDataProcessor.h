@@ -55,7 +55,7 @@ namespace MediaSDK
 		long long m_llDecodingTimeStampOffset = -1;
 		AudioDePacketizer* m_pAudioDePacketizer = nullptr;
 		CAudioByteBuffer m_AudioReceivedBuffer;
-		CAudioShortBuffer m_AudioPlayingBuffer;
+
 		short m_saPlayingData[MAX_AUDIO_FRAME_Length];
 		int m_iPlayedSinceRecordingStarted;
 

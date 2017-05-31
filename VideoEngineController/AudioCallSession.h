@@ -78,7 +78,6 @@ namespace MediaSDK
 
 		AudioNearEndProcessorThread *m_cNearEndProcessorThread;
 		AudioFarEndProcessorThread *m_cFarEndProcessorThread;
-		AudioPlayingThread *m_cPlayingThread;
 
 		SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
 

@@ -27,7 +27,7 @@
 #define ON 1
 #define OFF 0
 
-//#define LOG_ENABLED
+#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 

@@ -81,9 +81,9 @@ namespace MediaSDK
 				}
 				LOG18("#18#FE#AudioCall SendToPlayer");
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
-				Tools::SOSleep(0);
 			}
 		}
+		ProcessPlayingData();
 	}
 
 } //namespace MediaSDK
