@@ -71,7 +71,7 @@
 #define LOG18(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define HITLERSS(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define MR_DEBUG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
+#define DOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
@@ -89,6 +89,7 @@
 #define HITLERSS(...)
 #define MR_DEBUG(...)
 #define LOGE_MAIN(...)
+#define DOG(...)
 #endif
 
 
