@@ -631,13 +631,12 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::ProcessPlayingData()
 	{
-		if (m_pAudioCallSession->m_bRecordingStarted && !m_pAudioCallSession->m_bTraceSent)
+		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
-			m_iPlayedSinceRecordingStarted++;
-			m_pAudioCallSession->m_bRecordingStarted = false;
 			if (m_pAudioCallSession->m_bTraceTailRemains)
 			{
-				m_pAudioCallSession->m_bTraceTailRemains = CTrace::GenerateTrace(m_saPlayingData, 800);
+				LOG18("Calling Generate Trace");
+				m_pAudioCallSession->m_bTraceTailRemains = m_pAudioCallSession -> m_pTrace -> GenerateTrace(m_saPlayingData, 800);
 			}
 			
 			if (!m_pAudioCallSession->m_bTraceSent)

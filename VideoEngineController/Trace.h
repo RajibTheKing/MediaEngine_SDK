@@ -7,9 +7,13 @@ namespace MediaSDK
 
 	class CTrace
 	{
+	private:
+		int m_iTracePatternLength;
+		int m_iSentLength;
 	public:
-		static int GenerateTrace(short *sBuffer, int iTraceLength);
-		static int DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength);
+		CTrace();
+		int GenerateTrace(short *sBuffer, int iTraceLength);
+		int DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength);
 	};
 } //namespace MediaSDK
 

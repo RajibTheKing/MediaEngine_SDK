@@ -63,6 +63,7 @@ namespace MediaSDK
 	class AudioNearEndProcessorThread;
 	class AudioFarEndProcessorThread;
 	class AudioPlayingThread;
+	class CTrace;
 
 
 #ifdef USE_VAD
@@ -109,13 +110,15 @@ namespace MediaSDK
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
 		bool m_bTraceTailRemains;
 		long long m_llDelay, m_llDelayFraction;
-		bool m_bDeleteNextRecordedData;
+		int  m_iDeleteCount;
 		int m_nFramesRecvdSinceTraceSent;
 		bool m_b1stRecordedData;
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
 		CAudioShortBuffer  m_FarendBuffer;
 		short m_saFarendData[MAX_AUDIO_FRAME_Length];
+
+		CTrace * m_pTrace;
 
 		void GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 			int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);

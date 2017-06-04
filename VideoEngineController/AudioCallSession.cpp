@@ -68,6 +68,7 @@ namespace MediaSDK
 		m_cFarEndProcessorThread(nullptr)
 	{
 		SetResources(audioResources);
+		m_pTrace = new CTrace();
 
 		m_FriendID = llFriendID;
 		m_bRecordingStarted = false;
@@ -82,7 +83,7 @@ namespace MediaSDK
 		m_b1stRecordedData = true;
 		m_llDelayFraction = 0;
 		m_llDelay = 0;
-		m_bDeleteNextRecordedData = false;
+		m_iDeleteCount = 10;
 		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
@@ -448,10 +449,10 @@ namespace MediaSDK
 		}
 
 		//If trace is received, current and next frames are deleted
-		if (m_bDeleteNextRecordedData)
+		if (m_bTraceRecieved && m_iDeleteCount > 0)
 		{
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-			m_bDeleteNextRecordedData = false;
+			m_iDeleteCount --;
 		}
 		//Handle Trace
 		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
@@ -464,7 +465,7 @@ namespace MediaSDK
 			}
 			else
 			{
-				m_llDelayFraction = CTrace::DetectTrace(psaEncodingAudioData, unLength, 80);
+				m_llDelayFraction = m_pTrace -> DetectTrace(psaEncodingAudioData, unLength, 80);
 				LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)
 				{
@@ -473,7 +474,6 @@ namespace MediaSDK
 					//m_llDelayFraction = m_llDelay % 100;
 					m_llDelayFraction /= 8;
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-					m_bDeleteNextRecordedData = true;
 					m_bTraceRecieved = true;
 				}
 			}
