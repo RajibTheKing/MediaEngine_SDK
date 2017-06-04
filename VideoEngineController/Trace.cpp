@@ -3,7 +3,7 @@
 namespace MediaSDK
 {
 
-	void CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
+	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
 	{
 		for (int i = 0; i < iTraceLength; i++)
 		{
@@ -16,6 +16,7 @@ namespace MediaSDK
 				sBuffer[i] = -30000;
 			}
 		}
+		return 0;
 	}
 
 	int CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)

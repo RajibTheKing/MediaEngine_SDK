@@ -107,6 +107,7 @@ namespace MediaSDK
 		long long m_llTraceSendingTime;
 		long long m_llTraceReceivingTime;
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
+		bool m_bTraceTailRemains;
 		long long m_llDelay, m_llDelayFraction;
 		bool m_bDeleteNextRecordedData;
 		int m_nFramesRecvdSinceTraceSent;

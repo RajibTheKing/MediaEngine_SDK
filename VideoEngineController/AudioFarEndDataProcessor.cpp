@@ -635,9 +635,16 @@ namespace MediaSDK
 		{
 			m_iPlayedSinceRecordingStarted++;
 			m_pAudioCallSession->m_bRecordingStarted = false;
-			CTrace::GenerateTrace(m_saPlayingData, 800);
-			m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
-			m_pAudioCallSession->m_bTraceSent = true;
+			if (m_pAudioCallSession->m_bTraceTailRemains)
+			{
+				m_pAudioCallSession->m_bTraceTailRemains = CTrace::GenerateTrace(m_saPlayingData, 800);
+			}
+			
+			if (!m_pAudioCallSession->m_bTraceSent)
+			{
+				m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
+				m_pAudioCallSession->m_bTraceSent = true;
+			}
 		}
 		if (m_cbOnDataEvent != nullptr)
 		{

@@ -85,6 +85,7 @@ namespace MediaSDK
 		m_bDeleteNextRecordedData = false;
 		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
 		m_nFramesRecvdSinceTraceSent = 0;
+		m_bTraceTailRemains = true;
 
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
@@ -478,7 +479,7 @@ namespace MediaSDK
 			}
 
 		}
-		LOG18("55555Delay = %lld, m_bTraceRecieved = %d\n", m_llDelay, m_bTraceRecieved);
+		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld\n", m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime);
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||
