@@ -300,18 +300,19 @@ namespace MediaSDK
 			if (m_cbOnDataEvent != nullptr){
 				(m_cbOnDataEvent)(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 			}
+#ifdef PCM_DUMP
+			if (m_pAudioCallSession->PlayedFile)
+			{
+				fwrite(pshSentFrame, 2, nSentFrameSize, m_pAudioCallSession->PlayedFile);
+			}
+#endif
 		}
 		else
 		{
 			LOG18("Pushing to q");
 			memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
 		}
-#ifdef PCM_DUMP
-		if (m_pAudioCallSession->PlayedFile)
-		{
-			fwrite(pshSentFrame, 2, nSentFrameSize, m_pAudioCallSession->PlayedFile);
-		}
-#endif
+
 
 	}
 
@@ -648,6 +649,12 @@ namespace MediaSDK
 		if (m_cbOnDataEvent != nullptr)
 		{
 			(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+#ifdef PCM_DUMP
+			if (m_pAudioCallSession->PlayedFile)
+			{
+				fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
+			}
+#endif
 		}
 		if (m_pAudioCallSession->m_bTraceSent)
 		{
