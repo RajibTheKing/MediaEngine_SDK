@@ -197,7 +197,7 @@ namespace MediaSDK
 		-12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851
 
 	};
-
+//#define USE_OLD_TRACE
 	CTrace::CTrace()
 	{
 		m_iTracePatternLength = sizeof(sTraceArray) / sizeof(short);
@@ -242,11 +242,11 @@ namespace MediaSDK
 				int j = 0;
 				for (; j < iTraceDetectionLength; j++)
 				{
-					if (j % 8 < 4 && sBuffer[i + j] < 0)
+					if (j % 8 < 4 && sBuffer[i + j] <= 0)
 					{
 						break;
 					}
-					if (j % 8 >= 4 && sBuffer[i + j] > 0)
+					if (j % 8 >= 4 && sBuffer[i + j] >= 0)
 					{
 						break;
 					}
@@ -263,13 +263,13 @@ namespace MediaSDK
 		for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
 		{
 			int j = 0;
-			for (; j < iTraceDetectionLength; j++)
+			for (; j < iTraceDetectionLength; j ++)
 			{
-				if (j % 7 < 3 && sBuffer[i + j] > 0)
+				if (j % 8 <= 2 && sBuffer[i + j] >= 0)
 				{
 					break;
 				}
-				if (j % 8 > 3 && sBuffer[i + j] < 0)
+				if (j % 8 >= 4 && j % 8 <= 6 && sBuffer[i + j] <= 0)
 				{
 					break;
 				}
