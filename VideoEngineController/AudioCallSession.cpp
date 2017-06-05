@@ -457,7 +457,7 @@ namespace MediaSDK
 #endif
 
 		//If trace is received, current and next frames are deleted
-		if (m_bTraceRecieved && m_iDeleteCount > 0)
+		if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
 		{
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			m_iDeleteCount --;
@@ -487,6 +487,10 @@ namespace MediaSDK
 				}
 			}
 
+		}
+		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
+		{
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
 			m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
