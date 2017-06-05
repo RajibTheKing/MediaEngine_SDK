@@ -418,6 +418,7 @@ namespace MediaSDK
 		return m_pNearEndProcessor->GetBaseOfRelativeTime();
 	}
 	int iStartingBufferSize = -1;
+	int iDelayFractionOrig = -1;
 	int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
@@ -448,6 +449,13 @@ namespace MediaSDK
 			m_llnextRecordedDataTime += 100;
 		}
 
+#ifdef PCM_DUMP
+		if (RecordedFile)
+		{
+			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
+		}
+#endif
+
 		//If trace is received, current and next frames are deleted
 		if (m_bTraceRecieved && m_iDeleteCount > 0)
 		{
@@ -472,6 +480,7 @@ namespace MediaSDK
 					m_llTraceReceivingTime = Tools::CurrentTimestamp();
 					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
 					//m_llDelayFraction = m_llDelay % 100;
+					iDelayFractionOrig = m_llDelayFraction;
 					m_llDelayFraction /= 8;
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 					m_bTraceRecieved = true;
@@ -479,7 +488,8 @@ namespace MediaSDK
 			}
 
 		}
-		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld\n", m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime);
+		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
+			m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||
@@ -487,13 +497,6 @@ namespace MediaSDK
 		{
 			LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
 			m_bIsAECMNearEndThreadBusy = true;
-
-#ifdef PCM_DUMP
-			if (RecordedFile)
-			{
-				fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
-			}
-#endif
 
 #ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
