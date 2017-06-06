@@ -207,6 +207,7 @@ namespace MediaSDK
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() started Sending method");
 
 		Tools toolsObject;
+        toolsObject.SetThreadName("SendingCommon");
 		int packetSize = 0;
 		long long lFriendID = m_lfriendID;
 		int startFraction = SIZE_OF_INT_MINUS_8;

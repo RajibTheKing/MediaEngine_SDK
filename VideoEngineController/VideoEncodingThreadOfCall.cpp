@@ -206,6 +206,7 @@ m_VideoBeautificationer(NULL),
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() started EncodingThreadProcedure method");
 
 		Tools toolsObject;
+        toolsObject.SetThreadName("EncodingCall");
 		int nEncodingFrameSize, nENCODEDFrameSize, nCaptureTimeDifference, nDevice_orientation;
 		long long llCalculatingTime;
 		int sumOfEncodingTimediff = 0;

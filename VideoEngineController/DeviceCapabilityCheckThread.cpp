@@ -107,7 +107,7 @@ namespace MediaSDK
 	void CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure()
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG || CHECK_CAPABILITY_LOG, "CDeviceCapabilityCheckThread::DeviceCapabilityCheckThreadProcedure() started DeviceCapabilityCheck method");
-
+        Tools::SetThreadName("DCCheckThread");
 		int nOperation, nVideoHeigth, nVideoWidth, nNotification;
 		long long llFriendID;
 
