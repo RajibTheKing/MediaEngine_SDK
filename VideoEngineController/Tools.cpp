@@ -629,6 +629,26 @@ namespace MediaSDK
 		return nalType;
 	}
 
+	/*
+	void Tools::SetThreadName(std::thread* thread, const char* threadName, int iLen)
+	{
+		auto handle = thread->native_handle();
+		pthread_setname_np(handle,threadName, iLen);
+
+	}
+	*/
+
+#if defined(__ANDROID__)
+	void Tools::SetThreadName(const char* threadName)
+	{
+        //prctl Maximum ThreadName must be withing 16 bytes,
+        //15 bytes char and 16th bytes with EOF
+        
+		prctl(PR_SET_NAME,threadName,0,0,0);
+	}
+#endif
+
+
 } //namespace MediaSDK
 
 

@@ -4,6 +4,10 @@
 
 #include <string>
 
+#if defined(__ANDROID__)
+#include <sys/prctl.h>
+#endif
+
 #include "Size.h"
 
 #if defined(TARGET_OS_WINDOWS_PHONE) || defined (DESKTOP_C_SHARP) || defined (_WIN32)
@@ -111,6 +115,11 @@ namespace MediaSDK
 
 		static long long GetLongLongFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
 		static void SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index, int nLenght, long long value);
+
+		//static void SetThreadName(std::thread* thread, const char* threadName, int iLen);
+#if defined(__ANDROID__)
+		static void SetThreadName( const char* threadName);
+#endif
 
 	private:
 
