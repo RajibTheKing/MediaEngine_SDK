@@ -7,7 +7,6 @@
 #if defined(__ANDROID__)
 #include <sys/prctl.h>
 #endif
-
 #include "Size.h"
 
 #if defined(TARGET_OS_WINDOWS_PHONE) || defined (DESKTOP_C_SHARP) || defined (_WIN32)
@@ -15,6 +14,23 @@
 #elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
 #include <unistd.h>
 #endif
+
+
+#if defined(DESKTOP_C_SHARP)
+	const DWORD MS_VC_EXCEPTION = 0x406D1388;
+
+	#pragma pack(push,8)
+	typedef struct tagTHREADNAME_INFO
+	{
+		DWORD dwType; // Must be 0x1000.
+		LPCSTR szName; // Pointer to name (in user addr space).
+		DWORD dwThreadID; // Thread ID (-1=caller thread).
+		DWORD dwFlags; // Reserved for future use, must be zero.
+	} THREADNAME_INFO;
+	#pragma pack(pop)
+#endif
+
+
 
 #define NON_IDR_SLICE 1
 #define IDR_SLICE 5
@@ -116,10 +132,7 @@ namespace MediaSDK
 		static long long GetLongLongFromUnsignedChar(unsigned char *packetData, int index, int nLenght);
 		static void SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index, int nLenght, long long value);
 
-		//static void SetThreadName(std::thread* thread, const char* threadName, int iLen);
-#if defined(__ANDROID__)
-		static void SetThreadName( const char* threadName);
-#endif
+		static void SetThreadName(const char* threadName);
 
 	private:
 
