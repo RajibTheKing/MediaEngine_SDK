@@ -90,7 +90,7 @@ namespace MediaSDK
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
-			GetPlayerGain()->SetGain(9);
+			//m_pPlayerGain->SetGain(9);
 		}
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
