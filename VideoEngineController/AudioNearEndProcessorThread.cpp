@@ -28,7 +28,7 @@ namespace MediaSDK
 	void AudioNearEndProcessorThread::AudioNearEndProcedure()
 	{
 		MR_DEBUG("#nearEnd# CAudioNearEndThread::AudioNearEndProcedure()");
-
+		Tools::SetThreadName("AudioNEThread");
 		long long llCapturedTime;
 
 		m_bAudioNearEndThreadRunning = true;

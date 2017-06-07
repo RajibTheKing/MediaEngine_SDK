@@ -28,7 +28,7 @@ namespace MediaSDK
 	void AudioFarEndProcessorThread::AudioFarEndProcedure()
 	{
 		MR_DEBUG("#farEnd# AudioFarEndProcessorThread::AudioFarEndProcedure()");
-
+		Tools::SetThreadName("AudioFEThread");
 		long long llCapturedTime;
 
 		m_bAudioFarEndThreadRunning = true;
