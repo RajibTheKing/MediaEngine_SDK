@@ -207,6 +207,7 @@ namespace MediaSDK
 
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
 	{
+#ifdef __ANDROID__
 #ifdef USE_OLD_TRACE
 		for (int i = 0; i < iTraceLength; i++)
 		{
@@ -230,10 +231,14 @@ namespace MediaSDK
 		}
 		return 0;
 #endif
+#endif
+        return 0;
+       
 	}
 
 	int CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)
 	{
+#ifdef __ANDROID__
 #ifdef USE_OLD_TRACE
 		for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
 		{
@@ -283,6 +288,8 @@ namespace MediaSDK
 		return -1;
 
 #endif
+#endif
+        return 0;
 	}
 
 } //namespace MediaSDK
