@@ -10,15 +10,49 @@ namespace MediaSDK
 	//External Callbacks
 	typedef void(*SendFunctionPointerType)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> >);
 
-	//Internal Callbacks
-	typedef void(*OnDataReadyToSendCB)(int mediaType, unsigned char* data, size_t dataLength);
-	typedef void(*OnFirePacketEventCB)(int eventType, size_t dataLenth, unsigned char data[]);
-	typedef void(*OnFireDataEventCB)(int eventType, size_t dataLenth, short data[]);
-	typedef void(*OnFireNetworkChangeCB)(int eventType);
-	typedef void(*OnFireAudioAlarmCB)(int eventType);
+	//Internal Callback Interfaces.
+	//TODO: Should go on different header
+	class DataReadyListenerInterface
+	{
+	public:
+		virtual void OnDataReadyToSend(int mediaType, unsigned char* data, size_t dataLength) = 0;
+	};
 
-	typedef void(*OnPackatizedDataReadyCallback)(unsigned char*, int);
-	typedef void(*OnDepackatizedDataReadyCallback)(unsigned char*, int);
+	class PacketEventListener
+	{
+	public:
+		virtual void FirePacketEvent(int eventType, size_t dataLenth, unsigned char data[]) = 0;
+	};
+	
+	class DataEventListener
+	{
+	public:
+		virtual void FireDataEvent(int eventType, size_t dataLenth, short data[]) = 0;
+	};
+	
+	class NetworkChangeListener
+	{
+	public:
+		virtual void FireNetworkChange(int eventType) = 0;
+	};
+	
+	class AudioAlarmListener
+	{
+	public: 
+		virtual void FireAudioAlarm(int eventType) = 0;
+	};
+
+	class PackatizedDataListener
+	{
+	public:
+		virtual void SendPackatizedData(unsigned char*, int) = 0;
+	};
+
+	class DepackatizedDataListener
+	{
+	public:
+		virtual void SendDepackatizedData(unsigned char*, int) = 0;
+	};
 
 	enum AudioEntityRoleType
 	{

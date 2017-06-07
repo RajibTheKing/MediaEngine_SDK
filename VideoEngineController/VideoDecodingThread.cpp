@@ -175,6 +175,7 @@ namespace MediaSDK
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() started DecodingThreadProcedure method");
 
 		Tools toolsObject;
+        toolsObject.SetThreadName("DecodingCommon");
 
 		int nFrameNumber, nFrameLength, nEncodingTime, nOrientation;
 		unsigned int nTimeStampDiff = 0;

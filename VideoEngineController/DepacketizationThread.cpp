@@ -116,6 +116,7 @@ namespace MediaSDK
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDepacketizationThread::DepacketizationThreadProcedure() Started DepacketizationThreadProcedure method");
 
 		Tools toolsObject;
+        toolsObject.SetThreadName("DPKZThread");
 		int frameSize, queSize = 0, miniPacketQueueSize = 0;
 		long long llDepacitazationThreadStartTime = m_Tools.CurrentTimestamp();
 		while (bDepacketizationThreadRunning)

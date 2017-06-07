@@ -27,7 +27,7 @@ namespace MediaSDK
 		if (nQueueSize > 0)
 		{
 			m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
-			LOG18("#18#FE#Viewer... ");
+			DOG("#18#FE#Viewer... ");
 
 			if (m_nDecodingFrameSize < 1)
 			{
@@ -45,35 +45,35 @@ namespace MediaSDK
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-			LOG18("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			DOG("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
-				HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
+				DOG("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
 				return;
 			}
 
 			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 			llNow = Tools::CurrentTimestamp();
 			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
-			HITLER("XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
+			DOG("XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
 			if (bIsCompleteFrame){
 				//m_ucaDecodingFrame
-				HITLER("XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
+				DOG("XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
 
 				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
 				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 				{
-					HITLER("XXP@#@#MARUF REMOVED ON RELATIVE TIME");
+					DOG("XXP@#@#MARUF REMOVED ON RELATIVE TIME");
 					return;
 				}
 			}
 			llNow = Tools::CurrentTimestamp();
 
 			if (bIsCompleteFrame){
-				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
+				DOG("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
 				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-				HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
+				DOG("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
 
 				//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 
@@ -88,15 +88,15 @@ namespace MediaSDK
 						int nSize;
 						bool bFound = false;
 
-						LOG18("#18@# m_ViewerInCallSentDataQueue # Queue Size %d", m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize());
+						DOG("#18@# m_ViewerInCallSentDataQueue # Queue Size %d", m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize());
 
 						while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize())
 						{
 							nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue.DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);
-							LOG18("#18@# FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
+							DOG("#18@# FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
 
 							if (nSize == -1) {
-								LOG18("#18@# FOUND EITHER CURRENT FRAME IS GREATER THAN FRONT OF QUEUE OR NO DATA IN QUEUE");
+								DOG("#18@# FOUND EITHER CURRENT FRAME IS GREATER THAN FRONT OF QUEUE OR NO DATA IN QUEUE");
 								break;
 							}
 
@@ -108,41 +108,41 @@ namespace MediaSDK
 						}
 						if (bFound)
 						{
-							LOG18("#18@# FOUND REMOVED AUDIO DATA");
+							DOG("#18@# FOUND REMOVED AUDIO DATA");
 							m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 						}
 						else
 						{
 							//Do Some thing;
-							LOG18("#18@# FOUND REMOVED AUDIO DATA with -1");
+							DOG("#18@# FOUND REMOVED AUDIO DATA with -1");
 							nCalleeId = -1;
 							m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 						}
 					}
 					else //For Only Viewers
 					{
-						LOG18("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR");
+						DOG("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR");
 						nCalleeId = -1;
 						m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 					}
 				}
 				else
 				{
-					LOG18("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR wrong media");
+					DOG("#18@# FOUND REMOVED AUDIO DATA ONLY VIEWR wrong media");
 					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
 					m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
 				}
 
-				LOG18("#18#FE#Viewer  m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
+				DOG("#18#FE#Viewer  m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
 				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
-				HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
+				DOG("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
 				if (m_nDecodedFrameSize < 1)
 				{
-					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
+					DOG("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 					return;
 				}
-				LOG18("#18#FE#Viewer  SendToPlayer");
+				DOG("#18#FE#Viewer  SendToPlayer");
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
 				Tools::SOSleep(0);
 			}

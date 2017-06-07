@@ -19,7 +19,7 @@ namespace MediaSDK
 		//delete m_AudioPacketHeader;
 	}
 
-	void AudioPacketizer::Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, OnPackatizedDataReadyCallback callback)
+	void AudioPacketizer::Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, PackatizedDataListener* dataListener)
 	{
 
 		int nNumberOfBlocks = (headerParams.frameLength /*nDataLength*/ + m_nMaxDataSyzeInEachBlock - 1) / m_nMaxDataSyzeInEachBlock;
@@ -47,7 +47,7 @@ namespace MediaSDK
 			nBlockOffset += nCurrentBlockLength;
 			HITLER("XXP@#@#MARUF PACKETING .... %d", iBlockNumber);
 
-			callback(m_uchAudioBlock, nCurrentBlockLength + m_nHeaderLengthWithMediaByte);
+			dataListener->SendPackatizedData(m_uchAudioBlock, nCurrentBlockLength + m_nHeaderLengthWithMediaByte);
 
 			Tools::SOSleep(3);
 			HITLER("XXP@#@#MARUF PACKETING SENT.... %d", iBlockNumber);

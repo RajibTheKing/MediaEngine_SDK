@@ -96,6 +96,7 @@ namespace MediaSDK
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CRenderingThreadOfLive::RenderingThreadProcedure() started RenderingThreadProcedure method");
 
 		Tools toolsObject;
+        toolsObject.SetThreadName("RenderingLive");
 		int frameSize, nFrameNumber;
 		long long nTimeStampDiff;
 		long long currentFrameTime, firstFrameEncodingTime;

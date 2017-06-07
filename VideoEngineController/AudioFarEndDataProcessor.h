@@ -42,11 +42,11 @@ namespace MediaSDK
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
 
-		void SetEventCallback(OnFireDataEventCB dataCB, OnFireNetworkChangeCB networkCB, OnFireAudioAlarmCB alarmEvent)
+		void SetEventCallback(DataEventListener* pDataListener, NetworkChangeListener* networkListener, AudioAlarmListener* alarmListener)
 		{
-			m_cbOnDataEvent = dataCB;
-			m_cbOnNetworkChange = networkCB;
-			m_cbOnAudioAlarm = alarmEvent;
+			m_pDataEventListener = pDataListener;
+			m_pNetworkChangeListener = networkListener;
+			m_pAudioAlarmListener = alarmListener;
 		}
 
 
@@ -73,9 +73,9 @@ namespace MediaSDK
 		int m_iCurrentRecvdSlotID = -1;
 		int m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
 
-		OnFireDataEventCB m_cbOnDataEvent;
-		OnFireNetworkChangeCB m_cbOnNetworkChange;
-		OnFireAudioAlarmCB m_cbOnAudioAlarm;
+		DataEventListener* m_pDataEventListener;
+		NetworkChangeListener* m_pNetworkChangeListener;
+		AudioAlarmListener* m_pAudioAlarmListener;
 
 		CCommonElementsBucket *m_pCommonElementsBucket = nullptr;
 		//AudioPacketHeader *m_pAudioPacketHeader = nullptr;

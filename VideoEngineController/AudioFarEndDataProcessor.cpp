@@ -36,9 +36,9 @@ namespace MediaSDK
 		m_bAudioShouldStopNotified(false),
 		m_inoLossSlot(0),
 		m_ihugeLossSlot(0),
-		m_cbOnDataEvent(nullptr),
-		m_cbOnNetworkChange(nullptr),
-		m_cbOnAudioAlarm(nullptr)
+		m_pDataEventListener(nullptr),
+		m_pNetworkChangeListener(nullptr),
+		m_pAudioAlarmListener(nullptr)
 	{
 		m_b1stPlaying = true;
 		m_llNextPlayingTime = -1;
@@ -297,8 +297,9 @@ namespace MediaSDK
 			}
 #endif
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-			if (m_cbOnDataEvent != nullptr){
-				(m_cbOnDataEvent)(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+			if (m_pDataEventListener != nullptr)
+			{
+				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 			}
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
@@ -406,8 +407,9 @@ namespace MediaSDK
 				//g_StopVideoSending = 1;*/
 				if (false == m_bIsLiveStreamingRunning){
 					//m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
-					if (m_cbOnAudioAlarm != nullptr){
-						(m_cbOnAudioAlarm)(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO);
+					if (m_pAudioAlarmListener != nullptr)
+					{
+						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO);
 					}
 				}
 				return true;
@@ -560,8 +562,9 @@ namespace MediaSDK
 				if (false == m_bAudioQualityLowNotified)
 				{
 					//m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_GOOD);
-					if (m_cbOnNetworkChange != nullptr){
-						(m_cbOnNetworkChange)(CEventNotifier::NETWORK_STRENTH_GOOD);
+					if (m_pNetworkChangeListener != nullptr)
+					{
+						m_pNetworkChangeListener->FireNetworkChange(CEventNotifier::NETWORK_STRENTH_GOOD);
 					}
 
 					m_bAudioQualityLowNotified = true;
@@ -578,13 +581,15 @@ namespace MediaSDK
 				if (false == m_bAudioShouldStopNotified && m_ihugeLossSlot >= AUDIO_MAX_HUGE_LOSS_SLOT)
 				{
 					//m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_BAD);
-					if (m_cbOnNetworkChange != nullptr){
-						(m_cbOnNetworkChange)(CEventNotifier::NETWORK_STRENTH_BAD);
+					if (m_pNetworkChangeListener != nullptr)
+					{
+						m_pNetworkChangeListener->FireNetworkChange(CEventNotifier::NETWORK_STRENTH_BAD);
 					}
 
 					//m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);		
-					if (m_cbOnAudioAlarm != nullptr){
-						(m_cbOnAudioAlarm)(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO);
+					if (m_pAudioAlarmListener != nullptr)
+					{
+						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO);
 					}
 
 					m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
@@ -603,8 +608,9 @@ namespace MediaSDK
 				if (false == m_bAudioQualityHighNotified)
 				{
 					//m_pCommonElementsBucket->m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_llFriendID, CEventNotifier::NETWORK_STRENTH_EXCELLENT);
-					if (m_cbOnNetworkChange != nullptr){
-						(m_cbOnNetworkChange)(CEventNotifier::NETWORK_STRENTH_EXCELLENT);
+					if (m_pNetworkChangeListener != nullptr)
+					{
+						m_pNetworkChangeListener->FireNetworkChange(CEventNotifier::NETWORK_STRENTH_EXCELLENT);
 					}
 
 					m_bAudioQualityHighNotified = true;
@@ -646,9 +652,9 @@ namespace MediaSDK
 				m_pAudioCallSession->m_bTraceSent = true;
 			}
 		}
-		if (m_cbOnDataEvent != nullptr)
+		if (m_pDataEventListener != nullptr)
 		{
-			(m_cbOnDataEvent)(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
 			{

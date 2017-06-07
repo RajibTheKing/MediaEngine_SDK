@@ -38,8 +38,8 @@ namespace MediaSDK
 		m_iRawDataSendIndexViewer(0),
 		m_llLastChunkLastFrameRT(-1),
 		m_llLastFrameRT(0),
-		m_cbOnDataReady(nullptr),
-		m_cbOnPacketEvent(nullptr)
+		m_pDataReadyListener(nullptr),
+		m_pPacketEventListener(nullptr)
 	{
 		m_pAudioEncodingMutex.reset(new CLockHandler);
 		m_pAudioEncoder = pAudioCallSession->GetAudioEncoder();
@@ -117,13 +117,15 @@ namespace MediaSDK
 #ifndef NO_CONNECTIVITY
 		//	MR_DEBUG("#ptt# SentToNetwork, %x", *m_cbOnDataReady);
 		//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
-		if (m_cbOnDataReady != nullptr){
-			(m_cbOnDataReady)(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
+		if (m_pDataReadyListener != nullptr)
+		{
+			m_pDataReadyListener->OnDataReadyToSend(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
 		}
 #else
 		//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-		if(m_cbOnPacketEvent != nullptr){	
-			(m_cbOnPacketEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+		if(m_pPacketEventListener != nullptr)
+		{	
+			m_pPacketEventListener->FirePacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 		}
 #endif
 
@@ -133,13 +135,15 @@ namespace MediaSDK
 			Tools::SOSleep(5);
 #ifndef NO_CONNECTIVITY
 			//m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
-			if (m_cbOnDataReady != nullptr){
-				(m_cbOnDataReady)(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
+			if (m_pDataReadyListener != nullptr)
+			{
+				m_pDataReadyListener->OnDataReadyToSend(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
 			}
 #else
 			//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-			if(m_cbOnPacketEvent != nullptr){
-				(m_cbOnPacketEvent)(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
+			if(m_pPacketEventListener != nullptr)
+			{
+				m_pPacketEventListener->FirePacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 			}
 #endif
 		}

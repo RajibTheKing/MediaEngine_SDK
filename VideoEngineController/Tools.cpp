@@ -629,6 +629,38 @@ namespace MediaSDK
 		return nalType;
 	}
 
+	void Tools::SetThreadName(const char* threadName)
+	{
+#if defined(__ANDROID__)
+		//prctl Maximum ThreadName must be withing 16 bytes,
+		//15 bytes char and 16th bytes with EOF
+
+		prctl(PR_SET_NAME, threadName, 0, 0, 0);
+
+#elif defined(DESKTOP_C_SHARP)
+		
+		uint32_t dwThreadID = GetCurrentThreadId();
+		THREADNAME_INFO info;
+		info.dwType = 0x1000;
+		info.szName = threadName;
+		info.dwThreadID = dwThreadID;
+		info.dwFlags = 0;
+
+		__try
+		{
+			RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+
+		}
+		
+#else
+		//do nothing
+#endif
+	}
+
+
 } //namespace MediaSDK
 
 
