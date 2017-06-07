@@ -29,7 +29,7 @@ namespace MediaSDK
 		int iSlotID = headerParams.packetNumber /*nFrameNumber*/ / AUDIO_SLOT_SIZE;
 
 		iSlotID %= m_AudioPacketHeader->GetFieldCapacity(INF_SLOTNUMBER);
-		LOGT("##NF###XXP@#@#MARUF INIT PACKETING .... data Len = %d numBlock %d, SlotId %d", headerParams.frameLength /*nDataLength*/, nNumberOfBlocks, iSlotID);
+		//LOGT("##NF###XXP@#@#MARUF INIT PACKETING .... data Len = %d numBlock %d, SlotId %d", headerParams.frameLength /*nDataLength*/, nNumberOfBlocks, iSlotID);
 		for (int iBlockNumber = 0; iBlockNumber < nNumberOfBlocks; iBlockNumber++) {
 
 			nCurrentBlockLength = min(m_nMaxDataSyzeInEachBlock, headerParams.frameLength /*nDataLength*/ - nBlockOffset);

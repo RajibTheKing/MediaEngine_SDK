@@ -27,7 +27,6 @@ namespace MediaSDK
 		{
 			LOG18("#18#NE#AudioCall...");
 			m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
-			LOGT("##NF## encoder got job. time:%lld", llCapturedTime);
 
 			DumpEncodingFrame();
 			UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);

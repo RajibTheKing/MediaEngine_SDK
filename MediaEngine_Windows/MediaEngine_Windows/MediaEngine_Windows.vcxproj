@@ -223,6 +223,7 @@
     <ClCompile Include="..\..\VideoEngineController\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingThread.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Trace.cpp" />
     <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SpeexEchoCanceller.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SendingThreadOfCall.cpp" />
@@ -355,6 +356,7 @@
     <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h" />
     <ClInclude Include="..\..\VideoEngineController\ThreadTools.h" />
     <ClInclude Include="..\..\VideoEngineController\Tools.h" />
+    <ClInclude Include="..\..\VideoEngineController\Trace.h" />
     <ClInclude Include="..\..\VideoEngineController\typedef.h" />
     <ClInclude Include="..\..\VideoEngineController\typedefs.h" />
     <ClInclude Include="..\..\VideoEngineController\VersionController.h" />

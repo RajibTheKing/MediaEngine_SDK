@@ -4,7 +4,7 @@
 #include "AudioMacros.h"
 
 #define MAX_GAIN 10
-#define DEFAULT_GAIN 3
+#define DEFAULT_GAIN 10
 
 namespace MediaSDK
 {
@@ -14,11 +14,11 @@ namespace MediaSDK
 
 	public:
 
-		virtual int SetGain(int iGain) = 0;
+		virtual bool SetGain(int iGain) = 0;
 
-		virtual int AddFarEnd(short *sInBuf, int nBufferSize) = 0;
+		virtual bool AddFarEnd(short *sInBuf, int nBufferSize) = 0;
 
-		virtual int AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning) = 0;
+		virtual bool AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning) = 0;
 
 		virtual ~AudioGainInterface() { }
 	};

@@ -10,48 +10,42 @@
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 #endif
 
+
 namespace MediaSDK
 {
+#ifdef GAIN_DUMP
+	FILE* gainIn = nullptr;
+	FILE* gainOut = nullptr;
+#endif
 
-	WebRTCGain::WebRTCGain() : m_bGainEnabled(false)
+	WebRTCGain::WebRTCGain() : m_bGainEnabled(true)
 	{
+#ifdef GAIN_DUMP
+		gainIn = fopen("/sdcard/gain.input.pcm", "wb");
+		gainOut = fopen("/sdcard/gain.output.pcm", "wb");
+#endif
+
+		m_iSkipFrames = 20; //don't add gain for first 20 frames.
+
 #ifdef USE_AGC
-		LOG_AAC("#gain# WebRTCGain::WebRTCGain()");
+		LOGT("###GN##55 #gain# WebRTCGain::WebRTCGain()");
 
 		m_iVolume = DEFAULT_GAIN;
 		m_sTempBuf = new short[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		int agcret = -1;
 
-		if ((agcret = WebRtcAgc_Create(&AGC_instance)))
+		AGC_instance = WebRtcAgc_Create();
+
+		if ((agcret = WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, WEBRTC_AGC_MAX_LEVEL, MODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
 		{
-			ALOG("WebRtcAgc_Create failed with error code = " + m_Tools.IntegertoStringConvert(agcret));
+			LOGT("###GN## WebRtcAgc_Init failed");
 		}
 		else
 		{
-			ALOG("WebRtcAgc_Create successful");
-		}
-		if ((agcret = WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, SHRT_MAX, MODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
-		{
-			ALOG("WebRtcAgc_Init failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
-		}
-		else
-		{
-			ALOG("WebRtcAgc_Init successful");
+			LOGT("###GN## WebRtcAgc_Init successful");
 		}
 
-		WebRtcAgc_config_t gain_config;
-		gain_config.targetLevelDbfs = 3;
-		gain_config.compressionGaindB = m_iVolume * 10;
-		gain_config.limiterEnable = 0;
-
-		if ((agcret = WebRtcAgc_set_config(AGC_instance, gain_config)))
-		{
-			ALOG("WebRtcAgc_set_config failed with error code= " + m_Tools.IntegertoStringConvert(agcret));
-		}
-		else
-		{
-			ALOG("WebRtcAgc_Create successful");
-		}
+		SetGain(m_iVolume);
 #endif
 	}
 
@@ -59,64 +53,100 @@ namespace MediaSDK
 	WebRTCGain::~WebRTCGain()
 	{
 #ifdef USE_AGC
-		LOG_AAC("#gain# WebRTCGain::~WebRTCGain()");
+		LOGT("###GN## #gain# WebRTCGain::~WebRTCGain()");
 
 		WebRtcAgc_Free(AGC_instance);
+		if (m_sTempBuf)
+		{
+			delete m_sTempBuf;
+		}
+#endif
+		m_iSkipFrames = 0;
+#ifdef GAIN_DUMP
+		fclose(gainIn);
+		fclose(gainOut);
 #endif
 	}
 
 
-	int WebRTCGain::SetGain(int iGain)
+	bool WebRTCGain::SetGain(int iGain)
 	{
 #ifdef USE_AGC
-		LOG_AAC("#gain#Set# WebRTCGain::SetGain(), %d", iGain);
-
-		if (iGain < 0)
+		if (iGain <= 0)
 		{
 			m_bGainEnabled = false;
 			return false;
 		}
-		else if (iGain >= 0)
+		else if (iGain > MAX_GAIN)
 		{
-			m_bGainEnabled = true;
+			return false;
 		}
 
-		WebRtcAgc_config_t gain_config;
+		m_bGainEnabled = true;
+
+		/*
+		// Sets the target peak |level| (or envelope) of the AGC in dBFs (decibels
+		// from digital full-scale). The convention is to use positive values. For
+		// instance, passing in a value of 3 corresponds to -3 dBFs, or a target
+		// level 3 dB below full-scale. Limited to [0, 31].
+
+		// Sets the maximum |gain| the digital compression stage may apply, in dB. A
+		// higher number corresponds to greater compression, while a value of 0 will
+		// leave the signal uncompressed. Limited to [0, 90].
+
+		// When enabled, the compression stage will hard limit the signal to the
+		// target level. Otherwise, the signal will be compressed but not limited
+		// above the target level.
+		*/
+
+		WebRtcAgcConfig gain_config;
 
 		m_iVolume = iGain;
-		gain_config.targetLevelDbfs = 3;
-		gain_config.compressionGaindB = m_iVolume * 10;
-		gain_config.limiterEnable = 0;
+
+
+		gain_config.targetLevelDbfs = 13 - m_iVolume;      /* m_iVolume's range is 1-10 */ /* so effective dbfs range is 12-3 */    /* possible range: 0 - 31 */
+		gain_config.compressionGaindB = 9;   /* possible range: 0 - 90 */
+		gain_config.limiterEnable = true;
 
 		if (WebRtcAgc_set_config(AGC_instance, gain_config))
 		{
-			ALOG("WebRtcAgc_set_config failed  ");
+			LOGT("###GN## WebRtcAgc_set_config failed  ");
+			return false;
 		}
 		else
 		{
-			ALOG("WebRtcAgc_set_config successful");
+			LOGT("###GN## WebRtcAgc_set_config successful");
 		}
+
+		LOGT("###GN## setgain called with %d", iGain);
+
 #endif
 
 		return true;
 	}
 
 
-	int WebRTCGain::AddFarEnd(short *sInBuf, int nBufferSize)
+	bool WebRTCGain::AddFarEnd(short *sInBuf, int nBufferSize)
 	{
 #ifdef USE_AGC
-		LOG_AAC("#gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
+
 
 		if (!m_bGainEnabled)
 		{
 			return false;
 		}
+
+		if(m_iSkipFrames > 0){
+			return true;
+		}
+
+		LOGT("###GN## #gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
 
 		for (int i = 0; i < nBufferSize; i += AGC_SAMPLES_IN_FRAME)
 		{
 			if (0 != WebRtcAgc_AddFarend(AGC_instance, sInBuf + i, AGC_SAMPLES_IN_FRAME))
 			{
-				ALOG("WebRtcAgc_AddFarend failed");
+				LOGT("###GN## WebRtcAgc_AddFarend failed");
 			}
 		}
 #endif
@@ -124,71 +154,59 @@ namespace MediaSDK
 	}
 
 
-	int WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
+	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
 	{
 #ifdef USE_AGC
-		LOG_AAC("#gain# WebRTCGain::AddGain(), %d", nBufferSize);
 
 		if (!m_bGainEnabled)
 		{
 			return false;
 		}
 
-		uint8_t saturationWarning;
-		int32_t inMicLevel = 1;
-		int32_t outMicLevel;
-		bool bSucceeded = true;
+		if(m_iSkipFrames > 0){
+			m_iSkipFrames--;
+			return true;
+		}
 
+		uint8_t saturationWarning;
+		int32_t inMicLevel;
+		int32_t outMicLevel = 0;
+		bool bSucceeded = true;
+		//int total = 0, counter = 0; //debugging purpose
 		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
 		{
-			if (0 != WebRtcAgc_AddMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME))
+			inMicLevel = 0;
+			int16_t* in_buf_temp = sInBuf + i;
+			int16_t* out_buf_temp = m_sTempBuf + i;
+			if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
 			{
-				ALOG("WebRtcAgc_AddMic failed");
+				LOGT("###GN## WebRtcAgc_VirtualMic failed");
 				bSucceeded = false;
 			}
-			if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
+			
+			//total += outMicLevel; counter++;
+			if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
+				(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
 			{
-				ALOG("WebRtcAgc_AddMic failed");
-				bSucceeded = false;
-			}
-			if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME,
-				m_sTempBuf + i, 0,
-				inMicLevel, &outMicLevel, 0, &saturationWarning))
-			{
-				ALOG("WebRtcAgc_Process failed");
+				LOGT("###GN## WebRtcAgc_Process failed");
 				bSucceeded = false;
 			}
 		}
 
-#if 0
-		if (memcmp(sInBuf, m_sTempBuf, nBufferSize * sizeof(short)) == 0)
-		{
-			ALOG("WebRtcAgc_Process did nothing");
-			return false;
-		}
-		else
-		{
-			ALOG("WebRtcAgc_Process tried to do something, believe me :-( . Outputmic =  "
-				+ m_Tools.IntegertoStringConvert(outMicLevel) + " saturationWarning = " + m_Tools.IntegertoStringConvert(saturationWarning));
-		}
-
-		int k = 1;
-		double iRatio = 0;
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i++)
-		{
-			if (sInBuf[i])
-			{
-				//ALOG("ratio = " + m_Tools.IntegertoStringConvert(m_saAudioDecodedFrameTemp[i] / m_saAudioRecorderFrame[i]));
-				iRatio += m_sTempBuf[i] * 1.0 / sInBuf[i];
-				k++;
-			}
-		}
-		ALOG("ratio = " + m_Tools.DoubleToString(iRatio / k));
+#ifdef GAIN_DUMP
+		fwrite(sInBuf, 2, nBufferSize, gainIn);
 #endif
 
 		memcpy(sInBuf, m_sTempBuf, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
 
-		return bSucceeded;;
+#ifdef GAIN_DUMP
+		fwrite(sInBuf, 2, nBufferSize, gainOut);
+#endif
+
+		LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d", nBufferSize, m_iVolume);
+
+		//LOGT("###GN## addgain done with : %d volumeaverage:%d", bSucceeded, (int)(total/counter));
+		return bSucceeded;
 #endif
 
 		return true;

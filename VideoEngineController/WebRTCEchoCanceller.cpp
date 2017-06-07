@@ -3,6 +3,20 @@
 #include "Tools.h"
 #include "LogPrinter.h"
 
+//It is strongly recommended you don't remove this commented out code
+//#include "Filt.h"
+//#define USE_LOW_PASS
+
+//#define ECHO_ANALYSIS
+
+#ifdef ECHO_ANALYSIS
+FILE *EchoFile = nullptr;
+#define HEADER_SIZE 1
+#define WEBRTC_FAREND 1
+#define SPEEX_FAREND 2
+#define NEAREND 3
+#endif
+
 #ifndef ALOG
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 #endif
@@ -15,20 +29,14 @@ namespace MediaSDK
 
 #ifdef USE_AECM
 #ifdef ECHO_ANALYSIS
-		m_bWritingDump = false;
-		EchoFile = fopen("/sdcard/endSignal.pcma", "wb");
+		EchoFile = fopen("/sdcard/endSignal.pcma3", "wb");
 #endif
+		m_bNearEndingOrFarEnding = false;
 
-		int iAECERR = WebRtcAecm_Create(&AECM_instance);
-		if (iAECERR)
-		{
-			ALOG("WebRtcAecm_Create failed");
-		}
-		else
-		{
-			ALOG("WebRtcAecm_Create successful");
-			m_bAecmCreated = true;
-		}
+		int iAECERR = -1;
+
+		AECM_instance = WebRtcAecm_Create();
+		m_bAecmCreated = true;
 
 		iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
 		if (iAECERR)
@@ -43,8 +51,7 @@ namespace MediaSDK
 
 		AecmConfig aecConfig;
 		aecConfig.cngMode = AecmFalse;
-		aecConfig.echoMode = 2;
-
+		aecConfig.echoMode = 4;
 		if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
 		{
 			ALOG("WebRtcAecm_set_config unsuccessful");
@@ -53,7 +60,6 @@ namespace MediaSDK
 		{
 			ALOG("WebRtcAecm_set_config successful");
 		}
-
 		memset(m_sZeroBuf, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
 
 		m_llLastFarendTime = 0;
@@ -68,108 +74,167 @@ namespace MediaSDK
 #ifdef USE_AECM
 		ALOG("WebRtcAec_destructor called");
 		WebRtcAecm_Free(AECM_instance);
+#endif
 
 #ifdef ECHO_ANALYSIS
-		fclose(EchoFile);
+		if (EchoFile)
+		{
+			fclose(EchoFile);
+			EchoFile = nullptr;
+		}
 #endif
-#endif
+
 	}
 
 
-	int WebRTCEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning)
+	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveStreamRunning, long long llDelay)
 	{
 #ifdef USE_AECM
-		if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
+		if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
+		{
+			ALOG("aec nearend Invalid size");
+			return false;
+		}
+		LOG18("Nearending2");
+
+
+		iCounter++;
+
+		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
+		{
+
+			while (m_bNearEndingOrFarEnding)
+			{
+				Tools::SOSleep(1);
+			}
+			m_bNearEndingOrFarEnding = true;
+#ifdef ECHO_ANALYSIS
+
+			short temp = NEAREND;
+			fwrite(&temp, sizeof(short), 1, EchoFile);
+			fwrite(&llDelay, sizeof(short), 1, EchoFile);
+			fwrite(sInBuf + i, sizeof(short), AECM_SAMPLES_IN_FRAME, EchoFile);
+#endif
+			bool bFailed = false, bZeroed = false;
+			if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay))
+			{
+				ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)llDelay)
+					+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
+					+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
+					+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
+				bFailed = true;
+			}
+			else
+			{
+				/*ALOG("WebRtcAec_Process successful Delay = " + m_Tools.IntegertoStringConvert((int)delay) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
+				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
+				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
+			}
+			m_bNearEndingOrFarEnding = false;
+
+		}
+
+
+#ifdef USE_LOW_PASS
+		if (isLoudspeaker)
+		{
+			LowPass(sInBuf, sBufferSize);
+			//DeAmplitude(sInBuf, sBufferSize);
+			/ *for (int i = 0; i < sBufferSize; i++)
+			{
+				if (sInBuf[i] > 10922)
+				{
+					LOGE("###CE### %d", (int)sInBuf[i]);
+				}
+				sInBuf[i] *= 2;
+			}*/
+		}
+#endif
+#endif
+		return true;
+	}
+
+	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize, bool isLiveStreamRunning)
+	{
+#ifdef USE_AECM
+
+		if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 		{
 			ALOG("aec farend Invalid size");
 			return false;
 		}
 
-#ifdef ECHO_ANALYSIS
-		while (m_bWritingDump)
-		{
-			Tools::SOSleep(1);
-		}
-		m_bWritingDump = true;
-		short temp = WEBRTC_FAREND;
-		fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
-		fwrite(farEndData, sizeof(short), dataLen, EchoFile);
-		m_bWritingDump = false;
-#endif
+		LOG18("Farending2");
 
-		for (int i = 0; i < dataLen; i += AECM_SAMPLES_IN_FRAME)
+		for (int i = 0; i < sBufferSize; i += AECM_SAMPLES_IN_FRAME)
 		{
-			if (0 != WebRtcAecm_BufferFarend(AECM_instance, farEndData + i, AECM_SAMPLES_IN_FRAME))
+			while (m_bNearEndingOrFarEnding)
 			{
-				ALOG("WebRtcAec_BufferFarend failed, " + " err = " + Tools::IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
-					+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
-					+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));
+				Tools::SOSleep(1);
+			}
+			m_bNearEndingOrFarEnding = true;
+
+#ifdef ECHO_ANALYSIS
+
+			short temp = WEBRTC_FAREND;
+			short iDelay = 0;
+			fwrite(&temp, sizeof(short), 1, EchoFile);
+			fwrite(&iDelay, sizeof(short), 1, EchoFile);
+			fwrite(sBuffer + i, sizeof(short), AECM_SAMPLES_IN_FRAME, EchoFile);
+
+#endif
+			if (0 != WebRtcAecm_BufferFarend(AECM_instance, sBuffer + i, AECM_SAMPLES_IN_FRAME))
+			{
+				ALOG("WebRtcAec_BufferFarend failed id = " + m_Tools.IntegertoStringConvert(m_ID) + " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
+					+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
+					+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
 			}
 			else
 			{
 				m_llLastFarendTime = Tools::CurrentTimestamp();
-				/*ALOG("WebRtcAec_BufferFarend successful id = " + Tools::IntegertoStringConvert(m_ID)
-				+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));*/
+				/*ALOG("WebRtcAec_BufferFarend successful id = " + m_Tools.IntegertoStringConvert(m_ID)
+				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
+				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
 			}
+			m_bNearEndingOrFarEnding = false;
 		}
 #endif
 
 		return true;
 	}
 
-
-	int WebRTCEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning)
+	//It is strongly recommended you don't remove this commented out code
+	/*
+	int CEcho::DeAmplitude(short *sInBuf, int sBufferSize)
 	{
-#ifdef USE_AECM
+	int iAmplitudeThreshold = 50;
+	int iAmplitudeSum = 0;
 
-		if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
-		{
-			ALOG("aec nearend Invalid size");
-			return false;
-		}
-
-		iCounter++;
-
-#ifdef ECHO_ANALYSIS
-		while (m_bWritingDump)
-		{
-			Tools::SOSleep(1);
-		}
-		m_bWritingDump = true;
-		short temp = NEAREND;
-		fwrite(&temp, sizeof(short), HEADER_SIZE, EchoFile);
-		fwrite(nearEndData, sizeof(short), dataLen, EchoFile);
-		m_bWritingDump = false;
-#endif
-
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
-		{
-			bool bFailed = false, bZeroed = false;
-			int delay = Tools::CurrentTimestamp() - m_llLastFarendTime/*10*/;
-			if (delay < 0)
-			{
-				delay = 0;
-			}
-
-			if (0 != WebRtcAecm_Process(AECM_instance, nearEndData + i, NULL, nearEndData + i, AECM_SAMPLES_IN_FRAME, 50))
-			{
-				ALOG("WebRtcAec_Process failed bAecmCreated = " + Tools::IntegertoStringConvert((int)bAecmCreated) + " delay = " + Tools::IntegertoStringConvert((int)delay)
-					+ " err = " + Tools::IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
-					+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
-					+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));
-				bFailed = true;
-			}
-			else
-			{
-				/*ALOG("WebRtcAec_Process successful Delay = " + Tools::IntegertoStringConvert((int)delay) + " id = " + Tools::IntegertoStringConvert(m_ID)
-				+ " iCounter = " + Tools::IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + Tools::IntegertoStringConvert(iCounter2));*/
-			}
-		}
-#endif
-
-		return true;
+	for (int i = 0; i < sBufferSize; i++)
+	{
+	iAmplitudeSum += abs(sInBuf[i]);
 	}
+	short iAvgAmplitude = iAmplitudeSum / sBufferSize;
+
+	if (iAvgAmplitude <= iAmplitudeThreshold)
+	{
+	for (int i = 0; i < sBufferSize; i++)
+	{
+	sInBuf[i] = 0;
+	}
+	}
+	return true;
+	}
+	int CEcho::LowPass(short *sInBuf, int sBufferSize)
+	{
+	Filter *my_filter = new Filter(LPF, 51, 8, 2.0);
+	for (int i = 0; i < sBufferSize; i++)
+	{
+	sInBuf[i] = (short)(my_filter->do_sample((double)sInBuf[i]));
+	}
+	return true;
+	}
+	*/
 
 } //namespace MediaSDK
+

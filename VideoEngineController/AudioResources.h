@@ -26,7 +26,6 @@ namespace MediaSDK
 		SmartPointer<EchoCancellerInterface> m_pEchoCanceler;
 		SmartPointer<NoiseReducerInterface> m_pNoiseReducer;
 
-		SmartPointer<AudioGainInterface> m_pRecorderGain;
 		SmartPointer<AudioGainInterface> m_pPlayerGain;
 
 
@@ -44,7 +43,6 @@ namespace MediaSDK
 		SmartPointer<EchoCancellerInterface> GetEchoCanceler() { return m_pEchoCanceler; }
 		SmartPointer<NoiseReducerInterface> GetNoiseReducer()  { return m_pNoiseReducer; }
 
-		SmartPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
 		SmartPointer<AudioGainInterface> GetPlayerGain()   { return m_pPlayerGain; }
 	};
 

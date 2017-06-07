@@ -17,11 +17,11 @@ namespace MediaSDK
 
 		virtual ~GomGomGain();
 
-		int SetGain(int iGain) { return true; };
+		bool SetGain(int iGain) { return true; };
 
-		int AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
+		bool AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
 
-		int AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning);
+		bool AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning);
 
 	private:
 

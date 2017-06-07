@@ -8,6 +8,7 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioDePacketizer.h"
 
+
 namespace MediaSDK
 {
 	class AudioGainInterface;
@@ -30,6 +31,10 @@ namespace MediaSDK
 		~AudioFarEndDataProcessor();
 
 		virtual	void ProcessFarEndData() = 0;
+		void ProcessPlayingData();
+
+		bool m_b1stPlaying;
+		long long m_llNextPlayingTime;
 
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
 		void StartCallInLive(int nEntityType);
@@ -44,11 +49,15 @@ namespace MediaSDK
 			m_pAudioAlarmListener = alarmListener;
 		}
 
+
 		//LiveReceiver *m_pLiveReceiverAudio = nullptr;
 		ILiveAudioParser* m_pLiveAudioParser;
 		long long m_llDecodingTimeStampOffset = -1;
 		AudioDePacketizer* m_pAudioDePacketizer = nullptr;
 		CAudioByteBuffer m_AudioReceivedBuffer;
+
+		short m_saPlayingData[MAX_AUDIO_FRAME_Length];
+		int m_iPlayedSinceRecordingStarted;
 
 		short tmpBuffer[2048];
 
@@ -72,9 +81,6 @@ namespace MediaSDK
 		//AudioPacketHeader *m_pAudioPacketHeader = nullptr;
 		SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader = nullptr;
 		SmartPointer<GomGomGain> m_pGomGomGain;
-
-		bool m_bAudioDecodingThreadRunning;
-		bool m_bAudioDecodingThreadClosed;
 
 
 		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
