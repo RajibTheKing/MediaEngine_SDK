@@ -28,7 +28,7 @@ namespace MediaSDK
 		bool enableBufferData;
 		bool enableMuxing;
 		bool enablePacketization;
-
+		bool isLiveStreamingRunning;
 
 	protected:
 
@@ -51,6 +51,7 @@ namespace MediaSDK
 
 		void ResetOptions();
 		void SetOptions(int serviceType, int entityType);
+		bool GetIsLiveStreamRunning() { return isLiveStreamingRunning; }
 
 
 	public:

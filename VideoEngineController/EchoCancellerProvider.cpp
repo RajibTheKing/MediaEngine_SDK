@@ -6,14 +6,14 @@
 namespace MediaSDK
 {
 
-	SmartPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancelerType echoCancellerType)
+	SmartPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancelerType echoCancellerType, bool isLiveRunning)
 	{
 		EchoCancellerInterface* pInstance = nullptr;
 
 		switch (echoCancellerType)
 		{
 		case WebRTC_ECM:
-			pInstance = new WebRTCEchoCanceller();
+			pInstance = new WebRTCEchoCanceller(isLiveRunning);
 			break;
 
 		case Speex_ECM:

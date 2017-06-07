@@ -90,6 +90,7 @@ namespace MediaSDK
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
+			GetPlayerGain()->SetGain(9);
 		}
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
@@ -319,7 +320,7 @@ namespace MediaSDK
 
 		if (!m_pEcho.get())
 		{
-			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
+			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, true);
 		}
 
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
