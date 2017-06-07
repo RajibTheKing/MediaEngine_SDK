@@ -24,7 +24,7 @@ FILE *EchoFile = nullptr;
 namespace MediaSDK
 {
 
-	WebRTCEchoCanceller::WebRTCEchoCanceller() : m_bAecmCreated(false), m_bAecmInited(false)
+	WebRTCEchoCanceller::WebRTCEchoCanceller(bool isLiveRunning) : m_bAecmCreated(false), m_bAecmInited(false)
 	{
 
 #ifdef USE_AECM
@@ -51,7 +51,8 @@ namespace MediaSDK
 
 		AecmConfig aecConfig;
 		aecConfig.cngMode = AecmFalse;
-		aecConfig.echoMode = 4;
+		aecConfig.echoMode = isLiveRunning ? ECHO_LEVEL_LIVE : ECHO_LEVEL_CALL;
+		LOG18("##TT echo level %d", (int)aecConfig.echoMode);
 		if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
 		{
 			ALOG("WebRtcAecm_set_config unsuccessful");

@@ -28,7 +28,7 @@ namespace MediaSDK
 		bool enableBufferData;
 		bool enableMuxing;
 		bool enablePacketization;
-
+		bool isLiveStreamingRunning;
 
 	protected:
 
@@ -72,6 +72,7 @@ namespace MediaSDK
 		bool IsEnabledBufferData()             { return enableBufferData; }
 		bool IsEnabledMuxing()                 { return enableMuxing; }
 		bool IsEnabledPacketization()          { return enablePacketization; }
+		bool GetIsLiveStreamRunning()          { return isLiveStreamingRunning; }
 	};
 
 } //namespace MediaSDK

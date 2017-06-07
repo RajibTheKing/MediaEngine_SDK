@@ -90,6 +90,7 @@ namespace MediaSDK
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
+			//m_pPlayerGain->SetGain(9);
 		}
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
@@ -319,7 +320,7 @@ namespace MediaSDK
 
 		if (!m_pEcho.get())
 		{
-			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
+			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, true);
 		}
 
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
@@ -441,9 +442,9 @@ namespace MediaSDK
 		else
 		{
 			long long llNOw = Tools::CurrentTimestamp();
-			if (llNOw < m_llnextRecordedDataTime)
+			if (llNOw + 20 < m_llnextRecordedDataTime)
 			{
-				Tools::SOSleep(m_llnextRecordedDataTime - llNOw);
+				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
 			}
 			m_llnextRecordedDataTime += 100;
 		}

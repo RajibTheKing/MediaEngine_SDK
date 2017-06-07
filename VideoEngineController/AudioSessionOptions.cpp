@@ -31,6 +31,7 @@ namespace MediaSDK
 		enableBufferData = false;
 		enableMuxing = false;
 		enablePacketization = false;
+		isLiveStreamingRunning = false;
 	}
 
 
@@ -133,6 +134,7 @@ namespace MediaSDK
 		enableBufferData = false;
 		enableMuxing = false;
 		enablePacketization = false;
+		isLiveStreamingRunning = false;
 	}
 
 
@@ -157,6 +159,7 @@ namespace MediaSDK
 		enableBufferData = false;
 		enableMuxing = false;
 		enablePacketization = false;
+		isLiveStreamingRunning = false;
 	}
 
 
@@ -181,6 +184,7 @@ namespace MediaSDK
 		enableBufferData = false;
 		enableMuxing = false;
 		enablePacketization = false;
+		isLiveStreamingRunning = true;
 	}
 
 
@@ -205,6 +209,7 @@ namespace MediaSDK
 		enableBufferData = false;
 		enableMuxing = true;
 		enablePacketization = false;
+		isLiveStreamingRunning = true;
 	}
 
 
@@ -229,6 +234,7 @@ namespace MediaSDK
 		enableBufferData = false;
 		enableMuxing = false;
 		enablePacketization = false;
+		isLiveStreamingRunning = true;
 	}
 
 
@@ -253,6 +259,7 @@ namespace MediaSDK
 		enableBufferData = false;
 		enableMuxing = false;
 		enablePacketization = false;
+		isLiveStreamingRunning = true;
 	}
 
 } //namespace MediaSDK
