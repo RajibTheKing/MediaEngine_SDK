@@ -457,7 +457,7 @@ namespace MediaSDK
 #endif
 
 		//If trace is received, current and next frames are deleted
-		if (((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0) && !m_bLiveAudioStreamRunning)
+		if (!m_bLiveAudioStreamRunning && ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0))
 		{
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			m_iDeleteCount --;
@@ -488,7 +488,7 @@ namespace MediaSDK
 			}
 
 		}
-		if ((!m_bTraceRecieved && !m_bTraceWillNotBeReceived) && !m_bLiveAudioStreamRunning)
+		if (!m_bLiveAudioStreamRunning && (!m_bTraceRecieved && !m_bTraceWillNotBeReceived))
 		{
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
