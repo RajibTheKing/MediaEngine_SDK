@@ -442,9 +442,9 @@ namespace MediaSDK
 		else
 		{
 			long long llNOw = Tools::CurrentTimestamp();
-			if (llNOw < m_llnextRecordedDataTime)
+			if (llNOw + 20 < m_llnextRecordedDataTime)
 			{
-				Tools::SOSleep(m_llnextRecordedDataTime - llNOw);
+				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
 			}
 			m_llnextRecordedDataTime += 100;
 		}
