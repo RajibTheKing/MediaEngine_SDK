@@ -688,6 +688,8 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 int CController::SetBeautification(const IPVLongType llFriendID, bool bIsEnable)
 {
     CVideoCallSession* pVideoSession;
+
+	Locker lock(*m_pVideoSendMutex);
     
     bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
     
