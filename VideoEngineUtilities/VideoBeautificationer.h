@@ -5,7 +5,7 @@
 #include <string>
 
 #include "../VideoEngineController/Size.h"
-#include "../videoEngineController/Tools.h"
+#include "../VideoEngineController/Tools.h"
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 

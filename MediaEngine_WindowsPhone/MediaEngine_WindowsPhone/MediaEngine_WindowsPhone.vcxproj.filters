@@ -374,6 +374,9 @@
     <ClInclude Include="..\..\VideoEngineController\WebRTCNoiseReducer.h">
       <Filter>VideoEngineController</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\Trace.h">
+      <Filter>VideoEngineController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VideoEngineController\AudioCallSession.cpp">
@@ -692,6 +695,9 @@
       <Filter>VideoEngineController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\WebRTCNoiseReducer.cpp">
+      <Filter>VideoEngineController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\Trace.cpp">
       <Filter>VideoEngineController</Filter>
     </ClCompile>
   </ItemGroup>

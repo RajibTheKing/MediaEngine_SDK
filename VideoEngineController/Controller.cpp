@@ -685,6 +685,22 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 	}
 }
 
+int CController::SetBeautification(const IPVLongType llFriendID, bool bIsEnable)
+{
+    CVideoCallSession* pVideoSession;
+    
+    bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
+    
+    if (bExist)
+    {
+        pVideoSession->SetBeautification(bIsEnable);
+        return 1;
+    }
+    else
+    {
+        return -1;
+    }
+}
 int CController::SetVideoEffect(const long long llFriendID, int nEffectStatus)
 {
 	CVideoCallSession* pVideoSession;

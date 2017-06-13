@@ -60,6 +60,7 @@
 		DA5D38951EB07CCD00304B6D /* MuxHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA5D38931EB07CCD00304B6D /* MuxHeader.cpp */; };
 		DA5D38981EB07D1E00304B6D /* AudioShortBufferForPublisherFarEnd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA5D38961EB07D1E00304B6D /* AudioShortBufferForPublisherFarEnd.cpp */; };
 		DA63DA7C1C7C6E2800EF3793 /* Helper_IOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */; };
+		DA7726EF1EE7EEB300798DA7 /* Trace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7726ED1EE7EEB300798DA7 /* Trace.cpp */; };
 		DA77B0EE1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */; };
 		DA77B0EF1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */; };
 		DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA77B0F01CF45C5100719D7D /* AverageCalculator.cpp */; };
@@ -255,6 +256,8 @@
 		DA5D38971EB07D1E00304B6D /* AudioShortBufferForPublisherFarEnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioShortBufferForPublisherFarEnd.h; path = VideoEngineController/AudioShortBufferForPublisherFarEnd.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
+		DA7726ED1EE7EEB300798DA7 /* Trace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Trace.cpp; path = VideoEngineController/Trace.cpp; sourceTree = "<group>"; };
+		DA7726EE1EE7EEB300798DA7 /* Trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Trace.h; path = VideoEngineController/Trace.h; sourceTree = "<group>"; };
 		DA77B0EA1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceCapabilityCheckBuffer.cpp; path = VideoEngineController/DeviceCapabilityCheckBuffer.cpp; sourceTree = "<group>"; };
 		DA77B0EB1CF4597D00719D7D /* DeviceCapabilityCheckBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceCapabilityCheckBuffer.h; path = VideoEngineController/DeviceCapabilityCheckBuffer.h; sourceTree = "<group>"; };
 		DA77B0EC1CF4597D00719D7D /* DeviceCapabilityCheckThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceCapabilityCheckThread.cpp; path = VideoEngineController/DeviceCapabilityCheckThread.cpp; sourceTree = "<group>"; };
@@ -442,7 +445,6 @@
 		18AAB7741C0059320069154C /* VideoEngineController */ = {
 			isa = PBXGroup;
 			children = (
-				6A583FC51ED1B81D0044205A /* CommonTypes.h */,
 				6A4C253C1E152F8E00679D74 /* aacdecoder_lib.h */,
 				6A4C253D1E152F8E00679D74 /* aacdecoder.h */,
 				188587B71C0AEEAC00B1F435 /* AudioCallSession.cpp */,
@@ -519,6 +521,7 @@
 				188587C31C0AEEAC00B1F435 /* codec_ver.h */,
 				188587C41C0AEEAC00B1F435 /* CommonElementsBucket.cpp */,
 				188587C51C0AEEAC00B1F435 /* CommonElementsBucket.h */,
+				6A583FC51ED1B81D0044205A /* CommonTypes.h */,
 				188587C61C0AEEAC00B1F435 /* Controller.cpp */,
 				188587C71C0AEEAC00B1F435 /* Controller.h */,
 				DA988E6E1EBF4CA300B5B782 /* DecoderAAC.cpp */,
@@ -622,6 +625,8 @@
 				188587D61C0AEEAC00B1F435 /* ThreadTools.h */,
 				188587D71C0AEEAC00B1F435 /* Tools.cpp */,
 				188587D81C0AEEAC00B1F435 /* Tools.h */,
+				DA7726ED1EE7EEB300798DA7 /* Trace.cpp */,
+				DA7726EE1EE7EEB300798DA7 /* Trace.h */,
 				188587D91C0AEEAC00B1F435 /* typedef.h */,
 				188587DA1C0AEEAC00B1F435 /* typedefs.h */,
 				DA77B0F31CF45C8800719D7D /* VersionController.cpp */,
@@ -798,6 +803,7 @@
 				DA988E871EBF4CA300B5B782 /* EncoderOpus.cpp in Sources */,
 				DA77B0F21CF45C5100719D7D /* AverageCalculator.cpp in Sources */,
 				DA988EDE1EBF580C00B5B782 /* VideoDecodingThreadOfCall.cpp in Sources */,
+				DA7726EF1EE7EEB300798DA7 /* Trace.cpp in Sources */,
 				DA988E771EBF4CA300B5B782 /* AudioFarEndProcessorChannel.cpp in Sources */,
 				188587F31C0AEEAC00B1F435 /* InterfaceOfAudioVideoEngine.cpp in Sources */,
 				9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */,

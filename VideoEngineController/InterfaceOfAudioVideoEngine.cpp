@@ -428,6 +428,18 @@ namespace MediaSDK
 		return iReturnedValue;
 	}
 
+    int CInterfaceOfAudioVideoEngine::SetBeautification(const IPVLongType llFriendID, bool bIsEnable)
+    {
+        if (NULL == m_pcController)
+        {
+            return false;
+        }
+        
+        int iReturnedValue = m_pcController->SetBeautification(llFriendID, bIsEnable);
+        
+        return iReturnedValue;
+    }
+    
 	int CInterfaceOfAudioVideoEngine::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 	{
 		if (NULL == m_pcController)
