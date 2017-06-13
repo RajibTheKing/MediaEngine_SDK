@@ -510,7 +510,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
 					
 					}
 					else
@@ -531,10 +531,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
 						if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 						{
-                            pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, true);
 						}
 						else
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth);
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
 					}
 					else
 					{
@@ -615,11 +615,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			else
 			{
 
+				bool doSharp = false;
+
+				if(m_pVideoEncoder->GetBitrate() >= MIN_BITRATE_FOR_SHARPING)
+					doSharp = true;
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 				if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 				{
-					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5);
+					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5, doSharp);
 
 				}
 				else
@@ -634,14 +639,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				{
 					if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, doSharp);
 					}
 					else
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5, doSharp);
 				}
 				else
 				{
-					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5);
+					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5, doSharp);
 				}
 #endif
 				//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
