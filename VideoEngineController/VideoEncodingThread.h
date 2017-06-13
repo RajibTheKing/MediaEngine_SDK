@@ -49,6 +49,8 @@ namespace MediaSDK
 
 		void SetFrameNumber(int nFrameNumber);
 
+        void SetBeautification(bool bIsEnable);
+        
 		int SetVideoEffect(int nEffectStatus);
 
 		void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);

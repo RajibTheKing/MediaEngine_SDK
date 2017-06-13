@@ -456,6 +456,7 @@ namespace MediaSDK
 		}
 #endif
 
+#ifdef __ANDROID__
 		//If trace is received, current and next frames are deleted
 		if (!m_bLiveAudioStreamRunning && ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0))
 		{
@@ -494,6 +495,7 @@ namespace MediaSDK
 		}
 		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
 			m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
+#endif
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||

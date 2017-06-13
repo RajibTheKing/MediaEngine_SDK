@@ -223,6 +223,7 @@
     <ClInclude Include="..\..\VideoEngineController\SynchronizedMap.h" />
     <ClInclude Include="..\..\VideoEngineController\ThreadTools.h" />
     <ClInclude Include="..\..\VideoEngineController\Tools.h" />
+    <ClInclude Include="..\..\VideoEngineController\Trace.h" />
     <ClInclude Include="..\..\VideoEngineController\typedef.h" />
     <ClInclude Include="..\..\VideoEngineController\typedefs.h" />
     <ClInclude Include="..\..\VideoEngineController\VersionController.h" />
@@ -336,6 +337,7 @@
     <ClCompile Include="..\..\VideoEngineController\SpeexEchoCanceller.cpp" />
     <ClCompile Include="..\..\VideoEngineController\SynchronizedMap.cpp" />
     <ClCompile Include="..\..\VideoEngineController\Tools.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\Trace.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VersionController.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\VideoCallSessionListHandler.cpp" />

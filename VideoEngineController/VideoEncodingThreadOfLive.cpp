@@ -507,8 +507,7 @@ m_VideoBeautificationer(NULL)
 						{
 							if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 							{
-								if (m_nOrientationType != ORIENTATION_SCREEN)
-									pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
+								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
 							}
 							else
 								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth);

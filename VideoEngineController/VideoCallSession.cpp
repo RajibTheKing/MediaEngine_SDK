@@ -1510,6 +1510,24 @@ int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int hei
 	}
 }
 
+void CVideoCallSession::SetBeautification(bool bIsEnable)
+{
+    
+#ifdef	OLD_ENCODING_THREAD
+    
+    m_pVideoEncodingThread->SetBeautification(bIsEnable);
+    
+#else
+    
+    if (m_nServiceType == SERVICE_TYPE_CALL || m_nServiceType == SERVICE_TYPE_SELF_CALL)
+        m_pVideoEncodingThreadOfCall->SetBeautification(bIsEnable);
+    else if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+        m_pVideoEncodingThreadOfLive->SetBeautification(bIsEnable);
+    
+#endif
+    
+}
+    
 int CVideoCallSession::SetVideoEffect(int nEffectStatus)
 {
 	if (nEffectStatus == 1)

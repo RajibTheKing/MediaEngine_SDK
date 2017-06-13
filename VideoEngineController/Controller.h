@@ -61,6 +61,7 @@ namespace MediaSDK
 		int CheckDeviceCapability(const long long& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 		int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
+        int SetBeautification(const IPVLongType llFriendID, bool bIsEnable);
 		int SetVideoEffect(const long long llFriendID, int nEffectStatus);
 
 		void SetCallInLiveType(const long long llFriendID, int nCallInLiveType);
@@ -130,6 +131,7 @@ namespace MediaSDK
 		long long m_llLastTimeStamp;
 
 	private:
+        void TraverseReceivedVideoData(int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
 		CEventNotifier m_EventNotifier;
 

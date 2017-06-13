@@ -5,7 +5,7 @@
 #include <string>
 
 #include "../VideoEngineController/Size.h"
-#include "../videoEngineController/Tools.h"
+#include "../VideoEngineController/Tools.h"
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 
@@ -51,8 +51,8 @@ public:
 	void boxBlur_4 (unsigned char *scl, unsigned char *tcl , int h, int w, int r);
 	void boxBlurH_4 (unsigned char *scl, unsigned char *tcl, int h, int w, int r);
 
-	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth);
-	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
+	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp);
+	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, bool doSharp);
 	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
 
 	void BrightnessCalculation(int startPix, int endPix, int midPix, int highestChange);

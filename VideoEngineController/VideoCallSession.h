@@ -139,6 +139,7 @@ public:
 	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width);
 	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
+    void SetBeautification(bool bIsEnable);
 	int SetVideoEffect(int nEffectStatus);
 	int TestVideoEffect(int *param, int size);
 

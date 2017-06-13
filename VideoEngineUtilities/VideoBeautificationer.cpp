@@ -568,7 +568,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlu
 	return result;
 }
 
-pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
+pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, bool doSharp)
 {
 	Locker lock(*m_pVideoBeautificationMutex);
 
@@ -597,21 +597,23 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	memset(m_mean, iWidth, 0);
 
-
-	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+	if (doSharp)
 	{
-		int tmp = 0;
-
-		for (int j = 1; j <= iWidth; j++)
+		for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
 		{
-			tmp += pBlurConvertingData[i * iWidth + j - 1];
-			m_mean[i][j] = tmp + m_mean[i - 1][j];
+			int tmp = 0;
 
-			if (i > 2 && j > 2) 
+			for (int j = 1; j <= iWidth; j++)
 			{
-				int indx = m_mean[i][j] - m_mean[i - 3][j] - m_mean[i][j - 3] + m_mean[i - 3][j - 3];
+				tmp += pBlurConvertingData[i * iWidth + j - 1];
+				m_mean[i][j] = tmp + m_mean[i - 1][j];
 
-				pBlurConvertingData[iw + j - 2] = m_precSharpness[pBlurConvertingData[iw + j - 2]][indx];
+				if (i > 2 && j > 2)
+				{
+					int indx = m_mean[i][j] - m_mean[i - 3][j] - m_mean[i][j - 3] + m_mean[i - 3][j - 3];
+
+					pBlurConvertingData[iw + j - 2] = m_precSharpness[pBlurConvertingData[iw + j - 2]][indx];
+				}
 			}
 		}
 	}
@@ -718,7 +720,7 @@ bool CVideoBeautificationer::IsNotSkinPixel(unsigned char UPixel, unsigned char 
 	return (UPixel <= 94 || UPixel >= 126 || VPixel <= 134 || VPixel >= 176);
 }
 
-pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth)
+pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp)
 {
 	Locker lock(*m_pVideoBeautificationMutex);
 
@@ -754,7 +756,11 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	if (m_nIsGreaterThen5s > 0)
+	if (m_nIsGreaterThen5s > 0 && doSharp)
+
+#else
+
+	if (doSharp)
 
 #endif
 

@@ -76,6 +76,7 @@ namespace MediaSDK
 		int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
 		int SetDeviceDisplayHeightWidth(int nVideoHeight, int nVideoWidth);
 
+        int SetBeautification(const IPVLongType llFriendID, bool bIsEnable);
 		int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
 		int TestVideoEffect(const IPVLongType llFriendID, int *param, int size);
 
