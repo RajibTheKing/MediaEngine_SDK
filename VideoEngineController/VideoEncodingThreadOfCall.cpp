@@ -380,6 +380,48 @@ m_VideoBeautificationer(NULL),
 #endif
 				int nServiceType = m_pVideoCallSession->GetServiceType();
 
+				if (m_VideoBeautificationer == NULL)
+				{
+					m_VideoBeautificationer = new CVideoBeautificationer(iGotHeight, iGotWidth);
+				}
+
+				bool doSharp = false;
+
+				if (m_pVideoEncoder->GetBitrate() >= MIN_BITRATE_FOR_SHARPING)
+					doSharp = true;
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+				if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
+				{
+					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5, doSharp);
+
+				}
+				else
+				{
+					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter2(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth);
+				}
+#else
+
+#ifndef TARGET_OS_WINDOWS_PHONE
+
+				if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15 || m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+				{
+					if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+					{
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, doSharp);
+					}
+					else
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5, doSharp);
+				}
+				else
+				{
+					pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight - 5, iGotWidth - 5, doSharp);
+				}
+#endif
+				//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
+#endif
+
 				/*if(m_bIsCheckCall == true)
 				{
 				memset(m_ucaEncodingFrame, 0, sizeof(m_ucaEncodingFrame));
