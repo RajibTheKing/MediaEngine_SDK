@@ -442,11 +442,7 @@ int CController::PushPacketForDecodingVector(const long long& lFriendID, int off
 		//		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
 		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
-        {
-            TraverseReceivedVideoData(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
-            
-            return pVideoSession->PushPacketForMergingVector(offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames);
-        }
+			return pVideoSession->PushPacketForMergingVector(offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames);
 		else
 			return -1;
 	}
@@ -1323,33 +1319,6 @@ int CController::GetDeviceDisplayHeight()
 int CController::GetDeviceDisplayWidth()
 {
 	return m_nDeviceDisplayWidth;
-}
-    
-void CController::TraverseReceivedVideoData(int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
-{
-    
-    unsigned char ucTmp;
-    int iTmp;
-    int commonLeft;
-    int commonRight;
-    
-    for(int i=0;i<in_size;i++)
-    {
-        ucTmp = in_data[i+offset];
-    }
-    
-    for(int i=0;i<numberOfFrames;i++)
-    {
-        iTmp = frameSizes[i];
-    }
-    
-    int numberOfMissingFrame = (int)vMissingFrames.size();
-    
-    for(int i=0;i<numberOfMissingFrame;i++)
-    {
-        commonLeft = vMissingFrames[i].first;
-        commonRight = vMissingFrames[i].second;
-    }
 }
 
 } //namespace MediaSDK

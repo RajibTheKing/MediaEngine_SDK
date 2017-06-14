@@ -131,7 +131,6 @@ namespace MediaSDK
 		long long m_llLastTimeStamp;
 
 	private:
-        void TraverseReceivedVideoData(int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
 		CEventNotifier m_EventNotifier;
 
