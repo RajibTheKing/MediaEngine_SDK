@@ -121,12 +121,11 @@ namespace MediaSDK
 		*/
 #ifdef OLD_GAIN_LIB
 		WebRtcAgc_config_t gain_config;
+		m_iVolume = 13;
 #else
 		WebRtcAgcConfig gain_config;
-#endif
-
 		m_iVolume = iGain;
-
+#endif
 
 		gain_config.targetLevelDbfs = 13 - m_iVolume;      /* m_iVolume's range is 1-10 */ /* so effective dbfs range is 12-3 */    /* possible range: 0 - 31 */
 		gain_config.compressionGaindB = 9;   /* possible range: 0 - 90 */
@@ -215,7 +214,7 @@ namespace MediaSDK
 			//total += outMicLevel; counter++;
 #ifdef OLD_GAIN_LIB
 			if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, m_sTempBuf + i, 0,
-				outMicLevel, &inMicLevel, 1, &saturationWarning))
+				outMicLevel, &inMicLevel, 0, &saturationWarning))
 #else
 			if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
 				(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
