@@ -26,13 +26,15 @@
 		188587FB1C0AEEAC00B1F435 /* VideoPacketBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587E51C0AEEAC00B1F435 /* VideoPacketBuffer.cpp */; };
 		188587FC1C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587E71C0AEEAC00B1F435 /* EncodedFrameDepacketizer.cpp */; };
 		188588031C0AEEBC00B1F435 /* ColorConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188587FD1C0AEEBC00B1F435 /* ColorConverter.cpp */; };
-		1887672F1C0ACD5500899605 /* libG729Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1887672E1C0ACD5500899605 /* libG729Library.a */; };
-		18EB836E1C0ED768006738CB /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836A1C0ED768006738CB /* libcommon.a */; };
-		18EB836F1C0ED768006738CB /* libprocessing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836B1C0ED768006738CB /* libprocessing.a */; };
-		18EB83701C0ED768006738CB /* libwelsdec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836C1C0ED768006738CB /* libwelsdec.a */; };
-		18EB83711C0ED768006738CB /* libwelsenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EB836D1C0ED768006738CB /* libwelsenc.a */; };
+		6A084E791EF640BD00F4A6A0 /* libaac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E751EF640BD00F4A6A0 /* libaac.a */; };
+		6A084E7A1EF640BD00F4A6A0 /* libG729Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E761EF640BD00F4A6A0 /* libG729Library.a */; };
+		6A084E7B1EF640BD00F4A6A0 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E771EF640BD00F4A6A0 /* libopus.a */; };
+		6A084E7C1EF640BD00F4A6A0 /* libwebrtc-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E781EF640BD00F4A6A0 /* libwebrtc-ios.a */; };
+		6A084E811EF640CB00F4A6A0 /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E7D1EF640CB00F4A6A0 /* libcommon.a */; };
+		6A084E821EF640CB00F4A6A0 /* libprocessing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E7E1EF640CB00F4A6A0 /* libprocessing.a */; };
+		6A084E831EF640CB00F4A6A0 /* libwelsdec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E7F1EF640CB00F4A6A0 /* libwelsdec.a */; };
+		6A084E841EF640CB00F4A6A0 /* libwelsenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E801EF640CB00F4A6A0 /* libwelsenc.a */; };
 		6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A3E37511E0932F500228138 /* LiveStreamingHeader.cpp */; };
-		6A4C25431E152F9900679D74 /* libaac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A4C25421E152F9900679D74 /* libaac.a */; };
 		6A4F57871E0A3D8000C48ACC /* VideoBeautificationer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */; };
 		6AAEC53D1E07EF9E001525FE /* VideoHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */; };
 		9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */; };
@@ -75,7 +77,6 @@
 		DA848BE61E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BE01E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp */; };
 		DA848BE71E9CFD43002BC7DE /* LiveAudioParserForPublisher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA848BE21E9CFD43002BC7DE /* LiveAudioParserForPublisher.cpp */; };
 		DA86B3051E4B239000ED7C83 /* VideoEffects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */; };
-		DA91E7AA1D682440006F50E2 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA91E7A91D682440006F50E2 /* libopus.a */; };
 		DA91E7B01D6824AF006F50E2 /* AudioPacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */; };
 		DA988E751EBF4CA300B5B782 /* AudioEncoderProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA988E601EBF4CA300B5B782 /* AudioEncoderProvider.cpp */; };
 		DA988E761EBF4CA300B5B782 /* AudioFarEndProcessorCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA988E611EBF4CA300B5B782 /* AudioFarEndProcessorCall.cpp */; };
@@ -184,13 +185,16 @@
 		188587E81C0AEEAC00B1F435 /* EncodedFrameDepacketizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EncodedFrameDepacketizer.h; path = VideoEngineController/EncodedFrameDepacketizer.h; sourceTree = "<group>"; };
 		188587FD1C0AEEBC00B1F435 /* ColorConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorConverter.cpp; path = VideoEngineUtilities/ColorConverter.cpp; sourceTree = "<group>"; };
 		188587FE1C0AEEBC00B1F435 /* ColorConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorConverter.h; path = VideoEngineUtilities/ColorConverter.h; sourceTree = "<group>"; };
-		188587FF1C0AEEBC00B1F435 /* DefinedDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefinedDataTypes.h; path = VideoEngineUtilities/DefinedDataTypes.h; sourceTree = "<group>"; };
 		188588021C0AEEBC00B1F435 /* SmartPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SmartPointer.h; path = VideoEngineUtilities/SmartPointer.h; sourceTree = "<group>"; };
-		1887672E1C0ACD5500899605 /* libG729Library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libG729Library.a; sourceTree = "<group>"; };
-		18EB836A1C0ED768006738CB /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcommon.a; sourceTree = "<group>"; };
-		18EB836B1C0ED768006738CB /* libprocessing.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprocessing.a; sourceTree = "<group>"; };
-		18EB836C1C0ED768006738CB /* libwelsdec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwelsdec.a; sourceTree = "<group>"; };
-		18EB836D1C0ED768006738CB /* libwelsenc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwelsenc.a; sourceTree = "<group>"; };
+		6A084E6E1EF63B9300F4A6A0 /* gain_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gain_control.h; path = include/aecm/gain_control.h; sourceTree = "<group>"; };
+		6A084E751EF640BD00F4A6A0 /* libaac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libaac.a; path = iOSThirdParty/Audio/libaac.a; sourceTree = "<group>"; };
+		6A084E761EF640BD00F4A6A0 /* libG729Library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libG729Library.a; path = iOSThirdParty/Audio/libG729Library.a; sourceTree = "<group>"; };
+		6A084E771EF640BD00F4A6A0 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = iOSThirdParty/Audio/libopus.a; sourceTree = "<group>"; };
+		6A084E781EF640BD00F4A6A0 /* libwebrtc-ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwebrtc-ios.a"; path = "iOSThirdParty/Audio/libwebrtc-ios.a"; sourceTree = "<group>"; };
+		6A084E7D1EF640CB00F4A6A0 /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommon.a; path = iOSThirdParty/Video/openh264/libcommon.a; sourceTree = "<group>"; };
+		6A084E7E1EF640CB00F4A6A0 /* libprocessing.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprocessing.a; path = iOSThirdParty/Video/openh264/libprocessing.a; sourceTree = "<group>"; };
+		6A084E7F1EF640CB00F4A6A0 /* libwelsdec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwelsdec.a; path = iOSThirdParty/Video/openh264/libwelsdec.a; sourceTree = "<group>"; };
+		6A084E801EF640CB00F4A6A0 /* libwelsenc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwelsenc.a; path = iOSThirdParty/Video/openh264/libwelsenc.a; sourceTree = "<group>"; };
 		6A3E37511E0932F500228138 /* LiveStreamingHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveStreamingHeader.cpp; path = VideoEngineController/LiveStreamingHeader.cpp; sourceTree = "<group>"; };
 		6A3E37521E0932F500228138 /* LiveStreamingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveStreamingHeader.h; path = VideoEngineController/LiveStreamingHeader.h; sourceTree = "<group>"; };
 		6A4C253C1E152F8E00679D74 /* aacdecoder_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aacdecoder_lib.h; path = VideoEngineController/aacdecoder_lib.h; sourceTree = "<group>"; };
@@ -198,7 +202,6 @@
 		6A4C253E1E152F8E00679D74 /* FDK_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FDK_audio.h; path = VideoEngineController/FDK_audio.h; sourceTree = "<group>"; };
 		6A4C253F1E152F8E00679D74 /* genericStds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = genericStds.h; path = VideoEngineController/genericStds.h; sourceTree = "<group>"; };
 		6A4C25401E152F8E00679D74 /* machine_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = machine_type.h; path = VideoEngineController/machine_type.h; sourceTree = "<group>"; };
-		6A4C25421E152F9900679D74 /* libaac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaac.a; sourceTree = "<group>"; };
 		6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoBeautificationer.cpp; path = VideoEngineUtilities/VideoBeautificationer.cpp; sourceTree = "<group>"; };
 		6A4F57861E0A3D8000C48ACC /* VideoBeautificationer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoBeautificationer.h; path = VideoEngineUtilities/VideoBeautificationer.h; sourceTree = "<group>"; };
 		6A583FC51ED1B81D0044205A /* CommonTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommonTypes.h; path = VideoEngineController/CommonTypes.h; sourceTree = "<group>"; };
@@ -287,7 +290,6 @@
 		DA848BE31E9CFD43002BC7DE /* LiveAudioParserForPublisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveAudioParserForPublisher.h; path = VideoEngineController/LiveAudioParserForPublisher.h; sourceTree = "<group>"; };
 		DA86B3031E4B239000ED7C83 /* VideoEffects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoEffects.cpp; path = VideoEngineUtilities/VideoEffects.cpp; sourceTree = "<group>"; };
 		DA86B3041E4B239000ED7C83 /* VideoEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoEffects.h; path = VideoEngineUtilities/VideoEffects.h; sourceTree = "<group>"; };
-		DA91E7A91D682440006F50E2 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopus.a; sourceTree = "<group>"; };
 		DA91E7AC1D6824AF006F50E2 /* AudioPacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioPacketHeader.cpp; path = VideoEngineController/AudioPacketHeader.cpp; sourceTree = "<group>"; };
 		DA91E7AE1D6824AF006F50E2 /* AudioPacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioPacketHeader.h; path = VideoEngineController/AudioPacketHeader.h; sourceTree = "<group>"; };
 		DA988E601EBF4CA300B5B782 /* AudioEncoderProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioEncoderProvider.cpp; path = VideoEngineController/AudioEncoderProvider.cpp; sourceTree = "<group>"; };
@@ -388,13 +390,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18EB836F1C0ED768006738CB /* libprocessing.a in Frameworks */,
-				6A4C25431E152F9900679D74 /* libaac.a in Frameworks */,
-				18EB83701C0ED768006738CB /* libwelsdec.a in Frameworks */,
-				DA91E7AA1D682440006F50E2 /* libopus.a in Frameworks */,
-				18EB836E1C0ED768006738CB /* libcommon.a in Frameworks */,
-				18EB83711C0ED768006738CB /* libwelsenc.a in Frameworks */,
-				1887672F1C0ACD5500899605 /* libG729Library.a in Frameworks */,
+				6A084E831EF640CB00F4A6A0 /* libwelsdec.a in Frameworks */,
+				6A084E821EF640CB00F4A6A0 /* libprocessing.a in Frameworks */,
+				6A084E811EF640CB00F4A6A0 /* libcommon.a in Frameworks */,
+				6A084E841EF640CB00F4A6A0 /* libwelsenc.a in Frameworks */,
+				6A084E7C1EF640BD00F4A6A0 /* libwebrtc-ios.a in Frameworks */,
+				6A084E7A1EF640BD00F4A6A0 /* libG729Library.a in Frameworks */,
+				6A084E791EF640BD00F4A6A0 /* libaac.a in Frameworks */,
+				6A084E7B1EF640BD00F4A6A0 /* libopus.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,11 +407,8 @@
 		1852B33E1BCE1D3A000FF5C4 = {
 			isa = PBXGroup;
 			children = (
+				6A084E711EF6406900F4A6A0 /* iOSThirdParty */,
 				DA63DA791C7C6D9100EF3793 /* ExtraFiles */,
-				18EB83691C0ED768006738CB /* openh264 */,
-				1887672E1C0ACD5500899605 /* libG729Library.a */,
-				6A4C25421E152F9900679D74 /* libaac.a */,
-				DA91E7A91D682440006F50E2 /* libopus.a */,
 				18AAB7741C0059320069154C /* VideoEngineController */,
 				18AAB7431C00582B0069154C /* VideoEngineUtilities */,
 				1852B3481BCE1D3A000FF5C4 /* Products */,
@@ -428,7 +428,6 @@
 			children = (
 				188587FD1C0AEEBC00B1F435 /* ColorConverter.cpp */,
 				188587FE1C0AEEBC00B1F435 /* ColorConverter.h */,
-				188587FF1C0AEEBC00B1F435 /* DefinedDataTypes.h */,
 				DA3B791F1DED86D20061BEFC /* HashGenerator.cpp */,
 				DA3B79201DED86D20061BEFC /* HashGenerator.h */,
 				DA9CFEAA1DFBC7E2004112C4 /* MuxingVideoData.cpp */,
@@ -448,6 +447,7 @@
 				6A4C253C1E152F8E00679D74 /* aacdecoder_lib.h */,
 				6A4C253D1E152F8E00679D74 /* aacdecoder.h */,
 				188587B71C0AEEAC00B1F435 /* AudioCallSession.cpp */,
+				6A084E6E1EF63B9300F4A6A0 /* gain_control.h */,
 				188587B81C0AEEAC00B1F435 /* AudioCallSession.h */,
 				188587B91C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp */,
 				188587BA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.h */,
@@ -673,15 +673,43 @@
 			name = VideoEngineController;
 			sourceTree = "<group>";
 		};
-		18EB83691C0ED768006738CB /* openh264 */ = {
+		6A084E711EF6406900F4A6A0 /* iOSThirdParty */ = {
 			isa = PBXGroup;
 			children = (
-				18EB836A1C0ED768006738CB /* libcommon.a */,
-				18EB836B1C0ED768006738CB /* libprocessing.a */,
-				18EB836C1C0ED768006738CB /* libwelsdec.a */,
-				18EB836D1C0ED768006738CB /* libwelsenc.a */,
+				6A084E731EF640A400F4A6A0 /* Video */,
+				6A084E721EF6409D00F4A6A0 /* Audio */,
 			);
-			path = openh264;
+			name = iOSThirdParty;
+			sourceTree = "<group>";
+		};
+		6A084E721EF6409D00F4A6A0 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				6A084E751EF640BD00F4A6A0 /* libaac.a */,
+				6A084E761EF640BD00F4A6A0 /* libG729Library.a */,
+				6A084E771EF640BD00F4A6A0 /* libopus.a */,
+				6A084E781EF640BD00F4A6A0 /* libwebrtc-ios.a */,
+			);
+			name = Audio;
+			sourceTree = "<group>";
+		};
+		6A084E731EF640A400F4A6A0 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				6A084E741EF640AC00F4A6A0 /* openh264 */,
+			);
+			name = Video;
+			sourceTree = "<group>";
+		};
+		6A084E741EF640AC00F4A6A0 /* openh264 */ = {
+			isa = PBXGroup;
+			children = (
+				6A084E7D1EF640CB00F4A6A0 /* libcommon.a */,
+				6A084E7E1EF640CB00F4A6A0 /* libprocessing.a */,
+				6A084E7F1EF640CB00F4A6A0 /* libwelsdec.a */,
+				6A084E801EF640CB00F4A6A0 /* libwelsenc.a */,
+			);
+			name = openh264;
 			sourceTree = "<group>";
 		};
 		DA63DA791C7C6D9100EF3793 /* ExtraFiles */ = {
@@ -972,6 +1000,8 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/NATTraversalTeam",
 					"$(PROJECT_DIR)/openh264",
+					"$(PROJECT_DIR)/iOSThirdParty/Audio",
+					"$(PROJECT_DIR)/iOSThirdParty/Video/openh264",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1003,6 +1033,8 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/NATTraversalTeam",
 					"$(PROJECT_DIR)/openh264",
+					"$(PROJECT_DIR)/iOSThirdParty/Audio",
+					"$(PROJECT_DIR)/iOSThirdParty/Video/openh264",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
