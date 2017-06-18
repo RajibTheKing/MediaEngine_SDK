@@ -25,7 +25,7 @@ namespace MediaSDK
 
 	void CRenderingBuffer::ResetBuffer()
 	{
-		Locker lock(*m_pRenderingBufferMutex);
+		RenderingBufferLocker lock(*m_pRenderingBufferMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -37,7 +37,7 @@ namespace MediaSDK
 		if (m_nQueueSize >= MAX_VIDEO_RENDERER_BUFFER_SIZE)
 			printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
 
-		Locker lock(*m_pRenderingBufferMutex);
+		RenderingBufferLocker lock(*m_pRenderingBufferMutex);
 
 		memcpy(m_uc2aDecodedVideoDataBuffer[m_iPushIndex], ucaDecodedVideoFrameData, nLength);
 
@@ -70,7 +70,7 @@ namespace MediaSDK
 
 	int CRenderingBuffer::DeQueue(int &rnFrameNumber, long long &rllCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth, int &rnTimeDifferenceInQueue, int &rnOrientation, int &rnInsetHeight, int &rnInsetWidth)
 	{
-		Locker lock(*m_pRenderingBufferMutex);
+		RenderingBufferLocker lock(*m_pRenderingBufferMutex);
 
 		if (m_nQueueSize <= 0)
 		{
@@ -110,7 +110,7 @@ namespace MediaSDK
 
 	int CRenderingBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pRenderingBufferMutex);
+		RenderingBufferLocker lock(*m_pRenderingBufferMutex);
 
 		return m_nQueueSize;
 	}

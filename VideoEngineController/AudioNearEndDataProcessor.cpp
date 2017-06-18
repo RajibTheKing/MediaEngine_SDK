@@ -82,7 +82,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte)
 	{
-		Locker lock(*m_pAudioEncodingMutex);
+		NearEndLockerStoreDataForChunk lock(*m_pAudioEncodingMutex);
 
 
 		if (0 == m_iRawDataSendIndexViewer && -1 == m_llLastChunkLastFrameRT)
@@ -203,7 +203,7 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 	{
-		Locker lock(*m_pAudioEncodingMutex);
+		NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
 
 		vCombinedDataLengthVector.clear();
 		CombinedLength = 0;

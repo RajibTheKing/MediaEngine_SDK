@@ -20,7 +20,7 @@ namespace MediaSDK
 
 	int CRetransmitVideoPacketQueue::Queue(unsigned char *frame, int length)
 	{
-		Locker lock(*m_pChannelMutex);
+		CRetransmitVideoPacketQueueLocker lock(*m_pChannelMutex);
 
 		if (m_iQueueSize >= m_iQueueCapacity)
 		{
@@ -42,7 +42,7 @@ namespace MediaSDK
 
 	int CRetransmitVideoPacketQueue::DeQueue(unsigned char *decodeBuffer)
 	{
-		Locker lock(*m_pChannelMutex);
+		CRetransmitVideoPacketQueueLocker lock(*m_pChannelMutex);
 
 		if (m_iQueueSize <= 0)
 		{
@@ -72,7 +72,7 @@ namespace MediaSDK
 
 	int CRetransmitVideoPacketQueue::GetQueueSize()
 	{
-		Locker lock(*m_pChannelMutex);
+		CRetransmitVideoPacketQueueLocker lock(*m_pChannelMutex);
 
 		return m_iQueueSize;
 	}

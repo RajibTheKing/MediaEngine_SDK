@@ -23,7 +23,7 @@ namespace MediaSDK
 
 	int CDecodingBuffer::Queue(int iFrameNumber, unsigned char *ucaEncodedVideoFrameData, int nLength, unsigned int unCaptureTimeDifference)
 	{
-		Locker lock(*m_pDecodingBufferMutex);
+		CDecodingBufferLocker lock(*m_pDecodingBufferMutex);
 
 		memcpy(m_uc2aEncodedVideoDataBuffer[m_iPushIndex], ucaEncodedVideoFrameData, nLength);
 
@@ -51,7 +51,7 @@ namespace MediaSDK
 
 	int CDecodingBuffer::DeQueue(int &irFrameNumber, unsigned int &unrCaptureTimeDifference, unsigned char *ucaEncodedVideoFrameData, int &nrTimeDifferenceInQueue)
 	{
-		Locker lock(*m_pDecodingBufferMutex);
+		CDecodingBufferLocker lock(*m_pDecodingBufferMutex);
 		//printf("TheKing--> DecodingBuffer m_nQueueSize = %d\n", m_nQueueSize);
 		if (m_nQueueSize <= 0)
 		{
@@ -86,7 +86,7 @@ namespace MediaSDK
 
 	int CDecodingBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pDecodingBufferMutex);
+		CDecodingBufferLocker lock(*m_pDecodingBufferMutex);
 
 		return m_nQueueSize;
 	}

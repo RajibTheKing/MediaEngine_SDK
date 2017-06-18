@@ -31,7 +31,7 @@ namespace MediaSDK
 
 	void CAudioByteBuffer::ResetBuffer()
 	{
-		Locker lock(*m_pAudioDecodingBufferMutex);
+		AudioDecoderBufferLock lock(*m_pAudioDecodingBufferMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -40,7 +40,7 @@ namespace MediaSDK
 
 	int CAudioByteBuffer::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength)
 	{
-		Locker lock(*m_pAudioDecodingBufferMutex);
+		AudioDecoderBufferLock lock(*m_pAudioDecodingBufferMutex);
 
 		//LOGE("fahad --> CAudioDocderBuffer:Queue nLength = %d", nLength);
 
@@ -86,7 +86,7 @@ namespace MediaSDK
 
 	int CAudioByteBuffer::DeQueue(unsigned char *saReceivedAudioFrameData)
 	{
-		Locker lock(*m_pAudioDecodingBufferMutex);
+		AudioDecoderBufferLock lock(*m_pAudioDecodingBufferMutex);
 
 		if (m_nQueueSize == 0)
 		{
@@ -116,7 +116,7 @@ namespace MediaSDK
 
 	int CAudioByteBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pAudioDecodingBufferMutex);
+		AudioDecoderBufferLock lock(*m_pAudioDecodingBufferMutex);
 
 		return m_nQueueSize;
 	}

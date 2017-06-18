@@ -160,6 +160,7 @@ namespace MediaSDK
 		SmartPointer<CLockHandler> m_pVideoReceiveMutex;
 		SmartPointer<CLockHandler> m_pAudioSendMutex;
 		SmartPointer<CLockHandler> m_pAudioReceiveMutex;
+		SmartPointer<CLockHandler> m_pAudioLockMutex;
 	};
 
 } //namespace MediaSDK

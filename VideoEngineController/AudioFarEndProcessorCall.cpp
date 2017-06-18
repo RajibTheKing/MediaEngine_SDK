@@ -8,6 +8,7 @@ namespace MediaSDK
 		AudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, pAudioCallSession, pCommonElementsBucket, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorCall::FarEndProcessorCall()");
+		m_bProcessFarendDataStarted = false;
 	}
 
 
@@ -24,6 +25,7 @@ namespace MediaSDK
 
 		if (!IsQueueEmpty())
 		{
+			m_bProcessFarendDataStarted = true;
 			DequeueData(m_nDecodingFrameSize);
 			LOG18("#18#FE#AudioCall...");
 			if (m_nDecodingFrameSize < 1)
@@ -80,10 +82,25 @@ namespace MediaSDK
 					return;
 				}
 				LOG18("#18#FE#AudioCall SendToPlayer");
+
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+#ifndef __ANDROID__
+				ProcessPlayingData();
+#endif
 			}
 		}
-		ProcessPlayingData();
+		else
+		{
+#ifndef __ANDROID__
+			Tools::SOSleep(10);
+#endif
+		}
+#ifdef __ANDROID__
+		if (m_bProcessFarendDataStarted)
+		{
+			ProcessPlayingData();
+		}
+#endif
 	}
 
 } //namespace MediaSDK

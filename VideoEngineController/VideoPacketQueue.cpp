@@ -24,7 +24,7 @@ namespace MediaSDK
 
 	void CVideoPacketQueue::ResetBuffer()
 	{
-		Locker lock(*m_pVideoPacketQueueMutex);
+		PacketQueueLocker lock(*m_pVideoPacketQueueMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -33,7 +33,7 @@ namespace MediaSDK
 
 	int CVideoPacketQueue::Queue(unsigned char *ucaVideoPacketData, int nLength)
 	{
-		Locker lock(*m_pVideoPacketQueueMutex);
+		PacketQueueLocker lock(*m_pVideoPacketQueueMutex);
 
 		if (m_nQueueSize >= m_nQueueCapacity)
 		{
@@ -58,7 +58,7 @@ namespace MediaSDK
 
 	int CVideoPacketQueue::DeQueue(unsigned char *ucaVideoPacketData)
 	{
-		Locker lock(*m_pVideoPacketQueueMutex);
+		PacketQueueLocker lock(*m_pVideoPacketQueueMutex);
 
 		if (m_nQueueSize <= 0)
 		{
@@ -89,7 +89,7 @@ namespace MediaSDK
 
 	int CVideoPacketQueue::GetQueueSize()
 	{
-		Locker lock(*m_pVideoPacketQueueMutex);
+		PacketQueueLocker lock(*m_pVideoPacketQueueMutex);
 
 		return m_nQueueSize;
 	}

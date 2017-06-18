@@ -44,7 +44,7 @@ namespace MediaSDK
 
 	void CAudioShortBuffer::ResetBuffer()
 	{
-		Locker lock(*m_pAudioEnocdingBufferMutex);
+		AudioEncoderBufferLock lock(*m_pAudioEnocdingBufferMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -58,7 +58,7 @@ namespace MediaSDK
 	int CAudioShortBuffer::EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump)
 	{
 		LOG18("#18@# ENCO BUFFER SIZE %d", m_nQueueCapacity);
-		Locker lock(*m_pAudioEnocdingBufferMutex);
+		AudioEncoderBufferLock lock(*m_pAudioEnocdingBufferMutex);
 
 		memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);
 
@@ -99,7 +99,7 @@ namespace MediaSDK
 
 	int CAudioShortBuffer::DeQueue(short *saCapturedAudioFrameData, long long &receivedTime)
 	{
-		Locker lock(*m_pAudioEnocdingBufferMutex);
+		AudioEncoderBufferLock lock(*m_pAudioEnocdingBufferMutex);
 
 		if (m_nQueueSize == 0)
 		{
@@ -132,7 +132,7 @@ namespace MediaSDK
 
 	int CAudioShortBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pAudioEnocdingBufferMutex);
+		AudioEncoderBufferLock lock(*m_pAudioEnocdingBufferMutex);
 
 		return m_nQueueSize;
 	}
@@ -140,7 +140,7 @@ namespace MediaSDK
 
 	int CAudioShortBuffer::DeQueueForCallee(short *saCapturedAudioFrameData, long long &receivedTime, int iCalleeFrameNoSentByPublisher)
 	{
-		Locker lock(*m_pAudioEnocdingBufferMutex);
+		AudioEncoderBufferLock lock(*m_pAudioEnocdingBufferMutex);
 
 		if (m_nQueueSize == 0)
 		{

@@ -41,7 +41,7 @@ namespace MediaSDK
 
 	int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 	{
-		Locker lock(*m_pVideoEncoderMutex);
+		EncoderLocker lock(*m_pVideoEncoderMutex);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
@@ -173,7 +173,7 @@ namespace MediaSDK
 
 	int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 	{
-		Locker lock(*m_pVideoEncoderMutex);
+		EncoderLocker lock(*m_pVideoEncoderMutex);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
@@ -406,7 +406,7 @@ namespace MediaSDK
 
 	int CVideoEncoder::EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData, bool isForceIFrame)
 	{
-		Locker lock(*m_pVideoEncoderMutex);
+		EncoderLocker lock(*m_pVideoEncoderMutex);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::Encode");
 

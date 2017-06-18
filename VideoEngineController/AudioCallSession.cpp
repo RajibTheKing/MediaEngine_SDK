@@ -90,6 +90,7 @@ namespace MediaSDK
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
+			//m_pPlayerGain->SetGain(9);
 		}
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
@@ -177,6 +178,12 @@ namespace MediaSDK
 		{
 			delete m_pFarEndProcessor;
 			m_pFarEndProcessor = NULL;
+		}
+
+		if(m_pTrace)
+		{
+			delete m_pTrace;
+			m_pTrace = NULL;
 		}
 
 #ifdef USE_VAD
@@ -319,7 +326,7 @@ namespace MediaSDK
 
 		if (!m_pEcho.get())
 		{
-			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM);
+			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, true);
 		}
 
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
@@ -431,6 +438,7 @@ namespace MediaSDK
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
+#ifdef __ANDROID__
 		//Sleep to maintain 100 ms recording time diff
 		if (m_b1stRecordedData)
 		{
@@ -441,9 +449,9 @@ namespace MediaSDK
 		else
 		{
 			long long llNOw = Tools::CurrentTimestamp();
-			if (llNOw < m_llnextRecordedDataTime)
+			if (llNOw + 20 < m_llnextRecordedDataTime)
 			{
-				Tools::SOSleep(m_llnextRecordedDataTime - llNOw);
+				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
 			}
 			m_llnextRecordedDataTime += 100;
 		}
@@ -455,7 +463,7 @@ namespace MediaSDK
 		}
 #endif
 
-#ifdef __ANDROID__
+
 		//If trace is received, current and next frames are deleted
 		if (!m_bLiveAudioStreamRunning && ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0))
 		{
@@ -494,7 +502,7 @@ namespace MediaSDK
 		}
 		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
 			m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
-#endif
+
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||
@@ -563,7 +571,7 @@ namespace MediaSDK
 
 			m_bIsAECMNearEndThreadBusy = false;
 		}
-
+#endif
 		int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");

@@ -68,7 +68,7 @@ namespace MediaSDK
 
 	int CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data, int iLen, int nVideoHeight, int nVideoWidth)
 	{
-		Locker lock(*m_pVideoMuxingEncodeSessionMutex);
+		MuxingLocker lock(*m_pVideoMuxingEncodeSessionMutex);
 		//LOGE("fahad -->> CVideoMuxingAndEncodeSession::StartVideoMuxingAndEncodeSession  nVideoHeight = %d, int nVideoWidth = %d, bmpLen = %d", nVideoHeight, nVideoWidth, iLen);
 		if (NULL == this->m_CMuxingVideoData)
 		{
@@ -109,7 +109,7 @@ namespace MediaSDK
 
 	int CVideoMuxingAndEncodeSession::FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth)
 	{
-		Locker lock(*m_pVideoMuxingEncodeSessionMutex);
+		MuxingLocker lock(*m_pVideoMuxingEncodeSessionMutex);
 
 		if (NULL == this->m_VideoEncoder || NULL == m_ColorConverter || NULL == m_CMuxingVideoData)
 		{
@@ -141,7 +141,7 @@ namespace MediaSDK
 
 	int CVideoMuxingAndEncodeSession::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 	{
-		Locker lock(*m_pVideoMuxingEncodeSessionMutex);
+		MuxingLocker lock(*m_pVideoMuxingEncodeSessionMutex);
 
 		memcpy(finalData, m_ucaFinalEncodedFrameBuffer, m_iFinalEncodedFrameBufferIndx);
 

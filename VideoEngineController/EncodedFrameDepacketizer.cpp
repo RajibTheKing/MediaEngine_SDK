@@ -160,7 +160,7 @@ namespace MediaSDK
 			}
 		}
 
-		Locker lock(*m_pEncodedFrameDepacketizerMutex);
+		DepacketizerLocker lock(*m_pEncodedFrameDepacketizerMutex);
 
 		m_mFrameTimeStamp[frameNumber] = timeStampDiff;
 		m_mFrameOrientation[frameNumber] = orientation;
@@ -266,7 +266,7 @@ namespace MediaSDK
 
 	int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight, int &nOrientation)
 	{
-		Locker lock(*m_pEncodedFrameDepacketizerMutex);
+		DepacketizerLocker lock(*m_pEncodedFrameDepacketizerMutex);
 
 		if (m_FrontFrame > m_iMaxFrameNumRecvd)	//BUFFER IS EMPTY
 			return -1;

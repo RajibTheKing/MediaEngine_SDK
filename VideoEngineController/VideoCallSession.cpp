@@ -941,7 +941,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     if(currentTimeStamp - m_llClientFrameFPSTimeStamp >= 1000)
     {
         {//Block for Lock
-            Locker lock(*m_pVideoCallSessionMutex);
+            SessionLocker lock(*m_pVideoCallSessionMutex);
             if(m_ClientFrameCounter > MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS)
             {
                 //printf("RajibTheKing, setting m_ClientFrameCounter = %d\n", m_ClientFrameCounter);
@@ -963,7 +963,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 			int  nApproximateAverageFrameInterval = m_ClientFPSDiffSum / m_ClientFrameCounter;
 			if(nApproximateAverageFrameInterval > MINIMUM_CAPTURE_INTERVAL_TO_UPDATE_FPS)
             {
-				Locker lock(*m_pVideoCallSessionMutex);
+				SessionLocker lock(*m_pVideoCallSessionMutex);
 				m_pFPSController->SetClientFPS(1000 / nApproximateAverageFrameInterval);
 
 			}

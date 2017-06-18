@@ -10,6 +10,9 @@
 #include "echo_control_mobile.h"
 #endif
 
+const int ECHO_LEVEL_CALL = 4;
+const int ECHO_LEVEL_LIVE = 2;
+
 
 namespace MediaSDK
 {
@@ -17,7 +20,7 @@ namespace MediaSDK
 	{
 	
 	public:
-		WebRTCEchoCanceller();
+		WebRTCEchoCanceller(bool isLiveRunning);
 	
 		virtual ~WebRTCEchoCanceller();
 	

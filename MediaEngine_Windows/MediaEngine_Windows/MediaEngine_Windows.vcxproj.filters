@@ -737,6 +737,12 @@
     <ClInclude Include="..\..\VideoEngineController\Trace.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\CustomLocker.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters">

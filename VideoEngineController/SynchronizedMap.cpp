@@ -17,14 +17,14 @@ namespace MediaSDK
 
 	void CSynchronizedMap::clear()
 	{
-		Locker lock(*m_pSynchronizedMapMutex);
+		SynchronizedMapLocker lock(*m_pSynchronizedMapMutex);
 
 		m_STLMapSynchronizedMap.clear();
 	}
 
 	int CSynchronizedMap::find(int iIndex)
 	{
-		Locker lock(*m_pSynchronizedMapMutex);
+		SynchronizedMapLocker lock(*m_pSynchronizedMapMutex);
 
 		if (m_STLMapSynchronizedMap.find(iIndex) == m_STLMapSynchronizedMap.end())
 		{
@@ -36,7 +36,7 @@ namespace MediaSDK
 
 	int CSynchronizedMap::getElementAt(int iIndex)
 	{
-		Locker lock(*m_pSynchronizedMapMutex);
+		SynchronizedMapLocker lock(*m_pSynchronizedMapMutex);
 
 		return m_STLMapSynchronizedMap[iIndex];
 	}
@@ -48,14 +48,14 @@ namespace MediaSDK
 
 	void CSynchronizedMap::insert(int iIndex, int nElement)
 	{
-		Locker lock(*m_pSynchronizedMapMutex);
+		SynchronizedMapLocker lock(*m_pSynchronizedMapMutex);
 
 		m_STLMapSynchronizedMap[iIndex] = nElement;
 	}
 
 	void CSynchronizedMap::erase(int iIndex)
 	{
-		Locker lock(*m_pSynchronizedMapMutex);
+		SynchronizedMapLocker lock(*m_pSynchronizedMapMutex);
 
 		if (m_STLMapSynchronizedMap.find(iIndex) != m_STLMapSynchronizedMap.end())
 		{
@@ -64,7 +64,7 @@ namespace MediaSDK
 	}
 
 	void CSynchronizedMap::eraseAllSmallerEqual(int iIndex){
-		Locker lock(*m_pSynchronizedMapMutex);
+		SynchronizedMapLocker lock(*m_pSynchronizedMapMutex);
 		while (m_STLMapSynchronizedMap.size() > 0 && m_STLMapSynchronizedMap.begin()->first <= iIndex)
 		{
 			m_STLMapSynchronizedMap.erase(m_STLMapSynchronizedMap.begin());

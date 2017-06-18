@@ -29,7 +29,7 @@ namespace MediaSDK
 
 	void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 	{
-		Locker lock(*m_pLiveReceiverMutex);
+		LiveReceiverLocker lock(*m_pLiveReceiverMutex);
 
 		int iUsedLen = 0, nFrames = 0;
 		int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
@@ -121,7 +121,7 @@ namespace MediaSDK
 
 	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 	{
-		Locker lock(*m_pLiveReceiverMutex);
+		LiveReceiverLocker lock(*m_pLiveReceiverMutex);
 
 		if (numberOfFrames <= 0)
 			return;

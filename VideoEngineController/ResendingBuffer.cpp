@@ -28,7 +28,7 @@ namespace MediaSDK
 
 	void CResendingBuffer::Queue(unsigned char *frame, int length, int frameNumber, int packetNumber)
 	{
-		Locker lock(*m_pChannelMutex);
+		RenderingBufferLocker lock(*m_pChannelMutex);
 
 		memcpy(m_Buffer[m_iPushIndex], frame, length);
 
@@ -50,7 +50,7 @@ namespace MediaSDK
 
 	int CResendingBuffer::DeQueue(unsigned char *decodeBuffer, int frameNumber, int packetNumber, int &timeStampDiff)
 	{
-		Locker lock(*m_pChannelMutex);
+		RenderingBufferLocker lock(*m_pChannelMutex);
 
 		resendingMapIterator = resendingMap.find(std::make_pair(frameNumber, packetNumber));
 		if (resendingMapIterator == resendingMap.end())

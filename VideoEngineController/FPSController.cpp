@@ -53,7 +53,7 @@ namespace MediaSDK
 	}
 
 	void CFPSController::SetOpponentFPS(int OpponentFPS) {
-		Locker lock(*m_pMutex);
+		FPSControllerLocker lock(*m_pMutex);
 		if (OpponentFPS > 0)
 		{
 			m_nOpponentFPS = OpponentFPS;
@@ -83,7 +83,7 @@ namespace MediaSDK
 
 	void CFPSController::SetMaxOwnProcessableFPS(int fps)
 	{
-		Locker lock(*m_pMutex);
+		FPSControllerLocker lock(*m_pMutex);
 		m_nFPSForceSignalCounter = FORCE_FPS_SIGNAL_TIMES;
 		m_nMaxOwnProcessableFPS = fps;
 	}
@@ -98,7 +98,7 @@ namespace MediaSDK
 		{
 			return;
 		}
-		Locker lock(*m_pMutex);
+		FPSControllerLocker lock(*m_pMutex);
 		m_ClientFPS = fps;
 	}
 
@@ -139,7 +139,7 @@ namespace MediaSDK
 
 		if (bIsForceFPS)
 		{
-			Locker lock(*m_pMutex);
+			FPSControllerLocker lock(*m_pMutex);
 
 			if (m_nCallFPS >= opponentFPS)
 				m_nMaxOpponentProcessableFPS = opponentFPS;
@@ -150,18 +150,18 @@ namespace MediaSDK
 
 		}
 		else if (opponentFPS != m_nOpponentFPS) {
-			Locker lock(*m_pMutex);
+			FPSControllerLocker lock(*m_pMutex);
 			m_nOpponentFPS = opponentFPS;
 		}
 
 		if (m_nOwnFPS > m_ClientFPS)
 		{
-			Locker lock(*m_pMutex);
+			FPSControllerLocker lock(*m_pMutex);
 			SetOwnFPS((int)m_ClientFPS);
 		}
 		else if (m_nOwnFPS < m_ClientFPS && m_nOwnFPS < m_nCallFPS)
 		{
-			Locker lock(*m_pMutex);
+			FPSControllerLocker lock(*m_pMutex);
 			SetOwnFPS(min(m_nCallFPS, (int)m_ClientFPS));
 		}
 	}

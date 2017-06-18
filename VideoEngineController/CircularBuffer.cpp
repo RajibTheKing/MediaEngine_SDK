@@ -24,7 +24,7 @@ namespace MediaSDK
 
 	void CCircularBuffer::ResetBuffer()
 	{
-		Locker lock(*m_pRenderingBufferMutex);
+		CircularBufferLocker lock(*m_pRenderingBufferMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -41,7 +41,7 @@ namespace MediaSDK
 
 	int CCircularBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pRenderingBufferMutex);
+		CircularBufferLocker lock(*m_pRenderingBufferMutex);
 
 		return m_nQueueSize;
 	}

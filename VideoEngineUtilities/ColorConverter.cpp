@@ -90,7 +90,7 @@ int CColorConverter::TestVideoEffect(int *param, int size)
 
 void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
     
 #if defined(DESKTOP_C_SHARP)
     
@@ -118,7 +118,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 
 void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
     m_iDeviceHeight = 1920; //iVideoHeight;
     m_iDeviceWidth = 1130; //iVideoWidth;
@@ -128,7 +128,7 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 
 int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int i, j, k;
 
@@ -149,7 +149,7 @@ int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideo
 }
 int CColorConverter::ConvertYV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
-    Locker lock(*m_pColorConverterMutex);
+    ColorConverterLocker lock(*m_pColorConverterMutex);
     
     int YPlaneLength = iVideoHeight*iVideoWidth;
     int VPlaneLength = YPlaneLength >> 2;
@@ -166,7 +166,7 @@ int CColorConverter::ConvertYV12ToI420(unsigned char *convertingData, int iVideo
 
 int CColorConverter::ConvertNV21ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int i, j, k;
 
@@ -188,7 +188,7 @@ int CColorConverter::ConvertNV21ToI420(unsigned char *convertingData, int iVideo
 
 int CColorConverter::ConvertYUY2ToI420(unsigned char * input, unsigned char * output, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int pixels = iVideoHeight * iVideoWidth;
 	int macropixels = pixels >> 1;
@@ -214,7 +214,7 @@ int CColorConverter::ConvertYUY2ToI420(unsigned char * input, unsigned char * ou
 
 int CColorConverter::ConvertI420ToNV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int i, j, k;
 
@@ -236,7 +236,7 @@ int CColorConverter::ConvertI420ToNV12(unsigned char *convertingData, int iVideo
 
 int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int YPlaneLength = iVideoHeight*iVideoWidth;
 	int VPlaneLength = YPlaneLength >> 2;
@@ -253,7 +253,7 @@ int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideo
 
 int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int i, j, k;
 
@@ -312,7 +312,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 {
 	//LOGE("fahad -->> avgValue= %d, addValue= %d, thresholdVal= %d, m_iVideoHeight=%d, m_iVideoWidth = %d", m_AverageValue, m_PrevAddValue, m_ThresholdValue,m_iVideoHeight, m_iVideoWidth);
 
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int iWidth = iVideoHeight;
 	int iHeight = iVideoWidth;
@@ -356,7 +356,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420(unsigned char *m_pFrame, 
 
 void CColorConverter::NegativeRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData, int iVideoHeight, int iVideoWidth)
 {
-    Locker lock(*m_pColorConverterMutex);
+    ColorConverterLocker lock(*m_pColorConverterMutex);
     
     int iWidth = iVideoHeight;
     int iHeight = iVideoWidth;
@@ -403,7 +403,7 @@ void CColorConverter::NegativeRotateAndConvertNV12ToI420(unsigned char *m_pFrame
 
 void CColorConverter::mirrorRotateAndConvertNV12ToI420(unsigned char *m_pFrame, unsigned char *pData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int iWidth = iVideoHeight;
 	int iHeight = iVideoWidth;
@@ -484,7 +484,7 @@ void CColorConverter::mirrorAndConvertNV12ToI420(unsigned char *m_pFrame, unsign
 
 void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam90(unsigned char *m_pFrame, unsigned char *pData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int iWidth = iVideoHeight;
 	int iHeight = iVideoWidth;
@@ -528,7 +528,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam90(unsigned char
 
 void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam270(unsigned char *m_pFrame, unsigned char *pData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int iWidth = iVideoHeight;
 	int iHeight = iVideoWidth;
@@ -563,7 +563,7 @@ void CColorConverter::mirrorRotateAndConvertNV21ToI420ForBackCam270(unsigned cha
 
 void CColorConverter::mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *m_pFrame, unsigned char *pData, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int iWidth = iVideoHeight;
 	int iHeight = iVideoWidth;
@@ -598,7 +598,7 @@ void CColorConverter::mirrorRotateAndConvertNV12ToI420ForBackCam(unsigned char *
 
 int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char * pRGBs, int height, int width)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int yIndex = 0;
 	int uIndex = width * height;
@@ -650,7 +650,7 @@ int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char
 
 void CColorConverter::mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	int yLen = m_Multiplication[iHeight][iWidth];;
 	int uvLen = yLen >> 2;
@@ -713,7 +713,7 @@ static inline unsigned char Clip(int x)
 
 int CColorConverter::ConvertRGB24ToI420(unsigned char* lpIndata, unsigned char* lpOutdata, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	static bool bInit = false;
 
@@ -818,7 +818,7 @@ int CColorConverter::ConvertRGB24ToI420(unsigned char *input, unsigned char *out
 
 int CColorConverter::ConvertRGB32ToRGB24(unsigned char *input, int iHeight, int iWidth, unsigned char *output)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
     int in_len = iHeight * iWidth * 4;
     
@@ -1269,7 +1269,7 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
 
 void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
     
     //int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
     int iOutputHeight, iOutputWidth;
@@ -1571,7 +1571,7 @@ int CColorConverter::getVIndexforNV21(int h, int w, int yVertical, int xHorizont
 
 int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	if (m_bMergingSmallFrameEnabled == false)
 		return 0;
@@ -1606,7 +1606,7 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 
 int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	if (m_bMergingSmallFrameEnabled == false)
 		return 0;
@@ -1692,7 +1692,7 @@ int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, 
 
 int CColorConverter::Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	if (m_bMergingSmallFrameEnabled == false)
 		return 0;
@@ -1727,7 +1727,7 @@ int CColorConverter::Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int
 
 int CColorConverter::Merge_Two_VideoNV21(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	if (m_bMergingSmallFrameEnabled == false)
 		return 0;
@@ -1981,46 +1981,46 @@ int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, in
 
 int CColorConverter::GetSmallFrameWidth()
 {
-    Locker lock(*m_pColorConverterMutex);
+    ColorConverterLocker lock(*m_pColorConverterMutex);
     
     return m_iSmallFrameWidth;
 }
 int CColorConverter::GetSmallFrameHeight()
 {
-    Locker lock(*m_pColorConverterMutex);
+    ColorConverterLocker lock(*m_pColorConverterMutex);
     
     return m_iSmallFrameHeight;
 }
 
 int CColorConverter::GetScreenHeight()
 {
-    Locker lock(*m_pColorConverterMutex);
+    ColorConverterLocker lock(*m_pColorConverterMutex);
     return m_iDeviceHeight;
 }
 
 int CColorConverter::GetScreenWidth()
 {
-    Locker lock(*m_pColorConverterMutex);
+    ColorConverterLocker lock(*m_pColorConverterMutex);
     return m_iDeviceWidth;
 }
 
 void CColorConverter::ClearSmallScreen()
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	m_bMergingSmallFrameEnabled = false;
 }
 
 bool CColorConverter::GetSmallFrameStatus()
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	return m_bMergingSmallFrameEnabled;
 }
 
 void CColorConverter::GetSmallFrame(unsigned char *pSmallFrame)
 {
-	Locker lock(*m_pColorConverterMutex);
+	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	memcpy(pSmallFrame, m_pSmallFrame, m_iSmallFrameSize);
 }

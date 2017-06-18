@@ -25,7 +25,7 @@ namespace MediaSDK
 
 	void LiveAudioDecodingQueue::ResetBuffer()
 	{
-		Locker lock(*m_pLiveAudioDecodingQueueMutex);
+		LiveAudioDecodingQueueLock lock(*m_pLiveAudioDecodingQueueMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -34,7 +34,7 @@ namespace MediaSDK
 
 	int LiveAudioDecodingQueue::EnQueue(unsigned char *saReceivedAudioFrameData, int nLength, VP vMissing)
 	{
-		Locker lock(*m_pLiveAudioDecodingQueueMutex);
+		LiveAudioDecodingQueueLock lock(*m_pLiveAudioDecodingQueueMutex);
 
 		memcpy(m_uchBuffer[m_iPushIndex], saReceivedAudioFrameData, nLength);
 
@@ -61,7 +61,7 @@ namespace MediaSDK
 
 	int LiveAudioDecodingQueue::DeQueue(unsigned char *saReceivedAudioFrameData, VP &vMissing)
 	{
-		Locker lock(*m_pLiveAudioDecodingQueueMutex);
+		LiveAudioDecodingQueueLock lock(*m_pLiveAudioDecodingQueueMutex);
 
 		if (m_nQueueSize == 0)
 		{
@@ -91,7 +91,7 @@ namespace MediaSDK
 
 	int LiveAudioDecodingQueue::GetQueueSize()
 	{
-		Locker lock(*m_pLiveAudioDecodingQueueMutex);
+		LiveAudioDecodingQueueLock lock(*m_pLiveAudioDecodingQueueMutex);
 
 		return m_nQueueSize;
 	}
