@@ -50,12 +50,12 @@ namespace MediaSDK
 		}
 
 		m_pLiveAudioParser = nullptr;
-
+#if !defined(TARGET_OS_WINDOWS_PHONE)
 		if (SERVICE_TYPE_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
 		{
 			m_AudioReceivedBuffer.SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
 		}
-
+#endif
 		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
