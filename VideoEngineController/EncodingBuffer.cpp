@@ -23,7 +23,7 @@ namespace MediaSDK
 
 	void CEncodingBuffer::ResetBuffer()
 	{
-		Locker lock(*m_pEncodingBufferMutex);
+		EncodingBufferLocker lock(*m_pEncodingBufferMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -33,7 +33,7 @@ namespace MediaSDK
 
 	int CEncodingBuffer::Queue(unsigned char *ucaCapturedVideoFrameData, int nLength, int iHeight, int iWidth, int nCaptureTimeDifference, int device_orientation)
 	{
-		Locker lock(*m_pEncodingBufferMutex);
+		EncodingBufferLocker lock(*m_pEncodingBufferMutex);
 
 		memcpy(m_uc2aCapturedVideoDataBuffer[m_iPushIndex], ucaCapturedVideoFrameData, nLength);
 
@@ -63,7 +63,7 @@ namespace MediaSDK
 
 	int CEncodingBuffer::DeQueue(unsigned char *ucaCapturedVideoFrameData, int &iHeight, int &iWidth, int &nrTimeDifferenceInQueue, int &nrCaptureTimeDifference, int &device_orientation)
 	{
-		Locker lock(*m_pEncodingBufferMutex);
+		EncodingBufferLocker lock(*m_pEncodingBufferMutex);
 
 		if (m_nQueueSize <= 0)
 		{
@@ -101,7 +101,7 @@ namespace MediaSDK
 
 	int CEncodingBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pEncodingBufferMutex);
+		EncodingBufferLocker lock(*m_pEncodingBufferMutex);
 
 		return m_nQueueSize;
 	}

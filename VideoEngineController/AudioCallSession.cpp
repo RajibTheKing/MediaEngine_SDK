@@ -180,6 +180,12 @@ namespace MediaSDK
 			m_pFarEndProcessor = NULL;
 		}
 
+		if(m_pTrace)
+		{
+			delete m_pTrace;
+			m_pTrace = NULL;
+		}
+
 #ifdef USE_VAD
 		delete m_pVoice;
 #endif
@@ -432,6 +438,7 @@ namespace MediaSDK
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
+#ifdef __ANDROID__
 		//Sleep to maintain 100 ms recording time diff
 		if (m_b1stRecordedData)
 		{
@@ -456,7 +463,7 @@ namespace MediaSDK
 		}
 #endif
 
-#ifdef __ANDROID__
+
 		//If trace is received, current and next frames are deleted
 		if (!m_bLiveAudioStreamRunning && ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0))
 		{
@@ -495,7 +502,7 @@ namespace MediaSDK
 		}
 		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
 			m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
-#endif
+
 
 		if (m_bEchoCancellerEnabled &&
 			(!m_bLiveAudioStreamRunning ||
@@ -564,7 +571,7 @@ namespace MediaSDK
 
 			m_bIsAECMNearEndThreadBusy = false;
 		}
-
+#endif
 		int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");

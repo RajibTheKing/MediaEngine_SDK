@@ -16,7 +16,7 @@ namespace MediaSDK
 
 	void CAudioCallSessionListHandler::AddToAudioSessionList(LongLong friendName, CAudioCallSession* videoSession)
 	{
-		Locker lock(*m_pAudioSessionListMutex);
+		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
 		m_mAudioSessionList.insert(make_pair(friendName, videoSession));
 
@@ -25,7 +25,7 @@ namespace MediaSDK
 
 	CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(LongLong friendName)
 	{
-		Locker lock(*m_pAudioSessionListMutex);
+		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
 		auto audioSessionSearch = m_mAudioSessionList.find(friendName);
 
@@ -39,7 +39,7 @@ namespace MediaSDK
 
 	bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(LongLong friendName)
 	{
-		Locker lock(*m_pAudioSessionListMutex);
+		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 		auto audioSessionSearch = m_mAudioSessionList.find(friendName);
 
 		if (audioSessionSearch != m_mAudioSessionList.end())
@@ -58,7 +58,7 @@ namespace MediaSDK
 
 	void CAudioCallSessionListHandler::ClearAllFromAudioSessionList()
 	{
-		Locker lock(*m_pAudioSessionListMutex);
+		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
 		for (auto audioSessionIter = m_mAudioSessionList.begin(); audioSessionIter != m_mAudioSessionList.end(); ++audioSessionIter)
 		{
@@ -75,13 +75,13 @@ namespace MediaSDK
 
 	int CAudioCallSessionListHandler::SizeOfAudioSessionList()
 	{
-		Locker lock(*m_pAudioSessionListMutex);
+		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 		return (int)m_mAudioSessionList.size();
 	}
 
 	bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName)
 	{
-		Locker lock(*m_pAudioSessionListMutex);
+		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
 		bool bReturnedValue = !(m_mAudioSessionList.find(lFriendName) == m_mAudioSessionList.end());
 
@@ -91,7 +91,7 @@ namespace MediaSDK
 
 	bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &audioSession)
 	{
-		Locker lock(*m_pAudioSessionListMutex);
+		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
 		auto audioSessionSearch = m_mAudioSessionList.find(lFriendName);
 

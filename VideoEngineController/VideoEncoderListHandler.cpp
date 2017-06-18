@@ -18,7 +18,7 @@ namespace MediaSDK
 
 	void CVideoEncoderListHandler::AddToVideoEncoderList(long long llFriendID, CVideoEncoder* pcVideoEncoder)
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoderListHandler::CVideoEncoderListHandler");
 
@@ -29,7 +29,7 @@ namespace MediaSDK
 
 	CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderList(long long llFriendID)
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.find(llFriendID);
 
@@ -45,7 +45,7 @@ namespace MediaSDK
 
 	CVideoEncoder* CVideoEncoderListHandler::GetFromVideoEncoderListinIndex(int iIndex)
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.begin();
 
@@ -62,7 +62,7 @@ namespace MediaSDK
 
 	void CVideoEncoderListHandler::ClearAllFromVideoEncoderList()
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		if (false == m_mVideoEncoderList.empty())
 			m_mVideoEncoderList.clear();
@@ -70,7 +70,7 @@ namespace MediaSDK
 
 	bool CVideoEncoderListHandler::RemoveFromVideoEncoderList(long long llFriendID)
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.find(llFriendID);
 
@@ -99,21 +99,21 @@ namespace MediaSDK
 
 	int CVideoEncoderListHandler::SizeOfVideoEncoderList()
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		return (int)m_mVideoEncoderList.size();
 	}
 
 	bool CVideoEncoderListHandler::IsVideoEncoderExist(long long llFriendID)
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		return !(m_mVideoEncoderList.find(llFriendID) == m_mVideoEncoderList.end());
 	}
 
 	bool CVideoEncoderListHandler::IsVideoEncoderExist(int nVideoHeight, int nVideoWidth)
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		/*	map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.find(friendName);
 
@@ -131,7 +131,7 @@ namespace MediaSDK
 
 	void CVideoEncoderListHandler::ResetAllInVideoEncoderList()
 	{
-		Locker lock(*m_pVideoEncoderListMutex);
+		EncoderListLocker lock(*m_pVideoEncoderListMutex);
 
 		map<long long, CVideoEncoder*>::iterator mediaSearch = m_mVideoEncoderList.begin();
 

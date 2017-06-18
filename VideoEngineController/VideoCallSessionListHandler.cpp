@@ -17,7 +17,7 @@ namespace MediaSDK
 
 	void CVideoCallSessionListHandler::AddToVideoSessionList(long long llFriendName, CVideoCallSession* pcVideoSession)
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		m_mVideoSessionList.insert(make_pair(llFriendName, pcVideoSession));
 
@@ -26,7 +26,7 @@ namespace MediaSDK
 
 	CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionList(long long llFriendName)
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.find(llFriendName);
 
@@ -42,7 +42,7 @@ namespace MediaSDK
 
 	CVideoCallSession* CVideoCallSessionListHandler::GetFromVideoSessionListinIndex(int iIndex)
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
 
@@ -61,7 +61,7 @@ namespace MediaSDK
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoCallSessionListHandler::RemoveFromVideoSessionList() called");
 
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CVideoCallSessionListHandler::RemoveFromVideoSessionList() checking session key");
 
@@ -99,7 +99,7 @@ namespace MediaSDK
 
 	void CVideoCallSessionListHandler::ClearAllFromVideoSessionList()
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
 
@@ -125,7 +125,7 @@ namespace MediaSDK
 
 	int CVideoCallSessionListHandler::SizeOfVideoSessionList()
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		int iSize = (int)m_mVideoSessionList.size();
 
@@ -134,7 +134,7 @@ namespace MediaSDK
 
 	bool CVideoCallSessionListHandler::IsVideoSessionExist(long long llFriendName)
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		bool bReturnedValue = !(m_mVideoSessionList.find(llFriendName) == m_mVideoSessionList.end());
 
@@ -144,7 +144,7 @@ namespace MediaSDK
 
 	bool CVideoCallSessionListHandler::IsVideoSessionExist(long long llFriendName, CVideoCallSession* &rpcvideoSession)
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		std::map<long long, CVideoCallSession*>::iterator videoSessionSearch;
 		videoSessionSearch = m_mVideoSessionList.find(llFriendName);
@@ -162,14 +162,14 @@ namespace MediaSDK
 
 	int CVideoCallSessionListHandler::GetSessionListSize()
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		return m_mVideoSessionList.size();
 	}
 
 	void CVideoCallSessionListHandler::ResetAllInVideoSessionList()
 	{
-		Locker lock(*m_pVideoSessionListMutex);
+		SessionListLocker lock(*m_pVideoSessionListMutex);
 
 		std::map<long long, CVideoCallSession*>::iterator videoSessionSearch = m_mVideoSessionList.begin();
 

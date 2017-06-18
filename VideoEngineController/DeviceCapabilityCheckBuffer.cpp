@@ -23,7 +23,7 @@ namespace MediaSDK
 
 	void CDeviceCapabilityCheckBuffer::ResetBuffer()
 	{
-		Locker lock(*m_pDeviceCapabilityCheckBufferMutex);
+		CapabilityLocker lock(*m_pDeviceCapabilityCheckBufferMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -33,7 +33,7 @@ namespace MediaSDK
 	int CDeviceCapabilityCheckBuffer::Queue(LongLong llFriendID, int nOperation, int nNotification, int nVideoHeight, int nVideoWidth)
 	{
 		//printf("DeviceCapabilityCheckBuffer QUEUE Locked\n");
-		Locker lock(*m_pDeviceCapabilityCheckBufferMutex);
+		CapabilityLocker lock(*m_pDeviceCapabilityCheckBufferMutex);
 		//printf("DeviceCapabilityCheckBuffer QUEUE UN--Locked\n");
 
 		m_naBufferOperations[m_iPushIndex] = nOperation;
@@ -59,7 +59,7 @@ namespace MediaSDK
 	int CDeviceCapabilityCheckBuffer::DeQueue(LongLong &llrFriendID, int &nrNotification, int &nrVideoHeight, int &nrVideoWidth)
 	{
 		//printf("DeviceCapabilityCheckBuffer DeQUEUE Locked\n");
-		Locker lock(*m_pDeviceCapabilityCheckBufferMutex);
+		CapabilityLocker lock(*m_pDeviceCapabilityCheckBufferMutex);
 		//printf("DeviceCapabilityCheckBuffer DeQUEUE Un--Locked\n");
 
 		if (m_nQueueSize <= 0)
@@ -93,7 +93,7 @@ namespace MediaSDK
 
 	int CDeviceCapabilityCheckBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pDeviceCapabilityCheckBufferMutex);
+		CapabilityLocker lock(*m_pDeviceCapabilityCheckBufferMutex);
 
 		return m_nQueueSize;
 	}

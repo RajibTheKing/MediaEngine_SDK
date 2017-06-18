@@ -23,7 +23,7 @@ namespace MediaSDK
 
 	void CSendingBuffer::ResetBuffer()
 	{
-		Locker lock(*m_pSendingBufferMutex);
+		SendingBufferLocker lock(*m_pSendingBufferMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -32,7 +32,7 @@ namespace MediaSDK
 
 	int CSendingBuffer::Queue(long long llFriendID, unsigned char *ucaSendingVideoPacketData, int nLength, int iFrameNumber, int iPacketNumber)
 	{
-		Locker lock(*m_pSendingBufferMutex);
+		SendingBufferLocker lock(*m_pSendingBufferMutex);
 
 		memcpy(m_uc2aSendingVideoPacketBuffer[m_iPushIndex], ucaSendingVideoPacketData, nLength);
 
@@ -61,7 +61,7 @@ namespace MediaSDK
 
 	int CSendingBuffer::DeQueue(long long &rllFriendID, unsigned char *ucaSendingVideoPacketData, int &rnFrameNumber, int &rnPacketNumber, int &rnTimeDifferenceInQueue)
 	{
-		Locker lock(*m_pSendingBufferMutex);
+		SendingBufferLocker lock(*m_pSendingBufferMutex);
 
 		if (m_nQueueSize <= 0)
 		{
@@ -97,7 +97,7 @@ namespace MediaSDK
 
 	int CSendingBuffer::GetQueueSize()
 	{
-		Locker lock(*m_pSendingBufferMutex);
+		SendingBufferLocker lock(*m_pSendingBufferMutex);
 
 		return m_nQueueSize;
 	}

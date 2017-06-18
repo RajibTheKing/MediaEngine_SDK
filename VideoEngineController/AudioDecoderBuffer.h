@@ -18,6 +18,7 @@ namespace MediaSDK
 		CAudioByteBuffer();
 		~CAudioByteBuffer();
 
+		void SetQueueCapacity(int queueCapacity) { m_nQueueCapacity = queueCapacity; }
 		int EnQueue(unsigned char *saReceivedAudioFrameData, int nLength);
 		int DeQueue(unsigned char *saReceivedAudioFrameData);
 		void IncreamentIndex(int &irIndex);

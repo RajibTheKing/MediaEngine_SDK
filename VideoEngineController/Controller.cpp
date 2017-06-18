@@ -45,6 +45,7 @@ m_llLastTimeStamp(-1)
     m_pVideoReceiveMutex.reset(new CLockHandler);
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
+	m_pAudioLockMutex.reset(new CLockHandler);
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
 	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
@@ -85,6 +86,7 @@ m_llLastTimeStamp(-1)
     m_pVideoReceiveMutex.reset(new CLockHandler);
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
+	m_pAudioLockMutex.reset(new CLockHandler);
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
 	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
@@ -150,6 +152,8 @@ CController::~CController()
     SHARED_PTR_DELETE(m_pVideoReceiveMutex);
     SHARED_PTR_DELETE(m_pAudioSendMutex);
     SHARED_PTR_DELETE(m_pAudioReceiveMutex);
+	
+	SHARED_PTR_DELETE(m_pAudioLockMutex);
 
 	CLogPrinter_Write(CLogPrinter::WARNING, "CController::~CController() removed everything");
 }
@@ -165,10 +169,8 @@ bool CController::SetUserName(const long long& lUserName)
 
 bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType)
 {
+	StartAudioCallLocker lock3(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
-    
-    //Locker lock1(*m_pAudioSendMutex);
-    //Locker lock2(*m_pAudioReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
@@ -199,6 +201,8 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 bool CController::SetVolume(const long long& lFriendID, int iVolume, bool bRecorder)
 {
 	CAudioCallSession* pAudioSession;
+	
+	SetVolumeLocker lock1(*m_pAudioLockMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
@@ -214,6 +218,8 @@ bool CController::SetVolume(const long long& lFriendID, int iVolume, bool bRecor
 
 bool CController::SetLoudSpeaker(const long long& lFriendID, bool bOn)
 {
+	SetLoudSpeakerLocker lock1(*m_pAudioLockMutex);
+
 	CAudioCallSession* pAudioSession;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
@@ -230,6 +236,7 @@ bool CController::SetLoudSpeaker(const long long& lFriendID, bool bOn)
 
 bool CController::SetEchoCanceller(const long long& lFriendID, bool bOn)
 {
+	SetEchoCancellerLocker lock1(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
 	//return false;
 
@@ -250,6 +257,8 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() called");
 
 	CAudioCallSession* pAudioSession;
+
+	StartTestAudioCallLocker lock(*m_pAudioLockMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
@@ -313,7 +322,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 {
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called 1 ID %lld", lFriendID);
 
-	Locker lock1(*m_pVideoStartMutex);
+	StartCallLocker lock1(*m_pVideoStartMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called 2 ID %lld", lFriendID);
 
@@ -395,7 +404,7 @@ int CController::EncodeVideoFrame(const long long& lFriendID, unsigned char *in_
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
     
-    Locker lock(*m_pVideoSendMutex);
+	ControllerEncodeVideoFrameLocker lock(*m_pVideoSendMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
@@ -426,7 +435,7 @@ int CController::PushPacketForDecodingVector(const long long& lFriendID, int off
 
 	//	LOGE("CController::PushPacketForDecoding");
 
-	Locker lock(*m_pVideoReceiveMutex);
+	ReceiveLockerLive lock(*m_pVideoReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
@@ -442,11 +451,7 @@ int CController::PushPacketForDecodingVector(const long long& lFriendID, int off
 		//		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
 		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
-        {
-            TraverseReceivedVideoData(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
-            
-            return pVideoSession->PushPacketForMergingVector(offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames);
-        }
+			return pVideoSession->PushPacketForMergingVector(offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames);
 		else
 			return -1;
 	}
@@ -464,7 +469,7 @@ int CController::PushPacketForDecoding(const long long& lFriendID,unsigned char 
 
 //	LOGE("CController::PushPacketForDecoding");
     
-    Locker lock(*m_pVideoReceiveMutex);
+	ReceiveLockerCall lock(*m_pVideoReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
@@ -497,8 +502,9 @@ int CController::PushAudioForDecoding(const long long& lFriendID, int nOffset, u
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::PushAudioForDecoding called");
 
 	//	LOGE("CController::PushPacketForDecoding");
+	
+	PushAudioForDecodingLocker lock2(*m_pAudioLockMutex);
 
-	Locker lock(*m_pAudioReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
@@ -550,7 +556,7 @@ int CController::SendAudioData(const long long& lFriendID, short *in_data, unsig
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData");
     
-    Locker lock(*m_pAudioSendMutex);
+	SendAudioDataLocker lock2(*m_pAudioLockMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 
@@ -586,6 +592,7 @@ int CController::SendAudioData(const long long& lFriendID, short *in_data, unsig
 
 int CController::CancelAudioData(const long long& lFriendID, short *in_data, unsigned int in_size)
 {
+	CancelAudioDataLocker lock2(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::CancelAudioData");
@@ -619,7 +626,7 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::EncodeAndTransfer called");
     
     
-    Locker lock(*m_pVideoSendMutex);
+	SendLocker lock(*m_pVideoSendMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
@@ -661,7 +668,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 {
 	CVideoCallSession* pVideoSession;
 
-	Locker lock(*m_pVideoSendMutex);
+	SetEncoderLocker lock(*m_pVideoSendMutex);
     
 	if(height * width > 352 * 288)
 	{
@@ -693,7 +700,7 @@ int CController::SetBeautification(const IPVLongType llFriendID, bool bIsEnable)
 {
     CVideoCallSession* pVideoSession;
 
-	Locker lock(*m_pVideoSendMutex);
+	SetBeautifyLocker lock(*m_pVideoSendMutex);
     
     bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
     
@@ -729,7 +736,8 @@ void CController::SetCallInLiveType(const long long llFriendID, int nCallInLiveT
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::SetCallInLiveType called");
 
-	Locker lock(*m_pVideoSendMutex);
+	SetCallInLiveTypeLocker lock(*m_pVideoSendMutex);
+	SetCallInLiveTypeLocker lock2(*m_pAudioLockMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(llFriendID, pVideoSession);
 
@@ -795,7 +803,7 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
 {
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability called 1 ID %lld", lFriendID);
 
-	Locker lock1(*m_pVideoStartMutex);
+	StartCheckCapabilityLocker lock1(*m_pVideoStartMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability called 2 ID %lld", lFriendID);
 
@@ -892,7 +900,7 @@ void CController::InterruptOccured(const long long lFriendID)
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured called 1 ID %lld", lFriendID);
 
-	Locker lock(*m_pVideoSendMutex);
+	InterruptOccuredLocker lock(*m_pVideoSendMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOccured called 2 ID %lld", lFriendID);
 
@@ -925,7 +933,7 @@ void CController::InterruptOver(const long long lFriendID)
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver called 1 ID %lld", lFriendID);
 
-	Locker lock(*m_pVideoSendMutex);
+	InterruptOverLocker lock(*m_pVideoSendMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::InterruptOver called 2 ID %lld", lFriendID);
 
@@ -963,9 +971,8 @@ bool CController::StopAudioCall(const long long& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() called.");
     
-    Locker lock1(*m_pAudioSendMutex);
-    Locker lock2(*m_pAudioReceiveMutex);
-    
+	StopAudioCallLocker lock3(*m_pAudioLockMutex);
+
     CAudioCallSession *m_pSession;
     
     m_pSession = m_pCommonElementsBucket->m_pAudioCallSessionList->GetFromAudioSessionList(lFriendID);
@@ -987,8 +994,7 @@ bool CController::StopTestAudioCall(const long long& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() called");
 
-	Locker lock1(*m_pAudioSendMutex);
-	Locker lock2(*m_pAudioReceiveMutex);
+	StopTestAudioCallLocker lock3(*m_pAudioLockMutex);
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestAudioCall() checking session");
 
@@ -1014,8 +1020,8 @@ bool CController::StopTestVideoCall(const long long& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() called -> friendID = " + m_Tools.getText(lFriendID));
 
-	Locker lock1(*m_pVideoSendMutex);
-	Locker lock2(*m_pVideoReceiveMutex);
+	StopTestCallLocker lock1(*m_pVideoSendMutex);
+	StopTestCallLocker lock2(*m_pVideoReceiveMutex);
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StopTestVideoCall() checking session");
 
@@ -1046,9 +1052,9 @@ bool CController::StopVideoCall(const long long& lFriendID)
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall called 1 ID %lld", lFriendID);
     
-    Locker lock1(*m_pVideoSendMutex);
+	StopCallLocker lock1(*m_pVideoSendMutex);
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After first lock");
-    Locker lock2(*m_pVideoReceiveMutex);
+	StopCallLocker lock2(*m_pVideoReceiveMutex);
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
     
     CVideoCallSession *m_pSession;
@@ -1082,6 +1088,8 @@ bool CController::StopVideoCall(const long long& lFriendID)
 
 int CController::StartAudioEncodeDecodeSession()
 {
+	ControllerLockerStart lock(*m_pAudioLockMutex);
+
 	if (NULL == m_pAudioEncodeDecodeSession)
 		m_pAudioEncodeDecodeSession = new CAudioFileEncodeDecodeSession();
 
@@ -1090,6 +1098,8 @@ int CController::StartAudioEncodeDecodeSession()
 
 int CController::EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameSize, unsigned char *ucaEncodedDataBuffer)
 {
+	ControllerLockerStart lock(*m_pAudioLockMutex);
+
 	if (NULL == m_pAudioEncodeDecodeSession)
 	{
 		return 0;
@@ -1100,6 +1110,8 @@ int CController::EncodeAudioFrame(short *psaEncodingDataBuffer, int nAudioFrameS
 
 int CController::DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudioFrameSize, short *psaDecodingDataBuffer)
 {
+	EncodeAudioFrameLocker lock(*m_pAudioLockMutex);
+
 	if (NULL == m_pAudioEncodeDecodeSession)
 	{
 		return 0;
@@ -1110,6 +1122,7 @@ int CController::DecodeAudioFrame(unsigned char *ucaDecodedDataBuffer, int nAudi
 
 int CController::StopAudioEncodeDecodeSession()
 {
+	DecodeAudioFrameLocker lock(*m_pAudioLockMutex);
 	if (NULL != m_pAudioEncodeDecodeSession)
 	{
 		m_pAudioEncodeDecodeSession->StopAudioEncodeDecodeSession();
@@ -1175,8 +1188,8 @@ void CController::UninitializeLibrary()
 		m_pDeviceCapabilityCheckThread->StopDeviceCapabilityCheckThread();
 	}
 
-	Locker lock1(*m_pVideoSendMutex);
-	Locker lock2(*m_pVideoReceiveMutex);
+	UninitLibLocker lock1(*m_pVideoSendMutex);
+	UninitLibLocker lock2(*m_pVideoReceiveMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary remoging sessions");
 
@@ -1232,6 +1245,8 @@ void CController::SetSendFunctionPointer(SendFunctionPointerType callBackFunctio
 
 bool CController::StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType)
 {
+	StartAudioCallInLiveLocker lock(*m_pAudioLockMutex);
+
 	CAudioCallSession* pAudioSession;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
@@ -1248,6 +1263,7 @@ bool CController::StartAudioCallInLive(const long long& lFriendID, int iRole, in
 
 bool CController::EndAudioCallInLive(const long long& lFriendID)
 {
+	EndAudioCallInLiveLocker lock(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
 
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
@@ -1266,8 +1282,8 @@ bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLi
 {
 	CVideoCallSession* pVideoSession;
 
-	Locker lock(*m_pVideoSendMutex);
-	Locker lock2(*m_pVideoReceiveMutex);
+	StartCallInLiveLocker lock(*m_pVideoSendMutex);
+	StartCallInLiveLocker lock2(*m_pVideoReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 	
@@ -1287,8 +1303,8 @@ bool CController::EndVideoCallInLive(const long long& lFriendID, int nCalleeID)
 {
 	CVideoCallSession* pVideoSession;
 
-	Locker lock(*m_pVideoSendMutex);
-	Locker lock2(*m_pVideoReceiveMutex);
+	EndCallInLiveLocker lock(*m_pVideoSendMutex);
+	EndCallInLiveLocker lock2(*m_pVideoReceiveMutex);
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
@@ -1335,7 +1351,7 @@ void CController::TraverseReceivedVideoData(int offset, unsigned char *in_data, 
     
     for(int i=0;i<in_size;i++)
     {
-        ucTmp = in_data[i+offset];
+        ucTmp = in_data[i];
     }
     
     for(int i=0;i<numberOfFrames;i++)

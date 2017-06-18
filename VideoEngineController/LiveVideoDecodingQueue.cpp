@@ -24,7 +24,7 @@ namespace MediaSDK
 
 	void LiveVideoDecodingQueue::ResetBuffer()
 	{
-		Locker lock(*m_pLiveVideoDecodingQueueMutex);
+		LiveDecodingQueueLocker lock(*m_pLiveVideoDecodingQueueMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -33,7 +33,7 @@ namespace MediaSDK
 
 	int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int nLength)
 	{
-		Locker lock(*m_pLiveVideoDecodingQueueMutex);
+		LiveDecodingQueueLocker lock(*m_pLiveVideoDecodingQueueMutex);
 
 		if (nLength < 0 || nLength >= MAX_VIDEO_ENCODED_FRAME_SIZE)
 		{
@@ -65,7 +65,7 @@ namespace MediaSDK
 
 	int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedVideoFrameData)
 	{
-		Locker lock(*m_pLiveVideoDecodingQueueMutex);
+		LiveDecodingQueueLocker lock(*m_pLiveVideoDecodingQueueMutex);
 
 		if (m_nQueueSize == 0)
 		{
@@ -95,7 +95,7 @@ namespace MediaSDK
 
 	int LiveVideoDecodingQueue::GetQueueSize()
 	{
-		Locker lock(*m_pLiveVideoDecodingQueueMutex);
+		LiveDecodingQueueLocker lock(*m_pLiveVideoDecodingQueueMutex);
 
 		return m_nQueueSize;
 	}

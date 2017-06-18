@@ -51,6 +51,11 @@ namespace MediaSDK
 
 		m_pLiveAudioParser = nullptr;
 
+		if (SERVICE_TYPE_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
+		{
+			m_AudioReceivedBuffer.SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
+		}
+
 		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
@@ -638,6 +643,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::ProcessPlayingData()
 	{
+#ifdef __ANDROID__
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
 			if (m_pAudioCallSession->m_bTraceTailRemains)
@@ -693,6 +699,18 @@ namespace MediaSDK
 		{
 			LOG18("ppplaying 0 data, trace not sent");
 		}
+#else
+		if (m_pDataEventListener != nullptr)
+		{
+			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+#ifdef PCM_DUMP
+			if (m_pAudioCallSession->PlayedFile)
+			{
+				fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
+			}
+#endif
+		}
+#endif
 	}
 
 } //namespace MediaSDK

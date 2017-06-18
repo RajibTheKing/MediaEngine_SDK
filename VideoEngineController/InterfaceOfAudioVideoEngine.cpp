@@ -4,6 +4,8 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
+#define MEDIA_ENGINE_VERSION "9.31"
+
 namespace MediaSDK
 {
 
@@ -16,6 +18,7 @@ namespace MediaSDK
 	{
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = new CController();
+
 		m_llTimeOffset = -1;
 
 		m_pcController->initializeEventHandler();

@@ -43,7 +43,7 @@ namespace MediaSDK
 
 	void AudioShortBufferForPublisherFarEnd::ResetBuffer()
 	{
-		Locker lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
+		AudioShortBufferPublisherLock lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
 
 		m_iPushIndex = 0;
 		m_iPopIndex = 0;
@@ -57,7 +57,7 @@ namespace MediaSDK
 	int AudioShortBufferForPublisherFarEnd::EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump, MuxHeader pMuxHeader)
 	{
 		LOG18("#18@# ENCO BUFFER SIZE %d -> HEAD %lld", m_nQueueCapacity, pMuxHeader.getCalleeId());
-		Locker lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
+		AudioShortBufferPublisherLock lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
 
 		memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);
 
@@ -99,7 +99,7 @@ namespace MediaSDK
 
 	int AudioShortBufferForPublisherFarEnd::DeQueue(short *saCapturedAudioFrameData, long long &receivedTime, MuxHeader &pMuxHeader)
 	{
-		Locker lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
+		AudioShortBufferPublisherLock lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
 
 		if (m_nQueueSize == 0)
 		{
@@ -132,7 +132,7 @@ namespace MediaSDK
 
 	int AudioShortBufferForPublisherFarEnd::GetQueueSize()
 	{
-		Locker lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
+		AudioShortBufferPublisherLock lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
 
 		return m_nQueueSize;
 	}
@@ -140,7 +140,7 @@ namespace MediaSDK
 
 	int AudioShortBufferForPublisherFarEnd::DeQueueForCallee(short *saCapturedAudioFrameData, long long &receivedTime, MuxHeader &pMuxHeader, int iCalleeFrameNoSentByPublisher)
 	{
-		Locker lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
+		AudioShortBufferPublisherLock lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
 
 		if (m_nQueueSize == 0)
 		{

@@ -492,7 +492,7 @@ void CVideoBeautificationer::boxBlurH_4(unsigned char *scl, unsigned char *tcl, 
 
 pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth)
 {
-	Locker lock(*m_pVideoBeautificationMutex);
+	BeautyLocker lock(*m_pVideoBeautificationMutex);
 
 	if (m_applyBeatification != 1)
 	{
@@ -570,7 +570,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlu
 
 pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, bool doSharp)
 {
-	Locker lock(*m_pVideoBeautificationMutex);
+	BeautyLocker lock(*m_pVideoBeautificationMutex);
 
 	if (m_applyBeatification != 1)
 	{
@@ -722,7 +722,7 @@ bool CVideoBeautificationer::IsNotSkinPixel(unsigned char UPixel, unsigned char 
 
 pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp)
 {
-	Locker lock(*m_pVideoBeautificationMutex);
+	BeautyLocker lock(*m_pVideoBeautificationMutex);
 
 	if (m_applyBeatification != 1)
 	{
@@ -959,7 +959,7 @@ void CVideoBeautificationer::setParameters(int *param)
 
 int CVideoBeautificationer::TestVideoEffect(int *param, int size)
 {
-	Locker lock(*m_pVideoBeautificationMutex);
+	BeautyLocker lock(*m_pVideoBeautificationMutex);
 		
 	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
 

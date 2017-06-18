@@ -15,6 +15,7 @@ namespace MediaSDK
 
 		FarEndProcessorCall(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
 		~FarEndProcessorCall() { }
+		bool m_bProcessFarendDataStarted;
 
 		void ProcessFarEndData();
 	};

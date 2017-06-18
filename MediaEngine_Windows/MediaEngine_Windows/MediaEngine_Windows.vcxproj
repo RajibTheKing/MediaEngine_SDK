@@ -268,6 +268,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioResources.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioTypes.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioSessionOptions.h" />
+    <ClInclude Include="..\..\VideoEngineController\CustomLocker.h" />
     <ClInclude Include="..\..\VideoEngineController\DecoderAAC.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSessionListHandler.h" />
