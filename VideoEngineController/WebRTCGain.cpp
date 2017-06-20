@@ -1,9 +1,19 @@
 #include "WebRTCGain.h"
 
 #include "LogPrinter.h"
+#include "Tools.h"
+
 #ifdef USE_AGC
+
+#ifdef DESKTOP_C_SHARP
+#define OLD_GAIN_LIB
+#include "gain_control_old.h"
+#else
 #include "gain_control.h"
 #endif
+
+#endif
+
 #include "AudioMacros.h"
 
 #ifndef ALOG
@@ -34,7 +44,18 @@ namespace MediaSDK
 		m_sTempBuf = new short[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		int agcret = -1;
 
+#ifdef OLD_GAIN_LIB
+		if ((agcret = WebRtcAgc_Create(&AGC_instance)))
+		{
+			LOGT("WebRtcAgc_Create failed with error code = %d" , Tools::IntegertoStringConvert(agcret));
+		}
+		else
+		{
+			LOGT("WebRtcAgc_Create successful");
+		}
+#else
 		AGC_instance = WebRtcAgc_Create();
+#endif
 
 		if ((agcret = WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, WEBRTC_AGC_MAX_LEVEL, MODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
 		{
@@ -84,7 +105,7 @@ namespace MediaSDK
 
 		m_bGainEnabled = true;
 
-		/*
+		/*           ************* Applicable For New AGC Lib *************
 		// Sets the target peak |level| (or envelope) of the AGC in dBFs (decibels
 		// from digital full-scale). The convention is to use positive values. For
 		// instance, passing in a value of 3 corresponds to -3 dBFs, or a target
@@ -98,11 +119,13 @@ namespace MediaSDK
 		// target level. Otherwise, the signal will be compressed but not limited
 		// above the target level.
 		*/
-
+#ifdef OLD_GAIN_LIB
+		WebRtcAgc_config_t gain_config;
+		m_iVolume = 13;
+#else
 		WebRtcAgcConfig gain_config;
-
 		m_iVolume = iGain;
-
+#endif
 
 		gain_config.targetLevelDbfs = 13 - m_iVolume;      /* m_iVolume's range is 1-10 */ /* so effective dbfs range is 12-3 */    /* possible range: 0 - 31 */
 		gain_config.compressionGaindB = 9;   /* possible range: 0 - 90 */
@@ -176,17 +199,26 @@ namespace MediaSDK
 		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
 		{
 			inMicLevel = 0;
+#ifdef OLD_GAIN_LIB
+			if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
+#else
 			int16_t* in_buf_temp = sInBuf + i;
 			int16_t* out_buf_temp = m_sTempBuf + i;
 			if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
+#endif
 			{
 				LOGT("###GN## WebRtcAgc_VirtualMic failed");
 				bSucceeded = false;
 			}
 			
 			//total += outMicLevel; counter++;
+#ifdef OLD_GAIN_LIB
+			if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, m_sTempBuf + i, 0,
+				outMicLevel, &inMicLevel, 0, &saturationWarning))
+#else
 			if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
 				(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
+#endif
 			{
 				LOGT("###GN## WebRtcAgc_Process failed");
 				bSucceeded = false;

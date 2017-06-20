@@ -571,6 +571,13 @@ namespace MediaSDK
 
 			m_bIsAECMNearEndThreadBusy = false;
 		}
+
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(DESKTOP_C_SHARP)
+		if (GetPlayerGain().get())
+		{
+			GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+		}
+		else printf("##TT encodeaudiodata no gain\n");
 #endif
 		int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
 
