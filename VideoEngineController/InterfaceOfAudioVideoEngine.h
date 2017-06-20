@@ -116,7 +116,7 @@ namespace MediaSDK
 		void InterruptOccured(const LongLong lFriendID);
 		void InterruptOver(const LongLong lFriendID);
 
-    std::string getMediaEngineVersion();
+		std::string GetMediaEngineVersion();
 
 	private:
 

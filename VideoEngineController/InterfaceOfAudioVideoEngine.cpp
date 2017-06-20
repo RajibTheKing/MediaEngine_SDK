@@ -4,7 +4,8 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-#define MEDIA_ENGINE_VERSION "9.31"
+#define MEDIA_ENGINE_VERSION "9.32"
+#define MEDIA_ENGINE_BUILD_NUMBER 9324918
 
 namespace MediaSDK
 {
@@ -824,10 +825,10 @@ namespace MediaSDK
 		}
 	}
 
-std::string CInterfaceOfAudioVideoEngine::getMediaEngineVersion()
+std::string CInterfaceOfAudioVideoEngine::GetMediaEngineVersion()
 {
     
-    return "MediaEngine Version--> "+ std::string(MEDIA_ENGINE_VERSION)+" (compiled "+string(__TIME__)+", "+string(__DATE__)+")";
+    return "MediaEngine Version "+ std::string(MEDIA_ENGINE_VERSION)+" (compiled "+string(__TIME__)+", "+string(__DATE__)+")";
 }
 
 
