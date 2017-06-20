@@ -1,0 +1,17 @@
+Release 9.32 (Date: 18-06-2017)
+-------------------------------
+- Video bitrate modified. Now minimum bitrate is 300000 and maximum bitrate is 700000
+- Brightness reduced on live
+- Gain added on regular call for desktop and iOS platform
+- Code to pinpoint issue #3111
+
+Release 9.31 (Date: 07-06-2017)
+-------------------------------
+- Introduced WebRTC gain and WebRTC echo on normal audio/video call
+- Beautification is now applied on normal video call
+- Probable resolution on Locker crash (Issue #2807)
+
+Release 9.30 (Date: 30-05-2017)
+-------------------------------
+- Audio callback changed for handling multiple audio session.
+- Updated locker.
