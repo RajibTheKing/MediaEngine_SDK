@@ -1553,7 +1553,19 @@ int CVideoCallSession::SetVideoEffect(int nEffectStatus)
 
 int CVideoCallSession::TestVideoEffect( int *param, int size)
 {
-	this->m_pColorConverter->TestVideoEffect(param, size);
+	if (m_pVideoEncodingThreadOfLive != NULL)
+	{
+		this->m_pVideoEncodingThreadOfLive->TestVideoEffect(param, size);
+	}
+	else if (m_pVideoEncodingThreadOfCall != NULL)
+	{
+		this->m_pVideoEncodingThreadOfCall->TestVideoEffect(param, size);
+	}
+	else if (m_pVideoEncodingThread != NULL)
+	{
+		this->m_pVideoEncodingThread->TestVideoEffect(param, size);
+	}
+
 	return 1;
 }
 

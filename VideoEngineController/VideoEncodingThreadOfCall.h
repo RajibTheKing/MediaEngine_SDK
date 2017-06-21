@@ -47,6 +47,7 @@ namespace MediaSDK
 		void SetFrameNumber(int nFrameNumber);
 
 		int SetVideoEffect(int nEffectStatus);
+		void TestVideoEffect(int *param, int size);
 
 		CEncodingBuffer *m_pEncodingBuffer;
 

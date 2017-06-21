@@ -926,6 +926,12 @@ void CVideoEncodingThread::SetBeautification(bool bIsEnable)
 }
 
 
+void CVideoEncodingThread::TestVideoEffect(int *param, int size)
+{
+	m_VideoBeautificationer->TestVideoEffect(param, size);
+}
+
+
 
 
 

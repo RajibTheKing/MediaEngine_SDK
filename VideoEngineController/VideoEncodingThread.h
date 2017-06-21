@@ -54,6 +54,7 @@ namespace MediaSDK
 		int SetVideoEffect(int nEffectStatus);
 
 		void MakeBlackScreen(unsigned char *pData, int iHeight, int iWidth, int colorFormat);
+		void TestVideoEffect(int *param, int size);
 
 		CEncodingBuffer *m_pEncodingBuffer;
 

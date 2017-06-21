@@ -950,10 +950,6 @@ void CVideoBeautificationer::setParameters(int *param)
 
 	//m_applyBeatification = 1;
 
-	HITLERSS(">> sigma = %d radius = %d beauty = %d\n", param[0], param[1], param[3]);
-
-	HITLERSS("<< sigma = %d radius = %d beauty = %d\n", m_sigma, m_radius, m_applyBeatification);
-
 	return;
 }
 

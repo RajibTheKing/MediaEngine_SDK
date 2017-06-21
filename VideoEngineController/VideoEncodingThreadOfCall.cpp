@@ -566,6 +566,11 @@ m_VideoBeautificationer(NULL),
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() stopped EncodingThreadProcedure method.");
 	}
 
+	void CVideoEncodingThreadOfCall::TestVideoEffect(int *param, int size)
+	{
+		m_VideoBeautificationer->TestVideoEffect(param, size);
+	}
+
 
 
 } //namespace MediaSDK

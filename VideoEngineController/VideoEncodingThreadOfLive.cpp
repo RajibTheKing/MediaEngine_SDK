@@ -918,5 +918,10 @@ m_VideoBeautificationer(NULL)
 
 	}
 
+	void CVideoEncodingThreadOfLive::TestVideoEffect(int *param, int size)
+	{
+		m_VideoBeautificationer->TestVideoEffect(param, size);
+	}
+
 } //namespace MediaSDK
 
