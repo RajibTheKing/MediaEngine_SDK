@@ -28,7 +28,7 @@ namespace MediaSDK
 	{
 	public:
 		AudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
-		~AudioFarEndDataProcessor();
+		virtual ~AudioFarEndDataProcessor();
 
 		virtual	void ProcessFarEndData() = 0;
 		void ProcessPlayingData();
