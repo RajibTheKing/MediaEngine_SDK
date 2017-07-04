@@ -167,7 +167,7 @@ bool CController::SetUserName(const long long& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType)
+bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioPlayerType)
 {
 	StartAudioCallLocker lock3(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
@@ -184,7 +184,7 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, nAudioPlayerType);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -269,7 +269,7 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 		audioSessionOptions.SetOptions(SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, AUDIO_PLAYER_DEFAULT);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 

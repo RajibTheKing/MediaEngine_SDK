@@ -89,7 +89,7 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources);
+		CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioPlayerType);
 		~CAudioCallSession();
 
 		void StartCallInLive(int iRole, int nCallInLiveType);
@@ -171,6 +171,7 @@ namespace MediaSDK
 		Tools m_Tools;
 		LongLong m_FriendID;
 		bool m_bEchoCancellerEnabled;
+		bool m_bTraceSendingEnabled;
 
 		CCommonElementsBucket* m_pCommonElementsBucket;
 

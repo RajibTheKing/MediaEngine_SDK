@@ -30,6 +30,10 @@
 #define ENTITY_TYPE_VIEWER_CALLEE 2
 #define ENTITY_TYPE_PUBLISHER_CALLER 1
 
+#define AUDIO_PLAYER_DEFAULT 1
+#define AUDIO_PLAYER_HEADPHONE 2
+#define AUDIO_PLAYER_LOUDSPEAKER 3
+
 #define SESSION_ID_FOR_SELF_VIEW -1000
 
 typedef long long IPVLongType;
@@ -52,7 +56,7 @@ namespace MediaSDK
 		bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
 		bool InitializeLibrary(const IPVLongType& llUserID);
 		bool SetUserName(const IPVLongType llUserName);
-		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType);
+		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioPlayerType);
 
 		bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
 		bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
