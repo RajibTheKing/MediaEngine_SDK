@@ -245,7 +245,7 @@ namespace MediaSDK
 
 					videoHeaderObject.ShowDetails("##RCV : ");
 
-					//printf("#V## Queue: %d\n",nFrameLength);
+					printf("#V## DeviceOrientation from Header: %d\n",videoHeaderObject.GetDeviceOrientation());
 
 					currentTime = m_Tools.CurrentTimestamp();
 
@@ -295,7 +295,7 @@ namespace MediaSDK
 					videoHeaderObject.GetInsetWidths(m_naInsetWidths, nNumberOfInsets);
 
 					//nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
-					nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(), 0, 0, 0, m_naInsetHeights[0], m_naInsetWidths[0]);
+					nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(), 0, 0, videoHeaderObject.GetDeviceOrientation(), m_naInsetHeights[0], m_naInsetWidths[0]);
 
 					llSlotTimeStamp = m_Tools.CurrentTimestamp();
 					toolsObject.SOSleep(1);
@@ -545,6 +545,7 @@ namespace MediaSDK
 	int nIDR_Frame_Gap = -1;
 	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
+        printf("Got Orientation DecodeAndSendToClient = %d\n", nOrientation);
 		long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 		long long decTime = m_Tools.CurrentTimestamp();
@@ -628,7 +629,30 @@ namespace MediaSDK
 
 				int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
 				int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
-				this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
+                
+                int rotatedHeight, rotatedWidth;
+                
+                if(nOrientation == 3)
+                    nOrientation = 1;
+                else if(nOrientation == 1)
+                    nOrientation = 3;
+                else
+                {
+                    //do nothing
+                }
+                
+                int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientation);
+                
+                memcpy(m_DecodedFrame, m_RotatedFrame, iLen);
+                m_decodingHeight = rotatedHeight;
+                m_decodingWidth = rotatedWidth;
+                
+                printf("DeviceOrien = %d, H:W = %d:%d\n", nOrientation, m_decodingHeight,m_decodingWidth);
+                
+                nOrientation = 0; //todo: We will fix it later. This variable is used only for rotation. There need an analysis whether this value should be always zero or not.
+                
+                
+                this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 			{
