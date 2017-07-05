@@ -545,6 +545,8 @@ namespace MediaSDK
 	int nIDR_Frame_Gap = -1;
 	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
+		int nOrientationForRotation = nOrientation;
+
 		long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 		long long decTime = m_Tools.CurrentTimestamp();
@@ -604,6 +606,7 @@ namespace MediaSDK
 
 		if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 		{
+			nOrientation = 0;
 			int iNewHeight = m_decodingHeight - m_decodingHeight % 4;
 			int iNewWidth = m_decodingWidth - m_decodingWidth % 4;
 
@@ -622,6 +625,7 @@ namespace MediaSDK
 
 		if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 		{
+			nOrientation = 0;
 			if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
@@ -643,7 +647,7 @@ namespace MediaSDK
                         //do nothing
                     }
                     
-                    int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientation);
+					int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientationForRotation);
                     
                     memcpy(m_DecodedFrame, m_RotatedFrame, iLen);
                     m_decodingHeight = rotatedHeight;
@@ -686,8 +690,6 @@ namespace MediaSDK
 				this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 			}
 			//TheKing-->Here
-            
-            nOrientation = 0; //todo: We will fix it later. This variable is used only for rotation. There need an analysis whether this value should be always zero or not.
 
 		}
 
