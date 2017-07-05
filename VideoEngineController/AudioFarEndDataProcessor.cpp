@@ -268,6 +268,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
 	{
+		COW("###^^^### SENT TO PLAYER DATA .................");
 		long long llNow = 0;
 
 		if (m_bIsLiveStreamingRunning == true)
@@ -660,6 +661,7 @@ namespace MediaSDK
 		}
 		if (m_pDataEventListener != nullptr)
 		{
+			COW("###^^^### FIRE AUDIO EVENT WITH DATA");
 			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
@@ -702,6 +704,7 @@ namespace MediaSDK
 #else
 		if (m_pDataEventListener != nullptr)
 		{
+			COW("###^^^### FIRE AUDIO EVENT WITH DATA 2");
 			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)

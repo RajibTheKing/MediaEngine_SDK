@@ -969,6 +969,7 @@ void CController::initializeEventHandler()
 
 bool CController::StopAudioCall(const long long& lFriendID)
 {
+	COW("###^^^### STOP AUDIO CALL CALLING...........");
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() called.");
     
 	StopAudioCallLocker lock3(*m_pAudioLockMutex);
@@ -1180,7 +1181,7 @@ void CController::UninitializeLibrary()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary called 1");
-
+	COW("###^^^### UNINT LIBRARY ... ");
 	if (NULL != m_pDeviceCapabilityCheckThread)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary called 2");
@@ -1190,6 +1191,9 @@ void CController::UninitializeLibrary()
 
 	UninitLibLocker lock1(*m_pVideoSendMutex);
 	UninitLibLocker lock2(*m_pVideoReceiveMutex);
+	UninitLibLocker lock3(*m_pAudioLockMutex);
+	UninitLibLocker lock4(*m_pAudioSendMutex);
+	UninitLibLocker lock5(*m_pAudioReceiveMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary remoging sessions");
 
@@ -1197,6 +1201,8 @@ void CController::UninitializeLibrary()
 
 	m_pCommonElementsBucket->m_pVideoCallSessionList->ClearAllFromVideoSessionList();
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();
+
+	m_pCommonElementsBucket->m_pAudioCallSessionList->ClearAllFromAudioSessionList();
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary sessions removed");
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary done");
