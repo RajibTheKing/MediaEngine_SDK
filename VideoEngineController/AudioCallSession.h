@@ -89,7 +89,7 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources);
+		CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType);
 		~CAudioCallSession();
 
 		void StartCallInLive(int iRole, int nCallInLiveType);
@@ -137,6 +137,8 @@ namespace MediaSDK
 			m_pEventNotifier = pEventNotifier;
 		}
 
+		bool IsTraceSendingEnable(){ return m_bTraceSendingEnabled; }
+
 		int m_iNextPacketType;
 		CAudioShortBuffer m_AudioNearEndBuffer;
 		CAudioShortBuffer  m_ViewerInCallSentDataQueue;
@@ -171,6 +173,7 @@ namespace MediaSDK
 		Tools m_Tools;
 		LongLong m_FriendID;
 		bool m_bEchoCancellerEnabled;
+		bool m_bTraceSendingEnabled;
 
 		CCommonElementsBucket* m_pCommonElementsBucket;
 
