@@ -638,10 +638,10 @@ namespace MediaSDK
                     //inset Rotation is Turned off While User is in Desktop
                     int rotatedHeight, rotatedWidth;
                     
-                    if(nOrientation == 3)
-                        nOrientation = 1;
-                    else if(nOrientation == 1)
-                        nOrientation = 3;
+                    if(nOrientationForRotation == 3)
+                        nOrientationForRotation = 1;
+                    else if(nOrientationForRotation == 1)
+                        nOrientationForRotation = 3;
                     else
                     {
                         //do nothing
