@@ -545,7 +545,6 @@ namespace MediaSDK
 	int nIDR_Frame_Gap = -1;
 	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
-        printf("Got Orientation DecodeAndSendToClient = %d\n", nOrientation);
 		long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 		long long decTime = m_Tools.CurrentTimestamp();
@@ -647,11 +646,6 @@ namespace MediaSDK
                 m_decodingHeight = rotatedHeight;
                 m_decodingWidth = rotatedWidth;
                 
-                printf("DeviceOrien = %d, H:W = %d:%d\n", nOrientation, m_decodingHeight,m_decodingWidth);
-                
-                nOrientation = 0; //todo: We will fix it later. This variable is used only for rotation. There need an analysis whether this value should be always zero or not.
-                
-                
                 this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
@@ -687,6 +681,8 @@ namespace MediaSDK
 				this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
 			}
 			//TheKing-->Here
+            
+            nOrientation = 0; //todo: We will fix it later. This variable is used only for rotation. There need an analysis whether this value should be always zero or not.
 
 		}
 
