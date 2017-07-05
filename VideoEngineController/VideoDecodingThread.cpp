@@ -629,7 +629,7 @@ namespace MediaSDK
 				int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
 				int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
                 
-                if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
+                if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
                 {
                     //inset Rotation is Turned off While User is in Desktop
                     int rotatedHeight, rotatedWidth;
