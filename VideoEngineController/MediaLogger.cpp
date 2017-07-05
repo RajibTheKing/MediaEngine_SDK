@@ -7,6 +7,11 @@ namespace MediaSDK
 	{		
 #if defined(__ANDROID__)
 		m_sFilePath = "/sdcard/"+filePath;
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+		char *home = getenv("HOME");
+		std::string prefix(home);
+		prefix += "Documents";
+		m_sFilePath = prefix + filePath;
 #elif defined(DESKTOP_C_SHARP)
 		m_sFilePath = filePath;
 #endif
