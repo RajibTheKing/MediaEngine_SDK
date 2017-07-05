@@ -579,7 +579,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     
                     if(iOpponentVideoHeight !=-1 && iOpponentVideoWidth !=  -1)
                     {
-                        if(m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
+                        if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
                         {
                             int rotatedHeight, rotatedWidth;
                             m_pVideoCallSession->GetColorConverter()->RotateI420(m_ucaMirroredFrame, iHeight, iWidth, m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nDevice_orientation);
