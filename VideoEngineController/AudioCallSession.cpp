@@ -35,8 +35,10 @@
 #include "AudioFarEndProcessorCall.h"
 #include "AudioFarEndProcessorThread.h"
 #include "Trace.h"
+#include "MediaLogger.h"
 
 #include <sstream>
+#include <string>
 
 #define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
 
@@ -47,6 +49,7 @@
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
+
 
 namespace MediaSDK
 {
@@ -63,6 +66,19 @@ namespace MediaSDK
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr)
 	{
+		
+		MediaLogger *objMediaLogger = new MediaLogger("dumpfile.txt", INFO);
+		int var = 1;
+		MANSUR("MANSUR----------GetDateTime>> %s\n", objMediaLogger->GetDateTime().c_str());
+		MANSUR("MANSUR----------GetFilePath>> %s\n", objMediaLogger->GetFilePath().c_str());
+		MANSUR("MANSUR----------GetThreadId>> %s\n", objMediaLogger->GetThreadId2().c_str());
+		objMediaLogger->Log(NONE,"*********************hello world %d**************\n", var);
+		objMediaLogger->Log(ERRORS, "*********************hello world 2**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 3**************\n");
+		objMediaLogger->Init();
+		objMediaLogger->WriteLogToFile();
+
+
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
