@@ -78,6 +78,7 @@ namespace MediaSDK
 		unsigned char m_ucaEncodedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 		unsigned char m_ucaMirroredFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+        unsigned char m_ucaRotatedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 		unsigned char m_ucaCropedFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 		unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];

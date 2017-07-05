@@ -102,6 +102,7 @@ namespace MediaSDK
 
 		void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth);
 		int GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY);
+        int RotateI420(unsigned char *pInput, int inHeight, int inWidth, unsigned char *pOutput, int &outHeight, int &outWidth, int rotationParameter);
 	private:
 
 		int m_iDeviceHeight;
