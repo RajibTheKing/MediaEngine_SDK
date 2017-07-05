@@ -612,6 +612,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				}
                 
 			}
+			/*	
 			else
 			{
 
@@ -652,6 +653,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
 			}
+			*/
 
 			if (m_bSelfViewOnly == false)
 			{
