@@ -66,18 +66,6 @@ namespace MediaSDK
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr)
 	{
-		
-		MediaLogger *objMediaLogger = new MediaLogger("dumpfile.txt", INFO);
-		int var = 1;
-        CLogPrinter::Log("MANSUR----------GetDateTime>> %s\n", objMediaLogger->GetDateTime().c_str());
-		CLogPrinter::Log("MANSUR----------GetFilePath>> %s\n", objMediaLogger->GetFilePath().c_str());
-		CLogPrinter::Log("MANSUR----------GetThreadId>> %s\n", objMediaLogger->GetThreadId2().c_str());
-		objMediaLogger->Log(NONE,"*********************hello world %d**************\n", var);
-		objMediaLogger->Log(ERRORS, "*********************hello world 2**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 3**************\n");
-		objMediaLogger->Init();
-		objMediaLogger->WriteLogToFile();
-
 
 		SetResources(audioResources);
 		m_pTrace = new CTrace();

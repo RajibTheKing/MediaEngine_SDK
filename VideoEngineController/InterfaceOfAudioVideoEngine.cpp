@@ -3,6 +3,7 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "MediaLogger.h"
 
 #define MEDIA_ENGINE_VERSION "9.32"
 #define MEDIA_ENGINE_BUILD_NUMBER 9324918
@@ -17,6 +18,19 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
+
+		MediaLogger *objMediaLogger = new MediaLogger("dumpfile.txt", INFO);
+		int var = 1;
+		CLogPrinter::Log("MANSUR----------GetDateTime>> %s\n", objMediaLogger->GetDateTime().c_str());
+		CLogPrinter::Log("MANSUR----------GetFilePath>> %s\n", objMediaLogger->GetFilePath().c_str());
+		CLogPrinter::Log("MANSUR----------GetThreadId>> %s\n", objMediaLogger->GetThreadId2().c_str());
+		objMediaLogger->Log(NONE, "*********************hello world %d**************\n", var);
+		objMediaLogger->Log(ERRORS, "*********************hello world 2**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 3**************\n");
+		objMediaLogger->Init();
+		objMediaLogger->WriteLogToFile();
+
+
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
 			

@@ -13,7 +13,7 @@ namespace MediaSDK
 		prefix += "/Documents/";
 		m_sFilePath = prefix + filePath;
 #elif defined(DESKTOP_C_SHARP)
-		m_sFilePath = filePath;
+		m_sFilePath = "C:/"+filePath;
 #endif
 	}
 
@@ -99,7 +99,7 @@ namespace MediaSDK
 		}
 		for(int  i=0; i<m_vLogVector.size(); i++)
 		{
-			MANSUR("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
+			CLogPrinter::Log("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
 			m_pLoggerFileStream << m_vLogVector[i] << std::endl;
 		}
 

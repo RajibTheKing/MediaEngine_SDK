@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <thread> 
+#include <stdlib.h>
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"
