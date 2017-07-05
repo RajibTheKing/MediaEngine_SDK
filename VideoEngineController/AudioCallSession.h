@@ -89,7 +89,7 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioPlayerType);
+		CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType);
 		~CAudioCallSession();
 
 		void StartCallInLive(int iRole, int nCallInLiveType);

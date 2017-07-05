@@ -82,7 +82,7 @@ namespace MediaSDK
 		return Ret;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioPlayerType)
+	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType)
 	{
 		m_llTimeOffset = -1;
 
@@ -91,7 +91,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioPlayerType);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType);
 
 		return bReturnedValue;
 	}
@@ -143,7 +143,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_DEFAULT);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);

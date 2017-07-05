@@ -51,7 +51,7 @@
 namespace MediaSDK
 {
 
-	CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioPlayerType) :
+	CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType) :
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
 		m_llLastPlayTime(0),
@@ -66,7 +66,7 @@ namespace MediaSDK
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
-		if (nAudioPlayerType == AUDIO_PLAYER_LOUDSPEAKER)
+		if (nAudioSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			m_bTraceSendingEnabled = true;
 		}
