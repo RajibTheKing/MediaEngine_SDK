@@ -646,7 +646,7 @@ namespace MediaSDK
 #ifdef __ANDROID__
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
-			if (m_pAudioCallSession->m_bTraceSendingEnabled && m_pAudioCallSession->m_bTraceTailRemains)
+			if (m_pAudioCallSession->IsTraceSendingEnable() && m_pAudioCallSession->m_bTraceTailRemains)
 			{
 				LOG18("Calling Generate Trace");
 				m_pAudioCallSession->m_bTraceTailRemains = m_pAudioCallSession -> m_pTrace -> GenerateTrace(m_saPlayingData, 800);

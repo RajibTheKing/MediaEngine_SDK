@@ -137,6 +137,8 @@ namespace MediaSDK
 			m_pEventNotifier = pEventNotifier;
 		}
 
+		bool IsTraceSendingEnable(){ return m_bTraceSendingEnabled; }
+
 		int m_iNextPacketType;
 		CAudioShortBuffer m_AudioNearEndBuffer;
 		CAudioShortBuffer  m_ViewerInCallSentDataQueue;
