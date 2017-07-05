@@ -3,7 +3,6 @@
 namespace MediaSDK
 {
 	MediaLogger::MediaLogger(std::string filePath, LogLevel logLevel) :
-		m_pLoggerFile(nullptr),
 		m_elogLevel(logLevel)
 	{		
 #if defined(__ANDROID__)
@@ -15,10 +14,10 @@ namespace MediaSDK
 
 	MediaLogger::~MediaLogger()
 	{
-		if (m_pLoggerFile)
+		/*if (m_pLoggerFile)
 		{
 			fclose(m_pLoggerFile);
-		}
+		}*/
 		m_vLogVector.clear();
 	}
 
@@ -29,15 +28,15 @@ namespace MediaSDK
 			fclose(m_pLoggerFile);
 			//m_pLoggerFile = nullptr;
 		}*/
-		m_pLoggerFile = fopen(m_sFilePath.c_str(), "w");
+		//m_pLoggerFile = fopen(m_sFilePath.c_str(), "w");
 	}
 
-	inline std::string MediaLogger::GetFilePath()
+	std::string MediaLogger::GetFilePath()
 	{
 		return m_sFilePath;
 	}
 
-	inline MediaLogger::LogLevel MediaLogger::GetLogLevel()
+	LogLevel MediaLogger::GetLogLevel()
 	{
 		return m_elogLevel;
 	}
@@ -72,19 +71,29 @@ namespace MediaSDK
 
 		va_end(vargs);
 		
-		m_vLogVector.push_back(GetDateTime() + " " + GetThreadId() + " " + " " + str);
+		m_vLogVector.push_back(GetDateTime() + " " + GetThreadId2() + " " + " " + str);
+		//for (int i = 0; i < m_vLogVector.size(); i++) MANSUR("MANSUR>>>>>>>>>>>>>> %s\n",m_vLogVector[i].c_str());
+		
 	}
 	void MediaLogger::WriteLogToFile()
 	{
-		//Locker lock(*m_pLogPrinterMutex);
+		//MediaLocker lock(*m_pMediaLoggerMutex);
 
-#if defined(__ANDROID__)
 
-			ostream& stream = instance.fileStream.is_open() ? instance.fileStream : std::cout;
-			stream << GetDateTime() << PRIORITY_NAMES[priority] << ": " << message << endl;
+	}
+	std::string MediaLogger::GetThreadId2()
+	{
+		//For All Platforms
+		std::string str;
+		uint64_t iThreadID;
+		auto id = std::this_thread::get_id();
+		uint64_t* ptr = (uint64_t*)&id;
+		iThreadID = *ptr;
 
-#endif
-
+		stringstream ss;
+		ss << iThreadID;
+		ss >> str;
+		return str;
 	}
 	std::string MediaLogger::GetDateTime()
 	{
@@ -118,14 +127,6 @@ namespace MediaSDK
 #endif 
 
 	}
-	std::string GetThreadId()
-	{
-		int iThreadID;
-#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
-		iThreadID = GetCurrentThreadId();
-#else
-		iThreadID = pthread_self();
-#endif
-		return std::to_string(iThreadID);
-	}
+
+
 }

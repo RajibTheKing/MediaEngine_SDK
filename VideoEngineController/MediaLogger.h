@@ -5,53 +5,55 @@
 #include<string>
 #include<vector>
 #include <time.h>
+#include <fstream>   
+#include <stdarg.h>
+#include <iostream>
+#include <sstream>
+#include <thread> 
+
 #include "SmartPointer.h"
 #include "CommonTypes.h"
+#include "Tools.h"
+#include "LogPrinter.h"
 
 #if defined(TARGET_OS_WINDOWS_PHONE) || defined (DESKTOP_C_SHARP) 
 #include <windows.h>
-#include <stdarg.h>
 #elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
-#include <sys/prctl.h>
-#include <pthread.h>
 #endif
 
-#define va_start _crt_va_start
-#define va_arg _crt_va_arg
-#define va_end _crt_va_end
-void _CRTIMP __cdecl _vacopy(_Out_ va_list *, _In_ va_list);
-#define va_copy(apd, aps) _vacopy(&(apd), aps)
 
 namespace MediaSDK
 {
+	enum LogLevel
+	{
+		NONE,
+		DEBUGS,
+		CONFIG,
+		INFO,
+		WARNING,
+		ERRORS
+	};
 	class MediaLogger
 	{
-	private:
-		enum LogLevel
-		{
-			NONE,
-			DEBUGS,
-			CONFIG,
-			INFO,
-			WARNING,
-			ERRORS
-		};
-		LogLevel m_elogLevel;
-		std::string m_sFilePath;
-		FILE *m_pLoggerFile;
-		std::vector<std::string> m_vLogVector;
-		SmartPointer<MediaLocker> m_pMediaLoggerMutex;
-
-	public : 
+	public:
 		MediaLogger(std::string filePath, LogLevel logLevel);
 		~MediaLogger();
 		void Init();
-		inline void Log(LogLevel loglevel, const char *format, ...);
+		void Log(LogLevel loglevel, const char *format, ...);
 		void WriteLogToFile();
-		inline std::string GetFilePath();
-		inline LogLevel GetLogLevel();
+		std::string GetFilePath();
+		LogLevel GetLogLevel();
+		std::string GetThreadId2();
 		std::string GetDateTime();
-		std::string GetThreadId();
+		
+	private:
+		
+		LogLevel m_elogLevel;
+		std::string m_sFilePath;
+		std::vector<std::string> m_vLogVector;
+		SmartPointer<MediaLocker> m_pMediaLoggerMutex;
+		static MediaLogger instance;
+		std::ofstream   m_pLoggerFile;
 	};
 }
 
