@@ -629,22 +629,27 @@ namespace MediaSDK
 				int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
 				int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
                 
-                int rotatedHeight, rotatedWidth;
-                
-                if(nOrientation == 3)
-                    nOrientation = 1;
-                else if(nOrientation == 1)
-                    nOrientation = 3;
-                else
+                if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
                 {
-                    //do nothing
+                    //inset Rotation is Turned off While User is in Desktop
+                    int rotatedHeight, rotatedWidth;
+                    
+                    if(nOrientation == 3)
+                        nOrientation = 1;
+                    else if(nOrientation == 1)
+                        nOrientation = 3;
+                    else
+                    {
+                        //do nothing
+                    }
+                    
+                    int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientation);
+                    
+                    memcpy(m_DecodedFrame, m_RotatedFrame, iLen);
+                    m_decodingHeight = rotatedHeight;
+                    m_decodingWidth = rotatedWidth;
                 }
                 
-                int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientation);
-                
-                memcpy(m_DecodedFrame, m_RotatedFrame, iLen);
-                m_decodingHeight = rotatedHeight;
-                m_decodingWidth = rotatedWidth;
                 
                 this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 			}
