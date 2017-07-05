@@ -10,7 +10,7 @@ namespace MediaSDK
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		char *home = getenv("HOME");
 		std::string prefix(home);
-		prefix += "Documents";
+		prefix += "/Documents/";
 		m_sFilePath = prefix + filePath;
 #elif defined(DESKTOP_C_SHARP)
 		m_sFilePath = filePath;
@@ -83,7 +83,10 @@ namespace MediaSDK
 		va_end(vargs);
 		
 		m_vLogVector.push_back(GetDateTime() + " " + GetThreadId2() + " " + " " + str);
-		for (int i = 0; i < m_vLogVector.size(); i++) MANSUR("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
+		for (int i = 0; i < m_vLogVector.size(); i++)
+        {
+            CLogPrinter::Log("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
+        }
 		
 	}
 	void MediaLogger::WriteLogToFile()

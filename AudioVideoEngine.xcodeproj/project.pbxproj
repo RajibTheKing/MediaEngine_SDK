@@ -36,6 +36,7 @@
 		6A084E841EF640CB00F4A6A0 /* libwelsenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E801EF640CB00F4A6A0 /* libwelsenc.a */; };
 		6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A3E37511E0932F500228138 /* LiveStreamingHeader.cpp */; };
 		6A4F57871E0A3D8000C48ACC /* VideoBeautificationer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */; };
+		6A5659A11F0D11A500500DBB /* MediaLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A56599F1F0D11A500500DBB /* MediaLogger.cpp */; };
 		6AAEC53D1E07EF9E001525FE /* VideoHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */; };
 		9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */; };
 		9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */; };
@@ -204,6 +205,8 @@
 		6A4C25401E152F8E00679D74 /* machine_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = machine_type.h; path = VideoEngineController/machine_type.h; sourceTree = "<group>"; };
 		6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoBeautificationer.cpp; path = VideoEngineUtilities/VideoBeautificationer.cpp; sourceTree = "<group>"; };
 		6A4F57861E0A3D8000C48ACC /* VideoBeautificationer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoBeautificationer.h; path = VideoEngineUtilities/VideoBeautificationer.h; sourceTree = "<group>"; };
+		6A56599F1F0D11A500500DBB /* MediaLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MediaLogger.cpp; path = VideoEngineController/MediaLogger.cpp; sourceTree = "<group>"; };
+		6A5659A01F0D11A500500DBB /* MediaLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaLogger.h; path = VideoEngineController/MediaLogger.h; sourceTree = "<group>"; };
 		6A583FC51ED1B81D0044205A /* CommonTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommonTypes.h; path = VideoEngineController/CommonTypes.h; sourceTree = "<group>"; };
 		6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoHeader.cpp; path = VideoEngineController/VideoHeader.cpp; sourceTree = "<group>"; };
 		6AAEC53C1E07EF9E001525FE /* VideoHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoHeader.h; path = VideoEngineController/VideoHeader.h; sourceTree = "<group>"; };
@@ -450,6 +453,8 @@
 				6A084E6E1EF63B9300F4A6A0 /* gain_control.h */,
 				188587B81C0AEEAC00B1F435 /* AudioCallSession.h */,
 				188587B91C0AEEAC00B1F435 /* AudioCallSessionListHandler.cpp */,
+				6A56599F1F0D11A500500DBB /* MediaLogger.cpp */,
+				6A5659A01F0D11A500500DBB /* MediaLogger.h */,
 				188587BA1C0AEEAC00B1F435 /* AudioCallSessionListHandler.h */,
 				9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */,
 				9D00A8B81C1C17E5001A52BC /* AudioDecoderBuffer.h */,
@@ -839,6 +844,7 @@
 				DA848BE61E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp in Sources */,
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
 				6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */,
+				6A5659A11F0D11A500500DBB /* MediaLogger.cpp in Sources */,
 				DA9CFEAC1DFBC7E2004112C4 /* MuxingVideoData.cpp in Sources */,
 				DA988E7F1EBF4CA300B5B782 /* AudioNearEndProcessorThread.cpp in Sources */,
 				DA8257291EA4D8EE00A042FA /* IDRFrameIntervalController.cpp in Sources */,
