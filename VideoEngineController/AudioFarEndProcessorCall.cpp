@@ -96,10 +96,7 @@ namespace MediaSDK
 #endif
 		}
 #ifdef __ANDROID__
-		if (m_bProcessFarendDataStarted)
-		{
-			ProcessPlayingData();
-		}
+		ProcessPlayingData();	
 #endif
 	}
 

@@ -659,19 +659,19 @@ namespace MediaSDK
 				m_pAudioCallSession->m_bTraceSent = true;
 			}
 		}
-		if (m_pDataEventListener != nullptr)
-		{
-			COW("###^^^### FIRE AUDIO EVENT WITH DATA");
-			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
-#ifdef PCM_DUMP
-			if (m_pAudioCallSession->PlayedFile)
-			{
-				fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
-			}
-#endif
-		}
+
 		if (m_pAudioCallSession->m_bTraceSent)
 		{
+			if (m_pDataEventListener != nullptr)
+			{
+				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+#ifdef PCM_DUMP
+				if (m_pAudioCallSession->PlayedFile)
+				{
+					fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
+				}
+#endif
+			}
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
 			if (m_b1stPlaying)
@@ -700,11 +700,11 @@ namespace MediaSDK
 		else
 		{
 			LOG18("ppplaying 0 data, trace not sent");
+			Tools::SOSleep(20);
 		}
 #else
 		if (m_pDataEventListener != nullptr)
 		{
-			COW("###^^^### FIRE AUDIO EVENT WITH DATA 2");
 			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
