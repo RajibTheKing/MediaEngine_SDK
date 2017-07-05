@@ -52,8 +52,7 @@ namespace MediaSDK
 		std::string m_sFilePath;
 		std::vector<std::string> m_vLogVector;
 		SmartPointer<MediaLocker> m_pMediaLoggerMutex;
-		static MediaLogger instance;
-		std::ofstream   m_pLoggerFile;
+		std::ofstream   m_pLoggerFileStream;
 	};
 }
 

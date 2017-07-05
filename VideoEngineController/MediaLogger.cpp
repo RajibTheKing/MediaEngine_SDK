@@ -14,21 +14,27 @@ namespace MediaSDK
 
 	MediaLogger::~MediaLogger()
 	{
-		/*if (m_pLoggerFile)
+		/*if (m_pLoggerFileStream)
 		{
-			fclose(m_pLoggerFile);
+			fclose(m_pLoggerFileStream);
 		}*/
+
 		m_vLogVector.clear();
+		if (m_pLoggerFileStream.is_open()) m_pLoggerFileStream.close();
 	}
 
 	void MediaLogger::Init()
 	{
-		/*if (m_pLoggerFile)
+		/*if (m_pLoggerFileStream)
 		{
-			fclose(m_pLoggerFile);
-			//m_pLoggerFile = nullptr;
+			fclose(m_pLoggerFileStream);
+			//m_pLoggerFileStream = nullptr;
 		}*/
-		//m_pLoggerFile = fopen(m_sFilePath.c_str(), "w");
+		//m_pLoggerFileStream = fopen(m_sFilePath.c_str(), "w");
+		if (!m_pLoggerFileStream.is_open())
+		{
+			m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
+		}
 	}
 
 	std::string MediaLogger::GetFilePath()
@@ -42,7 +48,7 @@ namespace MediaSDK
 	}
 	void MediaLogger::Log(LogLevel logLevel, const char *format, ...)
 	{
-		MediaLocker lock(*m_pMediaLoggerMutex);
+		//MediaLocker lock(*m_pMediaLoggerMutex);
 
 		if (logLevel > m_elogLevel) return;
 
@@ -72,13 +78,22 @@ namespace MediaSDK
 		va_end(vargs);
 		
 		m_vLogVector.push_back(GetDateTime() + " " + GetThreadId2() + " " + " " + str);
-		//for (int i = 0; i < m_vLogVector.size(); i++) MANSUR("MANSUR>>>>>>>>>>>>>> %s\n",m_vLogVector[i].c_str());
+		for (int i = 0; i < m_vLogVector.size(); i++) MANSUR("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
 		
 	}
 	void MediaLogger::WriteLogToFile()
 	{
 		//MediaLocker lock(*m_pMediaLoggerMutex);
 
+		if (!m_pLoggerFileStream.is_open())
+		{
+			m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
+		}
+		for(int  i=0; i<m_vLogVector.size(); i++)
+		{
+			MANSUR("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
+			m_pLoggerFileStream << m_vLogVector[i] << std::endl;
+		}
 
 	}
 	std::string MediaLogger::GetThreadId2()
