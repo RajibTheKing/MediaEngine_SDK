@@ -23,6 +23,18 @@
 #endif
 
 
+#if defined(__ANDROID__)
+#define MEDIA_LOGGING_PATH "/sdcard/"
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#define MEDIA_LOGGING_PATH std::string(getenv("HOME"))+"/Documents/"
+#elif defined(DESKTOP_C_SHARP)
+#define MEDIA_LOGGING_PATH "C:/"
+#endif
+
+#define MEDIA_LOGGING_FOLDER_NAME "medialogs/"
+#define MEDIA_LOGGING_FILE_NAME "logdump.txt"
+#define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FOLDER_NAME MEDIA_LOGGING_FILE_NAME
+
 namespace MediaSDK
 {
 	enum LogLevel
@@ -37,7 +49,7 @@ namespace MediaSDK
 	class MediaLogger
 	{
 	public:
-		MediaLogger(std::string filePath, LogLevel logLevel);
+		MediaLogger(LogLevel logLevel);
 		~MediaLogger();
 		void Init();
 		void Log(LogLevel loglevel, const char *format, ...);

@@ -19,7 +19,7 @@ namespace MediaSDK
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
 
-		MediaLogger *objMediaLogger = new MediaLogger("dumpfile.txt", INFO);
+		MediaLogger *objMediaLogger = new MediaLogger(INFO);
 		int var = 1;
 		CLogPrinter::Log("MANSUR----------GetDateTime>> %s\n", objMediaLogger->GetDateTime().c_str());
 		CLogPrinter::Log("MANSUR----------GetFilePath>> %s\n", objMediaLogger->GetFilePath().c_str());
