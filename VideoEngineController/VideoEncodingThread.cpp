@@ -888,11 +888,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			sum += (int)(m_Tools.CurrentTimestamp() - startTime);
 
-#ifdef __ANDROID__
-
-			LOGSS("Average %d %d\n", sum / countNumber, countNumber);
-
-#endif
+			CLogPrinter_LOG(PUBLISHER_TIME_LOG, "Average %d count %d\n", sum / countNumber, countNumber);
 
 			countNumber++;
 		

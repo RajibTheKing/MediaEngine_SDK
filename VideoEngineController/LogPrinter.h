@@ -31,6 +31,7 @@
 
 #define WRITE_TO_LOG_FILE		OFF
 
+#define PUBLISHER_TIME_LOG		OFF
 #define CRASH_CHECK_LOG			OFF
 #define API_FLOW_CHECK_LOG		OFF
 #define PACKET_DETAILS_LOG		OFF
@@ -73,7 +74,7 @@
 #define HITLERSS(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define MR_DEBUG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define DOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define COW(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define COW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
