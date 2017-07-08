@@ -1,19 +1,14 @@
+#ifndef AUDIO_FILE_ENCODE_DECODE_SESSION_H
+#define AUDIO_FILE_ENCODE_DECODE_SESSION_H
 
-#ifndef _AUDIO_FILE_ENCODE_DECODE_SESSION_H_
-#define _AUDIO_FILE_ENCODE_DECODE_SESSION_H_
-
-#define OPUS_ENABLED
-
-#ifdef OPUS_ENABLED
-#include "AudioFileCodec.h"
-#else
-#include "G729CodecNative.h"
-#endif
 
 #define OPUS_ENABLED
+
 
 namespace MediaSDK
 {
+	class CAudioFileCodec;
+	class G729CodecNative;
 
 	class CAudioFileEncodeDecodeSession
 	{

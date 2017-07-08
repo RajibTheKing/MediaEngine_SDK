@@ -3,13 +3,12 @@
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"
-#include "Tools.h"
 #include "AudioMacros.h"
 #include "MuxHeader.h"
 
+
 namespace MediaSDK
 {
-
 	class AudioShortBufferForPublisherFarEnd
 	{
 
@@ -26,9 +25,8 @@ namespace MediaSDK
 		int GetQueueSize();
 		void ResetBuffer();
 
-	private:
 
-		Tools m_Tools;
+	private:
 
 		int m_iPushIndex;
 		int m_iPopIndex;

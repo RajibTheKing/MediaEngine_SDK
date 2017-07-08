@@ -295,7 +295,6 @@
     <ClInclude Include="..\..\VideoEngineController\AudioPacketHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioPacketizer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioShortBufferForPublisherFarEnd.h" />
-    <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h" />
     <ClInclude Include="..\..\VideoEngineController\AverageCalculator.h" />
     <ClInclude Include="..\..\VideoEngineController\BandwidthController.h" />
     <ClInclude Include="..\..\VideoEngineController\BitRateController.h" />

@@ -2,12 +2,14 @@
 #include "LogPrinter.h"
 #include "AudioCallSession.h"
 #include "AudioEncoderBuffer.h"
+#include "AudioPacketHeader.h"
+#include "Tools.h"
+
 
 namespace MediaSDK
 {
 
-
-	AudioNearEndProcessorPublisher::AudioNearEndProcessorPublisher(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioNearEndBuffer, bool bIsLiveStreamingRunning) :
+	AudioNearEndProcessorPublisher::AudioNearEndProcessorPublisher(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioNearEndBuffer, bool bIsLiveStreamingRunning) :
 		AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioNearEndBuffer, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::AudioNearEndProcessorPublisher()");

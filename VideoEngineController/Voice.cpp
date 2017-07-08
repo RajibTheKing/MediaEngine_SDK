@@ -1,5 +1,7 @@
 #include "Voice.h"
 #include "AudioCallSession.h"
+#include "LogPrinter.h"
+#include "AudioMacros.h"
 
 
 namespace MediaSDK

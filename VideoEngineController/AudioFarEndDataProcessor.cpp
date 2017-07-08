@@ -1,4 +1,8 @@
 #include "AudioFarEndDataProcessor.h"
+#include "AudioCallSession.h"
+#include "AudioDecoderBuffer.h"
+#include "AudioDePacketizer.h"
+#include "LogPrinter.h"
 #include "CommonElementsBucket.h"
 #include "LiveAudioParser.h"
 #include "LiveAudioParserForCallee.h"
@@ -7,11 +11,13 @@
 #include "AudioMixer.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "MuxHeader.h"
-
+#include "AudioShortBufferForPublisherFarEnd.h"
+#include "LiveAudioDecodingQueue.h"
+#include "AudioPacketHeader.h"
+#include "AudioEncoderBuffer.h"
 #include "AudioDecoderProvider.h"
 #include "AudioEncoderInterface.h"
 #include "AudioDecoderInterface.h"
-
 #include "GomGomGain.h"
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
@@ -21,15 +27,18 @@
 #include <dispatch/dispatch.h>
 #endif
 
+
+
 namespace MediaSDK
 {
-	AudioFarEndDataProcessor::AudioFarEndDataProcessor(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
+
+	AudioFarEndDataProcessor::AudioFarEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
 		m_nServiceType(nServiceType),
 		m_nEntityType(nEntityType),
-		m_llFriendID(llFriendID),
 		m_pAudioCallSession(pAudioCallSession),
-		m_pCommonElementsBucket(pCommonElementsBucket),
 		m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
+		m_bAudioDecodingThreadRunning(false),
+		m_bAudioDecodingThreadClosed(true),
 		m_llLastTime(-1),
 		m_bAudioQualityLowNotified(false),
 		m_bAudioQualityHighNotified(false),
@@ -42,6 +51,8 @@ namespace MediaSDK
 	{
 		m_b1stPlaying = true;
 		m_llNextPlayingTime = -1;
+		m_AudioReceivedBuffer.reset(new CAudioByteBuffer());
+
 		m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING); //Need Remove Magic Numbers.
 		memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 
@@ -53,7 +64,7 @@ namespace MediaSDK
 #if !defined(TARGET_OS_WINDOWS_PHONE)
 		if (SERVICE_TYPE_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
 		{
-			m_AudioReceivedBuffer.SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
+			m_AudioReceivedBuffer->SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
 		}
 #endif
 		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
@@ -66,9 +77,6 @@ namespace MediaSDK
 			{
 				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector);
 			}
-
-			//m_pLiveReceiverAudio = new LiveReceiver(m_pCommonElementsBucket, m_pAudioCallSession);
-			//m_pLiveReceiverAudio->SetAudioDecodingQueue(m_pLiveAudioReceivedQueue);
 		}
 		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
 		{
@@ -130,7 +138,7 @@ namespace MediaSDK
 			return 1;
 		}
 
-		return  m_AudioReceivedBuffer.EnQueue(pucaDecodingAudioData, unLength);
+		return  m_AudioReceivedBuffer->EnQueue(pucaDecodingAudioData, unLength);
 	}
 
 	void AudioFarEndDataProcessor::StartCallInLive(int nEntityType)
@@ -139,7 +147,7 @@ namespace MediaSDK
 		{
 			m_vAudioFarEndBufferVector[0]->ResetBuffer(); //Contains Data From Live Stream
 		}
-		m_AudioReceivedBuffer.ResetBuffer();
+		m_AudioReceivedBuffer->ResetBuffer();
 		m_nEntityType = nEntityType;
 	}
 
@@ -154,7 +162,7 @@ namespace MediaSDK
 		if (m_bIsLiveStreamingRunning)
 		{
 #ifdef LOCAL_SERVER_LIVE_CALL
-			if ((m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE) && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
+			if ((m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE) && m_AudioReceivedBuffer->GetQueueSize() == 0)	//EncodedData
 			{
 				Tools::SOSleep(5);
 				return true;
@@ -165,7 +173,7 @@ namespace MediaSDK
 				return true;
 			}
 #else
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_AudioReceivedBuffer.GetQueueSize() == 0)	//EncodedData
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_AudioReceivedBuffer->GetQueueSize() == 0)	//EncodedData
 			{
 				Tools::SOSleep(5);
 				return true;
@@ -177,7 +185,7 @@ namespace MediaSDK
 			}
 #endif
 		}
-		else if (m_AudioReceivedBuffer.GetQueueSize() == 0)
+		else if (m_AudioReceivedBuffer->GetQueueSize() == 0)
 		{
 			//Tools::SOSleep(10);
 			return true;
@@ -196,12 +204,12 @@ namespace MediaSDK
 			}
 			else
 			{
-				decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+				decodingFrameSize = m_AudioReceivedBuffer->DeQueue(m_ucaDecodingFrame);
 			}
 #else
 			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 			{
-				decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+				decodingFrameSize = m_AudioReceivedBuffer->DeQueue(m_ucaDecodingFrame);
 			}
 			else
 			{
@@ -211,7 +219,7 @@ namespace MediaSDK
 		}
 		else
 		{
-			decodingFrameSize = m_AudioReceivedBuffer.DeQueue(m_ucaDecodingFrame);
+			decodingFrameSize = m_AudioReceivedBuffer->DeQueue(m_ucaDecodingFrame);
 		}
 	}
 
@@ -222,7 +230,7 @@ namespace MediaSDK
 		if (!m_bIsLiveStreamingRunning)
 		{
 			m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
-			ALOG("#A#DE#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(iPacketNumber));
+//			ALOG("#A#DE#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(iPacketNumber));
 			LOGEF("Role %d, done decode", m_iRole);
 		}
 		else
@@ -292,7 +300,7 @@ namespace MediaSDK
 
 				MuxHeader audioMuxHeader(iCalleeId, iCurrentPacketNumber, m_vFrameMissingBlocks);
 
-				m_pAudioCallSession->m_PublisherBufferForMuxing.EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
+				m_pAudioCallSession->m_PublisherBufferForMuxing->EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 			}
 
 			HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
@@ -322,7 +330,7 @@ namespace MediaSDK
 
 
 	}
-
+	
 	void AudioFarEndDataProcessor::DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize)
 	{
 #ifdef DUMP_FILE
@@ -410,7 +418,6 @@ namespace MediaSDK
 			}
 			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
 			{
-				//g_StopVideoSending = 1;*/
 				if (false == m_bIsLiveStreamingRunning){
 					//m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
 					if (m_pAudioAlarmListener != nullptr)
@@ -506,7 +513,7 @@ namespace MediaSDK
 				m_iCurrentRecvdSlotID = nSlotNumber;
 				m_iReceivedPacketsInCurrentSlot = 0;
 
-				if (m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning()) {
+				if (m_pAudioCallSession->GetIsVideoCallRunning()) {
 					this->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 				}
 				else if (m_pAudioEncoder->GetCurrentBitrate() != AUDIO_BITRATE_INIT){
@@ -693,7 +700,7 @@ namespace MediaSDK
 				LOG18("processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
 				m_llNextPlayingTime += 100;
 			}
-			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
+			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
 			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 			LOG18("ppplaying 0 data");
 		}
@@ -714,6 +721,14 @@ namespace MediaSDK
 #endif
 		}
 #endif
+	}
+
+	
+	void AudioFarEndDataProcessor::SetEventCallback(DataEventListener* pDataListener, NetworkChangeListener* networkListener, AudioAlarmListener* alarmListener)
+	{
+		m_pDataEventListener = pDataListener;
+		m_pNetworkChangeListener = networkListener;
+		m_pAudioAlarmListener = alarmListener;
 	}
 
 } //namespace MediaSDK

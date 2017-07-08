@@ -2,19 +2,13 @@
 #define AUDIO_AAC_DECODER_H
 
 
-#if defined(TARGET_OS_WINDOWS_PHONE)
-#include <windows.h>
-#endif
-
 #include "AudioDecoderInterface.h"
-#include "Size.h"
-#include "LogPrinter.h"
 #include "aacdecoder_lib.h"
+
+
 
 namespace MediaSDK
 {
-
-
 	class DecoderAAC : public AudioDecoderInterface
 	{
 

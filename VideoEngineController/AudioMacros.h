@@ -1,9 +1,7 @@
 #ifndef AUDIO_MACROS_H
 #define AUDIO_MACROS_H
 
-/*		*VERSION   */
 #define AUDIO_CALL_VERSION				0
-
 #define AUDIO_LIVE_STREAMING_VERSION	0
 
 #define MAX_NUMBER_OF_CALLEE 3

@@ -39,6 +39,7 @@
 typedef long long IPVLongType;
 typedef long long LongLong;
 
+
 //#define NO_CONNECTIVITY
 
 namespace MediaSDK
@@ -101,10 +102,7 @@ namespace MediaSDK
 		int StopAudioEncodeDecodeSession();
 
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
-
-
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
-
 
 		void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));

@@ -1,11 +1,3 @@
-//
-//  VideoSockets.h
-//  TestCamera 
-//
-//  Created by Apple on 11/18/15.
-//
-//
-
 #ifndef VideoSockets_h
 #define VideoSockets_h
 

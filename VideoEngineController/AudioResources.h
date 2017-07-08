@@ -1,17 +1,20 @@
 #ifndef AUDIO_RESOURCES_H
 #define AUDIO_RESOURCES_H
 
+
 #include "SmartPointer.h"
-#include "AudioPacketHeader.h"
-#include "AudioEncoderInterface.h"
-#include "AudioDecoderInterface.h"
-#include "EchoCancellerInterface.h"
-#include "AudioGainInterface.h"
-#include "NoiseReducerInterface.h"
-#include "AudioSessionOptions.h"
+
 
 namespace MediaSDK
 {
+	class AudioPacketHeader;
+	class AudioEncoderInterface;
+	class AudioDecoderInterface;
+	class EchoCancellerInterface;
+	class NoiseReducerInterface;
+	class AudioGainInterface;
+	class AudioSessionOptions;
+
 
 	class AudioResources
 	{

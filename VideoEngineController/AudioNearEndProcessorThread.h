@@ -4,6 +4,7 @@
 
 #include <thread>
 
+
 namespace MediaSDK
 {
 
@@ -11,6 +12,7 @@ namespace MediaSDK
 
 	class AudioNearEndProcessorThread
 	{
+
 	private:
 
 		bool m_bAudioNearEndThreadRunning;

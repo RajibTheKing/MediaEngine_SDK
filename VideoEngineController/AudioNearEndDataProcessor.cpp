@@ -10,8 +10,10 @@
 #include "AudioCallSession.h"
 #include "AudioMixer.h"
 #include "MuxHeader.h"
+#include "AudioShortBufferForPublisherFarEnd.h"
 
 #include "EncoderOpus.h"
+#include "EncoderPCM.h"
 #include "AudioEncoderInterface.h"
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"
@@ -24,7 +26,7 @@
 namespace MediaSDK
 {
 
-	AudioNearEndDataProcessor::AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioNearEndBuffer, bool bIsLiveStreamingRunning) :
+	AudioNearEndDataProcessor::AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioNearEndBuffer, bool bIsLiveStreamingRunning) :
 		m_nServiceType(nServiceType),
 		m_nEntityType(nEntityType),
 		m_bIsReady(false),
@@ -109,7 +111,7 @@ namespace MediaSDK
 		if (m_bIsLiveStreamingRunning == false)
 		{
 			ALOG("#A#EN#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(m_iPacketNumber));
-			m_pAudioCallSession->m_pFarEndProcessor->m_AudioReceivedBuffer.EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
+			m_pAudioCallSession->m_pFarEndProcessor->m_AudioReceivedBuffer->EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
 			return;
 		}
 #endif
@@ -264,10 +266,10 @@ namespace MediaSDK
 		int iCallId = 0, nNumberOfBlocks;
 		std::vector<std::pair<int, int> > vMissingBlocks;
 		MuxHeader oCalleeMuxHeader;
-		if (m_pAudioCallSession->m_PublisherBufferForMuxing.GetQueueSize() != 0)
+		if (m_pAudioCallSession->m_PublisherBufferForMuxing->GetQueueSize() != 0)
 		{
 			bIsMuxed = true;
-			nLastDecodedFrameSizeInByte = m_pAudioCallSession->m_PublisherBufferForMuxing.DeQueue(m_saAudioPrevDecodedFrame, nFrameNumber, oCalleeMuxHeader) * 2;	//#Magic
+			nLastDecodedFrameSizeInByte = m_pAudioCallSession->m_PublisherBufferForMuxing->DeQueue(m_saAudioPrevDecodedFrame, nFrameNumber, oCalleeMuxHeader) * 2;	//#Magic
 			LOG18("#18@# DEQUE data of size %d", nLastDecodedFrameSizeInByte);
 			m_pAudioMixer->reset(18, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 

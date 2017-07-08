@@ -4,6 +4,7 @@
 #include "LogPrinter.h"
 #include "VideoCallSession.h"
 #include "CommonElementsBucket.h"
+#include "InterfaceOfAudioVideoEngine.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>

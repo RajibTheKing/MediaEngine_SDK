@@ -4,6 +4,7 @@
 
 #include "AudioFarEndDataProcessor.h"
 
+
 namespace MediaSDK
 {
 
@@ -12,7 +13,7 @@ namespace MediaSDK
 
 	public:
 
-		FarEndProcessorViewer(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
+		FarEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning);
 		~FarEndProcessorViewer() { }
 
 		void ProcessFarEndData();

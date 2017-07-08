@@ -34,7 +34,7 @@ namespace MediaSDK
 		CVideoEncoder *m_pVideoEncoder;
 
 		Tools m_Tools;
-		LongLong m_FriendID;
+		long long m_FriendID;
 
 		long long m_llLastSentIDRFrameNumber;
 		long long m_llLastSentPFrameNumber;

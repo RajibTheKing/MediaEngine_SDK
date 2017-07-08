@@ -9,9 +9,9 @@
 #define WEBRTC_AGC_MIN_LEVEL 1
 #define WEBRTC_AGC_MAX_LEVEL 255
 
+
 namespace MediaSDK
 {
-
 	enum AGCMode
 	{
 		MODE_UNCHANGED = 0,
@@ -22,6 +22,7 @@ namespace MediaSDK
 
 	class WebRTCGain : public AudioGainInterface
 	{
+	private:
 		bool m_bGainEnabled;
 		short *m_sTempBuf = nullptr;
 		int m_iVolume;
@@ -30,10 +31,9 @@ namespace MediaSDK
 
 		void* AGC_instance;
 
+
 	public:
-
 		WebRTCGain();
-
 		virtual ~WebRTCGain();
 
 		bool SetGain(int iGain);

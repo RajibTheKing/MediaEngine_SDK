@@ -1,9 +1,11 @@
 #ifndef _AUDIO_PACKETIZER_H_
 #define _AUDIO_PACKETIZER_H_
 
+
 #include "AudioMacros.h"
 #include "SmartPointer.h"
 #include "AudioPacketHeader.h"
+
 
 namespace MediaSDK
 {

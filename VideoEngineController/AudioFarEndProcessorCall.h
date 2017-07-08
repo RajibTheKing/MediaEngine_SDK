@@ -4,16 +4,16 @@
 
 #include "AudioFarEndDataProcessor.h"
 
+
 namespace MediaSDK
 {
 
 	class FarEndProcessorCall : public AudioFarEndDataProcessor
 	{
-
-
+		
 	public:
 
-		FarEndProcessorCall(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
+		FarEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning);
 		~FarEndProcessorCall() { }
 		bool m_bProcessFarendDataStarted;
 

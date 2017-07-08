@@ -1,8 +1,10 @@
 #ifndef AUDIO_PACKET_HEADER_H
 #define AUDIO_PACKET_HEADER_H
 
-#include "AudioSessionOptions.h"
+
+#include "AudioTypes.h"
 #include "SmartPointer.h"
+
 
 namespace MediaSDK
 {

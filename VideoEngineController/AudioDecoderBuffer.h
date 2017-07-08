@@ -1,15 +1,14 @@
+#ifndef AUDIO_DECODER_BUFFER_H
+#define AUDIO_DECODER_BUFFER_H
 
-#ifndef _AUDIO_DECODER_BUFFER_H_
-#define _AUDIO_DECODER_BUFFER_H_
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"
-#include "Tools.h"
 #include "AudioMacros.h"
+
 
 namespace MediaSDK
 {
-
 	class CAudioByteBuffer
 	{
 
@@ -25,15 +24,14 @@ namespace MediaSDK
 		int GetQueueSize();
 		void ResetBuffer();
 
-	private:
 
+	private:
 
 		int m_iPushIndex;
 		int m_iPopIndex;
 		int m_nQueueCapacity;
 		int m_nQueueSize;
 
-		Tools m_Tools;
 		long long mt_lPrevOverFlowTime;
 		long long mt_lSumOverFlowTime;
 		double mt_dAvgOverFlowTime;
@@ -47,6 +45,7 @@ namespace MediaSDK
 
 	};
 
-} //namespace MediaSDK
+}  //namespace MediaSDK
 
-#endif 
+
+#endif  // !AUDIO_DECODER_BUFFER_H
