@@ -74,7 +74,7 @@ namespace MediaSDK
 
 		va_end(vargs);
 		
-		m_vLogVector.push_back(GetDateTime() + " " + GetThreadId2() + " " + " " + str);
+		m_vLogVector.push_back(GetDateTime() + " " + GetThreadID() + " " + " " + str);
 		for (int i = 0; i < m_vLogVector.size(); i++)
         {
             CLogPrinter::Log("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
@@ -96,7 +96,7 @@ namespace MediaSDK
 		}
 
 	}
-	std::string MediaLogger::GetThreadId2()
+	std::string MediaLogger::GetThreadID()
 	{
 		//For All Platforms
 		std::string str;

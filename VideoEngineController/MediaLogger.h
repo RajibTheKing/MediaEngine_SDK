@@ -56,7 +56,7 @@ namespace MediaSDK
 		void WriteLogToFile();
 		std::string GetFilePath();
 		LogLevel GetLogLevel();
-		std::string GetThreadId2();
+		std::string GetThreadID();
 		std::string GetDateTime();
 		
 	private:
