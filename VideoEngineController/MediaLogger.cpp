@@ -51,28 +51,11 @@ namespace MediaSDK
 
 		std::string str;
 		va_list vargs;
-		va_start(vargs, format);
-
 		//argument to string start
-		int length;
-		va_list apDuplicate;
-		va_copy(apDuplicate, vargs);
-		length = vsnprintf(NULL, 0, format, apDuplicate);
-		va_end(apDuplicate);
-
-		if (length > 0)
-		{
-			str.resize(length);
-			vsnprintf((char *)str.data(), str.size() + 1, format, vargs);
-		}
-		else
-		{
-			str = "Format error! format: ";
-			str.append(format);
-		}
-		//argument to string end
-
+		va_start(vargs, format);
+		vsnprintf((char *)str.data(), 255, format, vargs);
 		va_end(vargs);
+		//argument to string end
 		
 		m_vLogVector.push_back(GetDateTime() + " " + GetThreadID() + " " + " " + str);
 		for (int i = 0; i < m_vLogVector.size(); i++)
