@@ -167,7 +167,7 @@ bool CController::SetUserName(const long long& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType)
+bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType)
 {
 	StartAudioCallLocker lock3(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
@@ -184,7 +184,7 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, nAudioSpeakerType);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -269,7 +269,7 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 		audioSessionOptions.SetOptions(SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources);
+		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, AUDIO_PLAYER_DEFAULT);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -336,8 +336,6 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
         m_Quality[0].iHeight = iVideoHeight;
         m_Quality[0].iWidth = iVideoWidth;
     }
-    
-    printf("TheKing--> CController::StartVideoCall Height = %d, Width = %d\n", iVideoHeight, iVideoWidth);
 
 	long long llCheckDeviceCapabilityStartTime = m_Tools.CurrentTimestamp();
 
@@ -681,8 +679,6 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 		m_Quality[0].iWidth = width;
 	}
     
-    printf("TheKing--> CController::SetEncoderHeightWidth Height = %d, Width = %d\n", height, width);
-    
 
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
@@ -969,6 +965,7 @@ void CController::initializeEventHandler()
 
 bool CController::StopAudioCall(const long long& lFriendID)
 {
+	COW("###^^^### STOP AUDIO CALL CALLING...........");
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopAudioCall() called.");
     
 	StopAudioCallLocker lock3(*m_pAudioLockMutex);
@@ -1180,7 +1177,7 @@ void CController::UninitializeLibrary()
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CController::UninitializeLibrary() for all friend and all media");
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary called 1");
-
+	COW("###^^^### UNINT LIBRARY ... ");
 	if (NULL != m_pDeviceCapabilityCheckThread)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary called 2");
@@ -1190,6 +1187,9 @@ void CController::UninitializeLibrary()
 
 	UninitLibLocker lock1(*m_pVideoSendMutex);
 	UninitLibLocker lock2(*m_pVideoReceiveMutex);
+	UninitLibLocker lock3(*m_pAudioLockMutex);
+	UninitLibLocker lock4(*m_pAudioSendMutex);
+	UninitLibLocker lock5(*m_pAudioReceiveMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary remoging sessions");
 
@@ -1197,6 +1197,8 @@ void CController::UninitializeLibrary()
 
 	m_pCommonElementsBucket->m_pVideoCallSessionList->ClearAllFromVideoSessionList();
 	m_pCommonElementsBucket->m_pVideoEncoderList->ClearAllFromVideoEncoderList();
+
+	m_pCommonElementsBucket->m_pAudioCallSessionList->ClearAllFromAudioSessionList();
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary sessions removed");
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary done");

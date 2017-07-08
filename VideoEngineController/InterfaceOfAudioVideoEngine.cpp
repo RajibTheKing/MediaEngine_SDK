@@ -96,7 +96,7 @@ namespace MediaSDK
 		return Ret;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType)
+	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType)
 	{
 		m_llTimeOffset = -1;
 
@@ -105,7 +105,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType);
 
 		return bReturnedValue;
 	}
@@ -157,7 +157,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
@@ -182,7 +182,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
@@ -335,6 +335,8 @@ namespace MediaSDK
 
 				int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
 				int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
+
+				CLogPrinter_LOG(CRASH_CHECK_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector headerLength %d lengthOfAudioData %d lengthOfVideoData %d unLength %d", headerLength, lengthOfAudioData, lengthOfVideoData, (int)unLength);
 
 				//LOGEF("THeKing--> interface:receive ############## lengthOfVideoData =  %d  Pos=%d   Offset= %d,  \n", lengthOfVideoData,headerPosition, nValidHeaderOffset);
 

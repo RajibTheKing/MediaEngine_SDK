@@ -245,7 +245,7 @@ namespace MediaSDK
 
 					videoHeaderObject.ShowDetails("##RCV : ");
 
-					//printf("#V## Queue: %d\n",nFrameLength);
+					printf("#V## DeviceOrientation from Header: %d\n",videoHeaderObject.GetDeviceOrientation());
 
 					currentTime = m_Tools.CurrentTimestamp();
 
@@ -295,7 +295,7 @@ namespace MediaSDK
 					videoHeaderObject.GetInsetWidths(m_naInsetWidths, nNumberOfInsets);
 
 					//nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
-					nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(), 0, 0, 0, m_naInsetHeights[0], m_naInsetWidths[0]);
+					nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(), 0, 0, videoHeaderObject.GetDeviceOrientation(), m_naInsetHeights[0], m_naInsetWidths[0]);
 
 					llSlotTimeStamp = m_Tools.CurrentTimestamp();
 					toolsObject.SOSleep(1);
@@ -545,6 +545,8 @@ namespace MediaSDK
 	int nIDR_Frame_Gap = -1;
 	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
+		int nOrientationForRotation = nOrientation;
+
 		long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 		long long decTime = m_Tools.CurrentTimestamp();
@@ -604,6 +606,7 @@ namespace MediaSDK
 
 		if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 		{
+			nOrientation = 0;
 			int iNewHeight = m_decodingHeight - m_decodingHeight % 4;
 			int iNewWidth = m_decodingWidth - m_decodingWidth % 4;
 
@@ -622,13 +625,37 @@ namespace MediaSDK
 
 		if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 		{
+			nOrientation = 0;
 			if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
 
 				int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
 				int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
-				this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
+                
+                if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
+                {
+                    //inset Rotation is Turned off While User is in Desktop
+                    int rotatedHeight, rotatedWidth;
+                    
+                    if(nOrientationForRotation == 3)
+                        nOrientationForRotation = 1;
+                    else if(nOrientationForRotation == 1)
+                        nOrientationForRotation = 3;
+                    else
+                    {
+                        //do nothing
+                    }
+                    
+					int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientationForRotation);
+                    
+                    memcpy(m_DecodedFrame, m_RotatedFrame, iLen);
+                    m_decodingHeight = rotatedHeight;
+                    m_decodingWidth = rotatedWidth;
+                }
+                
+                
+                this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 			{

@@ -268,6 +268,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
 	{
+		COW("###^^^### SENT TO PLAYER DATA .................");
 		long long llNow = 0;
 
 		if (m_bIsLiveStreamingRunning == true)
@@ -646,7 +647,7 @@ namespace MediaSDK
 #ifdef __ANDROID__
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
-			if (m_pAudioCallSession->m_bTraceTailRemains)
+			if (m_pAudioCallSession->IsTraceSendingEnable() && m_pAudioCallSession->m_bTraceTailRemains)
 			{
 				LOG18("Calling Generate Trace");
 				m_pAudioCallSession->m_bTraceTailRemains = m_pAudioCallSession -> m_pTrace -> GenerateTrace(m_saPlayingData, 800);
@@ -658,18 +659,19 @@ namespace MediaSDK
 				m_pAudioCallSession->m_bTraceSent = true;
 			}
 		}
-		if (m_pDataEventListener != nullptr)
-		{
-			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
-#ifdef PCM_DUMP
-			if (m_pAudioCallSession->PlayedFile)
-			{
-				fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
-			}
-#endif
-		}
+
 		if (m_pAudioCallSession->m_bTraceSent)
 		{
+			if (m_pDataEventListener != nullptr)
+			{
+				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+#ifdef PCM_DUMP
+				if (m_pAudioCallSession->PlayedFile)
+				{
+					fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
+				}
+#endif
+			}
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
 			if (m_b1stPlaying)
@@ -698,6 +700,7 @@ namespace MediaSDK
 		else
 		{
 			LOG18("ppplaying 0 data, trace not sent");
+			Tools::SOSleep(20);
 		}
 #else
 		if (m_pDataEventListener != nullptr)

@@ -579,7 +579,17 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     
                     if(iOpponentVideoHeight !=-1 && iOpponentVideoWidth !=  -1)
                     {
-                        m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+                        if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
+                        {
+                            int rotatedHeight, rotatedWidth;
+                            m_pVideoCallSession->GetColorConverter()->RotateI420(m_ucaMirroredFrame, iHeight, iWidth, m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nDevice_orientation);
+                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+                        }
+                        else
+                        {
+                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+                        }
+                        
                     }
 				}
 
@@ -612,6 +622,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				}
                 
 			}
+			/*	
 			else
 			{
 
@@ -652,6 +663,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
 			}
+			*/
 
 			if (m_bSelfViewOnly == false)
 			{
@@ -876,11 +888,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			sum += (int)(m_Tools.CurrentTimestamp() - startTime);
 
-#ifdef __ANDROID__
-
-			LOGSS("Average %d %d\n", sum / countNumber, countNumber);
-
-#endif
+			CLogPrinter_LOG(PUBLISHER_TIME_LOG, "Average %d count %d\n", sum / countNumber, countNumber);
 
 			countNumber++;
 		

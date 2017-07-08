@@ -380,6 +380,7 @@ m_VideoBeautificationer(NULL),
 #endif
 				int nServiceType = m_pVideoCallSession->GetServiceType();
 
+				/*	
 				if (m_VideoBeautificationer == NULL)
 				{
 					m_VideoBeautificationer = new CVideoBeautificationer(iGotHeight, iGotWidth);
@@ -421,6 +422,7 @@ m_VideoBeautificationer(NULL),
 #endif
 				//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
+				*/
 
 				/*if(m_bIsCheckCall == true)
 				{
