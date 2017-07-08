@@ -23,7 +23,7 @@ namespace MediaSDK
 		int var = 1;
 		CLogPrinter::Log("MANSUR----------GetDateTime>> %s\n", objMediaLogger->GetDateTime().c_str());
 		CLogPrinter::Log("MANSUR----------GetFilePath>> %s\n", objMediaLogger->GetFilePath().c_str());
-		CLogPrinter::Log("MANSUR----------GetThreadId>> %s\n", objMediaLogger->GetThreadId2().c_str());
+		CLogPrinter::Log("MANSUR----------GetThreadId>> %s\n", objMediaLogger->GetThreadID().c_str());
 		objMediaLogger->Log(NONE, "*********************hello world %d**************\n", var);
 		objMediaLogger->Log(ERRORS, "*********************hello world 2**************\n");
 		objMediaLogger->Log(INFO, "*********************hello world 3**************\n");
