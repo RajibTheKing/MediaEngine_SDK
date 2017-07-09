@@ -11,6 +11,7 @@
 #include <sstream>
 #include <thread> 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"

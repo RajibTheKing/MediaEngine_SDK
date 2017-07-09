@@ -56,7 +56,7 @@ namespace MediaSDK
 		va_end(vargs);
 		//argument to string end
 		
-		m_vLogVector.push_back(GetDateTime() + GetThreadID() + m_sMessage);
+		m_vLogVector.push_back(GetDateTime() + GetThreadID() + " " + m_sMessage);
 		for (int i = 0; i < m_vLogVector.size(); i++)
         {
             CLogPrinter::Log("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
@@ -95,9 +95,9 @@ namespace MediaSDK
 
 		GetSystemTime(&st);
 
-		char currentTime[103] = "";
+		char currentTime[40] = "";
 
-		sprintf(currentTime, "[%02d-%02d-%04d %02d:%02d:%02d: %03d] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+		_snprintf_s(currentTime, 40, "[%02d-%02d-%04d %02d:%02d:%02d: %03d] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 
 		return std::string(currentTime);
 
@@ -105,15 +105,13 @@ namespace MediaSDK
 
 		timeval curTime;
 		gettimeofday(&curTime, NULL);
-		int milli = curTime.tv_usec / 1000;
+		int milli = curTime.tv_usec / 1000, pos;
 
-		char buffer[103];
-		strftime(buffer, 80, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
+		char buffer[40];
+		pos = strftime(buffer, 20, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
+		snprintf(buffer+pos, 20, " %d] ", milli);
 
-		char currentTime[103] = "";
-		sprintf(currentTime, "%s: %d] ", buffer, milli);
-
-		return std::string(currentTime);
+		return std::string(buffer);
 
 #endif 
 
