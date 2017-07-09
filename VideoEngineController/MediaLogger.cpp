@@ -81,17 +81,11 @@ namespace MediaSDK
 	std::string MediaLogger::GetThreadID()
 	{
 		//For All Platforms
-		std::string str;
-		uint64_t iThreadID;
-		auto id = std::this_thread::get_id();
-		uint64_t* ptr = (uint64_t*)&id;
-		iThreadID = *ptr;
-
 		stringstream ss;
-		ss << iThreadID;
-		ss >> str;
-		return str;
+		ss << std::this_thread::get_id();
+		return ss.str();
 	}
+
 	std::string MediaLogger::GetDateTime()
 	{
 
