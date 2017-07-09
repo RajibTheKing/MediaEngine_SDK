@@ -88,6 +88,8 @@ namespace MediaSDK
 
 	std::string MediaLogger::GetDateTime()
 	{
+		stringstream ss;
+		ss<<std::time(nullptr);
 
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 
@@ -97,7 +99,7 @@ namespace MediaSDK
 
 		char currentTime[40] = "";
 
-		_snprintf_s(currentTime, 40, "[%02d-%02d-%04d %02d:%02d:%02d: %03d] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+		_snprintf_s(currentTime, 40, "[%02d-%02d-%04d %02d:%02d:%02d: %03s] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, ss.str().c_str());
 
 		return std::string(currentTime);
 
@@ -109,7 +111,7 @@ namespace MediaSDK
 
 		char buffer[40];
 		pos = strftime(buffer, 20, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
-		snprintf(buffer+pos, 20, " %d] ", milli);
+		snprintf(buffer+pos, 20, " %s] ", ss.str().c_str());
 
 		return std::string(buffer);
 
