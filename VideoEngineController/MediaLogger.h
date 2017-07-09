@@ -31,6 +31,7 @@
 #define MEDIA_LOGGING_PATH "C:/"
 #endif
 
+#define MEDIA_LOG_MAX_SIZE	255
 #define MEDIA_LOGGING_FOLDER_NAME "medialogs/"
 #define MEDIA_LOGGING_FILE_NAME "logdump.txt"
 #define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FOLDER_NAME MEDIA_LOGGING_FILE_NAME
@@ -66,6 +67,7 @@ namespace MediaSDK
 		std::vector<std::string> m_vLogVector;
 		SmartPointer<MediaLocker> m_pMediaLoggerMutex;
 		std::ofstream   m_pLoggerFileStream;
+		char m_sMessage[MEDIA_LOG_MAX_SIZE];
 	};
 }
 

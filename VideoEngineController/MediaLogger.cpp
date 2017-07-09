@@ -49,15 +49,14 @@ namespace MediaSDK
 
 		if (logLevel > m_elogLevel) return;
 
-		std::string str;
 		va_list vargs;
 		//argument to string start
 		va_start(vargs, format);
-		vsnprintf((char *)str.data(), 255, format, vargs);
+		vsnprintf(m_sMessage, MEDIA_LOG_MAX_SIZE, format, vargs);
 		va_end(vargs);
 		//argument to string end
 		
-		m_vLogVector.push_back(GetDateTime() + " " + GetThreadID() + " " + " " + str);
+		m_vLogVector.push_back(GetDateTime() + GetThreadID() + m_sMessage);
 		for (int i = 0; i < m_vLogVector.size(); i++)
         {
             CLogPrinter::Log("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
