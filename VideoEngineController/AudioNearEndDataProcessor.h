@@ -64,6 +64,7 @@ namespace MediaSDK
 
 		void DecideToChangeComplexity(int iEncodingTime);
 
+		CAudioCallSession *m_pAudioCallSession = nullptr;
 
 	private:
 
@@ -77,7 +78,6 @@ namespace MediaSDK
 
 		//	SmartPointer<NoiseReducerInterface> m_pNoise;
 
-		CAudioCallSession *m_pAudioCallSession = nullptr;
 		CAudioShortBuffer *m_pAudioNearEndBuffer = nullptr;
 		SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader = nullptr;
 		AudioMixer *m_pAudioMixer = nullptr;

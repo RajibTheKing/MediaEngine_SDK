@@ -14,6 +14,7 @@
 #include "AudioFarEndDataProcessor.h"
 #include "AudioShortBufferForPublisherFarEnd.h"
 #include "AudioMacros.h"
+#include "AudioLinearBuffer.h"
 
 #include <stdio.h>
 #include <string>
@@ -98,6 +99,7 @@ namespace MediaSDK
 		void SetCallInLiveType(int nCallInLiveType);
 		long long GetBaseOfRelativeTime();
 
+		void PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
 
@@ -121,6 +123,7 @@ namespace MediaSDK
 		long long m_llnextRecordedDataTime;
 		CAudioShortBuffer  m_FarendBuffer;
 		short m_saFarendData[MAX_AUDIO_FRAME_Length];
+		AudioLinearBuffer* m_recordBuffer = nullptr;
 
 		CTrace * m_pTrace;
 

@@ -63,6 +63,7 @@ namespace MediaSDK
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr)
 	{
+		m_recordBuffer = new AudioLinearBuffer(16000);
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
@@ -208,7 +209,10 @@ namespace MediaSDK
 		if (AfterEchoCancellationFile) fclose(AfterEchoCancellationFile);
 		if (PlayedFile) fclose(PlayedFile);
 #endif
-
+		if (m_recordBuffer)
+		{
+			delete m_recordBuffer;
+		}
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 	}
 
@@ -430,16 +434,9 @@ namespace MediaSDK
 	}
 	int iStartingBufferSize = -1;
 	int iDelayFractionOrig = -1;
-	int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
+
+	void CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
-		if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
-		{
-			ALOG("Invalid Audio Frame Length");
-			return -1;
-		}
-		//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-		m_bRecordingStarted = true;
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
@@ -473,7 +470,7 @@ namespace MediaSDK
 		if (!m_bLiveAudioStreamRunning && ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0))
 		{
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-			m_iDeleteCount --;
+			m_iDeleteCount--;
 		}
 		//Handle Trace
 		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
@@ -486,7 +483,7 @@ namespace MediaSDK
 			}
 			else
 			{
-				m_llDelayFraction = m_pTrace -> DetectTrace(psaEncodingAudioData, unLength, 80);
+				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, 80);
 				LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)
 				{
@@ -584,11 +581,23 @@ namespace MediaSDK
 		}
 		else printf("##TT encodeaudiodata no gain\n");
 #endif
-		int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
+	}
 
-		CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
+	int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
+		/*if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
+		{
+			ALOG("Invalid Audio Frame Length");
+			return -1;
+		}*/
+		//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+		m_bRecordingStarted = true;
+		//LOGT("##TT encodeaudiodata");
+		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
+		m_recordBuffer->PushData(psaEncodingAudioData, unLength);
 
-		return returnedValue;
+		return 0;
 	}
 
 	int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
