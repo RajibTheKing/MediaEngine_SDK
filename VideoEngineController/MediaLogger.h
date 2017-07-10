@@ -33,6 +33,9 @@
 #define MEDIA_LOGGING_PATH "C:/"
 #endif
 
+#define MIN_BUFFERED_LOG 5
+#define MAX_BUFFERED_LOG 100
+#define THREAD_SLEEP_TIME 250
 #define MEDIA_LOG_MAX_SIZE	255
 #define MEDIA_LOGGING_FOLDER_NAME "medialogs/"
 #define MEDIA_LOGGING_FILE_NAME "logdump.txt"
@@ -55,12 +58,19 @@ namespace MediaSDK
 		MediaLogger(LogLevel logLevel);
 		~MediaLogger();
 		void Init();
+		void Release();
 		void Log(LogLevel loglevel, const char *format, ...);
-		void WriteLogToFile();
 		std::string GetFilePath();
 		LogLevel GetLogLevel();
+
+	private:
+		void WriteLogToFile();
 		std::string GetThreadID();
 		std::string GetDateTime();
+
+		void StartMediaLoggingThread();
+		void StopMediaLoggingThread();
+		static void* CreateLoggingThread(void* param);
 		
 	private:
 		
@@ -70,6 +80,9 @@ namespace MediaSDK
 		SmartPointer<MediaLocker> m_pMediaLoggerMutex;
 		std::ofstream   m_pLoggerFileStream;
 		char m_sMessage[MEDIA_LOG_MAX_SIZE];
+
+		bool m_bMediaLoggingThreadRunning;
+		std::thread m_threadInstance;
 	};
 }
 

@@ -11,26 +11,26 @@ namespace MediaSDK
 
 	MediaLogger::~MediaLogger()
 	{
-		/*if (m_pLoggerFileStream)
-		{
-			fclose(m_pLoggerFileStream);
-		}*/
-
-		m_vLogVector.clear();
-		if (m_pLoggerFileStream.is_open()) m_pLoggerFileStream.close();
+		Release();
 	}
 
 	void MediaLogger::Init()
 	{
-		/*if (m_pLoggerFileStream)
-		{
-			fclose(m_pLoggerFileStream);
-			//m_pLoggerFileStream = nullptr;
-		}*/
-		//m_pLoggerFileStream = fopen(m_sFilePath.c_str(), "w");
 		if (!m_pLoggerFileStream.is_open())
 		{
 			m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
+		}
+		
+		StartMediaLoggingThread();
+	}
+	
+	void MediaLogger::Release()
+	{
+		StopMediaLoggingThread();
+
+		if (m_pLoggerFileStream.is_open())
+		{
+			m_pLoggerFileStream.close();
 		}
 	}
 
@@ -43,9 +43,10 @@ namespace MediaSDK
 	{
 		return m_elogLevel;
 	}
+
 	void MediaLogger::Log(LogLevel logLevel, const char *format, ...)
 	{
-		//MediaLocker lock(*m_pMediaLoggerMutex);
+		MediaLocker lock(*m_pMediaLoggerMutex);
 
 		if (logLevel > m_elogLevel) return;
 
@@ -61,23 +62,22 @@ namespace MediaSDK
         {
             CLogPrinter::Log("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
         }
-		
 	}
 	void MediaLogger::WriteLogToFile()
 	{
-		//MediaLocker lock(*m_pMediaLoggerMutex);
+		MediaLocker lock(*m_pMediaLoggerMutex);
 
-		if (!m_pLoggerFileStream.is_open())
+		size_t vSize = min(m_vLogVector.size(), (size_t)MAX_BUFFERED_LOG);
+
+		for(int  i=0; i < vSize; i++)
 		{
-			m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
-		}
-		for(int  i=0; i<m_vLogVector.size(); i++)
-		{
-			CLogPrinter::Log("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
+			//CLogPrinter::Log("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
 			m_pLoggerFileStream << m_vLogVector[i] << std::endl;
 		}
 
+		m_vLogVector.erase(m_vLogVector.begin(), m_vLogVector.begin() + vSize);
 	}
+
 	std::string MediaLogger::GetThreadID()
 	{
 		//For All Platforms
@@ -119,5 +119,37 @@ namespace MediaSDK
 
 	}
 
+	void MediaLogger::StartMediaLoggingThread()
+	{
+		m_threadInstance = std::thread(CreateLoggingThread, this);
+	}
+	
+	void MediaLogger::StopMediaLoggingThread()
+	{
+		m_bMediaLoggingThreadRunning = false;
+		
+		m_threadInstance.join();
+	}
+
+	void *MediaLogger::CreateLoggingThread(void* param)
+	{
+		MediaLogger *pThis = (MediaLogger*)param;
+
+		pThis->m_bMediaLoggingThreadRunning = true;
+
+		while (pThis->m_bMediaLoggingThreadRunning)
+		{
+			if (pThis->m_vLogVector.size() >= MIN_BUFFERED_LOG)
+			{
+				pThis->WriteLogToFile();
+			}
+			else
+			{
+				Tools::SOSleep(THREAD_SLEEP_TIME);
+			}
+		}
+
+		return NULL;
+	}
 
 }

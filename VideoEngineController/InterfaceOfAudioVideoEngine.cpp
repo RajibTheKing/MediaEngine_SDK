@@ -21,14 +21,16 @@ namespace MediaSDK
 
 		MediaLogger *objMediaLogger = new MediaLogger(INFO);
 		int var = 1;
-		CLogPrinter::Log("MANSUR----------GetDateTime>> %s\n", objMediaLogger->GetDateTime().c_str());
-		CLogPrinter::Log("MANSUR----------GetFilePath>> %s\n", objMediaLogger->GetFilePath().c_str());
-		CLogPrinter::Log("MANSUR----------GetThreadId>> %s\n", objMediaLogger->GetThreadID().c_str());
+		objMediaLogger->Init();
 		objMediaLogger->Log(NONE, "*********************hello world %d**************\n", var);
 		objMediaLogger->Log(ERRORS, "*********************hello world 2**************\n");
 		objMediaLogger->Log(INFO, "*********************hello world 3**************\n");
-		objMediaLogger->Init();
-		objMediaLogger->WriteLogToFile();
+		objMediaLogger->Log(ERRORS, "*********************hello world 4**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 5**************\n");
+		objMediaLogger->Log(ERRORS, "*********************hello world 6**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 7**************\n");
+		Tools::SOSleep(500);
+		objMediaLogger->Release();
 
 
 		G_pInterfaceOfAudioVideoEngine = this;
