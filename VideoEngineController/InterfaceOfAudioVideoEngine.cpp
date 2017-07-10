@@ -4,8 +4,8 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
-#define MEDIA_ENGINE_VERSION "9.32"
-#define MEDIA_ENGINE_BUILD_NUMBER 9324918
+#define MEDIA_ENGINE_VERSION "9.33.0"
+#define MEDIA_ENGINE_BUILD_NUMBER 0932002510
 
 namespace MediaSDK
 {
