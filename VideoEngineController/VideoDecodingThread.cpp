@@ -559,15 +559,21 @@ namespace MediaSDK
 			nIDR_Frame_Gap = nFramNumber;
 		}
 
+		m_decodedFrameSize = 0;
+
+		if (frameSize > 0)
+		{
+
 #if defined(TARGET_OS_WINDOWS_PHONE)
 
-		m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_TempDecodedFrame, m_decodingHeight, m_decodingWidth);
+			m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_TempDecodedFrame, m_decodingHeight, m_decodingWidth);
 
 #else
 
-		m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
+			m_decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(in_data, frameSize, m_DecodedFrame, m_decodingHeight, m_decodingWidth);
 
 #endif
+		}
 
 		CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
 
