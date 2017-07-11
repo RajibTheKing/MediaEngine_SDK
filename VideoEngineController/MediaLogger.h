@@ -36,7 +36,7 @@
 #define MIN_BUFFERED_LOG 5
 #define MAX_BUFFERED_LOG 100
 #define THREAD_SLEEP_TIME 250
-#define MEDIA_LOG_MAX_SIZE	255
+#define MEDIA_LOG_MAX_SIZE	512
 #define MEDIA_LOGGING_FOLDER_NAME "medialogs/"
 #define MEDIA_LOGGING_FILE_NAME "logdump.txt"
 #define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FOLDER_NAME MEDIA_LOGGING_FILE_NAME
@@ -65,8 +65,8 @@ namespace MediaSDK
 
 	private:
 		void WriteLogToFile();
-		std::string GetThreadID();
-		std::string GetDateTime();
+		size_t GetThreadID(char* buffer);
+		size_t GetDateTime(char* buffer);
 
 		void StartMediaLoggingThread();
 		void StopMediaLoggingThread();

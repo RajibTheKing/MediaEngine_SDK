@@ -51,14 +51,18 @@ namespace MediaSDK
 
 		if (logLevel > m_elogLevel) return;
 
+		int len = GetDateTime(m_sMessage);
+		len += GetThreadID(m_sMessage + len);
+		m_sMessage[len++] = ' ';
+
 		va_list vargs;
 		//argument to string start
 		va_start(vargs, format);
-		vsnprintf(m_sMessage, MEDIA_LOG_MAX_SIZE, format, vargs);
+		vsnprintf(m_sMessage + len, MEDIA_LOG_MAX_SIZE - len, format, vargs);
 		va_end(vargs);
 		//argument to string end
 		
-		m_vLogVector.push_back(GetDateTime() + GetThreadID() + " " + m_sMessage);
+		m_vLogVector.push_back(m_sMessage);
 		CLogPrinter::Log("MANSUR----------pushing >> %s\n", m_sMessage);
 	}
 	void MediaLogger::WriteLogToFile()
@@ -76,15 +80,16 @@ namespace MediaSDK
 		m_vLogVector.erase(m_vLogVector.begin(), m_vLogVector.begin() + vSize);
 	}
 
-	std::string MediaLogger::GetThreadID()
+	size_t MediaLogger::GetThreadID(char* buffer)
 	{
 		//For All Platforms
 		stringstream ss;
-		ss << std::this_thread::get_id();
-		return ss.str();
+		ss << std::this_thread::get_id();		
+		ss >> buffer;
+		return strlen(buffer);
 	}
 
-	std::string MediaLogger::GetDateTime()
+	size_t MediaLogger::GetDateTime(char* buffer)
 	{
 		stringstream ss;
 		ss<<std::time(nullptr);
@@ -93,29 +98,19 @@ namespace MediaSDK
 
 		SYSTEMTIME st;
 
-		GetSystemTime(&st);
+		GetLocalTime(&st);
 
-		char currentTime[40] = "";
-
-		_snprintf_s(currentTime, 40, "[%02d-%02d-%04d %02d:%02d:%02d: %03s] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, ss.str().c_str());
-
-		return std::string(currentTime);
-
+		return _snprintf(buffer, 40, "[%02d-%02d-%04d %02d:%02d:%02d: %03s] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, ss.str().c_str());
 #else
 
 		timeval curTime;
 		gettimeofday(&curTime, NULL);
 		int milli = curTime.tv_usec / 1000, pos;
 
-		char buffer[42];
 		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
 		CLogPrinter::Log("MANSUR---------position value = %d\n", pos);
-		snprintf(buffer+pos, 20, " %s] ", ss.str().c_str());
-
-		return std::string(buffer);
-
+		return snprintf(buffer+pos, 20, " %s] ", ss.str().c_str());
 #endif 
-
 	}
 
 	void MediaLogger::StartMediaLoggingThread()
