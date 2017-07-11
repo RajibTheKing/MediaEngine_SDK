@@ -77,7 +77,7 @@ namespace MediaSDK
 		LogLevel m_elogLevel;
 		std::string m_sFilePath;
 		std::vector<std::string> m_vLogVector;
-		SmartPointer<MediaLocker> m_pMediaLoggerMutex;
+		SmartPointer<CLockHandler> m_pMediaLoggerMutex;
 		std::ofstream   m_pLoggerFileStream;
 		char m_sMessage[MEDIA_LOG_MAX_SIZE];
 

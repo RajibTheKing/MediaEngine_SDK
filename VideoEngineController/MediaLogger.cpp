@@ -5,7 +5,6 @@ namespace MediaSDK
 	MediaLogger::MediaLogger(LogLevel logLevel) :
 		m_elogLevel(logLevel)
 	{		
-
 		m_sFilePath = MEDIA_FULL_LOGGING_PATH;
 	}
 
@@ -16,6 +15,8 @@ namespace MediaSDK
 
 	void MediaLogger::Init()
 	{
+		m_pMediaLoggerMutex.reset(new CLockHandler());
+
 		if (!m_pLoggerFileStream.is_open())
 		{
 			m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
@@ -46,7 +47,7 @@ namespace MediaSDK
 
 	void MediaLogger::Log(LogLevel logLevel, const char *format, ...)
 	{
-		MediaLocker lock(*m_pMediaLoggerMutex);
+		MediaLocker lock(m_pMediaLoggerMutex.get());
 
 		if (logLevel > m_elogLevel) return;
 
@@ -58,20 +59,17 @@ namespace MediaSDK
 		//argument to string end
 		
 		m_vLogVector.push_back(GetDateTime() + GetThreadID() + " " + m_sMessage);
-		for (int i = 0; i < m_vLogVector.size(); i++)
-        {
-            CLogPrinter::Log("MANSUR----------log>> %s\n",m_vLogVector[i].c_str());
-        }
+		CLogPrinter::Log("MANSUR----------pushing >> %s\n", m_sMessage);
 	}
 	void MediaLogger::WriteLogToFile()
 	{
-		MediaLocker lock(*m_pMediaLoggerMutex);
+		MediaLocker lock(m_pMediaLoggerMutex.get());
 
 		size_t vSize = min(m_vLogVector.size(), (size_t)MAX_BUFFERED_LOG);
 
 		for(int  i=0; i < vSize; i++)
 		{
-			//CLogPrinter::Log("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
+			CLogPrinter::Log("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
 			m_pLoggerFileStream << m_vLogVector[i] << std::endl;
 		}
 
@@ -109,8 +107,9 @@ namespace MediaSDK
 		gettimeofday(&curTime, NULL);
 		int milli = curTime.tv_usec / 1000, pos;
 
-		char buffer[40];
-		pos = strftime(buffer, 20, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
+		char buffer[42];
+		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
+		CLogPrinter::Log("MANSUR---------position value = %d\n", pos);
 		snprintf(buffer+pos, 20, " %s] ", ss.str().c_str());
 
 		return std::string(buffer);
@@ -126,6 +125,7 @@ namespace MediaSDK
 	
 	void MediaLogger::StopMediaLoggingThread()
 	{
+		CLogPrinter::Log("MANSUR----------stopping logger thread\n");
 		m_bMediaLoggingThreadRunning = false;
 		
 		m_threadInstance.join();
@@ -137,6 +137,8 @@ namespace MediaSDK
 
 		pThis->m_bMediaLoggingThreadRunning = true;
 
+		CLogPrinter::Log("MANSUR----------starting logger thread\n");
+
 		while (pThis->m_bMediaLoggingThreadRunning)
 		{
 			if (pThis->m_vLogVector.size() >= MIN_BUFFERED_LOG)
@@ -144,7 +146,8 @@ namespace MediaSDK
 				pThis->WriteLogToFile();
 			}
 			else
-			{
+			{ 
+				CLogPrinter::Log("MANSUR----------sleeping logger thread , vector size = %d\n", pThis->m_vLogVector.size());
 				Tools::SOSleep(THREAD_SLEEP_TIME);
 			}
 		}

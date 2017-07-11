@@ -29,8 +29,20 @@ namespace MediaSDK
 		objMediaLogger->Log(INFO, "*********************hello world 5**************\n");
 		objMediaLogger->Log(ERRORS, "*********************hello world 6**************\n");
 		objMediaLogger->Log(INFO, "*********************hello world 7**************\n");
-		Tools::SOSleep(500);
-		objMediaLogger->Release();
+		objMediaLogger->Log(NONE, "*********************hello world 8**************\n");
+		objMediaLogger->Log(ERRORS, "*********************hello world 9**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 10**************\n");
+		objMediaLogger->Log(ERRORS, "*********************hello world 11**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 12**************\n");
+		objMediaLogger->Log(ERRORS, "*********************hello world 13**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 14**************\n");
+		objMediaLogger->Log(ERRORS, "*********************hello world 15**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 16**************\n");
+		objMediaLogger->Log(ERRORS, "*********************hello world 17**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 18**************\n");
+		objMediaLogger->Log(ERRORS, "*********************hello world 19**************\n");
+		objMediaLogger->Log(INFO, "*********************hello world 20**************\n");
+
 
 
 		G_pInterfaceOfAudioVideoEngine = this;
@@ -44,6 +56,9 @@ namespace MediaSDK
 
 		//Late assignment to avoid transitional undefined behaviors
 		m_pcController = pController;
+
+		Tools::SOSleep(1000);
+		objMediaLogger->Release();
 	}
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
