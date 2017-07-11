@@ -663,7 +663,7 @@ namespace MediaSDK
 		{
 			if (m_pDataEventListener != nullptr)
 			{
-				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 				if (m_pAudioCallSession->PlayedFile)
 				{
@@ -704,7 +704,7 @@ namespace MediaSDK
 #else
 		if (m_pDataEventListener != nullptr)
 		{
-			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+			m_pDataEventListener->FireDataEvent(m_pAudioCallSession -> GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
 			{

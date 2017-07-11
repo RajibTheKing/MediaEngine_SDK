@@ -90,6 +90,7 @@ namespace MediaSDK
 		else {
 			Tools::SOSleep(5);
 		}
+		ProcessPlayingData();
 	}
 
 } //namespace MediaSDK
