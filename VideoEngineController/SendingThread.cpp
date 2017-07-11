@@ -313,10 +313,16 @@ namespace MediaSDK
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() session got");
 
-					/*unsigned char *p = m_EncodedFrame + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
+					unsigned char *p = m_EncodedFrame + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
 
-					int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
-					if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);*/
+					int nalType;
+					
+					if (packetSize > 10)
+						nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
+					else
+						nalType = 0;
+
+					//if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);
 
 					CAudioCallSession *pAudioSession;
 
@@ -652,6 +658,8 @@ namespace MediaSDK
 						memcpy(m_VideoDataToSend + m_iDataToSendIndex, m_EncodedFrame, packetSize);
 						m_iDataToSendIndex += (packetSize);
 
+						CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure FIRSTTTT frame Type %d size %d", nalType, packetSize);
+
 						long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
 
 						if (m_bPassOnlyAudio == true)
@@ -702,6 +710,11 @@ namespace MediaSDK
 						}
 
 						CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() 200 ms not ready");
+
+						if (firstFrame == true)
+							CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure FIRSTTTT frame Type %d size %d", nalType, packetSize);
+						else
+							CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure frame Type %d size %d", nalType, packetSize);
 
 						if (m_iDataToSendIndex + packetSize < MAX_VIDEO_DATA_TO_SEND_SIZE)
 						{

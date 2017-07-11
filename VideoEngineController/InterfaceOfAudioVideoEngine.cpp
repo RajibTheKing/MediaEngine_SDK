@@ -107,14 +107,14 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool bOn)
+	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, int iSpeakerType)
 	{
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->SetLoudSpeaker(lFriendID, bOn);
+		bool bReturnedValue = m_pcController->SetSpeakerType(lFriendID, iSpeakerType);
 		return bReturnedValue;
 	}
 
@@ -322,7 +322,7 @@ namespace MediaSDK
 				int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
 				int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
 
-				CLogPrinter_LOG(CRASH_CHECK_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector headerLength %d lengthOfAudioData %d lengthOfVideoData %d unLength %d", headerLength, lengthOfAudioData, lengthOfVideoData, (int)unLength);
+				CLogPrinter_LOG(CRASH_CHECK_LOG || CHUNK_RECIVE_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector headerLength %d lengthOfAudioData %d lengthOfVideoData %d unLength %d equality %d", headerLength, lengthOfAudioData, lengthOfVideoData, (int)unLength, (headerLength + lengthOfAudioData + lengthOfVideoData) == (int)unLength);
 
 				//LOGEF("THeKing--> interface:receive ############## lengthOfVideoData =  %d  Pos=%d   Offset= %d,  \n", lengthOfVideoData,headerPosition, nValidHeaderOffset);
 
