@@ -107,14 +107,14 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetLoudSpeaker(const LongLong lFriendID, bool bOn)
+	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, int iSpeakerType)
 	{
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->SetLoudSpeaker(lFriendID, bOn);
+		bool bReturnedValue = m_pcController->SetSpeakerType(lFriendID, iSpeakerType);
 		return bReturnedValue;
 	}
 

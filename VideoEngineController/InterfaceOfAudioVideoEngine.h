@@ -59,7 +59,7 @@ namespace MediaSDK
 		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType);
 
 		bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
-		bool SetLoudSpeaker(const LongLong lFriendID, bool bOn);
+		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType);
 		bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 		int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 

@@ -66,7 +66,8 @@ namespace MediaSDK
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
-		if (nAudioSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
+		m_iSpeakerType = nAudioSpeakerType;
+		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			m_bTraceSendingEnabled = true;
 		}
@@ -103,8 +104,7 @@ namespace MediaSDK
 		m_iPrevRecvdSlotID = -1;
 		m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
 		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
-
-		m_bUsingLoudSpeaker = false;
+		
 		m_bEchoCancellerEnabled = true;
 
 		if (m_bLiveAudioStreamRunning)
@@ -617,9 +617,9 @@ namespace MediaSDK
 		m_pPlayerGain.get() ? m_pPlayerGain->SetGain(iVolume) : 0;
 	}
 
-	void CAudioCallSession::SetLoudSpeaker(bool bOn)
+	void CAudioCallSession::SetSpeakerType(int iSpeakerType)
 	{
-		m_bUsingLoudSpeaker = bOn;
+		m_iSpeakerType = iSpeakerType;
 	}
 
 	int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
