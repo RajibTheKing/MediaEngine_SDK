@@ -22,12 +22,16 @@ namespace MediaSDK
 
 		int version = 0;
 		long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
-		if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
+		if (m_pAudioCallSession->m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
+		{
 			Tools::SOSleep(10);
+		}
 		else
 		{
 			LOG18("#18#NE#Viewer... ");
-			m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			llCapturedTime = Tools::CurrentTimestamp();
+			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 			int nDataLenthInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
 
 			m_pAudioCallSession->m_ViewerInCallSentDataQueue.EnQueue(m_saAudioRecorderFrame, nDataLenthInShort, m_iPacketNumber);

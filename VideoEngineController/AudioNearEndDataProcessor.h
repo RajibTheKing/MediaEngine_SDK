@@ -49,6 +49,7 @@ namespace MediaSDK
 		}
 
 		virtual void ProcessNearEndData() = 0;
+		CAudioCallSession *m_pAudioCallSession = nullptr;
 
 
 	protected:
@@ -64,7 +65,6 @@ namespace MediaSDK
 
 		void DecideToChangeComplexity(int iEncodingTime);
 
-		CAudioCallSession *m_pAudioCallSession = nullptr;
 
 	private:
 

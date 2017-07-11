@@ -28,6 +28,7 @@ namespace MediaSDK
 		else
 		{
 			//LOGT("##TT dequed #18#NE#AudioCall...");
+			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 
 			DumpEncodingFrame();

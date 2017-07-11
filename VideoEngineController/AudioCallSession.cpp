@@ -63,7 +63,7 @@ namespace MediaSDK
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr)
 	{
-		m_recordBuffer = new AudioLinearBuffer(16000);
+		m_recordBuffer = new AudioLinearBuffer(8000);
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
@@ -594,7 +594,7 @@ namespace MediaSDK
 		//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
 		m_bRecordingStarted = true;
 		//LOGT("##TT encodeaudiodata");
-		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
+		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, Tools::CurrentTimestamp());
 		m_recordBuffer->PushData(psaEncodingAudioData, unLength);
 
 		return 0;
