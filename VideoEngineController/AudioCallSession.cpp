@@ -445,20 +445,23 @@ namespace MediaSDK
 
 #ifdef USE_AECM
 		//Sleep to maintain 100 ms recording time diff
-		if (m_b1stRecordedData)
+		if (!m_bLiveAudioStreamRunning)
 		{
-			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
-			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
-			m_b1stRecordedData = false;
-		}
-		else
-		{
-			long long llNOw = Tools::CurrentTimestamp();
-			if (llNOw + 20 < m_llnextRecordedDataTime)
+			if (m_b1stRecordedData)
 			{
-				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+				m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
+				m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
+				m_b1stRecordedData = false;
 			}
-			m_llnextRecordedDataTime += 100;
+			else
+			{
+				long long llNOw = Tools::CurrentTimestamp();
+				if (llNOw + 20 < m_llnextRecordedDataTime)
+				{
+					Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+				}
+				m_llnextRecordedDataTime += 100;
+			}
 		}
 
 #ifdef PCM_DUMP
