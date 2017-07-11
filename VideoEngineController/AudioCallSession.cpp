@@ -535,7 +535,7 @@ namespace MediaSDK
 				int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
 				{
-					if (GetPlayerGain().get())
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 					{
 						GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
 					}
@@ -545,7 +545,7 @@ namespace MediaSDK
 
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 
-					if (GetPlayerGain().get())
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 					{
 						GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 					}
@@ -578,7 +578,7 @@ namespace MediaSDK
 		}
 
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(DESKTOP_C_SHARP)
-		if (GetPlayerGain().get())
+		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 		{
 			GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 		}
