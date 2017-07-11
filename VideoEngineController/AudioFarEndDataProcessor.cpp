@@ -304,8 +304,15 @@ namespace MediaSDK
 			}
 #endif
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+#ifdef USE_AECM
 			LOG18("Pushing to q");
 			memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
+#else
+			if (m_pDataEventListener != nullptr)
+			{
+				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+			}
+#endif
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
 			{
