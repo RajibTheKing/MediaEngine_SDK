@@ -1,9 +1,21 @@
 #include "MediaLogger.h"
 
+#if defined(TARGET_OS_WINDOWS_PHONE) || defined (DESKTOP_C_SHARP) 
+
+#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
+#include "Tools.h"
+#include "LogPrinter.h"
+
 namespace MediaSDK
 {
 	MediaLogger::MediaLogger(LogLevel logLevel) :
-		m_elogLevel(logLevel)
+		m_elogLevel(logLevel),
+		m_bFSError(false)
 	{		
 		m_sFilePath = MEDIA_FULL_LOGGING_PATH;
 	}
@@ -17,10 +29,20 @@ namespace MediaSDK
 	{
 		m_pMediaLoggerMutex.reset(new CLockHandler());
 
-		if (!m_pLoggerFileStream.is_open())
+		m_bFSError = CreateLogDirectory();
+		if (m_bFSError)
 		{
-			m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
+			CLogPrinter::Log("MANSUR----------directory creation successful >> %s\n", m_sFilePath.c_str());
+			if (!m_pLoggerFileStream.is_open())
+			{
+				m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
+			}
 		}
+		else
+		{
+			CLogPrinter::Log("MANSUR----------directory creation failed >> %s\n", m_sFilePath.c_str());
+		}
+
 		
 		StartMediaLoggingThread();
 	}
@@ -65,6 +87,35 @@ namespace MediaSDK
 		m_vLogVector.push_back(m_sMessage);
 		CLogPrinter::Log("MANSUR----------pushing >> %s\n", m_sMessage);
 	}
+
+	bool MediaLogger::CreateLogDirectory()
+	{
+#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
+
+		int ret = CreateDirectory(MEDIA_LOGGING_PATH, NULL);
+		if (ERROR_ALREADY_EXISTS != ret)
+		{
+			printf("Log folder creation FAILED, ret code %d\n", ret);
+
+			return false;
+		}
+
+#else
+		struct stat st = { 0 };
+
+		if (stat(MEDIA_LOGGING_PATH, &st) == -1) {
+			if(0 != mkdir(MEDIA_LOGGING_PATH, 0700))
+			{
+				printf("Log folder creation FAILED\n");
+
+				return false;
+			}
+		}
+#endif
+
+		return true;
+	}
+
 	void MediaLogger::WriteLogToFile()
 	{
 		MediaLocker lock(m_pMediaLoggerMutex.get());
@@ -74,7 +125,19 @@ namespace MediaSDK
 		for(int  i=0; i < vSize; i++)
 		{
 			CLogPrinter::Log("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
-			m_pLoggerFileStream << m_vLogVector[i] << std::endl;
+
+			if (!m_bFSError)
+			{
+				m_pLoggerFileStream << m_vLogVector[i] << std::endl;
+			}
+			else
+			{
+#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+				std::cout << m_vLogVector[i] << std::endl;
+#elif __ANDROID__
+				__android_log_print(ANDROID_LOG_ERROR, "MediaSDK", m_vLogVector[i].c_str());
+#endif
+			}
 		}
 
 		m_vLogVector.erase(m_vLogVector.begin(), m_vLogVector.begin() + vSize);

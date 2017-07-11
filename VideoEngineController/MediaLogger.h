@@ -16,30 +16,25 @@
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"
-#include "Tools.h"
-#include "LogPrinter.h"
 
-#if defined(TARGET_OS_WINDOWS_PHONE) || defined (DESKTOP_C_SHARP) 
-#include <windows.h>
-#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
-#endif
 
+#define MEDIA_LOGGING_FOLDER_NAME "MediaLogs/"
 
 #if defined(__ANDROID__)
-#define MEDIA_LOGGING_PATH "/sdcard/"
+#define MEDIA_LOGGING_PATH "/sdcard/" MEDIA_LOGGING_FOLDER_NAME
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#define MEDIA_LOGGING_PATH std::string(getenv("HOME"))+"/Documents/"
+#define MEDIA_LOGGING_PATH std::string(getenv("HOME"))+"/Documents/" MEDIA_LOGGING_FOLDER_NAME
 #elif defined(DESKTOP_C_SHARP)
-#define MEDIA_LOGGING_PATH "C:/"
+#define MEDIA_LOGGING_PATH "C:/" MEDIA_LOGGING_FOLDER_NAME
 #endif
 
 #define MIN_BUFFERED_LOG 5
 #define MAX_BUFFERED_LOG 100
 #define THREAD_SLEEP_TIME 250
 #define MEDIA_LOG_MAX_SIZE	512
-#define MEDIA_LOGGING_FOLDER_NAME "medialogs/"
-#define MEDIA_LOGGING_FILE_NAME "logdump.txt"
-#define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FOLDER_NAME MEDIA_LOGGING_FILE_NAME
+
+#define MEDIA_LOGGING_FILE_NAME "MediaLog.log"
+#define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FILE_NAME
 
 namespace MediaSDK
 {
@@ -64,6 +59,7 @@ namespace MediaSDK
 		LogLevel GetLogLevel();
 
 	private:
+		bool CreateLogDirectory();
 		void WriteLogToFile();
 		size_t GetThreadID(char* buffer);
 		size_t GetDateTime(char* buffer);
@@ -83,6 +79,9 @@ namespace MediaSDK
 
 		bool m_bMediaLoggingThreadRunning;
 		std::thread m_threadInstance;
+
+		/// File System Error
+		bool m_bFSError; 
 	};
 }
 
