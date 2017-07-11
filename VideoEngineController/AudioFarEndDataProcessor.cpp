@@ -305,8 +305,18 @@ namespace MediaSDK
 #endif
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 #ifdef USE_AECM
-			LOG18("Pushing to q");
-			memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+			{
+				LOG18("Pushing to q");
+				memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
+			}
+			else
+			{
+				if (m_pDataEventListener != nullptr)
+				{
+					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+				}
+			}
 #else
 			if (m_pDataEventListener != nullptr)
 			{
@@ -680,6 +690,7 @@ namespace MediaSDK
 			}
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
+			//Time sync will not work in case of 2nd live-call, may cause problems
 			if (m_b1stPlaying)
 			{
 				m_llNextPlayingTime = llCurrentTimeStamp + 100;

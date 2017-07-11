@@ -150,6 +150,10 @@ namespace MediaSDK
 		else {
 			Tools::SOSleep(5);
 		}
+		if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+		{
+			ProcessPlayingData();
+		}
 	}
 
 } //namespace MediaSDK
