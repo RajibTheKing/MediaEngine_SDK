@@ -16,6 +16,7 @@
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
 #include "Trace.h"
+#include "AudioMacros.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -303,10 +304,8 @@ namespace MediaSDK
 			}
 #endif
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-			if (m_pDataEventListener != nullptr)
-			{
-				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-			}
+			LOG18("Pushing to q");
+			memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
 			{
@@ -644,7 +643,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::ProcessPlayingData()
 	{
-#ifdef __ANDROID__
+#ifdef USE_AECM
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
 			if (m_pAudioCallSession->IsTraceSendingEnable() && m_pAudioCallSession->m_bTraceTailRemains)

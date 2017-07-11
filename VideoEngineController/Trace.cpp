@@ -1,6 +1,7 @@
 #include "Trace.h"
 #include <string.h>
 #include "LogPrinter.h"
+#include "AudioMacros.h"
 
 namespace MediaSDK
 {
@@ -207,7 +208,7 @@ namespace MediaSDK
 
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
 	{
-#ifdef __ANDROID__
+#ifdef USE_AECM
 #ifdef USE_OLD_TRACE
 		for (int i = 0; i < iTraceLength; i++)
 		{
@@ -238,7 +239,7 @@ namespace MediaSDK
 
 	int CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)
 	{
-#ifdef __ANDROID__
+#ifdef USE_AECM
 #ifdef USE_OLD_TRACE
 		for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
 		{

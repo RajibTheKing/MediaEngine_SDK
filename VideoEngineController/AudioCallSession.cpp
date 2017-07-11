@@ -443,7 +443,7 @@ namespace MediaSDK
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
-#ifdef __ANDROID__
+#ifdef USE_AECM
 		//Sleep to maintain 100 ms recording time diff
 		if (m_b1stRecordedData)
 		{
