@@ -101,8 +101,6 @@ namespace MediaSDK
 			//m_bEchoCancellerEnabled = false;
 		}
 
-		ResetTrace();
-
 		if(!m_bLiveAudioStreamRunning)
 		{
 			m_bEnableRecorderTimeSyncDuringEchoCancellation = true;
@@ -156,8 +154,24 @@ namespace MediaSDK
 		AfterEchoCancellationFile = fopen(AfterEchoCancellationFileName.c_str(), "wb");
 #endif 
 
-		StartNearEndDataProcessing();
-		StartFarEndDataProcessing(pSharedObject);
+		InitNearEndDataProcessing();
+		InitFarEndDataProcessing(pSharedObject);
+
+		ResetTrace();
+
+		m_cNearEndProcessorThread = new AudioNearEndProcessorThread(m_pNearEndProcessor);
+		if (m_cNearEndProcessorThread != nullptr)
+		{
+			m_cNearEndProcessorThread->StartNearEndThread();
+		}
+
+		m_cFarEndProcessorThread = new AudioFarEndProcessorThread(m_pFarEndProcessor);
+		if (m_cFarEndProcessorThread != nullptr)
+		{
+			m_cFarEndProcessorThread->StartFarEndThread();
+		}
+
+
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 	}
@@ -257,7 +271,7 @@ namespace MediaSDK
 	}
 
 
-	void CAudioCallSession::StartNearEndDataProcessing()
+	void CAudioCallSession::InitNearEndDataProcessing()
 	{
 		MR_DEBUG("#nearEnd# CAudioCallSession::StartNearEndDataProcessing()");
 
@@ -279,16 +293,10 @@ namespace MediaSDK
 
 		m_pNearEndProcessor->SetDataReadyCallback(this);
 		m_pNearEndProcessor->SetEventCallback(this);
-
-		m_cNearEndProcessorThread = new AudioNearEndProcessorThread(m_pNearEndProcessor);
-		if (m_cNearEndProcessorThread != nullptr)
-		{
-			m_cNearEndProcessorThread->StartNearEndThread();
-		}
 	}
 
 
-	void CAudioCallSession::StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject)
+	void CAudioCallSession::InitFarEndDataProcessing(CCommonElementsBucket* pSharedObject)
 	{
 		MR_DEBUG("#farEnd# CAudioCallSession::StartFarEndDataProcessing()");
 
@@ -313,13 +321,6 @@ namespace MediaSDK
 		}
 
 		m_pFarEndProcessor->SetEventCallback(this, this, this);
-
-		m_cFarEndProcessorThread = new AudioFarEndProcessorThread(m_pFarEndProcessor);
-		if (m_cFarEndProcessorThread != nullptr)
-		{
-			m_cFarEndProcessorThread->StartFarEndThread();
-		}
-
 	}
 
 

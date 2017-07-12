@@ -229,8 +229,8 @@ namespace MediaSDK
 
 		void SetResources(AudioResources &audioResources);
 
-		void StartNearEndDataProcessing();
-		void StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject);
+		void InitNearEndDataProcessing();
+		void InitFarEndDataProcessing(CCommonElementsBucket* pSharedObject);
 
 
 	public:
