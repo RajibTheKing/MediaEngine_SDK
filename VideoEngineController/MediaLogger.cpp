@@ -162,11 +162,15 @@ namespace MediaSDK
 
 	size_t MediaLogger::GetThreadID(char* buffer)
 	{
-		//For All Platforms
-		stringstream ss;
-		ss << std::this_thread::get_id();		
-		ss >> buffer;
-		return strlen(buffer);
+#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
+		return _snprintf(buffer, 15, "%d", GetCurrentThreadId());
+#else
+		return snprintf(buffer, 15, "%d", gettid());
+#endif
+	//	//For All Platforms
+	//	stringstream ss;
+	//	ss << std::this_thread::get_id();		
+	//	ss >> buffer;
 	}
 
 	size_t MediaLogger::GetDateTime(char* buffer)
@@ -188,8 +192,12 @@ namespace MediaSDK
 		int milli = curTime.tv_usec / 1000, pos;
 
 		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
+		
 		CLogPrinter::Log("MANSUR---------position value = %d\n", pos);
-		return snprintf(buffer+pos, 20, " %s] ", ss.str().c_str());
+
+		pos += snprintf(buffer + pos, 20, " %s] ", ss.str().c_str());
+
+		return pos;
 #endif 
 	}
 
