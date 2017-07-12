@@ -15,16 +15,24 @@ namespace MediaSDK
 	class AudioNearEndProcessorCall : public AudioNearEndDataProcessor
 	{
 
-		SmartPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
-
-
 	public:
 
-		AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+		AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning, const bool &isVideoCallRunning);
 		~AudioNearEndProcessorCall() { }
 
 		void ProcessNearEndData();
 
+
+	protected:
+
+		void SentToNetwork(long long llRelativeTime);
+		void DecideToChangeComplexity(int iEncodingTime);
+
+
+	private:
+
+		const bool &m_bIsVideoCallRunning;
+		int m_nEncodedFrameSize;
 	};
 
 } //namespace MediaSDK

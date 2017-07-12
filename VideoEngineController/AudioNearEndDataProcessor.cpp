@@ -35,7 +35,6 @@ namespace MediaSDK
 		m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
 		m_bAudioEncodingThreadRunning(false),
 		m_bAudioEncodingThreadClosed(true),
-		m_nEncodedFrameSize(0),
 		m_iPacketNumber(0),
 		m_iRawDataSendIndexViewer(0),
 		m_llLastChunkLastFrameRT(-1),
@@ -56,9 +55,6 @@ namespace MediaSDK
 
 		m_MyAudioHeadersize = m_pAudioNearEndPacketHeader->GetHeaderSize();
 		m_llEncodingTimeStampOffset = Tools::CurrentTimestamp();
-
-		m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
-
 		m_bIsReady = true;
 
 #ifdef DUMP_FILE
@@ -103,54 +99,6 @@ namespace MediaSDK
 		}
 	}
 
-
-	void AudioNearEndDataProcessor::SentToNetwork(long long llRelativeTime)
-	{
-#ifdef  AUDIO_SELF_CALL //Todo: build while this is enable
-		//Todo: m_AudioReceivedBuffer fix. not member of this class
-		if (m_bIsLiveStreamingRunning == false)
-		{
-			ALOG("#A#EN#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(m_iPacketNumber));
-			m_pAudioCallSession->m_pFarEndProcessor->m_AudioReceivedBuffer->EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
-			return;
-		}
-#endif
-
-#ifndef NO_CONNECTIVITY
-		//	MR_DEBUG("#ptt# SentToNetwork, %x", *m_cbOnDataReady);
-		//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
-		if (m_pDataReadyListener != nullptr)
-		{
-			m_pDataReadyListener->OnDataReadyToSend(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
-		}
-#else
-		//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-		if(m_pPacketEventListener != nullptr)
-		{	
-			m_pPacketEventListener->FirePacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-		}
-#endif
-
-#ifdef  DUPLICATE_AUDIO
-		if (false == m_bIsLiveStreamingRunning && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
-		{
-			Tools::SOSleep(5);
-#ifndef NO_CONNECTIVITY
-			//m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
-			if (m_pDataReadyListener != nullptr)
-			{
-				m_pDataReadyListener->OnDataReadyToSend(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
-			}
-#else
-			//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-			if(m_pPacketEventListener != nullptr)
-			{
-				m_pPacketEventListener->FirePacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-			}
-#endif
-		}
-#endif
-	}
 
 	void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
 		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header)
@@ -256,72 +204,6 @@ namespace MediaSDK
 	}
 
 
-	bool AudioNearEndDataProcessor::MuxIfNeeded(short* shPublisherData, short *shMuxedData, int &nDataSizeInByte, int nPacketNumber)
-	{
-		long long nFrameNumber;
-		nDataSizeInByte = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
-		int nLastDecodedFrameSizeInByte = 0;
-		bool bIsMuxed = false;
-		int iDataStartIndex, iDataEndIndex;
-		int iCallId = 0, nNumberOfBlocks;
-		std::vector<std::pair<int, int> > vMissingBlocks;
-		MuxHeader oCalleeMuxHeader;
-		if (m_pAudioCallSession->m_PublisherBufferForMuxing->GetQueueSize() != 0)
-		{
-			bIsMuxed = true;
-			nLastDecodedFrameSizeInByte = m_pAudioCallSession->m_PublisherBufferForMuxing->DeQueue(m_saAudioPrevDecodedFrame, nFrameNumber, oCalleeMuxHeader) * 2;	//#Magic
-			LOG18("#18@# DEQUE data of size %d", nLastDecodedFrameSizeInByte);
-			m_pAudioMixer->reset(18, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
-
-			iDataStartIndex = 0;
-			iDataEndIndex = 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING - 1;
-			iCallId = 0;	//Publisher
-			nNumberOfBlocks = 16;
-			int nMuxHeaderSize = 14;
-
-			MuxHeader oPublisherMuxHeader(iCallId, nPacketNumber, vMissingBlocks);
-			LOG18("#18@# -> PUB ID %lld CALLEE ID %lld", oPublisherMuxHeader.getCalleeId(), oCalleeMuxHeader.getCalleeId());
-			m_pAudioMixer->addAudioData((unsigned char*)shPublisherData, oPublisherMuxHeader); // this data should contains only the mux header
-
-			if (nLastDecodedFrameSizeInByte == 2 * AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING) //Both must be 800
-			{
-				m_pAudioMixer->addAudioData((unsigned char*)m_saAudioPrevDecodedFrame, oCalleeMuxHeader); // this data should contains only the mux header
-
-				nDataSizeInByte = m_pAudioMixer->getAudioData((unsigned char*)shMuxedData);
-			}
-			else
-			{
-				LOG18("#18@# RETURN WITH FALSE and zeor");
-				nDataSizeInByte = 0;
-				return false;
-			}
-		}
-		else
-		{
-			memcpy(shMuxedData, m_saAudioRecorderFrame, nDataSizeInByte);
-		}
-#ifdef DUMP_FILE
-		AudioMixer* DumpAudioMixer = new AudioMixer(18,800);
-		unsigned char temp[2000];
-
-		if (nDataSizeInByte == 1800)
-		{
-			DumpAudioMixer->Convert18BitTo16Bit((unsigned char*)shMuxedData, temp, 800);
-			fwrite((short *)temp, sizeof(short), 800, m_pAudioCallSession->File18BitData);
-		}
-		else {
-			fwrite(shMuxedData, sizeof(short), 800, m_pAudioCallSession->File18BitData);
-		}
-
-		short val = nDataSizeInByte;
-		LOG18("#18#NE#DMP nDataSizeInByte = %d", nDataSizeInByte);
-		fwrite(&val, 2, 1, m_pAudioCallSession->File18BitType);
-
-#endif
-		return bIsMuxed;
-	}
-
-
 	void AudioNearEndDataProcessor::StartCallInLive(int nEntityType)
 	{
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
@@ -331,6 +213,7 @@ namespace MediaSDK
 		}
 		m_nEntityType = nEntityType;
 	}
+
 
 	void AudioNearEndDataProcessor::StopCallInLive(int nEntityType)
 	{
@@ -345,21 +228,6 @@ namespace MediaSDK
 	long long AudioNearEndDataProcessor::GetBaseOfRelativeTime()
 	{
 		return m_llEncodingTimeStampOffset;
-	}
-
-	void AudioNearEndDataProcessor::DecideToChangeComplexity(int iEncodingTime)
-	{
-		int nComplexity = m_pAudioEncoder->GetComplexity();
-
-		if (iEncodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME && nComplexity > OPUS_MIN_COMPLEXITY)
-		{
-			m_pAudioEncoder->SetComplexity(nComplexity - 1);
-		}
-
-		if (iEncodingTime < AUDIO_MAX_TOLERABLE_ENCODING_TIME / 2 && nComplexity < OPUS_MAX_COMPLEXITY)
-		{
-			m_pAudioEncoder->SetComplexity(nComplexity + 1);
-		}
 	}
 
 } //namespace MediaSDK

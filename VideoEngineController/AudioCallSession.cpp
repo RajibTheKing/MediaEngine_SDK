@@ -59,7 +59,7 @@
 namespace MediaSDK
 {
 	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType) :
-	m_bIsVideoCallRunning(isVideoCallRunning),
+		m_bIsVideoCallRunning(isVideoCallRunning),
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
 		m_llLastPlayTime(0),
@@ -263,7 +263,7 @@ namespace MediaSDK
 		}
 		else
 		{
-			m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
+			m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning, m_bIsVideoCallRunning);
 		}
 
 		m_pNearEndProcessor->SetDataReadyCallback(this);

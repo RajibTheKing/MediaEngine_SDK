@@ -14,9 +14,6 @@ namespace MediaSDK
 		AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorViewerInCall::AudioNearEndProcessorViewerInCall()");
-
-		m_pAudioNearEndBuffer = pAudioEncodingBuffer;
-		m_pAudioCallSession = pAudioCallSession;
 	}
 
 
