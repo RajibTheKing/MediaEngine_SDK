@@ -88,8 +88,20 @@ namespace MediaSDK
 			}
 		}
 		else {
-			Tools::SOSleep(5);
+#ifndef USE_AECM
+			if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER)
+			{
+				Tools::SOSleep(10);
+			}
+#endif
 		}
+#ifdef USE_AECM
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		{
+			ProcessPlayingData();
+		}
+#endif
+
 	}
 
 } //namespace MediaSDK
