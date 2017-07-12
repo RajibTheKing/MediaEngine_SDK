@@ -99,7 +99,7 @@ namespace MediaSDK
 			int retCode = GetLastError();
 			if (ERROR_ALREADY_EXISTS != retCode)
 			{
-				printf("Log folder creation FAILED, ret code %d\n", retCode);
+				printf("MANSUR----------Log folder creation FAILED, ret code %d\n", retCode);
 				return false;
 			}
 		}
@@ -112,11 +112,11 @@ namespace MediaSDK
 			if(0 != mkdir(MEDIA_LOGGING_PATH, 0700))
 			{
 #if __ANDROID__
-				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGCAT_TAG, "Log folder creation FAILED, returned %d\n", errno);
+				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGCAT_TAG, "MANSUR----------Log folder creation FAILED, returned %d\n", errno);
 
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				printf("Log folder creation FAILED, returned %d\n", errno );
+				printf("MANSUR----------Log folder creation FAILED, returned %d\n", errno );
 #endif
 
 				return false;
