@@ -57,7 +57,7 @@ namespace MediaSDK
 		bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
 		bool InitializeLibrary(const IPVLongType& llUserID);
 		bool SetUserName(const IPVLongType llUserName);
-		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType = AUDIO_PLAYER_DEFAULT);
+		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType);
 
 		bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
 		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType);
