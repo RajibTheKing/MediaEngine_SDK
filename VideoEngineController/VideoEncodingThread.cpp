@@ -33,7 +33,8 @@ m_pCommonElementBucket(commonElementsBucket),
 m_bResetForViewerCallerCallEnd(false),
 m_bVideoEffectEnabled(true),
 m_bSelfViewOnly(bSelfViewOnly),
-m_VideoBeautificationer(NULL)
+m_VideoBeautificationer(NULL),
+m_bNewSessionStarted(true)
 {
     m_pCalculatorEncodeTime = new CAverageCalculator();
     m_pCalculateEncodingTimeDiff = new CAverageCalculator();
@@ -42,6 +43,8 @@ m_VideoBeautificationer(NULL)
 	//m_VideoBeautificationer->GenerateUVIndex(this->m_pColorConverter->GetHeight(), this->m_pColorConverter->GetWidth(), 11);
 
 	m_VideoEffects = new CVideoEffects();
+
+	m_EncodingFailedCounter = 0;
     
     m_pVideoCallSession = pVideoCallSession;
     m_bIsCheckCall = bIsCheckCall;
@@ -371,6 +374,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, " fahad Encode time ");
 
 			nEncodingFrameSize = m_pEncodingBuffer->DeQueue(m_ucaEncodingFrame, iGotHeight, iGotWidth, timeDiff, nCaptureTimeDifference, nDevice_orientation);
+			/*
+			if (m_iFrameNumber % 3 == 0)
+			{
+				m_iFrameNumber++;
+
+				continue;
+			}
+			*/
 
 			//LOGEF("Current bitrate %d", m_pVideoEncoder->GetBitrate());
             
@@ -675,6 +686,25 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             {
                 bNeedIDR = m_pIdrFrameIntervalController->NeedToGenerateIFrame(m_pVideoCallSession->GetServiceType());
             }
+			
+			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+			{
+				if (m_bNewSessionStarted)
+				{
+					m_llLastTime = Tools::CurrentTimestamp();
+
+					m_bNewSessionStarted = false;
+				}
+
+				long long currentTime = Tools::CurrentTimestamp();
+
+				if (currentTime - m_llLastTime > 200)
+				{
+					bNeedIDR = true;
+					m_llLastTime = currentTime;
+				}
+			}
+			
             
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 				llCalculatingTime = m_Tools.CurrentTimestamp();
@@ -712,6 +742,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 				//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
+				if (nENCODEDFrameSize == 0)
+					m_EncodingFailedCounter++;
+
+				CLogPrinter_LOG(ENCODING_FAIL_LOG, "CVideoEncodingThread::EncodingThreadProcedure nENCODEDFrameSize %d m_iFrameNumber %d m_EncodingFailedCounter %d bitrate %d", nENCODEDFrameSize, m_iFrameNumber, m_EncodingFailedCounter, m_pVideoEncoder->GetBitrate());
 
 
 				int timediff = (int)(m_Tools.CurrentTimestamp() - timeStampForEncoding);
