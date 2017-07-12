@@ -3,10 +3,11 @@
 
 
 #include "AudioFarEndDataProcessor.h"
-
+#include "SmartPointer.h"
 
 namespace MediaSDK
 {
+	class AudioMixer;
 
 	class FarEndProcessorViewer : public AudioFarEndDataProcessor
 	{
@@ -17,6 +18,11 @@ namespace MediaSDK
 		~FarEndProcessorViewer() { }
 
 		void ProcessFarEndData();
+
+	private:
+
+		short m_saCalleeSentData[MAX_AUDIO_FRAME_Length];
+		SmartPointer<AudioMixer> m_pAudioMixer;
 
 	};
 

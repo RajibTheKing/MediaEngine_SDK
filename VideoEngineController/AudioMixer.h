@@ -17,7 +17,7 @@ namespace MediaSDK
 	public:
 
 		AudioMixer(int m_iNumberOfBitsPerSample, int iFrameSize);
-		~AudioMixer();
+		~AudioMixer() { }
 		void addAudioData(unsigned char* uchCalleeAudio, MuxHeader &header);
 		int getAudioData(unsigned char* uchMixedAudioData);
 		int removeAudioData(unsigned char* uchAudioDataToPlay, unsigned char* uchMixedAudioData, unsigned char* uchCalleeAudioData, long long calleeId, std::vector<std::pair<int, int>> &vMissingBlock);

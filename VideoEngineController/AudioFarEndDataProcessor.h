@@ -46,13 +46,10 @@ namespace MediaSDK
 
 	protected:
 
-		bool IsQueueEmpty();
-		void DequeueData(int &m_nDecodingFrameSize);
 		void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
 			int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
 
 		bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
-		bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion);
 		bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 
@@ -80,6 +77,10 @@ namespace MediaSDK
 		
 	protected:
 
+		AudioAlarmListener* m_pAudioAlarmListener;
+
+		bool m_bIsLiveStreamingRunning = false;
+
 		int m_nEntityType;
 		int m_nDecodingFrameSize = 0;
 		int m_nDecodedFrameSize = 0;
@@ -89,27 +90,23 @@ namespace MediaSDK
 
 		unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
 		short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
-		short m_saCalleeSentData[MAX_AUDIO_FRAME_Length];
 
 		std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 		std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
 
-		AudioMixer* m_pAudioMixer;
 		CAudioCallSession *m_pAudioCallSession = nullptr;
-	
-	
+		
+
 	private:
 		
 		DataEventListener* m_pDataEventListener;
 		NetworkChangeListener* m_pNetworkChangeListener;
-		AudioAlarmListener* m_pAudioAlarmListener;
 
 		bool m_bAudioDecodingThreadRunning;
 		bool m_bAudioDecodingThreadClosed;
 		bool m_bAudioQualityLowNotified;
 		bool m_bAudioQualityHighNotified;
 		bool m_bAudioShouldStopNotified;
-		bool m_bIsLiveStreamingRunning = false;
 
 		int m_inoLossSlot;
 		int m_ihugeLossSlot;
