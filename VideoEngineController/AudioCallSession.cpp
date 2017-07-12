@@ -101,6 +101,8 @@ namespace MediaSDK
 			//m_bEchoCancellerEnabled = false;
 		}
 
+		ResetTrace();
+
 		if(!m_bLiveAudioStreamRunning)
 		{
 			m_bEnableRecorderTimeSyncDuringEchoCancellation = true;
