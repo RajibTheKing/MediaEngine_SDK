@@ -85,6 +85,7 @@ namespace MediaSDK
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
+			m_bTraceSendingEnabled = false;
 			//m_pPlayerGain->SetGain(9);
 		}
 
