@@ -29,10 +29,12 @@ namespace MediaSDK
 	{
 		m_pMediaLoggerMutex.reset(new CLockHandler());
 
-		m_bFSError = CreateLogDirectory();
-		if (m_bFSError)
+		m_bFSError = !CreateLogDirectory(); //if TRUE then NO ERROR, else we have FS error
+
+		if (!m_bFSError) //no error then
 		{
 			CLogPrinter::Log("MANSUR----------directory creation successful >> %s\n", m_sFilePath.c_str());
+
 			if (!m_pLoggerFileStream.is_open())
 			{
 				m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
@@ -92,21 +94,30 @@ namespace MediaSDK
 	{
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 
-		int ret = CreateDirectory(MEDIA_LOGGING_PATH, NULL);
-		if (ERROR_ALREADY_EXISTS != ret)
+		if (0 == CreateDirectory(MEDIA_LOGGING_PATH, NULL) )
 		{
-			printf("Log folder creation FAILED, ret code %d\n", ret);
-
-			return false;
+			int retCode = GetLastError();
+			if (ERROR_ALREADY_EXISTS != retCode)
+			{
+				printf("Log folder creation FAILED, ret code %d\n", retCode);
+				return false;
+			}
 		}
 
 #else
 		struct stat st = { 0 };
 
-		if (stat(MEDIA_LOGGING_PATH, &st) == -1) {
+		if (stat(MEDIA_LOGGING_PATH, &st) == -1)
+		{
 			if(0 != mkdir(MEDIA_LOGGING_PATH, 0700))
 			{
-				printf("Log folder creation FAILED\n");
+#if __ANDROID__
+				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGCAT_TAG, "Log folder creation FAILED, returned %d\n", errno);
+
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+				printf("Log folder creation FAILED, returned %d\n", errno );
+#endif
 
 				return false;
 			}
@@ -120,7 +131,7 @@ namespace MediaSDK
 	{
 		MediaLocker lock(m_pMediaLoggerMutex.get());
 
-		size_t vSize = min(m_vLogVector.size(), (size_t)MAX_BUFFERED_LOG);
+		size_t vSize = min(m_vLogVector.size(), (size_t)MAX_LOG_WRITE);
 
 		for(int  i=0; i < vSize; i++)
 		{
@@ -133,12 +144,18 @@ namespace MediaSDK
 			else
 			{
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
 				std::cout << m_vLogVector[i] << std::endl;
+
 #elif __ANDROID__
-				__android_log_print(ANDROID_LOG_ERROR, "MediaSDK", m_vLogVector[i].c_str());
+
+				__android_log_write(ANDROID_LOG_ERROR, MEDIA_LOGCAT_TAG, m_vLogVector[i].c_str());
+
 #endif
 			}
 		}
+
+		m_pLoggerFileStream.flush();
 
 		m_vLogVector.erase(m_vLogVector.begin(), m_vLogVector.begin() + vSize);
 	}

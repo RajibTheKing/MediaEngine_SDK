@@ -18,18 +18,19 @@
 #include "CommonTypes.h"
 
 
-#define MEDIA_LOGGING_FOLDER_NAME "MediaLogs/"
+#define MEDIA_LOGGING_FOLDER_NAME "MediaLogs"
 
 #if defined(__ANDROID__)
-#define MEDIA_LOGGING_PATH "/sdcard/" MEDIA_LOGGING_FOLDER_NAME
+#define MEDIA_LOGGING_PATH "/sdcard/" MEDIA_LOGGING_FOLDER_NAME "/"
+#define MEDIA_LOGCAT_TAG "MediaSDK"
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#define MEDIA_LOGGING_PATH std::string(getenv("HOME"))+"/Documents/" MEDIA_LOGGING_FOLDER_NAME
+#define MEDIA_LOGGING_PATH std::string(getenv("HOME"))+"/Documents/" MEDIA_LOGGING_FOLDER_NAME "/"
 #elif defined(DESKTOP_C_SHARP)
-#define MEDIA_LOGGING_PATH "C:/" MEDIA_LOGGING_FOLDER_NAME
+#define MEDIA_LOGGING_PATH "C:\\" MEDIA_LOGGING_FOLDER_NAME "\\"
 #endif
 
 #define MIN_BUFFERED_LOG 5
-#define MAX_BUFFERED_LOG 100
+#define MAX_LOG_WRITE 100
 #define THREAD_SLEEP_TIME 250
 #define MEDIA_LOG_MAX_SIZE	512
 
