@@ -216,6 +216,8 @@ namespace MediaSDK
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
 		m_FarendBuffer.ResetBuffer();
+		m_pFarEndProcessor->m_b1stPlaying = false;
+		m_pFarEndProcessor->m_llNextPlayingTime = -1;
 	}
 
 

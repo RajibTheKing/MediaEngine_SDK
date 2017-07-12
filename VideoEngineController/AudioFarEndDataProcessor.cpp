@@ -690,7 +690,6 @@ namespace MediaSDK
 			}
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
-			//Time sync will not work in case of 2nd live-call, may cause problems
 			if (m_b1stPlaying)
 			{
 				m_llNextPlayingTime = llCurrentTimeStamp + 100;
