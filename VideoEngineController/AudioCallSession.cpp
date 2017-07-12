@@ -76,9 +76,6 @@ namespace MediaSDK
 		SetEventNotifier(pSharedObject->m_pEventNotifier);
 
 		m_FriendID = llFriendID;
-		m_bRecordingStarted = false;
-		m_llTraceSendingTime = 0;
-		m_llTraceReceivingTime = 0;
 
 		//m_pAudioDePacketizer = new AudioDePacketizer(this);
 		m_iRole = nEntityType;
@@ -207,6 +204,9 @@ namespace MediaSDK
 	void CAudioCallSession::ResetTrace()
 	{
 		//Trace and Delay Related
+		m_bRecordingStarted = false;
+		m_llTraceSendingTime = 0;
+		m_llTraceReceivingTime = 0;
 		m_b1stRecordedDataSinceCallStarted = true;
 		m_llDelayFraction = 0;
 		m_llDelay = 0;
@@ -452,9 +452,19 @@ namespace MediaSDK
 		LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
 #ifdef USE_AECM
-		//Sleep to maintain 100 ms recording time diff
-		if (!m_bLiveAudioStreamRunning)
+		
+#ifdef PCM_DUMP
+		if (RecordedFile)
 		{
+			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
+		}
+#endif
+
+
+		
+		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
+		{
+			//Sleep to maintain 100 ms recording time diff
 			if (m_b1stRecordedDataSinceCallStarted)
 			{
 				m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
@@ -470,19 +480,7 @@ namespace MediaSDK
 				}
 				m_llnextRecordedDataTime += 100;
 			}
-		}
 
-#ifdef PCM_DUMP
-		if (RecordedFile)
-		{
-			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
-		}
-#endif
-
-
-		
-		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
-		{
 			//If trace is received, current and next frames are deleted
 			//In case of live call, it will only work for 1st call, after that m_iDeleteCount will be 0
 			if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
