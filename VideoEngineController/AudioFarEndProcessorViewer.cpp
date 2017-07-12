@@ -144,16 +144,19 @@ namespace MediaSDK
 				}
 				DOG("#18#FE#Viewer  SendToPlayer");
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+#ifdef USE_AECM
+				if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+				{
+					ProcessPlayingData();
+				}
+#endif
 				Tools::SOSleep(0);
 			}
 		}
 		else {
 			Tools::SOSleep(5);
 		}
-		if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
-		{
-			ProcessPlayingData();
-		}
+		
 	}
 
 } //namespace MediaSDK

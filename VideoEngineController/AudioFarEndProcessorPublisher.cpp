@@ -84,18 +84,19 @@ namespace MediaSDK
 				}
 				LOG18("#18#FE#Publisher SendToPlayer");
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+#ifdef USE_AECM
+				if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+				{
+					ProcessPlayingData();
+				}
+#endif
 				Tools::SOSleep(0);
 			}
 		}
 		else {
 			Tools::SOSleep(5);
 		}
-#ifdef USE_AECM
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
-		{
-			ProcessPlayingData();
-		}
-#endif
+
 	}
 
 } //namespace MediaSDK
