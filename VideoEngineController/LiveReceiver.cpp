@@ -119,7 +119,7 @@ namespace MediaSDK
 
 			if (!bBroken)	
 			{
-				CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector correct entered");
+				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector CORRECT entered number %d size %d", j, frameSizes[j]);
 
 				CVideoHeader videoHeader;
 
@@ -139,14 +139,14 @@ namespace MediaSDK
 				else
 					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
 
-				//m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
 				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
 			}
 			else
 			{
+				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector BROKENNNNNNNNNN entered number %d size %d", j, frameSizes[j]);
+
 				numOfMissingFrames++;
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
-				//LOGEF("THeKing--> receive #####  [%d] Broken## UsedLen: %d iLen = %d\n",j, iUsedLen, iLen);
 			}
 
 
@@ -155,7 +155,6 @@ namespace MediaSDK
 		}
 
 		LOG_AAC("#aac#b4q# TotalVideoFrames: %d, PushedVideoFrames: %d, NumOfMissingVideoFrames: %d", numberOfFrames, (numberOfFrames - numOfMissingFrames), numOfMissingFrames);
-		//    m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen, iLen + PACKET_HEADER_LENGTH);
 	}
 
 } //namespace MediaSDK

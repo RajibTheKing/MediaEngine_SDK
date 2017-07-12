@@ -304,12 +304,12 @@ namespace MediaSDK
 			}
 
 			HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
-#ifdef __ANDROID__
-			if (m_bIsLiveStreamingRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType))
-			{
-				m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
-			}
-#endif
+//#ifdef __ANDROID__
+//			if (m_bIsLiveStreamingRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType))
+//			{
+//				m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
+//			}
+//#endif
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 			if (m_pDataEventListener != nullptr)
 			{

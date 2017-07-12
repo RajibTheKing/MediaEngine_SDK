@@ -70,7 +70,7 @@ namespace MediaSDK
 
 		void SetCallInLiveType(int nCallInLiveType);
 		void SetVolume(int iVolume, bool bRecorder);
-		void SetLoudSpeaker(bool bOn);
+		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
 
 		void SetSendFunction(SendFunctionPointerType cbClientSendFunc) { m_cbClientSendFunction = cbClientSendFunc; }
@@ -163,6 +163,7 @@ namespace MediaSDK
 		int m_iVolume;
 		int m_nServiceType;
 		int m_nEntityType;
+		int m_iSpeakerType;
 		int m_iAudioVersionFriend;
 		int m_iAudioVersionSelf;
 		int m_nCallInLiveType;

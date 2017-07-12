@@ -79,7 +79,8 @@ namespace MediaSDK
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
-		if (nAudioSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
+		m_iSpeakerType = nAudioSpeakerType;
+		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			m_bTraceSendingEnabled = true;
 		}
@@ -114,8 +115,7 @@ namespace MediaSDK
 		m_iPrevRecvdSlotID = -1;
 		m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
 		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
-
-		m_bUsingLoudSpeaker = false;
+		
 		m_bEchoCancellerEnabled = true;
 
 		if (m_bLiveAudioStreamRunning)
@@ -545,7 +545,7 @@ namespace MediaSDK
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
 				{
-					if (GetPlayerGain().get())
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 					{
 						GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
 					}
@@ -555,7 +555,7 @@ namespace MediaSDK
 
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 
-					if (GetPlayerGain().get())
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 					{
 						GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 					}
@@ -588,7 +588,7 @@ namespace MediaSDK
 		}
 
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(DESKTOP_C_SHARP)
-		if (GetPlayerGain().get())
+		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 		{
 			GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 		}
@@ -627,9 +627,9 @@ namespace MediaSDK
 		m_pPlayerGain.get() ? m_pPlayerGain->SetGain(iVolume) : 0;
 	}
 
-	void CAudioCallSession::SetLoudSpeaker(bool bOn)
+	void CAudioCallSession::SetSpeakerType(int iSpeakerType)
 	{
-		m_bUsingLoudSpeaker = bOn;
+		m_iSpeakerType = iSpeakerType;
 	}
 
 	int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
