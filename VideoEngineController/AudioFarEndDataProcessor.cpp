@@ -41,8 +41,6 @@ namespace MediaSDK
 		m_pNetworkChangeListener(nullptr),
 		m_pAudioAlarmListener(nullptr)
 	{
-		m_b1stPlaying = true;
-		m_llNextPlayingTime = -1;
 		m_pAudioMixer = new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING); //Need Remove Magic Numbers.
 		memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 
