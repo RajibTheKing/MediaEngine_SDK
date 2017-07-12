@@ -113,6 +113,11 @@ namespace MediaSDK
 			delete m_pLiveAudioParser;
 			m_pLiveAudioParser = NULL;
 		}
+		if (m_pAudioMixer)
+		{
+			delete m_pAudioMixer;
+			m_pAudioMixer = nullptr;
+		}
 	}
 
 
