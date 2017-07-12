@@ -104,7 +104,7 @@ namespace MediaSDK
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
 		void SetVolume(int iVolume, bool bRecorder);
-		void SetLoudSpeaker(bool bOn);
+		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
 		bool m_bIsPublisher;
 
@@ -177,7 +177,7 @@ namespace MediaSDK
 
 		CCommonElementsBucket* m_pCommonElementsBucket;
 
-		bool m_bUsingLoudSpeaker;
+		int m_iSpeakerType;
 
 		bool m_bLiveAudioStreamRunning;
 		int m_nServiceType;

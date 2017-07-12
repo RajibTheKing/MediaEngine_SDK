@@ -216,7 +216,7 @@ bool CController::SetVolume(const long long& lFriendID, int iVolume, bool bRecor
 	}
 }
 
-bool CController::SetLoudSpeaker(const long long& lFriendID, bool bOn)
+bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
 {
 	SetLoudSpeakerLocker lock1(*m_pAudioLockMutex);
 
@@ -225,7 +225,7 @@ bool CController::SetLoudSpeaker(const long long& lFriendID, bool bOn)
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->SetLoudSpeaker(bOn);
+		pAudioSession->SetSpeakerType(iSpeakerType);
 		return true;
 	}
 	else
