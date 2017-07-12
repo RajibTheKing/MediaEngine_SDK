@@ -106,6 +106,7 @@ namespace MediaSDK
 		void SetVolume(int iVolume, bool bRecorder);
 		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
+		void ResetTrace();
 		bool m_bIsPublisher;
 
 		bool m_bRecordingStarted;

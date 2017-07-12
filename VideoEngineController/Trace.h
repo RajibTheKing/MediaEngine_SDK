@@ -12,6 +12,7 @@ namespace MediaSDK
 		int m_iSentLength;
 	public:
 		CTrace();
+		void Reset();
 		int GenerateTrace(short *sBuffer, int iTraceLength);
 		int DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength);
 	};

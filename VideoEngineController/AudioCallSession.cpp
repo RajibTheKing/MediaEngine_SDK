@@ -82,16 +82,8 @@ namespace MediaSDK
 
 		//m_pAudioDePacketizer = new AudioDePacketizer(this);
 		m_iRole = nEntityType;
-
-		//Trace and Delay Related
 		m_bLiveAudioStreamRunning = false;
-		m_b1stRecordedData = true;
-		m_llDelayFraction = 0;
-		m_llDelay = 0;
-		m_iDeleteCount = 10;
-		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
-		m_nFramesRecvdSinceTraceSent = 0;
-		m_bTraceTailRemains = true;
+
 
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
@@ -210,6 +202,19 @@ namespace MediaSDK
 #endif
 
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
+	}
+
+	void CAudioCallSession::ResetTrace()
+	{
+		//Trace and Delay Related
+		m_b1stRecordedData = true;
+		m_llDelayFraction = 0;
+		m_llDelay = 0;
+		m_iDeleteCount = 10;
+		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
+		m_nFramesRecvdSinceTraceSent = 0;
+		m_bTraceTailRemains = true;
+		m_pTrace->Reset();
 	}
 
 

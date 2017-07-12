@@ -206,6 +206,11 @@ namespace MediaSDK
 		LOG18("m_iTracePatternLength = %d\n", m_iTracePatternLength);
 	}
 
+	void CTrace::Reset()
+	{
+		m_iSentLength = 0;
+	}
+
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
 	{
 #ifdef USE_AECM
