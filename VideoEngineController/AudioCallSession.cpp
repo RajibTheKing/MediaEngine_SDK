@@ -215,6 +215,7 @@ namespace MediaSDK
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
+		m_FarendBuffer.ResetBuffer();
 	}
 
 
