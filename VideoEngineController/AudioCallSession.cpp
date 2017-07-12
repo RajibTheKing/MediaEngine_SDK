@@ -108,8 +108,8 @@ namespace MediaSDK
 		}
 		else
 		{
-			m_bEnableRecorderTimeSyncDuringEchoCancellation = false;
-			m_bEnablePlayerTimeSyncDuringEchoCancellation = false;
+			m_bEnableRecorderTimeSyncDuringEchoCancellation = true;
+			m_bEnablePlayerTimeSyncDuringEchoCancellation = true;
 		}
 
 
