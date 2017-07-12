@@ -91,7 +91,10 @@ namespace MediaSDK
 			Tools::SOSleep(5);
 		}
 #ifdef USE_AECM
-		ProcessPlayingData();
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		{
+			ProcessPlayingData();
+		}
 #endif
 	}
 
