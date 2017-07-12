@@ -12,19 +12,6 @@ namespace MediaSDK
 
 	class AudioFarEndProcessorThread
 	{
-	private:
-
-		bool m_bAudioFarEndThreadRunning;
-		bool m_bAudioFarEndThreadClosed;
-
-		AudioFarEndDataProcessor *m_pFarEndDataProcessor = nullptr;
-
-
-	protected:
-
-		void AudioFarEndProcedure();
-		std::thread CreateFarEndThread();
-
 
 	public:
 
@@ -33,6 +20,20 @@ namespace MediaSDK
 
 		void StartFarEndThread();
 		void StopFarEndThread();
+
+
+	protected:
+
+		void AudioFarEndProcedure();
+		std::thread CreateFarEndThread();
+
+
+	private:
+
+		bool m_bAudioFarEndThreadRunning;
+		bool m_bAudioFarEndThreadClosed;
+
+		AudioFarEndDataProcessor *m_pFarEndDataProcessor = nullptr;
 
 	};
 

@@ -13,20 +13,6 @@ namespace MediaSDK
 	class AudioNearEndProcessorThread
 	{
 
-	private:
-
-		bool m_bAudioNearEndThreadRunning;
-		bool m_bAudioNearEndThreadClosed;
-
-		AudioNearEndDataProcessor *m_pNearEndDataProcessor = nullptr;
-
-
-	protected:
-
-		void AudioNearEndProcedure();
-		std::thread CreateNearEndThread();
-
-
 	public:
 
 		AudioNearEndProcessorThread(AudioNearEndDataProcessor *pNearEndProcessor);
@@ -35,6 +21,18 @@ namespace MediaSDK
 		void StartNearEndThread();
 		void StopAudioNearEndThread();
 
+
+	protected:
+
+		void AudioNearEndProcedure();
+		std::thread CreateNearEndThread();
+
+	private:
+
+		bool m_bAudioNearEndThreadRunning;
+		bool m_bAudioNearEndThreadClosed;
+
+		AudioNearEndDataProcessor *m_pNearEndDataProcessor = nullptr;
 	};
 
 } //namespace MediaSDK

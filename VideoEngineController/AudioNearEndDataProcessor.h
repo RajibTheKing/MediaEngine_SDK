@@ -21,6 +21,50 @@ namespace MediaSDK
 	class AudioNearEndDataProcessor
 	{
 
+	public:
+
+		AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+		virtual ~AudioNearEndDataProcessor();
+		virtual void ProcessNearEndData() = 0;
+
+		void StartCallInLive(int nEntityType);
+		void StopCallInLive(int nEntityType);
+
+		void GetAudioDataToSend(unsigned char *pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector, int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
+		long long GetBaseOfRelativeTime();
+
+		void SetDataReadyCallback(DataReadyListenerInterface* pDataReady) { m_pDataReadyListener = pDataReady; }
+		void SetEventCallback(PacketEventListener* pEventListener) { m_pPacketEventListener = pEventListener; }
+
+		
+	protected:
+
+		void DumpEncodingFrame();
+		void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
+		bool PreProcessAudioBeforeEncoding();
+		void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber, int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
+		void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte);
+
+
+	protected:
+
+		DataReadyListenerInterface* m_pDataReadyListener;
+
+		bool m_bIsLiveStreamingRunning;
+
+		int m_MyAudioHeadersize;
+		int m_iPacketNumber;
+		long long m_llMaxAudioPacketNumber;
+
+		short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];    //Always contains UnMuxed Data
+		unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
+		unsigned char m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
+
+		SmartPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
+		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
+		CAudioCallSession *m_pAudioCallSession = nullptr;
+
+
 	private:
 
 		PacketEventListener* m_pPacketEventListener;
@@ -48,50 +92,6 @@ namespace MediaSDK
 		SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader = nullptr;
 		SmartPointer<CLockHandler> m_pAudioEncodingMutex;
 
-
-	protected:
-
-		DataReadyListenerInterface* m_pDataReadyListener;
-
-		bool m_bIsLiveStreamingRunning;
-
-		int m_MyAudioHeadersize;
-		int m_iPacketNumber;
-		long long m_llMaxAudioPacketNumber;
-
-		short m_saAudioRecorderFrame[MAX_AUDIO_FRAME_Length];    //Always contains UnMuxed Data
-		unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
-		unsigned char m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
-
-		SmartPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
-		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-		CAudioCallSession *m_pAudioCallSession = nullptr;
-
-
-	protected:
-
-		void DumpEncodingFrame();
-		void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
-		bool PreProcessAudioBeforeEncoding();
-		void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber, int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
-		void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte);
-
-
-	public:
-
-		AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
-		virtual ~AudioNearEndDataProcessor();
-
-		void StartCallInLive(int nEntityType);
-		void StopCallInLive(int nEntityType);
-
-		void GetAudioDataToSend(unsigned char *pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector, int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
-		long long GetBaseOfRelativeTime();
-
-		void SetDataReadyCallback(DataReadyListenerInterface* pDataReady) { m_pDataReadyListener = pDataReady; }
-		void SetEventCallback(PacketEventListener* pEventListener) { m_pPacketEventListener = pEventListener; }
-
-		virtual void ProcessNearEndData() = 0;
 	};
 
 } //namespace MediaSDK
