@@ -27,7 +27,7 @@
 #define ON 1
 #define OFF 0
 
-//#define LOG_ENABLED
+#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 
@@ -78,6 +78,7 @@
 #define MR_DEBUG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define DOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define COW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGFARQUAD(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
@@ -97,6 +98,7 @@
 #define LOGE_MAIN(...)
 #define DOG(...)
 #define COW(...)
+#define LOGFARQUAD(...)
 #endif
 
 

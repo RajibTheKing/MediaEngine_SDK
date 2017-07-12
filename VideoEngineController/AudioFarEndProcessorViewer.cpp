@@ -143,19 +143,27 @@ namespace MediaSDK
 					return;
 				}
 				DOG("#18#FE#Viewer  SendToPlayer");
+				LOGFARQUAD("Farquad calling SendToPlayer viewer");
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
-#ifdef USE_AECM
-				if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
-				{
-					ProcessPlayingData();
-				}
-#endif
 				Tools::SOSleep(0);
 			}
 		}
-		else {
-			Tools::SOSleep(5);
+		else 
+		{
+#ifndef USE_AECM
+			if (m_nEntityType != ENTITY_TYPE_VIEWER_CALLEE)
+			{
+				Tools::SOSleep(10);
+			}
+#endif
 		}
+#ifdef USE_AECM
+		if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+		{
+			LOGFARQUAD("Farquad calling ProcessPlayingData viewer");
+			ProcessPlayingData();
+		}
+#endif
 		
 	}
 
