@@ -117,7 +117,7 @@ namespace MediaSDK
 		long long m_llDelay, m_llDelayFraction;
 		int  m_iDeleteCount;
 		int m_nFramesRecvdSinceTraceSent;
-		bool m_b1stRecordedData;
+		bool m_b1stRecordedDataSinceCallStarted;
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
 		CAudioShortBuffer  m_FarendBuffer;

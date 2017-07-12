@@ -207,7 +207,7 @@ namespace MediaSDK
 	void CAudioCallSession::ResetTrace()
 	{
 		//Trace and Delay Related
-		m_b1stRecordedData = true;
+		m_b1stRecordedDataSinceCallStarted = true;
 		m_llDelayFraction = 0;
 		m_llDelay = 0;
 		m_iDeleteCount = 10;
@@ -361,6 +361,8 @@ namespace MediaSDK
 
 		m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
+
+		ResetTrace();
 #ifdef DUMP_FILE
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
@@ -453,11 +455,11 @@ namespace MediaSDK
 		//Sleep to maintain 100 ms recording time diff
 		if (!m_bLiveAudioStreamRunning)
 		{
-			if (m_b1stRecordedData)
+			if (m_b1stRecordedDataSinceCallStarted)
 			{
 				m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 				m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
-				m_b1stRecordedData = false;
+				m_b1stRecordedDataSinceCallStarted = false;
 			}
 			else
 			{
