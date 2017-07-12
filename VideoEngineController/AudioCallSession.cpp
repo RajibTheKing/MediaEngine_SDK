@@ -101,6 +101,18 @@ namespace MediaSDK
 			//m_bEchoCancellerEnabled = false;
 		}
 
+		if(!m_bLiveAudioStreamRunning)
+		{
+			m_bEnableRecorderTimeSyncDuringEchoCancellation = true;
+			m_bEnablePlayerTimeSyncDuringEchoCancellation = true;
+		}
+		else
+		{
+			m_bEnableRecorderTimeSyncDuringEchoCancellation = false;
+			m_bEnablePlayerTimeSyncDuringEchoCancellation = false;
+		}
+
+
 #ifdef USE_VAD
 		m_pVoice = new CVoice();
 #endif
@@ -467,20 +479,23 @@ namespace MediaSDK
 		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
 		{
 			//Sleep to maintain 100 ms recording time diff
-			if (m_b1stRecordedDataSinceCallStarted)
+			if (m_bEnableRecorderTimeSyncDuringEchoCancellation)
 			{
-				m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
-				m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
-				m_b1stRecordedDataSinceCallStarted = false;
-			}
-			else
-			{
-				long long llNOw = Tools::CurrentTimestamp();
-				if (llNOw + 20 < m_llnextRecordedDataTime)
+				if (m_b1stRecordedDataSinceCallStarted)
 				{
-					Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+					m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
+					m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
+					m_b1stRecordedDataSinceCallStarted = false;
 				}
-				m_llnextRecordedDataTime += 100;
+				else
+				{
+					long long llNOw = Tools::CurrentTimestamp();
+					if (llNOw + 20 < m_llnextRecordedDataTime)
+					{
+						Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+					}
+					m_llnextRecordedDataTime += 100;
+				}
 			}
 
 			//If trace is received, current and next frames are deleted

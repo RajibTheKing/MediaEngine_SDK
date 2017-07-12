@@ -98,6 +98,9 @@ namespace MediaSDK
 		void SetCallInLiveType(int nCallInLiveType);
 		long long GetBaseOfRelativeTime();
 
+		bool m_bEnableRecorderTimeSyncDuringEchoCancellation;
+		bool m_bEnablePlayerTimeSyncDuringEchoCancellation;
+
 		int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
 

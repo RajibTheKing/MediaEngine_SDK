@@ -690,24 +690,27 @@ namespace MediaSDK
 			}
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
-			if (m_b1stPlaying)
+			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
 			{
-				m_llNextPlayingTime = llCurrentTimeStamp + 100;
-				m_b1stPlaying = false;
-			}
-			else
-			{
-				if (llCurrentTimeStamp + 20 < m_llNextPlayingTime)
+				if (m_b1stPlaying)
 				{
-					LOG18("processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
-					Tools::SOSleep(m_llNextPlayingTime - llCurrentTimeStamp - 20);
+					m_llNextPlayingTime = llCurrentTimeStamp + 100;
+					m_b1stPlaying = false;
 				}
 				else
 				{
-					LOG18("processplayingdata sleeping time = %d", 0);
+					if (llCurrentTimeStamp + 20 < m_llNextPlayingTime)
+					{
+						LOG18("processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
+						Tools::SOSleep(m_llNextPlayingTime - llCurrentTimeStamp - 20);
+					}
+					else
+					{
+						LOG18("processplayingdata sleeping time = %d", 0);
+					}
+					LOG18("processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
+					m_llNextPlayingTime += 100;
 				}
-				LOG18("processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
-				m_llNextPlayingTime += 100;
 			}
 			m_pAudioCallSession->m_FarendBuffer.EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
 			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
