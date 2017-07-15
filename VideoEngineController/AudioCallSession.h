@@ -99,8 +99,13 @@ namespace MediaSDK
 		void SetCallInLiveType(int nCallInLiveType);
 		long long GetBaseOfRelativeTime();
 
+
 		void PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
-		int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
+
+		bool m_bEnableRecorderTimeSyncDuringEchoCancellation;
+		bool m_bEnablePlayerTimeSyncDuringEchoCancellation;
+
+		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
 
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
@@ -108,6 +113,7 @@ namespace MediaSDK
 		void SetVolume(int iVolume, bool bRecorder);
 		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
+		void ResetTrace();
 		bool m_bIsPublisher;
 
 		bool m_bRecordingStarted;
@@ -118,7 +124,7 @@ namespace MediaSDK
 		long long m_llDelay, m_llDelayFraction;
 		int  m_iDeleteCount;
 		int m_nFramesRecvdSinceTraceSent;
-		bool m_b1stRecordedData;
+		bool m_b1stRecordedDataSinceCallStarted;
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
 		CAudioShortBuffer  m_FarendBuffer;
@@ -228,8 +234,8 @@ namespace MediaSDK
 
 		void SetResources(AudioResources &audioResources);
 
-		void StartNearEndDataProcessing();
-		void StartFarEndDataProcessing(CCommonElementsBucket* pSharedObject);
+		void InitNearEndDataProcessing();
+		void InitFarEndDataProcessing(CCommonElementsBucket* pSharedObject);
 
 
 	public:

@@ -31,6 +31,8 @@
 
 #define WRITE_TO_LOG_FILE		OFF
 
+#define DECODING_FAIL_LOG		OFF
+#define ENCODING_FAIL_LOG		OFF
 #define BROKEN_FRAME_LOG		OFF
 #define CHUNK_RECIVE_LOG		OFF
 #define CHUNK_SENDING_LOG		OFF
@@ -78,6 +80,7 @@
 #define MR_DEBUG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define DOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define COW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGFARQUAD(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
@@ -97,6 +100,7 @@
 #define LOGE_MAIN(...)
 #define DOG(...)
 #define COW(...)
+#define LOGFARQUAD(...)
 #endif
 
 
