@@ -61,7 +61,8 @@ namespace MediaSDK
 		m_bIsPublisher(true),
 		m_AudioNearEndBuffer(AUDIO_ENCODING_BUFFER_SIZE),
 		m_cNearEndProcessorThread(nullptr),
-		m_cFarEndProcessorThread(nullptr)
+		m_cFarEndProcessorThread(nullptr),
+		m_bNeedToResetEcho(false)
 	{
 		m_recordBuffer = new AudioLinearBuffer(8000);
 		SetResources(audioResources);
@@ -489,6 +490,12 @@ namespace MediaSDK
 
 		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
 		{
+			if(m_bNeedToResetEcho)
+			{
+				ResetAEC();
+				ResetTrace();
+				m_bNeedToResetEcho = false;
+			}
 			//Sleep to maintain 100 ms recording time diff
 			if (m_bEnableRecorderTimeSyncDuringEchoCancellation)
 			{
@@ -670,6 +677,18 @@ namespace MediaSDK
 
 	void CAudioCallSession::SetSpeakerType(int iSpeakerType)
 	{
+		if (m_iSpeakerType != iSpeakerType)
+		{
+			m_bNeedToResetEcho = true;
+			if (iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
+			{
+				m_bTraceSendingEnabled = true;
+			}
+			else
+			{
+				m_bTraceSendingEnabled = false;
+			}
+		}
 		m_iSpeakerType = iSpeakerType;
 	}
 

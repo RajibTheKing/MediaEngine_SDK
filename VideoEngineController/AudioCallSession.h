@@ -116,6 +116,7 @@ namespace MediaSDK
 		void ResetTrace();
 		void ResetAEC();
 		bool m_bIsPublisher;
+		bool m_bNeedToResetEcho;
 
 		bool m_bRecordingStarted;
 		long long m_llTraceSendingTime;
