@@ -106,10 +106,18 @@ namespace MediaSDK
 
 #else
 		struct stat st = { 0 };
+        
+        const char* pathArray;
 
-		if (stat(MEDIA_LOGGING_PATH, &st) == -1)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+        pathArray = (MEDIA_LOGGING_PATH).c_str();
+#else
+        pathArray = MEDIA_LOGGING_PATH;
+#endif
+        
+		if (stat(pathArray, &st) == -1)
 		{
-			if(0 != mkdir(MEDIA_LOGGING_PATH, 0700))
+			if(0 != mkdir(pathArray, 0700))
 			{
 #if __ANDROID__
 				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGCAT_TAG, "MANSUR----------Log folder creation FAILED, returned %d\n", errno);
@@ -162,15 +170,16 @@ namespace MediaSDK
 
 	size_t MediaLogger::GetThreadID(char* buffer)
 	{
-#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
-		return _snprintf(buffer, 15, "%d", GetCurrentThreadId());
+#if defined(__ANDROID__)
+        return snprintf(buffer, 15, "%d", gettid());
 #else
-		return snprintf(buffer, 15, "%d", gettid());
+		
 #endif
 	//	//For All Platforms
-	//	stringstream ss;
-	//	ss << std::this_thread::get_id();		
-	//	ss >> buffer;
+		stringstream ss;
+		ss << std::this_thread::get_id();
+		ss >> buffer;
+        return strlen(buffer);
 	}
 
 	size_t MediaLogger::GetDateTime(char* buffer)

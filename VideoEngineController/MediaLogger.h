@@ -24,7 +24,7 @@
 #define MEDIA_LOGGING_PATH "/sdcard/" MEDIA_LOGGING_FOLDER_NAME "/"
 #define MEDIA_LOGCAT_TAG "MediaSDK"
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#define MEDIA_LOGGING_PATH std::string(getenv("HOME"))+"/Documents/" MEDIA_LOGGING_FOLDER_NAME "/"
+#define MEDIA_LOGGING_PATH std::string(getenv("HOME")) + "/Documents/" MEDIA_LOGGING_FOLDER_NAME "/"
 #elif defined(DESKTOP_C_SHARP)
 #define MEDIA_LOGGING_PATH "C:\\" MEDIA_LOGGING_FOLDER_NAME "\\"
 #endif
