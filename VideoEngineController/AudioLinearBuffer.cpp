@@ -45,42 +45,54 @@ namespace MediaSDK
 	{
 		std::lock_guard<std::mutex> guard(m_mutex);
 		//TODO: handle bigger data than max buffer size
+		short* data_pointer = data;
 
-		int availableSpace = m_bufferMaxSize - m_endPos - 1;
-		LOGT("##TTPUSH availableSpace %d begin %d endpos %d", availableSpace, m_beginPos, m_endPos);
-
-
-		if (dataLen > availableSpace)
+		if (dataLen >= LINEAR_BUFFER_MAX_SIZE) //discarding data , pushing only LINEAR_BUFFER_MAX_SIZE size
 		{
-			int toFreeLen = dataLen - availableSpace;
+			m_beginPos = 0;
+			m_endPos = -1;
 			
-			int newIndex = 0, i = 0;
-			if (toFreeLen < m_beginPos)
-			{
-				i = m_beginPos;
-			}
-			else
-			{
-				i = toFreeLen;
-			}
+			LOGT("##TTPUSH handleBiggerdata with size %d begin %d endpos %d", dataLen, m_beginPos, m_endPos);
+			data_pointer += dataLen - LINEAR_BUFFER_MAX_SIZE;
+			dataLen = LINEAR_BUFFER_MAX_SIZE;
+		}
+		else
+		{
+			int availableSpace = m_bufferMaxSize - m_endPos - 1;
+			LOGT("##TTPUSH availableSpace %d begin %d endpos %d", availableSpace, m_beginPos, m_endPos);
 
-			m_beginPos -= i;
-			if (m_beginPos < 0)
+			if (dataLen > availableSpace)
 			{
-				m_beginPos = 0;
-			}
+				int toFreeLen = dataLen - availableSpace;
 
-			for (; i <= m_endPos; i++, newIndex++)
-			{
-				m_buffer[newIndex] = m_buffer[i];
-			}
+				int newIndex = 0, i = 0;
+				if (toFreeLen < m_beginPos)
+				{
+					i = m_beginPos;
+				}
+				else
+				{
+					i = toFreeLen;
+				}
 
-			m_endPos = newIndex - 1;
-			
-			LOGT("##TTPUSH after shifting. beginpos %d endpos %d freed %d", m_beginPos, m_endPos, toFreeLen);
+				m_beginPos -= i;
+				if (m_beginPos < 0)
+				{
+					m_beginPos = 0;
+				}
+
+				for (; i <= m_endPos; i++, newIndex++)
+				{
+					m_buffer[newIndex] = m_buffer[i];
+				}
+
+				m_endPos = newIndex - 1;
+
+				LOGT("##TTPUSH after shifting. beginpos %d endpos %d freed %d", m_beginPos, m_endPos, toFreeLen);
+			}
 		}
 
-		memcpy(&m_buffer[m_endPos + 1], data, dataLen * sizeof(short));
+		memcpy(&m_buffer[m_endPos + 1], data_pointer, dataLen * sizeof(short));
 		m_endPos += dataLen;
 	}
 

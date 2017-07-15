@@ -63,7 +63,7 @@ namespace MediaSDK
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr)
 	{
-		m_recordBuffer = new AudioLinearBuffer(8000);
+		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
