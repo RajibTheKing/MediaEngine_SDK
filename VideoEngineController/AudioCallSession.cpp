@@ -253,6 +253,16 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
 	}
 
+	void CAudioCallSession::ResetAEC()
+	{
+		if (m_pEcho.get())
+		{
+			m_pEcho.reset();
+		}
+
+		m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, m_bLiveAudioStreamRunning);
+	}
+
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)
 	{

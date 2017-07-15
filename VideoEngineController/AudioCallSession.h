@@ -114,6 +114,7 @@ namespace MediaSDK
 		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
 		void ResetTrace();
+		void ResetAEC();
 		bool m_bIsPublisher;
 
 		bool m_bRecordingStarted;
