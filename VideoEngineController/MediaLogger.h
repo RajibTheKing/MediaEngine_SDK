@@ -10,6 +10,7 @@
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"
+#include "CommonMacros.h" //Need for LOG_ENABLED
 
 #define MEDIA_LOGGING_FOLDER_NAME "MediaLogs"
 #define MEDIA_LOGGER_TAG "MediaSDK"

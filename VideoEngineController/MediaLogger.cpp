@@ -1,5 +1,4 @@
 #include "MediaLogger.h"
-#include "CommonMacros.h"
 #include "Tools.h"
 #include "LogPrinter.h"
 
