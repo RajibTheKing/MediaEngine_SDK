@@ -1,8 +1,9 @@
 #include "MediaLogger.h"
+#include "CommonMacros.h"
+#include "Tools.h"
+#include "LogPrinter.h"
 
-#if defined(TARGET_OS_WINDOWS_PHONE) || defined (DESKTOP_C_SHARP) 
-
-#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -11,9 +12,6 @@
 #ifdef __ANDROID__
 #include <android/log.h>
 #endif
-
-#include "Tools.h"
-#include "LogPrinter.h"
 
 namespace MediaSDK
 {
@@ -26,6 +24,7 @@ namespace MediaSDK
 		m_sFilePath = MEDIA_FULL_LOGGING_PATH;
 
 		InternalLog(">>>>> Media SDK Logging Started <<<<<");
+		InternalLog("Media SDK version %s [%lu]", MEDIA_ENGINE_VERSION, MEDIA_ENGINE_BUILD_NUMBER);
 	}
 
 	MediaLogger::~MediaLogger()
@@ -55,6 +54,7 @@ namespace MediaSDK
 	void MediaLogger::Release()
 	{
 		InternalLog(">>>>> Media SDK Logging Finished <<<<<");
+		printf(">>>>> Media SDK Logging Finished <<<<<\n");
 
 		StopMediaLoggingThread();
 
@@ -192,7 +192,7 @@ namespace MediaSDK
 
 		m_pLoggerFileStream.flush();
 
-		m_vLogVector.erase(m_vLogVector.begin(), m_vLogVector.begin() + vSize);
+		m_vLogVector.erase(m_vLogVector.begin(), vPos);
 	}
 
 	size_t MediaLogger::GetThreadID(char* buffer)
@@ -236,7 +236,10 @@ namespace MediaSDK
 
 	void MediaLogger::StartMediaLoggingThread()
 	{
-		m_threadInstance = std::thread(CreateLoggingThread, this);
+		if (!m_bMediaLoggingThreadRunning)
+		{
+			m_threadInstance = std::thread(CreateLoggingThread, this);
+		}
 	}
 	
 	void MediaLogger::StopMediaLoggingThread()
@@ -253,7 +256,7 @@ namespace MediaSDK
 
 		pThis->m_bMediaLoggingThreadRunning = true;
 
-		pThis->InternalLog("Starting logger thread\n");
+		pThis->InternalLog("Starting logger thread");
 
 		while (pThis->m_bMediaLoggingThreadRunning)
 		{

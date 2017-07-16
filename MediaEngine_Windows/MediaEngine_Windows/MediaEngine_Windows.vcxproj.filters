@@ -755,6 +755,9 @@
     <ClInclude Include="..\..\VideoEngineController\AudioLinearBuffer.h">
       <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\CommonMacros.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\VideoEngineController\VideoEngineController.vcxproj.filters">
