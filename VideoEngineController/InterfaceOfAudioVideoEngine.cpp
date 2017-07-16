@@ -18,32 +18,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-
-		MediaLogger *objMediaLogger = new MediaLogger(INFO);
-		int var = 1;
-		objMediaLogger->Init();
-		objMediaLogger->Log(NONE, "*********************hello world %d**************\n", var);
-		objMediaLogger->Log(ERRORS, "*********************hello world 2**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 3**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 4**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 5**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 6**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 7**************\n");
-		objMediaLogger->Log(NONE, "*********************hello world 8**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 9**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 10**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 11**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 12**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 13**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 14**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 15**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 16**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 17**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 18**************\n");
-		objMediaLogger->Log(ERRORS, "*********************hello world 19**************\n");
-		objMediaLogger->Log(INFO, "*********************hello world 20**************\n");
-
-
+		MediaLogInit(LOG_INFO);
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
@@ -56,13 +31,12 @@ namespace MediaSDK
 
 		//Late assignment to avoid transitional undefined behaviors
 		m_pcController = pController;
-
-		Tools::SOSleep(1000);
-		objMediaLogger->Release();
 	}
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
+		MediaLogInit(LOG_DEBUG);
+
 		m_pcController = nullptr;
 			
 		CController* pController = new CController(szLoggerPath, nLoggerPrintLevel);
@@ -97,6 +71,8 @@ namespace MediaSDK
 			//Late destruction to avoid transitional UB
 			delete pController;
 		}
+
+		MediaLogRelease();
 	}
 
 	bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)

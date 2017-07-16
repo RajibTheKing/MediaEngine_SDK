@@ -8,16 +8,24 @@
 #include <unistd.h>
 #endif
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
+
 #include "Tools.h"
 #include "LogPrinter.h"
 
 namespace MediaSDK
 {
-	MediaLogger::MediaLogger(LogLevel logLevel) :
-		m_elogLevel(logLevel),
+	MediaLogger::MediaLogger():
+		m_elogLevel(LogLevel::INFO), //by default
 		m_bFSError(false)
-	{		
+	{
+		m_pMediaLoggerMutex.reset(new CLockHandler());
+
 		m_sFilePath = MEDIA_FULL_LOGGING_PATH;
+
+		InternalLog(">>>>> Media SDK Logging Started <<<<<");
 	}
 
 	MediaLogger::~MediaLogger()
@@ -25,32 +33,29 @@ namespace MediaSDK
 		Release();
 	}
 
-	void MediaLogger::Init()
+	void MediaLogger::Init(LogLevel logLevel)
 	{
-		m_pMediaLoggerMutex.reset(new CLockHandler());
+		m_elogLevel = logLevel;
+		
+		InternalLog("Media SDK Logging Level %d", m_elogLevel);
 
 		m_bFSError = !CreateLogDirectory(); //if TRUE then NO ERROR, else we have FS error
 
 		if (!m_bFSError) //no error then
 		{
-			CLogPrinter::Log("MANSUR----------directory creation successful >> %s\n", m_sFilePath.c_str());
-
 			if (!m_pLoggerFileStream.is_open())
 			{
 				m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
 			}
 		}
-		else
-		{
-			CLogPrinter::Log("MANSUR----------directory creation failed >> %s\n", m_sFilePath.c_str());
-		}
-
 		
 		StartMediaLoggingThread();
 	}
 	
 	void MediaLogger::Release()
 	{
+		InternalLog(">>>>> Media SDK Logging Finished <<<<<");
+
 		StopMediaLoggingThread();
 
 		if (m_pLoggerFileStream.is_open())
@@ -71,8 +76,6 @@ namespace MediaSDK
 
 	void MediaLogger::Log(LogLevel logLevel, const char *format, ...)
 	{
-		MediaLocker lock(m_pMediaLoggerMutex.get());
-
 		if (logLevel > m_elogLevel) return;
 
 		int len = GetDateTime(m_sMessage);
@@ -85,9 +88,28 @@ namespace MediaSDK
 		vsnprintf(m_sMessage + len, MEDIA_LOG_MAX_SIZE - len, format, vargs);
 		va_end(vargs);
 		//argument to string end
+
+		MediaLocker lock(m_pMediaLoggerMutex.get());
 		
 		m_vLogVector.push_back(m_sMessage);
-		CLogPrinter::Log("MANSUR----------pushing >> %s\n", m_sMessage);
+	}
+
+	void MediaLogger::InternalLog(const char *format, ...)
+	{
+		int len = GetDateTime(m_sMessage);
+		len += GetThreadID(m_sMessage + len);
+		m_sMessage[len++] = ' ';
+
+		va_list vargs;
+		//argument to string start
+		va_start(vargs, format);
+		vsnprintf(m_sMessage + len, MEDIA_LOG_MAX_SIZE - len, format, vargs);
+		va_end(vargs);
+		//argument to string end
+
+		MediaLocker lock(m_pMediaLoggerMutex.get());
+
+		m_vLogVector.push_back(m_sMessage);
 	}
 
 	bool MediaLogger::CreateLogDirectory()
@@ -99,7 +121,8 @@ namespace MediaSDK
 			int retCode = GetLastError();
 			if (ERROR_ALREADY_EXISTS != retCode)
 			{
-				printf("MANSUR----------Log folder creation FAILED, ret code %d\n", retCode);
+				printf("[%s] Log folder creation FAILED, code %d\n", MEDIA_LOGGER_TAG, retCode);
+
 				return false;
 			}
 		}
@@ -119,12 +142,15 @@ namespace MediaSDK
 		{
 			if(0 != mkdir(pathArray, 0700))
 			{
+
 #if __ANDROID__
-				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGCAT_TAG, "MANSUR----------Log folder creation FAILED, returned %d\n", errno);
+
+				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, "Log folder creation FAILED, code %d\n", errno);
 
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				printf("MANSUR----------Log folder creation FAILED, returned %d\n", errno );
+				printf("[%s] Log folder creation FAILED, code %d\n", MEDIA_LOGGER_TAG, errno);
+
 #endif
 
 				return false;
@@ -141,23 +167,24 @@ namespace MediaSDK
 
 		size_t vSize = min(m_vLogVector.size(), (size_t)MAX_LOG_WRITE);
 
-		for(int  i=0; i < vSize; i++)
-		{
-			CLogPrinter::Log("MANSUR----------writing to file stream >> %s\n", m_vLogVector[i].c_str());
+		auto vPos = m_vLogVector.begin();
 
+		for(; vSize>0; vSize--, vPos++)
+		{
 			if (!m_bFSError)
 			{
-				m_pLoggerFileStream << m_vLogVector[i] << std::endl;
+				m_pLoggerFileStream << *vPos << std::endl;
 			}
 			else
 			{
+
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				std::cout << m_vLogVector[i] << std::endl;
+				std::cout << *vPos << std::endl;
 
 #elif __ANDROID__
 
-				__android_log_write(ANDROID_LOG_ERROR, MEDIA_LOGCAT_TAG, m_vLogVector[i].c_str());
+				__android_log_write(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, vPos->c_str());
 
 #endif
 			}
@@ -201,9 +228,6 @@ namespace MediaSDK
 		int milli = curTime.tv_usec / 1000, pos;
 
 		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
-		
-		CLogPrinter::Log("MANSUR---------position value = %d\n", pos);
-
 		pos += snprintf(buffer + pos, 20, " %s] ", ss.str().c_str());
 
 		return pos;
@@ -217,7 +241,7 @@ namespace MediaSDK
 	
 	void MediaLogger::StopMediaLoggingThread()
 	{
-		CLogPrinter::Log("MANSUR----------stopping logger thread\n");
+		InternalLog("Stopping logger thread...");
 		m_bMediaLoggingThreadRunning = false;
 		
 		m_threadInstance.join();
@@ -229,7 +253,7 @@ namespace MediaSDK
 
 		pThis->m_bMediaLoggingThreadRunning = true;
 
-		CLogPrinter::Log("MANSUR----------starting logger thread\n");
+		pThis->InternalLog("Starting logger thread\n");
 
 		while (pThis->m_bMediaLoggingThreadRunning)
 		{
@@ -239,10 +263,13 @@ namespace MediaSDK
 			}
 			else
 			{ 
-				CLogPrinter::Log("MANSUR----------sleeping logger thread , vector size = %d\n", pThis->m_vLogVector.size());
+				//InternalLog("Sleeping logger thread , vector size = %d\n", pThis->m_vLogVector.size());
 				Tools::SOSleep(THREAD_SLEEP_TIME);
 			}
 		}
+
+		//When we will exit, we want to write everything pending
+		pThis->WriteLogToFile();
 
 		return NULL;
 	}
