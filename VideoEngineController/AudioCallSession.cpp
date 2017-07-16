@@ -125,7 +125,8 @@ namespace MediaSDK
 		{
 			m_iAudioVersionSelf = AUDIO_LIVE_VERSION;
 		}
-		else {
+		else 
+		{
 			m_iAudioVersionSelf = AUDIO_CALL_VERSION;
 		}
 #ifdef LOCAL_SERVER_LIVE_CALL
