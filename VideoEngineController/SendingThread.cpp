@@ -306,23 +306,18 @@ namespace MediaSDK
 
 				if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL))
 				{
-
-					LOGEF("fahad -->> m_pCommonElementsBucket 1 --> lFriendID = %lld", lFriendID);
-
-					int iIntervalIFrame = m_pVideoCallSession->m_nCallFPS / IFRAME_INTERVAL;
-
 					CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() session got");
-
-					unsigned char *p = m_EncodedFrame + PACKET_HEADER_LENGTH_WITH_MEDIA_TYPE;
-
-					int nalType;
 					
-					if (packetSize > 10)
+					unsigned char *p = m_EncodedFrame + 29;
+
+					int nalType = 0;
+					
+					if (packetSize > 29)
 						nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
 					else
 						nalType = 0;
 
-					//if(nalType == 7) LOGEF("nalType = %d, frameNumber=%d", nalType, frameNumber);
+					CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure FFFFFFFFFFFFF Type %d size %d", nalType, packetSize);
 
 					CAudioCallSession *pAudioSession;
 
@@ -333,7 +328,7 @@ namespace MediaSDK
 
 					LOGSS("##SS## firstFrame %d ", firstFrame);
 
-					if (m_bPassOnlyAudio == true || (frameNumber%iIntervalIFrame == 0 && firstFrame == false))
+					if (m_bPassOnlyAudio == true || (nalType == 7 && firstFrame == false))
 					{
 						CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() 200 ms completed");
 
@@ -552,8 +547,11 @@ namespace MediaSDK
 
 									}
 									else
-										m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+									{
+										CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure sending chunk size %d duration %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
 
+										m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+									}
 									//LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
 
 								}

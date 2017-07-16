@@ -21,12 +21,15 @@ namespace MediaSDK
 
 		int version = 0;
 		long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;;
-		if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
+		if (m_pAudioCallSession->m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
+		{
 			Tools::SOSleep(10);
+		}
 		else
 		{
-			LOG18("#18#NE#AudioCall...");
-			m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+			//LOGT("##TT dequed #18#NE#AudioCall...");
+			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 
 			DumpEncodingFrame();
 			UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);

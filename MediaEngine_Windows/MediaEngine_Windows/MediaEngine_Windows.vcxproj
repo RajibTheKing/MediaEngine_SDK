@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\VideoEngineController\AudioLinearBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorCall.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.cpp" />
@@ -257,6 +258,7 @@
     <ClCompile Include="..\..\VideoEngineUtilities\VideoEffects.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\VideoEngineController\AudioLinearBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorCall.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorChannel.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioFarEndProcessorPublisher.h" />

@@ -46,6 +46,9 @@ namespace MediaSDK
 
 #endif
 
+		m_DecodeFailCounter = 0;
+		m_NoFrameCounter = 0;
+
 		m_pCalculatorDecodeTime = new CAverageCalculator();
 
 		m_pCommonElementBucket = pCommonElementBucket;
@@ -574,6 +577,14 @@ namespace MediaSDK
 
 #endif
 		}
+
+		if (frameSize > 0 && m_decodedFrameSize == 0)
+			m_DecodeFailCounter++;
+
+		if (frameSize == 0)
+			m_NoFrameCounter++;
+
+		CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoDecodingThread::DecodeAndSendToClient frameSize %d m_decodedFrameSize %d m_NoFrameCounter %d m_DecodeFailCounter %d", frameSize, m_decodedFrameSize, m_NoFrameCounter, m_DecodeFailCounter);
 
 		CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
 

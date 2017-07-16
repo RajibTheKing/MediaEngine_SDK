@@ -5,8 +5,8 @@
 #include "Tools.h"
 #include "MediaLogger.h"
 
-#define MEDIA_ENGINE_VERSION "9.33.0"
-#define MEDIA_ENGINE_BUILD_NUMBER 0932002510
+#define MEDIA_ENGINE_VERSION "9.35"
+#define MEDIA_ENGINE_BUILD_NUMBER 0935002515
 
 namespace MediaSDK
 {

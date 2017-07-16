@@ -83,6 +83,9 @@ namespace MediaSDK
 		int m_PreviousFrameNumber;
 		int m_PreviousOrientation;
 
+		int m_DecodeFailCounter;
+		int m_NoFrameCounter;
+
 		bool m_HasPreviousValues;
 
 		int m_Counter;

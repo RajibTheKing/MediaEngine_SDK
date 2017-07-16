@@ -173,7 +173,7 @@ namespace MediaSDK
 		decoderType = No_Decoder;
 
 		noiseReducerType = No_NoiseReducer;
-		echoCancelerType = No_ECM;
+		echoCancelerType = WebRTC_ECM;
 		gainType = No_Gain;
 
 		adaptEncoderBitrate = false;
@@ -223,7 +223,7 @@ namespace MediaSDK
 		decoderType = PCM_Decoder;
 
 		noiseReducerType = No_NoiseReducer;
-		echoCancelerType = No_ECM;
+		echoCancelerType = WebRTC_ECM;
 		gainType = No_Gain;
 
 		adaptEncoderBitrate = false;

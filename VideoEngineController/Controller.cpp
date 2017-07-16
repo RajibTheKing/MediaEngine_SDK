@@ -574,7 +574,7 @@ int CController::SendAudioData(const long long& lFriendID, short *in_data, unsig
             }*/
             long long lEncodeStartTime = m_Tools.CurrentTimestamp();
             
-            int ret = pAudioSession->EncodeAudioData(in_data,in_size);
+            int ret = pAudioSession->PushAudioData(in_data,in_size);
             //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> AudioEncodingTime = " + m_Tools.LongLongtoStringConvert((m_Tools.CurrentTimestamp() - lEncodeStartTime)) + "asdfasdf");
             //printf("TheKing--> zAudioEncodingTime = %lld, zAudioEncodingTimeDiff = %lld, in_size = %d\n", m_Tools.CurrentTimestamp() - lEncodeStartTime, m_Tools.CurrentTimestamp() - g_lPrevAudioFrame, in_size);
             g_lPrevAudioFrame = m_Tools.CurrentTimestamp();

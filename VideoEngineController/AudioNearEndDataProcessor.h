@@ -49,6 +49,7 @@ namespace MediaSDK
 		}
 
 		virtual void ProcessNearEndData() = 0;
+		CAudioCallSession *m_pAudioCallSession = nullptr;
 
 
 	protected:
@@ -77,7 +78,6 @@ namespace MediaSDK
 
 		//	SmartPointer<NoiseReducerInterface> m_pNoise;
 
-		CAudioCallSession *m_pAudioCallSession = nullptr;
 		CAudioShortBuffer *m_pAudioNearEndBuffer = nullptr;
 		SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader = nullptr;
 		AudioMixer *m_pAudioMixer = nullptr;
