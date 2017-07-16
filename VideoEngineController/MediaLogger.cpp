@@ -54,7 +54,6 @@ namespace MediaSDK
 	void MediaLogger::Release()
 	{
 		InternalLog(">>>>> Media SDK Logging Finished <<<<<");
-		printf(">>>>> Media SDK Logging Finished <<<<<\n");
 
 		StopMediaLoggingThread();
 
