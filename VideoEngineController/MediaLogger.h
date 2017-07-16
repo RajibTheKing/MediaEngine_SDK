@@ -107,12 +107,31 @@ namespace MediaSDK
 	#define MediaLogRelease() g_Logger.Release();
 	#define MediaLog(a, ...) g_Logger.Log( (a), __VA_ARGS__);
 
+	class ScopeLog
+	{
+	public:
+		ScopeLog(char* scopeName):
+			m_sName(scopeName)
+		{
+			MediaLog(LOG_INFO, ">>> %s Entered >>>", scopeName);
+		}
+
+		~ScopeLog()
+		{
+			MediaLog(LOG_INFO, "<<< %s Exited <<<", m_sName.c_str());
+		}
+	private:
+		std::string m_sName;
+	};
+
 #else
 
 /// If log not enabled then these macros will work as a placeholder
 #define MediaLogInit(level);
 #define MediaLogRelease();
 #define MediaLog(a, ...);
+
+#define ScopeLog(...)
 
 #endif
 }
