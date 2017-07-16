@@ -149,6 +149,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioGainInstanceProvider.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioHeaderCommon.h" />
+    <ClInclude Include="..\..\VideoEngineController\AudioLinearBuffer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioMixer.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndDataProcessor.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioNearEndProcessorCall.h" />
@@ -273,6 +274,7 @@
     <ClCompile Include="..\..\VideoEngineController\AudioFileEncodeDecodeSession.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioGainInstanceProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioHeaderCommon.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\AudioLinearBuffer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioMixer.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndDataProcessor.cpp" />
     <ClCompile Include="..\..\VideoEngineController\AudioNearEndProcessorCall.cpp" />
