@@ -71,7 +71,11 @@ namespace MediaSDK
 
 	AudioNearEndDataProcessor::~AudioNearEndDataProcessor()
 	{
-
+		if (m_pAudioMixer)
+		{
+			delete m_pAudioMixer;
+			m_pAudioMixer = nullptr;
+		}
 		if (m_pAudioNearEndPacketHeader)
 		{
 			//delete m_pAudioPacketHeader;
