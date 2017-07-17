@@ -2,10 +2,13 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 #include "AudioNearEndDataProcessor.h"
+#include "AudioCallSession.h"
+#include "AudioLinearBuffer.h"
+
+
 
 namespace MediaSDK
 {
-
 
 	AudioNearEndProcessorThread::AudioNearEndProcessorThread(AudioNearEndDataProcessor *pNearEndProcessor) :
 		m_pNearEndDataProcessor(pNearEndProcessor)
@@ -33,6 +36,8 @@ namespace MediaSDK
 
 		m_bAudioNearEndThreadRunning = true;
 		m_bAudioNearEndThreadClosed = false;
+
+		m_pNearEndDataProcessor->m_pAudioCallSession->m_recordBuffer->Clear();
 
 		while (m_bAudioNearEndThreadRunning)
 		{

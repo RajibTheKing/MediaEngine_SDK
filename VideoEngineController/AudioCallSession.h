@@ -41,6 +41,7 @@ namespace MediaSDK
 	class AudioShortBufferForPublisherFarEnd;
 	class CAudioShortBuffer;
 	class CTrace;
+	class AudioLinearBuffer;
 
 
 	class CAudioCallSession : 
@@ -59,7 +60,8 @@ namespace MediaSDK
 		void StartCallInLive(int iRole, int nCallInLiveType);
 		void EndCallInLive();
 
-		int EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength);
+		void PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
+		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
@@ -72,6 +74,7 @@ namespace MediaSDK
 		void SetVolume(int iVolume, bool bRecorder);
 		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
+		void ResetTrace();
 
 		void SetSendFunction(SendFunctionPointerType cbClientSendFunc) { m_cbClientSendFunction = cbClientSendFunc; }
 		void SetEventNotifier(CEventNotifier *pEventNotifier)          { m_pEventNotifier = pEventNotifier; }
@@ -102,15 +105,17 @@ namespace MediaSDK
 		void FireAudioAlarm(int eventType);
 
 		void SetResources(AudioResources &audioResources);
-		void StartNearEndDataProcessing();
-		void StartFarEndDataProcessing();
+		void InitNearEndDataProcessing();
+		void InitFarEndDataProcessing();
 
 
 	public:
 
 		bool m_bIsPublisher;
-
 		bool m_bRecordingStarted;
+		bool m_bEnablePlayerTimeSyncDuringEchoCancellation;
+		bool m_bEnableRecorderTimeSyncDuringEchoCancellation;
+
 		long long m_llTraceSendingTime;
 		long long m_llTraceReceivingTime;
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
@@ -118,7 +123,7 @@ namespace MediaSDK
 		long long m_llDelay, m_llDelayFraction;
 		int  m_iDeleteCount;
 		int m_nFramesRecvdSinceTraceSent;
-		bool m_b1stRecordedData;
+		bool m_b1stRecordedDataSinceCallStarted;
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
 		short m_saFarendData[MAX_AUDIO_FRAME_Length];
@@ -135,7 +140,15 @@ namespace MediaSDK
 		SmartPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
 
 		CTrace *m_pTrace;
+		AudioLinearBuffer* m_recordBuffer = nullptr;
 
+#ifdef PCM_DUMP
+		FILE* RecordedFile;
+		FILE* EchoCancelledFile;
+		FILE* AfterEchoCancellationFile;
+		FILE* PlayedFile;
+#endif
+		
 	#ifdef DUMP_FILE
 		FILE *FileInput;
 		FILE *FileOutput;

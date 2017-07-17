@@ -348,6 +348,9 @@
     <ClCompile Include="..\..\VideoEngineController\Trace.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioLinearBuffer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\VideoEngineController\codec_api.h">
@@ -739,6 +742,9 @@
     </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\CustomLocker.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VideoEngineController\AudioLinearBuffer.h">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

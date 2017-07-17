@@ -34,6 +34,7 @@
 #include "AudioResources.h"
 #include "AudioDecoderBuffer.h"
 #include "Trace.h"
+#include "AudioLinearBuffer.h"
 
 
 
@@ -70,6 +71,8 @@ namespace MediaSDK
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr)
 	{
+		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
+	
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
 		m_PublisherBufferForMuxing.reset(new AudioShortBufferForPublisherFarEnd);
 		m_FarendBuffer.reset(new CAudioShortBuffer);
@@ -89,39 +92,41 @@ namespace MediaSDK
 		SetEventNotifier(pSharedObject->m_pEventNotifier);
 
 		m_FriendID = llFriendID;
-		m_bRecordingStarted = false;
-		m_llTraceSendingTime = 0;
-		m_llTraceReceivingTime = 0;
 
 		//m_pAudioDePacketizer = new AudioDePacketizer(this);
 		m_iRole = nEntityType;
-
-		//Trace and Delay Related
 		m_bLiveAudioStreamRunning = false;
-		m_b1stRecordedData = true;
-		m_llDelayFraction = 0;
-		m_llDelay = 0;
-		m_iDeleteCount = 10;
-		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
-		m_nFramesRecvdSinceTraceSent = 0;
-		m_bTraceTailRemains = true;
+
 
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
+			m_bTraceSendingEnabled = false;
 			//m_pPlayerGain->SetGain(9);
 		}
 
 		m_iPrevRecvdSlotID = -1;
 		m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
 		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
-		
+
 		m_bEchoCancellerEnabled = true;
 
 		if (m_bLiveAudioStreamRunning)
 		{
 			//m_bEchoCancellerEnabled = false;
 		}
+
+		if (!m_bLiveAudioStreamRunning)
+		{
+			m_bEnableRecorderTimeSyncDuringEchoCancellation = true;
+			m_bEnablePlayerTimeSyncDuringEchoCancellation = true;
+		}
+		else
+		{
+			m_bEnableRecorderTimeSyncDuringEchoCancellation = true;
+			m_bEnablePlayerTimeSyncDuringEchoCancellation = true;
+		}
+
 
 #ifdef USE_VAD
 		m_pVoice = new CVoice();
@@ -164,8 +169,24 @@ namespace MediaSDK
 		AfterEchoCancellationFile = fopen(AfterEchoCancellationFileName.c_str(), "wb");
 #endif 
 
-		StartNearEndDataProcessing();
-		StartFarEndDataProcessing();
+		InitNearEndDataProcessing();
+		InitFarEndDataProcessing();
+
+		ResetTrace();
+
+		m_cNearEndProcessorThread = new AudioNearEndProcessorThread(m_pNearEndProcessor);
+		if (m_cNearEndProcessorThread != nullptr)
+		{
+			m_cNearEndProcessorThread->StartNearEndThread();
+		}
+
+		m_cFarEndProcessorThread = new AudioFarEndProcessorThread(m_pFarEndProcessor);
+		if (m_cFarEndProcessorThread != nullptr)
+		{
+			m_cFarEndProcessorThread->StartFarEndThread();
+		}
+
+
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 	}
@@ -196,7 +217,7 @@ namespace MediaSDK
 			m_pFarEndProcessor = NULL;
 		}
 
-		if(m_pTrace)
+		if (m_pTrace)
 		{
 			delete m_pTrace;
 			m_pTrace = NULL;
@@ -219,8 +240,30 @@ namespace MediaSDK
 		if (AfterEchoCancellationFile) fclose(AfterEchoCancellationFile);
 		if (PlayedFile) fclose(PlayedFile);
 #endif
-
+		if (m_recordBuffer)
+		{
+			delete m_recordBuffer;
+		}
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
+	}
+
+	void CAudioCallSession::ResetTrace()
+	{
+		//Trace and Delay Related
+		m_bRecordingStarted = false;
+		m_llTraceSendingTime = 0;
+		m_llTraceReceivingTime = 0;
+		m_b1stRecordedDataSinceCallStarted = true;
+		m_llDelayFraction = 0;
+		m_llDelay = 0;
+		m_iDeleteCount = 10;
+		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
+		m_nFramesRecvdSinceTraceSent = 0;
+		m_bTraceTailRemains = true;
+		m_pTrace->Reset();
+		m_FarendBuffer->ResetBuffer();
+		m_pFarEndProcessor->m_b1stPlaying = true;
+		m_pFarEndProcessor->m_llNextPlayingTime = -1;
 	}
 
 
@@ -246,7 +289,7 @@ namespace MediaSDK
 	}
 
 
-	void CAudioCallSession::StartNearEndDataProcessing()
+	void CAudioCallSession::InitNearEndDataProcessing()
 	{
 		MR_DEBUG("#nearEnd# CAudioCallSession::StartNearEndDataProcessing()");
 
@@ -268,16 +311,10 @@ namespace MediaSDK
 
 		m_pNearEndProcessor->SetDataReadyCallback(this);
 		m_pNearEndProcessor->SetEventCallback(this);
-
-		m_cNearEndProcessorThread = new AudioNearEndProcessorThread(m_pNearEndProcessor);
-		if (m_cNearEndProcessorThread != nullptr)
-		{
-			m_cNearEndProcessorThread->StartNearEndThread();
-		}
 	}
 
 
-	void CAudioCallSession::StartFarEndDataProcessing()
+	void CAudioCallSession::InitFarEndDataProcessing()
 	{
 		MR_DEBUG("#farEnd# CAudioCallSession::StartFarEndDataProcessing()");
 
@@ -302,12 +339,6 @@ namespace MediaSDK
 		}
 
 		m_pFarEndProcessor->SetEventCallback(this, this, this);
-
-		m_cFarEndProcessorThread = new AudioFarEndProcessorThread(m_pFarEndProcessor);
-		if (m_cFarEndProcessorThread != nullptr)
-		{
-			m_cFarEndProcessorThread->StartFarEndThread();
-		}
 	}
 
 
@@ -365,6 +396,8 @@ namespace MediaSDK
 
 		m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
+
+		ResetTrace();
 #ifdef DUMP_FILE
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
@@ -440,36 +473,13 @@ namespace MediaSDK
 	}
 	int iStartingBufferSize = -1;
 	int iDelayFractionOrig = -1;
-	int CAudioCallSession::EncodeAudioData(short *psaEncodingAudioData, unsigned int unLength)
+
+	void CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
-		if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
-		{
-			ALOG("Invalid Audio Frame Length");
-			return -1;
-		}
-		//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-		m_bRecordingStarted = true;
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		LOG_50MS("_+_+ NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 
-#ifdef __ANDROID__
-		//Sleep to maintain 100 ms recording time diff
-		if (m_b1stRecordedData)
-		{
-			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
-			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
-			m_b1stRecordedData = false;
-		}
-		else
-		{
-			long long llNOw = Tools::CurrentTimestamp();
-			if (llNOw + 20 < m_llnextRecordedDataTime)
-			{
-				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
-			}
-			m_llnextRecordedDataTime += 100;
-		}
+#ifdef USE_AECM
 
 #ifdef PCM_DUMP
 		if (RecordedFile)
@@ -479,103 +489,125 @@ namespace MediaSDK
 #endif
 
 
-		//If trace is received, current and next frames are deleted
-		if (!m_bLiveAudioStreamRunning && ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0))
+
+		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
 		{
-			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-			m_iDeleteCount --;
-		}
-		//Handle Trace
-		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
-		{
-			m_nFramesRecvdSinceTraceSent++;
-			if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+			//Sleep to maintain 100 ms recording time diff
+			if (m_bEnableRecorderTimeSyncDuringEchoCancellation)
 			{
-				m_FarendBuffer->ResetBuffer();
-				m_bTraceWillNotBeReceived = true; // 8-(
-			}
-			else
-			{
-				m_llDelayFraction = m_pTrace -> DetectTrace(psaEncodingAudioData, unLength, 80);
-				LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
-				if (m_llDelayFraction != -1)
+				if (m_b1stRecordedDataSinceCallStarted)
 				{
-					m_llTraceReceivingTime = Tools::CurrentTimestamp();
-					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
-					//m_llDelayFraction = m_llDelay % 100;
-					iDelayFractionOrig = m_llDelayFraction;
-					m_llDelayFraction /= 8;
-					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-					m_bTraceRecieved = true;
-				}
-			}
-
-		}
-		if (!m_bLiveAudioStreamRunning && (!m_bTraceRecieved && !m_bTraceWillNotBeReceived))
-		{
-			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-		}
-		LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
-			m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
-
-
-		if (m_bEchoCancellerEnabled &&
-			(!m_bLiveAudioStreamRunning ||
-			(m_bLiveAudioStreamRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole))))
-		{
-			LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
-			m_bIsAECMNearEndThreadBusy = true;
-
-#ifdef DUMP_FILE
-			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
-#endif //DUMP_FILE
-
-			if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
-			{
-				long long llTS;
-				if (iStartingBufferSize == -1)
-				{
-					iStartingBufferSize = m_FarendBuffer->GetQueueSize();
-				}
-				LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
-				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-				LOG18("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
-					m_FarendBuffer->GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
-
-				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
-				if (iFarendDataLength > 0)
-				{
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
-					{
-						GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
-					}
-
-					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
-
-
-					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
-
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
-					{
-						GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-					}
-
-					LOG18("Successful farnear");
-#ifdef PCM_DUMP
-					if (EchoCancelledFile)
-					{
-						fwrite(psaEncodingAudioData, 2, unLength, EchoCancelledFile);
-					}
-#endif
+					m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
+					m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
+					m_b1stRecordedDataSinceCallStarted = false;
 				}
 				else
 				{
-					LOG18("UnSuccessful farnear");
+					long long llNOw = Tools::CurrentTimestamp();
+					if (llNOw + 20 < m_llnextRecordedDataTime)
+					{
+						Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+					}
+					m_llnextRecordedDataTime += 100;
+				}
+			}
+
+			//If trace is received, current and next frames are deleted
+			if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
+			{
+				memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+				m_iDeleteCount--;
+			}
+			//Handle Trace
+			if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+			{
+				m_nFramesRecvdSinceTraceSent++;
+				if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+				{
+					m_FarendBuffer->ResetBuffer();
+					m_bTraceWillNotBeReceived = true; // 8-(
+				}
+				else
+				{
+					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, 80);
+					LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
+					if (m_llDelayFraction != -1)
+					{
+						m_llTraceReceivingTime = Tools::CurrentTimestamp();
+						m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+						//m_llDelayFraction = m_llDelay % 100;
+						iDelayFractionOrig = m_llDelayFraction;
+						m_llDelayFraction /= 8;
+						memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+						m_bTraceRecieved = true;
+					}
 				}
 
+			}
+			if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
+			{
+				memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+			}
+			LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
+				m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
+
+
+			if (m_bEchoCancellerEnabled)
+			{
+				LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
+				m_bIsAECMNearEndThreadBusy = true;
+
 #ifdef DUMP_FILE
-				fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
+				fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
+#endif //DUMP_FILE
+
+				if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
+				{
+					long long llTS;
+					if (iStartingBufferSize == -1)
+					{
+						iStartingBufferSize = m_FarendBuffer->GetQueueSize();
+					}
+					LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
+					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+					LOG18("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
+						m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
+
+					int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+					if (iFarendDataLength > 0)
+					{
+						if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
+						{
+							GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
+						}
+
+						m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
+
+
+						m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
+
+						if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
+						{
+							GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+						}
+
+						LOG18("Successful farnear");
+#ifdef PCM_DUMP
+						if (EchoCancelledFile)
+						{
+							fwrite(psaEncodingAudioData, 2, unLength, EchoCancelledFile);
+						}
 #endif
+					}
+					else
+					{
+						LOG18("UnSuccessful farnear");
+					}
+
+#ifdef DUMP_FILE
+					fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
+#endif
+				}
 			}
 #ifdef PCM_DUMP
 			if (AfterEchoCancellationFile)
@@ -594,11 +626,23 @@ namespace MediaSDK
 		}
 		else printf("##TT encodeaudiodata no gain\n");
 #endif
-		int returnedValue = m_AudioNearEndBuffer->EnQueue(psaEncodingAudioData, unLength, llCurrentTime);
+	}
 
-		CLogPrinter_Write(CLogPrinter::DEBUGS, "CAudioCallSession::EncodeAudioData pushed to encoder queue");
+	int CAudioCallSession::PushAudioData(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
+		/*if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
+		{
+		ALOG("Invalid Audio Frame Length");
+		return -1;
+		}*/
+		//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
+		m_bRecordingStarted = true;
+		//LOGT("##TT encodeaudiodata");
+		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, Tools::CurrentTimestamp());
+		m_recordBuffer->PushData(psaEncodingAudioData, unLength);
 
-		return returnedValue;
+		return 0;
 	}
 
 	int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)

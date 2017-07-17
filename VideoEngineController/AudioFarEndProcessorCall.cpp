@@ -92,18 +92,18 @@ namespace MediaSDK
 				LOG18("#18#FE#AudioCall SendToPlayer");
 
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
-#ifndef __ANDROID__
+#ifndef USE_AECM
 				ProcessPlayingData();
 #endif
 			}
 		}
 		else
 		{
-#ifndef __ANDROID__
+#ifndef USE_AECM
 			Tools::SOSleep(10);
 #endif
 		}
-#ifdef __ANDROID__
+#ifdef USE_AECM
 		ProcessPlayingData();	
 #endif
 	}

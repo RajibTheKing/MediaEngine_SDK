@@ -539,7 +539,7 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 	this->m_pVideoEncoder = new CVideoEncoder(m_pCommonElementsBucket, m_lfriendID);
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
-		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, nServiceType);
+		m_pVideoEncoder->CreateVideoEncoder(iVideoHeight, iVideoWidth, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, nServiceType);
 	else
     {
         if(m_bDynamic_IDR_Sending_Mechanism == true)
@@ -1444,7 +1444,7 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
-		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
+		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
     else
     {
         if(m_bDynamic_IDR_Sending_Mechanism == true)
@@ -1489,7 +1489,7 @@ int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int hei
 		this->m_pColorConverter->SetHeightWidth(height, width);
 
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
-			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
+			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
 		else
         {
             if(m_bDynamic_IDR_Sending_Mechanism == true)
@@ -1649,7 +1649,7 @@ void CVideoCallSession::ReInitializeVideoLibrary(int iHeight, int iWidth)
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Video call session destructor 6");
     
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
-		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, m_nCallFPS / IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
+		m_pVideoEncoder->CreateVideoEncoder(iHeight, iWidth, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
     else
     {
         if(m_bDynamic_IDR_Sending_Mechanism == true)

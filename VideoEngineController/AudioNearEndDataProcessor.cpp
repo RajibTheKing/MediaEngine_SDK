@@ -69,7 +69,6 @@ namespace MediaSDK
 
 	AudioNearEndDataProcessor::~AudioNearEndDataProcessor()
 	{
-
 		if (m_pAudioNearEndPacketHeader)
 		{
 			//delete m_pAudioPacketHeader;

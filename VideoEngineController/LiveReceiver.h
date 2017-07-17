@@ -26,6 +26,8 @@ namespace MediaSDK
 
 	private:
 
+		int missedFrameCounter;
+
 		SmartPointer<CLockHandler> m_pLiveReceiverMutex;
 
 		LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;

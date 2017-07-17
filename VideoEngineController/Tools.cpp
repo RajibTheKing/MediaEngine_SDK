@@ -637,7 +637,7 @@ namespace MediaSDK
 
 		prctl(PR_SET_NAME, threadName, 0, 0, 0);
 
-#elif defined(DESKTOP_C_SHARP)
+#elif defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 		
 		uint32_t dwThreadID = GetCurrentThreadId();
 		THREADNAME_INFO info;

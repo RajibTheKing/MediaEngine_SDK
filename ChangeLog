@@ -1,3 +1,16 @@
+Release 9.35 (Date: 15-07-2017)
+-------------------------------
+- [Issue #3539] Audio dynamic recorder buffer for all platform.
+
+Release 9.32 (Date: 05-07-2017)
+-------------------------------
+- Applied rotation for collee inset.
+- Beautification switched off on regular video call.
+- [Issue #3432] Fixed audio delay issue in regular call in callee end.
+- [Issue #2623] Introduced API for speaker type with default parameter.
+- [Issue #3333] Uninitialized audio call session.
+
+
 Release 9.32 (Date: 18-06-2017)
 -------------------------------
 - Video bitrate modified. Now minimum bitrate is 300000 and maximum bitrate is 700000

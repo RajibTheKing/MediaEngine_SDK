@@ -70,6 +70,13 @@ namespace MediaSDK
 
 		bool m_bVideoEffectEnabled;
 
+		int m_EncodingFailedCounter;
+
+		long long m_llCurrentTime;
+		long long m_llLastTime;
+
+		bool m_bNewSessionStarted;
+
 		bool m_bResetForViewerCallerCallEnd;
 		bool m_ResetForPublisherCallerInAudioOnly;
 

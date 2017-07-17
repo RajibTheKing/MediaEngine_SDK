@@ -6,6 +6,7 @@
 #include "AudioPacketHeader.h"
 #include "AudioMixer.h"
 #include "MuxHeader.h"
+#include "AudioLinearBuffer.h"
 #include "Tools.h"
 
 
@@ -21,19 +22,26 @@ namespace MediaSDK
 		m_pAudioMixer.reset(new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING));
 	}
 
+	//FILE* fp = fopen("/sdcard/out.pcm", "wb");
 
 	void AudioNearEndProcessorPublisher::ProcessNearEndData()
 	{
 		//	MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::ProcessNearEndData()");
 
 		int version = 0;
-		long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
-		if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
+		long long llCapturedTime = 0, llRelativeTime = 0, llLasstTime = -1;
+		if (m_pAudioCallSession->m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
+		//if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
+		{
 			Tools::SOSleep(10);
+		}
 		else
 		{
-			LOG18("#18#NE#Publisher...");
-			m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+			//fwrite(m_saAudioRecorderFrame, 2, CHUNK_SIZE, fp);
+			LOGT("##TT#18#NE#Publisher...");
+			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
+			llCapturedTime = Tools::CurrentTimestamp();
+			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			DumpEncodingFrame();
 
 			int nSendingDataSizeInByte = 1600;	//Or contain 18 bit data with mixed header.

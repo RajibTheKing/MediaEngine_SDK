@@ -22,6 +22,7 @@
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
 #include "Trace.h"
+#include "AudioMacros.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -245,10 +246,25 @@ namespace MediaSDK
 //			}
 //#endif
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+#ifdef USE_AECM
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+			{
+				LOG18("Pushing to q");
+				memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
+			}
+			else
+			{
+				if (m_pDataEventListener != nullptr)
+				{
+					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+				}
+			}
+#else
 			if (m_pDataEventListener != nullptr)
 			{
 				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 			}
+#endif
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
 			{
@@ -549,7 +565,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::ProcessPlayingData()
 	{
-#ifdef __ANDROID__
+#ifdef USE_AECM
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
 			if (m_pAudioCallSession->IsTraceSendingEnable() && m_pAudioCallSession->m_bTraceTailRemains)
@@ -569,7 +585,7 @@ namespace MediaSDK
 		{
 			if (m_pDataEventListener != nullptr)
 			{
-				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 				if (m_pAudioCallSession->PlayedFile)
 				{
@@ -579,24 +595,27 @@ namespace MediaSDK
 			}
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
-			if (m_b1stPlaying)
+			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
 			{
-				m_llNextPlayingTime = llCurrentTimeStamp + 100;
-				m_b1stPlaying = false;
-			}
-			else
-			{
-				if (llCurrentTimeStamp + 20 < m_llNextPlayingTime)
+				if (m_b1stPlaying)
 				{
-					LOG18("processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
-					Tools::SOSleep(m_llNextPlayingTime - llCurrentTimeStamp - 20);
+					m_llNextPlayingTime = llCurrentTimeStamp + 100;
+					m_b1stPlaying = false;
 				}
 				else
 				{
-					LOG18("processplayingdata sleeping time = %d", 0);
+					if (llCurrentTimeStamp + 20 < m_llNextPlayingTime)
+					{
+						LOG18("processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
+						Tools::SOSleep(m_llNextPlayingTime - llCurrentTimeStamp - 20);
+					}
+					else
+					{
+						LOG18("processplayingdata sleeping time = %d", 0);
+					}
+					LOG18("processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
+					m_llNextPlayingTime += 100;
 				}
-				LOG18("processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
-				m_llNextPlayingTime += 100;
 			}
 			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
 			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
@@ -610,7 +629,7 @@ namespace MediaSDK
 #else
 		if (m_pDataEventListener != nullptr)
 		{
-			m_pDataEventListener->FireDataEvent(SERVICE_TYPE_CALL, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+			m_pDataEventListener->FireDataEvent(m_pAudioCallSession -> GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 			if (m_pAudioCallSession->PlayedFile)
 			{

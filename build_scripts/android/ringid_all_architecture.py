@@ -53,6 +53,7 @@ def buildEngine():
 	if three == 1: 
 		shutil.copy2( videoengine + r'\OthersLib\obj\local\x86\libvideoEngineController.a', callsdk + r'\libs\media\Android\libs\x86')
 		shutil.copy2( videoengine + r'\OthersLib\libs\x86\libRingIDSDK.so', ownClient + r'\app\src\main\jniLibs\x86')
+	shutil.copy2( videoengine + r'\\VideoEngineController\InterfaceOfAudioVideoEngine.h', callsdk + r'\libs\media\Android\include')
 	print('******************************Copy successfull!***************************')
 
 ln = 60

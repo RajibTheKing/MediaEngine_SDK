@@ -13,6 +13,7 @@ namespace MediaSDK
 		m_pCommonElementsBucket(sharedObject)
 
 	{
+		missedFrameCounter = 0;
 		m_pLiveVideoDecodingQueue = NULL;
 		m_pLiveReceiverMutex.reset(new CLockHandler);
 	}
@@ -119,7 +120,7 @@ namespace MediaSDK
 
 			if (!bBroken)	
 			{
-				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector CORRECT entered number %d size %d", j, frameSizes[j]);
+				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector CORRECT entered number %d size %d missCounter %d", j, frameSizes[j], missedFrameCounter);
 
 				CVideoHeader videoHeader;
 
@@ -143,9 +144,10 @@ namespace MediaSDK
 			}
 			else
 			{
-				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector BROKENNNNNNNNNN entered number %d size %d", j, frameSizes[j]);
+				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector BROKENNNNNNNNNN entered number %d size %d missCounter %d", j, frameSizes[j], missedFrameCounter);
 
 				numOfMissingFrames++;
+				missedFrameCounter++;;
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
 			}
 

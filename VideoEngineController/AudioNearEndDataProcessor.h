@@ -46,6 +46,11 @@ namespace MediaSDK
 		void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte);
 
 
+	public:
+		
+		CAudioCallSession *m_pAudioCallSession = nullptr;
+
+
 	protected:
 
 		DataReadyListenerInterface* m_pDataReadyListener;
@@ -62,7 +67,6 @@ namespace MediaSDK
 
 		SmartPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
 		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-		CAudioCallSession *m_pAudioCallSession = nullptr;
 
 
 	private:
