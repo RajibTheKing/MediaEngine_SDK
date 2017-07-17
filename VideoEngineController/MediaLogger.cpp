@@ -191,6 +191,57 @@ namespace MediaSDK
 		m_pLoggerFileStream.flush();
 
 		m_vLogVector.erase(m_vLogVector.begin(), vPos);
+
+		//Check that the file is not getting too big
+		if (m_pLoggerFileStream.tellp() >= MAX_LOG_FILE_SIZE_BYTES)
+		{
+			RenameFile();
+		}
+	}
+
+	void MediaLogger::RenameFile()
+	{
+		//Close the file stream and rename
+		m_pLoggerFileStream.close();
+
+		char currentDateTime[45];
+		GetDateTime(currentDateTime);
+
+		string newFile(MEDIA_LOGGING_FILE_NAME);
+
+		//Date
+		newFile += strtok(currentDateTime, " []");
+
+		newFile += "_";
+
+		//Time
+		newFile += strtok(NULL, " []") + string(MEDIA_LOGGING_FILE_EXT);
+
+		//Now replace all the : on the time portion with "_"
+		auto colonPos = newFile.find(":");
+
+		while (colonPos != string::npos)
+		{
+			newFile.replace(colonPos, 1, "_");
+			colonPos = newFile.find(":");
+		}
+		
+		/// After replacing all ":", now add the path
+		/// Adding path before will replace ":" after drive letter in Windows
+		newFile.insert(0, MEDIA_LOGGING_PATH);
+
+		//delete the old one, if any
+		//std::remove(newFile.c_str());
+
+		//Rename
+		if (0 != std::rename(m_sFilePath.c_str(), newFile.c_str()))
+		{
+			//Rename fails, so wait a sec to get a unique name
+			Log(LOG_ERROR, "[%s] Rename to file %s\n FAILED", MEDIA_LOGGER_TAG, newFile.c_str());
+		}
+
+		//Reopen
+		m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
 	}
 
 	size_t MediaLogger::GetThreadID(char* buffer)
@@ -209,8 +260,7 @@ namespace MediaSDK
 
 	size_t MediaLogger::GetDateTime(char* buffer)
 	{
-		stringstream ss;
-		ss<<std::time(nullptr);
+		unsigned long long epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 
@@ -218,7 +268,7 @@ namespace MediaSDK
 
 		GetLocalTime(&st);
 
-		return _snprintf(buffer, 40, "[%02d-%02d-%04d %02d:%02d:%02d: %03s] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, ss.str().c_str());
+		return _snprintf(buffer, 40, "[%02d-%02d-%04d %02d:%02d:%02d %llu] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, epoch);
 #else
 
 		timeval curTime;
@@ -226,7 +276,7 @@ namespace MediaSDK
 		int milli = curTime.tv_usec / 1000, pos;
 
 		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
-		pos += snprintf(buffer + pos, 20, " %s] ", ss.str().c_str());
+		pos += snprintf(buffer + pos, 20, " %llu] ", epoch);
 
 		return pos;
 #endif 
@@ -234,9 +284,9 @@ namespace MediaSDK
 
 	void MediaLogger::StartMediaLoggingThread()
 	{
-		if (!m_bMediaLoggingThreadRunning)
+		if (!m_pThreadInstance.get())
 		{
-			m_threadInstance = std::thread(CreateLoggingThread, this);
+			m_pThreadInstance.reset(new std::thread(CreateLoggingThread, this));
 		}
 	}
 	
@@ -245,7 +295,7 @@ namespace MediaSDK
 		InternalLog("Stopping logger thread...");
 		m_bMediaLoggingThreadRunning = false;
 		
-		m_threadInstance.join();
+		m_pThreadInstance->join();
 	}
 
 	void *MediaLogger::CreateLoggingThread(void* param)

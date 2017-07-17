@@ -28,8 +28,12 @@
 #define THREAD_SLEEP_TIME 250
 #define MEDIA_LOG_MAX_SIZE	512
 
-#define MEDIA_LOGGING_FILE_NAME "MediaLog.log"
-#define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FILE_NAME
+/// MAX Size 10 MB, 1 MB = 1048576 bytes
+#define MAX_LOG_FILE_SIZE_BYTES 10485760
+
+#define MEDIA_LOGGING_FILE_NAME "MediaLog"
+#define MEDIA_LOGGING_FILE_EXT ".log"
+#define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FILE_NAME MEDIA_LOGGING_FILE_EXT
 
 namespace MediaSDK
 {
@@ -72,6 +76,7 @@ namespace MediaSDK
 		
 		bool CreateLogDirectory();
 		void WriteLogToFile();
+		void RenameFile();
 
 		void InternalLog(const char *format, ...);
 		
@@ -85,8 +90,8 @@ namespace MediaSDK
 	private:
 		
 		std::unique_ptr<CLockHandler> m_pMediaLoggerMutex;
+		std::unique_ptr<std::thread> m_pThreadInstance;
 		bool m_bMediaLoggingThreadRunning;
-		std::thread m_threadInstance;
 
 		std::vector<std::string> m_vLogVector;
 		std::ofstream   m_pLoggerFileStream;
@@ -121,6 +126,7 @@ namespace MediaSDK
 		{
 			MediaLog(LOG_INFO, "<<< %s Exited <<<", m_sName.c_str());
 		}
+
 	private:
 		std::string m_sName;
 	};
