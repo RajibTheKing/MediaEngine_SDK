@@ -39,7 +39,7 @@ namespace MediaSDK
 		ERRORLOG, //Changed to avoid conflict with wingdi
 		WARNING,
 		INFO,
-		DEBUG,
+		DEBUGLOG,
 		CONFIG,
 		CODE_TRACE,
 		PACKET_DUMP
@@ -48,7 +48,7 @@ namespace MediaSDK
 	#define LOG_ERROR LogLevel::ERRORLOG
 	#define LOG_WARNING LogLevel::WARNING
 	#define LOG_INFO LogLevel::INFO
-	#define LOG_DEBUG LogLevel::DEBUG
+	#define LOG_DEBUG LogLevel::DEBUGLOG
 	#define LOG_CONFIG LogLevel::CONFIG
 	#define LOG_CODE_TRACE LogLevel::CODE_TRACE
 	#define LOG_PACKET_DUMP LogLevel::PACKET_DUMP
