@@ -661,14 +661,17 @@ namespace MediaSDK
 #ifdef USE_AECM
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
-			if (m_pAudioCallSession->IsTraceSendingEnable() && m_pAudioCallSession->m_bTraceTailRemains)
+			if (m_pAudioCallSession->IsTraceSendingEnabled() && m_pAudioCallSession->m_bTraceTailRemains)
 			{
 				LOG18("Calling Generate Trace");
+				LOGFARQUAD("qpushpop while sending trace m_FarendBufferSize = %d",
+					m_pAudioCallSession->m_FarendBuffer.GetQueueSize());
 				m_pAudioCallSession->m_bTraceTailRemains = m_pAudioCallSession -> m_pTrace -> GenerateTrace(m_saPlayingData, 800);
 			}
 			
 			if (!m_pAudioCallSession->m_bTraceSent)
 			{
+				m_pAudioCallSession->m_FarendBuffer.ResetBuffer();
 				m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
 				m_pAudioCallSession->m_bTraceSent = true;
 			}
