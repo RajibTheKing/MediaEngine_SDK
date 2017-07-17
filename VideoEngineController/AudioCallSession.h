@@ -42,7 +42,7 @@ namespace MediaSDK
 
 	//#define AUDIO_SELF_CALL
 	//#define DUMP_FILE
-	//#define PCM_DUMP
+#define PCM_DUMP
 
 
 	//#define FIRE_ENC_TIME
@@ -132,6 +132,8 @@ namespace MediaSDK
 		CAudioShortBuffer  m_FarendBuffer;
 		short m_saFarendData[MAX_AUDIO_FRAME_Length];
 		AudioLinearBuffer* m_recordBuffer = nullptr;
+		int m_iStartingBufferSize;
+		int m_iDelayFractionOrig;
 
 		CTrace * m_pTrace;
 

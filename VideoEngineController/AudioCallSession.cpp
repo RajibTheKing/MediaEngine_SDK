@@ -69,6 +69,7 @@ namespace MediaSDK
 		m_pTrace = new CTrace();
 
 		m_iSpeakerType = nAudioSpeakerType;
+		m_bTraceSendingEnabled = false;
 		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			m_bTraceSendingEnabled = true;
@@ -253,6 +254,7 @@ namespace MediaSDK
 		m_FarendBuffer.ResetBuffer();
 		m_pFarEndProcessor->m_b1stPlaying = true;
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
+		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
 	}
 
 	void CAudioCallSession::ResetAEC()
@@ -470,8 +472,6 @@ namespace MediaSDK
 	{
 		return m_pNearEndProcessor->GetBaseOfRelativeTime();
 	}
-	int iStartingBufferSize = -1;
-	int iDelayFractionOrig = -1;
 
 	void CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
@@ -541,7 +541,7 @@ namespace MediaSDK
 						m_llTraceReceivingTime = Tools::CurrentTimestamp();
 						m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
 						//m_llDelayFraction = m_llDelay % 100;
-						iDelayFractionOrig = m_llDelayFraction;
+						m_iDelayFractionOrig = m_llDelayFraction;
 						m_llDelayFraction /= 8;
 						memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 						m_bTraceRecieved = true;
@@ -553,8 +553,8 @@ namespace MediaSDK
 			{
 				memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			}
-			LOG18("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
-				m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, iDelayFractionOrig);
+			LOGFARQUAD("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
+				m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, m_iDelayFractionOrig);
 
 
 			if (m_bEchoCancellerEnabled)
@@ -569,14 +569,14 @@ namespace MediaSDK
 				if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
 				{
 					long long llTS;
-					if (iStartingBufferSize == -1)
+					if (m_iStartingBufferSize == -1)
 					{
-						iStartingBufferSize = m_FarendBuffer.GetQueueSize();
+						m_iStartingBufferSize = m_FarendBuffer.GetQueueSize();
 					}
 					LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-					LOG18("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
-						m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
+					LOGFARQUAD("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
+						m_FarendBuffer.GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
 
 					int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
 					if (iFarendDataLength > 0)
