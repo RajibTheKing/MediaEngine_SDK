@@ -1,5 +1,4 @@
 #include "EncoderOpus.h"
-
 #include "LogPrinter.h"
 #include "Tools.h"
 

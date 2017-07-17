@@ -1,4 +1,4 @@
-
+#include "AudioMacros.h"
 #include "EventNotifier.h"
 #include <string.h>
 #include "LogPrinter.h"
@@ -153,13 +153,6 @@ namespace MediaSDK
 	{
 		notifyClientWithAudioAlarmCallback = callBackFunctionPointer;
 	}
-
-	bool CEventNotifier::IsVideoCallRunning()
-	{
-		return m_pController->m_bLiveCallRunning;
-	}
-
-
 
 } //namespace MediaSDK
 

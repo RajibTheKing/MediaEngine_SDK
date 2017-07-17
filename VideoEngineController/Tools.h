@@ -39,11 +39,6 @@
 
 namespace MediaSDK
 {
-#ifdef WIN32
-	typedef __int64 LongLong;
-#else 
-	typedef long long LongLong;
-#endif
 
 	class Tools
 	{

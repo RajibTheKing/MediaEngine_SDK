@@ -1,7 +1,3 @@
-//
-// Created by ipvision on 10/23/2016.
-//
-
 #include "LiveAudioDecodingQueue.h"
 #include "ThreadTools.h"
 #include "LogPrinter.h"

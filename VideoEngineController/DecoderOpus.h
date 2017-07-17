@@ -2,14 +2,9 @@
 #define AUDIO_OPUS_DECODER_H
 
 
-#include <stdlib.h>
-
 #include "AudioDecoderInterface.h"
-#include "opus.h"
-#include "Tools.h"
-#include "size.h"
-#include "AudioMacros.h"
-#include "LogPrinter.h"
+
+struct OpusDecoder;
 
 namespace MediaSDK
 {
@@ -17,10 +12,7 @@ namespace MediaSDK
 	class DecoderOpus : public AudioDecoderInterface
 	{
 		int err;
-
 		OpusDecoder	*decoder;
-		Tools m_Tools;
-
 
 	public:
 

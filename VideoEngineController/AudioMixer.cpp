@@ -1,9 +1,10 @@
 #include "AudioMixer.h"
 #include <string.h>
 #include <algorithm>
-
+#include "MuxHeader.h"
 #include "AudioMacros.h"
 #include "LogPrinter.h"
+
 
 namespace MediaSDK
 {

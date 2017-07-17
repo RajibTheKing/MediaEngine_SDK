@@ -1,9 +1,9 @@
-
 #include "AudioDecoderBuffer.h"
-
 #include <string.h>
 #include "Tools.h"
 #include "LogPrinter.h"
+
+
 
 namespace MediaSDK
 {
@@ -49,7 +49,7 @@ namespace MediaSDK
 		m_naBufferDataLength[m_iPushIndex] = nLength;
 
 #ifdef QUEUE_OVERFLOW_LOG
-		m_BufferInsertionTime[m_iPushIndex] = m_Tools.CurrentTimestamp();
+		m_BufferInsertionTime[m_iPushIndex] = Tools::CurrentTimestamp();
 #endif
 
 		if (m_nQueueSize == m_nQueueCapacity)
@@ -57,18 +57,18 @@ namespace MediaSDK
 #ifdef QUEUE_OVERFLOW_LOG
 			if (mt_lPrevOverFlowTime == -1)
 			{
-				mt_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
+				mt_lPrevOverFlowTime = Tools::CurrentTimestamp();
 			}
 			else
 			{
-				long long lOverFlowTime = m_Tools.CurrentTimestamp() - mt_lPrevOverFlowTime;
+				long long lOverFlowTime = Tools::CurrentTimestamp() - mt_lPrevOverFlowTime;
 				mt_lSumOverFlowTime += lOverFlowTime;
 				mt_nOverFlowCount++;
 				mt_dAvgOverFlowTime = mt_lSumOverFlowTime * 1.0 / mt_nOverFlowCount;
 
 
 				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Audio Buffer OverFlow ( AudioDecodingBuffer )--> OverFlow DifftimeDecode  = " + m_Tools.LongLongToString(lOverFlowTime) + ", mt_dAvgOverFlowTime = " + m_Tools.DoubleToString(mt_dAvgOverFlowTime));
-				mt_lPrevOverFlowTime = m_Tools.CurrentTimestamp();
+				mt_lPrevOverFlowTime = Tools::CurrentTimestamp();
 			}
 
 #endif

@@ -1,5 +1,8 @@
 #include "AudioPacketHeader.h"
 #include "AudioHeaderCommon.h"
+#include "AudioSessionOptions.h"
+
+
 
 namespace MediaSDK
 {

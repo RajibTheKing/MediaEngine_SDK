@@ -4,23 +4,34 @@
 
 #include "AudioFarEndDataProcessor.h"
 
+
 namespace MediaSDK
 {
 
 	class FarEndProcessorCall : public AudioFarEndDataProcessor
 	{
-
-
+		
 	public:
 
-		FarEndProcessorCall(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning);
+		FarEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning);
 		~FarEndProcessorCall() { }
 		bool m_bProcessFarendDataStarted;
 
 		void ProcessFarEndData();
+
+	private:
+
+		void DequeueData(int &m_nDecodingFrameSize);
+		bool IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion);
+
+
+	private:
+
+		bool IsQueueEmpty();
+		int m_iAudioVersionFriend = -1;
+
 	};
 
 } //namespace MediaSDK
 
-
-#endif  // !AUDIO_FAR_END_PROCESSOR_CALL_H
+#endif

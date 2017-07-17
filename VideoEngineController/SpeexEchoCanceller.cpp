@@ -4,10 +4,9 @@
 
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 
+
 namespace MediaSDK
 {
-
-
 	SpeexEchoCanceller::SpeexEchoCanceller() : m_bFarendArrived(false), m_bReadingFarend(false), m_bWritingFarend(false)
 	{
 #ifdef USE_AECM

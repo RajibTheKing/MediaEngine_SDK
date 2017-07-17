@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 
-#include "AudioVideoEngineDefinitions.h"
 #include "LogPrinter.h"
 
 namespace MediaSDK
@@ -33,8 +32,6 @@ namespace MediaSDK
 		void fireNetworkStrengthNotificationEvent(long long callID, int eventType);
 
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
-
-
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
 
 
@@ -43,8 +40,6 @@ namespace MediaSDK
 		void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
 		void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
-		bool IsVideoCallRunning();
-
 
 		static const int NETWORK_STRENTH_GOOD = 202;
 		static const int NETWORK_STRENTH_EXCELLENT = 204;

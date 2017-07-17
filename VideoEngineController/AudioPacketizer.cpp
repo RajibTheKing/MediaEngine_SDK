@@ -2,6 +2,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 
+
 namespace MediaSDK
 {
 

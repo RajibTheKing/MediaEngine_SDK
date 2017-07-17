@@ -353,9 +353,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\VideoEngineController\AudioVideoEngineDefinitions.h">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\VideoEngineController\codec_api.h">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClInclude>

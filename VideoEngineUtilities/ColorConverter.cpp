@@ -11,7 +11,7 @@ typedef unsigned char byte;
 namespace MediaSDK
 {
 
-CColorConverter::CColorConverter(int iVideoHeight, int iVideoWidth, CCommonElementsBucket* commonElementsBucket, LongLong lfriendID) :
+CColorConverter::CColorConverter(int iVideoHeight, int iVideoWidth, CCommonElementsBucket* commonElementsBucket, long long lfriendID) :
 
 /*m_iVideoHeight(iVideoHeight),
 m_iVideoWidth(iVideoWidth),

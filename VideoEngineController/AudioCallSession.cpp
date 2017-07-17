@@ -1,57 +1,66 @@
+#include <sstream>
+#include <string>
+
 #include "AudioCallSession.h"
 #include "CommonElementsBucket.h"
-#include "LogPrinter.h"
 #include "Tools.h"
+#include "LogPrinter.h"
+#include "AudioMacros.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioDePacketizer.h"
 #include "LiveAudioParser.h"
-
+#include "AudioPacketHeader.h"
+#include "AudioShortBufferForPublisherFarEnd.h"
+#include "AudioNearEndDataProcessor.h"
+#include "AudioFarEndDataProcessor.h"
 #include "EchoCancellerProvider.h"
 #include "EchoCancellerInterface.h"
-
-#ifdef LOCAL_SERVER_LIVE_CALL
-#define LOCAL_SERVER_IP "192.168.0.120"
-#endif
-
-#define DUPLICATE_AUDIO
-
 #include "NoiseReducerProvider.h"
-
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
-
 #include "AudioEncoderProvider.h"
 #include "AudioDecoderProvider.h"
 #include "AudioEncoderInterface.h"
-
 #include "AudioNearEndProcessorPublisher.h"
 #include "AudioNearEndProcessorViewer.h"
 #include "AudioNearEndProcessorCall.h"
 #include "AudioNearEndProcessorThread.h"
-
 #include "AudioFarEndProcessorPublisher.h"
 #include "AudioFarEndProcessorViewer.h"
 #include "AudioFarEndProcessorChannel.h"
 #include "AudioFarEndProcessorCall.h"
 #include "AudioFarEndProcessorThread.h"
+#include "AudioEncoderBuffer.h"
+#include "AudioResources.h"
+#include "AudioDecoderBuffer.h"
 #include "Trace.h"
+#include "AudioLinearBuffer.h"
 
-#include <sstream>
 
-#define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
 
 #ifdef USE_VAD
 #include "Voice.h"
 #endif
 
+#ifdef LOCAL_SERVER_LIVE_CALL
+#define LOCAL_SERVER_IP "192.168.0.120"
+#include "VideoSockets.h"
+#endif
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include <dispatch/dispatch.h>
+#endif
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
 
+#define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
+#define DUPLICATE_AUDIO
+
 namespace MediaSDK
 {
-
-	CAudioCallSession::CAudioCallSession(LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType) :
+	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType) :
+		m_bIsVideoCallRunning(isVideoCallRunning),
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
 		m_llLastPlayTime(0),
@@ -59,11 +68,17 @@ namespace MediaSDK
 		m_bIsAECMNearEndThreadBusy(false),
 		m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 		m_bIsPublisher(true),
-		m_AudioNearEndBuffer(AUDIO_ENCODING_BUFFER_SIZE),
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr)
 	{
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
+	
+		m_pAudioCallSessionMutex.reset(new CLockHandler);
+		m_PublisherBufferForMuxing.reset(new AudioShortBufferForPublisherFarEnd);
+		m_FarendBuffer.reset(new CAudioShortBuffer);
+		m_AudioNearEndBuffer.reset(new CAudioShortBuffer);
+		m_ViewerInCallSentDataQueue.reset(new CAudioShortBuffer);
+		
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
@@ -89,8 +104,6 @@ namespace MediaSDK
 			m_bTraceSendingEnabled = false;
 			//m_pPlayerGain->SetGain(9);
 		}
-
-		m_pAudioCallSessionMutex.reset(new CLockHandler);
 
 		m_iPrevRecvdSlotID = -1;
 		m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
@@ -157,7 +170,7 @@ namespace MediaSDK
 #endif 
 
 		InitNearEndDataProcessing();
-		InitFarEndDataProcessing(pSharedObject);
+		InitFarEndDataProcessing();
 
 		ResetTrace();
 
@@ -248,7 +261,7 @@ namespace MediaSDK
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
-		m_FarendBuffer.ResetBuffer();
+		m_FarendBuffer->ResetBuffer();
 		m_pFarEndProcessor->m_b1stPlaying = true;
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
 	}
@@ -284,16 +297,16 @@ namespace MediaSDK
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
-				m_pNearEndProcessor = new AudioNearEndProcessorPublisher(m_nServiceType, m_nEntityType, this, &m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
+				m_pNearEndProcessor = new AudioNearEndProcessorPublisher(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 			}
 			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 			{
-				m_pNearEndProcessor = new AudioNearEndProcessorViewer(m_nServiceType, m_nEntityType, this, &m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
+				m_pNearEndProcessor = new AudioNearEndProcessorViewer(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 			}
 		}
 		else
 		{
-			m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, &m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
+			m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning, m_bIsVideoCallRunning);
 		}
 
 		m_pNearEndProcessor->SetDataReadyCallback(this);
@@ -301,7 +314,7 @@ namespace MediaSDK
 	}
 
 
-	void CAudioCallSession::InitFarEndDataProcessing(CCommonElementsBucket* pSharedObject)
+	void CAudioCallSession::InitFarEndDataProcessing()
 	{
 		MR_DEBUG("#farEnd# CAudioCallSession::StartFarEndDataProcessing()");
 
@@ -309,20 +322,20 @@ namespace MediaSDK
 		{
 			if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)		//Is Viewer or Callee.
 			{
-				m_pFarEndProcessor = new FarEndProcessorViewer(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+				m_pFarEndProcessor = new FarEndProcessorViewer(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 			}
 			else if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
-				m_pFarEndProcessor = new FarEndProcessorPublisher(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+				m_pFarEndProcessor = new FarEndProcessorPublisher(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 			}
 		}
 		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
 		{
-			m_pFarEndProcessor = new FarEndProcessorChannel(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+			m_pFarEndProcessor = new FarEndProcessorChannel(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 		}
 		else if (SERVICE_TYPE_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
 		{
-			m_pFarEndProcessor = new FarEndProcessorCall(m_FriendID, m_nServiceType, m_nEntityType, this, pSharedObject, m_bLiveAudioStreamRunning);
+			m_pFarEndProcessor = new FarEndProcessorCall(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 		}
 
 		m_pFarEndProcessor->SetEventCallback(this, this, this);
@@ -350,7 +363,7 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
-			m_Tools.SOSleep(1);
+			Tools::SOSleep(1);
 		}
 
 		//LOGE("### Start call in live");
@@ -375,11 +388,11 @@ namespace MediaSDK
 #endif
 		}
 
-		m_ViewerInCallSentDataQueue.ResetBuffer();
+		m_ViewerInCallSentDataQueue->ResetBuffer();
 		m_pNearEndProcessor->StartCallInLive(m_nEntityType);
 		m_pFarEndProcessor->StartCallInLive(m_nEntityType);
 
-		m_Tools.SOSleep(20);
+		Tools::SOSleep(20);
 
 		m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
@@ -403,7 +416,7 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
-			m_Tools.SOSleep(1);
+			Tools::SOSleep(1);
 		}
 
 #ifdef DUMP_FILE
@@ -414,16 +427,16 @@ namespace MediaSDK
 #endif
 
 		//m_pLiveAudioReceivedQueue->ResetBuffer();
-		m_pFarEndProcessor->m_AudioReceivedBuffer.ResetBuffer();
+		m_pFarEndProcessor->m_AudioReceivedBuffer->ResetBuffer();
 
-		m_Tools.SOSleep(20);
+		Tools::SOSleep(20);
 
 		if (m_pEcho.get())
 		{
 			//TODO: WE MUST FIND BETTER WAY TO AVOID THIS LOOPING
 			while (m_bIsAECMNearEndThreadBusy || m_bIsAECMFarEndThreadBusy)
 			{
-				m_Tools.SOSleep(1);
+				Tools::SOSleep(1);
 			}
 
 			m_pEcho.reset();
@@ -511,7 +524,7 @@ namespace MediaSDK
 				m_nFramesRecvdSinceTraceSent++;
 				if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 				{
-					m_FarendBuffer.ResetBuffer();
+					m_FarendBuffer->ResetBuffer();
 					m_bTraceWillNotBeReceived = true; // 8-(
 				}
 				else
@@ -553,14 +566,14 @@ namespace MediaSDK
 					long long llTS;
 					if (iStartingBufferSize == -1)
 					{
-						iStartingBufferSize = m_FarendBuffer.GetQueueSize();
+						iStartingBufferSize = m_FarendBuffer->GetQueueSize();
 					}
 					LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 					LOG18("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
 						m_FarendBuffer.GetQueueSize(), iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
 
-					int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
+					int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 					if (iFarendDataLength > 0)
 					{
 						if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
@@ -684,7 +697,7 @@ namespace MediaSDK
 	}
 
 
-	void CAudioCallSession::GetAudioSendToData(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
+	void CAudioCallSession::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 	{
 		m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthPeer, llAudioChunkDuration, llAudioChunkRelativeTime);

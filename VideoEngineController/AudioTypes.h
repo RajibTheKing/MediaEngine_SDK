@@ -1,14 +1,14 @@
 #ifndef AUDIO_TYPES_H
 #define AUDIO_TYPES_H
 
-#include "AudioVideoEngineDefinitions.h"
 #include <vector>
 #include <cstddef>
+
 
 namespace MediaSDK
 {
 	//External Callbacks
-	typedef void(*SendFunctionPointerType)(LongLong, int, unsigned char*, int, int, std::vector< std::pair<int, int> >);
+	typedef void(*SendFunctionPointerType)(long long, int, unsigned char*, int, int, std::vector< std::pair<int, int> >);
 
 	//Internal Callback Interfaces.
 	//TODO: Should go on different header
