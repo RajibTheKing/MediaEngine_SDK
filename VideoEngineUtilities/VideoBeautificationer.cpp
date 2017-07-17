@@ -11,42 +11,54 @@ namespace MediaSDK
 
 int m_applyBeatification;
 
+int m_Step0Sigma = 128;
+int m_Step1Sigma = 64;
+int m_Step2Sigma = 32;
+int m_Step3Sigma = 16;
+int m_Step4Sigma = 8;
+
+int m_Step0SigmaDigit = 7;
+int m_Step1SigmaDigit = 6;
+int m_Step2SigmaDigit = 5;
+int m_Step3SigmaDigit = 4;
+int m_Step4SigmaDigit = 3;
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 #import <sys/utsname.h> // import it in your header or implementation file.
 //#import <UIKit/UIKit.h>
 
-int m_sigma = 64;
+int m_sigma = m_Step1Sigma;
 
 #elif defined(__ANDROID__)
 
-int m_sigma = 64;
+int m_sigma = m_Step1Sigma;
 
 #elif defined(DESKTOP_C_SHARP)
 
-int m_sigma = 32;
+int m_sigma = m_Step2Sigma;
 
 #else 
 
-int m_sigma = 35;
+int m_sigma = m_Step2Sigma;
 
 #endif
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-int m_sigmaDigit = 6;
+int m_sigmaDigit = m_Step1SigmaDigit;
 
 #elif defined(__ANDROID__)
 
-int m_sigmaDigit = 6;
+int m_sigmaDigit = m_Step1SigmaDigit;
 
 #elif defined(DESKTOP_C_SHARP)
 
-int m_sigmaDigit = 5;
+int m_sigmaDigit = m_Step2SigmaDigit;
 
 #else 
 
-int m_sigmaDigit = 5;
+int m_sigmaDigit = m_Step2SigmaDigit;
 
 #endif
 
@@ -83,13 +95,13 @@ m_EffectValue(10)
 
 	if (m_nIsGreaterThen5s > 0)
 	{
-		m_sigma = 128;
-		m_sigmaDigit = 7;
+		m_sigma = m_Step0Sigma;
+		m_sigmaDigit = m_Step0SigmaDigit;
 	}
 	else
 	{
-		m_sigma = 64;
-		m_sigmaDigit = 6;
+		m_sigma = m_Step1Sigma;
+		m_sigmaDigit = m_Step1SigmaDigit;
 	}
 
 #endif
@@ -858,39 +870,78 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	if (m_AvarageValue < 50)
 	{
-		m_sigma = 16;
-		m_sigmaDigit = 4;
+		m_sigma = m_Step3Sigma;
+		m_sigmaDigit = m_Step3SigmaDigit;
 	}
-	else if (m_AvarageValue < 75)
+	else if (m_AvarageValue < 100)
 	{
-		m_sigma = 32;
-		m_sigmaDigit = 5;
+		m_sigma = m_Step2Sigma;
+		m_sigmaDigit = m_Step2SigmaDigit;
 	}
 	else
 	{
-		m_sigma = 64;
-		m_sigmaDigit = 6;
+		m_sigma = m_Step1Sigma;
+		m_sigmaDigit = m_Step1SigmaDigit;
 	}
 
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
+	/*
 	if (m_AvarageValue < 50)
 	{
-		m_sigma = 32;
-		m_sigmaDigit = 5;
+		m_sigma = m_Step2Sigma;
+		m_sigmaDigit = m_Step2SigmaDigit;
 	}
 	else
 	{
 		if (m_nIsGreaterThen5s > 0)
 		{
-			m_sigma = 128;
-			m_sigmaDigit = 7;
+			m_sigma = m_Step0Sigma;
+			m_sigmaDigit = m_Step0SigmaDigit;
 		}
 		else
 		{
-			m_sigma = 64;
-			m_sigmaDigit = 6;
+			m_sigma = m_Step1Sigma;
+			m_sigmaDigit = m_Step1SigmaDigit;
 		}	
+	}
+	*/
+
+	if (m_nIsGreaterThen5s > 0)
+	{
+		if (m_AvarageValue < 50)
+		{
+			m_sigma = m_Step3Sigma;
+			m_sigmaDigit = m_Step3SigmaDigit;
+		}
+		else if (m_AvarageValue < 100)
+		{
+			m_sigma = m_Step2Sigma;
+			m_sigmaDigit = m_Step2SigmaDigit;
+		}
+		else
+		{
+			m_sigma = m_Step1Sigma;
+			m_sigmaDigit = m_Step1SigmaDigit;
+		}
+	}
+	else
+	{
+		if (m_AvarageValue < 50)
+		{
+			m_sigma = m_Step3Sigma;
+			m_sigmaDigit = m_Step3SigmaDigit;
+		}
+		else if (m_AvarageValue < 100)
+		{
+			m_sigma = m_Step2Sigma;
+			m_sigmaDigit = m_Step2SigmaDigit;
+		}
+		else
+		{
+			m_sigma = m_Step1Sigma;
+			m_sigmaDigit = m_Step1SigmaDigit;
+		}
 	}
 
 #endif
