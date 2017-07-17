@@ -8,7 +8,7 @@ namespace MediaSDK
 #define MEDIA_ENGINE_BUILD_NUMBER 935002515
 
 //Enable to create log
-#define LOG_ENABLED
+//#define LOG_ENABLED
 
 
 } // namespace MediaSDK

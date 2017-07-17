@@ -162,7 +162,8 @@ namespace MediaSDK
 #define MediaLogRelease();
 #define MediaLog(a, ...);
 
-#define ScopeLog(...)
+#define ScopeLog(scopeName)
+#define BenchmarkScope(scopeName)
 
 #endif
 }
