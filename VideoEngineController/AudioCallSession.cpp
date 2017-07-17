@@ -553,7 +553,7 @@ namespace MediaSDK
 			{
 				memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			}
-			LOGFARQUAD("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, iDelayFractionOrig= %d\n",
+			LOGFARQUAD("55555Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, m_iDelayFractionOrig= %d\n",
 				m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, m_iDelayFractionOrig);
 
 
@@ -572,6 +572,8 @@ namespace MediaSDK
 					if (m_iStartingBufferSize == -1)
 					{
 						m_iStartingBufferSize = m_FarendBuffer.GetQueueSize();
+						LOGFARQUAD("qpushpop getting m_iStartingBufferSize,  m_FarendBufferSize = %d, m_iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d",
+							m_FarendBuffer.GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved);
 					}
 					LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
