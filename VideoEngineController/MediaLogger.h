@@ -131,6 +131,30 @@ namespace MediaSDK
 		std::string m_sName;
 	};
 
+	/**
+	* This is an unitily class to benchmark a given scope. The execution time shall be logged when the scoped is over
+	* @param scopeName Name of the scope
+	**/
+	class BenchmarkScope
+	{
+	public:
+		BenchmarkScope(char* scopeName) :
+			m_sName(scopeName),
+			m_nStart(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count())
+		{
+			MediaLog(LOG_INFO, "[BENCHMARK] %s Started", scopeName);
+		}
+
+		~BenchmarkScope()
+		{
+			MediaLog(LOG_INFO, "[BENCHMARK] %s Finished, Execution time %.03Lf ms", m_sName.c_str(), (long double)(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - m_nStart) / 1000.00L);
+		}
+
+	private:
+		std::string m_sName;
+		unsigned long long m_nStart;
+};
+
 #else
 
 /// If log not enabled then these macros will work as a placeholder

@@ -35,8 +35,6 @@ namespace MediaSDK
 	{
 		MediaLogInit(LOG_DEBUG);
 
-		ScopeLog("CInterfaceOfAudioVideoEngine");
-
 		m_pcController = nullptr;
 			
 		CController* pController = new CController(szLoggerPath, nLoggerPrintLevel);
