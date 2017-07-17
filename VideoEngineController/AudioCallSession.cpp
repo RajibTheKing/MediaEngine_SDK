@@ -575,7 +575,7 @@ namespace MediaSDK
 					}
 					LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-					LOGFARQUAD("qpushpop m_FarendBufferSize = %d, iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
+					LOGFARQUAD("qpushpop m_FarendBufferSize = %d, m_iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
 						m_FarendBuffer.GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
 
 					int iFarendDataLength = m_FarendBuffer.DeQueue(m_saFarendData, llTS);
