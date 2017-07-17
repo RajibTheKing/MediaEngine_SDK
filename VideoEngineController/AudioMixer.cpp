@@ -23,6 +23,10 @@ namespace MediaSDK
 		memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
 	}
 
+	AudioMixer::~AudioMixer()
+	{
+	}
+
 	void AudioMixer::reset(int iNumberOfBitsPerSample, int iFrameSize) // sample size ..
 	{
 		m_iTotalCallee = 0;
