@@ -39,6 +39,7 @@
 		6A4F57871E0A3D8000C48ACC /* VideoBeautificationer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A4F57851E0A3D8000C48ACC /* VideoBeautificationer.cpp */; };
 		6A5659A11F0D11A500500DBB /* MediaLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A56599F1F0D11A500500DBB /* MediaLogger.cpp */; };
 		6A7A40D11F1C89A600736403 /* MediaLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A40CF1F1C89A600736403 /* MediaLogger.cpp */; };
+		6A7A40D41F1C987F00736403 /* MediaLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A40D21F1C987F00736403 /* MediaLogger.cpp */; };
 		6AAEC53D1E07EF9E001525FE /* VideoHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */; };
 		9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */; };
 		9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */; };
@@ -214,6 +215,8 @@
 		6A583FC51ED1B81D0044205A /* CommonTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommonTypes.h; path = VideoEngineController/CommonTypes.h; sourceTree = "<group>"; };
 		6A7A40CF1F1C89A600736403 /* MediaLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MediaLogger.cpp; path = VideoEngineController/MediaLogger.cpp; sourceTree = "<group>"; };
 		6A7A40D01F1C89A600736403 /* MediaLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaLogger.h; path = VideoEngineController/MediaLogger.h; sourceTree = "<group>"; };
+		6A7A40D21F1C987F00736403 /* MediaLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MediaLogger.cpp; path = VideoEngineController/MediaLogger.cpp; sourceTree = "<group>"; };
+		6A7A40D31F1C987F00736403 /* MediaLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaLogger.h; path = VideoEngineController/MediaLogger.h; sourceTree = "<group>"; };
 		6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoHeader.cpp; path = VideoEngineController/VideoHeader.cpp; sourceTree = "<group>"; };
 		6AAEC53C1E07EF9E001525FE /* VideoHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoHeader.h; path = VideoEngineController/VideoHeader.h; sourceTree = "<group>"; };
 		6AFFA2D11E9CE8CA00BDDC63 /* AudioMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioMacros.h; path = VideoEngineController/AudioMacros.h; sourceTree = "<group>"; };
@@ -608,6 +611,8 @@
 				DA988EBD1EBF509400B5B782 /* NoiseReducerInterface.h */,
 				DA988E8B1EBF4D3600B5B782 /* NoiseReducerProvider.cpp */,
 				DA988EBE1EBF509400B5B782 /* NoiseReducerProvider.h */,
+				6A7A40D21F1C987F00736403 /* MediaLogger.cpp */,
+				6A7A40D31F1C987F00736403 /* MediaLogger.h */,
 				DA3AF4B91C55F67400E566BB /* PacketHeader.cpp */,
 				DA3AF4BA1C55F67400E566BB /* PacketHeader.h */,
 				DA2A7B061C38ED4500E6AFF8 /* PairMap.cpp */,
@@ -853,6 +858,7 @@
 				9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */,
 				DA988E791EBF4CA300B5B782 /* AudioFarEndProcessorThread.cpp in Sources */,
 				DA848BE61E9CFD43002BC7DE /* LiveAudioParserForChannel.cpp in Sources */,
+				6A7A40D41F1C987F00736403 /* MediaLogger.cpp in Sources */,
 				188587F41C0AEEAC00B1F435 /* LogPrinter.cpp in Sources */,
 				6A3E37531E0932F600228138 /* LiveStreamingHeader.cpp in Sources */,
 				6A5659A11F0D11A500500DBB /* MediaLogger.cpp in Sources */,
