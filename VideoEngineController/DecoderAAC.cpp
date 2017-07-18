@@ -2,10 +2,6 @@
 #include "Size.h"
 #include "LogPrinter.h"
 
-#if defined(TARGET_OS_WINDOWS_PHONE)
-#include <windows.h>
-#endif
-
 
 
 namespace MediaSDK

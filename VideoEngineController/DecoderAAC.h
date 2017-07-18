@@ -2,6 +2,10 @@
 #define AUDIO_AAC_DECODER_H
 
 
+#if defined(TARGET_OS_WINDOWS_PHONE)
+#include <windows.h>
+#endif
+
 #include "AudioDecoderInterface.h"
 #include "aacdecoder_lib.h"
 
