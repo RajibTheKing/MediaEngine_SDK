@@ -911,18 +911,18 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	{
 		if (m_AvarageValue < 50)
 		{
-			m_sigma = m_Step3Sigma;
-			m_sigmaDigit = m_Step3SigmaDigit;
-		}
-		else if (m_AvarageValue < 100)
-		{
 			m_sigma = m_Step2Sigma;
 			m_sigmaDigit = m_Step2SigmaDigit;
 		}
-		else
+		else if (m_AvarageValue < 100)
 		{
 			m_sigma = m_Step1Sigma;
 			m_sigmaDigit = m_Step1SigmaDigit;
+		}
+		else
+		{
+			m_sigma = m_Step0Sigma;
+			m_sigmaDigit = m_Step0SigmaDigit;
 		}
 	}
 	else
