@@ -135,9 +135,6 @@
     <ClCompile Include="..\..\VideoEngineController\AverageCalculator.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp">
-      <Filter>Source Files\VideoEngineController</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\LiveReceiver.cpp">
       <Filter>Source Files\VideoEngineController</Filter>
     </ClCompile>
@@ -349,6 +346,9 @@
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\VideoEngineController\AudioLinearBuffer.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VideoEngineController\AudioFileCodec.cpp">
       <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
   </ItemGroup>
