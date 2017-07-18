@@ -1,13 +1,12 @@
+#include <string.h>
 
 #include "AudioEncoderBuffer.h"
-
-#include <string.h>
 #include "LogPrinter.h"
 #include "Tools.h"
 
+
 namespace MediaSDK
 {
-
 	CAudioShortBuffer::CAudioShortBuffer() :
 
 		m_iPushIndex(0),
@@ -70,18 +69,18 @@ namespace MediaSDK
 
 			if (mt_llPrevOverFlowTime == -1)
 			{
-				mt_llPrevOverFlowTime = m_Tools.CurrentTimestamp();
+				mt_llPrevOverFlowTime = Tools::CurrentTimestamp();
 			}
 			else
 			{
-				long long llOverFlowTime = m_Tools.CurrentTimestamp() - mt_llPrevOverFlowTime;
+				long long llOverFlowTime = Tools::CurrentTimestamp() - mt_llPrevOverFlowTime;
 				mt_llSumOverFlowTime += llOverFlowTime;
 				mt_nOverFlowCounter++;
 				m_dAvgOverFlowTime = mt_llSumOverFlowTime * 1.0 / mt_nOverFlowCounter;
 
-				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Audio Buffer OverFlow ( AudioEncoderBuffer ) --> OverFlow Difftime = " + m_Tools.LongLongToString(llOverFlowTime) + ", m_dAvgOverFlowTimeDif = " + m_Tools.DoubleToString(m_dAvgOverFlowTime));
+				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Audio Buffer OverFlow ( AudioEncoderBuffer ) --> OverFlow Difftime = " + Tools::LongLongToString(llOverFlowTime) + ", m_dAvgOverFlowTimeDif = " + Tools::DoubleToString(m_dAvgOverFlowTime));
 
-				mt_llPrevOverFlowTime = m_Tools.CurrentTimestamp();
+				mt_llPrevOverFlowTime = Tools::CurrentTimestamp();
 			}
 
 

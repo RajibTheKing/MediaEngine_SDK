@@ -6,8 +6,6 @@
 #include <vector>
 #include <thread>
 
-#include "AudioVideoEngineDefinitions.h"
-
 #ifndef WIN32
 #include <errno.h>
 #endif

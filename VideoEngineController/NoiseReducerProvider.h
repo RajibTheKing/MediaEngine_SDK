@@ -5,12 +5,11 @@
 #include "AudioTypes.h"
 #include "SmartPointer.h"
 
+
 namespace MediaSDK
 {
 
-
 	class NoiseReducerInterface;
-
 
 	class NoiseReducerProvider
 	{

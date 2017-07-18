@@ -18,7 +18,6 @@ clean_videoEngine = 0
 debugOrRelease = 0 # 0 -> debug, 1-> release
 clean_callsdk = 0
 call_build = 0
-clean_ringid = 0
 ringid_build = 0
 libraryRelease = 0
 log_enabled = 0
@@ -121,22 +120,12 @@ def buildCallSDK():
 	
 def buildRingID():
 	global ret
-	if clean_ringid == 1:
-		os.chdir(ringidDesktop)
-		if debugOrRelease == 0: 
-			ret = subprocess.call(["msbuild.exe", "ringID.sln", "/t:Clean", "/p:configuration=debug"], shell=True)
-			check()
-		else: 
-			ret = subprocess.call(["msbuild.exe", "ringID.sln", "/t:Clean", "/p:configuration=release"], shell=True)
-			check()
-		
 	os.chdir(ringidDesktop)
-	if debugOrRelease == 0: 
-		ret = subprocess.call(["msbuild.exe", "ringID.sln", "/p:configuration=debug"], shell=True)
-		check()
-	else: 
-		ret = subprocess.call(["msbuild.exe", "ringID.sln", "/p:configuration=release"], shell=True)
-		check()
+	ret = subprocess.call(["msbuild.exe", "ringID.sln", "/t:Clean", "/p:configuration=debug"], shell=True)
+	check()
+		
+	ret = subprocess.call(["msbuild.exe", "ringID.sln", "/p:configuration=debug"], shell=True)
+	check()
 	
 ln = 60
 
@@ -165,18 +154,16 @@ while True:
 		break
 	elif str[0] == 'n' or str[0] == 'N':
 		log_enabled = 0
+		while True:
+			str = raw_input("Enter 'd' for debug build or 'r' for release build... (d/r)  ")
+			if len(str) == 1:
+				if str[0] == 'd' or str[0] == 'D':
+					debugOrRelease = 0
+					break
+				elif str[0] == 'r' or str[0] == 'R':
+					debugOrRelease = 1
+					break
 		break
-
-while True:
-	str = raw_input("Enter 'd' for debug build or 'r' for release build... (d/r)  ")
-	if len(str) == 1:
-		if str[0] == 'd' or str[0] == 'D':
-			debugOrRelease = 0
-			break
-		elif str[0] == 'r' or str[0] == 'R':
-			debugOrRelease = 1
-			break
-
 
 while True:
 	ins = raw_input("Want to give callsdk build? (Y/n)  ")
@@ -203,15 +190,6 @@ while True:
 	if len(ins) == 1:
 		if ins[0] == 'Y' or ins[0] == 'y':
 			ringid_build = 1
-			while True:
-				str = raw_input("Want to clean build ringid? (Y/n)  ")
-				if len(str) == 1:
-					if str[0] == 'y' or str[0] == 'Y':
-						clean_ringid = 1
-						break
-					elif str[0] == 'n' or str[0] == 'N':
-						clean_ringid = 0
-						break
 			break
 
 		elif ins[0] == 'N' or ins[0] == 'n':

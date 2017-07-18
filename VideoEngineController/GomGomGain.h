@@ -4,6 +4,7 @@
 #include "AudioGainInterface.h"
 #include "AudioMacros.h"
 
+
 namespace MediaSDK
 {
 
@@ -13,6 +14,7 @@ namespace MediaSDK
 	{
 
 	public:
+
 		GomGomGain();
 
 		virtual ~GomGomGain();

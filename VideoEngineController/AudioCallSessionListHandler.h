@@ -1,17 +1,14 @@
 #ifndef _AUDIO_CALL_SESSION_LIST_HANDLER_H_
 #define _AUDIO_CALL_SESSION_LIST_HANDLER_H_
 
-#include <stdio.h>
-#include <string>
-#include <map>
 
-#include "AudioCallSession.h"
-#include "ThreadTools.h"
+#include <map>
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 
 namespace MediaSDK
 {
+	class CAudioCallSession;
 
 	class CAudioCallSessionListHandler
 	{
@@ -21,17 +18,17 @@ namespace MediaSDK
 		CAudioCallSessionListHandler();
 		~CAudioCallSessionListHandler();
 
-		void AddToAudioSessionList(LongLong friendName, CAudioCallSession* AudioSession);
-		CAudioCallSession* GetFromAudioSessionList(LongLong friendName);
-		bool RemoveFromAudioSessionList(LongLong friendName);
+		void AddToAudioSessionList(long long friendName, CAudioCallSession* AudioSession);
+		CAudioCallSession* GetFromAudioSessionList(long long friendName);
+		bool RemoveFromAudioSessionList(long long friendName);
 		int SizeOfAudioSessionList();
-		bool IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &AudioSession);
-		bool IsAudioSessionExist(LongLong lFriendName);
+		bool IsAudioSessionExist(long long lFriendName, CAudioCallSession* &AudioSession);
+		bool IsAudioSessionExist(long long lFriendName);
 		void ClearAllFromAudioSessionList();
 
 	private:
 
-		std::map<LongLong, CAudioCallSession*> m_mAudioSessionList;
+		std::map<long long, CAudioCallSession*> m_mAudioSessionList;
 
 	protected:
 

@@ -2,17 +2,19 @@
 #include "LogPrinter.h"
 #include "AudioCallSession.h"
 #include "AudioEncoderBuffer.h"
+#include "AudioPacketHeader.h"
+#include "AudioLinearBuffer.h"
+#include "Tools.h"
+
+
 
 namespace MediaSDK
 {
 
-	AudioNearEndProcessorViewer::AudioNearEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CAudioShortBuffer *pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
+	AudioNearEndProcessorViewer::AudioNearEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning) :
 		AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorViewerInCall::AudioNearEndProcessorViewerInCall()");
-
-		m_pAudioNearEndBuffer = pAudioEncodingBuffer;
-		m_pAudioCallSession = pAudioCallSession;
 	}
 
 
@@ -34,7 +36,7 @@ namespace MediaSDK
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 			int nDataLenthInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
 
-			m_pAudioCallSession->m_ViewerInCallSentDataQueue.EnQueue(m_saAudioRecorderFrame, nDataLenthInShort, m_iPacketNumber);
+			m_pAudioCallSession->m_ViewerInCallSentDataQueue->EnQueue(m_saAudioRecorderFrame, nDataLenthInShort, m_iPacketNumber);
 
 			DumpEncodingFrame();
 			UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);

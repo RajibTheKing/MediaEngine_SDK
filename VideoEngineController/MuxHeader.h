@@ -1,7 +1,9 @@
-#ifndef _AUDIO_MUX_HEADER_H_
-#define _AUDIO_MUX_HEADER_H_
+#ifndef AUDIO_MUX_HEADER_H
+#define AUDIO_MUX_HEADER_H
+
 
 #include <vector>
+
 
 namespace MediaSDK
 {
@@ -19,6 +21,8 @@ namespace MediaSDK
 		long long getCalleeId();
 		int getMissingMask();
 		int getFrameNo();
+
+
 	private:
 		int m_iHeaderSizeInByte;
 		int m_iMissingMaskSizeInByte;

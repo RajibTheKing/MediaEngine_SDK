@@ -21,7 +21,7 @@ namespace MediaSDK
 
 	public:
 
-		BitRateController(int nFPS, LongLong llfriendID);
+		BitRateController(int nFPS, long long llfriendID);
 		~BitRateController();
 
 		void SetSharedObject(CCommonElementsBucket* pcSharedObject);
@@ -56,7 +56,7 @@ namespace MediaSDK
 
 		Tools m_Tools;
 
-		LongLong m_FriendID;
+		long long m_FriendID;
 
 		int m_nOppNotifiedByterate;
 		int m_nOpponentNetworkType;

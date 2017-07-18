@@ -6,6 +6,8 @@
 namespace MediaSDK
 {
 #define CHUNK_SIZE 800
+#define LINEAR_BUFFER_MAX_SIZE 8000
+
 	class AudioLinearBuffer
 	{
 		short* m_buffer = nullptr;

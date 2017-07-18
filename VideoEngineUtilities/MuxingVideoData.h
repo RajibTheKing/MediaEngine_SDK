@@ -2,7 +2,6 @@
 #ifndef MUXING_VIDEO_DATA_H
 #define MUXING_VIDEO_DATA_H
 
-#include "AudioVideoEngineDefinitions.h"
 #include "ColorConverter.h"
 #include "SmartPointer.h"
 #include "CommonTypes.h"

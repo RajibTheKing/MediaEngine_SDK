@@ -6,6 +6,10 @@
 #include "VideoDecoder.h"
 #include "AudioSessionOptions.h"
 #include "AudioResources.h"
+#include "AudioCallSession.h"
+#include "InterfaceOfAudioVideoEngine.h"
+
+
 
 namespace MediaSDK
 {
@@ -184,7 +188,7 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, nAudioSpeakerType);
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, nAudioSpeakerType);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -269,7 +273,7 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 		audioSessionOptions.SetOptions(SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, AUDIO_PLAYER_DEFAULT);
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, AUDIO_PLAYER_DEFAULT);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -380,7 +384,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session started");
-        
+
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called session created ID %lld", lFriendID);
 
 		return true;
@@ -391,7 +395,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
        // pVideoSession->ReInitializeVideoLibrary(iVideoHeight, iVideoWidth);
 		return false;
-	}
+	}	
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall done ID %lld", lFriendID);
 }
@@ -1046,7 +1050,7 @@ bool CController::StopVideoCall(const long long& lFriendID)
 {
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoCall() called. --> friendID = " + m_Tools.getText(lFriendID));
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call operation started");
-
+    
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall called 1 ID %lld", lFriendID);
     
 	StopCallLocker lock1(*m_pVideoSendMutex);
@@ -1055,7 +1059,7 @@ bool CController::StopVideoCall(const long long& lFriendID)
 //    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "StopVideo call After Second lock");
     
     CVideoCallSession *m_pSession;
-
+    
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StopVideoCall called 2 ID %lld", lFriendID);
     
     m_pSession = m_pCommonElementsBucket->m_pVideoCallSessionList->GetFromVideoSessionList(lFriendID);
@@ -1073,7 +1077,7 @@ bool CController::StopVideoCall(const long long& lFriendID)
     bool bReturnedValue = m_pCommonElementsBucket->m_pVideoCallSessionList->RemoveFromVideoSessionList(lFriendID);
 
     CLogPrinter_Write(CLogPrinter::ERRORS, "CController::StopVideoall() ended " + m_Tools.IntegertoStringConvert(bReturnedValue));
-    
+
     
     m_bLiveCallRunning = false;
 
@@ -1208,7 +1212,8 @@ void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointe
 {
     m_EventNotifier.SetNotifyClientWithPacketCallback(callBackFunctionPointer);
 }
-    
+
+
 void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);

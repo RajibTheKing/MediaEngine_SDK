@@ -1,13 +1,12 @@
-//
-// Created by Fahad-PC on 8/29/2016.
-//
+#include <stdio.h>
 
 #include "AudioFileCodec.h"
+#include "Tools.h"
+#include "LogPrinter.h"
+
 
 namespace MediaSDK
 {
-
-
 	CAudioFileCodec::CAudioFileCodec()
 	{
 

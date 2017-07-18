@@ -1,13 +1,23 @@
 #include "AudioFarEndProcessorViewer.h"
+#include "AudioCallSession.h"
+#include "AudioDePacketizer.h"
 #include "AudioMixer.h"
+#include "AudioEncoderBuffer.h"
+#include "LogPrinter.h"
+#include "LiveAudioDecodingQueue.h"
+#include "AudioPacketHeader.h"
+#include "Tools.h"
+
 
 namespace MediaSDK
 {
 
-	FarEndProcessorViewer::FarEndProcessorViewer(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
-		AudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, pAudioCallSession, pCommonElementsBucket, bIsLiveStreamingRunning)
+	FarEndProcessorViewer::FarEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
+		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorViewer::FarEndProcessorViewer()");
+	
+		m_pAudioMixer.reset(new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING));
 	}
 
 
@@ -90,9 +100,9 @@ namespace MediaSDK
 
 						DOG("#18@# m_ViewerInCallSentDataQueue # Queue Size %d", m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize());
 
-						while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize())
+						while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue->GetQueueSize())
 						{
-							nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue.DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);
+							nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue->DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);
 							DOG("#18@# FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
 
 							if (nSize == -1) {

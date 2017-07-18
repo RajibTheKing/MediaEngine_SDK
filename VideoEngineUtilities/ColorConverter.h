@@ -2,7 +2,6 @@
 #ifndef IPV_COLOR_CONVERTER_H
 #define IPV_COLOR_CONVERTER_H
 
-#include "AudioVideoEngineDefinitions.h"
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 #include "../VideoEngineController/Size.h"
@@ -31,7 +30,7 @@ namespace MediaSDK
 
 	public:
 
-		CColorConverter(int iVideoHeight, int iVideoWidth, CCommonElementsBucket* commonElementsBucket, LongLong lfriendID);
+		CColorConverter(int iVideoHeight, int iVideoWidth, CCommonElementsBucket* commonElementsBucket, long long lfriendID);
 		~CColorConverter();
 
 		int ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth);
@@ -128,7 +127,7 @@ namespace MediaSDK
 		int m_ThresholdValue;
 
 		CCommonElementsBucket* m_pCommonElementsBucket;
-		LongLong m_lfriendID;
+		long long m_lfriendID;
 
 		unsigned char m_pVPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 		unsigned char m_pUPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];

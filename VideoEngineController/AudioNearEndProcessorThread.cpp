@@ -3,10 +3,12 @@
 #include "Tools.h"
 #include "AudioNearEndDataProcessor.h"
 #include "AudioCallSession.h"
+#include "AudioLinearBuffer.h"
+
+
 
 namespace MediaSDK
 {
-
 
 	AudioNearEndProcessorThread::AudioNearEndProcessorThread(AudioNearEndDataProcessor *pNearEndProcessor) :
 		m_pNearEndDataProcessor(pNearEndProcessor)

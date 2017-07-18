@@ -1,12 +1,21 @@
-#include "AudioMacros.h"
+#ifndef AUDIO_MIXER_H
+#define AUDIO_MIXER_H
+
+
 #include <vector>
-#include "MuxHeader.h"
+#include "AudioMacros.h"
+
 
 namespace MediaSDK
 {
+	class MuxHeader;
 
-	class AudioMixer {
+
+	class AudioMixer 
+	{
+
 	public:
+
 		AudioMixer(int m_iNumberOfBitsPerSample, int iFrameSize);
 		~AudioMixer();
 		void addAudioData(unsigned char* uchCalleeAudio, MuxHeader &header);
@@ -19,7 +28,9 @@ namespace MediaSDK
 		long long getMax(int bitLength);
 		long long getMin(int bitLength);
 
+
 	private:
+		
 		int m_iTotalCallee;
 		int m_iNumberOfBitsPerSample;
 		int m_iCalleeMaskFlag;
@@ -40,3 +51,6 @@ namespace MediaSDK
 	};
 
 } //namespace MediaSDK
+
+
+#endif  // !AUDIO_MIXER_H

@@ -16,7 +16,7 @@
 #endif
 
 
-#if defined(DESKTOP_C_SHARP)
+#if defined(DESKTOP_C_SHARP) || defined (TARGET_OS_WINDOWS_PHONE)
 	const DWORD MS_VC_EXCEPTION = 0x406D1388;
 
 	#pragma pack(push,8)
@@ -39,11 +39,6 @@
 
 namespace MediaSDK
 {
-#ifdef WIN32
-	typedef __int64 LongLong;
-#else 
-	typedef long long LongLong;
-#endif
 
 	class Tools
 	{

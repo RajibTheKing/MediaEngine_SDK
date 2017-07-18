@@ -1,9 +1,10 @@
 #include "AudioMixer.h"
 #include <string.h>
 #include <algorithm>
-
+#include "MuxHeader.h"
 #include "AudioMacros.h"
 #include "LogPrinter.h"
+
 
 namespace MediaSDK
 {
@@ -21,6 +22,10 @@ namespace MediaSDK
 	{
 		memset(m_iMixedData, 0, sizeof m_iMixedData);
 		memset(m_uchCalleeBlockInfo, 0, sizeof m_uchCalleeBlockInfo);
+	}
+
+	AudioMixer::~AudioMixer()
+	{
 	}
 
 	void AudioMixer::reset(int iNumberOfBitsPerSample, int iFrameSize) // sample size ..

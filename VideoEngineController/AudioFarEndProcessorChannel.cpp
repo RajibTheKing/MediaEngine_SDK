@@ -1,10 +1,16 @@
 #include "AudioFarEndProcessorChannel.h"
+#include "LogPrinter.h"
+#include "AudioCallSession.h"
+#include "AudioDePacketizer.h"
+#include "LiveAudioDecodingQueue.h"
+#include "Tools.h"
+
 
 namespace MediaSDK
 {
 
-	FarEndProcessorChannel::FarEndProcessorChannel(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
-		AudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, pAudioCallSession, pCommonElementsBucket, bIsLiveStreamingRunning)
+	FarEndProcessorChannel::FarEndProcessorChannel(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
+		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorChannel::FarEndProcessorChannel()");
 	}

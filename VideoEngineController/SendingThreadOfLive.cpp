@@ -6,6 +6,7 @@
 #include "CommonElementsBucket.h"
 #include "VideoCallSession.h"
 #include "Controller.h"
+#include "AudioCallSession.h"
 
 #include <vector>
 
@@ -339,7 +340,7 @@ namespace MediaSDK
 
 						if (bExist && m_bVideoOnlyLive == false)
 						{
-							pAudioSession->GetAudioSendToData(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength, llAudioChunkDuration, llAudioChunkRelativeTime);
+							pAudioSession->GetAudioDataToSend(m_AudioDataToSend, m_iAudioDataToSendIndex, vAudioDataLengthVector, viewerDataLength, calleeDataLength, llAudioChunkDuration, llAudioChunkRelativeTime);
 
 							if (m_bPassOnlyAudio == true)
 							{

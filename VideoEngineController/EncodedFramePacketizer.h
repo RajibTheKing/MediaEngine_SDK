@@ -4,11 +4,9 @@
 
 //#define _CRT_SECURE_NO_WARNINGS
 
-#include "AudioVideoEngineDefinitions.h"
 #include "SendingBuffer.h"
 #include "Size.h"
 #include "Tools.h"
-//#include "PacketHeader.h"
 #include "VideoHeader.h"
 #include "HashGenerator.h"
 
