@@ -27,7 +27,7 @@
 #define ON 1
 #define OFF 0
 
-//#define LOG_ENABLED
+#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 
@@ -37,7 +37,7 @@
 #define CHUNK_RECIVE_LOG		OFF
 #define CHUNK_SENDING_LOG		OFF
 #define PUBLISHER_TIME_LOG		OFF
-#define CRASH_CHECK_LOG			OFF
+#define CRASH_CHECK_LOG			ON
 #define API_FLOW_CHECK_LOG		OFF
 #define PACKET_DETAILS_LOG		OFF
 #define INSTENT_TEST_LOG_2		OFF

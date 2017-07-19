@@ -1046,7 +1046,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
     
     if(m_bIsCheckCall != LIVE_CALL_MOOD) return;
     
-	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
+	unsigned char uchVersion = (unsigned char)GetVersionController()->GetOwnVersion();
     
 	CVideoHeader PacketHeader;
 
@@ -1054,23 +1054,34 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	{
 		//PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
-									uchVersion,									//VersionCode
-									VIDEO_HEADER_LENGTH,						//HeaderLength
-									0,											//FPSByte
-									m_miniPacketBandCounter,                    //FrameNumber           //SlotID
-									0,											//NetworkType
-									0,											//Device Orientation
-									0,											//QualityLevel
-									0,											//NumberofPacket
-									nMiniPacketType,							//PacketNumber
-									nByteReceivedOrNetworkType,					//TimeStamp             //Sending Received Byte
-									0,											//PacketStartingIndex
-									0,											//PacketDataLength
-                                    0,                                          //SenderDeviceType
-                                    0,                                          //NumberOfInsets
-                                    nullptr,                                    //InsetHeights
-                                    nullptr                                     //InsetWidths
+        PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
+                                     uchVersion,									//VersionCode
+                                     0,											//FPSByte
+                                     m_miniPacketBandCounter,                    //FrameNumber           //SlotID
+                                     0,											//NetworkType
+                                     0,											//Device Orientation
+                                     0,											//QualityLevel
+                                     0,											//NumberofPacket
+                                     nMiniPacketType,							//PacketNumber
+                                     nByteReceivedOrNetworkType,					//TimeStamp             //Sending Received Byte
+                                     0,											//PacketStartingIndex
+                                     0,											//PacketDataLength
+                                     0,                                          //SenderDeviceType
+                                     0,                                          //NumberOfInsets
+                                     nullptr,                                    //InsetHeights
+                                     nullptr,                                     //InsetWidths
+                                     
+                                     //MoreInfo
+                                     0,                                        //Device FPS
+                                     0,                                        //Number of Encode Fail Per FPS
+                                     0,                                        //Sigma Value
+                                     0,                                        //Brightness Value
+                                     0,                                        //Media Engine Version Length
+                                     "",                                       //Media Engine Version
+                                     0,                                        //Operating System Version Length
+                                     "",                                       //Operating System Version
+                                     0,                                        //Device Model Length
+                                     ""                                        //Device Model
                                     );
         
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
@@ -1080,23 +1091,35 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	{
 		//PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
-										uchVersion,								//VersionCode
-										VIDEO_HEADER_LENGTH,					//HeaderLength
-										0,										//FPSByte
-										m_miniPacketBandCounter,                //FrameNumber
-										0,										//NetworkType
-										0,										//Device Orientation
-										0,										//QualityLevel
-										0,										//NumberofPacket
-										nMiniPacketType,						//PacketNumber
-										nByteReceivedOrNetworkType,				//TimeStamp
-										0,										//PacketStartingIndex
-										0,										//PacketDataLength
-                                        0,                                      //SenderDeviceType
-                                        0,                                      //NumberOfInsets
-                                        nullptr,                                //InsetHeights
-                                        nullptr                                 //InsetWidths
+        PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
+                                     uchVersion,								//VersionCode
+                                     0,										//FPSByte
+                                     m_miniPacketBandCounter,                //FrameNumber
+                                     0,										//NetworkType
+                                     0,										//Device Orientation
+                                     0,										//QualityLevel
+                                     0,										//NumberofPacket
+                                     nMiniPacketType,						//PacketNumber
+                                     nByteReceivedOrNetworkType,				//TimeStamp
+                                     0,										//PacketStartingIndex
+                                     0,										//PacketDataLength
+                                     0,                                      //SenderDeviceType
+                                     0,                                      //NumberOfInsets
+                                     nullptr,                                //InsetHeights
+                                     nullptr,                                 //InsetWidths
+                                     
+                                     //MoreInfo
+                                     0,                                        //Device FPS
+                                     0,                                        //Number of Encode Fail Per FPS
+                                     0,                                        //Sigma Value
+                                     0,                                        //Brightness Value
+                                     0,                                        //Media Engine Version Length
+                                     "",                                       //Media Engine Version
+                                     0,                                        //Operating System Version Length
+                                     "",                                       //Operating System Version
+                                     0,                                        //Device Model Length
+                                     ""                                        //Device Model
+                                     
                                      );
 	}
 
@@ -1105,9 +1128,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
 #ifndef NO_CONNECTIVITY
-	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, VIDEO_HEADER_LENGTH + 1, 0, std::vector< std::pair<int, int> >());
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, PacketHeader.GetHeaderLength() + 1, 0, std::vector< std::pair<int, int> >());
 #else
-	m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, VIDEO_HEADER_LENGTH + 1, m_miniPacket);
+	m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, PacketHeader.GetHeaderLength() + 1, m_miniPacket);
 #endif
 }
 
@@ -1117,11 +1140,11 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
 		return;
 
     CVideoHeader PacketHeader;
-    unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
+    unsigned char uchVersion = (unsigned char)GetVersionController()->GetOwnVersion();
     
     PacketHeader.setPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
                                  uchVersion,							//VersionCode
-                                 VIDEO_HEADER_LENGTH,					//HeaderLength
+                                 //VIDEO_HEADER_LENGTH,					//HeaderLength
                                  0,										//FPSByte
                                  llMissedFrameNumber,                   //FrameNumber
                                  0,										//NetworkType
@@ -1135,7 +1158,19 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
 								 0,                                      //SenderDeviceType
 								 0,                                      //NumberOfInsets
 								 nullptr,                                //InsetHeights
-								 nullptr                                 //InsetWidths
+								 nullptr,                                 //InsetWidths
+                                 
+                                 //MoreInfo
+                                 0,                                        //Device FPS
+                                 0,                                        //Number of Encode Fail Per FPS
+                                 0,                                        //Sigma Value
+                                 0,                                        //Brightness Value
+                                 0,                                        //Media Engine Version Length
+                                 "",                                       //Media Engine Version
+                                 0,                                        //Operating System Version Length
+                                 "",                                       //Operating System Version
+                                 0,                                        //Device Model Length
+                                 ""                                        //Device Model
                                  );
     
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
@@ -1144,9 +1179,9 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
     
 #ifndef NO_CONNECTIVITY
     printf("TheKing--> Trying.... CreateAndSend_IDR_Frame_Info_Packet\n");
-	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, VIDEO_HEADER_LENGTH + 1, 0, std::vector< std::pair<int, int> >());
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, PacketHeader.GetHeaderLength() + 1, 0, std::vector< std::pair<int, int> >());
 #else
-    m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, VIDEO_HEADER_LENGTH + 1, m_miniPacket);
+    m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, PacketHeader.GetHeaderLength() + 1, m_miniPacket);
 #endif
     
 }

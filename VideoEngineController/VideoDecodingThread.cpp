@@ -243,6 +243,12 @@ namespace MediaSDK
 					CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got packet for decoding");
 
 					nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
+                    printf("DecodingThread: ");
+                    for(int i=0;i<50;i++)
+                    {
+                        printf("%02X ", m_PacketizedFrame[i]);
+                    }
+                    printf("\n");
 					//packetHeaderObject.setPacketHeader(m_PacketizedFrame);
 					videoHeaderObject.setPacketHeader(m_PacketizedFrame);
 
@@ -549,6 +555,12 @@ namespace MediaSDK
 	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
 		int nOrientationForRotation = nOrientation;
+        printf("DecodeAndSendToClient: ");
+        for(int i=0;i<20;i++)
+        {
+            printf("%02X ", in_data[i]);
+        }
+        printf("\n");
 
 		long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 

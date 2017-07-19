@@ -275,7 +275,7 @@ private:
 
 	unsigned char m_CroppedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-	unsigned char m_miniPacket[VIDEO_HEADER_LENGTH + 1];
+	unsigned char m_miniPacket[100 + 1];
     
     CVersionController *m_pVersionController;
     CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;

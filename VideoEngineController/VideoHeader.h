@@ -7,7 +7,7 @@
 #include <string>
 
 
-#define VIDEO_HEADER_LENGTH 28
+//#define VIDEO_HEADER_LENGTH 28
 
 namespace MediaSDK
 {
@@ -20,23 +20,33 @@ namespace MediaSDK
 
 		void setPacketHeader(unsigned char *headerData);
 
-		void setPacketHeader(unsigned char packetType,
-			unsigned char uchVersion,
-			unsigned int iHeaderLength,
-			unsigned int iFPSbyte,
-			long long llFrameNumber,
-			int iNetworkType,
-			int iDeviceOrientation,
-			int iQualityLevel,
-			unsigned int NumberOfPacket,
-			unsigned int PacketNumber,
-			long long llTimeStamp,
-			unsigned int iPacketStartingIndex,
-			unsigned int PacketLength,
-			int senderDeviceType,
-			int nNumberOfInsets,
-			int *pInsetHeights,
-			int *pInsetWidths
+        void setPacketHeader(unsigned char packetType,
+                             unsigned char uchVersion,
+                             unsigned int iFPSbyte,
+                             long long llFrameNumber,
+                             int iNetworkType,
+                             int iDeviceOrientation,
+                             int iQualityLevel,
+                             unsigned int NumberOfPacket,
+                             unsigned int PacketNumber,
+                             long long llTimeStamp,
+                             unsigned int iPacketStartingIndex,
+                             unsigned int PacketLength,
+                             int senderDeviceType,
+                             int nNumberOfInsets,
+                             int *pInsetHeights,
+                             int *pInsetWidths,
+                             //MoreInfo
+                             int iDeviceFPS,
+                             int iNumberOfEncodeFailPerFps,
+                             int iSigmaValue,
+                             int iBrightnessValue,
+                             int iMediaEngineVersionLen,
+                             std::string sMediaEngineVersion,
+                             int iOperatingSystemVersionLen,
+                             std::string sOperatingSystem,
+                             int iDeviceModelLen,
+                             std::string sDeviceModel
 			);
 
 		void ShowDetails(string sTag);
@@ -195,7 +205,24 @@ namespace MediaSDK
 
 		//Total: 23 byte + 1 byte + m_NumberOfInset * 4 byte. [Current Situation]
 		//Total: (23 + 1 + 1 * 4) = 28 byte
-
+        
+        
+        
+        int m_iDeviceFPS; //1 byte
+        int m_iNumberOfEncodeFailPerFPS; //1 byte
+        
+        int m_iSigmaValue;  //1 byte
+        int m_iBrightnessValue; //1 byte
+        
+        int m_iMediaEngineVersionLen; //1 byte
+        std::string m_sMediaEngineVersion;
+        
+        int m_iOperatingSystemVersionLen; //1 byte
+        std::string m_sOperatingSystem;
+        
+        int m_iDeviceModelLen; //1 byte
+        std::string m_sDeviceModel;
+        
 	};
 
 } //namespace MediaSDK
