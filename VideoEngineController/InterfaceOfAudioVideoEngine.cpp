@@ -5,7 +5,7 @@
 #include "Tools.h"
 
 #define MEDIA_ENGINE_VERSION "9.36"
-#define MEDIA_ENGINE_BUILD_NUMBER 0936012518
+#define MEDIA_ENGINE_BUILD_NUMBER 0936002519
 
 namespace MediaSDK
 {
