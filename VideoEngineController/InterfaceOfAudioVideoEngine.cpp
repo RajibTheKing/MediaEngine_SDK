@@ -16,8 +16,14 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
+        printf("MANSUR...............ENTERING INIT.............\n");
 		MediaLogInit(LOG_INFO);
+        printf("MANSUR...............LEAVING INIT.............\n");
 
+        for(int i=0; i<30; i++)
+        {
+            MediaLog(ERRORLOG, "MANSUR.................. HELLO WORLD...............\n");
+        }
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
 			

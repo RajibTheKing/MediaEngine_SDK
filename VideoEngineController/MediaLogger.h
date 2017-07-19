@@ -18,7 +18,7 @@
 #if defined(__ANDROID__)
 #define MEDIA_LOGGING_PATH "/sdcard/" MEDIA_LOGGING_FOLDER_NAME "/"
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#define MEDIA_LOGGING_PATH std::string(getenv("HOME")) + "/Documents/" MEDIA_LOGGING_FOLDER_NAME "/"
+#define MEDIA_LOGGING_PATH (std::string(getenv("HOME")) + "/Documents/" MEDIA_LOGGING_FOLDER_NAME "/")
 #elif defined(DESKTOP_C_SHARP)
 #define MEDIA_LOGGING_PATH "C:\\" MEDIA_LOGGING_FOLDER_NAME "\\"
 #endif
@@ -33,7 +33,7 @@
 
 #define MEDIA_LOGGING_FILE_NAME "MediaLog"
 #define MEDIA_LOGGING_FILE_EXT ".log"
-#define MEDIA_FULL_LOGGING_PATH MEDIA_LOGGING_PATH MEDIA_LOGGING_FILE_NAME MEDIA_LOGGING_FILE_EXT
+#define MEDIA_FULL_LOGGING_PATH (MEDIA_LOGGING_PATH + MEDIA_LOGGING_FILE_NAME MEDIA_LOGGING_FILE_EXT)
 
 namespace MediaSDK
 {
@@ -97,7 +97,7 @@ namespace MediaSDK
 		std::ofstream   m_pLoggerFileStream;
 
 		LogLevel m_elogLevel;
-		std::string m_sFilePath;
+		char m_sFilePath[255];
 
 		char m_sMessage[MEDIA_LOG_MAX_SIZE];
 

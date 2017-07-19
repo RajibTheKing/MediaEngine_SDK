@@ -20,7 +20,7 @@ namespace MediaSDK
 	{
 		m_pMediaLoggerMutex.reset(new CLockHandler());
 
-		m_sFilePath = MEDIA_FULL_LOGGING_PATH;
+		strcpy(m_sFilePath, MEDIA_FULL_LOGGING_PATH.c_str());
 
 		InternalLog(">>>>> Media SDK Logging Started <<<<<");
 		InternalLog("Media SDK version %s [%lu]", MEDIA_ENGINE_VERSION, MEDIA_ENGINE_BUILD_NUMBER);
@@ -33,6 +33,8 @@ namespace MediaSDK
 
 	void MediaLogger::Init(LogLevel logLevel)
 	{
+        
+        printf("MANSUR...............ENTERIG INIT 2.............\n");
 		m_elogLevel = logLevel;
 		
 		InternalLog("Media SDK Logging Level %d", m_elogLevel);
@@ -41,9 +43,11 @@ namespace MediaSDK
 
 		if (!m_bFSError) //no error then
 		{
+            printf("MANSUR...............Folder create successful.............\n");
 			if (!m_pLoggerFileStream.is_open())
 			{
-				m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
+                printf("MANSUR...............File open successful.............\n");
+				m_pLoggerFileStream.open(m_sFilePath, ofstream::out | ofstream::app);
 			}
 		}
 		
@@ -64,7 +68,7 @@ namespace MediaSDK
 
 	std::string MediaLogger::GetFilePath()
 	{
-		return m_sFilePath;
+        return std::string(m_sFilePath);
 	}
 
 	LogLevel MediaLogger::GetLogLevel()
@@ -74,8 +78,9 @@ namespace MediaSDK
 
 	void MediaLogger::Log(LogLevel logLevel, const char *format, ...)
 	{
+        //printf("MANSUR...............entering log.............\n");
 		if (logLevel > m_elogLevel) return;
-
+        //printf("MANSUR...............start logging.............\n");
 		int len = GetDateTime(m_sMessage);
 		len += GetThreadID(m_sMessage + len);
 		m_sMessage[len++] = ' ';
@@ -90,6 +95,7 @@ namespace MediaSDK
 		MediaLocker lock(m_pMediaLoggerMutex.get());
 		
 		m_vLogVector.push_back(m_sMessage);
+        
 	}
 
 	void MediaLogger::InternalLog(const char *format, ...)
@@ -112,6 +118,7 @@ namespace MediaSDK
 
 	bool MediaLogger::CreateLogDirectory()
 	{
+        printf("MANSUR................ENTERING CreateLogDirectory.............\n");
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 
 		if (0 == CreateDirectory(MEDIA_LOGGING_PATH, NULL) )
@@ -128,10 +135,16 @@ namespace MediaSDK
 #else
 		struct stat st = { 0 };
         
-        const char* pathArray;
+        char pathArray[255];
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-        pathArray = (MEDIA_LOGGING_PATH).c_str();
+        strcpy(pathArray, MEDIA_LOGGING_PATH.c_str());
+        //pathArray = MEDIA_LOGGING_PATH.c_str();  //undefined behaviour
+        //pathArray = getenv("HOME") "/Documents/" MEDIA_LOGGING_FOLDER_NAME "/";
+        printf("MANSUR................getenv(\"HOME\") : %s.............\n", getenv("HOME"));
+        printf("MANSUR................MEDIA_LOGGING_PATH : %s.............\n", MEDIA_LOGGING_PATH.c_str());
+        printf("MANSUR................MEDIA_FULL_LOGGING_PATH : %s.............\n", MEDIA_FULL_LOGGING_PATH.c_str());
+        printf("MANSUR................full file path : %s.............\n", pathArray);
 #else
         pathArray = MEDIA_LOGGING_PATH;
 #endif
@@ -155,7 +168,7 @@ namespace MediaSDK
 			}
 		}
 #endif
-
+        printf("MANSUR................LEAVING CreateLogDirectory.............\n");
 		return true;
 	}
 
@@ -234,14 +247,14 @@ namespace MediaSDK
 		//std::remove(newFile.c_str());
 
 		//Rename
-		if (0 != std::rename(m_sFilePath.c_str(), newFile.c_str()))
+		if (0 != std::rename(m_sFilePath, newFile.c_str()))
 		{
 			//Rename fails, so wait a sec to get a unique name
 			Log(LOG_ERROR, "[%s] Rename to file %s\n FAILED", MEDIA_LOGGER_TAG, newFile.c_str());
 		}
 
 		//Reopen
-		m_pLoggerFileStream.open(m_sFilePath.c_str(), ofstream::out | ofstream::app);
+		m_pLoggerFileStream.open(m_sFilePath, ofstream::out | ofstream::app);
 	}
 
 	size_t MediaLogger::GetThreadID(char* buffer)
@@ -273,7 +286,8 @@ namespace MediaSDK
 
 		timeval curTime;
 		gettimeofday(&curTime, NULL);
-		int milli = curTime.tv_usec / 1000, pos;
+		//int milli = curTime.tv_usec / 1000, pos;
+        int pos;
 
 		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
 		pos += snprintf(buffer + pos, 20, " %llu] ", epoch);
