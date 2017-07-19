@@ -133,13 +133,6 @@ namespace MediaSDK
 
 				unsigned char *p = uchVideoData + iUsedLen + 1 + videoHeader.GetHeaderLength();
                 
-                printf("LiveReceiver: ");
-                for(int i=0;i<20;i++)
-                {
-                    printf("%02X ", p[i]);
-                }
-                printf("\n");
-
 				int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
                 
                 CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector nCurrentFrameLen %d, nalType = %d, j=%d", nCurrentFrameLen, nalType, j);
