@@ -214,7 +214,7 @@ namespace MediaSDK
 		int videoPacketSizes[30];
 		int numberOfVideoPackets = 0;
 		int frameCounter = 0;
-		int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+		int packetSizeOfMissing = 1000;
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 		m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
@@ -572,8 +572,8 @@ namespace MediaSDK
 
 #ifdef	__RANDOM_MISSING_PACKET__
 
-						int nTotalSizeToSend = packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
-						const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfNetwork - 1 ) / packetSizeOfNetwork;
+						int nTotalSizeToSend = packetSizeOfMissing  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
+						const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfMissing - 1 ) / packetSizeOfMissing;
 
 						for(int i=0; i < nMaxMissingFrames; i ++)
 						{

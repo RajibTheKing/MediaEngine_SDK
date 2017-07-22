@@ -9,7 +9,6 @@ namespace MediaSDK
 
 	CCommonElementsBucket::CCommonElementsBucket() :
 		userName(-1),
-		m_nPacketSizeOfNetwork(-1),
 		sharedMutex(NULL)
 
 	{
@@ -55,16 +54,6 @@ namespace MediaSDK
 		{
 			sharedMutex = new CLockHandler();
 		}
-	}
-
-	void CCommonElementsBucket::SetPacketSizeOfNetwork(int packetSizeOfNetwork)
-	{
-		m_nPacketSizeOfNetwork = packetSizeOfNetwork;
-	}
-
-	int CCommonElementsBucket::GetPacketSizeOfNetwork()
-	{
-		return m_nPacketSizeOfNetwork;
 	}
 
 	CLockHandler* CCommonElementsBucket::GetSharedMutex()

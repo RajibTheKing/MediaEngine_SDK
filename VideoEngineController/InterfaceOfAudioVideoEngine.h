@@ -72,7 +72,7 @@ namespace MediaSDK
 		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive = true, int nVideoHeight = 352, int nVideoWidth = 288);
 		bool StartChannelView(const IPVLongType llFriendID);
 
-		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int packetSizeOfNetwork = 0, int nNetworkType = 0, bool bAudioOnlyLive = false);
+		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType = 0, bool bAudioOnlyLive = false);
 		int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
 		int PushPacketForDecoding(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength);
 		int PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames);
