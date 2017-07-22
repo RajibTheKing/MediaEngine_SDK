@@ -393,6 +393,10 @@ namespace MediaSDK
 					LOG_AAC("#aac#aqa# Frame not received timely: %d", llWaitingTime);
 					return false;
 				}
+				else if (llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp > MAX_WAITING_TIME_FOR_CHANNEL)
+				{
+					return false;
+				}
 
 				while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
 				{
