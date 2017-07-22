@@ -5,9 +5,9 @@
 #define VLOG(a)     //CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 #include <iostream>
 #include <string>
+#include <bitset>
 
-
-//#define VIDEO_HEADER_LENGTH 28
+#define VIDEO_HEADER_LENGTH 32
 
 namespace MediaSDK
 {
@@ -22,6 +22,7 @@ namespace MediaSDK
 
         void setPacketHeader(unsigned char packetType,
                              unsigned char uchVersion,
+                             unsigned int iHeaderLength,
                              unsigned int iFPSbyte,
                              long long llFrameNumber,
                              int iNetworkType,
@@ -37,123 +38,94 @@ namespace MediaSDK
                              int *pInsetHeights,
                              int *pInsetWidths,
                              //MoreInfo
-                             int iDeviceFPS,
-                             int iNumberOfEncodeFailPerFps,
                              int iSigmaValue,
                              int iBrightnessValue,
-                             int iMediaEngineVersionLen,
-                             std::string sMediaEngineVersion,
-                             int iOperatingSystemVersionLen,
-                             std::string sOperatingSystem,
-                             int iDeviceModelLen,
-                             std::string sDeviceModel
+                             int iDeviceFPS,
+                             int iNumberOfEncodeFailPerFps,
+                             int iMediaEngineVersion
 			);
+        
+        int GetHeaderInByteArray(unsigned char* data);
+        
+        int GetIntFromChar(unsigned char *packetData, int index, int nLenght);
+        long long GetLongLongFromChar(unsigned char *packetData, int index, int nLenght);
+        
+        long long getTimeStampDirectly(unsigned char *data);
+        long long GetFrameNumberDirectly(unsigned char *packetData);
+        int GetFrameHeaderLengthDirectly(unsigned char *pData);
+        int GetOpponentResolution(unsigned char *PacketHeader);
 
 		void ShowDetails(string sTag);
 
+        void setPacketType(unsigned char *pData);
+        unsigned char GetPacketType();
 
-		void SetPacketType(unsigned char packetType);
-		unsigned char GetPacketType();
-		void setPacketType(unsigned char *pData);
-
-		int GetHeaderInByteArray(unsigned char* data);
-		//hello
-		void setVersionCode(unsigned char VersionCode);
-
-		void setFrameNumber(long long llFrameNumber);
-
-		void setNumberOfPacket(unsigned int iNumberOfPacket);
-
-		void setPacketNumber(unsigned int iPacketNumber);
-
-		long long getTimeStampDirectly(unsigned char *data);
-
-		void setTimeStamp(long long llTimeStamp);
-
-		void setFPS(unsigned int iFPS);
-
-		void setPacketDataLength(int iPacketDataLength);
-
-		void setSenderDeviceType(int temp);
-
-		//hello1
-
+        void setVersionCode(unsigned char * VersionCode);
 		unsigned char getVersionCode();
-
-		void setVersionCode(unsigned char * VersionCode);
-
+        
+        void setHeaderLength(unsigned char *pData);
+        int GetHeaderLength();
+        
+        void setFPS(unsigned char * FPS);
+        unsigned int getFPS();
+        
+        void setFrameNumber(unsigned char * FrameNumber);
 		long long getFrameNumber();
+        
+        void SetNetworkType(unsigned char* data);
+        int GetNetworkType();
+        
+        void SetDeviceOrientation(unsigned char *packetData);
+        int GetDeviceOrientation();
+        
+        void SetVideoQualityLevel(unsigned char* data);
+        int GetVideoQualityLevel();
 
-		void setFrameNumber(unsigned char * FrameNumber);
-
+        void setNumberOfPacket(unsigned char * NumberOfPacket);
 		unsigned int getNumberOfPacket();
-
-		void setNumberOfPacket(unsigned char * NumberOfPacket);
-
+        
+        void setPacketNumber(unsigned char * PacketNumber);
 		unsigned int getPacketNumber();
 
-		void setPacketNumber(unsigned char * PacketNumber);
-
+        void setTimeStamp(unsigned char * TimeStamp);
 		long long getTimeStamp();
 
-		void setTimeStamp(unsigned char * TimeStamp);
+        void setPacketStartingIndex(unsigned char *pData);
+        int GetPacketStartingIndex();
 
-		unsigned int getFPS();
-
-		void setFPS(unsigned char * FPS);
-
+        void setPacketDataLength(unsigned char * PacketDataLength);
 		int getPacketLength();
 
-		void setPacketDataLength(unsigned char * PacketDataLength);
-
 		void setSenderDeviceType(unsigned char * PacketDataLength);
-
 		int getSenderDeviceType();
 
-		int GetIntFromChar(unsigned char *packetData, int index, int nLenght);
-		long long GetLongLongFromChar(unsigned char *packetData, int index, int nLenght);
-
-		long long GetFrameNumberDirectly(unsigned char *packetData);
-		int GetFrameHeaderLengthDirectly(unsigned char *pData);
-
-		int GetOpponentResolution(unsigned char *PacketHeader);
-
-		int GetVideoQualityLevel();
-		void SetVideoQualityLevel(int nQualityLevel);
-		void SetVideoQualityLevel(unsigned char* data);
-
-		int GetNetworkType();
-		void SetNetworkType(int nNetworkType);
-		void SetNetworkType(unsigned char* data);
-
-		void SetDeviceOrientation(int deviceOrientation);
-		void SetDeviceOrientation(unsigned char *packetData);
-		int GetDeviceOrientation();
-
-
-		void setHeaderLength(int iHeaderLength);
-		void setHeaderLength(unsigned char *pData);
-		int GetHeaderLength();
-
-		void setPacketStartingIndex(int iPacketStartingIndex);
-		void setPacketStartingIndex(unsigned char *pData);
-		int GetPacketStartingIndex();
 
 		//Inset Information
-		void setNumberOfInset(int value);
 		void setNumberOfInset(unsigned char *pData);
 		int GetNumberOfInset();
-
-		void setInsetHeights(int values[], int iLen);
+        
 		void setInsetHeights(unsigned char *pData, int nNumberOfInsets);
 		void GetInsetHeights(int *pHeightValues, int nNumberOfInsets);
 
-		void setInsetWidths(int values[], int iLen);
 		void setInsetWidths(unsigned char *pData, int nNumberOfInsets);
 		void GetInsetWidths(int *pHeightValues, int nNumberOfInsets);
-
-		//hello
-
+        
+        //More Information
+        void setSigmaValue(unsigned char *pData);
+        int getSigmaValue();
+        
+        void setBrightnessValue(unsigned char *pData);
+        int getBrightnessValue();
+        
+        void setDeviceFPS(unsigned char *pData);
+        int getDeviceFPS();
+        
+        void setEncodeFailPerFPS(unsigned char *pData);
+        int getEncodeFailPerFPS();
+        
+        void setLibraryVersion(unsigned char *pData);
+        int getLibraryVersion();
+        
 	private:
 
 		//unsigned char m_ucPacketType;
@@ -208,20 +180,16 @@ namespace MediaSDK
         
         
         
-        int m_iDeviceFPS; //1 byte
-        int m_iNumberOfEncodeFailPerFPS; //1 byte
-        
         int m_iSigmaValue;  //1 byte
         int m_iBrightnessValue; //1 byte
         
-        int m_iMediaEngineVersionLen; //1 byte
-        std::string m_sMediaEngineVersion;
+        int m_iDeviceFPS; //5 bit
+        int m_iNumberOfEncodeFailPerFPS; //5 bit
+        int m_iMediaEngineVersion; //6 bit
         
-        int m_iOperatingSystemVersionLen; //1 byte
-        std::string m_sOperatingSystem;
+        //Total: (23 + 1 + 1 * 4) = 32 byte
         
-        int m_iDeviceModelLen; //1 byte
-        std::string m_sDeviceModel;
+
         
 	};
 

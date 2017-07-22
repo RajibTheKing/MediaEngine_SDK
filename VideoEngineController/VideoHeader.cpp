@@ -19,8 +19,19 @@
 #define PACKET_STARTING_INDEX 16
 #define PACKET_DATA_LENGTH_INDEX 19
 #define SENDER_DEVICE_TYPE_INDEX 22
+
+//Inset Information
 #define NUMBER_OF_INSET_INDEX 23
 #define INSET_HEIGHT_WIDTH_INDEX 24
+
+//MoreInformation
+#define SIGMA_VALUE_INDEX 28
+#define BRIGHTNESS_VALUE_INDEX 29
+#define DEVICE_FPS_INDEX 30
+#define ENCODE_FAIL_INDEX 30
+#define LIBRARY_VERSION_INDEX 31
+
+
 
 #define QUALITY_BITS_N      3
 #define ORIENTATION_BITS_N  2
@@ -69,20 +80,12 @@ namespace MediaSDK
         
         
         //MoreInformation
-        m_iDeviceFPS = 0; //1 byte
-        m_iNumberOfEncodeFailPerFPS = 0; //1 byte
-        
         m_iSigmaValue = 0;  //1 byte
         m_iBrightnessValue = 0; //1 byte
         
-        m_iMediaEngineVersionLen = 0; //1 byte
-        m_sMediaEngineVersion = "UnknownMediaEngine";
-        
-        m_iOperatingSystemVersionLen = 0; //1 byte
-        m_sOperatingSystem = "UnknownOS";
-        
-        m_iDeviceModelLen = 0; //1 byte
-        m_sDeviceModel = "UnknownDeviceModel";
+        m_iDeviceFPS = 0; //5 bit
+        m_iNumberOfEncodeFailPerFPS = 0; //5 bit
+        m_iMediaEngineVersion = 0; //6 bit
 
 	}
 
@@ -123,25 +126,11 @@ namespace MediaSDK
         if(m_iVersionCode > 1)
         {
             printf("here inside new Header parsing\n");
-            m_iDeviceFPS = (int)headerData[nowIndex];                               nowIndex += 1;
-            m_iNumberOfEncodeFailPerFPS = (int)headerData[nowIndex];                nowIndex += 1;
-            m_iSigmaValue = (int)headerData[nowIndex];                              nowIndex += 1;
-            m_iBrightnessValue = (int)headerData[nowIndex];                         nowIndex += 1;
-            
-            m_iMediaEngineVersionLen = (int)headerData[nowIndex];                   nowIndex += 1;
-            m_sMediaEngineVersion = std::string(
-                                reinterpret_cast<char*>(headerData + nowIndex),
-                                                m_iMediaEngineVersionLen);          nowIndex += m_iMediaEngineVersionLen;
-            
-            m_iOperatingSystemVersionLen = (int)headerData[nowIndex];               nowIndex += 1;
-            m_sOperatingSystem = std::string(
-                                reinterpret_cast<char*>(headerData + nowIndex),
-                                             m_iOperatingSystemVersionLen);         nowIndex += m_iOperatingSystemVersionLen;
-            
-            m_iDeviceModelLen = (int)headerData[nowIndex];                          nowIndex += 1;
-            m_sDeviceModel = std::string(
-                                reinterpret_cast<char*>(headerData + nowIndex),
-                                             m_iDeviceModelLen);                    nowIndex += m_iDeviceModelLen;
+            setSigmaValue(headerData + SIGMA_VALUE_INDEX);                          nowIndex += 1;
+            setBrightnessValue(headerData + BRIGHTNESS_VALUE_INDEX);                nowIndex += 1;
+            setDeviceFPS(headerData + DEVICE_FPS_INDEX);                            //nowIndex += 1;
+            setEncodeFailPerFPS(headerData + ENCODE_FAIL_INDEX);                    nowIndex += 1;
+            setLibraryVersion(headerData + LIBRARY_VERSION_INDEX);                  nowIndex += 1;
             
         }
         
@@ -149,6 +138,7 @@ namespace MediaSDK
     
 	void CVideoHeader::setPacketHeader(unsigned char packetType,
                                        unsigned char uchVersion,
+                                       unsigned int iHeaderLength,
                                        unsigned int iFPSbyte,
                                        long long llFrameNumber,
                                        int iNetworkType,
@@ -164,54 +154,53 @@ namespace MediaSDK
                                        int *pInsetHeights,
                                        int *pInsetWidths,
                                        //MoreInfo
-                                       int iDeviceFPS,
-                                       int iNumberOfEncodeFailPerFps,
                                        int iSigmaValue,
                                        int iBrightnessValue,
-                                       int iMediaEngineVersionLen,
-                                       std::string sMediaEngineVersion,
-                                       int iOperatingSystemVersionLen,
-                                       std::string sOperatingSystem,
-                                       int iDeviceModelLen,
-                                       std::string sDeviceModel
+                                       int iDeviceFPS,
+                                       int iNumberOfEncodeFailPerFps,
+                                       int iMediaEngineVersion
                                        
 		)
 	{
-		SetPacketType(packetType);
-		setVersionCode(uchVersion);
-		//setHeaderLength(iHeaderLength);
-		setFPS(iFPSbyte);
-		setFrameNumber(llFrameNumber);
+		
+        m_iPacketType = packetType;
+        m_iVersionCode = uchVersion;
+        m_iHeaderLength = iHeaderLength;
+        m_iFPS = iFPSbyte;
+		m_llFrameNumber = llFrameNumber;
 
 		//CallInfoByte
-		SetNetworkType(iNetworkType);
-		SetDeviceOrientation(iDeviceOrientation);
-		SetVideoQualityLevel(iQualityLevel);
+		m_iNetworkType = iNetworkType;
+		m_iDeviceOrientation = iDeviceOrientation;
+        m_iVideoQualityLevel = iQualityLevel;
 
-		setNumberOfPacket(NumberOfPacket);
-		setPacketNumber(PacketNumber);
+		m_iNumberOfPacket = NumberOfPacket;
+        m_iPacketNumber = PacketNumber;
 
-		setTimeStamp(llTimeStamp);
-		setPacketStartingIndex(iPacketStartingIndex);
-		setPacketDataLength(PacketLength);
-		setSenderDeviceType(senderDeviceType);
+		m_llTimeStamp = llTimeStamp;
+        
+		m_iPacketStartingIndex = iPacketStartingIndex;
+		m_iPacketDataLength = PacketLength;
+		m_nSenderDeviceType = senderDeviceType;
 
-		//InsetInfo
-		setNumberOfInset(nNumberOfInsets);
-		setInsetHeights(pInsetHeights, nNumberOfInsets);
-		setInsetWidths(pInsetWidths, nNumberOfInsets);
+		
+        //InsetInfo
+        m_nNumberOfInset = nNumberOfInsets;
+        for (int i = 0; i < nNumberOfInsets; i++)
+        {
+            m_nInsetHeight[i] = pInsetHeights[i];
+        }
+        for (int i = 0; i < nNumberOfInsets; i++)
+        {
+            m_nInsetWidth[i] = pInsetWidths[i];
+        }
         
         //MoreInfo
-        m_iDeviceFPS = iDeviceFPS;
-        m_iNumberOfEncodeFailPerFPS = iNumberOfEncodeFailPerFps;
         m_iSigmaValue = iSigmaValue;
         m_iBrightnessValue = iBrightnessValue;
-        m_iMediaEngineVersionLen = iMediaEngineVersionLen;
-        m_sMediaEngineVersion = sMediaEngineVersion;
-        m_iOperatingSystemVersionLen = iOperatingSystemVersionLen;
-        m_sOperatingSystem = sOperatingSystem;
-        m_iDeviceModelLen = iDeviceModelLen;
-        m_sDeviceModel = sDeviceModel;
+        m_iDeviceFPS = iDeviceFPS;
+        m_iNumberOfEncodeFailPerFPS = iNumberOfEncodeFailPerFps;
+        m_iMediaEngineVersion = iMediaEngineVersion;
 	}
 
 	void CVideoHeader::ShowDetails(string sTag)
@@ -234,8 +223,11 @@ namespace MediaSDK
 			+ " NOI:" + Tools::getText(m_nNumberOfInset)
 			+ " IH0:" + Tools::getText(m_nInsetHeight[0])
 			+ " IW0:" + Tools::getText(m_nInsetWidth[0])
-			+ " IH1:" + Tools::getText(m_nInsetHeight[1])
-			+ " IW1:" + Tools::getText(m_nInsetWidth[1])
+			+ " sigma:" + Tools::getText(m_iSigmaValue)
+			+ " brightness:" + Tools::getText(m_iBrightnessValue)
+            + " dFPS:" + Tools::getText(m_iDeviceFPS)
+            + " EF:" + Tools::getText(m_iNumberOfEncodeFailPerFPS)
+            + " LV:" + Tools::getText(m_iMediaEngineVersion)
 			;
 
 		unsigned char pLocalData[100];
@@ -328,83 +320,42 @@ namespace MediaSDK
 		}
         
         //More Info
-        data[index++] = (unsigned char)m_iDeviceFPS;
-        data[index++] = (unsigned char)m_iNumberOfEncodeFailPerFPS;
         data[index++] = (unsigned char)m_iSigmaValue;
         data[index++] = (unsigned char)m_iBrightnessValue;
         
-        data[index++] = (unsigned char)m_iMediaEngineVersionLen;
-        for(int i=0; i<m_iMediaEngineVersionLen; i++)
-        {
-            data[index++] = m_sMediaEngineVersion[i];
-        }
+        unsigned char temp1, temp2;
+        temp1 = (unsigned char)m_iDeviceFPS;
+        temp2 = (unsigned char)m_iNumberOfEncodeFailPerFPS;
         
-        data[index++] = (unsigned char)m_iOperatingSystemVersionLen;
-        for(int i=0; i<m_iOperatingSystemVersionLen; i++)
-        {
-            data[index++] = m_sOperatingSystem[i];
-        }
-        
-        data[index++] = (unsigned char)m_iDeviceModelLen;
-        for(int i=0; i<m_iDeviceModelLen; i++)
-        {
-            data[index++] = m_sDeviceModel[i];
-        }
+        temp1 = (temp1 << 3);
+        temp2 = (temp2 >> 2) & 0x7;
+        data[index++] = temp1 | temp2;
         
         
-        //Finally Update the Header Length, it's really Important
-        if(m_iVersionCode>1)
-        {
-            m_iHeaderLength = index;
-            data[HEADER_LENGTH_INDEX] = (unsigned char)index;
-            
-        }
+        
+        temp1 = (unsigned char)m_iNumberOfEncodeFailPerFPS;
+        temp2 = (unsigned char)m_iMediaEngineVersion;
+        temp1 = temp1<<6;
+        temp2 = temp2 & 0x3F;
+        data[index++] = temp1 | temp2;
+        
+        
+        
+        
 		return index;
 	}
 
     
 
-	void CVideoHeader::SetPacketType(unsigned char packetType)
-	{
-		m_iPacketType = packetType;
-	}
+
 
 	unsigned char CVideoHeader::GetPacketType(){
 		return (unsigned char)m_iPacketType;
 	}
 
-	void CVideoHeader::setVersionCode(unsigned char cVersionCode) {
-		m_iVersionCode = cVersionCode;
-	}
 
-	void CVideoHeader::setFrameNumber(long long llFrameNumber) {
-		m_llFrameNumber = llFrameNumber;
-	}
+	
 
-	void CVideoHeader::setNumberOfPacket(unsigned int iNumberOfPacket) {
-		m_iNumberOfPacket = iNumberOfPacket;
-	}
-
-	void CVideoHeader::setPacketNumber(unsigned int iPacketNumber) {
-		m_iPacketNumber = iPacketNumber;
-	}
-
-	void CVideoHeader::setTimeStamp(long long llTimeStamp) {
-		m_llTimeStamp = llTimeStamp;
-	}
-
-	void CVideoHeader::setFPS(unsigned int iFPS) {
-		m_iFPS = iFPS;
-	}
-
-	void CVideoHeader::setPacketDataLength(int iPacketDataLength) {
-		m_iPacketDataLength = iPacketDataLength;
-	}
-
-	void CVideoHeader::setSenderDeviceType(int senderDeviceType)
-	{
-		m_nSenderDeviceType = senderDeviceType;
-	}
 
 	unsigned char CVideoHeader::getVersionCode() {
 		return (unsigned char)m_iVersionCode;
@@ -552,18 +503,9 @@ namespace MediaSDK
 		m_iVideoQualityLevel = (GetIntFromChar(data, 0, 1) >> 3) & QUALITY_LEVEL_BITSET;
 	}
 
-	void CVideoHeader::SetNetworkType(int nNetworkType){
-		m_iNetworkType = nNetworkType;
-	}
 
-	void CVideoHeader::SetVideoQualityLevel(int nQualityLevel){
-		m_iVideoQualityLevel = nQualityLevel;
-	}
 
-	void CVideoHeader::SetDeviceOrientation(int deviceOrientation)
-	{
-		m_iDeviceOrientation = deviceOrientation;
-	}
+
 
 	int CVideoHeader::GetDeviceOrientation() {
 		return m_iDeviceOrientation;
@@ -578,10 +520,6 @@ namespace MediaSDK
 	}
 
 
-	void CVideoHeader::setHeaderLength(int iHeaderLength)
-	{
-		m_iHeaderLength = iHeaderLength;
-	}
 	void CVideoHeader::setHeaderLength(unsigned char *pData)
 	{
 		m_iHeaderLength = pData[0];
@@ -593,10 +531,6 @@ namespace MediaSDK
 
 
 
-	void CVideoHeader::setPacketStartingIndex(int iPacketStartingIndex)
-	{
-		m_iPacketStartingIndex = iPacketStartingIndex;
-	}
 
 	void CVideoHeader::setPacketStartingIndex(unsigned char *pData)
 	{
@@ -610,10 +544,6 @@ namespace MediaSDK
 
 
 	//Inset Information
-	void CVideoHeader::setNumberOfInset(int value)
-	{
-		m_nNumberOfInset = value;
-	}
 	void CVideoHeader::setNumberOfInset(unsigned char *pData)
 	{
 		m_nNumberOfInset = (int)pData[0];
@@ -623,13 +553,6 @@ namespace MediaSDK
 		return m_nNumberOfInset;
 	}
 
-	void CVideoHeader::setInsetHeights(int values[], int iLen)
-	{
-		for (int i = 0; i < iLen; i++)
-		{
-			m_nInsetHeight[i] = values[i];
-		}
-	}
 	void CVideoHeader::setInsetHeights(unsigned char *pData, int nNumberOfInsets)
 	{
 
@@ -647,13 +570,7 @@ namespace MediaSDK
 		}
 	}
 
-	void CVideoHeader::setInsetWidths(int values[], int iLen)
-	{
-		for (int i = 0; i < iLen; i++)
-		{
-			m_nInsetWidth[i] = values[i];
-		}
-	}
+
 	void CVideoHeader::setInsetWidths(unsigned char *pData, int nNumberOfInsets)
 	{
 		for (int i = 0; i < nNumberOfInsets; i++)
@@ -670,6 +587,56 @@ namespace MediaSDK
 		}
 	}
 
+    //More Information
+    void CVideoHeader::setSigmaValue(unsigned char *pData)
+    {
+        m_iSigmaValue = (int)pData[0];
+    }
+    int CVideoHeader::getSigmaValue()
+    {
+        return m_iSigmaValue;
+    }
+    
+    void CVideoHeader::setBrightnessValue(unsigned char *pData)
+    {
+        m_iBrightnessValue = (int)pData[0];
+    }
+    int CVideoHeader::getBrightnessValue()
+    {
+        return m_iBrightnessValue;
+    }
+    
+    void CVideoHeader::setDeviceFPS(unsigned char *pData)
+    {
+        m_iDeviceFPS = (pData[0] >> 3) & 0x1F;
+    }
+    int CVideoHeader::getDeviceFPS()
+    {
+        return m_iDeviceFPS;
+    }
+    
+    void CVideoHeader::setEncodeFailPerFPS(unsigned char *pData)
+    {
+        int val = GetIntFromChar(pData, 0, 2);
+        m_iNumberOfEncodeFailPerFPS = (val >> 6) & 0x1F;
+        
+    }
+    int CVideoHeader::getEncodeFailPerFPS()
+    {
+        return m_iNumberOfEncodeFailPerFPS;
+    }
+    
+    void CVideoHeader::setLibraryVersion(unsigned char *pData)
+    {
+        m_iMediaEngineVersion = pData[0] & 0x3F;
+    }
+    int CVideoHeader::getLibraryVersion()
+    {
+        return m_iMediaEngineVersion;
+    }
+    
+    
+    
 
 } //namespace MediaSDK
 
