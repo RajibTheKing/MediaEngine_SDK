@@ -639,7 +639,7 @@ namespace MediaSDK
 			m_bIsAECMNearEndThreadBusy = false;
 		}
 
-#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(DESKTOP_C_SHARP)
+#elif defined(DESKTOP_C_SHARP)
 		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 		{
 			GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
