@@ -50,7 +50,7 @@ namespace MediaSDK
 		int nOpponentVersion = m_pcVideoCallSession->GetVersionController()->GetCurrentCallVersion();
 		unsigned char uchSendVersion = 0;
 
-		//int nVersionWiseHeaderLength = VIDEO_HEADER_LENGTH;
+		int nVersionWiseHeaderLength = VIDEO_HEADER_LENGTH;
 
 		if (nOpponentVersion == -1 || nOpponentVersion == 0 || bIsDummy == true)
 		{
@@ -61,16 +61,13 @@ namespace MediaSDK
 			uchSendVersion = (unsigned char)m_pcVideoCallSession->GetVersionController()->GetCurrentCallVersion();
 		}
 
-        int nPacketHeaderLenghtWithMediaType = 0; //Initialization
-        int nNumberOfPackets = 0; //Initialization
-        
-		// int nPacketHeaderLenghtWithMediaType = nVersionWiseHeaderLength + 1;
-        // m_nPacketSize = MAX_VIDEO_PACKET_SIZE - nPacketHeaderLenghtWithMediaType;
+         int nPacketHeaderLenghtWithMediaType = nVersionWiseHeaderLength + 1;
+         m_nPacketSize = MAX_VIDEO_PACKET_SIZE - nPacketHeaderLenghtWithMediaType;
 
-		//int nNumberOfPackets = (unLength + m_nPacketSize - 1) / m_nPacketSize;
+		int nNumberOfPackets = (unLength + m_nPacketSize - 1) / m_nPacketSize;
 
-		//if (nNumberOfPackets > MAX_NUMBER_OF_PACKETS)
-		//	return -1;
+		if (nNumberOfPackets > MAX_NUMBER_OF_PACKETS)
+			return -1;
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFramePacketizer::Packetize in_size " + m_Tools.IntegertoStringConvert(in_size) + " m_PacketSize " + m_Tools.IntegertoStringConvert(m_PacketSize));
 
@@ -80,17 +77,19 @@ namespace MediaSDK
 		int nCurrentCallQualityLevel = m_pcVideoCallSession->GetCurrentVideoCallQualityLevel();
         
         int nDeviceFPS = 25;
-        int nNumberOfEncodeFailPerFps = 2;
-        int iSigmaValue = 64;
+        int nNumberOfEncodeFailPerFps = 6;
+        int iSigmaValue = 64; 
         int iBrightnessValue = 120;
-        std::string sMediaEngineVersion = "9.3.1";
-        std::string sOperatingSystemVersion = "10.3";
-        std::string sDeviceModel = "Iphone6";
+        int iMediaEngineVersion = 63;
+        
+        //std::string sOperatingSystemVersion = "10.3";
+        //std::string sDeviceModel = "Iphone6";
         
 		if (bIsDummy)
 		{
             m_cVideoHeader.setPacketHeader(NEGOTIATION_PACKET_TYPE,					//packetType
                                            uchOwnVersion,							//VersionCode
+                                           nVersionWiseHeaderLength,                //Header Length
                                            0,										//FPSByte
                                            0,										//FrameNumber
                                            nNetworkType,							//NetworkType
@@ -107,16 +106,11 @@ namespace MediaSDK
                                            pInsetWidths,                            //InsetWidths
                                            
                                            //MoreInfo
-                                           nDeviceFPS,                              //Device FPS
-                                           nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
                                            iSigmaValue,                             //Sigma Value
                                            iBrightnessValue,                        //Brightness Value
-                                           (int)sMediaEngineVersion.size(),         //Media Engine Version Length
-                                           sMediaEngineVersion,                     //Media Engine Version
-                                           (int)sOperatingSystemVersion.size(),     //Operating System Version Length
-                                           sOperatingSystemVersion,                 //Operating System Version
-                                           (int)sDeviceModel.size(),                //Device Model Length
-                                           sDeviceModel                             //Device Model
+                                           nDeviceFPS,                              //Device FPS
+                                           nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
+                                           iMediaEngineVersion                      //MediaEngineVersion
                                            );
 
 			m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
@@ -140,6 +134,7 @@ namespace MediaSDK
 
             m_cVideoHeader.setPacketHeader(VIDEO_PACKET_TYPE,				//packetType
                                            uchOwnVersion,                   //VersionCode
+                                           nVersionWiseHeaderLength,                //Header Length
                                            0,                               //FPSByte
                                            iFrameNumber,                    //FrameNumber
                                            nNetworkType,                    //NetworkType
@@ -156,16 +151,11 @@ namespace MediaSDK
                                            pInsetWidths,                      //InsetWidths
                                            
                                            //MoreInfo
-                                           nDeviceFPS,                              //Device FPS
-                                           nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
                                            iSigmaValue,                             //Sigma Value
                                            iBrightnessValue,                        //Brightness Value
-                                           (int)sMediaEngineVersion.size(),         //Media Engine Version Length
-                                           sMediaEngineVersion,                     //Media Engine Version
-                                           (int)sOperatingSystemVersion.size(),     //Operating System Version Length
-                                           sOperatingSystemVersion,                 //Operating System Version
-                                           (int)sDeviceModel.size(),                //Device Model Length
-                                           sDeviceModel                             //Device Model
+                                           nDeviceFPS,                              //Device FPS
+                                           nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
+                                           iMediaEngineVersion                      //MediaEngineVersion
                                            );
 
 
@@ -220,7 +210,7 @@ namespace MediaSDK
 
                 m_cVideoHeader.setPacketHeader(VIDEO_PACKET_TYPE,             //packetType
                                                uchOwnVersion,                  //VersionCode
-                                               //VIDEO_HEADER_LENGTH,             //HeaderLength
+                                               VIDEO_HEADER_LENGTH,             //HeaderLength
                                                0,                               //FPSByte
                                                iFrameNumber,                    //FrameNumber
                                                nNetworkType,                    //NetworkType
@@ -237,16 +227,11 @@ namespace MediaSDK
                                                pInsetWidths,                            //InsetWidths
                                                
                                                //MoreInfo
-                                               nDeviceFPS,                              //Device FPS
-                                               nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
                                                iSigmaValue,                             //Sigma Value
                                                iBrightnessValue,                        //Brightness Value
-                                               (int)sMediaEngineVersion.size(),         //Media Engine Version Length
-                                               sMediaEngineVersion,                     //Media Engine Version
-                                               (int)sOperatingSystemVersion.size(),     //Operating System Version Length
-                                               sOperatingSystemVersion,                 //Operating System Version
-                                               (int)sDeviceModel.size(),                //Device Model Length
-                                               sDeviceModel                             //Device Model
+                                               nDeviceFPS,                              //Device FPS
+                                               nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
+                                               iMediaEngineVersion                      //MediaEngineVersion
                                                );
                 
                 

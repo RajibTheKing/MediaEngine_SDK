@@ -1056,6 +1056,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
         PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
                                      uchVersion,									//VersionCode
+                                     VIDEO_HEADER_LENGTH,                       //VideoHeaderLength
                                      0,											//FPSByte
                                      m_miniPacketBandCounter,                    //FrameNumber           //SlotID
                                      0,											//NetworkType
@@ -1076,12 +1077,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
                                      0,                                        //Number of Encode Fail Per FPS
                                      0,                                        //Sigma Value
                                      0,                                        //Brightness Value
-                                     0,                                        //Media Engine Version Length
-                                     "",                                       //Media Engine Version
-                                     0,                                        //Operating System Version Length
-                                     "",                                       //Operating System Version
-                                     0,                                        //Device Model Length
-                                     ""                                        //Device Model
+                                     0                                        //Media Engine Version
                                     );
         
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
@@ -1093,6 +1089,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 
         PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
                                      uchVersion,								//VersionCode
+                                     VIDEO_HEADER_LENGTH,                   // Header Length
                                      0,										//FPSByte
                                      m_miniPacketBandCounter,                //FrameNumber
                                      0,										//NetworkType
@@ -1109,17 +1106,11 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
                                      nullptr,                                 //InsetWidths
                                      
                                      //MoreInfo
-                                     0,                                        //Device FPS
-                                     0,                                        //Number of Encode Fail Per FPS
                                      0,                                        //Sigma Value
                                      0,                                        //Brightness Value
-                                     0,                                        //Media Engine Version Length
-                                     "",                                       //Media Engine Version
-                                     0,                                        //Operating System Version Length
-                                     "",                                       //Operating System Version
-                                     0,                                        //Device Model Length
-                                     ""                                        //Device Model
-                                     
+                                     0,                                        //Device FPS
+                                     0,                                        //Number of Encode Fail Per FPS
+                                     0                                        //Media Engine Version
                                      );
 	}
 
@@ -1144,7 +1135,7 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
     
     PacketHeader.setPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
                                  uchVersion,							//VersionCode
-                                 //VIDEO_HEADER_LENGTH,					//HeaderLength
+                                 VIDEO_HEADER_LENGTH,					//HeaderLength
                                  0,										//FPSByte
                                  llMissedFrameNumber,                   //FrameNumber
                                  0,										//NetworkType
@@ -1161,16 +1152,11 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
 								 nullptr,                                 //InsetWidths
                                  
                                  //MoreInfo
-                                 0,                                        //Device FPS
-                                 0,                                        //Number of Encode Fail Per FPS
                                  0,                                        //Sigma Value
                                  0,                                        //Brightness Value
-                                 0,                                        //Media Engine Version Length
-                                 "",                                       //Media Engine Version
-                                 0,                                        //Operating System Version Length
-                                 "",                                       //Operating System Version
-                                 0,                                        //Device Model Length
-                                 ""                                        //Device Model
+                                 0,                                        //Device FPS
+                                 0,                                        //Number of Encode Fail Per FPS
+                                 0                                        //Media Engine Version
                                  );
     
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
