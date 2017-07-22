@@ -28,56 +28,6 @@ namespace MediaSDK
 		m_pLiveVideoDecodingQueue = pQueue;
 	}
 
-	void LiveReceiver::PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
-	{
-		LiveReceiverLocker lock(*m_pLiveReceiverMutex);
-
-		int iUsedLen = 0, nFrames = 0;
-		int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
-		int offset = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
-		int tillIndex = offset;
-		//int frameCounter = 0;
-
-		if (packetSizeOfNetwork < 0)
-			return;
-
-		for (int j = 0; iUsedLen < iLen; j++)
-		{
-			nFrames++;
-
-			int indexOfThisFrame = tillIndex;
-			int endOfThisFrame = indexOfThisFrame + frameSizes[j] - 1;
-			int commonLeft, commonRight;
-			bool bBroken = false;
-
-			for (int i = 0; i < numberOfMissingFrames; i++)
-			{
-				commonLeft = max(indexOfThisFrame, missingFrames[i] * packetSizeOfNetwork);
-				commonRight = min(endOfThisFrame, ((missingFrames[i] + 1) * packetSizeOfNetwork) - 1);
-
-				if (commonLeft <= commonRight)
-				{
-					bBroken = true;
-					break;
-				}
-			}
-
-			if (!bBroken)	//If the current frame is not broken.
-			{
-				int nCurrentFrameLen = ((int)uchVideoData[1 + iUsedLen + 13] << 8) + uchVideoData[1 + iUsedLen + 14];
-
-				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + PACKET_HEADER_LENGTH);
-			}
-			else
-			{
-
-			}
-
-			iUsedLen += frameSizes[j];
-			tillIndex = endOfThisFrame + 1;
-		}
-	}
-
 	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 	{
 		CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector called");
