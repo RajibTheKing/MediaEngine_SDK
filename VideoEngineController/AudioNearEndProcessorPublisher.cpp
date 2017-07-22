@@ -74,9 +74,8 @@ namespace MediaSDK
 				m_iPacketNumber = 0;
 			}
 			LOG18("#18#NE#Publish  StoreDataForChunk nSendingDataSizeInByte = %d m_MyAudioHeadersize = %d", nSendingDataSizeInByte, m_MyAudioHeadersize);
-
-			int nSendigFrameSize = nSendingDataSizeInByte + m_MyAudioHeadersize + 1;
-			StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendigFrameSize);
+			
+			StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendingDataSizeInByte);
 
 			Tools::SOSleep(0);
 		}
