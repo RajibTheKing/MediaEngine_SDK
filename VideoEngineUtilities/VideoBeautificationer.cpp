@@ -831,7 +831,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 		{
 
 #if defined(DESKTOP_C_SHARP)
-			pBlurConvertingData[iw + j - 1] = pBlurConvertingData[iw + j - 1] - brightness_shift;
+			pBlurConvertingData[iw + j - 1] = max(0, pBlurConvertingData[iw + j - 1] - brightness_shift);
 #endif
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
