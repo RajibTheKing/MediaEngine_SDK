@@ -14,9 +14,13 @@
 
 namespace MediaSDK
 {
+	//Global Media Logger object
+	MediaLogger g_Logger;
+
 	MediaLogger::MediaLogger():
 		m_elogLevel(LogLevel::INFO), //by default
-		m_bFSError(false)
+		m_bFSError(false),
+		m_bShowDate(false)
 	{
 		m_pMediaLoggerMutex.reset(new CLockHandler());
 
@@ -31,9 +35,10 @@ namespace MediaSDK
 		Release();
 	}
 
-	void MediaLogger::Init(LogLevel logLevel)
+	void MediaLogger::Init(LogLevel logLevel, bool showDate)
 	{
 		m_elogLevel = logLevel;
+		m_bShowDate = showDate;
 		
 		InternalLog("Media SDK Logging Level %d", m_elogLevel);
 
@@ -76,6 +81,8 @@ namespace MediaSDK
 	{
 		if (logLevel > m_elogLevel) return;
 
+		MediaLocker lock(m_pMediaLoggerMutex.get());
+
 		int len = GetDateTime(m_sMessage);
 		len += GetThreadID(m_sMessage + len);
 		m_sMessage[len++] = ' ';
@@ -86,14 +93,14 @@ namespace MediaSDK
 		vsnprintf(m_sMessage + len, MEDIA_LOG_MAX_SIZE - len, format, vargs);
 		va_end(vargs);
 		//argument to string end
-
-		MediaLocker lock(m_pMediaLoggerMutex.get());
 		
 		m_vLogVector.push_back(m_sMessage);
 	}
 
 	void MediaLogger::InternalLog(const char *format, ...)
 	{
+		MediaLocker lock(m_pMediaLoggerMutex.get());
+
 		int len = GetDateTime(m_sMessage);
 		len += GetThreadID(m_sMessage + len);
 		m_sMessage[len++] = ' ';
@@ -104,8 +111,6 @@ namespace MediaSDK
 		vsnprintf(m_sMessage + len, MEDIA_LOG_MAX_SIZE - len, format, vargs);
 		va_end(vargs);
 		//argument to string end
-
-		MediaLocker lock(m_pMediaLoggerMutex.get());
 
 		m_vLogVector.push_back(m_sMessage);
 	}
@@ -268,14 +273,17 @@ namespace MediaSDK
 
 		GetLocalTime(&st);
 
-		return _snprintf(buffer, 40, "[%02d-%02d-%04d %02d:%02d:%02d %llu] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, epoch);
+		if(m_bShowDate)
+			return _snprintf(buffer, 40, "[%02d-%02d-%04d %02d:%02d:%02d %llu] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, epoch);
+		else
+			return _snprintf(buffer, 40, "[%02d:%02d:%02d %llu] ", st.wHour, st.wMinute, st.wSecond, epoch);
 #else
 
 		timeval curTime;
 		gettimeofday(&curTime, NULL);
 		int milli = curTime.tv_usec / 1000, pos;
 
-		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
+		pos = m_bShowDate ? strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec)) : strftime(buffer, 22, "[%H:%M:%S", localtime(&curTime.tv_sec));
 		pos += snprintf(buffer + pos, 20, " %llu] ", epoch);
 
 		return pos;

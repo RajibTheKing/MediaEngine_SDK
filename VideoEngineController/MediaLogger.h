@@ -64,7 +64,7 @@ namespace MediaSDK
 		MediaLogger();
 		~MediaLogger();
 
-		void Init(LogLevel logLevel);
+		void Init(LogLevel logLevel, bool showDate);
 		void Release();
 		
 		void Log(LogLevel loglevel, const char *format, ...);
@@ -103,13 +103,14 @@ namespace MediaSDK
 
 		/// File System Error
 		bool m_bFSError; 
+		bool m_bShowDate;
 	};
 
 #ifdef LOG_ENABLED
 
-	static MediaLogger g_Logger;
+	extern MediaLogger g_Logger;
 
-	#define MediaLogInit(level) g_Logger.Init(level);
+	#define MediaLogInit(level, showDate) g_Logger.Init( (level), (showDate) );
 	#define MediaLogRelease() g_Logger.Release();
 	#define MediaLog(a, ...) g_Logger.Log( (a), __VA_ARGS__);
 
@@ -119,17 +120,30 @@ namespace MediaSDK
 		ScopeLog(char* scopeName):
 			m_sName(scopeName)
 		{
-			MediaLog(LOG_INFO, ">>> %s Entered >>>", scopeName);
+			MediaLog(LOG_INFO, "<<< %s Entered <<<", scopeName);
 		}
 
 		~ScopeLog()
 		{
-			MediaLog(LOG_INFO, "<<< %s Exited <<<", m_sName.c_str());
+			MediaLog(LOG_INFO, ">>> %s Exited >>>", m_sName.c_str());
 		}
 
 	private:
 		std::string m_sName;
 	};
+
+#else
+
+/// If log not enabled then these macros will work as a placeholder
+#define MediaLogInit(level, showDate);
+#define MediaLogRelease();
+#define MediaLog(a, ...);
+
+#define ScopeLog(scopeName)
+
+#endif
+
+#if defined(LOG_ENABLED) && defined(BENCHMARK_ENABLED)
 
 	/**
 	* This is an unitily class to benchmark a given scope. The execution time shall be logged when the scoped is over
@@ -142,29 +156,20 @@ namespace MediaSDK
 			m_sName(scopeName),
 			m_nStart(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count())
 		{
-			MediaLog(LOG_INFO, "[BENCHMARK] %s Started", scopeName);
+			MediaLog(LOG_INFO, "{*} %s Started", scopeName); //«ß«
 		}
 
 		~BenchmarkScope()
 		{
-			MediaLog(LOG_INFO, "[BENCHMARK] %s Finished, Execution time %.03Lf ms", m_sName.c_str(), (long double)(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - m_nStart) / 1000.00L);
+			MediaLog(LOG_INFO, "{*} %s Finished, Execution time %.03Lf ms", m_sName.c_str(), (long double)(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - m_nStart) / 1000.00L);
 		}
 
 	private:
 		std::string m_sName;
 		unsigned long long m_nStart;
-};
-
+	};
 #else
-
-/// If log not enabled then these macros will work as a placeholder
-#define MediaLogInit(level);
-#define MediaLogRelease();
-#define MediaLog(a, ...);
-
-#define ScopeLog(scopeName)
 #define BenchmarkScope(scopeName)
-
 #endif
 }
 

@@ -9,6 +9,7 @@ namespace MediaSDK
 
 //Enable to create log
 //#define LOG_ENABLED
+//#define BENCHMARK_ENABLED
 
 
 } // namespace MediaSDK
