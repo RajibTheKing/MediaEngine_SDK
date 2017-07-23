@@ -20,7 +20,7 @@ namespace MediaSDK
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
-			
+		
 		CController* pController = new CController();
 
 		m_llTimeOffset = -1;
