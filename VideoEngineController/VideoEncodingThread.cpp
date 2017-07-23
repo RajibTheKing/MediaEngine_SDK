@@ -69,6 +69,7 @@ m_bNewSessionStarted(true)
      }
 
 	m_filterToApply = 0;
+    m_iNumberOfEncodeFailPerFPS = 0;
 }
 
 CVideoEncodingThread::~CVideoEncodingThread()
@@ -231,7 +232,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	Tools toolsObject;
     toolsObject.SetThreadName("EncodingCommon");
-	int nEncodingFrameSize, nENCODEDFrameSize, nCaptureTimeDifference, nDevice_orientation;
+	int nEncodingFrameSize, nENCODEDFrameSize = 0, nCaptureTimeDifference, nDevice_orientation;
 	long long llCalculatingTime;
 	int sumOfEncodingTimediff = 0;
 	int sumOfZeroLengthEncodingTimediff = 0;
@@ -249,7 +250,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 	int iGotHeight;
 	int iGotWidth;
-
+    
+    int iNumberOfEncodeFailCounter = 0;
 #if defined(DESKTOP_C_SHARP)
 
 	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallHeight,  m_pVideoCallSession->m_nVideoCallWidth, RGB24);
@@ -806,6 +808,18 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			}
 
 			
+            
+            if(m_iFrameNumber % m_nCallFPS == 0)
+            {
+                m_iNumberOfEncodeFailPerFPS = iNumberOfEncodeFailCounter;
+                iNumberOfEncodeFailCounter = 0;
+            }
+            
+            if(nENCODEDFrameSize <= 0)
+            {
+                iNumberOfEncodeFailCounter++;
+            }
+            
 			//if (nENCODEDFrameSize > 0)
 			{
 
@@ -976,7 +990,10 @@ void CVideoEncodingThread::TestVideoEffect(int *param, int size)
 
 
 
-
+CVideoBeautificationer* CVideoEncodingThread::getVideoBeautificationar()
+{
+    return m_VideoBeautificationer;
+}
 
 
 

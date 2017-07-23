@@ -858,6 +858,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 		return 1;
     
     m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
+    
     /*if(m_bIsCheckCall==true)
     {
         m_nDeviceCheckFrameCounter++;
@@ -1968,6 +1969,11 @@ int CVideoCallSession::GetCallInLiveType()
 bool CVideoCallSession::isDynamicIDR_Mechanism_Enable()
 {
     return m_bDynamic_IDR_Sending_Mechanism;
+}
+    
+CAverageCalculator* CVideoCallSession::getFpsCalculator()
+{
+    return m_VideoFpsCalculator;
 }
 
 } //namespace MediaSDK

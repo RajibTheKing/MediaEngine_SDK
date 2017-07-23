@@ -161,7 +161,8 @@ public:
     
     bool isDynamicIDR_Mechanism_Enable();
     
-
+    CAverageCalculator* getFpsCalculator();
+    
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
@@ -171,6 +172,8 @@ public:
 	int m_nVideoCallWidth;
 
 	CVideoEncodingThread *m_pVideoEncodingThread;
+    
+    
 
 private:
 

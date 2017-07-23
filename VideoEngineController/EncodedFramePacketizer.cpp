@@ -76,11 +76,12 @@ namespace MediaSDK
 		int nOwnQualityLevel = m_pcVideoCallSession->GetOwnVideoCallQualityLevel();
 		int nCurrentCallQualityLevel = m_pcVideoCallSession->GetCurrentVideoCallQualityLevel();
         
-        int nDeviceFPS = 25;
-        int nNumberOfEncodeFailPerFps = 6;
-        int iSigmaValue = 64; 
-        int iBrightnessValue = 120;
-        int iMediaEngineVersion = 63;
+        int nDeviceFPS = m_pcVideoCallSession->getFpsCalculator()->getDeviceFPS();
+        int nNumberOfEncodeFailPerFps = m_pcVideoCallSession->m_pVideoEncodingThread->m_iNumberOfEncodeFailPerFPS;
+        int iSigmaValue = m_pcVideoCallSession->m_pVideoEncodingThread->getVideoBeautificationar()->GetCurrentSigma();
+        int iBrightnessValue = m_pcVideoCallSession->m_pVideoEncodingThread->getVideoBeautificationar()->GetCurrentAverageLuminace();
+        int iMediaEngineVersion = LIBRARY_VERSION;
+        
         
         //std::string sOperatingSystemVersion = "10.3";
         //std::string sDeviceModel = "Iphone6";

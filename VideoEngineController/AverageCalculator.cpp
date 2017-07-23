@@ -74,6 +74,7 @@ namespace MediaSDK
 #endif
 
 			m_llPrevFPSTime = m_Tools.CurrentTimestamp();
+            m_iDeviceFPS = m_iFpsCounter;
 			m_iFpsCounter = 0;
 		}
 	}
@@ -89,5 +90,10 @@ namespace MediaSDK
 		m_llEndingTimeStamp = m_Tools.CurrentTimestamp();
 		printf("Operation Time for %s  = %d\n", m_sOperationTag.c_str(), m_llEndingTimeStamp - m_llStartingTimeStamp);
 	}
+    
+    int CAverageCalculator::getDeviceFPS()
+    {
+        return m_iDeviceFPS;
+    }
 
 } //namespace MediaSDK

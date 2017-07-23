@@ -27,6 +27,7 @@ namespace MediaSDK
 
 		void StartingOperation(string sOperationName);
 		void EndingOperation();
+        int getDeviceFPS();
 	private:
 		double m_dAvg;
 		int m_nCounter;
@@ -40,6 +41,8 @@ namespace MediaSDK
 		long long m_llStartingTimeStamp;
 		long long m_llEndingTimeStamp;
 		string m_sOperationTag;
+        
+        int m_iDeviceFPS;
 	};
 
 } //namespace MediaSDK
