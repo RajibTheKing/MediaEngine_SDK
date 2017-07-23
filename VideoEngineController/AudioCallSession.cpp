@@ -81,11 +81,7 @@ namespace MediaSDK
 		m_pTrace = new CTrace();
 
 		m_iSpeakerType = nAudioSpeakerType;
-		m_bTraceSendingEnabled = false;
-		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
-		{
-			m_bTraceSendingEnabled = true;
-		}
+		
 
 		SetSendFunction(pSharedObject->GetSendFunctionPointer());
 		SetEventNotifier(pSharedObject->m_pEventNotifier);
@@ -100,7 +96,6 @@ namespace MediaSDK
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
-			m_bTraceSendingEnabled = false;
 			//m_pPlayerGain->SetGain(9);
 		}
 
@@ -292,6 +287,27 @@ namespace MediaSDK
 		{
 			return false;
 		}
+#endif
+#else
+		return false
+#endif
+	}
+
+	bool CAudioCallSession::IsTraceSendingEnabled()
+	{
+#ifdef USE_AECM
+#ifdef __ANDROID__
+		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER
+			&& !m_bLiveAudioStreamRunning)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+#elif defined (DESKTOP_C_SHARP)
+		return false;
 #endif
 #else
 		return false
@@ -712,14 +728,6 @@ namespace MediaSDK
 		if (m_iSpeakerType != iSpeakerType)
 		{
 			m_bNeedToResetEcho = true;
-			if (iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
-			{
-				m_bTraceSendingEnabled = true;
-			}
-			else
-			{
-				m_bTraceSendingEnabled = false;
-			}
 		}
 		m_iSpeakerType = iSpeakerType;
 	}
