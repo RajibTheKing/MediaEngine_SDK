@@ -10,6 +10,7 @@ namespace MediaSDK
 	SpeexEchoCanceller::SpeexEchoCanceller() : m_bFarendArrived(false), m_bReadingFarend(false), m_bWritingFarend(false)
 	{
 #ifdef USE_AECM
+#ifdef __ANDROID__
 		int sampleRate = AUDIO_SAMPLE_RATE;
 		st = speex_echo_state_init(AECM_SAMPLES_IN_FRAME, 1024);
 		int db = -60;
@@ -33,14 +34,17 @@ namespace MediaSDK
 
 		// NOTE: Speex gain has been removed from here
 #endif
+#endif
 	}
 
 
 	SpeexEchoCanceller::~SpeexEchoCanceller()
 	{
 #ifdef USE_AECM
+#ifdef __ANDROID__
 		speex_echo_state_destroy(st);
 		speex_preprocess_state_destroy(den);
+#endif
 #endif
 	}
 
@@ -48,6 +52,7 @@ namespace MediaSDK
 	int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning)
 	{
 #ifdef USE_AECM
+#ifdef __ANDROID__
 		while (m_bReadingFarend)
 		{
 			Tools::SOSleep(1);
@@ -55,6 +60,7 @@ namespace MediaSDK
 		m_bWritingFarend = true;
 		memcpy(m_sSpeexFarendBuf, farEndData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
 		m_bWritingFarend = false;
+#endif
 #endif
 
 		return true;
@@ -64,7 +70,7 @@ namespace MediaSDK
 int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay)
 {
 #ifdef USE_AECM
-
+#ifdef __ANDROID__
 		if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 		{
 			ALOG("aec nearend Invalid size");
@@ -86,6 +92,7 @@ int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveS
 
 		m_bReadingFarend = false;
 		m_bFarendArrived = false;
+#endif
 #endif 
 
 		return true;
