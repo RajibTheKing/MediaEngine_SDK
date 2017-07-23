@@ -9,71 +9,12 @@ namespace MediaSDK
 #define NV21 21
 #define NV12 12
 
-int m_applyBeatification;
-
-int m_Step0Sigma = 128;
-int m_Step1Sigma = 64;
-int m_Step2Sigma = 32;
-int m_Step3Sigma = 16;
-int m_Step4Sigma = 8;
-
-int m_Step0SigmaDigit = 7;
-int m_Step1SigmaDigit = 6;
-int m_Step2SigmaDigit = 5;
-int m_Step3SigmaDigit = 4;
-int m_Step4SigmaDigit = 3;
-
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 #import <sys/utsname.h> // import it in your header or implementation file.
-//#import <UIKit/UIKit.h>
-
-int m_sigma = m_Step1Sigma;
-
-#elif defined(__ANDROID__)
-
-int m_sigma = m_Step1Sigma;
-
-#elif defined(DESKTOP_C_SHARP)
-
-int m_sigma = m_Step2Sigma;
-
-#else 
-
-int m_sigma = m_Step2Sigma;
+	//#import <UIKit/UIKit.h>
 
 #endif
-
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
-int m_sigmaDigit = m_Step1SigmaDigit;
-
-#elif defined(__ANDROID__)
-
-int m_sigmaDigit = m_Step1SigmaDigit;
-
-#elif defined(DESKTOP_C_SHARP)
-
-int m_sigmaDigit = m_Step2SigmaDigit;
-
-#else 
-
-int m_sigmaDigit = m_Step2SigmaDigit;
-
-#endif
-
-#if defined(DESKTOP_C_SHARP)
-
-int m_radius = 8;
-
-#else
-
-int m_radius = 5;
-
-#endif
-
-int m_rr = (m_radius << 1) + 1;
-double m_pixels = m_rr * m_rr;
 
 #define getMin(a,b) a<b?a:b
 #define getMax(a,b) a>b?a:b
@@ -84,6 +25,66 @@ m_nPreviousAddValueForBrightening(0),
 m_nBrightnessPrecision(0),
 m_EffectValue(10)
 {
+	m_Step0Sigma = 128;
+	m_Step1Sigma = 64;
+	m_Step2Sigma = 32;
+	m_Step3Sigma = 16;
+	m_Step4Sigma = 8;
+
+	m_Step0SigmaDigit = 7;
+	m_Step1SigmaDigit = 6;
+	m_Step2SigmaDigit = 5;
+	m_Step3SigmaDigit = 4;
+	m_Step4SigmaDigit = 3;
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	m_sigma = m_Step1Sigma;
+
+#elif defined(__ANDROID__)
+
+	m_sigma = m_Step1Sigma;
+
+#elif defined(DESKTOP_C_SHARP)
+
+	m_sigma = m_Step2Sigma;
+
+#else 
+
+	m_sigma = m_Step2Sigma;
+
+#endif
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	m_sigmaDigit = m_Step1SigmaDigit;
+
+#elif defined(__ANDROID__)
+
+	m_sigmaDigit = m_Step1SigmaDigit;
+
+#elif defined(DESKTOP_C_SHARP)
+
+	m_sigmaDigit = m_Step2SigmaDigit;
+
+#else 
+
+	m_sigmaDigit = m_Step2SigmaDigit;
+
+#endif
+
+#if defined(DESKTOP_C_SHARP)
+
+	m_radius = 8;
+
+#else
+
+	m_radius = 5;
+
+#endif
+
+	m_rr = (m_radius << 1) + 1;
+	m_pixels = m_rr * m_rr;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -569,7 +570,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter2(unsigned char *pBlu
 		//pBlurConvertingData[i] = modifYUV[pBlurConvertingData[i]];
 	}
 
-	int m_AvarageValue = totalYValue / ll;
+	m_AvarageValue = totalYValue / ll;
 
 	SetBrighteningValue(m_AvarageValue, 10);
 
@@ -687,7 +688,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	}
 
 
-	int m_AvarageValue = totalYValue/yLen;
+	m_AvarageValue = totalYValue/yLen;
 
 	SetBrighteningValue(m_AvarageValue, 10);
 
@@ -864,7 +865,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 		}
 	}
 
-	int m_AvarageValue = totalYValue/yLen;
+	m_AvarageValue = totalYValue/yLen;
 
 #if defined(__ANDROID__)
 
@@ -985,6 +986,16 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	pair<int, int> result = { m_mean[iHeight][iWidth] / (iHeight*iWidth), m_variance[iHeight][iWidth] / (iHeight*iWidth) };
 
 	return result;
+}
+
+int CVideoBeautificationer::GetCurrentSigma()
+{
+	return m_sigma;
+}
+
+int CVideoBeautificationer::GetCurrentAverageLuminace()
+{
+	return m_AvarageValue;
 }
 
 void CVideoBeautificationer::setParameters(int *param)

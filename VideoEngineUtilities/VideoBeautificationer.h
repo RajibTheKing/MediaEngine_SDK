@@ -43,6 +43,9 @@ public:
 	void MakeFrameBright(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, int nPrecision);
 	void IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, unsigned char  nThreshold);
 
+	int GetCurrentSigma();
+	int GetCurrentAverageLuminace();
+
 	void setParameters(int *param);
 	int TestVideoEffect(int *param, int size);
 
@@ -78,6 +81,27 @@ private:
 	int m_nBlurScale;
 	int m_nThresholdValue;
 	int m_nIsGreaterThen5s;
+
+	int m_applyBeatification;
+
+	int m_sigma;
+	int m_sigmaDigit;
+	int m_radius;
+	int m_rr;
+	double m_pixels;
+	int m_AvarageValue;
+
+	int m_Step0Sigma;
+	int m_Step1Sigma;
+	int m_Step2Sigma;
+	int m_Step3Sigma;
+	int m_Step4Sigma;
+
+	int m_Step0SigmaDigit;
+	int m_Step1SigmaDigit;
+	int m_Step2SigmaDigit;
+	int m_Step3SigmaDigit;
+	int m_Step4SigmaDigit;
 
 	int m_iDeviceHeight;
 	int m_iDeviceWidth;
