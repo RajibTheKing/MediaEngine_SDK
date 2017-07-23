@@ -23,6 +23,8 @@ int m_Step2SigmaDigit = 5;
 int m_Step3SigmaDigit = 4;
 int m_Step4SigmaDigit = 3;
 
+int brightness_shift = 30;
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 #import <sys/utsname.h> // import it in your header or implementation file.
@@ -173,11 +175,11 @@ m_EffectValue(10)
 		
 		if (i >= 25 && i <= 125) 
 		{
-			m_preBrightness[i] += (i - 25) * 9 / firstDif;
+			m_preBrightness[i] += (i - 25) * BRIGHTNESS_SCALE / firstDif;
 		}
 		else if (i >= 125 && i <= 225) 
 		{
-			m_preBrightness[i] += (225 - i) * 9 / secondDif;
+			m_preBrightness[i] += (225 - i) * BRIGHTNESS_SCALE / secondDif;
 		}
 	}
 
@@ -789,8 +791,10 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 2)));
-#else
+#elif defined(__ANDROID__)
 					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
+#else
+					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 10)));
 #endif
 				}
 			}
@@ -826,11 +830,15 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 		for (int j = startWidth; j <= endWidth; j++)
 		{
 
+#if defined(DESKTOP_C_SHARP)
+			pBlurConvertingData[iw + j - 1] = pBlurConvertingData[iw + j - 1] - brightness_shift;
+#endif
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 			//MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
 
-#elif defined(__ANDROID__)
+#else
 
 			//if (pBlurConvertingData[iw + j - 1] >= luminaceHigh - m_nPreviousAddValueForBrightening)
 			//	pBlurConvertingData[iw + j - 1] = luminaceHigh;
@@ -989,15 +997,17 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 void CVideoBeautificationer::setParameters(int *param)
 {
-	if (param[0] != 0) m_sigma = param[0];
+	if (param[0] != 0) m_sigma = param[0], m_sigmaDigit = log2(m_sigma);
 
-	if (param[1] != 0) m_radius = param[1];
+	if (param[1] != 0) brightness_shift = param[1];
+
+	m_applyBeatification = param[2];
 
 	m_rr = (m_radius << 1) + 1;
 
 	m_pixels = m_rr * m_rr;
 
-	m_applyBeatification = param[3];
+	//m_applyBeatification = param[3];
 
 	//m_applyBeatification = 1;
 
@@ -1016,7 +1026,7 @@ int CVideoBeautificationer::TestVideoEffect(int *param, int size)
 		
 	memcpy(m_VideoEffectParam, param, size * sizeof(int));
 
-	BrightnessCalculation(m_VideoEffectParam[4], m_VideoEffectParam[5], m_VideoEffectParam[6], m_VideoEffectParam[7]);
+	//BrightnessCalculation(m_VideoEffectParam[4], m_VideoEffectParam[5], m_VideoEffectParam[6], m_VideoEffectParam[7]);
 
 	setParameters(m_VideoEffectParam);
 
@@ -1040,7 +1050,7 @@ void CVideoBeautificationer::BrightnessCalculation(int startPix, int endPix, int
 		{
 			m_preBrightness[i] += (endPix - i) * highestChange / secondDif;
 		}
-	}		
+	}
 		
 	return;
 }
