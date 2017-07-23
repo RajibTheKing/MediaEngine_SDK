@@ -83,4 +83,8 @@
 #define USE_AGC
 #endif
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#define USE_AGC
+#endif
+
 #endif
