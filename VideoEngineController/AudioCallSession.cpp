@@ -520,6 +520,25 @@ namespace MediaSDK
 		return m_pNearEndProcessor->GetBaseOfRelativeTime();
 	}
 
+	void CAudioCallSession::SyncRecordingTime()
+	{
+		if (m_b1stRecordedDataSinceCallStarted)
+		{
+			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
+			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
+			m_b1stRecordedDataSinceCallStarted = false;
+		}
+		else
+		{
+			long long llNOw = Tools::CurrentTimestamp();
+			if (llNOw + 20 < m_llnextRecordedDataTime)
+			{
+				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+			}
+			m_llnextRecordedDataTime += 100;
+		}
+	}
+
 	void CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		long long llCurrentTime = Tools::CurrentTimestamp();
@@ -534,8 +553,6 @@ namespace MediaSDK
 		}
 #endif
 
-
-
 		if (IsEchoCancellerEnabled())
 		{
 			if (m_bNeedToResetEcho)
@@ -547,21 +564,7 @@ namespace MediaSDK
 			//Sleep to maintain 100 ms recording time diff
 			if (m_bEnableRecorderTimeSyncDuringEchoCancellation)
 			{
-				if (m_b1stRecordedDataSinceCallStarted)
-				{
-					m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
-					m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
-					m_b1stRecordedDataSinceCallStarted = false;
-				}
-				else
-				{
-					long long llNOw = Tools::CurrentTimestamp();
-					if (llNOw + 20 < m_llnextRecordedDataTime)
-					{
-						Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
-					}
-					m_llnextRecordedDataTime += 100;
-				}
+				SyncRecordingTime();
 			}
 
 			//If trace is received, current and next frames are deleted

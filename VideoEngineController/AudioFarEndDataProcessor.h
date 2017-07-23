@@ -121,6 +121,10 @@ namespace MediaSDK
 		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
 		SmartPointer<AudioDecoderInterface> m_cAacDecoder;
 
+	private:
+
+		void SyncPlayingTime();
+
 	};
 
 } //namespace MediaSDK

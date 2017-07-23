@@ -110,6 +110,7 @@ namespace MediaSDK
 		void SetResources(AudioResources &audioResources);
 		void InitNearEndDataProcessing();
 		void InitFarEndDataProcessing();
+		void SyncRecordingTime();
 
 
 	public:
