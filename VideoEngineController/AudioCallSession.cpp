@@ -50,9 +50,6 @@
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#include <dispatch/dispatch.h>
-#endif
 
 #define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
 #define DUPLICATE_AUDIO
