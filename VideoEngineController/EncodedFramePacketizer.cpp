@@ -78,8 +78,13 @@ namespace MediaSDK
         
         int nDeviceFPS = m_pcVideoCallSession->getFpsCalculator()->getDeviceFPS();
         int nNumberOfEncodeFailPerFps = m_pcVideoCallSession->m_pVideoEncodingThread->m_iNumberOfEncodeFailPerFPS;
-        int iSigmaValue = m_pcVideoCallSession->m_pVideoEncodingThread->getVideoBeautificationar()->GetCurrentSigma();
-        int iBrightnessValue = m_pcVideoCallSession->m_pVideoEncodingThread->getVideoBeautificationar()->GetCurrentAverageLuminace();
+        int iSigmaValue = 0;
+        int iBrightnessValue = 0;
+        if(m_pcVideoCallSession->m_pVideoEncodingThread->getVideoBeautificationar() != NULL)
+        {
+            iSigmaValue = m_pcVideoCallSession->m_pVideoEncodingThread->getVideoBeautificationar()->GetCurrentSigma();
+            iBrightnessValue = m_pcVideoCallSession->m_pVideoEncodingThread->getVideoBeautificationar()->GetCurrentAverageLuminace();
+        }
         int iMediaEngineVersion = LIBRARY_VERSION;
         
         
