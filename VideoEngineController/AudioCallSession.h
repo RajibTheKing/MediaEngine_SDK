@@ -76,6 +76,7 @@ namespace MediaSDK
 		void SetEchoCanceller(bool bOn);
 		void ResetTrace();
 		void ResetAEC();
+		bool IsEchoCancellerEnabled();
 		
 		void SetSendFunction(SendFunctionPointerType cbClientSendFunc) { m_cbClientSendFunction = cbClientSendFunc; }
 		void SetEventNotifier(CEventNotifier *pEventNotifier)          { m_pEventNotifier = pEventNotifier; }
@@ -169,7 +170,7 @@ namespace MediaSDK
 		bool m_bTraceSendingEnabled;
 		bool m_bIsAECMFarEndThreadBusy;
 		bool m_bIsAECMNearEndThreadBusy;
-		bool m_bEchoCancellerEnabled;
+
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;
 		const bool& m_bIsVideoCallRunning;

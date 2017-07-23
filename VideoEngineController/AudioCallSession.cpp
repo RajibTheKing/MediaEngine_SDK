@@ -70,13 +70,13 @@ namespace MediaSDK
 		m_bNeedToResetEcho(false)
 	{
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
-	
+
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
 		m_PublisherBufferForMuxing.reset(new AudioShortBufferForPublisherFarEnd);
 		m_FarendBuffer.reset(new CAudioShortBuffer);
 		m_AudioNearEndBuffer.reset(new CAudioShortBuffer);
 		m_ViewerInCallSentDataQueue.reset(new CAudioShortBuffer);
-		
+
 		SetResources(audioResources);
 		m_pTrace = new CTrace();
 
@@ -108,12 +108,6 @@ namespace MediaSDK
 		m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
 		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
-		m_bEchoCancellerEnabled = true;
-
-		if (m_bLiveAudioStreamRunning)
-		{
-			//m_bEchoCancellerEnabled = false;
-		}
 
 		if (!m_bLiveAudioStreamRunning)
 		{
@@ -136,7 +130,7 @@ namespace MediaSDK
 		{
 			m_iAudioVersionSelf = AUDIO_LIVE_VERSION;
 		}
-		else 
+		else
 		{
 			m_iAudioVersionSelf = AUDIO_CALL_VERSION;
 		}
@@ -277,6 +271,33 @@ namespace MediaSDK
 		m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, m_bLiveAudioStreamRunning);
 	}
 
+	bool CAudioCallSession::IsEchoCancellerEnabled()
+	{
+#ifdef USE_AECM
+#ifdef __ANDROID__
+		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+#elif defined (DESKTOP_C_SHARP)
+		if (!m_bLiveAudioStreamRunning)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+#endif
+#else
+		return false
+#endif
+	}
+
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)
 	{
@@ -355,7 +376,7 @@ namespace MediaSDK
 
 	void CAudioCallSession::SetEchoCanceller(bool bOn)
 	{
-		m_bEchoCancellerEnabled = /*bOn*/ true;
+
 	}
 
 
@@ -499,9 +520,9 @@ namespace MediaSDK
 
 
 
-		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
+		if (IsEchoCancellerEnabled())
 		{
-			if(m_bNeedToResetEcho)
+			if (m_bNeedToResetEcho)
 			{
 				ResetAEC();
 				ResetTrace();
@@ -567,64 +588,62 @@ namespace MediaSDK
 				m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, m_iDelayFractionOrig);
 
 
-			if (m_bEchoCancellerEnabled)
-			{
-				LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
-				m_bIsAECMNearEndThreadBusy = true;
+			LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
+			m_bIsAECMNearEndThreadBusy = true;
 
 #ifdef DUMP_FILE
-				fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
+			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
 #endif //DUMP_FILE
 
-				if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
+			if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
+			{
+				long long llTS;
+				if (m_iStartingBufferSize == -1)
 				{
-					long long llTS;
-					if (m_iStartingBufferSize == -1)
+					m_iStartingBufferSize = m_FarendBuffer->GetQueueSize();
+					LOGFARQUAD("qpushpop getting m_iStartingBufferSize,  m_FarendBufferSize = %d, m_iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d",
+						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved);
+				}
+				LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
+				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+				LOGFARQUAD("qpushpop m_FarendBufferSize = %d, m_iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
+					m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
+
+				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+				if (iFarendDataLength > 0)
+				{
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 					{
-						m_iStartingBufferSize = m_FarendBuffer->GetQueueSize();
-						LOGFARQUAD("qpushpop getting m_iStartingBufferSize,  m_FarendBufferSize = %d, m_iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d",
-							m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved);
+						GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
 					}
-					LOG18("mansur: entering m_llDelayFraction : %d", m_llDelayFraction);
-					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-					LOGFARQUAD("qpushpop m_FarendBufferSize = %d, m_iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
-						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
 
-					int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
-					if (iFarendDataLength > 0)
+					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
+
+
+					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
+
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
 					{
-						if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
-						{
-							GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
-						}
+						GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+					}
 
-						m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
-
-
-						m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
-
-						if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
-						{
-							GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-						}
-
-						LOG18("Successful farnear");
+					LOG18("Successful farnear");
 #ifdef PCM_DUMP
-						if (EchoCancelledFile)
-						{
-							fwrite(psaEncodingAudioData, 2, unLength, EchoCancelledFile);
-						}
-#endif
-					}
-					else
+					if (EchoCancelledFile)
 					{
-						LOG18("UnSuccessful farnear");
+						fwrite(psaEncodingAudioData, 2, unLength, EchoCancelledFile);
 					}
-
-#ifdef DUMP_FILE
-					fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
 #endif
 				}
+				else
+				{
+					LOG18("UnSuccessful farnear");
+				}
+
+#ifdef DUMP_FILE
+				fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
+#endif
+
 			}
 #ifdef PCM_DUMP
 			if (AfterEchoCancellationFile)
