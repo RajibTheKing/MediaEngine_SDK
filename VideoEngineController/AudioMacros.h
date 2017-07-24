@@ -75,11 +75,15 @@
 
 #ifdef __ANDROID__
 #define USE_AECM
-// #define USE_ANS
-//#define USE_VAD
+#define USE_AGC
 #endif
 
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) ||  defined(__ANDROID__) || defined (DESKTOP_C_SHARP)
+#ifdef DESKTOP_C_SHARP
+#define USE_AECM
+#define USE_AGC
+#endif
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #define USE_AGC
 #endif
 

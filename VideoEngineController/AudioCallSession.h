@@ -76,6 +76,8 @@ namespace MediaSDK
 		void SetEchoCanceller(bool bOn);
 		void ResetTrace();
 		void ResetAEC();
+		bool IsEchoCancellerEnabled();
+		bool IsTraceSendingEnabled();
 		
 		void SetSendFunction(SendFunctionPointerType cbClientSendFunc) { m_cbClientSendFunction = cbClientSendFunc; }
 		void SetEventNotifier(CEventNotifier *pEventNotifier)          { m_pEventNotifier = pEventNotifier; }
@@ -85,7 +87,7 @@ namespace MediaSDK
 		int GetEntityType()  { return m_nEntityType; }
 		bool getIsAudioLiveStreamRunning() { return m_bLiveAudioStreamRunning; }
 		bool GetIsVideoCallRunning() { return m_bIsVideoCallRunning; }
-		bool IsTraceSendingEnabled()  { return m_bTraceSendingEnabled; }
+		
 
 		SmartPointer<AudioPacketHeader> GetAudioNearEndPacketHeader() { return m_pAudioNearEndPacketHeader; }
 		SmartPointer<AudioPacketHeader> GetAudioFarEndPacketHeader()  { return m_pAudioFarEndPacketHeader; }
@@ -108,6 +110,7 @@ namespace MediaSDK
 		void SetResources(AudioResources &audioResources);
 		void InitNearEndDataProcessing();
 		void InitFarEndDataProcessing();
+		void SyncRecordingTime();
 
 
 	public:
@@ -166,10 +169,9 @@ namespace MediaSDK
 		SendFunctionPointerType m_cbClientSendFunction;
 
 		bool m_bNeedToResetEcho;
-		bool m_bTraceSendingEnabled;
 		bool m_bIsAECMFarEndThreadBusy;
 		bool m_bIsAECMNearEndThreadBusy;
-		bool m_bEchoCancellerEnabled;
+
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;
 		const bool& m_bIsVideoCallRunning;
