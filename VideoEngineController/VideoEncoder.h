@@ -29,7 +29,7 @@ namespace MediaSDK
 		int SetMaxBitrate(int nBitRate);
 		int GetBitrate();
 		int GetMaxBitrate();
-		int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
+		int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType, int nDataType);
 
 		void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int &newHeight, int &newWidth);
 

@@ -666,7 +666,7 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 	}
 }
 
-int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, int width)
+int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType)
 {
 	CVideoCallSession* pVideoSession;
 
@@ -688,7 +688,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 
 	if (bExist)
 	{
-		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width);
+		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width, nDataType);
 	}
 	else
 	{

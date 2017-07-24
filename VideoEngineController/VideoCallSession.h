@@ -136,7 +136,7 @@ public:
 
 	void SetCallInLiveType(int nCallInLiveType);
 
-	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width);
+	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType);
 	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
     void SetBeautification(bool bIsEnable);

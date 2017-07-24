@@ -15,6 +15,9 @@
 #define MEDIA_TYPE_LIVE_CALL_AUDIO 4
 #define MEDIA_TYPE_LIVE_CALL_VIDEO 5
 
+#define DESKTOP_WEB_CAM_DATA 51
+#define DESKTOP_APP_DATA 52
+
 #define SERVICE_TYPE_CALL 11
 #define SERVICE_TYPE_SELF_CALL 13
 
@@ -78,7 +81,7 @@ namespace MediaSDK
 		int PushAudioForDecodingVector(const IPVLongType llFriendID, int mediaType, int nEntityType, unsigned char *in_data, unsigned int unLength, std::vector< std::pair<int, int> > vMissingFrames);
 		int SendAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 		int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation);
-		int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth);
+		int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nDataType);
 		int SetDeviceDisplayHeightWidth(int nVideoHeight, int nVideoWidth);
 
         int SetBeautification(const IPVLongType llFriendID, bool bIsEnable);
