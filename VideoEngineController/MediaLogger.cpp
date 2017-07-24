@@ -298,10 +298,17 @@ namespace MediaSDK
 	
 	void MediaLogger::StopMediaLoggingThread()
 	{
+		if (!m_pThreadInstance.get())
+		{
+			/// Already stoped, return to the hell
+			return;
+		}
+
 		InternalLog("Stopping logger thread...");
 		m_bMediaLoggingThreadRunning = false;
 		
 		m_pThreadInstance->join();
+		m_pThreadInstance.reset();
 	}
 
 	void *MediaLogger::CreateLoggingThread(void* param)
