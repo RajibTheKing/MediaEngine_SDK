@@ -39,7 +39,7 @@ namespace MediaSDK
 		SHARED_PTR_DELETE(m_pVideoEncoderMutex);
 	}
 
-	int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
+	int CVideoEncoder::SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType, int nDataType)
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
@@ -48,8 +48,23 @@ namespace MediaSDK
 		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 #if defined(DESKTOP_C_SHARP)
-			m_nVideoHeight = nVideoHeight;
-			m_nVideoWidth = nVideoWidth;
+
+			if (nDataType != DESKTOP_WEB_CAM_DATA)
+			{
+				m_nVideoHeight = nVideoHeight;
+				m_nVideoWidth = nVideoWidth;
+			}
+			else
+			{
+				int nNewHeight;
+				int nNewWidth;
+
+				CalculateAspectRatioWithScreenAndModifyHeightWidth(nVideoHeight, nVideoWidth, nNewHeight, nNewWidth);
+
+				m_nVideoHeight = nNewHeight;
+				m_nVideoWidth = nNewWidth;
+			}
+			
 #else
 			int nNewHeight;
 			int nNewWidth;
