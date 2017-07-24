@@ -23,7 +23,7 @@ int m_Step2SigmaDigit = 5;
 int m_Step3SigmaDigit = 4;
 int m_Step4SigmaDigit = 3;
 
-int brightness_shift = 30;
+int brightness_shift = 15;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
