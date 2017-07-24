@@ -289,7 +289,7 @@ namespace MediaSDK
 		}
 #endif
 #else
-		return false
+		return false;
 #endif
 	}
 
@@ -310,7 +310,7 @@ namespace MediaSDK
 		return false;
 #endif
 #else
-		return false
+		return false;
 #endif
 	}
 
