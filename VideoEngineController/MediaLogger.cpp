@@ -37,8 +37,7 @@ namespace MediaSDK
 
 	void MediaLogger::Init(LogLevel logLevel, bool showDate)
 	{
-        
-        printf("MANSUR...............ENTERIG INIT 2.............\n");
+
 		m_elogLevel = logLevel;
 		m_bShowDate = showDate;
 		
@@ -48,10 +47,8 @@ namespace MediaSDK
 
 		if (!m_bFSError) //no error then
 		{
-            printf("MANSUR...............Folder create successful.............\n");
 			if (!m_pLoggerFileStream.is_open())
 			{
-                printf("MANSUR...............File open successful.............\n");
 				m_pLoggerFileStream.open(m_sFilePath, ofstream::out | ofstream::app);
 			}
 		}
@@ -83,9 +80,8 @@ namespace MediaSDK
 
 	void MediaLogger::Log(LogLevel logLevel, const char *format, ...)
 	{
-        //printf("MANSUR...............entering log.............\n");
 		if (logLevel > m_elogLevel) return;
-        //printf("MANSUR...............start logging.............\n");
+
 		MediaLocker lock(m_pMediaLoggerMutex.get());
 
 		int len = GetDateTime(m_sMessage);
@@ -123,7 +119,6 @@ namespace MediaSDK
 
 	bool MediaLogger::CreateLogDirectory()
 	{
-        printf("MANSUR................ENTERING CreateLogDirectory.............\n");
 #if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
 
 		if (0 == CreateDirectory(MEDIA_LOGGING_PATH, NULL) )
@@ -162,7 +157,7 @@ namespace MediaSDK
 			}
 		}
 #endif
-        printf("MANSUR................LEAVING CreateLogDirectory.............\n");
+
 		return true;
 	}
 
