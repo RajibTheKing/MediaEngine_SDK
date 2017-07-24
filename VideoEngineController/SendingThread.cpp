@@ -220,7 +220,7 @@ namespace MediaSDK
 		int videoPacketSizes[30];
 		int numberOfVideoPackets = 0;
 		int frameCounter = 0;
-		int packetSizeOfNetwork = m_pCommonElementsBucket->GetPacketSizeOfNetwork();
+		int packetSizeOfMissing = 1000;
 
 #ifdef  BANDWIDTH_CONTROLLING_TEST
 		m_BandWidthList.push_back(500 * 1024);    m_TimePeriodInterval.push_back(20 * 1000);
@@ -451,15 +451,6 @@ namespace MediaSDK
 						}
 #endif
 
-#ifndef NEW_HEADER_FORMAT
-
-						for (int i = 1; i < NUMBER_OF_HEADER_FOR_STREAMING; i++)
-							memcpy(m_AudioVideoDataToSend + i * packetSizeOfNetwork, m_AudioVideoDataToSend, packetSizeOfNetwork);
-
-						index = packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING;
-
-#endif
-
 						m_Tools.SetAudioBlockStartingPositionInMediaChunck(index + m_iDataToSendIndex, m_AudioVideoDataToSend);
 						m_Tools.SetVideoBlockStartingPositionInMediaChunck(index, m_AudioVideoDataToSend);
 
@@ -509,8 +500,6 @@ namespace MediaSDK
 						HITLERSS("#RT### Sending 0");
 
 #ifndef __LIVE_STREAMIN_SELF__
-
-#ifdef NEW_HEADER_FORMAT
 
 						HITLERSS("#RT### Sending 01");
 
@@ -570,22 +559,6 @@ namespace MediaSDK
 							}
 						}
 
-#else
-						HITLERSS("#RT### Sending 1");
-
-						if (m_bInterruptRunning == false)
-						{
-							if (m_bInterruptHappened == false)
-							{
-								HITLERSS("#RT### Sending friendID %lld mediaType %d length %d duration %d", m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
-								m_pCommonElementsBucket->SendFunctionPointer(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
-							}
-							else
-								m_bInterruptHappened = false;
-						}
-
-#endif
-
 						//m_pCommonElementsBucket->SendFunctionPointer(m_AudioDataToSend, m_iAudioDataToSendIndex, (int)llNowTimeDiff);
 						//m_pCommonElementsBucket->SendFunctionPointer(m_VideoDataToSend, m_iDataToSendIndex, (int)llNowTimeDiff);
 
@@ -609,8 +582,8 @@ namespace MediaSDK
 
 #ifdef	__RANDOM_MISSING_PACKET__
 
-						int nTotalSizeToSend = packetSizeOfNetwork  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
-						const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfNetwork - 1 ) / packetSizeOfNetwork;
+						int nTotalSizeToSend = packetSizeOfMissing  * NUMBER_OF_HEADER_FOR_STREAMING  + m_iDataToSendIndex + m_iAudioDataToSendIndex;
+						const int nMaxMissingFrames = (nTotalSizeToSend +  packetSizeOfMissing - 1 ) / packetSizeOfMissing;
 
 						for(int i=0; i < nMaxMissingFrames; i ++)
 						{
@@ -623,9 +596,6 @@ namespace MediaSDK
 						//LOGEF("TheKing--> Processing LIVESTREAM\n");
 						if(bExist)
 						{
-
-#ifdef NEW_HEADER_FORMAT
-
 							if (m_bInterruptRunning == false)
 							{
 								if (m_bInterruptHappened == false)
@@ -633,19 +603,8 @@ namespace MediaSDK
 								else
 									m_bInterruptHappened = false;
 							}
-
-#else
-							if (m_bInterruptRunning == false)
-							{
-								if (m_bInterruptHappened == false)
-									G_pInterfaceOfAudioVideoEngine->PushAudioForDecoding(m_pVideoCallSession->GetFriendID(), MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, packetSizeOfNetwork * NUMBER_OF_HEADER_FOR_STREAMING + m_iDataToSendIndex + m_iAudioDataToSendIndex, nMissingFrames, missingFrames);
-								else
-									m_bInterruptHappened = false;
-							}
-
-#endif
-
 						}
+
 						CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CSendingThread::SendingThreadProcedure() pushed done");
 #endif
 
