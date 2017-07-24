@@ -24,7 +24,7 @@ namespace MediaSDK
 	{
 		m_pMediaLoggerMutex.reset(new CLockHandler());
 
-		strcpy(m_sFilePath, MEDIA_FULL_LOGGING_PATH.c_str());
+		m_sFilePath = MEDIA_FULL_LOGGING_PATH;
 
 		InternalLog(">>>>> Media SDK Logging Started <<<<<");
 		InternalLog("Media SDK version %s [%lu]", MEDIA_ENGINE_VERSION, MEDIA_ENGINE_BUILD_NUMBER);
@@ -140,32 +140,21 @@ namespace MediaSDK
 #else
 		struct stat st = { 0 };
         
-        char pathArray[255];
-
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-        strcpy(pathArray, MEDIA_LOGGING_PATH.c_str());
-        //pathArray = MEDIA_LOGGING_PATH.c_str();  //undefined behaviour
-        //pathArray = getenv("HOME") "/Documents/" MEDIA_LOGGING_FOLDER_NAME "/";
-        printf("MANSUR................getenv(\"HOME\") : %s.............\n", getenv("HOME"));
-        printf("MANSUR................MEDIA_LOGGING_PATH : %s.............\n", MEDIA_LOGGING_PATH.c_str());
-        printf("MANSUR................MEDIA_FULL_LOGGING_PATH : %s.............\n", MEDIA_FULL_LOGGING_PATH.c_str());
-        printf("MANSUR................full file path : %s.............\n", pathArray);
-#else
-        pathArray = MEDIA_LOGGING_PATH;
-#endif
+		///Store the temporary string object to prevent vanishing
+		const std::string& sPath(MEDIA_LOGGING_PATH);
         
-		if (stat(pathArray, &st) == -1)
+		if (stat(sPath.c_str(), &st) == -1)
 		{
-			if(0 != mkdir(pathArray, 0700))
+			if(0 != mkdir(sPath.c_str(), 0700))
 			{
 
 #if __ANDROID__
 
-				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, "Log folder creation FAILED, code %d\n", errno);
+				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, "Log folder creation FAILED for %s, code %d\n", sPath.c_str(), errno);
 
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-				printf("[%s] Log folder creation FAILED, code %d\n", MEDIA_LOGGER_TAG, errno);
+				printf("[%s] Log folder creation FAILED for %s, code %d\n", MEDIA_LOGGER_TAG, sPath.c_str(), errno);
 
 #endif
 
@@ -252,7 +241,7 @@ namespace MediaSDK
 		//std::remove(newFile.c_str());
 
 		//Rename
-		if (0 != std::rename(m_sFilePath, newFile.c_str()))
+		if (0 != std::rename(m_sFilePath.c_str(), newFile.c_str()))
 		{
 			//Rename fails, so wait a sec to get a unique name
 			Log(LOG_ERROR, "[%s] Rename to file %s\n FAILED", MEDIA_LOGGER_TAG, newFile.c_str());
