@@ -714,7 +714,7 @@ namespace MediaSDK
 
 		//printf("service type = %d, ownDeviceType = %d, OpponentDevice type = %d\n", m_pVideoCallSession->GetServiceType(), m_pVideoCallSession->GetOwnDeviceType(), m_pVideoCallSession->GetOponentDeviceType());
 
-		if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
+		/*if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
 		{
 			int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
 			int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
@@ -749,7 +749,7 @@ namespace MediaSDK
 				m_PreviousDecodingHeight = iCropedHeight;
 				m_PreviousDecodingWidth = iCropedWidth;
 			}
-		}
+		}*/
 
 
 
@@ -769,7 +769,7 @@ namespace MediaSDK
 #endif
 		CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " ConvertI420ToNV21 ", currentTimeStamp);
 
-		if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP))
+		/*if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP))
 		{
 			int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
 			int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
@@ -829,7 +829,12 @@ namespace MediaSDK
 					m_PreviousDecodingWidth = m_decodingWidth;
 				}
 			}
-		}
+		}*/
+
+		memcpy(m_PreviousDecodedFrame, m_DecodedFrame, m_decodedFrameSize);
+		m_previousDecodedFrameSize = m_decodedFrameSize;
+		m_PreviousDecodingHeight = m_decodingHeight;
+		m_PreviousDecodingWidth = m_decodingWidth;
 
 		/*
 		if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CALL && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_ANDROID && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
