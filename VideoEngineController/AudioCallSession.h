@@ -1,4 +1,3 @@
-
 #ifndef _AUDIO_CALL_SESSION_H_
 #define _AUDIO_CALL_SESSION_H_
 
@@ -10,12 +9,11 @@
 #include "CommonTypes.h"
 #include "Size.h"
 
-#define AUDIO_CALL_VERSION  0
-#define AUDIO_LIVE_VERSION  0
-
 
 namespace MediaSDK
 {
+    #define AUDIO_CALL_VERSION  0
+    #define AUDIO_LIVE_VERSION  0
 	static std::string colon = "ALOG:";
 	#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
 	
