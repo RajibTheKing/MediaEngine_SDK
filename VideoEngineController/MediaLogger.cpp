@@ -1,6 +1,6 @@
 #include "MediaLogger.h"
 #include "Tools.h"
-#include "LogPrinter.h"
+#include <iostream>
 
 #if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
 #include <sys/types.h>
@@ -14,6 +14,8 @@
 
 namespace MediaSDK
 {
+	using namespace std;
+
 	//Global Media Logger object
 	MediaLogger g_Logger;
 
