@@ -24,7 +24,7 @@
 #define NUMBER_OF_INSET_INDEX 23
 #define INSET_HEIGHT_WIDTH_INDEX 24
 
-//MoreInformation
+//MoreInformation, While Version = 2
 #define SIGMA_VALUE_INDEX 28
 #define BRIGHTNESS_VALUE_INDEX 29
 #define DEVICE_FPS_INDEX 30
@@ -123,7 +123,7 @@ namespace MediaSDK
 		setInsetWidths(headerData + INSET_HEIGHT_WIDTH_INDEX, m_nNumberOfInset);    nowIndex += 2;
         
         
-        if(m_iVersionCode > 1)
+        if(m_iVersionCode == 2)
         {
             printf("here inside new Header parsing\n");
             setSigmaValue(headerData + SIGMA_VALUE_INDEX);                          nowIndex += 1;
