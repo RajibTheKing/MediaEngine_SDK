@@ -289,7 +289,7 @@ namespace MediaSDK
 		}
 #endif
 #else
-		return false
+		return false;
 #endif
 	}
 
@@ -310,7 +310,7 @@ namespace MediaSDK
 		return false;
 #endif
 #else
-		return false
+		return false;
 #endif
 	}
 
@@ -584,7 +584,7 @@ namespace MediaSDK
 				}
 				else
 				{
-					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, 80);
+					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, 50);
 					LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
 					if (m_llDelayFraction != -1)
 					{
