@@ -3,6 +3,8 @@
 #include "AudioPacketHeader.h"
 #include "ThreadTools.h"
 #include "AudioMacros.h"
+#include "CommonTypes.h"
+
 
 namespace MediaSDK
 {

@@ -12,7 +12,7 @@
 namespace MediaSDK
 {
 
-	BitRateController::BitRateController(int nFPS, LongLong llfriendID) :
+	BitRateController::BitRateController(int nFPS, long long llfriendID) :
 
 		m_nBytesReceivedInMegaSlotInterval(0),
 		m_nSlotIntervalCounter(0),

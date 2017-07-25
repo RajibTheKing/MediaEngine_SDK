@@ -4,11 +4,12 @@
 #include "EchoCancellerProvider.h"
 #include "AudioGainInstanceProvider.h"
 #include "NoiseReducerProvider.h"
+#include "AudioSessionOptions.h"
+#include "AudioPacketHeader.h"
+
 
 namespace MediaSDK
 {
-
-
 	AudioResources::AudioResources(AudioSessionOptions audioSessionOptions)
 	{
 		m_pAudioNearEndHeader = AudioPacketHeader::GetInstance(audioSessionOptions.GetHeaderType());

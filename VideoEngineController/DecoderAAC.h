@@ -7,14 +7,12 @@
 #endif
 
 #include "AudioDecoderInterface.h"
-#include "Size.h"
-#include "LogPrinter.h"
 #include "aacdecoder_lib.h"
+
+
 
 namespace MediaSDK
 {
-
-
 	class DecoderAAC : public AudioDecoderInterface
 	{
 

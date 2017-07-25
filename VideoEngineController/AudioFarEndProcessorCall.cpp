@@ -1,11 +1,19 @@
 #include "AudioFarEndProcessorCall.h"
+#include "Tools.h"
+#include "LogPrinter.h"
+#include "AudioCallSession.h"
+#include "AudioDePacketizer.h"
+#include "LiveAudioDecodingQueue.h"
+#include "AudioFarEndDataProcessor.h"
+#include "AudioDecoderBuffer.h"
+#include "AudioPacketHeader.h"
+#include "AudioTypes.h"
+
 
 namespace MediaSDK
 {
-
-
-	FarEndProcessorCall::FarEndProcessorCall(long long llFriendID, int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, CCommonElementsBucket* pCommonElementsBucket, bool bIsLiveStreamingRunning) :
-		AudioFarEndDataProcessor(llFriendID, nServiceType, nEntityType, pAudioCallSession, pCommonElementsBucket, bIsLiveStreamingRunning)
+	FarEndProcessorCall::FarEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
+		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorCall::FarEndProcessorCall()");
 		m_bProcessFarendDataStarted = false;
@@ -99,5 +107,112 @@ namespace MediaSDK
 		ProcessPlayingData();	
 #endif
 	}
+
+
+	void FarEndProcessorCall::DequeueData(int &decodingFrameSize)
+	{
+		if (m_bIsLiveStreamingRunning)
+		{
+#ifndef LOCAL_SERVER_LIVE_CALL
+			if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER)
+			{
+				decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
+			}
+			else
+			{
+				decodingFrameSize = m_AudioReceivedBuffer->DeQueue(m_ucaDecodingFrame);
+			}
+#else
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+			{
+				decodingFrameSize = m_AudioReceivedBuffer->DeQueue(m_ucaDecodingFrame);
+			}
+			else
+			{
+				decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame);
+			}
+#endif
+		}
+		else
+		{
+			decodingFrameSize = m_AudioReceivedBuffer->DeQueue(m_ucaDecodingFrame);
+		}
+	}
+
+
+	bool FarEndProcessorCall::IsPacketProcessableInNormalCall(int &nCurrentAudioPacketType, int &nVersion)
+	{
+		if (false == m_bIsLiveStreamingRunning)
+		{
+			if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
+			{
+				//ALOG("#V#TYPE# ############################################### SKIPPET");
+				Tools::SOSleep(0);
+				return false;
+			}
+			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
+			{
+				if (false == m_bIsLiveStreamingRunning){
+					//m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
+					if (m_pAudioAlarmListener != nullptr)
+					{
+						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO);
+					}
+				}
+				return true;
+			}
+			else if (AUDIO_NORMAL_PACKET_TYPE == nCurrentAudioPacketType)
+			{
+				m_iAudioVersionFriend = nVersion;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+
+	bool FarEndProcessorCall::IsQueueEmpty()
+	{
+		if (m_bIsLiveStreamingRunning)
+		{
+#ifdef LOCAL_SERVER_LIVE_CALL
+			if ((m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE) && m_AudioReceivedBuffer->GetQueueSize() == 0)	//EncodedData
+			{
+				Tools::SOSleep(5);
+				return true;
+			}
+			else if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
+			{
+				Tools::SOSleep(5);
+				return true;
+			}
+#else
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER && m_AudioReceivedBuffer->GetQueueSize() == 0)	//EncodedData
+			{
+				Tools::SOSleep(5);
+				return true;
+			}
+			else if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER && m_vAudioFarEndBufferVector[0]->GetQueueSize() == 0)	//All Viewers ( including callee)
+			{
+				Tools::SOSleep(5);
+				return true;
+			}
+#endif
+		}
+		else if (m_AudioReceivedBuffer->GetQueueSize() == 0)
+		{
+			//Tools::SOSleep(10);
+			return true;
+		}
+		return false;
+	}
+
 
 } //namespace MediaSDK

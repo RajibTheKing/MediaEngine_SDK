@@ -26,6 +26,7 @@ namespace MediaSDK
 
 	WebRTCEchoCanceller::WebRTCEchoCanceller(bool isLiveRunning) : m_bAecmCreated(false), m_bAecmInited(false)
 	{
+		LOGFARQUAD("WebRTCEchoCanceller constructor");
 
 #ifdef USE_AECM
 #ifdef ECHO_ANALYSIS

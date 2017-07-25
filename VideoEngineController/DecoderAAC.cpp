@@ -1,4 +1,8 @@
 #include "DecoderAAC.h"
+#include "Size.h"
+#include "LogPrinter.h"
+
+
 
 namespace MediaSDK
 {

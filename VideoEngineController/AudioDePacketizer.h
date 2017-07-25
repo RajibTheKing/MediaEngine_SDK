@@ -1,8 +1,10 @@
 #ifndef _AUDIO_DE_PACKETIZER_H_
 #define _AUDIO_DE_PACKETIZER_H_
 
+
 #include "AudioMacros.h"
 #include "SmartPointer.h"
+
 
 namespace MediaSDK
 {
@@ -10,8 +12,10 @@ namespace MediaSDK
 	class AudioPacketHeader;
 	class CAudioCallSession;
 
+
 	class AudioDePacketizer
 	{
+	
 	public:
 		AudioDePacketizer(CAudioCallSession * pAudioCallSession);
 		~AudioDePacketizer();
@@ -21,6 +25,8 @@ namespace MediaSDK
 		int GetCompleteFrame(unsigned char* uchFrame);
 
 		void ResetDepacketizer();
+	
+	
 	private:
 		int m_iBlockOkayFlag;
 		int m_iAudioHeaderLength;

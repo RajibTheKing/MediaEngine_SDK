@@ -4,30 +4,30 @@
 
 #include "AudioEncoderInterface.h"
 
+
 namespace MediaSDK
 {
-
 	class EncoderPCM : public AudioEncoderInterface
 	{
 
 	public:
-		EncoderPCM() { }
+		
+		EncoderPCM()  { }
 		~EncoderPCM() { }
 
 		int CreateAudioEncoder() { return true; }
 		int EncodeAudio(short *in_data, unsigned int in_size, unsigned char *out_buffer);
 
-		bool SetBitrate(int nBitrate) { return true; }
+		bool SetBitrate(int nBitrate)       { return true; }
 		bool SetComplexity(int nComplexity) { return true; }
 
 		int GetCurrentBitrate() { return -1; }
-		int GetComplexity(){ return -1; }
+		int GetComplexity()     { return -1; }
 
-		void DecideToChangeBitrate(int iNumPacketRecvd) {  }
+		void DecideToChangeBitrate(int iNumPacketRecvd)  {  }
 		void DecideToChangeComplexity(int iEncodingTime) {  }
 
 	};
-
 
 } //namespace MediaSDK
 

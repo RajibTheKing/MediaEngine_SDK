@@ -7,6 +7,7 @@
 
 #ifdef __cplusplus
 
+
 namespace MediaSDK
 {
 

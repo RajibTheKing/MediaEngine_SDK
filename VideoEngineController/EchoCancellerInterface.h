@@ -5,9 +5,9 @@
 
 #define AECM_SAMPLES_IN_FRAME 80
 
+
 namespace MediaSDK
 {
-
 	class EchoCancellerInterface
 	{
 

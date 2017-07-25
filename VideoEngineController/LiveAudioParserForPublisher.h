@@ -3,14 +3,15 @@
 
 #include "LiveAudioParser.h"
 #include "SmartPointer.h"
-#include "CommonTypes.h"
+
 
 namespace MediaSDK
 {
-
 	class AudioPacketHeader;
 
-	class CLiveAudioParserForPublisher : public ILiveAudioParser{
+	class CLiveAudioParserForPublisher : public ILiveAudioParser
+	{
+
 	private:
 		std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
 		SmartPointer<CLockHandler> m_pLiveReceiverMutex;
@@ -18,9 +19,9 @@ namespace MediaSDK
 		bool m_bIsCurrentlyParsingAudioData;
 		bool m_bIsRoleChanging;
 
+
 	public:
 		CLiveAudioParserForPublisher(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector);
-
 		virtual ~CLiveAudioParserForPublisher();
 
 		virtual void ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks);

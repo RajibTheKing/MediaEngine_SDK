@@ -13,10 +13,8 @@
 #include "CommonTypes.h"
 #include "ThreadTools.h"
 #include "VideoPacketBuffer.h"
-#include "AudioVideoEngineDefinitions.h"
 #include "Size.h"
 #include "Tools.h"
-//#include "PacketHeader.h"
 #include "VideoHeader.h"
 
 namespace MediaSDK

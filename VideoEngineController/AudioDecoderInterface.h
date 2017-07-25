@@ -1,6 +1,7 @@
 #ifndef AUDIO_DECODER_INTERFACE_H
 #define AUDIO_DECODER_INTERFACE_H
 
+
 namespace MediaSDK
 {
 

@@ -1,9 +1,9 @@
 #ifndef AUDIO_ENCODER_INTERFACE_H
 #define AUDIO_ENCODER_INTERFACE_H
 
+
 namespace MediaSDK
 {
-
 
 	class AudioEncoderInterface
 	{

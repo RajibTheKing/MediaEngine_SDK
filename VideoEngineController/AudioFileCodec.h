@@ -1,27 +1,19 @@
-//
-// Created by Fahad-PC on 8/29/2016.
-//
-
 #ifndef FAHADOPUS_AUDIOFILECODEC_H
 #define FAHADOPUS_AUDIOFILECODEC_H
 
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <stdio.h>
-#include <string>
-#include <stdlib.h>
 
 #include "opus.h"
-#include "Tools.h"
 #include "AudioMacros.h"
-#include "LogPrinter.h"
 
+
+#define _CRT_SECURE_NO_WARNINGS
 #define AUDIO_FIXED_BITRATE
 
 #define OPUS_MIN_COMPLEXITY 1
 #define OPUS_MAX_COMPLEXITY 10
 
 #define AFLOG(a)     CLogPrinter_WriteSpecific(CLogPrinter::INFO,a);
+
 
 namespace MediaSDK
 {
@@ -53,9 +45,6 @@ namespace MediaSDK
 		opus_int16 out[AUDIO_MAX_FRAME_SIZE * AUDIO_CHANNELS];
 
 		int nbBytes;
-
-		Tools m_Tools;
-
 	};
 
 } //namespace MediaSDK

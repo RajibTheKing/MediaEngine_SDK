@@ -1,5 +1,9 @@
 #include "AudioCallSessionListHandler.h"
 #include "LogPrinter.h"
+#include "AudioCallSession.h"
+#include "ThreadTools.h"
+
+
 
 namespace MediaSDK
 {
@@ -14,7 +18,7 @@ namespace MediaSDK
 		SHARED_PTR_DELETE(m_pAudioSessionListMutex);
 	}
 
-	void CAudioCallSessionListHandler::AddToAudioSessionList(LongLong friendName, CAudioCallSession* videoSession)
+	void CAudioCallSessionListHandler::AddToAudioSessionList(long long friendName, CAudioCallSession* videoSession)
 	{
 		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
@@ -23,7 +27,7 @@ namespace MediaSDK
 		CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSessionListHandler::AddToAudioSessionList added video Session");
 	}
 
-	CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(LongLong friendName)
+	CAudioCallSession* CAudioCallSessionListHandler::GetFromAudioSessionList(long long friendName)
 	{
 		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
@@ -37,7 +41,7 @@ namespace MediaSDK
 	}
 
 
-	bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(LongLong friendName)
+	bool CAudioCallSessionListHandler::RemoveFromAudioSessionList(long long friendName)
 	{
 		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 		auto audioSessionSearch = m_mAudioSessionList.find(friendName);
@@ -79,7 +83,7 @@ namespace MediaSDK
 		return (int)m_mAudioSessionList.size();
 	}
 
-	bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName)
+	bool CAudioCallSessionListHandler::IsAudioSessionExist(long long lFriendName)
 	{
 		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 
@@ -89,7 +93,7 @@ namespace MediaSDK
 	}
 
 
-	bool CAudioCallSessionListHandler::IsAudioSessionExist(LongLong lFriendName, CAudioCallSession* &audioSession)
+	bool CAudioCallSessionListHandler::IsAudioSessionExist(long long lFriendName, CAudioCallSession* &audioSession)
 	{
 		AudioListHandlerLock lock(*m_pAudioSessionListMutex);
 

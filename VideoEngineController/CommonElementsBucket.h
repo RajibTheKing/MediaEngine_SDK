@@ -43,14 +43,10 @@ namespace MediaSDK
 			return SendFunctionPointer;
 		}
 
-		void SetPacketSizeOfNetwork(int packetSizeOfNetwork);
-		int GetPacketSizeOfNetwork();
-
 	private:
 
 		void InstantiateSharedMutex();
 
-		int m_nPacketSizeOfNetwork;
 		long long m_friendID;
 		long long userName;
 		CLockHandler* sharedMutex;

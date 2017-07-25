@@ -756,21 +756,6 @@ bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in
 
 bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, int numberOfMissingFrames, int *missingFrames)
 {
-	if(m_bLiveVideoStreamRunning)
-	{		
-		m_cVH.setPacketHeader(in_data);
-
-		m_cVH.ShowDetails("After Receiving ");
-
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
-			m_pVideoPacketQueue->Queue(in_data, in_size);	
-		else if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
-			m_pLiveReceiverVideo->PushVideoData(in_data, in_size, numberOfFrames, frameSizes, numberOfMissingFrames, missingFrames);
-			
-		return true;
-	}
-
-
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushPacketForMerging 326");
 	unsigned char uchPacketType = in_data[PACKET_TYPE_INDEX];
 	if(uchPacketType < MIN_PACKET_TYPE || MAX_PACKET_TYPE < uchPacketType)

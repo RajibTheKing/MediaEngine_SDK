@@ -90,8 +90,6 @@ namespace MediaSDK
 		int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
-
-
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
 
 		void TraverseReceivedVideoData(int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);

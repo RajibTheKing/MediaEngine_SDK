@@ -21,7 +21,6 @@ namespace MediaSDK
 		~LiveReceiver();
 
 		void SetVideoDecodingQueue(LiveVideoDecodingQueue *pQueue);
-		void PushVideoData(unsigned char* uchVideoData, int iLen, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
 		void PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
 	private:

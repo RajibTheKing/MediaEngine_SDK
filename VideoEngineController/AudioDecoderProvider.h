@@ -3,11 +3,13 @@
 
 
 #include "AudioTypes.h"
-#include "AudioDecoderInterface.h"
 #include "SmartPointer.h"
+
 
 namespace MediaSDK
 {
+	class AudioDecoderInterface;
+
 
 	class AudioDecoderProvider
 	{

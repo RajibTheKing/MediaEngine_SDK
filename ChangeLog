@@ -1,3 +1,7 @@
+Release 9.36 (Date: 18-07-2017)
+-------------------------------
+- [Issue #3660] Fix of Samsung A5-2017 echo in call.
+
 Release 9.35 (Date: 15-07-2017)
 -------------------------------
 - [Issue #3539] Audio dynamic recorder buffer for all platform.

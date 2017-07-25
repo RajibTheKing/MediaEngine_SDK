@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "AudioVideoEngineDefinitions.h"
 #include "SmartPointer.h"
 #include "CommonTypes.h"
 

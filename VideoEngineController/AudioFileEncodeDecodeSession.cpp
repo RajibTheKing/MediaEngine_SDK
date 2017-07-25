@@ -1,8 +1,14 @@
 #include "AudioFileEncodeDecodeSession.h"
 
+#ifdef OPUS_ENABLED
+#include "AudioFileCodec.h"
+#else
+#include "G729CodecNative.h"
+#endif
+
+
 namespace MediaSDK
 {
-
 	//#define __CAudioFileEncodeDecodeSession_DUMP_FILE__
 
 #ifdef __CAudioFileEncodeDecodeSession_DUMP_FILE__
@@ -20,9 +26,9 @@ namespace MediaSDK
 #endif
 
 #ifdef OPUS_ENABLED
-		m_pAudioCodec = NULL;
+		m_pAudioCodec = nullptr;
 #else
-		m_pG729CodecNative = NULL;
+		m_pG729CodecNative = nullptr;
 #endif
 	}
 
@@ -35,18 +41,18 @@ namespace MediaSDK
 #endif
 
 #ifdef OPUS_ENABLED
-		if (NULL != this->m_pAudioCodec)
+		if (nullptr != this->m_pAudioCodec)
 		{
 			delete this->m_pAudioCodec;
 
-			this->m_pAudioCodec = NULL;
+			this->m_pAudioCodec = nullptr;
 		}
 #else
-		if (NULL != m_pG729CodecNative)
+		if (nullptr != m_pG729CodecNative)
 		{
 			delete m_pG729CodecNative;
 
-			m_pG729CodecNative = NULL;
+			m_pG729CodecNative = nullptr;
 		}
 #endif
 	}
@@ -56,14 +62,14 @@ namespace MediaSDK
 
 
 #ifdef OPUS_ENABLED
-		if (NULL == this->m_pAudioCodec)
+		if (nullptr == this->m_pAudioCodec)
 		{
 			this->m_pAudioCodec = new CAudioFileCodec();
 
 		}
 		return m_pAudioCodec->CreateAudioEncoder();
 #else
-		if (NULL == m_pG729CodecNative)
+		if (nullptr == m_pG729CodecNative)
 		{
 			m_pG729CodecNative = new G729CodecNative();
 		}
@@ -80,7 +86,7 @@ namespace MediaSDK
 		//fwrite(psaEncodingDataBuffer, 2, nAudioFrameSize, Fileinput);
 #endif
 
-		if (NULL == this->m_pAudioCodec)
+		if (nullptr == this->m_pAudioCodec)
 		{
 			this->m_pAudioCodec = new CAudioFileCodec();
 			m_pAudioCodec->CreateAudioEncoder();
@@ -90,7 +96,7 @@ namespace MediaSDK
 
 		return size;
 #else
-		if (NULL == m_pG729CodecNative)
+		if (nullptr == m_pG729CodecNative)
 		{
 			m_pG729CodecNative = new G729CodecNative();
 			m_pG729CodecNative->Open();
@@ -107,7 +113,7 @@ namespace MediaSDK
 	{
 #ifdef OPUS_ENABLED
 
-		if (NULL == this->m_pAudioCodec)
+		if (nullptr == this->m_pAudioCodec)
 		{
 			this->m_pAudioCodec = new CAudioFileCodec();
 			m_pAudioCodec->CreateAudioEncoder();
@@ -120,7 +126,7 @@ namespace MediaSDK
 
 		return size;
 #else
-		if (NULL == m_pG729CodecNative)
+		if (nullptr == m_pG729CodecNative)
 		{
 			m_pG729CodecNative = new G729CodecNative();
 			m_pG729CodecNative->Open();
@@ -137,18 +143,18 @@ namespace MediaSDK
 	{
 
 #ifdef OPUS_ENABLED
-		if (NULL != this->m_pAudioCodec)
+		if (nullptr != this->m_pAudioCodec)
 		{
 			delete this->m_pAudioCodec;
 
-			this->m_pAudioCodec = NULL;
+			this->m_pAudioCodec = nullptr;
 		}
 #else
-		if (NULL != m_pG729CodecNative)
+		if (nullptr != m_pG729CodecNative)
 		{
 			delete m_pG729CodecNative;
 
-			m_pG729CodecNative = NULL;
+			m_pG729CodecNative = nullptr;
 		}
 #endif
 
