@@ -56,7 +56,7 @@ namespace MediaSDK
 
 		void SetCallFPS(int nFPS);
 
-		int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth);
+		int DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, long long nFramNumber, long long nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth);
 		int DecodeAndSendToClient2();
 
 	private:
@@ -80,7 +80,7 @@ namespace MediaSDK
 		int m_nPreviousInsetHeight;
 		int m_nPreviousInsetWidth;
 		int m_PreviousDecodingWidth;
-		int m_PreviousFrameNumber;
+		long long m_PreviousFrameNumber;
 		int m_PreviousOrientation;
 
 		int m_DecodeFailCounter;

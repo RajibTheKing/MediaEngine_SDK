@@ -26,8 +26,8 @@ m_ClientFrameCounter(0),
 m_EncodingFrameCounter(0),
 m_pEncodedFramePacketizer(NULL),
 m_ByteRcvInBandSlot(0),
-m_SlotResetLeftRange(0),
-m_SlotResetRightRange(nFPS),
+m_llSlotResetLeftRange(0),
+m_llSlotResetRightRange(nFPS),
 m_pVideoEncoder(NULL),
 m_bSkipFirstByteCalculation(true),
 m_llTimeStampOfFirstPacketRcvd(-1),
@@ -775,13 +775,13 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         }*/
         m_PacketHeader.setPacketHeader(in_data);
         
-		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.getFrameNumber();
+		long long llFrameNumber = m_PacketHeader.getFrameNumber();
         
 //		VLOG("#DR# --------------------------> FrameNumber : "+Tools::IntegertoStringConvert(unFrameNumber));
         //printf("PushPacketForMerging--> nFrameNumber = %d, m_nCallFPS = %d, m_PacketHeader.GetHeaderLength() = %d\n", unFrameNumber, m_nCallFPS, m_PacketHeader.GetHeaderLength());
         
 
-		if (unFrameNumber >= m_SlotResetLeftRange && unFrameNumber < m_SlotResetRightRange)
+		if (llFrameNumber >= m_llSlotResetLeftRange && llFrameNumber < m_llSlotResetRightRange)
 		{
 			m_ByteRcvInBandSlot += (in_size - m_PacketHeader.GetHeaderLength());
 		}
@@ -793,17 +793,17 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 			}
 			else
 			{
-				m_miniPacketBandCounter = m_SlotResetLeftRange / m_nCallFPS;
+				m_miniPacketBandCounter = (unsigned int)(m_llSlotResetLeftRange / m_nCallFPS);
 //				VLOG("#DR# -----------------+++++++++------> m_miniPacketBandCounter : "+Tools::IntegertoStringConvert(m_miniPacketBandCounter));
 //                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "ReceivingSide: SlotIndex = " + m_Tools.IntegertoStringConvert(m_miniPacketBandCounter) + ", ReceivedBytes = " + m_Tools.IntegertoStringConvert(m_ByteRcvInBandSlot));
 
 				CreateAndSendMiniPacket(m_ByteRcvInBandSlot, BITRATE_CONTROLL_PACKET_TYPE);
 			}
 
-			m_SlotResetLeftRange = unFrameNumber - (unFrameNumber % m_nCallFPS);
+			m_llSlotResetLeftRange = llFrameNumber - (llFrameNumber % m_nCallFPS);
             
             
-			m_SlotResetRightRange = m_SlotResetLeftRange + m_nCallFPS;
+			m_llSlotResetRightRange = m_llSlotResetLeftRange + m_nCallFPS;
 
 			m_ByteRcvInBandSlot = in_size - m_PacketHeader.GetHeaderLength();
 		}
@@ -1375,14 +1375,14 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 		m_nVideoCallWidth = m_pController->m_Quality[1].iWidth;
         
 		m_nCallFPS = HIGH_QUALITY_FPS;
-		m_SlotResetRightRange = HIGH_QUALITY_FPS;
+		m_llSlotResetRightRange = HIGH_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_25)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
 		m_nCallFPS = HIGH_QUALITY_FPS;
-		m_SlotResetRightRange = HIGH_QUALITY_FPS;
+		m_llSlotResetRightRange = HIGH_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_352_15)
 	{
@@ -1390,14 +1390,14 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
         
 		m_nCallFPS = LOW_QUALITY_FPS;
-		m_SlotResetRightRange = LOW_QUALITY_FPS;
+		m_llSlotResetRightRange = LOW_QUALITY_FPS;
 	}
 	else if (m_nCurrentVideoCallQualityLevel == RESOLUTION_FPS_SUPPORT_NOT_TESTED)
 	{
         m_nVideoCallHeight = m_pController->m_Quality[0].iHeight;
         m_nVideoCallWidth = m_pController->m_Quality[0].iWidth;
 		m_nCallFPS = LOW_QUALITY_FPS;
-		m_SlotResetRightRange = LOW_QUALITY_FPS;
+		m_llSlotResetRightRange = LOW_QUALITY_FPS;
 	}
 
 	m_BitRateController->SetCallFPS(m_nCallFPS);

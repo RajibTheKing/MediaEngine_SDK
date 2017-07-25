@@ -97,7 +97,8 @@ namespace MediaSDK
 
 		Tools toolsObject;
         toolsObject.SetThreadName("RenderingCall");
-		int frameSize, nFrameNumber;
+        int frameSize;
+        long long  nFrameNumber;
 		long long nTimeStampDiff;
 		long long currentFrameTime, firstFrameEncodingTime;
 		int videoHeight, videoWidth;

@@ -26,7 +26,7 @@ namespace MediaSDK
 		m_pController = pController;
 	}
 
-	void CEventNotifier::firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[])
+	void CEventNotifier::firePacketEvent(int eventType, long long frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[])
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent 1");
 
@@ -36,7 +36,7 @@ namespace MediaSDK
 	}
 
 
-	void CEventNotifier::fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iDeviceOrientation)
+	void CEventNotifier::fireVideoEvent(long long friendID, int eventType, long long frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iDeviceOrientation)
 	{
 		//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber) + " iOrientation --> " + Tools::IntegertoStringConvert(iDeviceOrientation));
 

@@ -230,8 +230,8 @@ private:
 	int m_nDeviceHeight;
 	int m_nDeviceWidth;
 
-	int m_SlotResetLeftRange;
-	int m_SlotResetRightRange;
+	long long m_llSlotResetLeftRange;
+	long long m_llSlotResetRightRange;
 
 	bool m_bIsCheckCall;
 

@@ -19,10 +19,10 @@ namespace MediaSDK
 
 		CEventNotifier(CController *pController);
 
-		void firePacketEvent(int eventType, int frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[]);
+		void firePacketEvent(int eventType, long long frameNumber, int numberOfPackets, int packetNumber, int packetSize, int dataLenth, unsigned char data[]);
 
 
-		void fireVideoEvent(long long friendID, int eventType, int frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iOrientation);
+		void fireVideoEvent(long long friendID, int eventType, long long frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iOrientation);
 
 
 		void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);

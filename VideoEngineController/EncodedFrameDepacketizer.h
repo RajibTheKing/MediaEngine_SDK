@@ -40,10 +40,10 @@ namespace MediaSDK
 
 		//int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CPacketHeader &packetHeader);
 		int Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader);
-		void MoveForward(int frame);
-		int CreateNewIndex(int frame);
-		void ClearFrame(int index, int frame);
-		int GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight, int &nOrientation);
+		void MoveForward(long long frame);
+		int CreateNewIndex(long long frame);
+		void ClearFrame(int index, long long frame);
+		int GetReceivedFrame(unsigned char* data, long long &nFramNumber, long long &nEcodingTime, long long nExpectedTime, int nRight, int &nOrientation);
 
 		map<long long, long long> m_mFrameTimeStamp;
 		map<long long, int> m_mFrameOrientation;
@@ -51,18 +51,18 @@ namespace MediaSDK
 		Tools m_Tools;
 
 	private:
-		int ProcessFrame(unsigned char *data, int index, int frameNumber, int &nFramNumber);
-		int GetEncodingTime(int nFrameNumber);
-		int GetOrientation(int nFrameNumber);
+		int ProcessFrame(unsigned char *data, int index, long long frameNumber, long long &nFramNumber);
+		long long GetEncodingTime(long long nFrameNumber);
+		int GetOrientation(long long nFrameNumber);
 		bool m_bIsDpkgBufferFilledUp;
-		int m_iFirstFrameReceived;
+		long long m_llFirstFrameReceived;
 
-		int SafeFinder(int Data);
+		int SafeFinder(long long Data/*used for Frame*/);
 
 		long long m_iMaxFrameNumRecvd;
 		long long m_FirstFrameEncodingTime;
 
-		std::map<int, int> m_FrameTracker;
+		std::map<long long/*Frame*/, int/*index*/> m_FrameTracker;
 		long long m_FrontFrame;
 		long long m_BackFrame;
 		int m_Counter;

@@ -177,27 +177,21 @@ namespace MediaSDK
 		Tools toolsObject;
         toolsObject.SetThreadName("DecodingCall");
 
-		int nFrameNumber, nFrameLength, nEncodingTime, nOrientation;
-		unsigned int nTimeStampDiff = 0;
+        long long nFrameNumber , nEncodingTime;
+        int nFrameLength, nOrientation;
 		long long currentTime;
 
-		int nExpectedTime;
+		long long nExpectedTime;
 
 		int nDecodingStatus, fps = -1;
 
 		int nOponnentFPS, nMaxProcessableByMine;
 		nExpectedTime = -1;
-		long long maxDecodingTime = 0, framCounter = 0, decodingTime, nBeforeDecodingTime;
-		double decodingTimeAverage = 0;
+		long long decodingTime, nBeforeDecodingTime;
 
 		long long llFirstFrameTimeStamp = -1;
-		int nFirstFrameNumber = -1;
+		long long nFirstFrameNumber = -1;
 		long long llTargetTimeStampDiff = -1;
-		long long llExpectedTimeOffset = -1;
-
-		long long llCountMiss = 0;
-
-		long long llSlotTimeStamp = 0;
 
 		CVideoHeader videoHeaderObject;
 
@@ -234,20 +228,20 @@ namespace MediaSDK
 			if (nFrameLength > -1)
 			{
 				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "#$Dec# FN: " +
-					m_Tools.IntegertoStringConvert(
+					m_Tools.getText(
 					nFrameNumber) + "  Len: " +
-					m_Tools.IntegertoStringConvert(
+					m_Tools.getText(
 					nFrameLength) +
 					"  E.Time: " +
-					m_Tools.IntegertoStringConvert(
+					m_Tools.getText(
 					nEncodingTime)
 					+ "  Exp E.Time: " +
-					m_Tools.IntegertoStringConvert(
+					m_Tools.getText(
 					nExpectedTime) + " -> " +
-					m_Tools.IntegertoStringConvert(
+					m_Tools.getText(
 					nExpectedTime -
 					nEncodingTime) + "Orientation = " +
-					m_Tools.IntegertoStringConvert(nOrientation));
+					m_Tools.getText(nOrientation));
 				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "#$ Cur: " + m_Tools.LongLongToString(currentTime) + " diff: " + m_Tools.LongLongToString(currentTime - g_ArribalTime[nFrameNumber]));
 
 
@@ -345,8 +339,8 @@ namespace MediaSDK
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThreadOfCall::DecodingThreadProcedure() stopped DecodingThreadProcedure method.");
 	}
 
-	int nIDR_Frame_GapOfCall = -1;
-	int CVideoDecodingThreadOfCall::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, int nFramNumber, unsigned int nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
+	long long nIDR_Frame_GapOfCall = -1;
+	int CVideoDecodingThreadOfCall::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, long long nFramNumber, long long nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
 		long long currentTimeStamp = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
@@ -356,7 +350,7 @@ namespace MediaSDK
 
 		if (nalType == SPS_DATA)
 		{
-			printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %d, IDR_FRAME_GAP = %d\n", nFramNumber, nFramNumber - nIDR_Frame_GapOfCall);
+			printf("TheKing--> IDR FRAME Recieved, nFrameNumber = %lld, IDR_FRAME_GAP = %lld\n", nFramNumber, nFramNumber - nIDR_Frame_GapOfCall);
 			nIDR_Frame_GapOfCall = nFramNumber;
 		}
 
@@ -425,9 +419,9 @@ namespace MediaSDK
 			m_Counter++;
 			long long currentTimeStampForBrust = m_Tools.CurrentTimestamp();
 			long long diff = currentTimeStampForBrust - m_pVideoCallSession->GetCalculationStartTime();
-			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG || CHECK_CAPABILITY_LOG, "Inside m_Counter = " + m_Tools.IntegertoStringConvert(m_Counter)
-				+ ", CalculationStartTime = " + m_Tools.LongLongtoStringConvert(m_pVideoCallSession->GetCalculationStartTime())
-				+ ", CurrentTime = " + m_Tools.LongLongtoStringConvert(currentTimeStampForBrust) + ", m_nCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", diff = " + m_Tools.IntegertoStringConvert(diff));
+			CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG || CHECK_CAPABILITY_LOG, "Inside m_Counter = " + m_Tools.getText(m_Counter)
+				+ ", CalculationStartTime = " + m_Tools.getText(m_pVideoCallSession->GetCalculationStartTime())
+				+ ", CurrentTime = " + m_Tools.getText(currentTimeStampForBrust) + ", m_nCallFPS = " + m_Tools.getText(m_nCallFPS) + ", diff = " + m_Tools.getText(diff));
 
 			if (m_Counter >= (m_nCallFPS - FPS_TOLERANCE_FOR_HIGH_RESOLUTION) && diff <= 1000)
 			{

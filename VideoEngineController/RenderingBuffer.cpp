@@ -32,7 +32,7 @@ namespace MediaSDK
 		m_nQueueSize = 0;
 	}
 
-	int CRenderingBuffer::Queue(int nFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation, int nInsetHeight, int nInsetWidth)
+	int CRenderingBuffer::Queue(long long nFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
 		if (m_nQueueSize >= MAX_VIDEO_RENDERER_BUFFER_SIZE)
 			printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
@@ -68,7 +68,7 @@ namespace MediaSDK
 		return 1;
 	}
 
-	int CRenderingBuffer::DeQueue(int &rnFrameNumber, long long &rllCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth, int &rnTimeDifferenceInQueue, int &rnOrientation, int &rnInsetHeight, int &rnInsetWidth)
+	int CRenderingBuffer::DeQueue(long long &rnFrameNumber, long long &rllCaptureTimeDifference, unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth, int &rnTimeDifferenceInQueue, int &rnOrientation, int &rnInsetHeight, int &rnInsetWidth)
 	{
 		RenderingBufferLocker lock(*m_pRenderingBufferMutex);
 

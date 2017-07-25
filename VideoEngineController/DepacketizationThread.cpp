@@ -117,8 +117,7 @@ namespace MediaSDK
 
 		Tools toolsObject;
         toolsObject.SetThreadName("DPKZThread");
-		int frameSize, queSize = 0, miniPacketQueueSize = 0;
-		long long llDepacitazationThreadStartTime = m_Tools.CurrentTimestamp();
+		int frameSize = 0, queSize = 0, miniPacketQueueSize = 0;
 		while (bDepacketizationThreadRunning)
 		{
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"CVideoDepacketizationThread::DepacketizationThreadProcedure() RUNNING DepacketizationThreadProcedure method");
@@ -292,20 +291,20 @@ namespace MediaSDK
 	}
 
 
-	void CVideoDepacketizationThread::UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets)
+	void CVideoDepacketizationThread::UpdateExpectedFramePacketPair(pair<long long, int> currentFramePacketPair, int iNumberOfPackets)
 	{
-		int iFrameNumber = currentFramePacketPair.first;
+		long long llFrameNumber = currentFramePacketPair.first;
 		int iPackeNumber = currentFramePacketPair.second;
 		if (iPackeNumber == iNumberOfPackets - 1)//Last Packet In a Frame
 		{
 			iNumberOfPacketsInCurrentFrame = 1;//next frame has at least 1 packet, it will be updated when a packet is received
-			ExpectedFramePacketPair.first = iFrameNumber + 1;
+			ExpectedFramePacketPair.first = llFrameNumber + 1;
 			ExpectedFramePacketPair.second = 0;
 		}
 		else
 		{
 			iNumberOfPacketsInCurrentFrame = iNumberOfPackets;
-			ExpectedFramePacketPair.first = iFrameNumber;
+			ExpectedFramePacketPair.first = llFrameNumber;
 			ExpectedFramePacketPair.second = iPackeNumber + 1;
 		}
 
@@ -315,10 +314,8 @@ namespace MediaSDK
 
 	void CVideoDepacketizationThread::ExpectedPacket()
 	{
-		int iPacketType = NORMAL_PACKET;
-
 		int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-		pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
+		pair<long long, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
 
 		if (currentFramePacketPair != ExpectedFramePacketPair /*&& !m_pVideoPacketQueue->PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)*/) //Out of order frame found, need to retransmit
 		{
