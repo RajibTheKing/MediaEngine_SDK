@@ -30,6 +30,7 @@ namespace MediaSDK
 		SmartPointer<NoiseReducerInterface> m_pNoiseReducer;
 
 		SmartPointer<AudioGainInterface> m_pPlayerGain;
+		SmartPointer<AudioGainInterface> m_pRecorderGain;
 
 
 	public:
@@ -47,6 +48,7 @@ namespace MediaSDK
 		SmartPointer<NoiseReducerInterface> GetNoiseReducer()  { return m_pNoiseReducer; }
 
 		SmartPointer<AudioGainInterface> GetPlayerGain()   { return m_pPlayerGain; }
+		SmartPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
 	};
 
 } //namespace MediaSDK
