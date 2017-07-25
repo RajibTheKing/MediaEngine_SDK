@@ -3,9 +3,8 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include "LogPrinter.h"
 #include "Tools.h"
-
-#define MEDIA_ENGINE_VERSION "9.37.1"
-#define MEDIA_ENGINE_BUILD_NUMBER 0937012524
+#include "MediaLogger.h"
+#include "CommonMacros.h"
 
 namespace MediaSDK
 {
@@ -17,9 +16,11 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
+		MediaLogInit(LOG_CODE_TRACE, false);
+
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
-			
+		
 		CController* pController = new CController();
 
 		m_llTimeOffset = -1;
@@ -32,6 +33,8 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
+		MediaLogInit(LOG_CODE_TRACE, false);
+
 		m_pcController = nullptr;
 			
 		CController* pController = new CController(szLoggerPath, nLoggerPrintLevel);
@@ -66,6 +69,8 @@ namespace MediaSDK
 			//Late destruction to avoid transitional UB
 			delete pController;
 		}
+
+		MediaLogRelease();
 	}
 
 	bool CInterfaceOfAudioVideoEngine::SetUserName(const IPVLongType llUserName)

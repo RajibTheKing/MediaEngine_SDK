@@ -214,6 +214,8 @@ LOCAL_SRC_FILES := \
 			../../VideoEngineController/EncoderPCM.cpp \
 			../../VideoEngineController/EncoderOpus.cpp \
 			../../VideoEngineController/Trace.cpp \
+			../../VideoEngineController/MediaLogger.cpp \
+			../../VideoEngineController/MediaLogger.h \
 
 
 			

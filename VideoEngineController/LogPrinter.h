@@ -3,6 +3,7 @@
 #define IPV_LOG_PRINTER_H
 
 #include "CommonTypes.h"
+#include "CommonMacros.h"
 
 //#define _CRT_SECURE_NO_WARNINGS
 
@@ -26,8 +27,6 @@
 
 #define ON 1
 #define OFF 0
-
-//#define LOG_ENABLED
 
 #define WRITE_TO_LOG_FILE		OFF
 

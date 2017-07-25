@@ -210,6 +210,7 @@
     <ClCompile Include="..\..\VideoEngineController\LiveStreamingHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LiveVideoDecodingQueue.cpp" />
     <ClCompile Include="..\..\VideoEngineController\LogPrinter.cpp" />
+    <ClCompile Include="..\..\VideoEngineController\MediaLogger.cpp" />
     <ClCompile Include="..\..\VideoEngineController\MuxHeader.cpp" />
     <ClCompile Include="..\..\VideoEngineController\NoiseReducerProvider.cpp" />
     <ClCompile Include="..\..\VideoEngineController\NaiveGain.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="..\..\VideoEngineController\AudioResources.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioTypes.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioSessionOptions.h" />
+    <ClInclude Include="..\..\VideoEngineController\CommonMacros.h" />
     <ClInclude Include="..\..\VideoEngineController\CustomLocker.h" />
     <ClInclude Include="..\..\VideoEngineController\DecoderAAC.h" />
     <ClInclude Include="..\..\VideoEngineController\AudioCallSession.h" />
@@ -336,6 +338,7 @@
     <ClInclude Include="..\..\VideoEngineController\LogPrinter.h" />
     <ClInclude Include="..\..\VideoEngineController\macros.h" />
     <ClInclude Include="..\..\VideoEngineController\CommonTypes.h" />
+    <ClInclude Include="..\..\VideoEngineController\MediaLogger.h" />
     <ClInclude Include="..\..\VideoEngineController\MuxHeader.h" />
     <ClInclude Include="..\..\VideoEngineController\NoiseReducerInterface.h" />
     <ClInclude Include="..\..\VideoEngineController\NoiseReducerProvider.h" />

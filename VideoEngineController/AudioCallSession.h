@@ -1,4 +1,3 @@
-
 #ifndef _AUDIO_CALL_SESSION_H_
 #define _AUDIO_CALL_SESSION_H_
 
@@ -13,9 +12,12 @@
 
 namespace MediaSDK
 {
-	#define AUDIO_CALL_VERSION  0
-	#define AUDIO_LIVE_VERSION  0
-
+    #define AUDIO_CALL_VERSION  0
+    #define AUDIO_LIVE_VERSION  0
+	static std::string colon = "ALOG:";
+	#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+	
+	
 	//#define LOCAL_SERVER_LIVE_CALL
 	//#define AUDIO_SELF_CALL
 	//#define DUMP_FILE
