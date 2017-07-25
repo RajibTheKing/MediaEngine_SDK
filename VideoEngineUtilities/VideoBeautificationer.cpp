@@ -997,8 +997,11 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 void CVideoBeautificationer::setParameters(int *param)
 {
-	if (param[0] != 0) m_sigma = param[0], m_sigmaDigit = log2(m_sigma);
-
+	if (param[0] != 0)
+	{
+		m_sigma = param[0];
+		m_sigmaDigit = log(m_sigma) / log(2);
+	}
 	if (param[1] != 0) brightness_shift = param[1];
 
 	m_applyBeatification = param[2];
