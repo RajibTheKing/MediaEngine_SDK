@@ -53,6 +53,7 @@
 
 #define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
 #define DUPLICATE_AUDIO
+#define TRACE_DETECTION_DURATION_IN_SAMPLES 60
 
 namespace MediaSDK
 {
@@ -584,7 +585,7 @@ namespace MediaSDK
 				}
 				else
 				{
-					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, 50);
+					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES);
 					LOG18("mansur: m_llDelayFraction : %lld", m_llDelayFraction);
 					if (m_llDelayFraction != -1)
 					{
