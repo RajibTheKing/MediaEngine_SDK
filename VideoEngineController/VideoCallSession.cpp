@@ -1429,16 +1429,16 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
-		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType, DESKTOP_WEB_CAM_DATA);
+		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType, CAMARA_VIDEO_DATA);
     else
     {
         if(m_bDynamic_IDR_Sending_Mechanism == true)
         {
-			this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType, DESKTOP_WEB_CAM_DATA);
+			this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType, CAMARA_VIDEO_DATA);
         }
         else
         {
-			this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType, DESKTOP_WEB_CAM_DATA);
+			this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType, CAMARA_VIDEO_DATA);
         }
     }
 
