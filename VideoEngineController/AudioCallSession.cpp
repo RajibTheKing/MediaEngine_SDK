@@ -79,6 +79,10 @@ namespace MediaSDK
 		m_ViewerInCallSentDataQueue.reset(new CAudioShortBuffer);
 
 		SetResources(audioResources);
+		if (GetPlayerGain().get())
+		{
+			GetPlayerGain()->SetGain(0);
+		}
 		m_pTrace = new CTrace();
 
 		m_iSpeakerType = nAudioSpeakerType;
@@ -97,7 +101,6 @@ namespace MediaSDK
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
-			//m_pPlayerGain->SetGain(9);
 		}
 
 		m_iPrevRecvdSlotID = -1;
@@ -335,6 +338,7 @@ namespace MediaSDK
 		m_pNoiseReducer = audioResources.GetNoiseReducer();
 
 		m_pPlayerGain = audioResources.GetPlayerGain();
+		m_pRecorderGain = audioResources.GetRecorderGain();
 	}
 
 
@@ -632,9 +636,9 @@ namespace MediaSDK
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
 				{
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
 					{
-						GetPlayerGain()->AddFarEnd(m_saFarendData, unLength);
+						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
 					}
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
@@ -642,9 +646,9 @@ namespace MediaSDK
 
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
 					{
-						GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+						GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 					}
 
 					LOG18("Successful farnear");
@@ -676,9 +680,9 @@ namespace MediaSDK
 		}
 
 #elif defined(DESKTOP_C_SHARP)
-		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetPlayerGain().get())
+		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
 		{
-			GetPlayerGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+			GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 		}
 		else printf("##TT encodeaudiodata no gain\n");
 #endif
@@ -724,7 +728,10 @@ namespace MediaSDK
 
 	void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 	{
-		m_pPlayerGain.get() ? m_pPlayerGain->SetGain(iVolume) : 0;
+		if (GetPlayerGain().get())
+		{
+			GetPlayerGain()->SetGain(iVolume);
+		}
 	}
 
 	void CAudioCallSession::SetSpeakerType(int iSpeakerType)

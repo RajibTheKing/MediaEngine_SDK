@@ -275,6 +275,13 @@ namespace MediaSDK
 		else
 		{
 			LOG18("Pushing to q");
+#ifdef __ANDROID__
+			if (m_pAudioCallSession->GetPlayerGain().get())
+			{
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, false);
+			}
+#endif // __ANDROID__
+
 			memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
 		}
 

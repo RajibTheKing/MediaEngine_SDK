@@ -3,7 +3,7 @@
 
 #include "AudioMacros.h"
 
-#define MAX_GAIN 13
+#define MAX_GAIN 12
 #define DEFAULT_GAIN 10
 
 

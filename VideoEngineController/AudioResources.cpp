@@ -23,6 +23,7 @@ namespace MediaSDK
 		m_pNoiseReducer = NoiseReducerProvider::GetNoiseReducer(audioSessionOptions.GetNoiseReducerType());
 
 		m_pPlayerGain = AudioGainInstanceProvider::GetAudioGainInstance(audioSessionOptions.GetGainType());
+		m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(audioSessionOptions.GetGainType());
 	}
 
 } //namespace MediaSDK
