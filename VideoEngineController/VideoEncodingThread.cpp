@@ -721,7 +721,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 				long long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-				if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+				if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_nOrientationType != ORIENTATION_90_MIRRORED)
 				{
 					if (iGotHeight == m_pVideoCallSession->m_nVideoCallHeight && iGotWidth == m_pVideoCallSession->m_nVideoCallWidth)
 					{
