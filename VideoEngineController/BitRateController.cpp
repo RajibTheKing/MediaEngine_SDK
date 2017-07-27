@@ -106,7 +106,7 @@ namespace MediaSDK
 
 	bool BitRateController::HandleNetworkTypeMiniPacket(CVideoHeader &crTempHeader)
 	{
-		m_nOpponentNetworkType = (int)crTempHeader.getTimeStamp();
+		m_nOpponentNetworkType = (int)crTempHeader.GetTimeStamp();
 
 		CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "m_iNetworkType = " + m_Tools.IntegertoStringConvert(m_nOpponentNetworkType));
 
@@ -137,13 +137,13 @@ namespace MediaSDK
 
 		//m_nOppNotifiedByterate = (int)crTempHeader.getTimeStamp();
 
-		if (m_BandWidthRatioHelper.find((int)crTempHeader.getFrameNumber()) == -1)
+		if (m_BandWidthRatioHelper.find((int)crTempHeader.GetFrameNumber()) == -1)
 		{
 			CLogPrinter_WriteSpecific5(CLogPrinter::INFO, "TheKing--> Not Found SLOT = " + m_Tools.IntegertoStringConvert((int)crTempHeader.getFrameNumber()));
 
 			//printf("TheKing--> Bitrate MiniPacket slot not found\n");
 
-			if (m_nLastSendingSlot <= (int)crTempHeader.getFrameNumber())
+			if (m_nLastSendingSlot <= (int)crTempHeader.GetFrameNumber())
 			{
 				m_bMegSlotCounterShouldStop = false;
 			}
@@ -151,11 +151,11 @@ namespace MediaSDK
 			return false;
 		}
 
-		int iSlotNumber = (int)crTempHeader.getFrameNumber();
+		int iSlotNumber = (int)crTempHeader.GetFrameNumber();
 
 		m_nMostRecentRespondedSlotNumber = iSlotNumber;
 		m_nBytesSendInMegaSlotInverval += m_BandWidthRatioHelper.getElementAt(iSlotNumber);
-		m_nBytesReceivedInMegaSlotInterval += (int)crTempHeader.getTimeStamp();
+		m_nBytesReceivedInMegaSlotInterval += (int)crTempHeader.GetTimeStamp();
 
 		NeedToNotifyClient(m_nBytesReceivedInMegaSlotInterval);
 
@@ -229,11 +229,11 @@ namespace MediaSDK
 
 		//printf("TheKing--> g_OppNotifiedByteRate = (%d, %d)\n", tempHeader.getFrameNumber(), tempHeader.getTimeStamp());
 
-		double dRatio = ((int)crTempHeader.getTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt((int)crTempHeader.getFrameNumber())) * 100.0;
+		double dRatio = ((int)crTempHeader.GetTimeStamp() *1.0) / (1.0 * m_BandWidthRatioHelper.getElementAt((int)crTempHeader.GetFrameNumber())) * 100.0;
 
 		//printf("Theking--> &&&&&&&& Loss Ratio = %lf\n", dRatio);
 
-		m_BandWidthRatioHelper.eraseAllSmallerEqual((int)crTempHeader.getFrameNumber());
+		m_BandWidthRatioHelper.eraseAllSmallerEqual((int)crTempHeader.GetFrameNumber());
 
 		return true;
 	}

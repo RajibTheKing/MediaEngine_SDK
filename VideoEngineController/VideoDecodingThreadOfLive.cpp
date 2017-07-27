@@ -240,7 +240,7 @@ namespace MediaSDK
 
 					nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
 					//packetHeaderObject.setPacketHeader(m_PacketizedFrame);
-					videoHeaderObject.setPacketHeader(m_PacketizedFrame);
+					videoHeaderObject.SetPacketHeader(m_PacketizedFrame);
 
 					videoHeaderObject.ShowDetails("##RCV : ");
 
@@ -254,9 +254,9 @@ namespace MediaSDK
 						currentTime = m_Tools.CurrentTimestamp();
 						llFirstFrameTimeStamp = currentTime;
 						//llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
-						llExpectedTimeOffset = llFirstFrameTimeStamp - videoHeaderObject.getTimeStamp();
+						llExpectedTimeOffset = llFirstFrameTimeStamp - videoHeaderObject.GetTimeStamp();
 
-						m_pVideoCallSession->SetOponentDeviceType(videoHeaderObject.getSenderDeviceType());
+						m_pVideoCallSession->SetOponentDeviceType(videoHeaderObject.GetSenderDeviceType());
 
 					}
 					else
@@ -264,18 +264,18 @@ namespace MediaSDK
 						//diifTime = packetHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
 						//int iCurrentFrame = packetHeaderObject.getFrameNumber();
 
-						diifTime = videoHeaderObject.getTimeStamp() - currentTime + llExpectedTimeOffset;
-						int iCurrentFrame = videoHeaderObject.getFrameNumber();
+						diifTime = videoHeaderObject.GetTimeStamp() - currentTime + llExpectedTimeOffset;
+						int iCurrentFrame = videoHeaderObject.GetFrameNumber();
 
 						//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThreadOfLive::DecodingThreadProcedure()************* FN: " + m_Tools.IntegertoStringConvert(iCurrentFrame) + " DIFT: " + m_Tools.LongLongToString(diifTime));
 
 						//while(packetHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
 
-						if (videoHeaderObject.getTimeStamp() < (currentTime - llExpectedTimeOffset)){
+						if (videoHeaderObject.GetTimeStamp() < (currentTime - llExpectedTimeOffset)){
 							LOG_AAC("#aac#aqv# VideoFrameReceivedAfterTime: %lld", videoHeaderObject.getTimeStamp() - (currentTime - llExpectedTimeOffset));
 						}
 
-						while (videoHeaderObject.getTimeStamp() > currentTime - llExpectedTimeOffset)
+						while (videoHeaderObject.GetTimeStamp() > currentTime - llExpectedTimeOffset)
 						{
 							toolsObject.SOSleep(1);
 							currentTime = m_Tools.CurrentTimestamp();

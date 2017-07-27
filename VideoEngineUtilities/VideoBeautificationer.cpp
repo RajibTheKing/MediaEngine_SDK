@@ -987,16 +987,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	return result;
 }
-
-int CVideoBeautificationer::GetCurrentSigma()
-{
-	return m_sigma;
-}
-
-int CVideoBeautificationer::GetCurrentAverageLuminace()
-{
-	return m_AvarageValue;
-}
+    
 
 void CVideoBeautificationer::setParameters(int *param)
 {

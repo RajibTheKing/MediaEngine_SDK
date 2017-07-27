@@ -310,7 +310,7 @@ namespace MediaSDK
                     CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() session got");
                     
                     CVideoHeader temporaryHeader;
-                    temporaryHeader.setPacketHeader(m_EncodedFrame + 1);
+                    temporaryHeader.SetPacketHeader(m_EncodedFrame + 1);
                     
                     unsigned char *p = m_EncodedFrame + temporaryHeader.GetHeaderLength() + 1;
                     
@@ -492,7 +492,7 @@ namespace MediaSDK
                         }
                         else
                         {
-                            timeNow = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+                            timeNow = packetHeader.GetTimeStampDirectly(m_EncodedFrame + 1);
                             
                             if (m_bAudioOnlyLive)
                             {
@@ -674,7 +674,7 @@ namespace MediaSDK
                         }
                         else
                         {
-                            m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+                            m_nTimeStampOfChunck = packetHeader.GetTimeStampDirectly(m_EncodedFrame + 1);
                         }
                         
                         LOGSS("##SS## odd m_nTimeStampOfChunck %lld", m_nTimeStampOfChunck);
@@ -687,7 +687,7 @@ namespace MediaSDK
                     {
                         if (firstFrame == true)
                         {
-                            m_nTimeStampOfChunck = packetHeader.getTimeStampDirectly(m_EncodedFrame + 1);
+                            m_nTimeStampOfChunck = packetHeader.GetTimeStampDirectly(m_EncodedFrame + 1);
                             
                             if (m_bAudioOnlyLive)
                             {
@@ -732,8 +732,8 @@ namespace MediaSDK
                             int nCurrentFrameLen = ((int)p[13] << 8) + p[14];
                             //CPacketHeader   ccc;
                             CVideoHeader ccc;
-                            ccc.setPacketHeader(p);
-                            int nTemp = ccc.getPacketLength();
+                            ccc.SetPacketHeader(p);
+                            int nTemp = ccc.GetPacketLength();
                             //printf("SendingSide--> nCurrentFrameLen = %d, but packetSize = %d, iDataToSendIndex = %d, gotLengthFromHeader = %d\n", nCurrentFrameLen, packetSize, m_iDataToSendIndex, nTemp); 
                             
                             m_iDataToSendIndex += (packetSize);
@@ -761,9 +761,9 @@ namespace MediaSDK
                     
                     int iNumberOfPackets = -1;
                     
-                    iNumberOfPackets = packetHeader.getNumberOfPacket();
+                    iNumberOfPackets = packetHeader.GetNumberOfPacket();
                     
-                    pair<long long, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
+                    pair<long long, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.GetFrameNumber(), packetHeader.GetPacketNumber());
                     
                     if (FramePacketPair.first != iPrevFrameNumer)
                     {

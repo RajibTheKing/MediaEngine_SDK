@@ -43,8 +43,14 @@ public:
 	void MakeFrameBright(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, int nPrecision);
 	void IncreaseTemperatureOfFrame(unsigned char *convertingData, int iVideoHeight, int iVideoWidth, unsigned char  nThreshold);
 
-	int GetCurrentSigma();
-	int GetCurrentAverageLuminace();
+	int GetCurrentSigma()
+    {
+        return m_sigma;
+    }
+	int GetCurrentAverageLuminace()
+    {
+        return m_AvarageValue;
+    }
 
 	void setParameters(int *param);
 	int TestVideoEffect(int *param, int size);

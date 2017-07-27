@@ -758,7 +758,7 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 {
 	if(m_bLiveVideoStreamRunning)
 	{		
-		m_cVH.setPacketHeader(in_data);
+		m_cVH.SetPacketHeader(in_data);
 
 		m_cVH.ShowDetails("After Receiving ");
 
@@ -788,9 +788,9 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         {
             OperationForResolutionControl(in_data,in_size);
         }*/
-        m_PacketHeader.setPacketHeader(in_data);
+        m_PacketHeader.SetPacketHeader(in_data);
         
-		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.getFrameNumber();
+		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.GetFrameNumber();
         
 //		VLOG("#DR# --------------------------> FrameNumber : "+Tools::IntegertoStringConvert(unFrameNumber));
         //printf("PushPacketForMerging--> nFrameNumber = %d, m_nCallFPS = %d, m_PacketHeader.GetHeaderLength() = %d\n", unFrameNumber, m_nCallFPS, m_PacketHeader.GetHeaderLength());
@@ -1055,7 +1055,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	{
 		//PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
 
-        PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
+        PacketHeader.SetPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
                                      uchVersion,									//VersionCode
                                      VIDEO_HEADER_LENGTH,                       //VideoHeaderLength
                                      0,											//FPSByte
@@ -1088,7 +1088,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	{
 		//PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
 
-        PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
+        PacketHeader.SetPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
                                      uchVersion,								//VersionCode
                                      VIDEO_HEADER_LENGTH,                   // Header Length
                                      0,										//FPSByte
@@ -1134,7 +1134,7 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
     CVideoHeader PacketHeader;
     unsigned char uchVersion = (unsigned char)GetVersionController()->GetOwnVersion();
     
-    PacketHeader.setPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
+    PacketHeader.SetPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
                                  uchVersion,							//VersionCode
                                  VIDEO_HEADER_LENGTH,					//HeaderLength
                                  0,										//FPSByte

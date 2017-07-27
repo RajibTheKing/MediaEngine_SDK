@@ -19,9 +19,9 @@ namespace MediaSDK
 		CVideoHeader();
 		~CVideoHeader();
 
-		void setPacketHeader(unsigned char *headerData);
+		void SetPacketHeader(unsigned char *headerData);
 
-        void setPacketHeader(unsigned char packetType,
+        void SetPacketHeader(unsigned char packetType,
                              unsigned char uchVersion,
                              unsigned int iHeaderLength,
                              unsigned int iFPSbyte,
@@ -51,81 +51,141 @@ namespace MediaSDK
         int GetIntFromChar(unsigned char *packetData, int index, int nLenght);
         long long GetLongLongFromChar(unsigned char *packetData, int index, int nLenght);
         
-        long long getTimeStampDirectly(unsigned char *data);
+        long long GetTimeStampDirectly(unsigned char *data);
         long long GetFrameNumberDirectly(unsigned char *packetData);
         int GetFrameHeaderLengthDirectly(unsigned char *pData);
         int GetOpponentResolution(unsigned char *PacketHeader);
 
 		void ShowDetails(string sTag);
 
-        void setPacketType(unsigned char *pData);
-        unsigned char GetPacketType();
+        void SetPacketType(unsigned char *pData);
+        unsigned char GetPacketType()
+        {
+            return (unsigned char)m_iPacketType;
+        }
 
-        void setVersionCode(unsigned char * VersionCode);
-		unsigned char getVersionCode();
+        void SetVersionCode(unsigned char * VersionCode);
+		unsigned char GetVersionCode()
+        {
+            return (unsigned char)m_iVersionCode;
+        }
         
-        void setHeaderLength(unsigned char *pData);
-        int GetHeaderLength();
+        void SetHeaderLength(unsigned char *pData);
+        int GetHeaderLength()
+        {
+            return m_iHeaderLength;
+        }
         
-        void setFPS(unsigned char * FPS);
-        unsigned int getFPS();
+        void SetFPS(unsigned char * FPS);
+        unsigned int GetFPS()
+        {
+            return m_iFPS;
+        }
         
-        void setFrameNumber(unsigned char * FrameNumber);
-		long long getFrameNumber();
+        void SetFrameNumber(unsigned char * FrameNumber);
+		long long GetFrameNumber()
+        {
+            return m_llFrameNumber;
+        }
         
         void SetNetworkType(unsigned char* data);
-        int GetNetworkType();
+        int GetNetworkType()
+        {
+            return m_iNetworkType;
+        }
         
         void SetDeviceOrientation(unsigned char *packetData);
-        int GetDeviceOrientation();
+        int GetDeviceOrientation()
+        {
+            return m_iDeviceOrientation;
+        }
         
         void SetVideoQualityLevel(unsigned char* data);
-        int GetVideoQualityLevel();
+        int GetVideoQualityLevel()
+        {
+            return m_iVideoQualityLevel;
+        }
 
-        void setNumberOfPacket(unsigned char * NumberOfPacket);
-		unsigned int getNumberOfPacket();
+        void SetNumberOfPacket(unsigned char * NumberOfPacket);
+		unsigned int GetNumberOfPacket()
+        {
+            return m_iNumberOfPacket;
+        }
         
-        void setPacketNumber(unsigned char * PacketNumber);
-		unsigned int getPacketNumber();
+        void SetPacketNumber(unsigned char * PacketNumber);
+		unsigned int GetPacketNumber()
+        {
+            return m_iPacketNumber;
+        }
 
-        void setTimeStamp(unsigned char * TimeStamp);
-		long long getTimeStamp();
+        void SetTimeStamp(unsigned char * TimeStamp);
+		long long GetTimeStamp()
+        {
+            return m_llTimeStamp;
+        }
 
-        void setPacketStartingIndex(unsigned char *pData);
-        int GetPacketStartingIndex();
+        void SetPacketStartingIndex(unsigned char *pData);
+        int GetPacketStartingIndex()
+        {
+            return m_iPacketStartingIndex;
+        }
 
-        void setPacketDataLength(unsigned char * PacketDataLength);
-		int getPacketLength();
+        void SetPacketDataLength(unsigned char * PacketDataLength);
+		int GetPacketLength()
+        {
+            return m_iPacketDataLength;
+        }
 
-		void setSenderDeviceType(unsigned char * PacketDataLength);
-		int getSenderDeviceType();
+		void SetSenderDeviceType(unsigned char * PacketDataLength);
+		int GetSenderDeviceType()
+        {
+            return m_nSenderDeviceType;
+        }
 
 
 		//Inset Information
-		void setNumberOfInset(unsigned char *pData);
-		int GetNumberOfInset();
+		void SetNumberOfInset(unsigned char *pData);
+		int GetNumberOfInset()
+        {
+            return m_nNumberOfInset;
+        }
         
-		void setInsetHeights(unsigned char *pData, int nNumberOfInsets);
+		void SetInsetHeights(unsigned char *pData, int nNumberOfInsets);
 		void GetInsetHeights(int *pHeightValues, int nNumberOfInsets);
 
-		void setInsetWidths(unsigned char *pData, int nNumberOfInsets);
+		void SetInsetWidths(unsigned char *pData, int nNumberOfInsets);
 		void GetInsetWidths(int *pHeightValues, int nNumberOfInsets);
         
         //More Information
-        void setSigmaValue(unsigned char *pData);
-        int getSigmaValue();
+        void SetSigmaValue(unsigned char *pData);
+        int GetSigmaValue()
+        {
+            return m_iSigmaValue;
+        }
         
-        void setBrightnessValue(unsigned char *pData);
-        int getBrightnessValue();
+        void SetBrightnessValue(unsigned char *pData);
+        int GetBrightnessValue()
+        {
+            return m_iBrightnessValue;
+        }
         
-        void setDeviceFPS(unsigned char *pData);
-        int getDeviceFPS();
+        void SetDeviceFPS(unsigned char *pData);
+        int GetDeviceFPS()
+        {
+            return m_iDeviceFPS;
+        }
         
-        void setEncodeFailPerFPS(unsigned char *pData);
-        int getEncodeFailPerFPS();
+        void SetEncodeFailPerFPS(unsigned char *pData);
+        int GetEncodeFailPerFPS()
+        {
+            return m_iNumberOfEncodeFailPerFPS;
+        }
         
-        void setLibraryVersion(unsigned char *pData);
-        int getLibraryVersion();
+        void SetLibraryVersion(unsigned char *pData);
+        int GetLibraryVersion()
+        {
+            return m_iMediaEngineVersion;
+        }
         
 	private:
 

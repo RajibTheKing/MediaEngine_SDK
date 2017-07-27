@@ -126,8 +126,8 @@ namespace MediaSDK
 
 				CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector iUsedLen %d", iUsedLen);
 
-				videoHeader.setPacketHeader(uchVideoData + 1 + iUsedLen);
-				int nCurrentFrameLen = videoHeader.getPacketLength();
+				videoHeader.SetPacketHeader(uchVideoData + 1 + iUsedLen);
+				int nCurrentFrameLen = videoHeader.GetPacketLength();
 
 				
 

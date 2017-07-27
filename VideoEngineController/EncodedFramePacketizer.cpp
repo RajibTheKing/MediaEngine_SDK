@@ -76,7 +76,7 @@ namespace MediaSDK
 		int nOwnQualityLevel = m_pcVideoCallSession->GetOwnVideoCallQualityLevel();
 		int nCurrentCallQualityLevel = m_pcVideoCallSession->GetCurrentVideoCallQualityLevel();
         
-        int nDeviceFPS = m_pcVideoCallSession->getFpsCalculator()->getDeviceFPS();
+        int nDeviceFPS = m_pcVideoCallSession->getFpsCalculator()->GetDeviceFPS();
         int nNumberOfEncodeFailPerFps = m_pcVideoCallSession->m_pVideoEncodingThread->m_iNumberOfEncodeFailPerFPS;
         int iSigmaValue = 0;
         int iBrightnessValue = 0;
@@ -93,7 +93,7 @@ namespace MediaSDK
         
 		if (bIsDummy)
 		{
-            m_cVideoHeader.setPacketHeader(NEGOTIATION_PACKET_TYPE,					//packetType
+            m_cVideoHeader.SetPacketHeader(NEGOTIATION_PACKET_TYPE,					//packetType
                                            uchOwnVersion,							//VersionCode
                                            nVersionWiseHeaderLength,                //Header Length
                                            0,										//FPSByte
@@ -138,7 +138,7 @@ namespace MediaSDK
 			int nPacketNumber = 0;
 			int nNumberOfPackets = 1;
 
-            m_cVideoHeader.setPacketHeader(VIDEO_PACKET_TYPE,				//packetType
+            m_cVideoHeader.SetPacketHeader(VIDEO_PACKET_TYPE,				//packetType
                                            uchOwnVersion,                   //VersionCode
                                            nVersionWiseHeaderLength,                //Header Length
                                            0,                               //FPSByte
@@ -193,7 +193,7 @@ namespace MediaSDK
 
 
 			CVideoHeader pH;
-			pH.setPacketHeader(m_ucaPacket + 1);
+			pH.SetPacketHeader(m_ucaPacket + 1);
 			pH.ShowDetails("JUST2");
             
 			m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + unLength, iFrameNumber, nPacketNumber);
@@ -214,7 +214,7 @@ namespace MediaSDK
 				if (nPacketizedDataLength + m_nPacketSize > unLength)
 					m_nPacketSize = unLength - nPacketizedDataLength;
 
-                m_cVideoHeader.setPacketHeader(VIDEO_PACKET_TYPE,             //packetType
+                m_cVideoHeader.SetPacketHeader(VIDEO_PACKET_TYPE,             //packetType
                                                uchOwnVersion,                  //VersionCode
                                                VIDEO_HEADER_LENGTH,             //HeaderLength
                                                0,                               //FPSByte
