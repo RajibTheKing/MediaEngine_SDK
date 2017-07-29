@@ -154,14 +154,14 @@ namespace MediaSDK
 	public:
 		BenchmarkScope(char* scopeName) :
 			m_sName(scopeName),
-			m_nStart(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count())
+			m_nStart(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count())
 		{
 			MediaLog(LOG_INFO, "{*} %s Started", scopeName); //«ß«
 		}
 
 		~BenchmarkScope()
 		{
-			MediaLog(LOG_INFO, "{*} %s Finished, Execution time %.03Lf ms", m_sName.c_str(), (long double)(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - m_nStart) / 1000.00L);
+			MediaLog(LOG_INFO, "{*} %s Finished, Execution time %.03Lf ms", m_sName.c_str(), (long double)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - m_nStart) / 1000.00L);
 		}
 
 	private:
