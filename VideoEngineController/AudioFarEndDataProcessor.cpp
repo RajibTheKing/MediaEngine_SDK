@@ -257,6 +257,12 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+#ifdef PCM_DUMP
+					if (m_pAudioCallSession->PlayedFile)
+					{
+						fwrite(pshSentFrame, 2, nSentFrameSize, m_pAudioCallSession->PlayedFile);
+					}
+#endif
 				}
 			}
 #else
@@ -265,12 +271,7 @@ namespace MediaSDK
 				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 			}
 #endif
-#ifdef PCM_DUMP
-			if (m_pAudioCallSession->PlayedFile)
-			{
-				fwrite(pshSentFrame, 2, nSentFrameSize, m_pAudioCallSession->PlayedFile);
-			}
-#endif
+
 		}
 		else
 		{
