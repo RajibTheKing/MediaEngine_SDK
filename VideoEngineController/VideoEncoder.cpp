@@ -49,7 +49,7 @@ namespace MediaSDK
 		{
 #if defined(DESKTOP_C_SHARP)
 
-			if (nDataType == CAMARA_VIDEO_DATA && nVideoWidth > nVideoHeight)
+			if (nDataType == CAMARA_VIDEO_DATA && nVideoWidth < nVideoHeight)
 			{
 				int nNewHeight;
 				int nNewWidth;
