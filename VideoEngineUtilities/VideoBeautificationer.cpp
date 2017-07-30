@@ -190,6 +190,7 @@ m_EffectValue(10)
 
 	luminaceHigh = 255;
 
+	brightness_shift = 15;
 	m_applyBeatification = 1;
 
 	m_pVideoBeautificationMutex.reset(new CLockHandler);

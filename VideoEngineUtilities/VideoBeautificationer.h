@@ -89,6 +89,7 @@ private:
 	int m_nIsGreaterThen5s;
 
 	int m_applyBeatification;
+	int brightness_shift;
 
 	int m_sigma;
 	int m_sigmaDigit;
