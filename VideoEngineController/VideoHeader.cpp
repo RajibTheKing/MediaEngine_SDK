@@ -410,7 +410,7 @@ namespace MediaSDK
 
 	int CVideoHeader::GetFrameHeaderLengthDirectly(unsigned char *pData)
 	{
-		return GetLongLongFromChar(pData + HEADER_LENGTH_INDEX, 0, 1);
+		return GetIntFromChar(pData + HEADER_LENGTH_INDEX, 0, 1);
 
 	}
 

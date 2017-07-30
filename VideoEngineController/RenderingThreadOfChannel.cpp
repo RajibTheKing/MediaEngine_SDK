@@ -96,7 +96,8 @@ namespace MediaSDK
 		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CRenderingThreadOfChannel::RenderingThreadProcedure() started RenderingThreadProcedure method");
 
 		Tools toolsObject;
-		int frameSize, nFrameNumber;
+        int frameSize;
+        long long nFrameNumber;
 		long long nTimeStampDiff;
 		long long currentFrameTime, firstFrameEncodingTime;
 		int videoHeight, videoWidth;

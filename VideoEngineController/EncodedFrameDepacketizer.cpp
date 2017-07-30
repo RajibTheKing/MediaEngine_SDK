@@ -31,7 +31,7 @@ namespace MediaSDK
 
 		g_ArribalTime.clear();
 		g_llChangeSum = g_iChangeCounter = 0;
-		m_iFirstFrameReceived = DEFAULT_FIRST_FRAME_RCVD;
+		m_llFirstFrameReceived = DEFAULT_FIRST_FRAME_RCVD;
 		m_bIsDpkgBufferFilledUp = false;
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CEncodedFrameDepacketizer::CEncodedFrameDepacketizer");
@@ -45,7 +45,7 @@ namespace MediaSDK
 
 		m_BackFrame = m_FrontFrame + m_BufferSize;
 
-		for (int frame = m_FrontFrame; frame <= m_BackFrame; frame++)
+		for (long long frame = m_FrontFrame; frame <= m_BackFrame; frame++)
 		{
 			CreateNewIndex(frame);
 		}
@@ -75,7 +75,7 @@ namespace MediaSDK
 
 		g_ArribalTime.clear();
 		g_llChangeSum = g_iChangeCounter = 0;
-		m_iFirstFrameReceived = DEFAULT_FIRST_FRAME_RCVD;
+		m_llFirstFrameReceived = DEFAULT_FIRST_FRAME_RCVD;
 		m_bIsDpkgBufferFilledUp = false;
 
 		for (int i = 0; i <= m_BufferSize; i++)
@@ -85,7 +85,7 @@ namespace MediaSDK
 
 		m_BackFrame = m_FrontFrame + m_BufferSize;
 
-		for (int frame = m_FrontFrame; frame <= m_BackFrame; frame++)
+		for (long long frame = m_FrontFrame; frame <= m_BackFrame; frame++)
 		{
 			CreateNewIndex(frame);
 		}
@@ -93,7 +93,6 @@ namespace MediaSDK
 
 	int CEncodedFrameDepacketizer::Depacketize(unsigned char *in_data, unsigned int in_size, int PacketType, CVideoHeader &packetHeader)
 	{
-		bool bIsMiniPacket = (PacketType == MINI_PACKET_TYPE);
 		int firstByte = 0;
 
 #ifdef FPS_CHANGE_SIGNALING
@@ -116,8 +115,8 @@ namespace MediaSDK
 		if (0 == packetNumber) {
 			long long llCurTime = Tools::CurrentTimestamp();
 
-			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "#DP~ FN: " + m_Tools.getText(frameNumber) + " CurTime: " + m_Tools.LongLongToString(llCurTime) + " timedif: " + m_Tools.IntegertoStringConvert(timeStampDiff) + " Sh: " + m_Tools.LongLongToString(m_VideoCallSession->GetShiftedTime())
-				+ "BUF SZ: " + Tools::IntegertoStringConvert(m_BackFrame - m_FrontFrame + 1));
+			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "#DP~ FN: " + m_Tools.getText(frameNumber) + " CurTime: " + m_Tools.getText(llCurTime) + " timedif: " + m_Tools.getText(timeStampDiff) + " Sh: " + m_Tools.getText(m_VideoCallSession->GetShiftedTime())
+				+ "BUF SZ: " + Tools::getText(m_BackFrame - m_FrontFrame + 1));
 			g_ArribalTime[frameNumber] = llCurTime;
 
 			long long curDiff = TIME_DELAY_FOR_RETRANSMISSION_IN_MS + llCurTime - timeStampDiff;
@@ -154,8 +153,8 @@ namespace MediaSDK
 		{
 			m_iMaxFrameNumRecvd = frameNumber;
 
-			if (m_iFirstFrameReceived > frameNumber) {
-				m_iFirstFrameReceived = frameNumber;
+			if (m_llFirstFrameReceived > frameNumber) {
+				m_llFirstFrameReceived = frameNumber;
 				m_FirstFrameEncodingTime = timeStampDiff;
 			}
 		}
@@ -176,7 +175,7 @@ namespace MediaSDK
 			m_FrontFrame = max(m_FrontFrame, frameNumber - 3);
 			m_BackFrame = frameNumber;
 
-			for (int frame = m_FrontFrame; frame < m_BackFrame; frame++)
+			for (long long frame = m_FrontFrame; frame < m_BackFrame; frame++)
 				CreateNewIndex(frame);
 
 			index = CreateNewIndex(m_BackFrame);
@@ -185,23 +184,23 @@ namespace MediaSDK
 		}
 		else if (frameNumber > m_BackFrame)
 		{
-			int previousBackFrame = m_BackFrame;
+			long long previousBackFrame = m_BackFrame;
 
 			m_BackFrame = frameNumber;
 
 			if (m_FrontFrame + m_BufferSize < m_BackFrame)
 			{
 				CLogPrinter_WriteInstentTestLog(CLogPrinter::DEBUGS, "####--------------------------------->BufferOverflow# FN: " + m_Tools.IntegertoStringConvert(m_FrontFrame));
-				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Video Buffer OverFlow ( VideoPacketBuffer in EncodedFrameDepacketizer ) --> OverFlow FrontFrame " + m_Tools.IntegertoStringConvert(m_FrontFrame) + " BackFrame " + m_Tools.IntegertoStringConvert(m_BackFrame));
-				int previousFrontFrame = m_FrontFrame;
+				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Video Buffer OverFlow ( VideoPacketBuffer in EncodedFrameDepacketizer ) --> OverFlow FrontFrame " + m_Tools.getText(m_FrontFrame) + " BackFrame " + m_Tools.getText(m_BackFrame));
+				long long previousFrontFrame = m_FrontFrame;
 
 				m_FrontFrame = max(m_FrontFrame, m_BackFrame - m_BufferSize);
 
-				int frame;
+				long long frame;
 
 				for (frame = previousFrontFrame; frame < m_FrontFrame; frame++)		//Remove all old frames fromm Merging buffer
 				{
-					std::map<int, int>::iterator it = m_FrameTracker.find(frame);
+					std::map<long long, int>::iterator it = m_FrameTracker.find(frame);
 
 					if (it == m_FrameTracker.end())
 						break;
@@ -228,8 +227,9 @@ namespace MediaSDK
 					CreateNewIndex(frame);
 				}
 			}
-			else {
-				for (int frame = 1 + previousBackFrame; frame < m_BackFrame; ++frame)
+			else
+            {
+				for (long long frame = 1 + previousBackFrame; frame < m_BackFrame; ++frame)
 				{
 					CreateNewIndex(frame);
 				}
@@ -259,12 +259,14 @@ namespace MediaSDK
 		int nPacketStartingIndex = packetHeader.GetPacketStartingIndex();
 
 		int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber, iHeaderLength, nPacketStartingIndex);
-
+        
+        CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "isCompleteFrame = : " + m_Tools.getText(isCompleteFrame));
+        
 		return 1;
 	}
 
 
-	int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, int &nFramNumber, int &nEcodingTime, int nExpectedTime, int nRight, int &nOrientation)
+	int CEncodedFrameDepacketizer::GetReceivedFrame(unsigned char* data, long long &nFramNumber, long long &nEcodingTime, long long nExpectedTime, int nRight, int &nOrientation)
 	{
 		DepacketizerLocker lock(*m_pEncodedFrameDepacketizerMutex);
 
@@ -289,8 +291,6 @@ namespace MediaSDK
 		//	CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS,
 		//							   " GetReceivedFrame : Encoding time: "+m_Tools.IntegertoStringConvert(nEcodingTime));
 		int nFrameLength = -1;
-		int frameNumber = -1;
-
 		int index = SafeFinder(m_FrontFrame);
 
 #ifdef CRASH_CHECK
@@ -303,8 +303,9 @@ namespace MediaSDK
 		if (m_bIsDpkgBufferFilledUp)		// 300 Milliseconds delay has preserved.
 		{
 			// No packet of this frame is found and it is not the only frame of buffer.
-			if (nEcodingTime == -1 && m_FrontFrame < m_iMaxFrameNumRecvd)	{
-				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "No Pkt Found Dropped-----> " + m_Tools.IntegertoStringConvert(m_FrontFrame) + "  ExpTime: " + m_Tools.IntegertoStringConvert(nExpectedTime));
+			if (nEcodingTime == -1 && m_FrontFrame < m_iMaxFrameNumRecvd)
+            {
+				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "No Pkt Found Dropped-----> " + m_Tools.getText(m_FrontFrame) + "  ExpTime: " + m_Tools.getText(nExpectedTime));
 				//			g_FPSController.NotifyFrameDropped(m_FrontFrame);
 				MoveForward(m_FrontFrame);	//Drop the frame
 				//asdf
@@ -312,18 +313,23 @@ namespace MediaSDK
 
 				return -1;
 			}
-			//At least one packet is found and it is not the right time to send this frame to decoder.
-			if (-1 != nExpectedTime && nEcodingTime > nExpectedTime)
+			
+            //At least one packet is found and it is not the right time to send this frame to decoder.
+			
+            if (-1 != nExpectedTime && nEcodingTime > nExpectedTime)
 			{
 				return -1;
 			}
 		}
 
 		// Before 300 completing milliseconds.
-		if (!m_bIsDpkgBufferFilledUp) {
+		if (!m_bIsDpkgBufferFilledUp)
+        {
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-			if (m_iFirstFrameReceived != DEFAULT_FIRST_FRAME_RCVD && TIME_DELAY_FOR_RETRANSMISSION_IN_MS <= llCurrentTimeStamp - m_VideoCallSession->GetFirstVideoPacketTime()) {
-				for (int frame = m_FrontFrame; frame < m_iFirstFrameReceived; ++frame)
+			
+            if (m_llFirstFrameReceived != DEFAULT_FIRST_FRAME_RCVD && TIME_DELAY_FOR_RETRANSMISSION_IN_MS <= llCurrentTimeStamp - m_VideoCallSession->GetFirstVideoPacketTime())
+            {
+				for (long long frame = m_FrontFrame; frame < m_llFirstFrameReceived; ++frame)
 				{
 					MoveForward(frame);
 					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CEncodedFrameDepacketizer::GetReceivedFrame 1");
@@ -345,7 +351,7 @@ namespace MediaSDK
 		}
 		else if (m_FrontFrame < m_iMaxFrameNumRecvd)		// Front frame is not complete and it is not the only frame of buffer.
 		{
-			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "Incomplete Frame Dropped-----> " + m_Tools.IntegertoStringConvert(m_FrontFrame) + "  ExpTime: " + m_Tools.IntegertoStringConvert(nExpectedTime));
+			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "Incomplete Frame Dropped-----> " + m_Tools.getText(m_FrontFrame) + "  ExpTime: " + m_Tools.getText(nExpectedTime));
 			//		g_FPSController.NotifyFrameDropped(m_FrontFrame);
 			MoveForward(m_FrontFrame);
 			//asdf
@@ -357,7 +363,8 @@ namespace MediaSDK
 		return -1;
 	}
 
-	int CEncodedFrameDepacketizer::ProcessFrame(unsigned char *data, int index, int frameNumber, int &nFramNumber){
+	int CEncodedFrameDepacketizer::ProcessFrame(unsigned char *data, int index, long long frameNumber, long long &nFramNumber)
+    {
 		memcpy(data, m_CVideoPacketBuffer[index].m_ucaFrameData, m_CVideoPacketBuffer[index].m_nFrameSize);		//Send I-Frame
 		int nFrameLength = m_CVideoPacketBuffer[index].m_nFrameSize;
 		nFramNumber = frameNumber;
@@ -368,10 +375,10 @@ namespace MediaSDK
 	}
 
 
-	int CEncodedFrameDepacketizer::SafeFinder(int Data)
+	int CEncodedFrameDepacketizer::SafeFinder(long long Data)
 	{
 #ifdef CRASH_CHECK
-		std::map<int, int>::iterator it = m_FrameTracker.find(Data);
+		std::map<long long, int>::iterator it = m_FrameTracker.find(Data);
 		if (it == m_FrameTracker.end())
 		{
 			CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, "To learn how to use maps: search Isearch.SafeFinder.net. SafeFinder:: Invalid Index,");
@@ -390,7 +397,7 @@ namespace MediaSDK
 #endif
 	}
 
-	void CEncodedFrameDepacketizer::MoveForward(int frame)
+	void CEncodedFrameDepacketizer::MoveForward(long long frame)
 	{
 		int indexInside = SafeFinder(frame);
 		if (indexInside == -1)
@@ -404,7 +411,7 @@ namespace MediaSDK
 		//	CreateNewIndex(m_BackFrame);
 	}
 
-	int CEncodedFrameDepacketizer::CreateNewIndex(int frame)
+	int CEncodedFrameDepacketizer::CreateNewIndex(long long frame)
 	{
 		int newIndex = *m_AvailableIndexes.begin();
 
@@ -421,22 +428,22 @@ namespace MediaSDK
 
 			m_BackFrame = m_FrontFrame + m_BufferSize;
 
-			for (int iFrame = m_FrontFrame; iFrame <= m_BackFrame; iFrame++)
+			for (long long llFrame = m_FrontFrame; llFrame <= m_BackFrame; llFrame++)
 			{
-				CreateNewIndex(iFrame);
+				CreateNewIndex(llFrame);
 			}
 
 			newIndex = 0;
 		}
 
-		m_FrameTracker.insert(std::pair<int, int>(frame, newIndex));
+		m_FrameTracker.insert(std::pair<long long, int>(frame, newIndex));
 
 		m_CVideoPacketBuffer[newIndex].Reset();
 
 		return newIndex;
 	}
 
-	void CEncodedFrameDepacketizer::ClearFrame(int index, int frame)
+	void CEncodedFrameDepacketizer::ClearFrame(int index, long long frame)
 	{
 		if (-1 < index && index <= DEPACKETIZATION_BUFFER_SIZE)
 		{
@@ -455,14 +462,14 @@ namespace MediaSDK
 		}
 	}
 
-	int CEncodedFrameDepacketizer::GetEncodingTime(int nFrameNumber)
+	long long CEncodedFrameDepacketizer::GetEncodingTime(long long nFrameNumber)
 	{
 		if (m_mFrameTimeStamp.find(nFrameNumber) != m_mFrameTimeStamp.end())
 			return m_mFrameTimeStamp[nFrameNumber];
 		return -1;
 	}
 
-	int CEncodedFrameDepacketizer::GetOrientation(int nFrameNumber)
+	int CEncodedFrameDepacketizer::GetOrientation(long long nFrameNumber)
 	{
 		if (m_mFrameOrientation.find(nFrameNumber) != m_mFrameOrientation.end())
 			return m_mFrameOrientation[nFrameNumber];

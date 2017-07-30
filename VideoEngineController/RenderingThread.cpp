@@ -97,21 +97,17 @@ namespace MediaSDK
 
 		Tools toolsObject;
         toolsObject.SetThreadName("RenderingCommon");
-		int frameSize, nFrameNumber;
+        int frameSize;
+        long long nFrameNumber;
 		long long nTimeStampDiff;
 		long long currentFrameTime, firstFrameEncodingTime;
 		int videoHeight, videoWidth;
 		long long prevFrameTimeStamp = 0;
-		int currentTimeGap = 52;
-		int prevTimeStamp = 0;
-		int minTimeGap = 51;
+		long long currentTimeGap = 52;
+		long long prevTimeStamp = 0;
+		long long minTimeGap = 51;
 		bool m_b1stDecodedFrame = true;
-		long long m_ll1stDecodedFrameTimeStamp = 0;
 		long long lRenderingTimeDiff = 0;
-		long long llPrevTimeStamp = 0;
-		//CAverageCalculator *pRenderingFps = new CAverageCalculator();
-		long long llFirePrevTime = 0;
-		long long llDequeuePrevTime = 0;
 
 		while (m_bRenderingThreadRunning)
 		{

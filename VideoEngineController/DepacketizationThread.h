@@ -37,7 +37,7 @@ namespace MediaSDK
 
 	private:
 
-		void UpdateExpectedFramePacketPair(pair<int, int> currentFramePacketPair, int iNumberOfPackets);
+		void UpdateExpectedFramePacketPair(pair<long long, int> currentFramePacketPair, int iNumberOfPackets);
 		void ExpectedPacket();
 
 		bool bDepacketizationThreadRunning;
@@ -57,7 +57,7 @@ namespace MediaSDK
 
 		bool m_bResetForPublisherCallerCallEnd;
 
-		pair<int, int> ExpectedFramePacketPair;
+		pair<long long, int> ExpectedFramePacketPair;
 		int iNumberOfPacketsInCurrentFrame;
 
 		unsigned int *m_miniPacketBandCounter;
