@@ -49,12 +49,7 @@ namespace MediaSDK
 		{
 #if defined(DESKTOP_C_SHARP)
 
-			if (nDataType != CAMARA_VIDEO_DATA)
-			{
-				m_nVideoHeight = nVideoHeight;
-				m_nVideoWidth = nVideoWidth;
-			}
-			else
+			if (nDataType == CAMARA_VIDEO_DATA && nVideoWidth > nVideoHeight)
 			{
 				int nNewHeight;
 				int nNewWidth;
@@ -62,7 +57,12 @@ namespace MediaSDK
 				CalculateAspectRatioWithScreenAndModifyHeightWidth(nVideoHeight, nVideoWidth, nNewHeight, nNewWidth);
 
 				m_nVideoHeight = nNewHeight;
-				m_nVideoWidth = nNewWidth;
+				m_nVideoWidth = nNewWidth;	
+			}
+			else
+			{
+				m_nVideoHeight = nVideoHeight;
+				m_nVideoWidth = nVideoWidth;
 			}
 			
 #else
