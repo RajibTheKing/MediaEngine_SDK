@@ -1451,16 +1451,16 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
 	this->m_pColorConverter->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth);
 
 	if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
-		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
+		this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType, CAMARA_VIDEO_DATA);
     else
     {
         if(m_bDynamic_IDR_Sending_Mechanism == true)
         {
-            this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+			this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType, CAMARA_VIDEO_DATA);
         }
         else
         {
-            this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+			this->m_pVideoEncoder->SetHeightWidth(m_nVideoCallHeight, m_nVideoCallWidth, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType, CAMARA_VIDEO_DATA);
         }
     }
 
@@ -1485,7 +1485,7 @@ void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
 	m_nCallInLiveType = nCallInLiveType;
 }
 
-int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width)
+int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType)
 {
 	if(m_nVideoCallHeight != height || m_nVideoCallWidth != width)
 	{
@@ -1496,16 +1496,16 @@ int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int hei
 		this->m_pColorConverter->SetHeightWidth(height, width);
 
 		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
-			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType);
+			this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, IFRAME_INTERVAL, m_bIsCheckCall, m_nServiceType, nDataType);
 		else
         {
             if(m_bDynamic_IDR_Sending_Mechanism == true)
             {
-                this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType);
+				this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS * 2, m_bIsCheckCall, m_nServiceType, nDataType);
             }
             else
             {
-                this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType);
+				this->m_pVideoEncoder->SetHeightWidth(height, width, m_nCallFPS, m_nCallFPS / 2 + 1, m_bIsCheckCall, m_nServiceType, nDataType);
             }
         }
 

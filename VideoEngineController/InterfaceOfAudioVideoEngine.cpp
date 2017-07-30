@@ -428,14 +428,14 @@ namespace MediaSDK
 		return iReturnedValue;
 	}
 
-	int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth)
+	int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nDataType)
 	{
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		int iReturnedValue = m_pcController->SetEncoderHeightWidth(llFriendID, nVideoHeight, nVideoWidth);
+		int iReturnedValue = m_pcController->SetEncoderHeightWidth(llFriendID, nVideoHeight, nVideoWidth, nDataType);
 
 		return iReturnedValue;
 	}

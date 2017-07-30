@@ -54,7 +54,7 @@ namespace MediaSDK
 		int SendAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
 		int CancelAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
 		int SendVideoData(const long long& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
-		int SetEncoderHeightWidth(const long long& lFriendID, int height, int width);
+		int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType);
 		int SetDeviceDisplayHeightWidth(int height, int width);
 		int SetBitRate(const long long& lFriendID, int bitRate);
 

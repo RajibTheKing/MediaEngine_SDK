@@ -459,7 +459,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #endif
 			int nServiceType = m_pVideoCallSession->GetServiceType();
-			if ( (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL) && m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
+			if ((nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL) && (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP || (m_nOrientationType == ORIENTATION_90_MIRRORED && iGotWidth < iGotHeight)))
 			{
 				int iChangedGotHeight, iChangedGotWidth;
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -545,7 +545,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
 						if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
 						{
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight-5, iGotWidth-5, true);
+							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight, iGotWidth, true);
 						}
 						else
 							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
@@ -723,7 +723,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 				long long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
-				if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP)
+				if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_nOrientationType != ORIENTATION_90_MIRRORED)
 				{
 					if (iGotHeight == m_pVideoCallSession->m_nVideoCallHeight && iGotWidth == m_pVideoCallSession->m_nVideoCallWidth)
 					{
