@@ -35,7 +35,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		long long llMissingFrame = crTempHeader.getFrameNumber();
+		long long llMissingFrame = crTempHeader.GetFrameNumber();
 		if (m_llFirstMissedFrameNumber == -1)
 		{
 			m_llFirstMissedFrameNumber = llMissingFrame;

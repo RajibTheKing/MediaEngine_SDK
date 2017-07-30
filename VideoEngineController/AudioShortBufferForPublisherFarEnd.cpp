@@ -79,7 +79,7 @@ namespace MediaSDK
 				mt_nOverFlowCounter++;
 				m_dAvgOverFlowTime = mt_llSumOverFlowTime * 1.0 / mt_nOverFlowCounter;
 
-				CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Audio Buffer OverFlow ( AudioEncoderBuffer ) --> OverFlow Difftime = " + Tools::LongLongToString(llOverFlowTime) + ", m_dAvgOverFlowTimeDif = " + Tools::DoubleToString(m_dAvgOverFlowTime));
+				//CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Audio Buffer OverFlow ( AudioEncoderBuffer ) --> OverFlow Difftime = " + m_Tools.LongLongToString(llOverFlowTime) + ", m_dAvgOverFlowTimeDif = " + m_Tools.DoubleToString(m_dAvgOverFlowTime));
 
 				mt_llPrevOverFlowTime = Tools::CurrentTimestamp();
 			}

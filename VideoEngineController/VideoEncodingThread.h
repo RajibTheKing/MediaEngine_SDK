@@ -57,7 +57,11 @@ namespace MediaSDK
 		void TestVideoEffect(int *param, int size);
 
 		CEncodingBuffer *m_pEncodingBuffer;
-
+        
+        CVideoBeautificationer* getVideoBeautificationar();
+        
+        int m_iNumberOfEncodeFailPerFPS;
+        
 	private:
 
 		CVideoCallSession *m_pVideoCallSession;
@@ -127,6 +131,8 @@ namespace MediaSDK
 		bool m_bIsCheckCall;
 
 		int m_filterToApply;
+        
+        
 
 		SmartPointer<std::thread> pEncodingThread;
 	};

@@ -19,7 +19,11 @@ namespace MediaSDK
 		void Reset();
 		void UpdateData(long long nValue);
 		double GetAverage();
-		long long GetTotal();
+        
+		long long GetTotal()
+        {
+            return m_llTotalValue;
+        }
 
 		void OperationTheatre(long long llOperationStartTime, CVideoCallSession *pVideoCallSession, string sOperationType);
 
@@ -27,6 +31,12 @@ namespace MediaSDK
 
 		void StartingOperation(string sOperationName);
 		void EndingOperation();
+        
+        int GetDeviceFPS()
+        {
+            return m_iDeviceFPS;
+        }
+        
 	private:
 		double m_dAvg;
 		int m_nCounter;
@@ -40,6 +50,8 @@ namespace MediaSDK
 		long long m_llStartingTimeStamp;
 		long long m_llEndingTimeStamp;
 		string m_sOperationTag;
+        
+        int m_iDeviceFPS;
 	};
 
 } //namespace MediaSDK

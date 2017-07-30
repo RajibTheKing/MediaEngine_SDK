@@ -189,9 +189,9 @@ namespace MediaSDK
 
 					int iNumberOfPackets = -1;
 
-					iNumberOfPackets = packetHeader.getNumberOfPacket();
+					iNumberOfPackets = packetHeader.GetNumberOfPacket();
 
-					pair<long long, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.getFrameNumber(), packetHeader.getPacketNumber());
+					pair<long long, int> FramePacketPair = /*toolsObject.GetFramePacketFromHeader(m_EncodedFrame + 1, iNumberOfPackets);*/make_pair(packetHeader.GetFrameNumber(), packetHeader.GetPacketNumber());
 
 					if (FramePacketPair.first != iPrevFrameNumerOfCall)
 					{

@@ -773,9 +773,9 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
         {
             OperationForResolutionControl(in_data,in_size);
         }*/
-        m_PacketHeader.setPacketHeader(in_data);
+        m_PacketHeader.SetPacketHeader(in_data);
         
-		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.getFrameNumber();
+		unsigned int unFrameNumber = (unsigned int)m_PacketHeader.GetFrameNumber();
         
 //		VLOG("#DR# --------------------------> FrameNumber : "+Tools::IntegertoStringConvert(unFrameNumber));
         //printf("PushPacketForMerging--> nFrameNumber = %d, m_nCallFPS = %d, m_PacketHeader.GetHeaderLength() = %d\n", unFrameNumber, m_nCallFPS, m_PacketHeader.GetHeaderLength());
@@ -843,6 +843,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 		return 1;
     
     m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
+    
     /*if(m_bIsCheckCall==true)
     {
         m_nDeviceCheckFrameCounter++;
@@ -1031,7 +1032,7 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
     
     if(m_bIsCheckCall != LIVE_CALL_MOOD) return;
     
-	unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
+	unsigned char uchVersion = (unsigned char)GetVersionController()->GetOwnVersion();
     
 	CVideoHeader PacketHeader;
 
@@ -1039,23 +1040,30 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	{
 		//PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Byte Received*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
-									uchVersion,									//VersionCode
-									VIDEO_HEADER_LENGTH,						//HeaderLength
-									0,											//FPSByte
-									m_miniPacketBandCounter,                    //FrameNumber           //SlotID
-									0,											//NetworkType
-									0,											//Device Orientation
-									0,											//QualityLevel
-									0,											//NumberofPacket
-									nMiniPacketType,							//PacketNumber
-									nByteReceivedOrNetworkType,					//TimeStamp             //Sending Received Byte
-									0,											//PacketStartingIndex
-									0,											//PacketDataLength
-                                    0,                                          //SenderDeviceType
-                                    0,                                          //NumberOfInsets
-                                    nullptr,                                    //InsetHeights
-                                    nullptr                                     //InsetWidths
+        PacketHeader.SetPacketHeader(BITRATE_CONTROLL_PACKET_TYPE,			//packetType
+                                     uchVersion,									//VersionCode
+                                     VIDEO_HEADER_LENGTH,                       //VideoHeaderLength
+                                     0,											//FPSByte
+                                     m_miniPacketBandCounter,                    //FrameNumber           //SlotID
+                                     0,											//NetworkType
+                                     0,											//Device Orientation
+                                     0,											//QualityLevel
+                                     0,											//NumberofPacket
+                                     nMiniPacketType,							//PacketNumber
+                                     nByteReceivedOrNetworkType,					//TimeStamp             //Sending Received Byte
+                                     0,											//PacketStartingIndex
+                                     0,											//PacketDataLength
+                                     0,                                          //SenderDeviceType
+                                     0,                                          //NumberOfInsets
+                                     nullptr,                                    //InsetHeights
+                                     nullptr,                                     //InsetWidths
+                                     
+                                     //MoreInfo
+                                     0,                                        //Device FPS
+                                     0,                                        //Number of Encode Fail Per FPS
+                                     0,                                        //Sigma Value
+                                     0,                                        //Brightness Value
+                                     0                                        //Media Engine Version
                                     );
         
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
@@ -1065,23 +1073,30 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	{
 		//PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE, uchVersion, m_miniPacketBandCounter/*SlotID*/, 0, nMiniPacketType, nByteReceivedOrNetworkType/*Network Type*/, 0, 0, 0, 0, 0);
 
-		PacketHeader.setPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
-										uchVersion,								//VersionCode
-										VIDEO_HEADER_LENGTH,					//HeaderLength
-										0,										//FPSByte
-										m_miniPacketBandCounter,                //FrameNumber
-										0,										//NetworkType
-										0,										//Device Orientation
-										0,										//QualityLevel
-										0,										//NumberofPacket
-										nMiniPacketType,						//PacketNumber
-										nByteReceivedOrNetworkType,				//TimeStamp
-										0,										//PacketStartingIndex
-										0,										//PacketDataLength
-                                        0,                                      //SenderDeviceType
-                                        0,                                      //NumberOfInsets
-                                        nullptr,                                //InsetHeights
-                                        nullptr                                 //InsetWidths
+        PacketHeader.SetPacketHeader(NETWORK_INFO_PACKET_TYPE,				//packetType
+                                     uchVersion,								//VersionCode
+                                     VIDEO_HEADER_LENGTH,                   // Header Length
+                                     0,										//FPSByte
+                                     m_miniPacketBandCounter,                //FrameNumber
+                                     0,										//NetworkType
+                                     0,										//Device Orientation
+                                     0,										//QualityLevel
+                                     0,										//NumberofPacket
+                                     nMiniPacketType,						//PacketNumber
+                                     nByteReceivedOrNetworkType,				//TimeStamp
+                                     0,										//PacketStartingIndex
+                                     0,										//PacketDataLength
+                                     0,                                      //SenderDeviceType
+                                     0,                                      //NumberOfInsets
+                                     nullptr,                                //InsetHeights
+                                     nullptr,                                 //InsetWidths
+                                     
+                                     //MoreInfo
+                                     0,                                        //Sigma Value
+                                     0,                                        //Brightness Value
+                                     0,                                        //Device FPS
+                                     0,                                        //Number of Encode Fail Per FPS
+                                     0                                        //Media Engine Version
                                      );
 	}
 
@@ -1090,9 +1105,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
 	PacketHeader.GetHeaderInByteArray(m_miniPacket + 1);
 
 #ifndef NO_CONNECTIVITY
-	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, VIDEO_HEADER_LENGTH + 1, 0, std::vector< std::pair<int, int> >());
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, PacketHeader.GetHeaderLength() + 1, 0, std::vector< std::pair<int, int> >());
 #else
-	m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, VIDEO_HEADER_LENGTH + 1, m_miniPacket);
+	m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, PacketHeader.GetHeaderLength() + 1, m_miniPacket);
 #endif
 }
 
@@ -1102,9 +1117,9 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
 		return;
 
     CVideoHeader PacketHeader;
-    unsigned char uchVersion = (unsigned char)GetVersionController()->GetCurrentCallVersion();
+    unsigned char uchVersion = (unsigned char)GetVersionController()->GetOwnVersion();
     
-    PacketHeader.setPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
+    PacketHeader.SetPacketHeader(IDR_FRAME_CONTROL_INFO_TYPE,		//packetType
                                  uchVersion,							//VersionCode
                                  VIDEO_HEADER_LENGTH,					//HeaderLength
                                  0,										//FPSByte
@@ -1120,7 +1135,14 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
 								 0,                                      //SenderDeviceType
 								 0,                                      //NumberOfInsets
 								 nullptr,                                //InsetHeights
-								 nullptr                                 //InsetWidths
+								 nullptr,                                 //InsetWidths
+                                 
+                                 //MoreInfo
+                                 0,                                        //Sigma Value
+                                 0,                                        //Brightness Value
+                                 0,                                        //Device FPS
+                                 0,                                        //Number of Encode Fail Per FPS
+                                 0                                        //Media Engine Version
                                  );
     
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
@@ -1129,9 +1151,9 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
     
 #ifndef NO_CONNECTIVITY
     printf("TheKing--> Trying.... CreateAndSend_IDR_Frame_Info_Packet\n");
-	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, VIDEO_HEADER_LENGTH + 1, 0, std::vector< std::pair<int, int> >());
+	m_pCommonElementsBucket->SendFunctionPointer(m_lfriendID, MEDIA_TYPE_VIDEO, m_miniPacket, PacketHeader.GetHeaderLength() + 1, 0, std::vector< std::pair<int, int> >());
 #else
-    m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, VIDEO_HEADER_LENGTH + 1, m_miniPacket);
+    m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, PacketHeader.GetHeaderLength() + 1, m_miniPacket);
 #endif
     
 }
@@ -1932,6 +1954,11 @@ int CVideoCallSession::GetCallInLiveType()
 bool CVideoCallSession::isDynamicIDR_Mechanism_Enable()
 {
     return m_bDynamic_IDR_Sending_Mechanism;
+}
+    
+CAverageCalculator* CVideoCallSession::getFpsCalculator()
+{
+    return m_VideoFpsCalculator;
 }
 
 } //namespace MediaSDK

@@ -104,11 +104,11 @@ namespace MediaSDK
 		}
 #endif
 
-		long long frameNumber = packetHeader.getFrameNumber();
-		int numberOfPackets = packetHeader.getNumberOfPacket();
-		int packetNumber = packetHeader.getPacketNumber();
-		int packetLength = packetHeader.getPacketLength();
-		long long timeStampDiff = packetHeader.getTimeStamp();
+		long long frameNumber = packetHeader.GetFrameNumber();
+		int numberOfPackets = packetHeader.GetNumberOfPacket();
+		int packetNumber = packetHeader.GetPacketNumber();
+		int packetLength = packetHeader.GetPacketLength();
+		long long timeStampDiff = packetHeader.GetTimeStamp();
 		int orientation = packetHeader.GetDeviceOrientation();
 
 		//	if(g_ArribalTime.find(frameNumber) == g_ArribalTime.end()) {

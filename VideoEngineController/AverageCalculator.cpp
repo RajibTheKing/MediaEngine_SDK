@@ -29,12 +29,7 @@ namespace MediaSDK
 		m_dAvg = (m_llTotalValue*1.0) / (m_nCounter*1.0);
 		return m_dAvg;
 	}
-
-	long long CAverageCalculator::GetTotal()
-	{
-		return m_llTotalValue;
-	}
-
+    
 	void CAverageCalculator::OperationTheatre(long long llOperationStartTime, CVideoCallSession *pVideoCallSession, string sOperationType)
 	{
 		if (pVideoCallSession->GetCalculationStatus() == true)
@@ -74,6 +69,7 @@ namespace MediaSDK
 #endif
 
 			m_llPrevFPSTime = m_Tools.CurrentTimestamp();
+            m_iDeviceFPS = m_iFpsCounter;
 			m_iFpsCounter = 0;
 		}
 	}

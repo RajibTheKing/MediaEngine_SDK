@@ -163,7 +163,7 @@ namespace MediaSDK
 			//			 +"  OWN: "+Tools::IntegertoStringConvert(m_pVersionController->GetOwnVersion())
 			//		);
 
-			m_RcvdPacketHeader.setPacketHeader(m_PacketToBeMerged);
+			m_RcvdPacketHeader.SetPacketHeader(m_PacketToBeMerged);
 			//		m_RcvdPacketHeader.ShowDetails("RCV");
 
 			CLogPrinter_WriteSpecific4(CLogPrinter::DEBUGS,
@@ -224,14 +224,14 @@ namespace MediaSDK
 				{
 					//				VLOG("#SOV# ########################################TheKing : " + Tools::IntegertoStringConvert(m_RcvdPacketHeader.getVersionCode()));
 
-					m_pVersionController->SetOpponentVersion((int)m_RcvdPacketHeader.getVersionCode());     //NEGOTIATION PACKETS CONTAIN OPPONENT VERSION.
+					m_pVersionController->SetOpponentVersion((int)m_RcvdPacketHeader.GetVersionCode());     //NEGOTIATION PACKETS CONTAIN OPPONENT VERSION.
 					//				VLOG("#SOV# ########################################TheKing2 : " + Tools::IntegertoStringConvert((int)m_pVersionController->GetOpponentVersion()));
 					//printf("TheVersion --> setOpponentVersion %d, because m_RcvdPacketHeader.getNumberOfPacket() == 0\n", m_pVersionController->GetOpponentVersion());
 
 					m_pVersionController->SetCurrentCallVersion(min((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
 
 					if (m_pVersionController->GetCurrentCallVersion() >= DEVICE_TYPE_CHECK_START_VERSION)
-						m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.getSenderDeviceType());
+						m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.GetSenderDeviceType());
 				}
 
 				continue;
@@ -252,14 +252,14 @@ namespace MediaSDK
 					m_pVideoCallSession->GetBitRateController()->SetOpponentNetworkType(NETWORK_TYPE_2G);
 				}
 
-				m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.getVersionCode());		//VIDEO PACKET CONTAINS CURRENT CALL VERSION.
+				m_pVersionController->SetOpponentVersion(m_RcvdPacketHeader.GetVersionCode());		//VIDEO PACKET CONTAINS CURRENT CALL VERSION.
 
 				//m_pVersionController->SetCurrentCallVersion(m_RcvdPacketHeader.getVersionCode());
 
 				m_pVersionController->SetCurrentCallVersion(min((int)m_pVersionController->GetOwnVersion(), m_pVersionController->GetOpponentVersion()));
 
 				if (m_pVersionController->GetCurrentCallVersion() >= DEVICE_TYPE_CHECK_START_VERSION)
-					m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.getSenderDeviceType());
+					m_pVideoCallSession->SetOponentDeviceType(m_RcvdPacketHeader.GetSenderDeviceType());
 			}
 
 			if (!m_pVersionController->IsFirstVideoPacetReceived() && VIDEO_PACKET_TYPE == m_RcvdPacketHeader.GetPacketType())
@@ -317,8 +317,8 @@ namespace MediaSDK
 	{
 		int iPacketType = NORMAL_PACKET;
 
-		int iNumberOfPackets = m_RcvdPacketHeader.getNumberOfPacket();
-		pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.getFrameNumber(), m_RcvdPacketHeader.getPacketNumber());
+		int iNumberOfPackets = m_RcvdPacketHeader.GetNumberOfPacket();
+		pair<int, int> currentFramePacketPair = make_pair(m_RcvdPacketHeader.GetFrameNumber(), m_RcvdPacketHeader.GetPacketNumber());
 
 		if (currentFramePacketPair != ExpectedFramePacketPair /*&& !m_pVideoPacketQueue->PacketExists(ExpectedFramePacketPair.first, ExpectedFramePacketPair.second)*/) //Out of order frame found, need to retransmit
 		{
