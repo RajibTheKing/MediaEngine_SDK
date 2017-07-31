@@ -751,8 +751,19 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	int startWidth = (iWidth - iNewWidth)/2 - 0;
 	int endWidth = iWidth - startWidth + 0;
+    
+    int shiftDigit;
+    
+    if (m_nIsGreaterThen5s > 0)
+    {
+        shiftDigit = 2;
+    }
+    else
+    {
+        shiftDigit = 4;
+    }
 
-	//for (int i = 0; i <= iHeight; i++) 
+	//for (int i = 0; i <= iHeight; i++)
 	//{
 	//	m_mean[i][0] = 0;
 	//}
@@ -770,7 +781,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	if (m_nIsGreaterThen5s > 0 && doSharp)
+	if (doSharp)
 
 #else
 
@@ -790,7 +801,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 					//if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 2)));
+					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> shiftDigit)));
 #elif defined(__ANDROID__)
 					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
 #else
@@ -837,6 +848,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 			//MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+            
+            pBlurConvertingData[iw + j - 1] = m_ucpreBrightness[pBlurConvertingData[iw + j - 1]];
 
 #else
 
@@ -917,6 +930,17 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	if (m_nIsGreaterThen5s > 0)
 	{
+       
+        m_sigma = (int)((16 * m_AvarageValue) / 25);
+        
+        m_sigma++;
+        
+        if(m_sigma > 128)
+            m_sigma = 128;
+        if(m_sigma < 32)
+            m_sigma = 32;
+      
+        /*
 		if (m_AvarageValue < 50)
 		{
 			m_sigma = m_Step2Sigma;
@@ -932,9 +956,21 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			m_sigma = m_Step0Sigma;
 			m_sigmaDigit = m_Step0SigmaDigit;
 		}
+        */
 	}
 	else
 	{
+        m_sigma = (int)((16 * m_AvarageValue) / 50);
+        
+        m_sigma++;
+        
+        if(m_sigma > 64)
+            m_sigma = 64;
+        if(m_sigma < 16)
+            m_sigma = 16;
+        
+      
+        /*
 		if (m_AvarageValue < 50)
 		{
 			m_sigma = m_Step3Sigma;
@@ -950,6 +986,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			m_sigma = m_Step1Sigma;
 			m_sigmaDigit = m_Step1SigmaDigit;
 		}
+        */
 	}
 
 #endif
@@ -980,7 +1017,15 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			
 			double var = viu - (miu * miu / m_pixels);
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+			pBlurConvertingData[iw + wl] = min(255., max(0., ((miu * m_sigma) + var * pBlurConvertingData[iw + wl]) / (var + sigmaPix)));
+
+#else
+
 			pBlurConvertingData[iw + wl] = min(255., max(0., ((miu << m_sigmaDigit) + var * pBlurConvertingData[iw + wl]) / (var + sigmaPix)));
+#endif
+
 		}
 
 		iw += iWidth;
