@@ -152,7 +152,7 @@ namespace MediaSDK
 #if defined(__ANDROID__)
 		std::string filePrefix =  "/sdcard/"
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-		std::string filePrefix = std::string(getenv("HOME")) + "/Documents/"
+		std::string filePrefix = std::string(getenv("HOME")) + "/Documents/";
 #elif defined(DESKTOP_C_SHARP)
 		std::string filePrefix = "C:\\";
 #endif
