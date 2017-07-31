@@ -616,6 +616,14 @@ namespace MediaSDK
 			m_iSentLength += iTraceLength;
 			return 1;
 		}
+		else if (m_iSentLength < m_iTracePatternLength)
+		{
+			memset(sBuffer, 0, iTraceLength * sizeof(short));
+			int iTraceSEndFraction = m_iTracePatternLength - m_iSentLength;
+			memcpy(sBuffer, sTraceArray + m_iSentLength, iTraceSEndFraction * sizeof(short));
+			m_iSentLength = m_iTracePatternLength;
+			return 0;
+		}
 		return 0;
 #endif
 #endif
