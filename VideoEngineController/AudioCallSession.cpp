@@ -301,8 +301,7 @@ namespace MediaSDK
 	{
 #ifdef USE_AECM
 #ifdef __ANDROID__
-		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER
-			&& !m_bLiveAudioStreamRunning)
+		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			return true;
 		}
