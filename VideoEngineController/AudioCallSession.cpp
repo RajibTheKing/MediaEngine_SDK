@@ -457,6 +457,7 @@ namespace MediaSDK
 			FileInputMuxed = fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
 		}
 #endif
+		m_bNeedToResetEcho = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 	}
 
