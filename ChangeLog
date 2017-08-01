@@ -1,3 +1,8 @@
+Release 9.28.1 (Date: 01-08-2017)
+-------------------------------
+- [Issue #2795] Enabled trace in live inside call.
+- [Issue #2795] Fixed trace length(unplayed trace).
+
 Release 9.36 (Date: 18-07-2017)
 -------------------------------
 - [Issue #3660] Fix of Samsung A5-2017 echo in call.
