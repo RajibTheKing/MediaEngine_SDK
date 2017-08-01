@@ -301,8 +301,7 @@ namespace MediaSDK
 	{
 #ifdef USE_AECM
 #ifdef __ANDROID__
-		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER
-			&& !m_bLiveAudioStreamRunning)
+		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			return true;
 		}
@@ -457,6 +456,7 @@ namespace MediaSDK
 			FileInputMuxed = fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
 		}
 #endif
+		m_bNeedToResetEcho = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 	}
 
