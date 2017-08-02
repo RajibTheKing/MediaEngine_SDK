@@ -422,11 +422,6 @@ namespace MediaSDK
 		m_nEntityType = iRole;
 		m_iRole = iRole;
 
-		if (!m_pEcho.get())
-		{
-			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, true);
-		}
-
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 #ifdef LOCAL_SERVER_LIVE_CALL
@@ -449,7 +444,6 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 
-		ResetTrace();
 #ifdef DUMP_FILE
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
