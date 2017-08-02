@@ -171,8 +171,6 @@ namespace MediaSDK
 		SendFunctionPointerType m_cbClientSendFunction;
 
 		bool m_bNeedToResetEcho;
-		bool m_bIsAECMFarEndThreadBusy;
-		bool m_bIsAECMNearEndThreadBusy;
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;
