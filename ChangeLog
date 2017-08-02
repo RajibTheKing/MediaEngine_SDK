@@ -1,6 +1,10 @@
+Release 9.38.5 (Date: 02-08-2017)
+-------------------------------
+-	[HF] Decreased CPU processing by sleep.
+
+
 Release 9.28.4 (Date: 02-08-2017)
 -------------------------------
-
 -	Windows phone chennel view problem fix
 
 
