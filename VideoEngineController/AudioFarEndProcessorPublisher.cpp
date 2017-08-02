@@ -93,13 +93,9 @@ namespace MediaSDK
 				Tools::SOSleep(0);
 			}
 		}
-		else {
-#ifndef USE_AECM
-			if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER)
-			{
-				Tools::SOSleep(10);
-			}
-#endif
+		else 
+		{
+			Tools::SOSleep(10);
 		}
 #ifdef USE_AECM
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
