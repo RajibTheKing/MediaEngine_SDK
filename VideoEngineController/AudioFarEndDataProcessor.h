@@ -115,6 +115,13 @@ namespace MediaSDK
 		int m_iCurrentRecvdSlotID = -1;
 		int m_iLastDecodedPacketNumber = -1;
 		int m_iReceivedPacketsInCurrentSlot = AUDIO_SLOT_SIZE;
+	
+
+		int m_nPacketsRecvdTimely = 0;
+		int m_nPacketPlayed = 0;
+		int m_nPacketsRecvdNotTimely = 0;
+		int m_nPacketsLost = 0;
+		int m_nExpectedNextPacketNumber = 0;
 
 		SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader = nullptr;
 		SmartPointer<GomGomGain> m_pGomGomGain;
