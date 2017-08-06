@@ -749,7 +749,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	if (effectParam[1] != 0)m_radius = effectParam[1];
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
 
-	int startWidth = (iWidth - iNewWidth)/2 - 0;
+	int startWidth = (iWidth - iNewWidth)/2 + 1;
 	int endWidth = iWidth - startWidth + 0;
     
     int shiftDigit;
@@ -796,7 +796,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 			{
 				m_mean[i][j] = pBlurConvertingData[iw + j - 1];
 
-				if (i > 2)
+				if (i > 2 && j>1 && j<endWidth)
 				{
 					//if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
