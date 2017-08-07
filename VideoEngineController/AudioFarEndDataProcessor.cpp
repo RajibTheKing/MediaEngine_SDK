@@ -402,7 +402,7 @@ namespace MediaSDK
 				m_nExpectedNextPacketNumber = iPacketNumber + 1;
 
 				LOGENEW("@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d", llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
-
+#if 0
 				if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 				{
 					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = "
@@ -425,6 +425,7 @@ namespace MediaSDK
 						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
 					return false;
 				}
+#endif
 
 				while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
 				{
