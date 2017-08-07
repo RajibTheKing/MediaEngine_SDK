@@ -23,7 +23,7 @@
 
 //#define  __SPECIFIC_LOG6__
 
-#define LOG_ENABLED
+//#define LOG_ENABLED
 #define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 #define ON 1
