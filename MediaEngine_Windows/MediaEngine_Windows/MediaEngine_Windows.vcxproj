@@ -80,7 +80,7 @@
     <IncludePath>$(SolutionDir)\..\include\;$(SolutionDir)\..\include\opus\include;$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(SolutionDir)\..\include\aecm;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(SolutionDir)\OpenH264Libs_WindowsDesktop;$(LibraryWPath)</LibraryWPath>
-    <OutDir>E:\LiveApp\build\callsdk_v2\libs\media\desktop\libs\Release</OutDir>
+    <OutDir>..\..\..\IPV-RingIDSDK\RingIDSDK_Windows\Libs_Windows\Release</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)\..\VideoEngineUtilities;$(SolutionDir)\..\VideoEngineController;$(SolutionDir)\..\OthersLib\boost\;$(IncludePath)</IncludePath>
