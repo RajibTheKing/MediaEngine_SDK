@@ -23,6 +23,7 @@
 
 //#define  __SPECIFIC_LOG6__
 
+//#define LOG_ENABLED
 #define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 #define ON 1
@@ -80,6 +81,7 @@
 #define DOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define COW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGFARQUAD(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGDISCARD(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
@@ -100,6 +102,7 @@
 #define DOG(...)
 #define COW(...)
 #define LOGFARQUAD(...)
+#define LOGDISCARD(...)
 #endif
 
 
