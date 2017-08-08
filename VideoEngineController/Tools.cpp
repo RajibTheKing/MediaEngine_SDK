@@ -3,17 +3,6 @@
 
 #include <sstream>
 #include <cstdlib>
-
-#ifdef _WIN32
-#include <chrono>
-#include <windows.h>
-#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR) 
-#include <ctime>
-#include <chrono>
-#else
-#include <sys/time.h>
-#endif
-
 #include "LogPrinter.h"
 
 namespace MediaSDK
@@ -196,8 +185,6 @@ namespace MediaSDK
 		return convertedStringStream.str();
 	}
 
-
-
 	void Tools::SOSleep(int nSleepTimeout)
 	{
 
@@ -214,51 +201,6 @@ namespace MediaSDK
 		nanosleep(&t, NULL);
 
 #endif
-
-	}
-
-	long long  Tools::CurrentTimestamp()
-	{
-		long long currentTime;
-
-#if	defined(DESKTOP_C_SHARP)
-		auto timeEpoch = std::chrono::system_clock::now().time_since_epoch();
-		currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEpoch).count();
-
-#elif defined(TARGET_OS_WINDOWS_PHONE) || defined (_WIN32)
-
-		currentTime = GetTickCount64();
-
-#elif defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
-
-		namespace sc = std::chrono;
-
-		auto time = sc::system_clock::now(); // get the current time
-		auto since_epoch = time.time_since_epoch(); // get the duration since epoch
-
-		// I don't know what system_clock returns
-		// I think it's uint64_t nanoseconds since epoch
-		// Either way this duration_cast will do the right thing
-
-		auto millis = sc::duration_cast<sc::milliseconds>(since_epoch);
-
-		currentTime = millis.count(); // just like java (new Date()).getTime();
-
-#elif defined(__linux__) || defined (__APPLE__)
-
-		struct timeval te;
-
-		gettimeofday(&te, NULL); 
-
-		currentTime = te.tv_sec* +te.tv_sec * 1000LL + te.tv_usec / 1000; 
-
-#else
-
-		currentTime = 0;
-
-#endif
-
-		return currentTime;
 
 	}
 

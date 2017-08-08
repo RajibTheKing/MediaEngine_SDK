@@ -3,6 +3,7 @@
 #define IPV_TOOLS_H
 
 #include <string>
+#include <chrono>
 
 #if defined(__ANDROID__)
 #include <sys/prctl.h>
@@ -15,6 +16,7 @@
 #include <unistd.h>
 #endif
 
+#include "CommonMacros.h"
 
 #if defined(DESKTOP_C_SHARP) || defined (TARGET_OS_WINDOWS_PHONE)
 	const DWORD MS_VC_EXCEPTION = 0x406D1388;
@@ -49,7 +51,16 @@ namespace MediaSDK
 		~Tools();
 
 		static void SOSleep(int nSleepTimeout);
-		static long long CurrentTimestamp();
+
+		static ForceInline unsigned long long CurrentTimestamp()
+		{
+#if defined(TARGET_OS_WINDOWS_PHONE)
+			return GetTickCount64();
+#else
+			return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+#endif
+		}
+
 		static std::string IntegertoStringConvert(int nConvertingNumber);
 		static std::string LongLongtoStringConvert(long long number);
 		static std::string DoubleToString(double dConvertingValue);
