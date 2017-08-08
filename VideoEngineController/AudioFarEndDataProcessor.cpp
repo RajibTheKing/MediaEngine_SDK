@@ -402,20 +402,26 @@ namespace MediaSDK
 				m_nExpectedNextPacketNumber = iPacketNumber + 1;
 
 				LOGENEW("@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d", llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
-#if 0
+
+				
+				
 				if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 				{
 					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = "
 						+ Tools::getText(llCurrentFrameRelativeTime) + " DELAY = " + Tools::getText(llWaitingTime) + " currentTime = " + Tools::getText(llNow)
 						+ " iPacketNumber = " + Tools::getText(iPacketNumber));
-					//				HITLER("#@#@26022017# ##################################################################### dropping audio data");
-					LOG_AAC("#aac#aqa# Frame not received timely: %d", llWaitingTime);
+					
 					m_nPacketsRecvdNotTimely++;
 					LOGDISCARD("Discarding because of delay, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
 						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
 						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
-					
+
+					if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
+					{
+						return true; //Use delay frame for viewer.
+					}
 					return false;
+
 				}
 				else if (llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp > MAX_WAITING_TIME_FOR_CHANNEL)
 				{
@@ -423,9 +429,11 @@ namespace MediaSDK
 					LOGDISCARD("Discarding because of delay 2nd case, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
 						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
 						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
+
 					return false;
 				}
-#endif
+				
+
 
 				while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
 				{
