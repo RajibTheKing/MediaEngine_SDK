@@ -750,7 +750,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
 
 	int startWidth = (iWidth - iNewWidth)/2 + 1;
-	int endWidth = iWidth - startWidth + 0;
+	int endWidth = iWidth - startWidth + 1;
     
     int shiftDigit;
     
