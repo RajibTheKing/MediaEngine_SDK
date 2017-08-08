@@ -62,8 +62,6 @@ namespace MediaSDK
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
 		m_llLastPlayTime(0),
-		m_bIsAECMFarEndThreadBusy(false),
-		m_bIsAECMNearEndThreadBusy(false),
 		m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
@@ -422,11 +420,6 @@ namespace MediaSDK
 		m_nEntityType = iRole;
 		m_iRole = iRole;
 
-		if (!m_pEcho.get())
-		{
-			m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, true);
-		}
-
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
 #ifdef LOCAL_SERVER_LIVE_CALL
@@ -449,7 +442,6 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 
-		ResetTrace();
 #ifdef DUMP_FILE
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER)
 		{
@@ -484,16 +476,6 @@ namespace MediaSDK
 
 		Tools::SOSleep(20);
 
-		if (m_pEcho.get())
-		{
-			//TODO: WE MUST FIND BETTER WAY TO AVOID THIS LOOPING
-			while (m_bIsAECMNearEndThreadBusy || m_bIsAECMFarEndThreadBusy)
-			{
-				Tools::SOSleep(1);
-			}
-
-			m_pEcho.reset();
-		}
 
 		if (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 		{
@@ -613,7 +595,6 @@ namespace MediaSDK
 
 
 			LOG18("b4 farnear m_bTraceRecieved = %d", m_bTraceRecieved);
-			m_bIsAECMNearEndThreadBusy = true;
 
 #ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
@@ -676,7 +657,6 @@ namespace MediaSDK
 			}
 #endif
 
-			m_bIsAECMNearEndThreadBusy = false;
 		}
 
 #elif defined(DESKTOP_C_SHARP)
