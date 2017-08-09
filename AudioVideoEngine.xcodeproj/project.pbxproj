@@ -1010,7 +1010,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/VideoEngineController\"",
 					"\"$(SRCROOT)/VideoEngineUtilities\"",
-					"\"$(SRCROOT)/OthersLib/IOS/boost\"",
 					"\"$(SRCROOT)/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -1043,7 +1042,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/VideoEngineController\"",
 					"\"$(SRCROOT)/VideoEngineUtilities\"",
-					"\"$(SRCROOT)/OthersLib/IOS/boost\"",
 					"\"$(SRCROOT)/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
