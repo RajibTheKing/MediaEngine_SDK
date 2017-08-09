@@ -16,7 +16,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-		MediaLogInit(LOG_CODE_TRACE, false);
+		MediaLogInit(LOG_CODE_TRACE, false, true);
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
@@ -33,7 +33,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
-		MediaLogInit(LOG_CODE_TRACE, false);
+		MediaLogInit(LOG_CODE_TRACE, false, true);
 
 		m_pcController = nullptr;
 			
