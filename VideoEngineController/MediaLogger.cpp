@@ -124,7 +124,7 @@ namespace MediaSDK
 
 	bool MediaLogger::CreateLogDirectory()
 	{
-#if (MEDIA_OS_WINDOWS_ALL & MEDIA_OS_TYPE)
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
 
 		if (0 == CreateDirectory(MEDIA_LOGGING_PATH, NULL) )
 		{
@@ -184,7 +184,7 @@ namespace MediaSDK
 			if (m_bPrintOnConsole || m_bFSError)
 			{
 
-#if (MEDIA_OS_NON_ANDROID & MEDIA_OS_TYPE)
+#if IS_OS(MEDIA_OS_NON_ANDROID)
 				std::cout << *vPos << std::endl;
 #else
 				__android_log_write(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, vPos->c_str());
@@ -266,7 +266,7 @@ namespace MediaSDK
 	{
 		unsigned long long epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-#if (MEDIA_OS_WINDOWS_ALL & MEDIA_OS_TYPE)
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
 
 		SYSTEMTIME st;
 

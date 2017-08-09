@@ -100,6 +100,13 @@ namespace MediaSDK
 #define MEDIA_OS_NON_ANDROID		(MEDIA_OS_WINDOWS_ALL | MEDIA_OS_LINUX | MEDIA_OS_IPHONE | MEDIA_OS_MAC)
 #define MEDIA_OS_NON_IPHONE			(MEDIA_OS_WINDOWS_ALL | MEDIA_OS_LINUX | MEDIA_OS_MAC)
 
+/**
+* Utility macros
+*/
+
+/// Macro to check whether the passed MEDIA_OS_* platform is equeal to the build environment 
+#define IS_OS(Media_OS)				( (Media_OS) & MEDIA_OS_TYPE )
+
 /*
 *  Macro to detect build environment
 */
