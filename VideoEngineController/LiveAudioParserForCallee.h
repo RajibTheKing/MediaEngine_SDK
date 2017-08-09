@@ -19,6 +19,7 @@ namespace MediaSDK
 		SmartPointer<AudioPacketHeader> m_pAudioPacketHeader;
 		bool m_bIsCurrentlyParsingAudioData;
 		bool m_bIsRoleChanging;
+		long long m_llLastProcessedFrameNo;
 	
 
 	public:
