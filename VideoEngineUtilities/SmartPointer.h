@@ -1,14 +1,19 @@
-
 #ifndef IPV_SAMART_POINTER_H
 #define IPV_SAMART_POINTER_H
 
-#include <boost/utility.hpp>
-#include <boost/smart_ptr.hpp>
+#include <memory>
 
 namespace MediaSDK
 {
 
-#define SmartPointer   boost::shared_ptr
+	template < typename T >
+	using SmartPointer = std::shared_ptr < T > ;
+
+	template < typename T >
+	using UniquePointer = std::unique_ptr < T > ;
+
+	template < typename T >
+	using WeakPointer = std::weak_ptr < T > ;
 
 } //namespace
 
