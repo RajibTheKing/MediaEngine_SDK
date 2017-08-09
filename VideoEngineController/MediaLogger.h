@@ -136,7 +136,7 @@ namespace MediaSDK
 #else
 
 /// If log not enabled then these macros will work as a placeholder
-#define MediaLogInit(level, showDate);
+#define MediaLogInit(level, showDate, PrintOnConsole);
 #define MediaLogRelease();
 #define MediaLog(a, ...);
 
