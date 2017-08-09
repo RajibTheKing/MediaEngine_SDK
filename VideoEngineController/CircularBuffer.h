@@ -29,7 +29,7 @@ private:
 	int m_nQueueSize;
 
 	Tools m_Tools;
-	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
+	SharedPointer<CLockHandler> m_pRenderingBufferMutex;
 };
 
 } //namespace MediaSDK

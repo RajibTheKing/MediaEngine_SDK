@@ -15,7 +15,7 @@ namespace MediaSDK
 
 	public:
 
-		static SmartPointer<AudioGainInterface> GetAudioGainInstance(AudioGainType audioGainType);
+		static SharedPointer<AudioGainInterface> GetAudioGainInstance(AudioGainType audioGainType);
 
 	};
 

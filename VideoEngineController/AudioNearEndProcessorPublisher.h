@@ -17,7 +17,7 @@ namespace MediaSDK
 
 	public:
 
-		AudioNearEndProcessorPublisher(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+		AudioNearEndProcessorPublisher(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 		~AudioNearEndProcessorPublisher() { }
 
 		void ProcessNearEndData();
@@ -33,7 +33,7 @@ namespace MediaSDK
 		short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
 		short m_saSendingDataPublisher[MAX_AUDIO_FRAME_Length];  //Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
 
-		SmartPointer<AudioMixer> m_pAudioMixer;
+		SharedPointer<AudioMixer> m_pAudioMixer;
 	};
 
 }   //namespace MediaSDK

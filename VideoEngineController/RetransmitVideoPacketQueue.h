@@ -34,7 +34,7 @@ namespace MediaSDK
 		unsigned char m_Buffer[MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE][MAX_VIDEO_PACKET_SIZE];
 		int m_BufferDataLength[MAX_RETRANS_VIDEO_PACKET_QUEUE_SIZE];
 
-		SmartPointer<CLockHandler> m_pChannelMutex;
+		SharedPointer<CLockHandler> m_pChannelMutex;
 	};
 
 } //namespace MediaSDK

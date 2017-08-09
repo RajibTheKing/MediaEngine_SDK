@@ -80,7 +80,7 @@ namespace MediaSDK
 
 		//Factory Method to get the header instance
 
-		static SmartPointer<AudioPacketHeader> GetInstance(AudioHeaderTypes type);
+		static SharedPointer<AudioPacketHeader> GetInstance(AudioHeaderTypes type);
 
 		//Constructor
 		AudioPacketHeader(){}

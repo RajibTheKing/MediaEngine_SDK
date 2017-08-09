@@ -7,7 +7,7 @@
 namespace MediaSDK
 {
 
-	SmartPointer<AudioGainInterface> AudioGainInstanceProvider::GetAudioGainInstance(AudioGainType audioGainType)
+	SharedPointer<AudioGainInterface> AudioGainInstanceProvider::GetAudioGainInstance(AudioGainType audioGainType)
 	{
 		AudioGainInterface* pInstance = nullptr;
 		switch (audioGainType)
@@ -29,7 +29,7 @@ namespace MediaSDK
 			break;
 		}
 
-		return SmartPointer<AudioGainInterface>(pInstance);
+		return SharedPointer<AudioGainInterface>(pInstance);
 	}
 
 } // namespace MediaSDK

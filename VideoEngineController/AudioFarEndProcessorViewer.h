@@ -22,7 +22,7 @@ namespace MediaSDK
 	private:
 
 		short m_saCalleeSentData[MAX_AUDIO_FRAME_Length];
-		SmartPointer<AudioMixer> m_pAudioMixer;
+		SharedPointer<AudioMixer> m_pAudioMixer;
 
 	};
 

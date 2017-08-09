@@ -77,7 +77,7 @@ namespace MediaSDK
 		m_bIsCurrentlyParsingAudioData = true;
 
 		LiveAudioParserForCalleeLocker lock(*m_pLiveReceiverMutex);
-		SmartPointer<AudioPacketHeader> g_LiveReceiverHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
+		SharedPointer<AudioPacketHeader> g_LiveReceiverHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 		size_t nNumberOfMissingBlocks = vMissingBlocks.size();
 		size_t iMissingIndex = 0;
 

@@ -134,7 +134,7 @@ namespace MediaSDK
         
         
 
-		SmartPointer<std::thread> pEncodingThread;
+		SharedPointer<std::thread> pEncodingThread;
 	};
 
 } //namespace MediaSDK

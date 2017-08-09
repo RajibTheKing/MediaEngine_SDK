@@ -16,7 +16,7 @@ namespace MediaSDK
 
 	public:
 
-		static SmartPointer<AudioDecoderInterface> GetAudioDecoder(AudioDecoderType audioDecoderType);
+		static SharedPointer<AudioDecoderInterface> GetAudioDecoder(AudioDecoderType audioDecoderType);
 
 	};
 

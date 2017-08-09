@@ -299,7 +299,7 @@ private:
 
 protected:
 
-	SmartPointer<CLockHandler> m_pVideoCallSessionMutex;
+	SharedPointer<CLockHandler> m_pVideoCallSessionMutex;
 };
 
 } //namespace MediaSDK

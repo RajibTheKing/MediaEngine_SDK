@@ -153,12 +153,12 @@ namespace MediaSDK
 
 		int m_nDeviceSupportedCallFPS;
 
-		SmartPointer<CLockHandler> m_pVideoStartMutex;
-		SmartPointer<CLockHandler> m_pVideoSendMutex;
-		SmartPointer<CLockHandler> m_pVideoReceiveMutex;
-		SmartPointer<CLockHandler> m_pAudioSendMutex;
-		SmartPointer<CLockHandler> m_pAudioReceiveMutex;
-		SmartPointer<CLockHandler> m_pAudioLockMutex;
+		SharedPointer<CLockHandler> m_pVideoStartMutex;
+		SharedPointer<CLockHandler> m_pVideoSendMutex;
+		SharedPointer<CLockHandler> m_pVideoReceiveMutex;
+		SharedPointer<CLockHandler> m_pAudioSendMutex;
+		SharedPointer<CLockHandler> m_pAudioReceiveMutex;
+		SharedPointer<CLockHandler> m_pAudioLockMutex;
 	};
 
 } //namespace MediaSDK

@@ -39,7 +39,7 @@ namespace MediaSDK
 
 	protected:
 
-		SmartPointer<CLockHandler> m_pVideoSessionListMutex;
+		SharedPointer<CLockHandler> m_pVideoSessionListMutex;
 	};
 
 } //namespace MediaSDK

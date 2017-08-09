@@ -16,7 +16,7 @@ namespace MediaSDK
 
 	public:
 
-		static SmartPointer<NoiseReducerInterface> GetNoiseReducer(NoiseReducerType noiseReducerType);
+		static SharedPointer<NoiseReducerInterface> GetNoiseReducer(NoiseReducerType noiseReducerType);
 
 	};
 

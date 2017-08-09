@@ -41,7 +41,7 @@ namespace MediaSDK
 		int m_naBufferDataLength[MAX_AUDIO_DECODER_BUFFER_SIZE];
 		long long m_BufferInsertionTime[MAX_AUDIO_DECODER_BUFFER_SIZE];
 
-		SmartPointer<CLockHandler> m_pAudioDecodingBufferMutex;
+		SharedPointer<CLockHandler> m_pAudioDecodingBufferMutex;
 
 	};
 

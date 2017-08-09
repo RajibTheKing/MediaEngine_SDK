@@ -14,7 +14,7 @@
 namespace MediaSDK
 {
 
-	AudioNearEndProcessorCall::AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioNearEndBuffer, bool bIsLiveStreamingRunning, const bool &isVideoCallRunning) :
+	AudioNearEndProcessorCall::AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioNearEndBuffer, bool bIsLiveStreamingRunning, const bool &isVideoCallRunning) :
 		AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioNearEndBuffer, bIsLiveStreamingRunning),
 		m_nEncodedFrameSize(0),
 		m_bIsVideoCallRunning(isVideoCallRunning)

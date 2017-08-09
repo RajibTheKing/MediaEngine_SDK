@@ -45,7 +45,7 @@ private:
     unsigned char m_uchBuffer[LIVE_VIDEO_DECODING_QUEUE_SIZE][MAX_VIDEO_ENCODED_FRAME_SIZE];
     int m_naBufferDataLength[LIVE_VIDEO_DECODING_QUEUE_SIZE];
 
-    SmartPointer<CLockHandler> m_pLiveVideoDecodingQueueMutex;
+    SharedPointer<CLockHandler> m_pLiveVideoDecodingQueueMutex;
 };
 
 } //namespace MediaSDK

@@ -39,7 +39,7 @@ namespace MediaSDK
 		int m_naBufferVideoHeights[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 		int m_naBufferVideoWidths[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];
 
-		SmartPointer<CLockHandler> m_pDeviceCapabilityCheckBufferMutex;
+		SharedPointer<CLockHandler> m_pDeviceCapabilityCheckBufferMutex;
 	};
 
 } //namespace MediaSDK

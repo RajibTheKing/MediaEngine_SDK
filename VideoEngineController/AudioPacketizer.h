@@ -32,7 +32,7 @@ namespace MediaSDK
 	private:
 
 		CAudioCallSession* m_pAudioCallSession;
-		SmartPointer<AudioPacketHeader> m_AudioPacketHeader;
+		SharedPointer<AudioPacketHeader> m_AudioPacketHeader;
 
 		int m_nHeaderLengthWithMediaByte, m_nMaxDataSyzeInEachBlock, m_nHeaderLength;
 

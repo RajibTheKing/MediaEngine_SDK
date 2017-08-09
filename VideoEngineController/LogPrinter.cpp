@@ -18,7 +18,7 @@ namespace MediaSDK
 
 	bool CLogPrinter::isLogEnable;
 
-	//SmartPointer<CLockHandler> CLogPrinter::m_pLogPrinterMutex;
+	//SharedPointer<CLockHandler> CLogPrinter::m_pLogPrinterMutex;
 
 	CLogPrinter::CLogPrinter()
 	{

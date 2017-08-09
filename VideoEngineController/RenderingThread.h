@@ -51,7 +51,7 @@ namespace MediaSDK
 		CCommonElementsBucket* m_pcCommonElementsBucket;
 		CVideoCallSession *m_pcVideoCallSession;
 
-		SmartPointer<std::thread> pRenderingThread;
+		SharedPointer<std::thread> pRenderingThread;
 	};
 
 } //namespace MediaSDK

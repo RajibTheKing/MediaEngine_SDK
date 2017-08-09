@@ -59,7 +59,7 @@ namespace MediaSDK
 		int m_nCallFPS;
 
 		long long m_LastIntervalStartingTime;
-		SmartPointer<CLockHandler> m_pMutex;
+		SharedPointer<CLockHandler> m_pMutex;
 		Tools m_Tools;
 
 		CVideoEncoder *m_pVideoEncoder;
