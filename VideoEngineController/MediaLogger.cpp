@@ -23,7 +23,8 @@ namespace MediaSDK
 	MediaLogger::MediaLogger():
 		m_elogLevel(LogLevel::INFO), //by default
 		m_bFSError(false),
-		m_bShowDate(false)
+		m_bShowDate(false),
+		m_bPrintOnConsole(false)
 	{
 		m_pMediaLoggerMutex.reset(new CLockHandler());
 
@@ -38,11 +39,12 @@ namespace MediaSDK
 		Release();
 	}
 
-	void MediaLogger::Init(LogLevel logLevel, bool showDate)
+	void MediaLogger::Init(LogLevel logLevel, bool showDate, bool printOnConsole)
 	{
 
 		m_elogLevel = logLevel;
 		m_bShowDate = showDate;
+		m_bPrintOnConsole = printOnConsole;
 		
 		InternalLog("Media SDK Logging Level %d", m_elogLevel);
 
@@ -178,17 +180,14 @@ namespace MediaSDK
 			{
 				m_pLoggerFileStream << *vPos << std::endl;
 			}
-			else
+			
+			if (m_bPrintOnConsole || m_bFSError)
 			{
 
 #if (MEDIA_OS_NON_ANDROID & MEDIA_OS_TYPE)
-
 				std::cout << *vPos << std::endl;
-
 #else
-
 				__android_log_write(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, vPos->c_str());
-
 #endif
 			}
 		}
