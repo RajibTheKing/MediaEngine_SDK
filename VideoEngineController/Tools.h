@@ -72,6 +72,7 @@ namespace MediaSDK
 
 		static int StringToIntegerConvert(std::string strConvertingString);
 		static std::string LongLongToString(long long llConvertingValue);
+		static void ConvertToCharArray(unsigned char *arr, unsigned long long a, int len);
 		static int GetEncodedFrameType(unsigned char *pFrame);
 
 		void WriteToFile(short* saDataToWriteToFile, int nLength);

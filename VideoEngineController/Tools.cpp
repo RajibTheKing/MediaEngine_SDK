@@ -185,6 +185,15 @@ namespace MediaSDK
 		return convertedStringStream.str();
 	}
 
+	void Tools::ConvertToCharArray(unsigned char *arr, unsigned long long a, int len)
+	{
+		int i = 0;  
+		for (i = 0; i < len; ++i) 
+		{
+			arr[i] = (unsigned char)((a >> (len - 1 - i) * 8) & 0xFFu);
+		}
+	}
+
 	void Tools::SOSleep(int nSleepTimeout)
 	{
 
