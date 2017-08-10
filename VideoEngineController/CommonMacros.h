@@ -7,6 +7,10 @@ namespace MediaSDK
 #define MEDIA_ENGINE_VERSION "9.39.1"
 #define MEDIA_ENGINE_BUILD_NUMBER 939012608
 
+//Enable to create log
+//#define LOG_ENABLED
+//#define BENCHMARK_ENABLED
+
 /**
 * Macros to detect OS
 */
@@ -151,10 +155,193 @@ namespace MediaSDK
 	#define	ForceInline __attribute__((always_inline)) ///For GCC (Linux, Android and iOS)
 #endif
 
-//Enable to create log
-//#define LOG_ENABLED
-//#define BENCHMARK_ENABLED
+/** 
+  Macros to detect processor architecture
+*/
 
+#define MEDIA_ARCH__ARM			0x0001
+#define MEDIA_ARCH__ARM5		0x0002
+#define MEDIA_ARCH__ARM6		0x0004
+#define MEDIA_ARCH__ARM7		0x0008
+#define MEDIA_ARCH__ARM7a		0x0010
+#define MEDIA_ARCH__ARM7r		0x0020
+#define MEDIA_ARCH__ARM7m		0x0040
+#define MEDIA_ARCH__ARM7s		0x0080
+#define MEDIA_ARCH__ARM64		0x0100
+#define MEDIA_ARCH__x86			0x0200
+#define MEDIA_ARCH__x86_64		0x0400	
+#define MEDIA_ARCH__MIPS64		0x0800
+#define MEDIA_ARCH__MIPS		0x1000
+#define MEDIA_ARCH__UNKNOWN		0x8000
+
+#if defined(COMPILER_MSVC)
+	#if defined(_M_ARM)
+
+		#if (_M_ARM == 5)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM5
+			#define MEDIA_ARCH_ARMv5
+			#define MEDIA_ABI "armeabi-v5"
+
+		#elif (_M_ARM == 6)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM6
+			#define MEDIA_ARCH_ARMv6
+			#define MEDIA_ABI "armeabi-v6"
+
+		#elif (_M_ARM == 7)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM7
+			#define MEDIA_ARCH_ARMv7
+			#define MEDIA_ABI "armeabi-v7"
+
+		#else
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM
+			#define MEDIA_ARCH_ARM
+			#define MEDIA_ABI "armeabi"
+
+		#endif
+
+	#elif defined(_M_ARM64)
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM64
+		#define MEDIA_ARCH_ARM64
+		#define MEDIA_ABI "arm64"
+
+	#elif defined(_M_IX86)
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__x86
+		#define MEDIA_ARCH_x86
+		#define MEDIA_ABI "x86"
+
+	#elif defined(_M_X64)
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__x86_64
+		#define MEDIA_ARCH_x86_64
+		#define MEDIA_ABI "x86_64"
+
+	#else
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__UNKNOWN
+		#define MEDIA_ABI "unknown"
+
+	#endif
+#else //GCC, Clang, others
+	#if defined(__arm__)
+
+		#if defined(__ARM_ARCH_5__)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM5
+			#define MEDIA_ARCH_ARMv5
+			#define MEDIA_ABI "armeabi-v5"
+
+		#elif defined(__ARM_ARCH_6__)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM6
+			#define MEDIA_ARCH_ARMv6
+			#define MEDIA_ABI "armeabi-v6"
+
+		#elif defined(__ARM_ARCH_7__)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM7
+			#define MEDIA_ARCH_ARMv7
+			#define MEDIA_ABI "armeabi-v7"
+
+		#elif defined(__ARM_ARCH_7A__)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM7a
+			#define MEDIA_ARCH_ARMv7a
+
+			#if defined(__ARM_NEON__)
+
+				#define MEDIA_ARCH_NEON
+				#if defined(__ARM_PCS_VFP)
+					#define MEDIA_ABI "armeabi-v7a/NEON (hard-float)"
+				#else
+					#define MEDIA_ABI "armeabi-v7a/NEON"
+				#endif
+
+			#else
+
+				#if defined(__ARM_PCS_VFP)
+					#define MEDIA_ABI "armeabi-v7a (hard-float)"
+				#else
+					#define MEDIA_ABI "armeabi-v7a"
+				#endif
+
+			#endif
+
+		#elif defined(__ARM_ARCH_7R__)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM7r
+			#define MEDIA_ARCH_ARMv7r
+			#define MEDIA_ABI "armeabi-v7r"
+
+		#elif defined(__ARM_ARCH_7M__)
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM7m
+			#define MEDIA_ARCH_ARMv7m
+			#define MEDIA_ABI "armeabi-v7m"
+
+		#elif defined(__ARM_ARCH_7S__)
+			
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM7s
+			#define MEDIA_ARCH_ARMv7s
+			#define MEDIA_ABI "armeabi-v7s"
+
+		#else
+
+			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM
+			#define MEDIA_ARCH_ARM
+			#define MEDIA_ABI "armeabi"
+
+		#endif
+
+	#elif defined(__i386__)
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__x86
+		#define MEDIA_ARCH_x86
+		#define MEDIA_ABI "x86"
+	
+	#elif defined(__x86_64__)
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__x86_64
+		#define MEDIA_ARCH_x86_64
+		#define MEDIA_ABI "x86_64"
+
+	#elif defined(__mips64)  /* mips64el-* toolchain defines __mips__ too */
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__MIPS64
+		#define MEDIA_ARCH_MIPS64
+		#define MEDIA_ABI "mips64"
+
+	#elif defined(__mips__)
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__MIPS
+		#define MEDIA_ARCH_MIPS
+		#define MEDIA_ABI "mips"
+
+	#elif defined(__aarch64__)
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM64
+		#define MEDIA_ARCH_ARM64
+		#define MEDIA_ABI "arm64-v8a"
+
+	#else
+
+		#define MEDIA_ARCH_TYPE	MEDIA_ARCH__UNKNOWN
+		#define MEDIA_ARCH_UNKNOWN
+		#define MEDIA_ABI "unknown"
+
+	#endif
+
+#endif
+
+/**
+	Useful macro to check platform architecture
+*/
+#define IS_ARCH(Media_Arch) ( (Media_Arch) & MEDIA_ARCH_TYPE )
 
 } // namespace MediaSDK
 
