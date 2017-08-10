@@ -122,7 +122,7 @@ namespace MediaSDK
 
 	bool MediaLogger::CreateLogDirectory()
 	{
-#if (MEDIA_OS_WINDOWS_ALL & MEDIA_OS_TYPE)
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
 
 		if (0 == CreateDirectory(MEDIA_LOGGING_PATH, NULL) )
 		{
@@ -181,7 +181,7 @@ namespace MediaSDK
 			else
 			{
 
-#if (MEDIA_OS_NON_ANDROID & MEDIA_OS_TYPE)
+#if IS_OS(MEDIA_OS_NON_ANDROID)
 
 				std::cout << *vPos << std::endl;
 
@@ -267,7 +267,7 @@ namespace MediaSDK
 	{
 		unsigned long long epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-#if (MEDIA_OS_WINDOWS_ALL & MEDIA_OS_TYPE)
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
 
 		SYSTEMTIME st;
 
