@@ -57,7 +57,7 @@ namespace MediaSDK
 #if defined(TARGET_OS_WINDOWS_PHONE)
 			return GetTickCount64();
 #else
-			return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 #endif
 		}
 
