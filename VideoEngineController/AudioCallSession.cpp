@@ -147,9 +147,9 @@ namespace MediaSDK
 		ss >> sCurrentTime;
 
 #if defined (__ANDROID__)
-	cstd::string filePrefix = "/sdcard/";
+		std::string filePrefix = "/sdcard/";
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-        std::string filePrefix = std::string(getenv("HOME")) + "/";
+        std::string filePrefix = std::string(getenv("HOME")) + "/Documents/";
 #else
         std::string filePrefix = "";
 #endif
