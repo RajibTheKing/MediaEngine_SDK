@@ -30,7 +30,6 @@
 		6A084E791EF640BD00F4A6A0 /* libaac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E751EF640BD00F4A6A0 /* libaac.a */; };
 		6A084E7A1EF640BD00F4A6A0 /* libG729Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E761EF640BD00F4A6A0 /* libG729Library.a */; };
 		6A084E7B1EF640BD00F4A6A0 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E771EF640BD00F4A6A0 /* libopus.a */; };
-		6A084E7C1EF640BD00F4A6A0 /* libwebrtc-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E781EF640BD00F4A6A0 /* libwebrtc-ios.a */; };
 		6A084E811EF640CB00F4A6A0 /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E7D1EF640CB00F4A6A0 /* libcommon.a */; };
 		6A084E821EF640CB00F4A6A0 /* libprocessing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E7E1EF640CB00F4A6A0 /* libprocessing.a */; };
 		6A084E831EF640CB00F4A6A0 /* libwelsdec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A084E7F1EF640CB00F4A6A0 /* libwelsdec.a */; };
@@ -40,6 +39,7 @@
 		6A5659A11F0D11A500500DBB /* MediaLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A56599F1F0D11A500500DBB /* MediaLogger.cpp */; };
 		6A7A40D11F1C89A600736403 /* MediaLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A7A40CF1F1C89A600736403 /* MediaLogger.cpp */; };
 		6AAEC53D1E07EF9E001525FE /* VideoHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */; };
+		6ADC2FAA1F3EFF0300BA7EA9 /* libwebrtc-aecm-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ADC2FA91F3EFF0300BA7EA9 /* libwebrtc-aecm-ios.a */; };
 		9D00A8B61C1BF161001A52BC /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */; };
 		9D00A8B91C1C17E5001A52BC /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D00A8B71C1C17E5001A52BC /* AudioDecoderBuffer.cpp */; };
 		9D25D6DE1C316D2C00BBDB63 /* SendingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D25D6DC1C316D2C00BBDB63 /* SendingBuffer.cpp */; };
@@ -195,7 +195,6 @@
 		6A084E751EF640BD00F4A6A0 /* libaac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libaac.a; path = iOSThirdParty/Audio/libaac.a; sourceTree = "<group>"; };
 		6A084E761EF640BD00F4A6A0 /* libG729Library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libG729Library.a; path = iOSThirdParty/Audio/libG729Library.a; sourceTree = "<group>"; };
 		6A084E771EF640BD00F4A6A0 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = iOSThirdParty/Audio/libopus.a; sourceTree = "<group>"; };
-		6A084E781EF640BD00F4A6A0 /* libwebrtc-ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwebrtc-ios.a"; path = "iOSThirdParty/Audio/libwebrtc-ios.a"; sourceTree = "<group>"; };
 		6A084E7D1EF640CB00F4A6A0 /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommon.a; path = iOSThirdParty/Video/openh264/libcommon.a; sourceTree = "<group>"; };
 		6A084E7E1EF640CB00F4A6A0 /* libprocessing.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprocessing.a; path = iOSThirdParty/Video/openh264/libprocessing.a; sourceTree = "<group>"; };
 		6A084E7F1EF640CB00F4A6A0 /* libwelsdec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwelsdec.a; path = iOSThirdParty/Video/openh264/libwelsdec.a; sourceTree = "<group>"; };
@@ -216,6 +215,7 @@
 		6A7A40D01F1C89A600736403 /* MediaLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaLogger.h; path = VideoEngineController/MediaLogger.h; sourceTree = "<group>"; };
 		6AAEC53B1E07EF9E001525FE /* VideoHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoHeader.cpp; path = VideoEngineController/VideoHeader.cpp; sourceTree = "<group>"; };
 		6AAEC53C1E07EF9E001525FE /* VideoHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoHeader.h; path = VideoEngineController/VideoHeader.h; sourceTree = "<group>"; };
+		6ADC2FA91F3EFF0300BA7EA9 /* libwebrtc-aecm-ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwebrtc-aecm-ios.a"; path = "iOSThirdParty/Audio/libwebrtc-aecm-ios.a"; sourceTree = "<group>"; };
 		6AFFA2D11E9CE8CA00BDDC63 /* AudioMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioMacros.h; path = VideoEngineController/AudioMacros.h; sourceTree = "<group>"; };
 		9D00A8B41C1BF161001A52BC /* AudioEncoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioEncoderBuffer.cpp; path = VideoEngineController/AudioEncoderBuffer.cpp; sourceTree = "<group>"; };
 		9D00A8B51C1BF161001A52BC /* AudioEncoderBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioEncoderBuffer.h; path = VideoEngineController/AudioEncoderBuffer.h; sourceTree = "<group>"; };
@@ -403,7 +403,7 @@
 				6A084E821EF640CB00F4A6A0 /* libprocessing.a in Frameworks */,
 				6A084E811EF640CB00F4A6A0 /* libcommon.a in Frameworks */,
 				6A084E841EF640CB00F4A6A0 /* libwelsenc.a in Frameworks */,
-				6A084E7C1EF640BD00F4A6A0 /* libwebrtc-ios.a in Frameworks */,
+				6ADC2FAA1F3EFF0300BA7EA9 /* libwebrtc-aecm-ios.a in Frameworks */,
 				6A084E7A1EF640BD00F4A6A0 /* libG729Library.a in Frameworks */,
 				6A084E791EF640BD00F4A6A0 /* libaac.a in Frameworks */,
 				6A084E7B1EF640BD00F4A6A0 /* libopus.a in Frameworks */,
@@ -703,7 +703,7 @@
 				6A084E751EF640BD00F4A6A0 /* libaac.a */,
 				6A084E761EF640BD00F4A6A0 /* libG729Library.a */,
 				6A084E771EF640BD00F4A6A0 /* libopus.a */,
-				6A084E781EF640BD00F4A6A0 /* libwebrtc-ios.a */,
+				6ADC2FA91F3EFF0300BA7EA9 /* libwebrtc-aecm-ios.a */,
 			);
 			name = Audio;
 			sourceTree = "<group>";
