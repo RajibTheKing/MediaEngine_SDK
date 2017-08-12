@@ -15,7 +15,7 @@ namespace MediaSDK
 	Tools m_Tools;
 
 #ifdef LIVE_CHUNK_DUMPLINGS
-	FILE *fp_live_data = nullptr;//, *fp_live_missing_vec = nullptr;
+	FILE *fp_live_data = nullptr, *fp_live_missing_vec = nullptr;
 	unsigned char temp_buffer[12];
 #endif
 
@@ -152,7 +152,9 @@ namespace MediaSDK
 #endif
 		dpath += "inf_" + Tools::LongLongToString(Tools::CurrentTimestamp() / 1000);
 		std::string data_file = dpath + ".data";
+		std::string vector_file = dpath + ".vector";
 		fp_live_data = fopen(data_file.c_str(), "wb");
+		fp_live_missing_vec = fopen(vector_file.c_str(), "wb");
 
 		LOGE_MAIN("###PPP stalivest call filepath:%s", data_file.c_str());
 #endif
@@ -254,19 +256,22 @@ namespace MediaSDK
 		int iReturnedValue = 0;
 
 #ifdef LIVE_CHUNK_DUMPLINGS
-		Tools::ConvertToCharArray(temp_buffer, vMissingFrames.size(), 4);
-		fwrite(temp_buffer, 1, 4, fp_live_data);
+		if(fp_live_missing_vec){
+			Tools::ConvertToCharArray(temp_buffer, vMissingFrames.size(), 4);
+			fwrite(temp_buffer, 1, 4, fp_live_missing_vec);
 
-		for (auto par : vMissingFrames){
-			Tools::ConvertToCharArray(temp_buffer, par.first, 4);
-			Tools::ConvertToCharArray(temp_buffer + 4, par.second, 4);
-			fwrite(temp_buffer, 1, 8, fp_live_data);
+			for (auto par : vMissingFrames){
+				Tools::ConvertToCharArray(temp_buffer, par.first, 4);
+				Tools::ConvertToCharArray(temp_buffer + 4, par.second, 4);
+				fwrite(temp_buffer, 1, 8, fp_live_missing_vec);
+			}
 		}
-
-		Tools::ConvertToCharArray(temp_buffer, Tools::CurrentTimestamp(), 8);
-		Tools::ConvertToCharArray(temp_buffer + 8, unLength, 4);
-		fwrite(temp_buffer, 1, 12, fp_live_data);
-		fwrite(in_data, 1, unLength, fp_live_data);
+		if(fp_live_data){
+			Tools::ConvertToCharArray(temp_buffer, Tools::CurrentTimestamp(), 8);
+			Tools::ConvertToCharArray(temp_buffer + 8, unLength, 4);
+			fwrite(temp_buffer, 1, 12, fp_live_data);
+			fwrite(in_data, 1, unLength, fp_live_data);
+		}
 #endif
 
 
@@ -617,7 +622,11 @@ namespace MediaSDK
 			fclose(fp_live_data);
 			fp_live_data = nullptr;
 		}
-		LOGE_MAIN("###PPP stopvideocallcalled.");
+		if (fp_live_missing_vec)
+		{
+			fclose(fp_live_missing_vec);
+			fp_live_missing_vec = nullptr;
+		}
 #endif
 		
 		return bReturnedValue;
