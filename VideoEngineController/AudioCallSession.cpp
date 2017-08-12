@@ -289,6 +289,15 @@ namespace MediaSDK
 		{
 			return false;
 		}
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+        if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
 #endif
 #else
 		return false;
@@ -298,7 +307,7 @@ namespace MediaSDK
 	bool CAudioCallSession::IsTraceSendingEnabled()
 	{
 #ifdef USE_AECM
-#ifdef __ANDROID__
+#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			return true;

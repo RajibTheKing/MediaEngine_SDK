@@ -84,7 +84,7 @@
 #endif
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-#define USE_AGC
+#define USE_AECM
 #endif
 
 #endif

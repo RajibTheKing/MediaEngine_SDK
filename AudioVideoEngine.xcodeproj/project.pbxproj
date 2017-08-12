@@ -1011,6 +1011,7 @@
 					"\"$(SRCROOT)/VideoEngineController\"",
 					"\"$(SRCROOT)/VideoEngineUtilities\"",
 					"\"$(SRCROOT)/OthersLib/IOS/boost\"",
+					"\"$(SRCROOT)/include/aecm\"",
 					"\"$(SRCROOT)/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -1044,6 +1045,7 @@
 					"\"$(SRCROOT)/VideoEngineController\"",
 					"\"$(SRCROOT)/VideoEngineUtilities\"",
 					"\"$(SRCROOT)/OthersLib/IOS/boost\"",
+					"\"$(SRCROOT)/include/aecm\"",
 					"\"$(SRCROOT)/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
