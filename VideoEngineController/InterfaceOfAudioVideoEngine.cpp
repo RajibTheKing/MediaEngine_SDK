@@ -274,12 +274,6 @@ namespace MediaSDK
 		}
 #endif
 
-
-		LOGE_MAIN("##KK len:%d", (int)unLength);
-		for (auto a : vMissingFrames){
-			LOGE_MAIN("##KKKKK left:%d right:%d", a.first, a.second);
-		}
-
 		if (nullptr == m_pcController)
 		{
 			return 0;
