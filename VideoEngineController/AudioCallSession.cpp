@@ -146,7 +146,13 @@ namespace MediaSDK
 		ss << llcurrentTime;
 		ss >> sCurrentTime;
 
-		std::string filePrefix = "/sdcard/";
+#if defined (__ANDROID__)
+	cstd::string filePrefix = "/sdcard/";
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+        std::string filePrefix = std::string(getenv("HOME")) + "/";
+#else
+        std::string filePrefix = "";
+#endif
 		std::string fileExtension = ".pcm";
 
 		std::string RecordedFileName = filePrefix + sCurrentTime + "-Recorded" + fileExtension;
