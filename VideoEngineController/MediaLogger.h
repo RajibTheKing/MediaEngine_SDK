@@ -64,7 +64,7 @@ namespace MediaSDK
 		MediaLogger();
 		~MediaLogger();
 
-		void Init(LogLevel logLevel, bool showDate);
+		void Init(LogLevel logLevel, bool showDate, bool printOnConsole);
 		void Release();
 		
 		void Log(LogLevel loglevel, const char *format, ...);
@@ -104,13 +104,14 @@ namespace MediaSDK
 		/// File System Error
 		bool m_bFSError; 
 		bool m_bShowDate;
+		bool m_bPrintOnConsole; /// Shall print the logs on console or logcat is enabled
 	};
 
 #ifdef LOG_ENABLED
 
 	extern MediaLogger g_Logger;
 
-	#define MediaLogInit(level, showDate) g_Logger.Init( (level), (showDate) );
+	#define MediaLogInit(level, showDate, printOnConsole) g_Logger.Init( (level), (showDate), (printOnConsole) );
 	#define MediaLogRelease() g_Logger.Release();
 	#define MediaLog(a, ...) g_Logger.Log( (a), __VA_ARGS__);
 
@@ -135,7 +136,7 @@ namespace MediaSDK
 #else
 
 /// If log not enabled then these macros will work as a placeholder
-#define MediaLogInit(level, showDate);
+#define MediaLogInit(level, showDate, PrintOnConsole);
 #define MediaLogRelease();
 #define MediaLog(a, ...);
 
