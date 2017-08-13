@@ -8,6 +8,7 @@
 #include "AudioTypes.h"
 #include "CommonTypes.h"
 #include "Size.h"
+#include "MediaLogger.h"
 
 
 namespace MediaSDK
