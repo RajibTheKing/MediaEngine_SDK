@@ -1,4 +1,3 @@
-
 #include "Controller.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "LogPrinter.h"
@@ -16,7 +15,8 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-		MediaLogInit(LOG_CODE_TRACE, false, true);
+	    bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
+		MediaLogInit(LOG_CODE_TRACE, false, bLogOnTerminal);
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
