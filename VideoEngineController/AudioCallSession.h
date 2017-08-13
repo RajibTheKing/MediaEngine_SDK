@@ -9,7 +9,6 @@
 #include "CommonTypes.h"
 #include "Size.h"
 
-//#define PCM_DUMP
 
 namespace MediaSDK
 {
