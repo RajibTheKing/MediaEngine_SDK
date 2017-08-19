@@ -151,7 +151,7 @@ namespace MediaSDK
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		std::string filePrefix = std::string(getenv("HOME")) + "/Documents/";
 #elif defined(DESKTOP_C_SHARP)
-		std::string filePrefix = "D:/";
+		std::string filePrefix = "";
 #endif
 		std::string fileExtension = ".pcm";
 
@@ -277,17 +277,8 @@ namespace MediaSDK
 	bool CAudioCallSession::IsEchoCancellerEnabled()
 	{
 #ifdef USE_AECM
-#ifdef __ANDROID__
+#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (DESKTOP_C_SHARP)
 		if (!m_bLiveAudioStreamRunning || (m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-#elif defined (DESKTOP_C_SHARP)
-		if (!m_bLiveAudioStreamRunning)
 		{
 			return true;
 		}
@@ -304,7 +295,7 @@ namespace MediaSDK
 	bool CAudioCallSession::IsTraceSendingEnabled()
 	{
 #ifdef USE_AECM
-#ifdef __ANDROID__
+#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			return true;
