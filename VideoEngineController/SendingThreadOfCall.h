@@ -66,7 +66,7 @@ namespace MediaSDK
 
 		Tools m_Tools;
 
-		SmartPointer<std::thread> pSendingThread;
+		SharedPointer<std::thread> pSendingThread;
 	};
 
 } //namespace MediaSDK

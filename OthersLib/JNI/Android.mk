@@ -97,7 +97,6 @@ LOCAL_C_INCLUDES := \
             ../../VideoEngineController \
 			../../VideoEngineUtilities \
 			../../../RingIDSDK \
-			../../OthersLib/boost \
 			../../include/ \
 			../../include/aecm \
 			../../include/aecm/webrtc \
@@ -284,7 +283,6 @@ LOCAL_SRC_FILES := \
 LOCAL_C_INCLUDES := \
             ../../VideoEngineUtilities \
 			../../VideoEngineController \
-			../../OthersLib/boost \
 			../../OthersLib/WinOpenH264 \
 			../../../RingIDSDK \
 			../../include/g729 \

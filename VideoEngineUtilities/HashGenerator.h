@@ -32,7 +32,7 @@ namespace MediaSDK
 
 	private:
 		unsigned int m_nSeed;
-		SmartPointer<CLockHandler> m_pHashGeneratorMutex;
+		SharedPointer<CLockHandler> m_pHashGeneratorMutex;
 	};
 
 } //namespace MediaSDK

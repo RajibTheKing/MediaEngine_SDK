@@ -27,7 +27,7 @@ namespace MediaSDK
 
 		int missedFrameCounter;
 
-		SmartPointer<CLockHandler> m_pLiveReceiverMutex;
+		SharedPointer<CLockHandler> m_pLiveReceiverMutex;
 
 		LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
 		CCommonElementsBucket* m_pCommonElementsBucket;

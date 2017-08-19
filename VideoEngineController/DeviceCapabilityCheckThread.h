@@ -45,7 +45,7 @@ namespace MediaSDK
 		CCommonElementsBucket *m_pCommonElementBucket;
 		bool m_bThreadAllreadyStarted;
 
-		SmartPointer<std::thread> pDeviceCapabilityCheckThread;
+		SharedPointer<std::thread> pDeviceCapabilityCheckThread;
 	};
 
 } //namespace MediaSDK

@@ -10,7 +10,7 @@
 namespace MediaSDK
 {
 
-	SmartPointer<AudioDecoderInterface> AudioDecoderProvider::GetAudioDecoder(AudioDecoderType audioDecoderType)
+	SharedPointer<AudioDecoderInterface> AudioDecoderProvider::GetAudioDecoder(AudioDecoderType audioDecoderType)
 	{
 		AudioDecoderInterface *audioDecoder = nullptr;
 
@@ -33,7 +33,7 @@ namespace MediaSDK
 			break;
 		}
 
-		return SmartPointer<AudioDecoderInterface>(audioDecoder);
+		return SharedPointer<AudioDecoderInterface>(audioDecoder);
 	}
 
 } //namespace MediaSDK

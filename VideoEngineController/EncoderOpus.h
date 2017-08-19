@@ -27,7 +27,7 @@ namespace MediaSDK
 		unsigned char m_DummyDataOut[AUDIO_MAX_PACKET_SIZE];
 
 		OpusEncoder	*encoder;
-		SmartPointer<CLockHandler> m_pMediaSocketMutex;
+		SharedPointer<CLockHandler> m_pMediaSocketMutex;
 
 
 	public:

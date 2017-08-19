@@ -1,8 +1,9 @@
 #include "DecoderOpus.h"
 #include "LogPrinter.h"
 #include "AudioMacros.h"
-
 #include "opus.h"
+
+#include <stdlib.h>
 
 #define BYTES_TO_STORE_AUDIO_EFRAME_LEN 2
 

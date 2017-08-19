@@ -146,7 +146,7 @@ namespace MediaSDK
 
 		//CVideoBeautificationer *m_VideoBeautificationer;
 
-		SmartPointer<CLockHandler> m_pColorConverterMutex;
+		SharedPointer<CLockHandler> m_pColorConverterMutex;
 	};
 
 } //namespace MediaSDK

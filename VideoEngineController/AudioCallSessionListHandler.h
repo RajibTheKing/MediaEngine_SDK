@@ -32,7 +32,7 @@ namespace MediaSDK
 
 	protected:
 
-		SmartPointer<CLockHandler> m_pAudioSessionListMutex;
+		SharedPointer<CLockHandler> m_pAudioSessionListMutex;
 	};
 
 } //namespace MediaSDK

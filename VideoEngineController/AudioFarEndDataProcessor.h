@@ -72,7 +72,7 @@ namespace MediaSDK
 		//LiveReceiver *m_pLiveReceiverAudio = nullptr;
 		ILiveAudioParser* m_pLiveAudioParser;
 		AudioDePacketizer* m_pAudioDePacketizer = nullptr;
-		SmartPointer<CAudioByteBuffer> m_AudioReceivedBuffer;
+		SharedPointer<CAudioByteBuffer> m_AudioReceivedBuffer;
 
 		
 	protected:
@@ -123,10 +123,10 @@ namespace MediaSDK
 		int m_nPacketsLost = 0;
 		int m_nExpectedNextPacketNumber = 0;
 
-		SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader = nullptr;
-		SmartPointer<GomGomGain> m_pGomGomGain;
-		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-		SmartPointer<AudioDecoderInterface> m_cAacDecoder;
+		SharedPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader = nullptr;
+		SharedPointer<GomGomGain> m_pGomGomGain;
+		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;
+		SharedPointer<AudioDecoderInterface> m_cAacDecoder;
 
 	private:
 

@@ -6,9 +6,9 @@
 namespace MediaSDK
 {
 
-	SmartPointer<AudioEncoderInterface> AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType)
+	SharedPointer<AudioEncoderInterface> AudioEncoderProvider::GetAudioEncoder(AudioEncoderType audioEncoderType)
 	{
-		SmartPointer<AudioEncoderInterface> pInstance;
+		SharedPointer<AudioEncoderInterface> pInstance;
 
 		switch (audioEncoderType)
 		{

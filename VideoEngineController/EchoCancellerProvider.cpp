@@ -6,7 +6,7 @@
 namespace MediaSDK
 {
 
-	SmartPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancelerType echoCancellerType, bool isLiveRunning)
+	SharedPointer<EchoCancellerInterface> EchoCancellerProvider::GetEchoCanceller(EchoCancelerType echoCancellerType, bool isLiveRunning)
 	{
 		EchoCancellerInterface* pInstance = nullptr;
 
@@ -24,7 +24,7 @@ namespace MediaSDK
 			pInstance = nullptr;
 		}
 
-		return SmartPointer<EchoCancellerInterface>(pInstance);
+		return SharedPointer<EchoCancellerInterface>(pInstance);
 	}
 
 } //namespace MediaSDK

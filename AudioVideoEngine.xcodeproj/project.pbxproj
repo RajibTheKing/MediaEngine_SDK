@@ -1010,7 +1010,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/VideoEngineController\"",
 					"\"$(SRCROOT)/VideoEngineUtilities\"",
-					"\"$(SRCROOT)/OthersLib/IOS/boost\"",
 					"\"$(SRCROOT)/include/aecm\"",
 					"\"$(SRCROOT)/include\"",
 				);
@@ -1044,7 +1043,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/VideoEngineController\"",
 					"\"$(SRCROOT)/VideoEngineUtilities\"",
-					"\"$(SRCROOT)/OthersLib/IOS/boost\"",
 					"\"$(SRCROOT)/include/aecm\"",
 					"\"$(SRCROOT)/include\"",
 				);

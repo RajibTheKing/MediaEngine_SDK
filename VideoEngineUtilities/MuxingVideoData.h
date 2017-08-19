@@ -42,7 +42,7 @@ namespace MediaSDK
 		bool m_bCheckMatrix[MAX_FRAME_HEIGHT_MUXING_SESSION * MAX_FRAME_WIDTH_MUXING_SESSION];
 		bool m_bBMP32FrameIsSet;
 
-		SmartPointer<CLockHandler> m_pMuxingVideoMutex;
+		SharedPointer<CLockHandler> m_pMuxingVideoMutex;
 	};
 
 } //namespace MediaSDK

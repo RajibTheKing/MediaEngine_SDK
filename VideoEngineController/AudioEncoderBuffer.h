@@ -42,7 +42,7 @@ namespace MediaSDK
 		int m_naBufferDataLength[MAX_AUDIO_ENCODING_BUFFER_SIZE];
 		long long m_laReceivedTimeList[MAX_AUDIO_ENCODING_BUFFER_SIZE];
 
-		SmartPointer<CLockHandler> m_pAudioEnocdingBufferMutex;
+		SharedPointer<CLockHandler> m_pAudioEnocdingBufferMutex;
 	};
 
 } //namespace MediaSDK

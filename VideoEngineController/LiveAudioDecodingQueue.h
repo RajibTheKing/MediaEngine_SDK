@@ -39,7 +39,7 @@ namespace MediaSDK
 		int m_naBufferDataLength[LIVE_AUDIO_DECODING_QUEUE_SIZE];
 		VP m_vMissingBuffer[LIVE_AUDIO_DECODING_QUEUE_SIZE];
 
-		SmartPointer<CLockHandler> m_pLiveAudioDecodingQueueMutex;
+		SharedPointer<CLockHandler> m_pLiveAudioDecodingQueueMutex;
 	};
 
 }  // namespace MediaSDK

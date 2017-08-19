@@ -41,7 +41,7 @@ namespace MediaSDK
 		unsigned int m_unaBufferCaptureTimeDifferences[MAX_VIDEO_DECODER_BUFFER_SIZE];
 		long long m_llaBufferInsertionTimes[MAX_VIDEO_DECODER_BUFFER_SIZE];
 
-		SmartPointer<CLockHandler> m_pDecodingBufferMutex;
+		SharedPointer<CLockHandler> m_pDecodingBufferMutex;
 	};
 
 } //namespace MediaSDK

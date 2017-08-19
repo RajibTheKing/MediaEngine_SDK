@@ -20,17 +20,17 @@ namespace MediaSDK
 	{
 	private:
 
-		SmartPointer<AudioPacketHeader> m_pAudioNearEndHeader;
-		SmartPointer<AudioPacketHeader> m_pAudioFarEndHeader;
+		SharedPointer<AudioPacketHeader> m_pAudioNearEndHeader;
+		SharedPointer<AudioPacketHeader> m_pAudioFarEndHeader;
 
-		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-		SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
+		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;
+		SharedPointer<AudioDecoderInterface> m_pAudioDecoder;
 
-		SmartPointer<EchoCancellerInterface> m_pEchoCanceler;
-		SmartPointer<NoiseReducerInterface> m_pNoiseReducer;
+		SharedPointer<EchoCancellerInterface> m_pEchoCanceler;
+		SharedPointer<NoiseReducerInterface> m_pNoiseReducer;
 
-		SmartPointer<AudioGainInterface> m_pPlayerGain;
-		SmartPointer<AudioGainInterface> m_pRecorderGain;
+		SharedPointer<AudioGainInterface> m_pPlayerGain;
+		SharedPointer<AudioGainInterface> m_pRecorderGain;
 
 
 	public:
@@ -38,17 +38,17 @@ namespace MediaSDK
 		AudioResources(AudioSessionOptions audioSessionOptions);
 		~AudioResources() { }
 
-		SmartPointer<AudioPacketHeader> GetNearEndPacketHeader() { return m_pAudioNearEndHeader; }
-		SmartPointer<AudioPacketHeader> GetFarEndPacketHeader() { return m_pAudioFarEndHeader; }
+		SharedPointer<AudioPacketHeader> GetNearEndPacketHeader() { return m_pAudioNearEndHeader; }
+		SharedPointer<AudioPacketHeader> GetFarEndPacketHeader() { return m_pAudioFarEndHeader; }
 
-		SmartPointer<AudioEncoderInterface> GetEncoder()  { return m_pAudioEncoder; }
-		SmartPointer<AudioDecoderInterface> GetDecoder()  { return m_pAudioDecoder; }
+		SharedPointer<AudioEncoderInterface> GetEncoder()  { return m_pAudioEncoder; }
+		SharedPointer<AudioDecoderInterface> GetDecoder()  { return m_pAudioDecoder; }
 
-		SmartPointer<EchoCancellerInterface> GetEchoCanceler() { return m_pEchoCanceler; }
-		SmartPointer<NoiseReducerInterface> GetNoiseReducer()  { return m_pNoiseReducer; }
+		SharedPointer<EchoCancellerInterface> GetEchoCanceler() { return m_pEchoCanceler; }
+		SharedPointer<NoiseReducerInterface> GetNoiseReducer()  { return m_pNoiseReducer; }
 
-		SmartPointer<AudioGainInterface> GetPlayerGain()   { return m_pPlayerGain; }
-		SmartPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
+		SharedPointer<AudioGainInterface> GetPlayerGain()   { return m_pPlayerGain; }
+		SharedPointer<AudioGainInterface> GetRecorderGain() { return m_pRecorderGain; }
 	};
 
 } //namespace MediaSDK

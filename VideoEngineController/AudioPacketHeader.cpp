@@ -7,7 +7,7 @@
 namespace MediaSDK
 {
 
-	SmartPointer<AudioPacketHeader> AudioPacketHeader::GetInstance(AudioHeaderTypes type)
+	SharedPointer<AudioPacketHeader> AudioPacketHeader::GetInstance(AudioHeaderTypes type)
 	{
 		AudioPacketHeader* pPacketHeader = nullptr;
 		switch (type)
@@ -22,7 +22,7 @@ namespace MediaSDK
 			break;
 		}
 
-		SmartPointer<AudioPacketHeader> pHeader(pPacketHeader);
+		SharedPointer<AudioPacketHeader> pHeader(pPacketHeader);
 
 		return pHeader;
 	}

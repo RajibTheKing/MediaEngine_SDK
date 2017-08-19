@@ -1,8 +1,10 @@
-#include <stdio.h>
-
 #include "AudioFileCodec.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 #include "Tools.h"
 #include "LogPrinter.h"
+
 
 
 namespace MediaSDK

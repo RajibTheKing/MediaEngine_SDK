@@ -49,7 +49,7 @@ namespace MediaSDK
 
 	protected:
 
-		SmartPointer<CLockHandler> m_pVideoEncoderMutex;
+		SharedPointer<CLockHandler> m_pVideoEncoderMutex;
 	};
 
 } //namespace MediaSDK

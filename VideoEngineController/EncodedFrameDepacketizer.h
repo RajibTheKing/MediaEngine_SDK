@@ -80,7 +80,7 @@ namespace MediaSDK
 
 	protected:
 
-		SmartPointer<CLockHandler> m_pEncodedFrameDepacketizerMutex;
+		SharedPointer<CLockHandler> m_pEncodedFrameDepacketizerMutex;
 
 	};
 

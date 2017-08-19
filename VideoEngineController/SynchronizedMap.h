@@ -30,7 +30,7 @@ namespace MediaSDK
 
 		std::map<int, int> m_STLMapSynchronizedMap;
 
-		SmartPointer<CLockHandler> m_pSynchronizedMapMutex;
+		SharedPointer<CLockHandler> m_pSynchronizedMapMutex;
 	};
 
 } //namespace MediaSDK

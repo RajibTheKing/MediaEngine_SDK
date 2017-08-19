@@ -23,7 +23,7 @@ namespace MediaSDK
 
 	public:
 
-		AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SmartPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+		AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 		virtual ~AudioNearEndDataProcessor();
 		virtual void ProcessNearEndData() = 0;
 
@@ -65,8 +65,8 @@ namespace MediaSDK
 		unsigned char m_ucaEncodedFrame[MAX_AUDIO_FRAME_Length];
 		unsigned char m_ucaRawFrameNonMuxed[MAX_AUDIO_FRAME_Length];
 
-		SmartPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
-		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
+		SharedPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
+		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;
 
 
 	private:
@@ -91,10 +91,10 @@ namespace MediaSDK
 		std::vector<int> m_vRawFrameLengthViewer;
 		std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 
-		//SmartPointer<NoiseReducerInterface> m_pNoise;
-		//SmartPointer<std::thread> m_pAudioEncodingThread;
-		SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader = nullptr;
-		SmartPointer<CLockHandler> m_pAudioEncodingMutex;
+		//SharedPointer<NoiseReducerInterface> m_pNoise;
+		//SharedPointer<std::thread> m_pAudioEncodingThread;
+		SharedPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader = nullptr;
+		SharedPointer<CLockHandler> m_pAudioEncodingMutex;
 
 	};
 

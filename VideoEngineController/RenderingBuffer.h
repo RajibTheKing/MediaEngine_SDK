@@ -42,7 +42,7 @@ private:
 	long long m_llaBufferInsertionTimes[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 	long long m_llaBufferCaptureTimeDifferences[MAX_VIDEO_RENDERER_BUFFER_SIZE];
 
-	SmartPointer<CLockHandler> m_pRenderingBufferMutex;
+	SharedPointer<CLockHandler> m_pRenderingBufferMutex;
 };
 
 } //namespace MediaSDK
