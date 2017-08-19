@@ -257,6 +257,7 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					m_nPacketPlayed ++;
+					MediaLog(LOG_INFO, "[AFEDP]Viewer# To Player [SendToPlayer]");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 #ifdef PCM_DUMP
 					if (m_pAudioCallSession->PlayedFile)
@@ -639,8 +640,7 @@ namespace MediaSDK
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
 			if (m_pAudioCallSession->IsTraceSendingEnabled() && m_pAudioCallSession->m_bTraceTailRemains)
-			{
-				LOG18("Calling Generate Trace");
+			{				
 				LOGFARQUAD("qpushpop while sending trace m_FarendBufferSize = %d",
 					m_pAudioCallSession->m_FarendBuffer->GetQueueSize());
 				m_pAudioCallSession->m_bTraceTailRemains = m_pAudioCallSession -> m_pTrace -> GenerateTrace(m_saPlayingData, 800);
@@ -656,8 +656,10 @@ namespace MediaSDK
 
 		if (m_pAudioCallSession->m_bTraceSent)
 		{
+			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			if (m_pDataEventListener != nullptr)
-			{
+			{				
+				MediaLog(LOG_INFO, "[AFEDP] To Player# Playing Time: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime);
 				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 				if (m_pAudioCallSession->PlayedFile)
@@ -666,7 +668,7 @@ namespace MediaSDK
 				}
 #endif
 			}
-			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+			llCurrentTimeStamp = Tools::CurrentTimestamp();
 			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
 			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
 			{

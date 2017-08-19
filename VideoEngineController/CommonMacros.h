@@ -8,10 +8,13 @@ namespace MediaSDK
 #define MEDIA_ENGINE_BUILD_NUMBER 939012608
 
 	/********Enable to create log************/
+#define LOG_ENABLED
 
-//#define LOG_ENABLED
 
-
+	/*******ENABLE MEDIA LOGGER *******/
+#ifdef LOG_ENABLED
+	#define MEDIA_LOGGER_ENABLED
+#endif
 
 //#define BENCHMARK_ENABLED
 
@@ -346,6 +349,8 @@ namespace MediaSDK
 	Useful macro to check platform architecture
 */
 #define IS_ARCH(Media_Arch) ( (Media_Arch) & MEDIA_ARCH_TYPE )
+
+#define MIN_CHUNK_DURATION_SAFE 50
 
 } // namespace MediaSDK
 

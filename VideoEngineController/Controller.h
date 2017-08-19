@@ -127,6 +127,7 @@ namespace MediaSDK
 
 		CCommonElementsBucket *m_pCommonElementsBucket;
 		long long m_llLastTimeStamp;
+		long long m_llLastChunkDuration;
 
 	private:
 

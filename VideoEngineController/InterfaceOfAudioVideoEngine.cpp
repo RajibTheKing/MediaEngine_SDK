@@ -21,7 +21,7 @@ namespace MediaSDK
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
 	    bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
-		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
+		MediaLogInit(LOG_INFO, false, bTerminalWriteEnabled);
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
@@ -39,7 +39,7 @@ namespace MediaSDK
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
 		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
-		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
+		MediaLogInit(LOG_INFO, false, bTerminalWriteEnabled);
 
 		m_pcController = nullptr;
 			
@@ -321,24 +321,30 @@ namespace MediaSDK
 				return 6;*/
 
 				int nValidHeaderOffset = 0;
-
+				long long llLastChunkRelativeTime = m_pcController->m_llLastTimeStamp;
 				long long itIsNow = m_Tools.CurrentTimestamp();
 				long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
 
+				if (llLastChunkRelativeTime + m_pcController->m_llLastChunkDuration + MIN_CHUNK_DURATION_SAFE < recvTimeOffset)
+				{
+					long long llChunkGap = recvTimeOffset - llLastChunkRelativeTime - m_pcController->m_llLastChunkDuration;
+					MediaLog(LOG_WARNING, "[IAVE] CHUNK# Chunk Missing!!!!!!  Relative Time Gap: %lld RTlast:%lld[%lld] RTnow:%lld", 
+						llChunkGap, llLastChunkRelativeTime, m_pcController->m_llLastChunkDuration, recvTimeOffset);
+				}
 				//LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
 
 				if (m_llTimeOffset == -1)
 				{
 					m_llTimeOffset = itIsNow - recvTimeOffset;
 					m_pcController->m_llLastTimeStamp = recvTimeOffset;
-					HITLER("##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
+					MediaLog(LOG_INFO, "[IAVE]##DE#interface*first# timestamp:%lld recv:%lld", m_llTimeOffset, recvTimeOffset);
 				}
 				else
 				{
 					long long expectedTime = itIsNow - m_llTimeOffset;
 					int tmp_headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
 					int tmp_chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
-					HITLER("@#DE#Interface##now:%lld peertimestamp:%lld expected:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d ", itIsNow, recvTimeOffset, expectedTime, recvTimeOffset - expectedTime, tmp_chunkDuration, tmp_headerLength);
+					MediaLog(LOG_INFO, "[IAVE]Now:%lld peertimestamp:%lld expected:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d ", itIsNow, recvTimeOffset, expectedTime, recvTimeOffset - expectedTime, tmp_chunkDuration, tmp_headerLength);
 
 					if (recvTimeOffset < expectedTime - CHUNK_DELAY_TOLERANCE) {
 						if (!m_pcController->IsCallInLiveEnabled())
@@ -348,8 +354,8 @@ namespace MediaSDK
 						}
 					}
 					if (m_pcController->m_llLastTimeStamp >= recvTimeOffset) {
-						// HITLER("#@#@26022017# RECEIVING DATA FOR BOKKOR %u", unLength);
-						HITLER("#@#@26022017# ##Interface discarding duplicate packet.");
+						
+						MediaLog(LOG_WARNING, "[IAVE]#@#@26022017# ##Interface discarding duplicate packet.");
 						return -10;
 					}
 
@@ -360,8 +366,8 @@ namespace MediaSDK
 
 				int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
 				int chunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
-
-				HITLER("##@@@TTTTTTheaderLength %d chunkDuration %d\n", headerLength, chunkDuration);
+				m_pcController->m_llLastChunkDuration = chunkDuration;
+				MediaLog(LOG_INFO, "[IAVE]HeaderLength = %d, ChunkDuration = %d", headerLength, chunkDuration);
 
 				int lengthOfAudioData = m_Tools.GetAudioBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
 				int lengthOfVideoData = m_Tools.GetVideoBlockSizeFromMediaChunck(in_data + nValidHeaderOffset);
@@ -397,14 +403,14 @@ namespace MediaSDK
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
 
-				HITLER("#TTTTTTTTTTTTaac#b4q# GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
+				MediaLog(LOG_INFO, "[IAVE]CHUNK# GotNumberOfAudioFrames: %d, numberOfVideoFrames: %d, missingVectorSize: %d, audioDataSize: %d", numberOfAudioFrames, numberOfVideoFrames, vMissingFrames.size(), lengthOfAudioData);
 
 				int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 				int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
 				int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
 
-				HITLER("TTTTTTTTTTTaudioStartingPosition %d videoStartingPosition %d streamType %d\n", audioStartingPosition, videoStartingPosition, streamType);
+				MediaLog(LOG_INFO, "[IAVE]CHUNK#audioStartingPosition %d videoStartingPosition %d streamType %d", audioStartingPosition, videoStartingPosition, streamType);
 
 				iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, audioStartingPosition, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
