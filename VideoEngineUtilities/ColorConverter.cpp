@@ -1983,7 +1983,7 @@ int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, in
         int iLen = inHeight * inWidth * 3 / 2;
         int indx = 0;
         
-        if(rotationParameter == 3)
+        if(rotationParameter == 1)
         {
             for(int j=0;j<inWidth;j++)
             {
@@ -2017,7 +2017,7 @@ int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, in
             outHeight = inWidth;
             outWidth = inHeight;
         }
-        else if(rotationParameter == 1)
+        else if(rotationParameter == 3)
         {
             for(int j=inWidth-1;j>=0;j--)
             {

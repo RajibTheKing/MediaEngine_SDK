@@ -160,12 +160,7 @@ namespace MediaSDK
 		}
 		else 
 		{
-#ifndef USE_AECM
-			if (m_nEntityType != ENTITY_TYPE_VIEWER_CALLEE)
-			{
-				Tools::SOSleep(10);
-			}
-#endif
+			Tools::SOSleep(10);
 		}
 #ifdef USE_AECM
 		if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)

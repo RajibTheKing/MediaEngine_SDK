@@ -1,4 +1,3 @@
-
 #include "Controller.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "LogPrinter.h"
@@ -14,9 +13,15 @@ namespace MediaSDK
 	CController* m_pcController = nullptr;
 	Tools m_Tools;
 
+#ifdef LIVE_CHUNK_DUMPLINGS
+	FILE *fp_live_data = nullptr, *fp_live_missing_vec = nullptr;
+	unsigned char temp_buffer[12];
+#endif
+
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-		MediaLogInit(LOG_CODE_TRACE, false);
+	    bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
+		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
@@ -33,7 +38,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
-		MediaLogInit(LOG_CODE_TRACE, false);
+		MediaLogInit(LOG_CODE_TRACE, false, true);
 
 		m_pcController = nullptr;
 			
@@ -137,6 +142,22 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth)
 	{
+#ifdef LIVE_CHUNK_DUMPLINGS
+#if defined(__ANDROID__)
+		std::string dpath = "/sdcard/";
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+		std::string dpath = std::string(getenv("HOME")) + "/Documents/";
+#elif defined(DESKTOP_C_SHARP)
+		std::string dpath = "C:\\";
+#endif
+		dpath += "inf_" + Tools::LongLongToString(Tools::CurrentTimestamp() / 1000);
+		std::string data_file = dpath + ".data";
+		std::string vector_file = dpath + ".vector";
+		fp_live_data = fopen(data_file.c_str(), "wb");
+		fp_live_missing_vec = fopen(vector_file.c_str(), "wb");
+
+		LOGE_MAIN("###PPP stalivest call filepath:%s", data_file.c_str());
+#endif
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 1 ID %lld", llFriendID);
 
 		m_llTimeOffset = -1;
@@ -233,6 +254,25 @@ namespace MediaSDK
 	{
 		HITLER("#@#@26022017# RECEIVING DATA FOR BOKKOR %u", unLength);
 		int iReturnedValue = 0;
+
+#ifdef LIVE_CHUNK_DUMPLINGS
+		if(fp_live_missing_vec){
+			Tools::ConvertToCharArray(temp_buffer, vMissingFrames.size(), 4);
+			fwrite(temp_buffer, 1, 4, fp_live_missing_vec);
+
+			for (auto par : vMissingFrames){
+				Tools::ConvertToCharArray(temp_buffer, par.first, 4);
+				Tools::ConvertToCharArray(temp_buffer + 4, par.second, 4);
+				fwrite(temp_buffer, 1, 8, fp_live_missing_vec);
+			}
+		}
+		if(fp_live_data){
+			Tools::ConvertToCharArray(temp_buffer, Tools::CurrentTimestamp(), 8);
+			Tools::ConvertToCharArray(temp_buffer + 8, unLength, 4);
+			fwrite(temp_buffer, 1, 12, fp_live_data);
+			fwrite(in_data, 1, unLength, fp_live_data);
+		}
+#endif
 
 		if (nullptr == m_pcController)
 		{
@@ -570,6 +610,19 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StopVideoCall done ID %lld", llFriendID);
 
+#ifdef LIVE_CHUNK_DUMPLINGS
+		if(fp_live_data) 
+		{
+			fclose(fp_live_data);
+			fp_live_data = nullptr;
+		}
+		if (fp_live_missing_vec)
+		{
+			fclose(fp_live_missing_vec);
+			fp_live_missing_vec = nullptr;
+		}
+#endif
+		
 		return bReturnedValue;
 	}
 

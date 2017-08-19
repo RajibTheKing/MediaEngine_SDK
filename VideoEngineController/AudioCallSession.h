@@ -8,6 +8,7 @@
 #include "AudioTypes.h"
 #include "CommonTypes.h"
 #include "Size.h"
+#include "MediaLogger.h"
 
 #define PCM_DUMP
 
@@ -173,8 +174,6 @@ namespace MediaSDK
 		SendFunctionPointerType m_cbClientSendFunction;
 
 		bool m_bNeedToResetEcho;
-		bool m_bIsAECMFarEndThreadBusy;
-		bool m_bIsAECMNearEndThreadBusy;
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;

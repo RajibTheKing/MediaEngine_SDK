@@ -23,7 +23,8 @@ namespace MediaSDK
 	MediaLogger::MediaLogger():
 		m_elogLevel(LogLevel::INFO), //by default
 		m_bFSError(false),
-		m_bShowDate(false)
+		m_bShowDate(false),
+		m_bPrintOnConsole(false)
 	{
 		m_pMediaLoggerMutex.reset(new CLockHandler());
 
@@ -38,11 +39,12 @@ namespace MediaSDK
 		Release();
 	}
 
-	void MediaLogger::Init(LogLevel logLevel, bool showDate)
+	void MediaLogger::Init(LogLevel logLevel, bool showDate, bool printOnConsole)
 	{
 
 		m_elogLevel = logLevel;
 		m_bShowDate = showDate;
+		m_bPrintOnConsole = printOnConsole;
 		
 		InternalLog("Media SDK Logging Level %d", m_elogLevel);
 
@@ -122,7 +124,7 @@ namespace MediaSDK
 
 	bool MediaLogger::CreateLogDirectory()
 	{
-#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
 
 		if (0 == CreateDirectory(MEDIA_LOGGING_PATH, NULL) )
 		{
@@ -146,11 +148,11 @@ namespace MediaSDK
 			if(0 != mkdir(sPath.c_str(), 0700))
 			{
 
-#if __ANDROID__
+#if defined(OS_TYPE_ANDROID)
 
 				__android_log_print(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, "Log folder creation FAILED for %s, code %d\n", sPath.c_str(), errno);
 
-#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#elif defined(OS_TYPE_IPHONE)
 
 				printf("[%s] Log folder creation FAILED for %s, code %d\n", MEDIA_LOGGER_TAG, sPath.c_str(), errno);
 
@@ -178,17 +180,14 @@ namespace MediaSDK
 			{
 				m_pLoggerFileStream << *vPos << std::endl;
 			}
-			else
+			
+			if (m_bPrintOnConsole || m_bFSError)
 			{
 
-#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
+#if IS_OS(MEDIA_OS_NON_ANDROID)
 				std::cout << *vPos << std::endl;
-
-#elif __ANDROID__
-
+#else
 				__android_log_write(ANDROID_LOG_ERROR, MEDIA_LOGGER_TAG, vPos->c_str());
-
 #endif
 			}
 		}
@@ -251,7 +250,7 @@ namespace MediaSDK
 
 	size_t MediaLogger::GetThreadID(char* buffer)
 	{
-#if defined(__ANDROID__)
+#if defined(OS_TYPE_ANDROID)
         return snprintf(buffer, 15, "%d", gettid());
 #else
 		
@@ -267,7 +266,7 @@ namespace MediaSDK
 	{
 		unsigned long long epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-#if defined(DESKTOP_C_SHARP) || defined(TARGET_OS_WINDOWS_PHONE)
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
 
 		SYSTEMTIME st;
 

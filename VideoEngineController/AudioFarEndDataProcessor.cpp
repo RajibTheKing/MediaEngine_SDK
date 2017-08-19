@@ -256,6 +256,7 @@ namespace MediaSDK
 			{
 				if (m_pDataEventListener != nullptr)
 				{
+					m_nPacketPlayed ++;
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 #ifdef PCM_DUMP
 					if (m_pAudioCallSession->PlayedFile)
@@ -383,6 +384,7 @@ namespace MediaSDK
 				Tools::SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
 				m_llDecodingTimeStampOffset = Tools::CurrentTimestamp() - llCurrentFrameRelativeTime;
 				LOGENEW("iPacketNumber resyncing");
+				m_nExpectedNextPacketNumber = iPacketNumber++;
 			}
 			else
 			{
@@ -390,27 +392,59 @@ namespace MediaSDK
 				long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 				long long llWaitingTime = llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp;
 
+				if (m_nExpectedNextPacketNumber < iPacketNumber)
+				{
+					m_nPacketsLost += iPacketNumber - m_nExpectedNextPacketNumber;
+					LOGDISCARD("Discarding because of loss, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
+						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
+				}
+				m_nExpectedNextPacketNumber = iPacketNumber + 1;
+
 				LOGENEW("@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d", llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
 
+				
+				
 				if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 				{
 					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = "
 						+ Tools::getText(llCurrentFrameRelativeTime) + " DELAY = " + Tools::getText(llWaitingTime) + " currentTime = " + Tools::getText(llNow)
 						+ " iPacketNumber = " + Tools::getText(iPacketNumber));
-					//				HITLER("#@#@26022017# ##################################################################### dropping audio data");
-					LOG_AAC("#aac#aqa# Frame not received timely: %d", llWaitingTime);
+					
+					m_nPacketsRecvdNotTimely++;
+					LOGDISCARD("Discarding because of delay, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
+						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
+
+					if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
+					{
+						return true; //Use delay frame for viewer.
+					}
 					return false;
+
 				}
 				else if (llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp > MAX_WAITING_TIME_FOR_CHANNEL)
 				{
+					m_nPacketsRecvdNotTimely++;
+					LOGDISCARD("Discarding because of delay 2nd case, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
+						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
+
 					return false;
 				}
+				
+
 
 				while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
 				{
 					Tools::SOSleep(5);
 					llExpectedEncodingTimeStamp = Tools::CurrentTimestamp() - m_llDecodingTimeStampOffset;
+					
 				}
+				m_nPacketsRecvdTimely++;
+				LOGDISCARD("Discarding sttistics, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+					m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
+					m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
 			}
 			return true;
 		}

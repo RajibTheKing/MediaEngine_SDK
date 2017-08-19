@@ -592,6 +592,18 @@ namespace MediaSDK
 
 		//if (m_decodingHeight > MAX_FRAME_HEIGHT || m_decodingWidth > MAX_FRAME_WIDTH)
 
+		if (1 > m_decodedFrameSize)
+			return -1;
+
+#if defined(TARGET_OS_WINDOWS_PHONE)
+
+		if(m_decodedFrameSize > MAX_VIDEO_DECODER_FRAME_SIZE )
+			m_decodedFrameSize = this->m_pColorConverter->DownScaleYUV420_Dynamic(m_TempDecodedFrame, m_decodingHeight, m_decodingWidth, m_DecodedFrame, 2);
+		else
+			memcpy(m_DecodedFrame, m_TempDecodedFrame, m_decodedFrameSize);
+
+#endif
+
 		if (m_decodedFrameSize > m_iMaxLen)
 		{
 			m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_llFriendID, m_pCommonElementBucket->m_pEventNotifier->RESOLUTION_NOT_SUPPORTED);
@@ -602,18 +614,6 @@ namespace MediaSDK
 		// CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime) + ", CurrentCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth) + ", AverageDecodeTime --> " + m_Tools.DoubleToString(m_pCalculatorDecodeTime->GetAverage()) + ", Decoder returned = " + m_Tools.IntegertoStringConvert(m_decodedFrameSize) + ", FrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 
 		CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Decode ", currentTimeStamp);
-
-		if (1 > m_decodedFrameSize)
-			return -1;
-
-#if defined(TARGET_OS_WINDOWS_PHONE)
-
-		if(m_decodedFrameSize > MAX_VIDEO_DECODER_FRAME_SIZE )
-			m_decodedFrameSize = this->m_pColorConverter->DownScaleYUV420_Dynamic(m_TempDecodedFrame, m_decodingHeight, m_decodingWidth, m_DecodedFrame, 2);
-		else 
-			memcpy(m_DecodedFrame, m_TempDecodedFrame, m_decodedFrameSize);
-
-#endif
 
 		m_pVideoCallSession->SetOpponentVideoHeightWidth(m_decodingHeight, m_decodingWidth);
 

@@ -1,10 +1,50 @@
+Release 9.39.1 (Date: 08-08-2017)
+---------------------------------
+- [Issue #3996] Used delay packet for viewer in livestreaming.
+
+
+Release 9.39 (Date: 08-08-2017)
+---------------------------------
+-	Beatify, sharping side bar fixed
+
+
+Release 9.38.5 (Date: 02-08-2017)
+-------------------------------
+-	[HF] Decreased CPU processing by sleep.
+
+
+Release 9.28.4 (Date: 02-08-2017)
+-------------------------------
+-	Windows phone chennel view problem fix
+
+
+Release 9.28.3 (Date: 01-08-2017)
+-------------------------------
+
+-	Inset roation modified as client specification
+
+
+Release 9.28.2 (Date: 01-08-2017)
+-------------------------------
+- [Issue #2795] Enabled trace in live inside call.
+- [Issue #2795] Fixed trace length(unplayed trace).
+
+
+Release 9.28.1 (Date: 31-07-2017)
+-------------------------------
+
+-	Beautification improved for iOS.
+
+
 Release 9.36 (Date: 18-07-2017)
 -------------------------------
 - [Issue #3660] Fix of Samsung A5-2017 echo in call.
 
+
 Release 9.35 (Date: 15-07-2017)
 -------------------------------
 - [Issue #3539] Audio dynamic recorder buffer for all platform.
+
 
 Release 9.32 (Date: 05-07-2017)
 -------------------------------
@@ -22,11 +62,13 @@ Release 9.32 (Date: 18-06-2017)
 - Gain added on regular call for desktop and iOS platform
 - Code to pinpoint issue #3111
 
+
 Release 9.31 (Date: 07-06-2017)
 -------------------------------
 - Introduced WebRTC gain and WebRTC echo on normal audio/video call
 - Beautification is now applied on normal video call
 - Probable resolution on Locker crash (Issue #2807)
+
 
 Release 9.30 (Date: 30-05-2017)
 -------------------------------
