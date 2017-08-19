@@ -38,7 +38,8 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
-		MediaLogInit(LOG_CODE_TRACE, false, true);
+		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
+		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		m_pcController = nullptr;
 			
