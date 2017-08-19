@@ -23,7 +23,7 @@ namespace MediaSDK
 	//#define DUMP_FILE
 	//#define FIRE_ENC_TIME
 	//#define AUDIO_FIXED_COMPLEXITY
-    //#define PCM_DUMP
+    #define PCM_DUMP
 
 	class AudioEncoderInterface;
 	class AudioDecoderInterface;
@@ -127,7 +127,7 @@ namespace MediaSDK
 		long long m_llTraceReceivingTime;
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
 		bool m_bTraceTailRemains;
-		long long m_llDelay, m_llDelayFraction;
+		long long m_llDelay, m_llDelayFraction, m_llLastEchoLogTime = 0;
 		int  m_iDeleteCount;
 		int m_nFramesRecvdSinceTraceSent;
 		bool m_b1stRecordedDataSinceCallStarted;
