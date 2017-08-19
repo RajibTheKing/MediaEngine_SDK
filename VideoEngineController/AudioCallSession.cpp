@@ -158,12 +158,15 @@ namespace MediaSDK
 		std::string RecordedFileName = filePrefix + sCurrentTime + "-Recorded" + fileExtension;
 		std::string EchoCancelledFileName = filePrefix + sCurrentTime + "-Cancelled" + fileExtension;
 		std::string PlayedFileName = filePrefix + sCurrentTime + "-Played" + fileExtension;
+		std::string RecordedChunckedFileName = filePrefix + sCurrentTime + "-RecordedChuncked" + fileExtension;
 		std::string AfterEchoCancellationFileName = filePrefix + sCurrentTime + "-AfterCancellation" + fileExtension;
 
 		RecordedFile = fopen(RecordedFileName.c_str(), "wb");
 		EchoCancelledFile = fopen(EchoCancelledFileName.c_str(), "wb");
-		PlayedFile = fopen(PlayedFileName.c_str(), "wb");
 		AfterEchoCancellationFile = fopen(AfterEchoCancellationFileName.c_str(), "wb");
+		RecordedChunckedFile = fopen(RecordedChunckedFileName.c_str(), "wb");
+		PlayedFile = fopen(PlayedFileName.c_str(), "wb");
+
 #endif 
 
 		InitNearEndDataProcessing();
@@ -235,6 +238,7 @@ namespace MediaSDK
 		if (RecordedFile) fclose(RecordedFile);
 		if (EchoCancelledFile) fclose(EchoCancelledFile);
 		if (AfterEchoCancellationFile) fclose(AfterEchoCancellationFile);
+		if (RecordedChunckedFile) fclose(RecordedChunckedFile);
 		if (PlayedFile) fclose(PlayedFile);
 #endif
 		if (m_recordBuffer)

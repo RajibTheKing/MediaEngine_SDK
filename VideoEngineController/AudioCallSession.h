@@ -10,6 +10,7 @@
 #include "Size.h"
 #include "MediaLogger.h"
 
+#define PCM_DUMP
 
 namespace MediaSDK
 {
@@ -151,6 +152,7 @@ namespace MediaSDK
 
 #ifdef PCM_DUMP
 		FILE* RecordedFile;
+		FILE* RecordedChunckedFile;
 		FILE* EchoCancelledFile;
 		FILE* AfterEchoCancellationFile;
 		FILE* PlayedFile;
