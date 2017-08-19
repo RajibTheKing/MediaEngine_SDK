@@ -15,8 +15,7 @@ namespace MediaSDK
 {
     #define AUDIO_CALL_VERSION  0
     #define AUDIO_LIVE_VERSION  0
-	static std::string colon = "ALOG:";
-	#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO,colon + a);
+	
 	
 	
 	//#define LOCAL_SERVER_LIVE_CALL
@@ -24,6 +23,7 @@ namespace MediaSDK
 	//#define DUMP_FILE
 	//#define FIRE_ENC_TIME
 	//#define AUDIO_FIXED_COMPLEXITY
+    //#define PCM_DUMP
 
 	class AudioEncoderInterface;
 	class AudioDecoderInterface;
