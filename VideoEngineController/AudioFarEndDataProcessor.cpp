@@ -257,7 +257,7 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					m_nPacketPlayed ++;
-					MediaLog(LOG_INFO, "[AFEDP]Viewer# To Player [SendToPlayer]");
+					MediaLog(LOG_INFO, "[AFEDP]Viewer# To Player [SendToPlayer]\n");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 #ifdef PCM_DUMP
 					if (m_pAudioCallSession->PlayedFile)
