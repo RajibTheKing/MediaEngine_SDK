@@ -69,7 +69,7 @@ namespace MediaSDK
 
 		for (auto &missing : vMissingBlocks)
 		{
-			MediaLog(LOG_INFO, "[LAPC]  LIVE ST %d ED %d", missing.first, missing.second);
+			MediaLog(LOG_CODE_TRACE, "[LAPC]  LIVE ST %d ED %d", missing.first, missing.second);
 			int left = max(nOffset, missing.first);
 			if (left < missing.second)
 			{
@@ -96,6 +96,8 @@ namespace MediaSDK
 		int validHeaderLength;
 
 		int iMediaByteHeaderSize = 1;
+		
+		MediaLog(LOG_INFO, "[LAPC] AudioFrames = %d, MissingBlocks = %u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
 
 		while (iFrameNumber < nNumberOfAudioFrames)
 		{
@@ -117,16 +119,16 @@ namespace MediaSDK
 				iLeftRange = max(nFrameLeftRange, iLeftRange);
 				iRightRange = min(nFrameRightRange, iRightRange);
 				
-				MediaLog(LOG_INFO, "[LAPC] LIVE FRAME INCOMPLETE. [%03d]", (iRightRange - iLeftRange));
+				MediaLog(LOG_CODE_TRACE, "[LAPC] LIVE FRAME INCOMPLETE. [%03d]", (iRightRange - iLeftRange));
 
 				if (iLeftRange <= iRightRange)	//The frame is not complete.
 				{
-					MediaLog(LOG_INFO, "[LAPC] Broken Frame %d", iFrameNumber);
+					MediaLog(LOG_CODE_TRACE, "[LAPC] Broken Frame %d", iFrameNumber);
 					bCompleteFrame = false;					
 
 					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
 					{
-						MediaLog(LOG_INFO, "[LAPC] VALID HEADER");
+						MediaLog(LOG_CODE_TRACE, "[LAPC] VALID HEADER");
 						// Get header length;
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
 						validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
@@ -135,19 +137,19 @@ namespace MediaSDK
 						if (uchAudioData[nFrameLeftRange + iMediaByteHeaderSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 							int totalCallee = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize + validHeaderLength];
 							validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2); /**INFO FOR TOTAL CALLEE AND SAMPLE BIT SIZE LENGTH 2 BYTE**/
-							MediaLog(LOG_INFO, "[LAPC]  TOTAL CALEE %d and VALID HEADER LENGTH %d", totalCallee, validHeaderLength);
+							MediaLog(LOG_CODE_TRACE, "[LAPC]  TOTAL CALEE %d and VALID HEADER LENGTH %d", totalCallee, validHeaderLength);
 						}
 
-						MediaLog(LOG_INFO, "[LAPC]  LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
+						MediaLog(LOG_CODE_TRACE, "[LAPC]  LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
 
 						if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
-							MediaLog(LOG_INFO, "[LAPC]  LIVE HEADER INCOMPLETE");
+							MediaLog(LOG_CODE_TRACE, "[LAPC]  LIVE HEADER INCOMPLETE");
 							bCompleteFrameHeader = false;
 						}
 					}
 					else
 					{
-						MediaLog(LOG_INFO, "[LAPC]  LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
+						MediaLog(LOG_CODE_TRACE, "[LAPC]  LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
 						bCompleteFrameHeader = false;
 					}
 				}
@@ -159,15 +161,16 @@ namespace MediaSDK
 			}
 
 			++iFrameNumber;
-			MediaLog(LOG_INFO, "[LAPC]  livereceiver receivedpacket frameno:%d", iFrameNumber);
+			MediaLog(LOG_CODE_TRACE, "[LAPC]  livereceiver receivedpacket frameno:%d", iFrameNumber);
 
 			if (!bCompleteFrameHeader)
 			{
 				numOfMissingFrames++;
-				MediaLog(LOG_INFO, "[LAPC]  live receiver continue FrameNo = %d", iFrameNumber);
+				MediaLog(LOG_CODE_TRACE, "[LAPC]  live receiver continue FrameNo = %d", iFrameNumber);
 				continue;
 			}
 
+			MediaLog(LOG_INFO, "[LAPC] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER));
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
 			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
@@ -183,15 +186,15 @@ namespace MediaSDK
 
 			if (-1 < m_llLastProcessedFrameNo && m_llLastProcessedFrameNo + 1 < iCurrentFrameNumber)
 			{
-				MediaLog(LOG_WARNING, "[LAPC] Number of Missing Frames = %lld [%lld--%lld]\n", iCurrentFrameNumber - m_llLastProcessedFrameNo - 1, m_llLastProcessedFrameNo + 1, iCurrentFrameNumber - 1);
+				MediaLog(LOG_DEBUG, "[LAPC] Number of Missing Frames = %lld [%lld--%lld]", iCurrentFrameNumber - m_llLastProcessedFrameNo - 1, m_llLastProcessedFrameNo + 1, iCurrentFrameNumber - 1);
 			}
 			m_llLastProcessedFrameNo = iCurrentFrameNumber;
 
 
-			MediaLog(LOG_DEBUG, "[LAPC] Used Frame No: %lld\n", iCurrentFrameNumber);
+			MediaLog(LOG_DEBUG, "[LAPC] Used Frame No: %lld", iCurrentFrameNumber);
 		}
 
-		MediaLog(LOG_DEBUG, "[LAPC] Total Frames: %d Used Frames: %d, Missing Frame: %d\n", nNumberOfAudioFrames, nProcessedFramsCounter, numOfMissingFrames);
+		MediaLog(LOG_INFO, "[LAPC] Total Frames: %d Used Frames: %d, Missing Frame: %d", nNumberOfAudioFrames, nProcessedFramsCounter, numOfMissingFrames);
 
 		m_bIsCurrentlyParsingAudioData = false;
 	}

@@ -4,6 +4,7 @@
 #include "ThreadTools.h"
 #include "AudioMacros.h"
 #include "CommonTypes.h"
+#include "MediaLogger.h"
 
 
 namespace MediaSDK
@@ -95,6 +96,8 @@ namespace MediaSDK
 
 		int mediaByteSize = 1;
 
+		MediaLog(LOG_INFO, "[LAPP] AudioFrames = %d, MissingBlocks = %u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
+
 		while (iFrameNumber < nNumberOfAudioFrames)
 		{
 			bCompleteFrame = true;
@@ -156,7 +159,8 @@ namespace MediaSDK
 				LOG18("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
 				continue;
 			}
-
+			
+			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER));
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
 			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
@@ -169,10 +173,8 @@ namespace MediaSDK
 			}
 		}
 
-		HITLER("#@LR -> Totla= %d Used = %d Missing = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
-		m_bIsCurrentlyParsingAudioData = false;
-
-		LOG_AAC("#aac#b4q# TotalAudioFrames: %d, PushedAudioFrames: %d, NumOfMissingAudioFrames: %d", nNumberOfAudioFrames, (nNumberOfAudioFrames - numOfMissingFrames), numOfMissingFrames);
+		MediaLog(LOG_INFO, "[LAPP] CHUNK# Totla = %d Used = %d Missing = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
+		m_bIsCurrentlyParsingAudioData = false;		
 	}
 
 } //namespace MediaSDK

@@ -88,7 +88,8 @@ namespace MediaSDK
 					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 					return;
 				}
-				LOG18("#18#FE#Publisher SendToPlayer");
+				MediaLog(LOG_INFO, "[AFEDPP] Publisher# SendToPlayer, FN = %d", iPacketNumber);
+
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
 				Tools::SOSleep(0);
 			}
