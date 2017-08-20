@@ -526,7 +526,7 @@ namespace MediaSDK
 
 			int nChangedBitRate = (iNumPacketRecvd * nCurrentBitRate) / AUDIO_SLOT_SIZE;
 			//		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
-			HITLER("@@@@------------------------>Bitrate: %d\n", nChangedBitRate);
+			MediaLog(LOG_INFO, "[AFEDP] @@@@------------------------>Bitrate: %d\n", nChangedBitRate);
 			if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
 			{
 				m_ihugeLossSlot = 0;
@@ -620,16 +620,12 @@ namespace MediaSDK
 		}
 		else
 		{
+			MediaLog(LOG_CODE_TRACE, "[AFEDP] Processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
 			if (llCurrentTimeStamp + 20 < m_llNextPlayingTime)
-			{
-				LOG18("processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
+			{				
 				Tools::SOSleep(m_llNextPlayingTime - llCurrentTimeStamp - 20);
-			}
-			else
-			{
-				LOG18("processplayingdata sleeping time = %d", 0);
-			}
-			LOG18("processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
+			}			
+			MediaLog(LOG_CODE_TRACE, "[AFEDP] processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
 			m_llNextPlayingTime += 100;
 		}
 	}
@@ -659,7 +655,7 @@ namespace MediaSDK
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			if (m_pDataEventListener != nullptr)
 			{				
-				MediaLog(LOG_INFO, "[AFEDP] To Player# Playing Time: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime);
+				MediaLog(LOG_INFO, "[AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
 				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 				if (m_pAudioCallSession->PlayedFile)
@@ -669,18 +665,16 @@ namespace MediaSDK
 #endif
 			}
 			llCurrentTimeStamp = Tools::CurrentTimestamp();
-			LOG18("qpushpop pushing silent llCurrentTimeStamp = %lld", llCurrentTimeStamp);
+			
 			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
 			{
 				SyncPlayingTime();
 			}
 			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
-			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
-			LOG18("ppplaying 0 data");
+			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));			
 		}
 		else
-		{
-			LOG18("ppplaying 0 data, trace not sent");
+		{			
 			Tools::SOSleep(20);
 		}
 #else
@@ -696,7 +690,6 @@ namespace MediaSDK
 		}
 #endif
 	}
-
 	
 	void AudioFarEndDataProcessor::SetEventCallback(DataEventListener* pDataListener, NetworkChangeListener* networkListener, AudioAlarmListener* alarmListener)
 	{
