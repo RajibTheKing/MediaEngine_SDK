@@ -629,7 +629,7 @@ namespace MediaSDK
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
 					m_llLastEchoLogTime = llCurrentTimeStamp;
-					MediaLog(LOG_INFO, "[ACS] [Echo] PreprocessAudioData->m_pEcho.get()-> m_FarendBufferSize = %d, m_iStartingBufferSize = %d,"
+					MediaLog(LOG_DEBUG, "[ACS] [Echo] PreprocessAudioData->m_pEcho.get()-> m_FarendBufferSize = %d, m_iStartingBufferSize = %d,"
 						"m_llDelay = %lld, m_bTraceRecieved = %d llEchoLogTimeDiff = %lld, Time Taken = %lld",
 						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time);

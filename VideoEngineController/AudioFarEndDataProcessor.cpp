@@ -648,7 +648,7 @@ namespace MediaSDK
 			
 			if (!m_pAudioCallSession->m_bTraceSent)
 			{
-				MediaLog(LOG_INFO, "[ECHO] After sending trace clearing buffer");
+				MediaLog(LOG_DEBUG, "[AFEDP][ECHO] After sending trace clearing buffer");
 				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
 				m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
 				m_pAudioCallSession->m_bTraceSent = true;
@@ -673,7 +673,7 @@ namespace MediaSDK
 			{
 				SyncPlayingTime();
 			}
-			MediaLog(LOG_INFO, "[ECHO] Pushing to farend buffer");
+			MediaLog(LOG_DEBUG, "[AFEDP] [ECHO] Pushing to farend buffer");
 			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
 			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 			LOG18("ppplaying 0 data");
