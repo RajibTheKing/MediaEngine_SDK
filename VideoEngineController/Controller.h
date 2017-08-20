@@ -62,6 +62,9 @@ namespace MediaSDK
 		int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
         int SetBeautification(const IPVLongType llFriendID, bool bIsEnable);
+
+		int SetVideoQualityForLive(const IPVLongType llFriendID, int quality);
+
 		int SetVideoEffect(const long long llFriendID, int nEffectStatus);
 
 		void SetCallInLiveType(const long long llFriendID, int nCallInLiveType);

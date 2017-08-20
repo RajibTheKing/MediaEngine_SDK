@@ -20,8 +20,8 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-	    bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
-		MediaLogInit(LOG_INFO, false, bTerminalWriteEnabled);
+	    bool bTerminalWriteEnabled = false;  //Always writes on file whether terminal is enabled or not. 
+		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
@@ -38,8 +38,8 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
-		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
-		MediaLogInit(LOG_INFO, false, bTerminalWriteEnabled);
+		bool bTerminalWriteEnabled = false;  //Always writes on file whether terminal is enabled or not. 
+		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		m_pcController = nullptr;
 			
@@ -514,6 +514,18 @@ namespace MediaSDK
         
         return iReturnedValue;
     }
+
+	int CInterfaceOfAudioVideoEngine::SetVideoQualityForLive(const IPVLongType llFriendID, int quality)
+	{
+		if (nullptr == m_pcController)
+		{
+			return false;
+		}
+
+		int iReturnedValue = m_pcController->SetVideoQualityForLive(llFriendID, quality);
+
+		return iReturnedValue;
+	}
     
 	int CInterfaceOfAudioVideoEngine::SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus)
 	{

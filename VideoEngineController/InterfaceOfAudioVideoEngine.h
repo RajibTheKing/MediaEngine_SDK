@@ -28,6 +28,10 @@
 
 #define SERVICE_TYPE_CHANNEL 16
 
+#define VIDEO_QUALITY_HIGH 3
+#define VIDEO_QUALITY_MEDIUM 2
+#define VIDEO_QUALITY_LOW 1
+
 #define ENTITY_TYPE_PUBLISHER 31
 #define ENTITY_TYPE_VIEWER 32
 #define ENTITY_TYPE_VIEWER_CALLEE 2
@@ -83,6 +87,8 @@ namespace MediaSDK
 		int SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation);
 		int SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nDataType = CAMARA_VIDEO_DATA);
 		int SetDeviceDisplayHeightWidth(int nVideoHeight, int nVideoWidth);
+
+		int SetVideoQualityForLive(const IPVLongType llFriendID, int quality);
 
         int SetBeautification(const IPVLongType llFriendID, bool bIsEnable);
 		int SetVideoEffect(const IPVLongType llFriendID, int nEffectStatus);
