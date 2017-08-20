@@ -670,7 +670,7 @@ namespace MediaSDK
 		{
 			GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 		}
-		else printf("##TT encodeaudiodata no gain\n");
+		else LOGT("##TT encodeaudiodata no gain\n");
 #endif
 	}
 

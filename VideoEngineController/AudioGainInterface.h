@@ -4,7 +4,7 @@
 #include "AudioMacros.h"
 
 #define MAX_GAIN 12
-#ifdef defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #define DEFAULT_GAIN 9
 #else
 #define DEFAULT_GAIN 10
