@@ -80,7 +80,7 @@
 #define DOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define COW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGFARQUAD(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define LOGDISCARD(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGDISCARD(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
