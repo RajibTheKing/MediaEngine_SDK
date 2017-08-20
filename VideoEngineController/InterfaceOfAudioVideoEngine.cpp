@@ -257,6 +257,7 @@ namespace MediaSDK
 		int iReturnedValue = 0;
 
 #ifdef LIVE_CHUNK_DUMPLINGS
+		long long DumpStartTime = m_Tools.CurrentTimestamp();
 		if(fp_live_missing_vec){
 			Tools::ConvertToCharArray(temp_buffer, vMissingFrames.size(), 4);
 			fwrite(temp_buffer, 1, 4, fp_live_missing_vec);
@@ -273,6 +274,9 @@ namespace MediaSDK
 			fwrite(temp_buffer, 1, 12, fp_live_data);
 			fwrite(in_data, 1, unLength, fp_live_data);
 		}
+
+		long long DumpEndTime = m_Tools.CurrentTimestamp();
+		MediaLog(LOG_INFO, "[IAVE] DumpingTime: %lld", DumpEndTime - DumpStartTime);
 #endif
 
 		if (nullptr == m_pcController)

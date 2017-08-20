@@ -401,16 +401,16 @@ namespace MediaSDK
 
 	void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 	{
-		MediaLog(LOG_CODE_TRACE, "[IAVE] StartCallInLive Starting...");
+		MediaLog(LOG_CODE_TRACE, "[ACS] StartCallInLive Starting...");
 		if (iRole != ENTITY_TYPE_VIEWER_CALLEE && iRole != ENTITY_TYPE_PUBLISHER_CALLER)//Unsupported or inaccessible role
 		{
-			MediaLog(LOG_ERROR, "[IAVE] StartCallInLive FAILED!!!Unsupported or inaccessible role.\n");
+			MediaLog(LOG_ERROR, "[ACS] StartCallInLive FAILED!!!Unsupported or inaccessible role.\n");
 			return;
 		}
 
 		if (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole) //Call inside a call
 		{
-			MediaLog(LOG_WARNING, "[IAVE] StartCallInLive FAILED!!! Call inside call.\n");
+			MediaLog(LOG_WARNING, "[ACS] StartCallInLive FAILED!!! Call inside call.\n");
 			return;
 		}
 
@@ -455,16 +455,16 @@ namespace MediaSDK
 #endif
 		m_bNeedToResetEcho = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
-		MediaLog(LOG_INFO, "\n\n[IAVE]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");
+		MediaLog(LOG_INFO, "\n\n[ACS]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");
 	}
 
 	void CAudioCallSession::EndCallInLive()
 	{
-		MediaLog(LOG_CODE_TRACE, "[IAVE]EndCallInLive Starting");
+		MediaLog(LOG_CODE_TRACE, "[ACS]EndCallInLive Starting");
 
 		if (m_iRole != ENTITY_TYPE_VIEWER_CALLEE && m_iRole != ENTITY_TYPE_PUBLISHER_CALLER)//Call Not Running
 		{
-			MediaLog(LOG_WARNING, "[IAVE] EndCallInLive FAILED!!!!!\n");
+			MediaLog(LOG_WARNING, "[ACS] EndCallInLive FAILED!!!!!\n");
 			return;
 		}
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
@@ -505,7 +505,7 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 
-		MediaLog(LOG_INFO, "\n\n[IAVE]!!!!!!!  EndCallInLive !!!!!!!!!\n\n");
+		MediaLog(LOG_INFO, "\n\n[ACS]!!!!!!!  EndCallInLive !!!!!!!!!\n\n");
 	}
 
 	void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)
