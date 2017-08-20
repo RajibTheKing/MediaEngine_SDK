@@ -9,6 +9,7 @@
 #include "CommonTypes.h"
 #include "Size.h"
 #include "MediaLogger.h"
+#include "AudioMacros.h"
 
 
 
@@ -16,16 +17,13 @@ namespace MediaSDK
 {
     #define AUDIO_CALL_VERSION  0
     #define AUDIO_LIVE_VERSION  0
-	
-
-	//#define PCM_DUMP
-	
+		
 	//#define LOCAL_SERVER_LIVE_CALL
 	//#define AUDIO_SELF_CALL
 	//#define DUMP_FILE
 	//#define FIRE_ENC_TIME
 	//#define AUDIO_FIXED_COMPLEXITY
-    
+
 	class AudioEncoderInterface;
 	class AudioDecoderInterface;
 	class EchoCancellerInterface;
@@ -128,7 +126,7 @@ namespace MediaSDK
 		long long m_llTraceReceivingTime;
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
 		bool m_bTraceTailRemains;
-		long long m_llDelay, m_llDelayFraction;
+		long long m_llDelay, m_llDelayFraction, m_llLastEchoLogTime = 0;
 		int  m_iDeleteCount;
 		int m_nFramesRecvdSinceTraceSent;
 		bool m_b1stRecordedDataSinceCallStarted;
