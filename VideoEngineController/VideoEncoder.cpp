@@ -325,6 +325,8 @@ namespace MediaSDK
 
 	int CVideoEncoder::SetBitrate(int nBitRate)
 	{
+		EncoderLocker lock(*m_pVideoEncoderMutex);
+
 		int nTargetBitRate = nBitRate - (nBitRate % 25000);
 
 		/*	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN)
@@ -377,6 +379,8 @@ namespace MediaSDK
 
 	int CVideoEncoder::SetMaxBitrate(int nBitRate)
 	{
+		EncoderLocker lock(*m_pVideoEncoderMutex);
+
 		nBitRate = (int)(nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
 
 		int nTargetBitRate = nBitRate - (nBitRate % 25000);

@@ -49,6 +49,7 @@ m_nOwnVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false),
 m_nDeviceCheckFrameCounter(0),
+m_bLiveVideoQuality(VIDEO_QUALITY_HIGH),
 m_nCapturedFrameCounter(0),
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
@@ -1544,25 +1545,39 @@ void CVideoCallSession::SetBeautification(bool bIsEnable)
 
 void CVideoCallSession::SetVideoQualityForLive(int quality)
 {
-	if (quality == VIDEO_QUALITY_HIGH)
+	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality != VIDEO_QUALITY_HIGH)
 	{
 		m_bFrameReduce = false;
 
 		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_STREAM);
 		m_pVideoEncoder->SetMaxBitrate((int)(BITRATE_BEGIN_FOR_STREAM/1.25));
 	}
-	else if (quality == VIDEO_QUALITY_MEDIUM)
+	else if (quality == VIDEO_QUALITY_MEDIUM && m_bLiveVideoQuality != VIDEO_QUALITY_MEDIUM)
 	{
-		m_bFrameReduce = true;
-		m_nReduceCheckNumber = 3;
+		if (m_VideoFpsCalculator->GetDeviceFPS() > 20)
+		{
+			m_bFrameReduce = true;
+
+			m_nReduceCheckNumber = 3;
+		}
 
 		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MEDIUM_STREAM);
 		m_pVideoEncoder->SetMaxBitrate((int)(BITRATE_FOR_MEDIUM_STREAM / 1.25));
 	}
-	else if (quality == VIDEO_QUALITY_LOW)
+	else if (quality == VIDEO_QUALITY_LOW && m_bLiveVideoQuality != VIDEO_QUALITY_LOW)
 	{
-		m_bFrameReduce = true;
-		m_nReduceCheckNumber = 2;
+		if (m_VideoFpsCalculator->GetDeviceFPS() > 20)
+		{
+			m_bFrameReduce = true;
+
+			m_nReduceCheckNumber = 2;
+		}
+		else if (m_VideoFpsCalculator->GetDeviceFPS() > 15)
+		{
+			m_bFrameReduce = true;
+
+			m_nReduceCheckNumber = 3;
+		}
 
 		m_pVideoEncoder->SetBitrate(BITRATE_FOR_LOW_STREAM);
 		m_pVideoEncoder->SetMaxBitrate((int)(BITRATE_FOR_LOW_STREAM / 1.25));

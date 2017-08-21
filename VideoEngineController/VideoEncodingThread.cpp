@@ -721,6 +721,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 #else
+			CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
+
 				long long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
 				if (m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_nOrientationType != ORIENTATION_90_MIRRORED)
