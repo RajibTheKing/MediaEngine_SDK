@@ -203,7 +203,7 @@ private:
 	int m_EncodingFrameCounter;
 	bool m_bSkipFirstByteCalculation;
 
-	bool m_bLiveVideoQuality;
+	int m_bLiveVideoQuality;
 
 	bool m_bVideoEffectEnabled;
 

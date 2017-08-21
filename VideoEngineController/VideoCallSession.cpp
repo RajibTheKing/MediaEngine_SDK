@@ -1562,7 +1562,7 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 		}
 
 		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MEDIUM_STREAM);
-		m_pVideoEncoder->SetMaxBitrate((int)(BITRATE_FOR_MEDIUM_STREAM / 1.25));
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_MEDIUM_STREAM);
 	}
 	else if (quality == VIDEO_QUALITY_LOW && m_bLiveVideoQuality != VIDEO_QUALITY_LOW)
 	{
@@ -1580,7 +1580,7 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 		}
 
 		m_pVideoEncoder->SetBitrate(BITRATE_FOR_LOW_STREAM);
-		m_pVideoEncoder->SetMaxBitrate((int)(BITRATE_FOR_LOW_STREAM / 1.25));
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_LOW_STREAM);
 	}
 }
     
