@@ -613,7 +613,7 @@ namespace MediaSDK
 						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved);
 				}
 				MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()-> m_llDelayFraction : %d", m_llDelayFraction);
-				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+				//long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 				MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()-> m_FarendBufferSize = %d, m_iStartingBufferSize = %d, m_llDelay = %lld, m_bTraceRecieved = %d llCurrentTimeStamp = %lld",
 					m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved, llCurrentTimeStamp);
 
@@ -632,11 +632,6 @@ namespace MediaSDK
 
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-					{
-						MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
-						GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-					}
 
 					MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear\n");
 #ifdef PCM_DUMP
@@ -650,6 +645,12 @@ namespace MediaSDK
 				{
 					MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get() UnSuccessful farnear\n");
 				}
+                
+                if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+                {
+                    MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
+                    GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+                }
 
 #ifdef DUMP_FILE
 				fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
