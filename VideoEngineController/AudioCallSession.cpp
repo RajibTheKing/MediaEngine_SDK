@@ -653,11 +653,6 @@ namespace MediaSDK
 
 					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-					{
-						MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2");
-						GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-					}
 
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
 #ifdef PCM_DUMP
@@ -671,6 +666,12 @@ namespace MediaSDK
 				{
 					MediaLog(LOG_WARNING, "[ACS] PreprocessAudioData->m_pEcho.get() UnSuccessful farnear");
 				}
+                
+                if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+                {
+                    MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
+                    GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+                }
 
 #ifdef DUMP_FILE
 				fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
@@ -691,7 +692,7 @@ namespace MediaSDK
 		{
 			GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
 		}
-		else printf("##TT encodeaudiodata no gain\n");
+		else LOGT("##TT encodeaudiodata no gain\n");
 #endif
 	}
 

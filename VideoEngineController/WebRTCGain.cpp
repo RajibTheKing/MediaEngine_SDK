@@ -19,7 +19,7 @@
 #ifndef ALOG
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 #endif
-
+//#define GAIN_DUMP
 
 namespace MediaSDK
 {
@@ -31,8 +31,13 @@ namespace MediaSDK
 	WebRTCGain::WebRTCGain() : m_bGainEnabled(true)
 	{
 #ifdef GAIN_DUMP
-		gainIn = fopen("/sdcard/gain.input.pcm", "wb");
-		gainOut = fopen("/sdcard/gain.output.pcm", "wb");
+		//gainIn = fopen("/sdcard/gain.input.pcm", "wb");
+		//gainOut = fopen("/sdcard/gain.output.pcm", "wb");
+        const std::string path = std::string(getenv("HOME")) + "/Documents/";
+        std::string a = path + "gain.input.pcm";
+        std::string b = path + "gain.output.pcm";
+		gainIn = fopen(a.c_str(), "wb");
+		gainOut = fopen(b.c_str(), "wb");
 #endif
 
 		m_iSkipFrames = 20; //don't add gain for first 20 frames.
