@@ -628,17 +628,21 @@ namespace MediaSDK
 				}
 				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()-> m_llDelayFraction : %d", m_llDelayFraction);
 				
-				
+                if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+                {
+                    MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
+                    GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+                }
 
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
 				{
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength");
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+					/*if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
 					{
 						MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()");
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
-					}
+					}*/
 
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
@@ -667,11 +671,7 @@ namespace MediaSDK
 					MediaLog(LOG_WARNING, "[ACS] PreprocessAudioData->m_pEcho.get() UnSuccessful farnear");
 				}
                 
-                if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-                {
-                    MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
-                    GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-                }
+                
 
 #ifdef DUMP_FILE
 				fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning), FileInputPreGain);
