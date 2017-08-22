@@ -8,7 +8,7 @@
 #include <bitset>
 
 #define VIDEO_HEADER_LENGTH 32
-#define LIBRARY_VERSION 2
+#define LIBRARY_VERSION 3
 
 namespace MediaSDK
 {
