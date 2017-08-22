@@ -42,7 +42,7 @@ namespace MediaSDK
 
 		Tools m_Tools;
 
-		SmartPointer<CLockHandler> m_pSendingBufferMutex;
+		SharedPointer<CLockHandler> m_pSendingBufferMutex;
 	};
 
 } //namespace MediaSDK

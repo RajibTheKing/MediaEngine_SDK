@@ -62,6 +62,9 @@ namespace MediaSDK
 		int SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow);
 
         int SetBeautification(const IPVLongType llFriendID, bool bIsEnable);
+
+		int SetVideoQualityForLive(const IPVLongType llFriendID, int quality);
+
 		int SetVideoEffect(const long long llFriendID, int nEffectStatus);
 
 		void SetCallInLiveType(const long long llFriendID, int nCallInLiveType);
@@ -127,6 +130,7 @@ namespace MediaSDK
 
 		CCommonElementsBucket *m_pCommonElementsBucket;
 		long long m_llLastTimeStamp;
+		long long m_llLastChunkDuration;
 
 	private:
 
@@ -153,12 +157,12 @@ namespace MediaSDK
 
 		int m_nDeviceSupportedCallFPS;
 
-		SmartPointer<CLockHandler> m_pVideoStartMutex;
-		SmartPointer<CLockHandler> m_pVideoSendMutex;
-		SmartPointer<CLockHandler> m_pVideoReceiveMutex;
-		SmartPointer<CLockHandler> m_pAudioSendMutex;
-		SmartPointer<CLockHandler> m_pAudioReceiveMutex;
-		SmartPointer<CLockHandler> m_pAudioLockMutex;
+		SharedPointer<CLockHandler> m_pVideoStartMutex;
+		SharedPointer<CLockHandler> m_pVideoSendMutex;
+		SharedPointer<CLockHandler> m_pVideoReceiveMutex;
+		SharedPointer<CLockHandler> m_pAudioSendMutex;
+		SharedPointer<CLockHandler> m_pAudioReceiveMutex;
+		SharedPointer<CLockHandler> m_pAudioLockMutex;
 	};
 
 } //namespace MediaSDK

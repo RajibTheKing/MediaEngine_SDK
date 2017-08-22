@@ -23,7 +23,6 @@
 
 //#define  __SPECIFIC_LOG6__
 
-//#define LOG_ENABLED
 #define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 #define ON 1
@@ -33,6 +32,7 @@
 
 #define DECODING_FAIL_LOG		OFF
 #define ENCODING_FAIL_LOG		OFF
+#define BITRATE_INFO_LOG		OFF
 #define BROKEN_FRAME_LOG		OFF
 #define CHUNK_RECIVE_LOG		OFF
 #define CHUNK_SENDING_LOG		OFF
@@ -81,7 +81,7 @@
 #define DOG(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define COW(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGFARQUAD(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define LOGDISCARD(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGDISCARD(...) //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
 
 #define LOG_AAC(...)  
@@ -229,7 +229,7 @@ private:
 	static CLogPrinter instance;
     static bool isLogEnable;
 
-	//static SmartPointer<CLockHandler> m_pLogPrinterMutex;
+	//static SharedPointer<CLockHandler> m_pLogPrinterMutex;
 
 };
 

@@ -41,13 +41,13 @@ namespace MediaSDK
 
 		unsigned char m_ucaRenderingFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-		SmartPointer<CAverageCalculator> m_cRenderTimeCalculator;
+		SharedPointer<CAverageCalculator> m_cRenderTimeCalculator;
 
 		CRenderingBuffer *m_pcRenderingBuffer;
 		CCommonElementsBucket* m_pcCommonElementsBucket;
 		CVideoCallSession *m_pcVideoCallSession;
 
-		SmartPointer<std::thread> pThreadPointer;
+		SharedPointer<std::thread> pThreadPointer;
 	};
 
 } //namespace MediaSDK

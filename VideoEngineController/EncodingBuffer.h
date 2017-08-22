@@ -42,7 +42,7 @@ namespace MediaSDK
 		int m_iHeight[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 		int m_iWidth[MAX_VIDEO_ENCODER_BUFFER_SIZE];
 
-		SmartPointer<CLockHandler> m_pEncodingBufferMutex;
+		SharedPointer<CLockHandler> m_pEncodingBufferMutex;
 	};
 
 } //namespace MediaSDK

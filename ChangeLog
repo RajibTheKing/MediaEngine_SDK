@@ -1,3 +1,10 @@
+Release 10.0 (Date: 20-08-2017)
+---------------------------------
+- Boost removed.
+- Video quality API given for live
+- Echo cancellation given for iOS and Desktop
+
+
 Release 9.39.1 (Date: 08-08-2017)
 ---------------------------------
 - [Issue #3996] Used delay packet for viewer in livestreaming.

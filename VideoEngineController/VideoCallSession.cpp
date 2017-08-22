@@ -49,9 +49,12 @@ m_nOwnVideoCallQualityLevel(nOwnSupportedResolutionFPSLevel),
 m_pDeviceCheckCapabilityBuffer(deviceCheckCapabilityBuffer),
 m_bVideoCallStarted(false),
 m_nDeviceCheckFrameCounter(0),
+m_bLiveVideoQuality(VIDEO_QUALITY_HIGH),
 m_nCapturedFrameCounter(0),
 m_nServiceType(nServiceType),
 m_nEntityType(nEntityType),
+m_bFrameReduce(false),
+m_nReduceCheckNumber(3),
 m_iRole(0),
 m_bVideoEffectEnabled(true),
 m_nOponentDeviceType(DEVICE_TYPE_UNKNOWN),
@@ -841,6 +844,11 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER)
 		return 1;
+
+	m_nCapturedFrameCounter++;
+
+	if (m_bFrameReduce == true && m_nCapturedFrameCounter % m_nReduceCheckNumber == 0)
+		return 1;
     
     m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
     
@@ -852,7 +860,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
     //LOGE("CVideoCallSession::PushIntoBufferForEncoding called");
     
-	m_nCapturedFrameCounter++;
+	
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 407");
     
@@ -1533,6 +1541,47 @@ void CVideoCallSession::SetBeautification(bool bIsEnable)
     
 #endif
     
+}
+
+void CVideoCallSession::SetVideoQualityForLive(int quality)
+{
+	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality != VIDEO_QUALITY_HIGH)
+	{
+		m_bFrameReduce = false;
+
+		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_STREAM);
+		m_pVideoEncoder->SetMaxBitrate((int)(BITRATE_BEGIN_FOR_STREAM/1.25));
+	}
+	else if (quality == VIDEO_QUALITY_MEDIUM && m_bLiveVideoQuality != VIDEO_QUALITY_MEDIUM)
+	{
+		if (m_VideoFpsCalculator->GetDeviceFPS() > 20)
+		{
+			m_bFrameReduce = true;
+
+			m_nReduceCheckNumber = 3;
+		}
+
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MEDIUM_STREAM);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_MEDIUM_STREAM);
+	}
+	else if (quality == VIDEO_QUALITY_LOW && m_bLiveVideoQuality != VIDEO_QUALITY_LOW)
+	{
+		if (m_VideoFpsCalculator->GetDeviceFPS() > 20)
+		{
+			m_bFrameReduce = true;
+
+			m_nReduceCheckNumber = 2;
+		}
+		else if (m_VideoFpsCalculator->GetDeviceFPS() > 15)
+		{
+			m_bFrameReduce = true;
+
+			m_nReduceCheckNumber = 3;
+		}
+
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_LOW_STREAM);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_LOW_STREAM);
+	}
 }
     
 int CVideoCallSession::SetVideoEffect(int nEffectStatus)

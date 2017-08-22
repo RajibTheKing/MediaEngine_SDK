@@ -665,11 +665,11 @@ namespace MediaSDK
 			int j = 0;
 			for (; j < iTraceDetectionLength; j ++)
 			{
-				if (j % 20 >= 3 && j % 20 <= 7 && sBuffer[i + j] < 0)
+				if (j % 20 >= 3 && j % 20 <= 7 && sBuffer[i + j] <= 0)
 				{
 					break;
 				}
-				if (j % 20 >= 12 && j % 20 <= 15 && sBuffer[i + j] > 0)
+				if (j % 20 >= 12 && j % 20 <= 15 && sBuffer[i + j] >= 0)
 				{
 					break;
 				}

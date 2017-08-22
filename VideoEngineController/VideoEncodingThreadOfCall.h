@@ -110,7 +110,7 @@ namespace MediaSDK
 
 		int m_filterToApply;
 
-		SmartPointer<std::thread> pEncodingThread;
+		SharedPointer<std::thread> pEncodingThread;
 	};
 
 } //namespace MediaSDK

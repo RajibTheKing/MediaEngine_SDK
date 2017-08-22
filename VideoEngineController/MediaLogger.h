@@ -10,7 +10,7 @@
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"
-#include "CommonMacros.h" //Need for LOG_ENABLED
+#include "CommonMacros.h" //Need for MEDIA_LOGGER_ENABLED
 
 #define MEDIA_LOGGING_FOLDER_NAME "MediaLogs"
 #define MEDIA_LOGGER_TAG "MediaSDK"
@@ -107,7 +107,7 @@ namespace MediaSDK
 		bool m_bPrintOnConsole; /// Shall print the logs on console or logcat is enabled
 	};
 
-#ifdef LOG_ENABLED
+#ifdef MEDIA_LOGGER_ENABLED
 
 	extern MediaLogger g_Logger;
 
@@ -144,7 +144,7 @@ namespace MediaSDK
 
 #endif
 
-#if defined(LOG_ENABLED) && defined(BENCHMARK_ENABLED)
+#if defined(MEDIA_LOGGER_ENABLED) && defined(BENCHMARK_ENABLED)
 
 	/**
 	* This is an unitily class to benchmark a given scope. The execution time shall be logged when the scoped is over

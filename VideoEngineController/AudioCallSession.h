@@ -9,21 +9,20 @@
 #include "CommonTypes.h"
 #include "Size.h"
 #include "MediaLogger.h"
+#include "AudioMacros.h"
+
 
 
 namespace MediaSDK
 {
     #define AUDIO_CALL_VERSION  0
     #define AUDIO_LIVE_VERSION  0
-	
-	
-	
+		
 	//#define LOCAL_SERVER_LIVE_CALL
 	//#define AUDIO_SELF_CALL
 	//#define DUMP_FILE
 	//#define FIRE_ENC_TIME
 	//#define AUDIO_FIXED_COMPLEXITY
-    //#define PCM_DUMP
 
 	class AudioEncoderInterface;
 	class AudioDecoderInterface;
@@ -92,14 +91,14 @@ namespace MediaSDK
 		bool GetIsVideoCallRunning() { return m_bIsVideoCallRunning; }
 		
 
-		SmartPointer<AudioPacketHeader> GetAudioNearEndPacketHeader() { return m_pAudioNearEndPacketHeader; }
-		SmartPointer<AudioPacketHeader> GetAudioFarEndPacketHeader()  { return m_pAudioFarEndPacketHeader; }
-		SmartPointer<AudioEncoderInterface> GetAudioEncoder()         { return m_pAudioEncoder; }
-		SmartPointer<AudioDecoderInterface> GetAudioDecoder()         { return m_pAudioDecoder; }
-		SmartPointer<EchoCancellerInterface> GetEchoCanceler()        { return m_pEcho; }
-		SmartPointer<NoiseReducerInterface> GetNoiseReducer()         { return m_pNoiseReducer; }
-		SmartPointer<AudioGainInterface> GetRecorderGain()            { return m_pRecorderGain; }
-		SmartPointer<AudioGainInterface> GetPlayerGain()              { return m_pPlayerGain; }
+		SharedPointer<AudioPacketHeader> GetAudioNearEndPacketHeader() { return m_pAudioNearEndPacketHeader; }
+		SharedPointer<AudioPacketHeader> GetAudioFarEndPacketHeader()  { return m_pAudioFarEndPacketHeader; }
+		SharedPointer<AudioEncoderInterface> GetAudioEncoder()         { return m_pAudioEncoder; }
+		SharedPointer<AudioDecoderInterface> GetAudioDecoder()         { return m_pAudioDecoder; }
+		SharedPointer<EchoCancellerInterface> GetEchoCanceler()        { return m_pEcho; }
+		SharedPointer<NoiseReducerInterface> GetNoiseReducer()         { return m_pNoiseReducer; }
+		SharedPointer<AudioGainInterface> GetRecorderGain()            { return m_pRecorderGain; }
+		SharedPointer<AudioGainInterface> GetPlayerGain()              { return m_pPlayerGain; }
 
 
 	private:
@@ -127,7 +126,7 @@ namespace MediaSDK
 		long long m_llTraceReceivingTime;
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
 		bool m_bTraceTailRemains;
-		long long m_llDelay, m_llDelayFraction;
+		long long m_llDelay, m_llDelayFraction, m_llLastEchoLogTime = 0;
 		int  m_iDeleteCount;
 		int m_nFramesRecvdSinceTraceSent;
 		bool m_b1stRecordedDataSinceCallStarted;
@@ -141,16 +140,17 @@ namespace MediaSDK
 
 		AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 		AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
-		SmartPointer<CAudioShortBuffer> m_FarendBuffer;
-		SmartPointer<CAudioShortBuffer> m_AudioNearEndBuffer;
-		SmartPointer<CAudioShortBuffer> m_ViewerInCallSentDataQueue;
-		SmartPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
+		SharedPointer<CAudioShortBuffer> m_FarendBuffer;
+		SharedPointer<CAudioShortBuffer> m_AudioNearEndBuffer;
+		SharedPointer<CAudioShortBuffer> m_ViewerInCallSentDataQueue;
+		SharedPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
 
 		CTrace *m_pTrace;
 		AudioLinearBuffer* m_recordBuffer = nullptr;
 
 #ifdef PCM_DUMP
 		FILE* RecordedFile;
+		FILE* RecordedChunckedFile;
 		FILE* EchoCancelledFile;
 		FILE* AfterEchoCancellationFile;
 		FILE* PlayedFile;
@@ -196,16 +196,16 @@ namespace MediaSDK
 		AudioNearEndProcessorThread *m_cNearEndProcessorThread;
 		AudioFarEndProcessorThread *m_cFarEndProcessorThread;
 		CCommonElementsBucket* m_pCommonElementsBucket;
-		SmartPointer<CLockHandler> m_pAudioCallSessionMutex;
+		SharedPointer<CLockHandler> m_pAudioCallSessionMutex;
 
-		SmartPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader;
-		SmartPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader;
-		SmartPointer<AudioEncoderInterface> m_pAudioEncoder;
-		SmartPointer<AudioDecoderInterface> m_pAudioDecoder;
-		SmartPointer<EchoCancellerInterface> m_pEcho;
-		SmartPointer<NoiseReducerInterface> m_pNoiseReducer;
-		SmartPointer<AudioGainInterface> m_pRecorderGain;
-		SmartPointer<AudioGainInterface> m_pPlayerGain;
+		SharedPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader;
+		SharedPointer<AudioPacketHeader> m_pAudioFarEndPacketHeader;
+		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;
+		SharedPointer<AudioDecoderInterface> m_pAudioDecoder;
+		SharedPointer<EchoCancellerInterface> m_pEcho;
+		SharedPointer<NoiseReducerInterface> m_pNoiseReducer;
+		SharedPointer<AudioGainInterface> m_pRecorderGain;
+		SharedPointer<AudioGainInterface> m_pPlayerGain;
 		
 	#ifdef USE_VAD
 		CVoice *m_pVoice;

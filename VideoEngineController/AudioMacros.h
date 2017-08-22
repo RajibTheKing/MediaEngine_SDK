@@ -1,6 +1,11 @@
 #ifndef AUDIO_MACROS_H
 #define AUDIO_MACROS_H
 
+
+//#define PCM_DUMP
+
+
+
 #define MAX_WAITING_TIME_FOR_CHANNEL 4000
 
 #define AUDIO_CALL_VERSION				0

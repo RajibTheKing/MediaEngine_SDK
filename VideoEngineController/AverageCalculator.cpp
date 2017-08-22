@@ -13,6 +13,8 @@ namespace MediaSDK
 
 		m_llPrevFPSTime = -1;
 		m_iFpsCounter = 0;
+
+		m_iDeviceFPS = 30;
 	}
 	void CAverageCalculator::Reset()
 	{

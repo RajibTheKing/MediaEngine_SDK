@@ -5,7 +5,7 @@
 namespace MediaSDK
 {
 
-	SmartPointer<NoiseReducerInterface> NoiseReducerProvider::GetNoiseReducer(NoiseReducerType noiseReducerType)
+	SharedPointer<NoiseReducerInterface> NoiseReducerProvider::GetNoiseReducer(NoiseReducerType noiseReducerType)
 	{
 		NoiseReducerInterface* pInstance;
 		switch (noiseReducerType)
@@ -18,7 +18,7 @@ namespace MediaSDK
 			pInstance = nullptr;
 		}
 
-		return SmartPointer<NoiseReducerInterface>(pInstance);
+		return SharedPointer<NoiseReducerInterface>(pInstance);
 	}
 
 } //namespace MediaSDK

@@ -45,6 +45,16 @@ namespace MediaSDK
 		int iUsedLen = 0, nFrames = 0;
 		int tillIndex = offset;
 
+		if (numberOfMissingFrames)
+		{
+			int rightMost = vMissingFrames[numberOfMissingFrames - 1].second;
+
+			if (rightMost > iLen + 100)
+				CLogPrinter_LOG(BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector numberOfMissingFrames %d left %d right %d videoLength %d AUDIO", numberOfMissingFrames, vMissingFrames[0].first, vMissingFrames[0].second, iLen);
+			else
+				CLogPrinter_LOG(BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector numberOfMissingFrames %d left %d right %d videoLength %d", numberOfMissingFrames, vMissingFrames[0].first, vMissingFrames[0].second, iLen);
+		}
+
 		for (int j = 0; iUsedLen < iLen; j++)
 		{
 			nFrames++;

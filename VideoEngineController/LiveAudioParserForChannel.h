@@ -15,8 +15,8 @@ namespace MediaSDK
 	
 	private:	
 		std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
-		SmartPointer<CLockHandler> m_pLiveReceiverMutex;
-		SmartPointer<AudioPacketHeader> m_pAudioPacketHeader;
+		SharedPointer<CLockHandler> m_pLiveReceiverMutex;
+		SharedPointer<AudioPacketHeader> m_pAudioPacketHeader;
 		bool m_bIsCurrentlyParsingAudioData;
 		bool m_bIsRoleChanging;
 

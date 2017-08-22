@@ -140,6 +140,9 @@ public:
 	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
     void SetBeautification(bool bIsEnable);
+
+	void SetVideoQualityForLive(int quality);
+
 	int SetVideoEffect(int nEffectStatus);
 	int TestVideoEffect(int *param, int size);
 
@@ -180,6 +183,8 @@ private:
 	int m_nPublisherInsetNumber;
 
 	CSendingThread *m_pSendingThread;
+
+	bool m_bFrameReduce;
 	
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
@@ -198,6 +203,8 @@ private:
 	int m_EncodingFrameCounter;
 	bool m_bSkipFirstByteCalculation;
 
+	int m_bLiveVideoQuality;
+
 	bool m_bVideoEffectEnabled;
 
 	int m_nOwnVideoCallQualityLevel;
@@ -210,6 +217,8 @@ private:
 
 	int m_nCallInLiveType;
 	int m_nFrameCount;
+
+	int m_nReduceCheckNumber;
 
 	int m_iRole;
 
@@ -299,7 +308,7 @@ private:
 
 protected:
 
-	SmartPointer<CLockHandler> m_pVideoCallSessionMutex;
+	SharedPointer<CLockHandler> m_pVideoCallSessionMutex;
 };
 
 } //namespace MediaSDK

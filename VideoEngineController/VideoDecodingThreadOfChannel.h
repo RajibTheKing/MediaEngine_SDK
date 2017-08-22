@@ -115,7 +115,7 @@ namespace MediaSDK
 
 		Tools m_Tools;
 		CAverageCalculator *m_pCalculatorDecodeTime;
-		SmartPointer<std::thread> pDecodingThread;
+		SharedPointer<std::thread> pDecodingThread;
 
 
 

@@ -68,7 +68,7 @@ namespace MediaSDK
 		Tools m_Tools;
 		CVersionController *m_pVersionController;
 
-		SmartPointer<std::thread> pDepacketizationThread;
+		SharedPointer<std::thread> pDepacketizationThread;
 	};
 
 } //namespace MediaSDK

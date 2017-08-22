@@ -32,7 +32,7 @@ namespace MediaSDK
 		int m_iAudioHeaderLength;
 		int m_iPreviousPacketNumber;
 		int m_nFrameLength;
-		SmartPointer<AudioPacketHeader> m_pAudioPacketHeader;
+		SharedPointer<AudioPacketHeader> m_pAudioPacketHeader;
 		CAudioCallSession* m_pAudioCallSession;
 		void SentIncompleteFrame(int iLastPacketNumber, long long &llNow, long long &llLastTime);
 

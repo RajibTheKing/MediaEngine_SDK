@@ -41,7 +41,7 @@ namespace MediaSDK
 		int m_BufferPacketNumber[RESENDING_BUFFER_SIZE];
 		long long m_BufferInsertionTime[RESENDING_BUFFER_SIZE];
 
-		SmartPointer<CLockHandler> m_pChannelMutex;
+		SharedPointer<CLockHandler> m_pChannelMutex;
 	};
 
 } //namespace MediaSDK

@@ -152,7 +152,8 @@ namespace MediaSDK
 					DOG("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 					return;
 				}
-				DOG("#18#FE#Viewer  SendToPlayer");
+
+				MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber); 
 				LOGFARQUAD("Farquad calling SendToPlayer viewer");
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
 				Tools::SOSleep(0);

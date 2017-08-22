@@ -140,7 +140,7 @@ private:
 	int m_skinPixels;
 	int m_skinPixelSum;
 
-	SmartPointer<CLockHandler> m_pVideoBeautificationMutex;
+	SharedPointer<CLockHandler> m_pVideoBeautificationMutex;
 
 };
 

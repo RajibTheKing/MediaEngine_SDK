@@ -20,7 +20,7 @@ namespace MediaSDK
 	private:
 		Tools m_Tools;
     	map< pair<int,int>,long long> m_map;
-		SmartPointer<CLockHandler> m_pMutex;
+		SharedPointer<CLockHandler> m_pMutex;
 	};
 
 } //namespace MediaSDK

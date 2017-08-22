@@ -49,7 +49,7 @@ namespace MediaSDK
 		int m_YUV420ConvertedLen;
 		int m_iFinalEncodedFrameBufferIndx;
 
-		SmartPointer<CLockHandler> m_pVideoMuxingEncodeSessionMutex;
+		SharedPointer<CLockHandler> m_pVideoMuxingEncodeSessionMutex;
 	};
 
 } //namespace MediaSDK

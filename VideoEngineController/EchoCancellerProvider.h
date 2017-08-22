@@ -16,7 +16,7 @@ namespace MediaSDK
 
 	public:
 
-		static SmartPointer<EchoCancellerInterface> GetEchoCanceller(EchoCancelerType echoCancellerType, bool isLiveRunning);
+		static SharedPointer<EchoCancellerInterface> GetEchoCanceller(EchoCancelerType echoCancellerType, bool isLiveRunning);
 
 	};
 
