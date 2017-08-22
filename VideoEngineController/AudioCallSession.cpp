@@ -687,7 +687,7 @@ namespace MediaSDK
 
 		}
 
-#elif defined(DESKTOP_C_SHARP) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#elif defined(DESKTOP_C_SHARP)
 		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
 		{
 			GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
