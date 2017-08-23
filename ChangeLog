@@ -1,6 +1,12 @@
+Release 10.1.2 (Date: 23-08-2017)
+---------------------------------
+- Beautification modified for iOS.
+
+
 Release 10.1.1 (Date: 23-08-2017)
 ---------------------------------
 - [Issue#3236] Applied gain before cancelling echo.
+
 
 Release 10.1 (Date: 22-08-2017)
 ---------------------------------
