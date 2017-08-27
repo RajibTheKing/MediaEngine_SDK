@@ -102,7 +102,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType, true);
 
 		return bReturnedValue;
 	}
@@ -170,7 +170,9 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER);
+		bool bAudioCodecOpus = true;	//Enable opus codec for livestreaming.
+		
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER, bAudioCodecOpus);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
@@ -195,7 +197,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT, true);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);

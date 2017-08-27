@@ -57,7 +57,7 @@
 
 namespace MediaSDK
 {
-	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType) :
+	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType, bool bOpusCodec) :
 		m_bIsVideoCallRunning(isVideoCallRunning),
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
@@ -66,12 +66,22 @@ namespace MediaSDK
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr),
-		m_bNeedToResetEcho(false)
+		m_bNeedToResetEcho(false),
+		m_bIsOpusCodec(bOpusCodec)
 	{
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
-		m_PublisherBufferForMuxing.reset(new AudioShortBufferForPublisherFarEnd);
+
+		if (IsOpusEnable())
+		{
+			m_FarEndBufferOpus.reset(new CAudioByteBuffer);			
+		}
+		else 
+		{
+			m_PublisherBufferForMuxing.reset(new AudioShortBufferForPublisherFarEnd);
+		}
+		
 		m_FarendBuffer.reset(new CAudioShortBuffer);
 		m_AudioNearEndBuffer.reset(new CAudioShortBuffer);
 		m_ViewerInCallSentDataQueue.reset(new CAudioShortBuffer);

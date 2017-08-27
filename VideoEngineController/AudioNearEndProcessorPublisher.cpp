@@ -7,7 +7,9 @@
 #include "AudioMixer.h"
 #include "MuxHeader.h"
 #include "AudioLinearBuffer.h"
+#include "AudioEncoderInterface.h"
 #include "Tools.h"
+#include "AudioDecoderBuffer.h"
 
 
 
@@ -29,7 +31,13 @@ namespace MediaSDK
 		//	MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::ProcessNearEndData()");
 
 		int version = 0;
+		int nSendingFramePacketType = 0;
 		long long llCapturedTime = 0, llRelativeTime = 0, llLasstTime = -1;
+		int iSlotID = 0;
+		int iPrevRecvdSlotID = 0;
+		int iReceivedPacketsInPrevSlot = 0;
+		int nChannel = 0;
+
 		if (m_pAudioCallSession->m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
 		//if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
 		{
@@ -44,27 +52,33 @@ namespace MediaSDK
 			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			DumpEncodingFrame();
 
-			int nSendingDataSizeInByte = 1600;	//Or contain 18 bit data with mixed header.
+			int nSendingDataSizeInByte = PCM_FRAME_SIZE_IN_BYTE;	//Or contain 18 bit data with mixed header.
 			bool bIsMuxed = false;
 
 			if (false == PreProcessAudioBeforeEncoding())
 			{
 				return;
 			}
-
-			bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
-
+			
 			UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
-			memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saSendingDataPublisher, nSendingDataSizeInByte);
+			//For opus livestreaming.
+			if (m_pAudioCallSession->IsOpusEnable())
+			{				
+				nSendingDataSizeInByte = m_pAudioEncoder->EncodeAudio(m_saAudioRecorderFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, &m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize]);
+				MediaLog(LOG_DEBUG, "[ANEPP] EncodedDataSize = %d", nSendingDataSizeInByte);
+				nSendingFramePacketType = LIVE_PUBLISHER_PACKET_TYPE_OPUS;				
+			}
+			else	//For PCM livestreaming.
+			{
+				bIsMuxed = MuxIfNeeded(m_saAudioRecorderFrame, m_saSendingDataPublisher, nSendingDataSizeInByte, m_iPacketNumber);
 
-			int nSendingFramePacketType = bIsMuxed ? AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED : AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED;
+				memcpy(&m_ucaRawFrameNonMuxed[1 + m_MyAudioHeadersize], m_saSendingDataPublisher, nSendingDataSizeInByte);
+				nSendingFramePacketType = bIsMuxed ? AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED : AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED;
+			}
+		
+			m_ucaRawFrameNonMuxed[0] = 0;	//Media packet type.
 
-			int iSlotID = 0;
-			int iPrevRecvdSlotID = 0;
-			int iReceivedPacketsInPrevSlot = 0;
-			int nChannel = 0;
-			m_ucaRawFrameNonMuxed[0] = 0;
 			BuildAndGetHeaderInArray(nSendingFramePacketType, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, nSendingDataSizeInByte,
 				iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 
@@ -73,9 +87,27 @@ namespace MediaSDK
 			{
 				m_iPacketNumber = 0;
 			}
-			LOG18("#18#NE#Publish  StoreDataForChunk nSendingDataSizeInByte = %d m_MyAudioHeadersize = %d", nSendingDataSizeInByte, m_MyAudioHeadersize);
+
+			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  StoreDataForChunk nSendingDataSizeInByte = %d m_MyAudioHeadersize = %d", nSendingDataSizeInByte, m_MyAudioHeadersize);
 			
-			StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendingDataSizeInByte);
+			int nSendingFrameSizeInByte = 1 + m_MyAudioHeadersize + nSendingDataSizeInByte;
+
+			if (m_pAudioCallSession->IsOpusEnable())
+			{
+				int nCalleePacketLength = 0;
+				if ( 0 < m_pAudioCallSession->m_FarEndBufferOpus->GetQueueSize())
+				{
+					nCalleePacketLength = m_pAudioCallSession->m_FarEndBufferOpus->DeQueue(m_uchFarEndFrame);
+				}
+				
+				MediaLog(LOG_DEBUG, "[ANEPP] NearFrameSize = %d, FarFrameSize = %d, RT = %lld", nSendingFrameSizeInByte, nCalleePacketLength, llRelativeTime);
+
+				StoreDataForChunk(m_ucaRawFrameNonMuxed, nSendingFrameSizeInByte, m_uchFarEndFrame, nCalleePacketLength, llRelativeTime);
+			}
+			else {
+				StoreDataForChunk(m_ucaRawFrameNonMuxed, llRelativeTime, nSendingFrameSizeInByte);
+			}
+
 
 			Tools::SOSleep(0);
 		}

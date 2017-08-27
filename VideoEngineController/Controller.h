@@ -40,7 +40,7 @@ namespace MediaSDK
 		~CController();
 
 		bool SetUserName(const long long& lUserName);
-		bool StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType);
+		bool StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, bool bOpusCodec);
 		bool SetVolume(const long long& lFriendID, int iVolume, bool bRecorder);		
 		bool SetSpeakerType(const long long& lFriendID, int iSpeakerType);
 		bool SetEchoCanceller(const long long& lFriendID, bool bOn);

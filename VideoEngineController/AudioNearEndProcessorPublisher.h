@@ -30,8 +30,9 @@ namespace MediaSDK
 
 	private:
 
-		short m_saAudioPrevDecodedFrame[MAX_AUDIO_FRAME_Length];
-		short m_saSendingDataPublisher[MAX_AUDIO_FRAME_Length];  //Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
+		short m_saAudioPrevDecodedFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
+		unsigned char m_uchFarEndFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
+		short m_saSendingDataPublisher[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];  //Always contains data for VIEWER_NOT_IN_CALL, MUXED data if m_saAudioPrevDecodedFrame is available
 
 		SharedPointer<AudioMixer> m_pAudioMixer;
 	};
