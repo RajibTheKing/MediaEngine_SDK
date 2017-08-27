@@ -62,12 +62,17 @@ namespace MediaSDK
 
 			for (int iterator = 0; iterator < MAX_NUMBER_OF_CALL_PARTICIPANTS; iterator++)
 			{
+				if (0 == m_vAudioFarEndBufferVector[iterator]->GetQueueSize())
+				{
+					continue;
+				}
+
 				m_nDecodingFrameSize = m_vAudioFarEndBufferVector[iterator]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
 
 				if (m_nDecodingFrameSize < 1)
 				{
 					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] m_nDecodingFrameSize = %d",iterator, m_nDecodingFrameSize);
-					return;
+					continue;
 				}
 
 				/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
@@ -85,7 +90,7 @@ namespace MediaSDK
 				if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 				{
 					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] nCurrentAudioPacketType = %d", iterator, nCurrentAudioPacketType);
-					return;
+					continue;
 				}
 
 				bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
@@ -99,7 +104,7 @@ namespace MediaSDK
 					if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 					{
 						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
-						return;
+						continue;
 					}
 
 					llNow = Tools::CurrentTimestamp();
@@ -116,13 +121,13 @@ namespace MediaSDK
 						m_nDecodedFrameSize = m_pCalleeDecoderOpus->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
 					}
 					
-					MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, m_nDecodedFrameSize, nCurrentPacketHeaderLength);					
+					MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
 					PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);					
 
 					if (m_nDecodedFrameSize < 1)
 					{
 						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d]  REMOVED DECODED FRAME# LEN = %d", m_nDecodedFrameSize);
-						return;
+						continue;
 					}
 					m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 					MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber);
