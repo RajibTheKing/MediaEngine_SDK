@@ -331,4 +331,29 @@ namespace MediaSDK
 		}
 	}
 
+	void AudioMixer::ResetPCMAdder()
+	{
+		memset(m_sPcmAdder, 0, sizeof m_sPcmAdder);
+	}
+
+	void AudioMixer::AddDataToPCMAdder(short *psPcmData, int nDataSizeInShort)
+	{
+		for (int i = 0; i < nDataSizeInShort; i++)
+		{
+			int nValue = (int) m_sPcmAdder[i] + psPcmData[i];
+
+			if (SHRT_MIN > nValue)
+				nValue = SHRT_MIN;
+			else if (SHRT_MAX < nValue)
+				nValue = SHRT_MAX;
+			
+			m_sPcmAdder[i] = nValue;
+		}
+	}
+
+	void AudioMixer::GetAddedData(short *psPcmData, int nDataSizeInShort)
+	{
+		memcpy(psPcmData, m_sPcmAdder, sizeof(short) * nDataSizeInShort);
+	}
+
 } //namespace MediaSDK
