@@ -67,14 +67,12 @@ namespace MediaSDK
 	
 		long long m_llDecodingTimeStampOffset = -1;
 		short tmpBuffer[2048];
-		short m_saPlayingData[MAX_AUDIO_FRAME_Length];
+		short m_saPlayingData[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 
 		//LiveReceiver *m_pLiveReceiverAudio = nullptr;
 		ILiveAudioParser* m_pLiveAudioParser;
 		AudioDePacketizer* m_pAudioDePacketizer = nullptr;
-		SharedPointer<CAudioByteBuffer> m_AudioReceivedBuffer;
-
-		
+		SharedPointer<CAudioByteBuffer> m_AudioReceivedBuffer;		
 	protected:
 
 		AudioAlarmListener* m_pAudioAlarmListener;
@@ -88,8 +86,8 @@ namespace MediaSDK
 
 		long long m_llLastTime;
 
-		unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
-		short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
+		unsigned char m_ucaDecodingFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
+		short m_saDecodedFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 
 		std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 		std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
