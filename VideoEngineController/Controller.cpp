@@ -187,7 +187,7 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		AudioSessionOptions audioSessionOptions;
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
-		
+		MediaLog(LOG_INFO, "[C] OpusCodec %d", (int)bOpusCodec);
 		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, nAudioSpeakerType, bOpusCodec);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);

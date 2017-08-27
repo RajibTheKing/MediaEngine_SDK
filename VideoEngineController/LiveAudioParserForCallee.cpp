@@ -107,6 +107,7 @@ namespace MediaSDK
 		{
 			bCompleteFrame = true;
 			bCompleteFrameHeader = true;
+			iCurrentFrameNumber = -1;
 
 			nFrameLeftRange = nUsedLength + nOffset;
 			nFrameRightRange = nFrameLeftRange + pAudioFrameSizeInByte[iFrameNumber] - 1;
@@ -163,14 +164,19 @@ namespace MediaSDK
 					iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
 				}
 			}
+			else
+			{
+				m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
+				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+			}
 
 			++iFrameNumber;
-			MediaLog(LOG_CODE_TRACE, "[LAPC]  livereceiver receivedpacket frameno:%d", iFrameNumber);
+			MediaLog(LOG_CODE_TRACE, "[LAPC]  FrameCounter:%d", iFrameNumber);
 
 			if (!bCompleteFrameHeader)
 			{
 				numOfMissingFrames++;
-				MediaLog(LOG_CODE_TRACE, "[LAPC]  live receiver continue FrameNo = %d", iFrameNumber);
+				MediaLog(LOG_CODE_TRACE, "[LAPC]  Incomplete Header# FrameCounter = %d", iFrameNumber);
 				continue;
 			}
 
@@ -184,13 +190,15 @@ namespace MediaSDK
 				continue;
 			}
 
-			MediaLog(LOG_INFO, "[LAPC] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER));
+			
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
 			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
 
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			nProcessedFramsCounter++;
+
+			MediaLog(LOG_INFO, "[LAPC] CompleteFrameNo = %lld, WholeFrameLength = %d", iCurrentFrameNumber, nCurrentFrameLenWithMediaHeader);
 
 			/*  Callee-Opus data */
 			if (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType)
