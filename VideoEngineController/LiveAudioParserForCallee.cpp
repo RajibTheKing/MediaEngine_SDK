@@ -94,8 +94,8 @@ namespace MediaSDK
 		int nProcessedFramsCounter = 0;
 		long long iCurrentFrameNumber = -1;
 		int validHeaderLength;
-
-		int iMediaByteHeaderSize = 1;
+		int nPacketType;		 
+		const int iMediaByteHeaderSize = 1;
 		
 		MediaLog(LOG_INFO, "[LAPC] AudioFrames = %d, MissingBlocks = %u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
 
@@ -167,6 +167,16 @@ namespace MediaSDK
 			{
 				numOfMissingFrames++;
 				MediaLog(LOG_CODE_TRACE, "[LAPC]  live receiver continue FrameNo = %d", iFrameNumber);
+				continue;
+			}
+
+			nPacketType = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize];
+			MediaLog(LOG_CODE_TRACE, "[LAPC]  PacketType = %d", nPacketType);
+
+			/* Discarding broken Opus frame */
+			if (!bCompleteFrame && (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType || LIVE_PUBLISHER_PACKET_TYPE_OPUS == nPacketType))
+			{
+				MediaLog(LOG_CODE_TRACE, "[LAPC]  Discarding Opus Packet. PT = %d", nPacketType);
 				continue;
 			}
 
