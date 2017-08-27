@@ -216,10 +216,13 @@ namespace MediaSDK
 		nDataLengthNear = m_nStoredDataLengthNear;
 
 		/*  COPY FAR_END DATA */
-		vCombinedDataLengthVector.insert(std::end(vCombinedDataLengthVector), std::begin(m_vRawFrameLengthFar), std::end(m_vRawFrameLengthFar));
-		memcpy(pAudioCombinedDataToSend + m_nStoredDataLengthNear, m_ucaRawDataToSendFar, m_nStoredDataLengthFar); 
-		CombinedLength += m_nStoredDataLengthFar;
-		nDataLengthFar = m_nStoredDataLengthFar;
+		if (0 < m_nStoredDataLengthFar)
+		{
+			vCombinedDataLengthVector.insert(std::end(vCombinedDataLengthVector), std::begin(m_vRawFrameLengthFar), std::end(m_vRawFrameLengthFar));
+			memcpy(pAudioCombinedDataToSend + m_nStoredDataLengthNear, m_ucaRawDataToSendFar, m_nStoredDataLengthFar);
+			CombinedLength += m_nStoredDataLengthFar;
+			nDataLengthFar = m_nStoredDataLengthFar;
+		}
 
 		int nFrames = vCombinedDataLengthVector.size();
 		int nFramesNear = m_vRawFrameLengthNear.size();
