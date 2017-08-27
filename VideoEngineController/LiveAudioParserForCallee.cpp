@@ -61,6 +61,10 @@ namespace MediaSDK
 		}
 	}
 
+
+	/*
+		Always, iId = 0;
+	*/
 	void CLiveAudioParserForCallee::ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFrameSizeInByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks){
 		if (m_bIsRoleChanging)
 		{
@@ -188,11 +192,21 @@ namespace MediaSDK
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			nProcessedFramsCounter++;
 
-			if (m_vAudioFarEndBufferVector[iId])
+			/*  Callee-Opus data */
+			if (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType)
 			{
-				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize, nCurrentFrameLenWithMediaHeader - 1, vCurrentAudioFrameMissingBlock);
+				if (m_vAudioFarEndBufferVector[1])
+				{
+					m_vAudioFarEndBufferVector[1]->EnQueue(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize, nCurrentFrameLenWithMediaHeader - 1, vCurrentAudioFrameMissingBlock);
+				}
 			}
-
+			else /* Others data except callee-opus data. */
+			{
+				if (m_vAudioFarEndBufferVector[0])
+				{
+					m_vAudioFarEndBufferVector[0]->EnQueue(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize, nCurrentFrameLenWithMediaHeader - 1, vCurrentAudioFrameMissingBlock);
+				}
+			}
 
 			if (-1 < m_llLastProcessedFrameNo && m_llLastProcessedFrameNo + 1 < iCurrentFrameNumber)
 			{

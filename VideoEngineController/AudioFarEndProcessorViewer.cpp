@@ -7,7 +7,9 @@
 #include "LiveAudioDecodingQueue.h"
 #include "AudioPacketHeader.h"
 #include "Tools.h"
-
+#include "AudioDecoderInterface.h"
+#include "MediaLogger.h"
+#include "DecoderOpus.h"
 
 namespace MediaSDK
 {
@@ -16,12 +18,143 @@ namespace MediaSDK
 		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorViewer::FarEndProcessorViewer()");
-	
+		m_pCalleeDecoderOpus.reset(new DecoderOpus());
 		m_pAudioMixer.reset(new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING));
 	}
 
-
 	void FarEndProcessorViewer::ProcessFarEndData()
+	{
+		if (m_pAudioCallSession->IsOpusEnable())
+		{
+			ProcessFarEndDataOpus();
+		}
+		else 
+		{
+			ProcessFarEndDataPCM();
+		}
+	}
+
+	void FarEndProcessorViewer::ProcessFarEndDataOpus()
+	{
+		//	MR_DEBUG("#farEnd# FarEndProcessorViewer::ProcessFarEndData()");
+
+		int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
+		long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
+		double dbTotalTime = 0; //MeaningLess
+
+		int iDataSentInCurrentSec = 0; //NeedToFix.
+		long long llTimeStamp = 0;
+		int nQueueSize = 0;
+
+
+		for (int i = 0; i < MAX_NUMBER_OF_CALL_PARTICIPANTS; i++)
+		{
+			nQueueSize += m_vAudioFarEndBufferVector[i]->GetQueueSize();
+		}
+
+		int nCalleeId = 1;
+		m_vFrameMissingBlocks.clear();
+		int iTotalFrameCounter = 0;
+
+		if (nQueueSize > 0)
+		{
+			m_pAudioMixer->ResetPCMAdder();
+
+			for (int iterator = 0; iterator < MAX_NUMBER_OF_CALL_PARTICIPANTS; iterator++)
+			{
+				m_nDecodingFrameSize = m_vAudioFarEndBufferVector[iterator]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
+
+				if (m_nDecodingFrameSize < 1)
+				{
+					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] m_nDecodingFrameSize = %d",iterator, m_nDecodingFrameSize);
+					return;
+				}
+
+				/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
+
+				llCapturedTime = Tools::CurrentTimestamp();
+
+				int dummy;
+				int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
+				int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
+				ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
+					nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] [iterator:%d]  [PN:%d BN:%d] PL:%d FL:%d",iterator ,iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+
+				if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
+				{
+					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] nCurrentAudioPacketType = %d", iterator, nCurrentAudioPacketType);
+					return;
+				}
+
+				bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+				llNow = Tools::CurrentTimestamp();
+				bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);				
+
+				if (bIsCompleteFrame)
+				{
+					m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
+
+					if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+					{
+						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
+						return;
+					}
+
+					llNow = Tools::CurrentTimestamp();
+					int nEncodedFrameSize = m_nDecodingFrameSize - nCurrentPacketHeaderLength;					
+										
+					if (0 == iterator)
+					{
+						/* OPUS Decoder for Publisher*/
+						m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
+					}
+					else
+					{
+						/* OPUS Decoder for Callee Data*/
+						m_nDecodedFrameSize = m_pCalleeDecoderOpus->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
+					}
+					
+					MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, m_nDecodedFrameSize, nCurrentPacketHeaderLength);					
+					PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);					
+
+					if (m_nDecodedFrameSize < 1)
+					{
+						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d]  REMOVED DECODED FRAME# LEN = %d", m_nDecodedFrameSize);
+						return;
+					}
+					m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
+					MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber);
+					LOGFARQUAD("Farquad calling SendToPlayer viewer");
+				}
+			}
+			
+			m_pAudioMixer->GetAddedData(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	/*Mixed Audio Data*/
+
+			DumpDecodedFrame(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
+			MediaLog(LOG_INFO, "[AFEPV] Publisher# SendToPlayer, FN = %d", iPacketNumber);
+
+			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber);
+			Tools::SOSleep(0);
+		}
+		else
+		{
+			Tools::SOSleep(10);
+		}
+#ifdef USE_AECM
+		if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+		{
+			LOGFARQUAD("Farquad calling ProcessPlayingData viewer");
+			ProcessPlayingData();
+		}
+#endif
+
+	}
+
+
+
+	void FarEndProcessorViewer::ProcessFarEndDataPCM()
 	{
 		//	MR_DEBUG("#farEnd# FarEndProcessorViewer::ProcessFarEndData()");
 

@@ -56,7 +56,7 @@ namespace MediaSDK
 
 		memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 
-		for (int i = 0; i < MAX_NUMBER_OF_CALLEE; i++){
+		for (int i = 0; i < MAX_NUMBER_OF_CALL_PARTICIPANTS; i++){
 			m_vAudioFarEndBufferVector.push_back(new LiveAudioDecodingQueue());	//Need to delete.
 		}
 

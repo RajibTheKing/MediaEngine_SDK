@@ -117,7 +117,7 @@ namespace MediaSDK
 					return;
 				}
 
-				MediaLog(LOG_INFO, "[AFEDPP] Publisher# SendToPlayer, FN = %d", iPacketNumber);
+				MediaLog(LOG_INFO, "[AFEPP] Publisher# SendToPlayer, FN = %d", iPacketNumber);
 
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
 				Tools::SOSleep(0);
