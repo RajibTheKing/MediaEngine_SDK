@@ -223,7 +223,7 @@ namespace MediaSDK
 				llNow - llLastTime, nSentFrameSize);
 
 			llLastTime = llNow;
-			if (m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+			if (false == m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
 				MediaLog(LOG_INFO, "[AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
 				int iStartIndex = 0;
@@ -234,7 +234,7 @@ namespace MediaSDK
 				int iMuxHeaderSize = AUDIO_MUX_HEADER_LENGHT;
 
 				MuxHeader audioMuxHeader(iCalleeId, iCurrentPacketNumber, m_vFrameMissingBlocks);
-
+				
 				m_pAudioCallSession->m_PublisherBufferForMuxing->EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 			}
 
