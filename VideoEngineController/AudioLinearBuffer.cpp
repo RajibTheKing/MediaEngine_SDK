@@ -1,6 +1,7 @@
 #include "AudioLinearBuffer.h"
 #include "LogPrinter.h"
 #include <cstring>
+#include "Tools.h"
 
 
 namespace MediaSDK
@@ -27,6 +28,15 @@ namespace MediaSDK
 
 	int AudioLinearBuffer::PopData(short* data)
 	{
+		if (m_llNextPopTime != -1)
+		{
+			if (m_llNextPopTime > Tools::CurrentTimestamp())
+			{
+				//LOGE_MAIN("##KK too early %lld > %lld(~1)", m_llNextPopTime, Tools::CurrentTimestamp());
+				return 0;
+			}
+		}
+
 		std::lock_guard<std::mutex> guard(m_mutex);
 
 		int availableDataSize = m_endPos - m_beginPos + 1;
@@ -35,6 +45,17 @@ namespace MediaSDK
 			memcpy(data, &m_buffer[m_beginPos], CHUNK_SIZE * sizeof(short));
 			m_beginPos += CHUNK_SIZE;
 			LOGT("##TTPOP data size 800 availablesize %d", availableDataSize);
+
+			if (m_llNextPopTime == -1)
+			{
+				m_llNextPopTime = Tools::CurrentTimestamp() + 80;
+				//LOGE_MAIN("##KK setting first %lld", m_llNextPopTime);
+			}
+			else
+			{
+				m_llNextPopTime += 100;
+				//LOGE_MAIN("##KK setting %lld", m_llNextPopTime);
+			}
 
 			return CHUNK_SIZE;
 		}
