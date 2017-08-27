@@ -256,9 +256,12 @@ namespace MediaSDK
 	{
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
+			NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
 			m_llLastChunkLastFrameRT = -1;
 			m_nStoredDataLengthNear = 0;
 			m_nStoredDataLengthFar = 0;
+			m_vRawFrameLengthNear.clear();
+			m_vRawFrameLengthFar.clear();
 		}
 		m_nEntityType = nEntityType;
 	}
@@ -268,9 +271,12 @@ namespace MediaSDK
 	{
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
+			NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
 			m_llLastChunkLastFrameRT = -1;
 			m_nStoredDataLengthNear = 0;
 			m_nStoredDataLengthFar = 0;
+			m_vRawFrameLengthNear.clear();
+			m_vRawFrameLengthFar.clear();
 		}
 		m_nEntityType = nEntityType;
 	}
