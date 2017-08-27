@@ -347,20 +347,37 @@ namespace MediaSDK
 			return false;
 		}
 		else if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
-		{
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)	//
+		{			
+			if (m_pAudioCallSession->IsOpusEnable())	
 			{
-				if (nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
-					return true;
-			}
-			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
-			{
-				if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType || AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED == nCurrentAudioPacketType)
+				if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)	//
 				{
-					return true;
+					if (nCurrentAudioPacketType == LIVE_CALLEE_PACKET_TYPE_OPUS)
+						return true;
+				}
+				else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+				{
+					if (LIVE_CALLEE_PACKET_TYPE_OPUS == nCurrentAudioPacketType || LIVE_PUBLISHER_PACKET_TYPE_OPUS == nCurrentAudioPacketType)
+					{
+						return true;
+					}
 				}
 			}
-
+			else
+			{
+				if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)	//
+				{
+					if (nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
+						return true;
+				}
+				else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+				{
+					if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType || AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED == nCurrentAudioPacketType)
+					{
+						return true;
+					}
+				}
+			}
 		}
 
 		return false;
