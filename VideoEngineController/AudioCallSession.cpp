@@ -69,6 +69,7 @@ namespace MediaSDK
 		m_bNeedToResetEcho(false),
 		m_bIsOpusCodec(bOpusCodec)
 	{
+		MediaLog(LOG_INFO, "[ACS] OpusCodec %d", (int)m_bIsOpusCodec);
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);

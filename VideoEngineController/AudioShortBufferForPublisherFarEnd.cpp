@@ -4,6 +4,7 @@
 #include <string.h>
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "MediaLogger.h"
 
 
 namespace MediaSDK
@@ -56,7 +57,7 @@ namespace MediaSDK
 
 	int AudioShortBufferForPublisherFarEnd::EnQueue(short *saCapturedAudioFrameData, int nlength, long long llTimeStump, MuxHeader pMuxHeader)
 	{
-		LOG18("#18@# ENCO BUFFER SIZE %d -> HEAD %lld", m_nQueueCapacity, pMuxHeader.getCalleeId());
+		MediaLog(LOG_INFO, "[ASBFPFE]  nlength %d, BUFFER SIZE %d -> HEAD %lld", nlength, m_nQueueCapacity, pMuxHeader.getCalleeId());
 		AudioShortBufferPublisherLock lock(*m_pAudioShortBufferForPublisherFarEndrMutex);
 
 		memcpy(m_s2aAudioEncodingBuffer[m_iPushIndex], saCapturedAudioFrameData, nlength * 2);

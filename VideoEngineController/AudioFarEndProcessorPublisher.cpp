@@ -113,7 +113,7 @@ namespace MediaSDK
 				
 				if (m_nDecodedFrameSize < 1)
 				{
-					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
+					MediaLog(LOG_INFO, "[AFEPP]  REMOVED FOR LOW SIZE.");
 					return;
 				}
 

@@ -211,7 +211,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
 	{
-		COW("###^^^### SENT TO PLAYER DATA .................");
+		MediaLog(LOG_INFO, "[AFEDP] SENT TO PLAYER DATA .................");
 		long long llNow = 0;
 
 		if (m_bIsLiveStreamingRunning == true)
@@ -219,13 +219,13 @@ namespace MediaSDK
 
 			llNow = Tools::CurrentTimestamp();
 
-			__LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d",
-				iPacketNumber, llNow - llLastTime, nSentFrameSize);
+			MediaLog(LOG_INFO, "[AFEDP] Live Streaming Receiver Time Diff : %lld, DataLength: %d",
+				llNow - llLastTime, nSentFrameSize);
 
 			llLastTime = llNow;
 			if (m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
-				LOG18("#18@# PUb enq , packet type %d", iCurrentPacketNumber);
+				MediaLog(LOG_INFO, "[AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
 				int iStartIndex = 0;
 				int iEndIndex = 1599;
 				int iCalleeId = 1;
@@ -238,7 +238,7 @@ namespace MediaSDK
 				m_pAudioCallSession->m_PublisherBufferForMuxing->EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 			}
 
-			HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
+			MediaLog(LOG_INFO, "[AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 //#ifdef __ANDROID__
 //			if (m_bIsLiveStreamingRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType))
 //			{
@@ -257,7 +257,7 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					m_nPacketPlayed ++;
-					MediaLog(LOG_INFO, "[AFEDP]Viewer# To Player [SendToPlayer]\n");
+					MediaLog(LOG_INFO, "[AFEDP] Viewer# To Player [SendToPlayer]\n");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 #ifdef PCM_DUMP
 					if (m_pAudioCallSession->PlayedFile)
