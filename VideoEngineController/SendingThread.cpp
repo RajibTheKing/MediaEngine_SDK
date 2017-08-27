@@ -361,7 +361,7 @@ namespace MediaSDK
                                  m_bAudioOnlyDataAlreadySent = true;
                                  */
                                 
-                                if (viewerDataLength <= 0)
+								if (m_iAudioDataToSendIndex <= 0)
                                     continue;
                             }
                         }
