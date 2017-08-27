@@ -169,8 +169,8 @@ namespace MediaSDK
 
 		headerType = HEADER_COMMON;
 
-		encoderType = PCM_Encoder;
-		decoderType = No_Decoder;
+		encoderType = Opus_Encoder;
+		decoderType = Opus_Decoder;
 
 		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
@@ -219,8 +219,8 @@ namespace MediaSDK
 
 		headerType = HEADER_COMMON;
 
-		encoderType = No_Encoder;
-		decoderType = PCM_Decoder;
+		encoderType = Opus_Encoder;
+		decoderType = Opus_Decoder;
 
 		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
