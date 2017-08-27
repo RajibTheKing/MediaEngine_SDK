@@ -169,7 +169,7 @@ namespace MediaSDK
 			nProcessedFramsCounter++;
 			if (m_vAudioFarEndBufferVector[iId])
 			{
-				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1, vCurrentAudioFrameMissingBlock);
+				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange, nCurrentFrameLenWithMediaHeader , vCurrentAudioFrameMissingBlock);
 			}
 		}
 

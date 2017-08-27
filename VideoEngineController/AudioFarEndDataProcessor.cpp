@@ -223,7 +223,7 @@ namespace MediaSDK
 				iPacketNumber, llNow - llLastTime, nSentFrameSize);
 
 			llLastTime = llNow;
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+			if (m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
 				LOG18("#18@# PUb enq , packet type %d", iCurrentPacketNumber);
 				int iStartIndex = 0;
