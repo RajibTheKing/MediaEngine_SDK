@@ -55,7 +55,7 @@
 
 
 
-
+#define LOG_ENABLED
 
 #if  defined(__ANDROID__) && defined(LOG_ENABLED)
 

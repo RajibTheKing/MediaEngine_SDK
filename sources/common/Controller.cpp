@@ -642,8 +642,8 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 
 		if (pVideoSession)
 		{
-			if (in_size > MAX_VIDEO_ENCODER_FRAME_SIZE)
-				return -1;
+			//if (in_size > MAX_VIDEO_ENCODER_FRAME_SIZE)
+			//	return -1;
 
 #ifdef OLD_ENCODING_THREAD
 

@@ -832,8 +832,10 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 map<int, long long> g_TimeTraceFromCaptureToSend;
 int g_CapturingFrameCounter = 0;
 
+
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
+	LOGE_MAIN("CVideoCallSession::PushIntoBufferForEncoding starts in_size = %d", in_size);
     //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && (m_nEntityType == ENTITY_TYPE_PUBLISHER || m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER) && m_bAudioOnlyLive == true)
@@ -995,8 +997,24 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	//int nCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(in_data, 352, 288, 1920, 1130, m_CroppedFrame, nCroppedHeight, nCroppedWidth, YUVNV12);
 
-	int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
+	LOGE_MAIN("CVideoCallSession::PushIntoBufferForEncoding  m_nVideoCallHeight = %d m_nVideoCallWidth = %d", m_nVideoCallHeight, m_nVideoCallWidth);
+	int tempH = 1080;
+	int tempW = 1920;
+	int tempHs = 288;
+	int tempWs = 352;
+
+	unsigned char* buf = new unsigned char[tempHs * tempWs * 3 / 2];
+	m_pColorConverter->ConvertNV21ToI420(in_data, tempH, tempW);
+	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempH, tempW, buf, tempHs, tempWs);
+	m_pColorConverter->ConvertI420ToNV21(buf, tempHs, tempWs);
+
+
+
+	//int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
+	int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempWs, tempHs, nCaptureTimeDiff, device_orientation);
     
+	delete[] buf;
+
     //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " nCaptureTimeDiff = " +  m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - mt_llCapturePrevTime));
     mt_llCapturePrevTime = m_Tools.CurrentTimestamp();
     
