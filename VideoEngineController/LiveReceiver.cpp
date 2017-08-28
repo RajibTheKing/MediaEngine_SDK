@@ -28,6 +28,68 @@ namespace MediaSDK
 		m_pLiveVideoDecodingQueue = pQueue;
 	}
 
+	bool LiveReceiver::isComplement(int firstFrame, int offset, int secondFrame, int numberOfFrames, int *frameSizes, std::vector<std::pair<int, int>>& vMissingFrames)
+	{
+		if (firstFrame < 0 || firstFrame >= numberOfFrames || secondFrame < 0 || secondFrame >= numberOfFrames)
+		{
+			return false;
+		}
+		if (frameSizes[firstFrame] != frameSizes[secondFrame])
+		{
+			return false;
+		}
+		
+		int firstFrameStartPos, secondFrameStartPos;
+		
+		for (int i = 0, current = offset; i < numberOfFrames; i++, current += frameSizes[i])
+		{
+			if (i == firstFrame)
+			{
+				firstFrameStartPos = current;
+			}
+			else if (i == secondFrame)
+			{
+				secondFrameStartPos = current;
+			}
+			else if (i > firstFrame && i > secondFrame)
+			{
+				break;
+			}
+		}
+
+		if (firstFrameStartPos > secondFrameStartPos)
+		{
+			swap(firstFrameStartPos, secondFrameStartPos);
+		}
+
+		bool flag = true;
+		int numberOfMissingFrames = vMissingFrames.size();
+
+		for (int i = 0; i < frameSizes[firstFrame]; i++)
+		{
+			bool missingFromFirstFrame = false, missingFromSecondFrame = false;
+			for (int j = 0; j < numberOfFrames; j++)
+			{
+				if (firstFrameStartPos + i >= vMissingFrames[j].first && firstFrameStartPos + i <= vMissingFrames[i].second)
+				{
+					missingFromFirstFrame = true;
+				}
+				if (secondFrameStartPos + i >= vMissingFrames[j].first && secondFrameStartPos + i <= vMissingFrames[i].second)
+				{
+					missingFromSecondFrame = true;
+				}
+				if (missingFromFirstFrame == true && missingFromSecondFrame == true)
+				{
+					flag = false;
+					j = numberOfFrames;
+					i = frameSizes[firstFrame];
+				}
+			}
+		}
+
+		return flag;
+	}
+
 	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 	{
 		CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector called");
