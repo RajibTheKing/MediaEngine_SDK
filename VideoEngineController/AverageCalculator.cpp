@@ -76,6 +76,11 @@ namespace MediaSDK
 		}
 	}
 
+	void CAverageCalculator::SetDeviceFPS(int nFPS)
+	{
+		m_iDeviceFPS = nFPS;
+	}
+
 	void CAverageCalculator::StartingOperation(string sOperationName)
 	{
 		m_llStartingTimeStamp = m_Tools.CurrentTimestamp();
