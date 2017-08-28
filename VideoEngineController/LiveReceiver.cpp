@@ -43,7 +43,7 @@ namespace MediaSDK
 		int numOfMissingFrames = 0;
 
 		int iUsedLen = 0, nFrames = 0;
-		int tillIndex = offset;
+		int tillIndex = offset + 3;
 
 		if (numberOfMissingFrames)
 		{

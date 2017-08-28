@@ -635,7 +635,12 @@ namespace MediaSDK
                         
                         int tempIndex = m_iDataToSendIndex;
                         numberOfVideoPackets = 0;
-                        m_iDataToSendIndex = 0;
+                        
+						m_VideoDataToSend[0] = (unsigned char)1;
+						m_VideoDataToSend[1] = (unsigned char)1;
+
+						m_iDataToSendIndex = 3;
+
                         memcpy(m_VideoDataToSend + m_iDataToSendIndex, m_EncodedFrame, packetSize);
                         m_iDataToSendIndex += (packetSize);
                         
