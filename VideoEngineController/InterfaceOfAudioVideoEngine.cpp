@@ -414,7 +414,9 @@ namespace MediaSDK
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
 
-				
+				int nEntityType = m_Tools.GetEntityTypeFromMediaChunck(in_data + nValidHeaderOffset);
+				int nServiceType = m_Tools.GetServiceTypeFromMediaChunck(in_data + nValidHeaderOffset);
+				int nChunkNumber = m_Tools.GetMediaUnitChunkNumberFromMediaChunck(in_data + nValidHeaderOffset);
 
 				int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 				int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);

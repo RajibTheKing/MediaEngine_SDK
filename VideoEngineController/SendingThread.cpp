@@ -48,7 +48,8 @@ namespace MediaSDK
     m_bAudioOnlyLive(bAudioOnlyLive),
     m_bVideoOnlyLive(false),
     m_bPassOnlyAudio(false),
-    m_llBaseRelativeTimeOfAudio(-1)
+    m_llBaseRelativeTimeOfAudio(-1),
+	m_nChunkNumber(0)
     
     {
         m_pVideoCallSession = pVideoCallSession;
@@ -499,6 +500,12 @@ namespace MediaSDK
                         m_Tools.SetMediaUnitStreamTypeInMediaChunck(STREAM_TYPE_LIVE_STREAM, m_AudioVideoDataToSend);
                         m_Tools.SetMediaUnitBlockInfoPositionInMediaChunck(LIVE_MEDIA_UNIT_NUMBER_OF_AUDIO_BLOCK_POSITION, m_AudioVideoDataToSend);
                         m_Tools.SetMediaUnitChunkDurationInMediaChunck(diff, m_AudioVideoDataToSend);
+
+						m_Tools.SetEntityTypeInMediaChunck(m_pVideoCallSession->GetEntityType(), m_AudioVideoDataToSend);
+						m_Tools.SetServiceTypeInMediaChunck(m_pVideoCallSession->GetServiceType(), m_AudioVideoDataToSend);
+						m_Tools.SetMediaUnitChunkNumberInMediaChunck(m_nChunkNumber, m_AudioVideoDataToSend);
+
+						m_nChunkNumber++;
                         
                         HITLERSS("#RT### Sending 0");
                         

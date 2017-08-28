@@ -101,6 +101,9 @@ namespace MediaSDK
 		void SetMediaUnitChunkDurationInMediaChunck(int number, unsigned char convertedArray[]);
 		int GetMediaUnitChunkDurationFromMediaChunck(unsigned char convertedArray[]);
 
+		void SetMediaUnitChunkNumberInMediaChunck(int number, unsigned char convertedArray[]);
+		int GetMediaUnitChunkNumberFromMediaChunck(unsigned char convertedArray[]);
+
 		void SetMediaUnitTimestampInMediaChunck(long long number, unsigned char data[]);
 		long long GetMediaUnitTimestampInMediaChunck(unsigned char data[]);
 
@@ -121,6 +124,12 @@ namespace MediaSDK
 
 		void SetNumberOfVideoFramesInMediaChunck(int index, int number, unsigned char convertedArray[]);
 		int GetNumberOfVideoFramesFromMediaChunck(int index, unsigned char convertedArray[]);
+
+		void SetServiceTypeInMediaChunck(int number, unsigned char convertedArray[]);
+		int GetServiceTypeFromMediaChunck(unsigned char convertedArray[]);
+
+		void SetEntityTypeInMediaChunck(int number, unsigned char convertedArray[]);
+		int GetEntityTypeFromMediaChunck(unsigned char convertedArray[]);
 
 		void SetNextAudioFramePositionInMediaChunck(int index, int number, unsigned char convertedArray[]);
 		int GetNextAudioFramePositionFromMediaChunck(int index, unsigned char convertedArray[]);

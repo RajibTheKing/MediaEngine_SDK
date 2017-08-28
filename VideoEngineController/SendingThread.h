@@ -62,6 +62,7 @@ namespace MediaSDK
 		CSendingBuffer *m_SendingBuffer;
 
 		bool m_bIsCheckCall;
+		int m_nChunkNumber;
 
 		bool m_bPassOnlyAudio;
 
