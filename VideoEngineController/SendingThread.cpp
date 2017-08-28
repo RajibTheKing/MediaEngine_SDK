@@ -524,11 +524,11 @@ namespace MediaSDK
                                     
                                     std::vector<std::pair<int, int> > liVector;
                                     
-									//liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+									MediaLog(LOG_DEBUG, "[NE][ST] AudioStartInd:%d, TotalAudio:%d[%d+%d]", viewerDataIndex, m_iAudioDataToSendIndex, viewerDataLength, calleeDataLength);
+									//liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));									
 									liVector.push_back(std::make_pair(viewerDataIndex, m_iAudioDataToSendIndex));
                                     liVector.push_back(std::make_pair(0, 0));
-                                    
-                                    LOG18("#18#Sent# viewerDataIndex=%d , viewerDataLength=%d", viewerDataIndex, viewerDataLength);
+                                                                        
                                     
                                     //if (ENTITY_TYPE_VIEWER_CALLEE == m_pVideoCallSession->GetEntityType())
                                     //{

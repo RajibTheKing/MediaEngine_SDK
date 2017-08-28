@@ -61,6 +61,8 @@ namespace MediaSDK
 		int nCalleeId = 1;
 		m_vFrameMissingBlocks.clear();
 		int iTotalFrameCounter = 0;
+		int naFrameNumbers[2];
+		naFrameNumbers[0] = naFrameNumbers[1] = -1;
 
 		if (nQueueSize > 0)
 		{
@@ -107,7 +109,8 @@ namespace MediaSDK
 				{
 					m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
 
-					if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+					/*Skip delay packet only for publisher.*/
+					if (0 == iterator && !IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 					{
 						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
 						continue;
@@ -135,6 +138,9 @@ namespace MediaSDK
 						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d]  REMOVED DECODED FRAME# LEN = %d", m_nDecodedFrameSize);
 						continue;
 					}
+
+					naFrameNumbers[iterator] = iPacketNumber;
+
 					m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 					MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber);
 					LOGFARQUAD("Farquad calling SendToPlayer viewer");
@@ -144,7 +150,7 @@ namespace MediaSDK
 			m_pAudioMixer->GetAddedData(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	/*Mixed Audio Data*/
 
 			DumpDecodedFrame(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
-			MediaLog(LOG_INFO, "[AFEPV] Publisher# SendToPlayer, FN = %d", iPacketNumber);
+			MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, PublisherFN = %d, CalleeFN = %d", naFrameNumbers[0], naFrameNumbers[1]);
 
 			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber);
 			Tools::SOSleep(0);
