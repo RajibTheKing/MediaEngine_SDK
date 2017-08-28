@@ -28,7 +28,7 @@ namespace MediaSDK
 		m_pLiveVideoDecodingQueue = pQueue;
 	}
 
-	bool LiveReceiver::isComplement(int firstFrame, int offset, int secondFrame, int numberOfFrames, int *frameSizes, std::vector<std::pair<int, int>>& vMissingFrames)
+	bool LiveReceiver::isComplement(int firstFrame, int secondFrame, int offset, int numberOfFrames, int *frameSizes, std::vector<std::pair<int, int>>& vMissingFrames)
 	{
 		if (firstFrame < 0 || firstFrame >= numberOfFrames || secondFrame < 0 || secondFrame >= numberOfFrames)
 		{
