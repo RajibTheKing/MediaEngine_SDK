@@ -54,7 +54,7 @@ namespace MediaSDK
 			else
 			{
 				m_llNextPopTime += 100;
-				//LOGE_MAIN("##KK setting %lld", m_llNextPopTime);
+				//LOGE_MAIN("##KK setting:%lld distance:%lld ms", m_llNextPopTime, m_llNextPopTime - Tools::CurrentTimestamp());
 			}
 
 			return CHUNK_SIZE;
@@ -121,7 +121,9 @@ namespace MediaSDK
 	{
 		std::lock_guard<std::mutex> guard(m_mutex);
 
+		//LOGE_MAIN("##KK Clearing..");
 		m_beginPos = 0;
 		m_endPos = -1;
+		m_llNextPopTime = -1;
 	}
 }
