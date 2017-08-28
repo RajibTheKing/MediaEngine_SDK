@@ -103,7 +103,8 @@ namespace MediaSDK
 				}
 				else{	/*PCM*/
 					m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-					DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+										
+					DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength + 1, nCurrentAudioPacketType);
 
 					MediaLog(LOG_CODE_TRACE, "[AFEPP] PCM# m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
 				}

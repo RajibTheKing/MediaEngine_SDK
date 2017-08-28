@@ -158,7 +158,7 @@ namespace MediaSDK
 	}
 
 
-	void AudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType)
+	void AudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(const int iPacketNumber, const int nCurrentPacketHeaderLength, const int nCurrentAudioPacketType)
 	{
 		m_iLastDecodedPacketNumber = iPacketNumber;
 		LOGEF("Role %d, Before decode", m_iRole);

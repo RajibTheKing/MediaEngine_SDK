@@ -54,7 +54,7 @@ namespace MediaSDK
 		bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 
 		void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
-		void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
+		void DecodeAndPostProcessIfNeeded(const int iPacketNumber, const int nCurrentPacketHeaderLength, const int nCurrentAudioPacketType);
 		void DecideToChangeBitrate(int iNumPacketRecvd);
 
 		void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec, long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime);
