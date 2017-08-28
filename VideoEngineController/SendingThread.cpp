@@ -558,7 +558,7 @@ namespace MediaSDK
                                         CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure sending chunk size %d duration %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
                                         
                                         m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
-										this->ParseChunk(m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex,"ST");
+										//this->ParseChunk(m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex,"ST");
                                     }
                                     //LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
                                     
