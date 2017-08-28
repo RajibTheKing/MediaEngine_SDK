@@ -83,11 +83,9 @@ namespace MediaSDK
 
 				if (m_nDecodingFrameSize < 1)
 				{
-					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] m_nDecodingFrameSize = %d",iterator, m_nDecodingFrameSize);
+					MediaLog(LOG_WARNING, "[AFEPV] [Iterator:%d] Too Small Frame!!!!!!!. DecodingFrameSize = %d",iterator, m_nDecodingFrameSize);
 					continue;
-				}
-
-				/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
+				}				
 
 				llCapturedTime = Tools::CurrentTimestamp();
 
@@ -97,11 +95,11 @@ namespace MediaSDK
 				ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 					nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] [iterator:%d]  PT:%d PN:%d BN:%d DataLen:%d FL:%d", iterator, nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);				
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] [Iterator:%d] PT:%d PN:%d BN:%d DataLen:%d FL:%d", iterator, nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);				
 
 				if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 				{
-					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] Not Processable based on Role!!!!!. PT = %d", iterator, nCurrentAudioPacketType);
+					MediaLog(LOG_WARNING, "[AFEPV] [Iterator:%d] Not Processable based on Role!!!!!. PT = %d", iterator, nCurrentAudioPacketType);
 					continue;
 				}
 
@@ -118,7 +116,7 @@ namespace MediaSDK
 					/*Skip delay packet only for publisher.*/
 					if (0 == iterator && !IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 					{
-						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
+						MediaLog(LOG_WARNING, "[AFEPV]  [Iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
 						continue;
 					}
 
@@ -140,7 +138,7 @@ namespace MediaSDK
 
 					if (m_nDecodedFrameSize < 1)
 					{
-						MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d]  REMOVED DECODED FRAME# LEN = %d", m_nDecodedFrameSize);
+						MediaLog(LOG_WARNING, "[AFEPV] [Iterator:%d] REMOVED DECODED FRAME# LEN = %d", m_nDecodedFrameSize);
 						continue;
 					}
 
@@ -150,7 +148,7 @@ namespace MediaSDK
 					LOGFARQUAD("Farquad calling SendToPlayer viewer");
 				}
 
-				MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] FN: %d EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, iPacketNumber, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] [Iterator:%d] USED FRAME# FN: %d EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, iPacketNumber, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
 			}
 			
 			m_pAudioMixer->GetAddedData(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	/*Mixed Audio Data*/

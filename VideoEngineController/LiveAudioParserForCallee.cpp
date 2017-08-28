@@ -168,7 +168,7 @@ namespace MediaSDK
 			{				
 				m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
 				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
-				MediaLog(LOG_CODE_TRACE, "[LAPC] COMPLETE FRAME. FN:%lld", iCurrentFrameNumber);
+				MediaLog(LOG_CODE_TRACE, "[LAPC] COMPLETE FRAME. FrameNo = %lld", iCurrentFrameNumber);
 			}
 
 			++iFrameNumber;
@@ -198,6 +198,7 @@ namespace MediaSDK
 			/*Not OPUS Packet*/
 			if (LIVE_CALLEE_PACKET_TYPE_OPUS != nPacketType &&  LIVE_PUBLISHER_PACKET_TYPE_OPUS != nPacketType)
 			{
+				MediaLog(LOG_CODE_TRACE, "[LAPC] Generating missing bloks for PCM. PT = %d", nPacketType);
 				GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
 			}
 
