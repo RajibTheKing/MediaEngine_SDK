@@ -170,7 +170,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		bool bAudioCodecOpus = true;	//Enable opus codec for livestreaming.
+		bool bAudioCodecOpus = false;	//Enable opus codec for livestreaming.
 		
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER, bAudioCodecOpus);
 
