@@ -310,6 +310,11 @@ namespace MediaSDK
 
 			if ((mediaType == MEDIA_TYPE_LIVE_STREAM && (nEntityType == ENTITY_TYPE_VIEWER || nEntityType == ENTITY_TYPE_VIEWER_CALLEE)) || ((mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO) && nEntityType == ENTITY_TYPE_PUBLISHER_CALLER))
 			{
+				CLogPrinter_LOG(HEADER_TEST_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector (int)in_data[0] %d", (int)in_data[0]);
+
+				if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0] || VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+					return 0;
+
 				//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
 				//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
 
@@ -337,6 +342,8 @@ namespace MediaSDK
 				}
 
 				int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
+
+				CLogPrinter_LOG(HEADER_TEST_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector version %d", version);
 
 				int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
 				int llCurrentChunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
