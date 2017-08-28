@@ -557,6 +557,7 @@ namespace MediaSDK
                                         CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure sending chunk size %d duration %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
                                         
                                         m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);
+										this->ParseChunk(m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex,"ST");
                                     }
                                     //LOGT("##TN##CALLBACK## viewerdataindex:%d viewerdatalength:%d || calleedataindex:%d calleedatalength:%d", viewerDataIndex, viewerDataLength, calleeDataIndex, calleeDataLength);
                                     
@@ -880,13 +881,13 @@ namespace MediaSDK
         return SleepTime;
     }
     
-    int CSendingThread::ParseChunk(unsigned char *in_data, unsigned int unLength)
+	int CSendingThread::ParseChunk(unsigned char *in_data, unsigned int unLength, std::string tag)
     {
         printf("SendingSide DATA FOR BOKKOR %u\n", unLength);
         
         int nValidHeaderOffset = 0;
-        
-        long long itIsNow = m_Tools.CurrentTimestamp();
+		Tools m_Tools;
+		long long itIsNow = m_Tools.CurrentTimestamp();
         long long recvTimeOffset = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
         
         //LOGE("##DE#Interface## now %lld peertimestamp %lld timediff %lld relativediff %lld", itIsNow, recvTimeOffset, itIsNow - m_llTimeOffset, recvTimeOffset);
@@ -946,7 +947,18 @@ namespace MediaSDK
         int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
         int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
         int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
-        
+		int ind = audioStartingPosition;
+
+		
+		MediaLog(LOG_CODE_TRACE, "[%s] -------------->HL:%d ASI:%d ADL: %d, AFrames: %d RT:%lld[%d]\n", 
+			tag.c_str(),headerLength, audioStartingPosition, lengthOfAudioData, numberOfAudioFrames, recvTimeOffset, tmp_chunkDuration);
+
+		for (int i = 0; i < numberOfAudioFrames; i++)
+		{
+			MediaLog(LOG_CODE_TRACE, "[%s] %d-> PT:%d, L:%d FrmSI:%d\n",tag.c_str(), i, (int)in_data[ind + 1], audioFrameSizes[i], ind);
+			ind += audioFrameSizes[i];
+		}
+
         printf("SendingSide audioStartingPosition = %d, videoStartingPosition = %d, streamType = %d\n", audioStartingPosition, videoStartingPosition, streamType);
         
         return 0;

@@ -54,7 +54,7 @@ namespace MediaSDK
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame + 1, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-			MediaLog(LOG_CODE_TRACE, "[AFEPP] FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			MediaLog(LOG_CODE_TRACE, "[AFEPP] PT:%d PN:%d BN:%d DataLen:%d FL:%d", nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{

@@ -20,7 +20,7 @@ namespace MediaSDK
 		AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioNearEndBuffer, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::AudioNearEndProcessorPublisher()");
-
+		m_pHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 		m_pAudioMixer.reset(new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING));
 	}
 
@@ -98,6 +98,9 @@ namespace MediaSDK
 				if ( 0 < m_pAudioCallSession->m_FarEndBufferOpus->GetQueueSize())
 				{
 					nCalleePacketLength = m_pAudioCallSession->m_FarEndBufferOpus->DeQueue(m_uchFarEndFrame);
+					m_pHeader->CopyHeaderToInformation(m_uchFarEndFrame + 1);
+
+					MediaLog(LOG_DEBUG, "[NR][ANEPP] FarPacketType = %d", (int)m_uchFarEndFrame[1]);
 				}
 				
 				MediaLog(LOG_DEBUG, "[ANEPP] NearFrameSize = %d, FarFrameSize = %d, RT = %lld", nSendingFrameSizeInByte, nCalleePacketLength, llRelativeTime);

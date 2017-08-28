@@ -331,6 +331,9 @@ namespace MediaSDK
 				long long itIsNow = m_Tools.CurrentTimestamp();
 				long long llCurrentChunkRelativeTime = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
 
+				CSendingThread::ParseChunk(in_data, unLength, "[IAVE][CHUNK]");
+
+
 				if (llLastChunkRelativeTime + m_pcController->m_llLastChunkDuration + MIN_CHUNK_DURATION_SAFE < llCurrentChunkRelativeTime)
 				{
 					long long llChunkGap = llCurrentChunkRelativeTime - llLastChunkRelativeTime - m_pcController->m_llLastChunkDuration;

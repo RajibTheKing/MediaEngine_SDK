@@ -46,8 +46,14 @@ namespace MediaSDK
 		long long llTimeStamp = 0;
 		int nQueueSize = 0;
 
+		int nRequiredCallPerticipantNumber = MAX_NUMBER_OF_CALL_PARTICIPANTS;
 
-		for (int i = 0; i < MAX_NUMBER_OF_CALL_PARTICIPANTS; i++)
+		if (ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+		{
+			nRequiredCallPerticipantNumber = 1;	/*Callee will discard his own data.*/
+		}
+
+		for (int i = 0; i < nRequiredCallPerticipantNumber; i++)
 		{
 			nQueueSize += m_vAudioFarEndBufferVector[i]->GetQueueSize();
 		}
@@ -60,12 +66,12 @@ namespace MediaSDK
 		{
 			m_pAudioMixer->ResetPCMAdder();
 
-			for (int iterator = 0; iterator < MAX_NUMBER_OF_CALL_PARTICIPANTS; iterator++)
+			for (int iterator = 0; iterator < nRequiredCallPerticipantNumber; iterator++)
 			{
 				if (0 == m_vAudioFarEndBufferVector[iterator]->GetQueueSize())
 				{
 					continue;
-				}
+				}								
 
 				m_nDecodingFrameSize = m_vAudioFarEndBufferVector[iterator]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
 
@@ -85,7 +91,7 @@ namespace MediaSDK
 				ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
 					nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] [iterator:%d]  [PN:%d BN:%d] PL:%d FL:%d",iterator ,iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] [iterator:%d]  PT:%d PN:%d BN:%d DataLen:%d FL:%d", iterator, nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);				
 
 				if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 				{

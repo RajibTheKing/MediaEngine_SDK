@@ -111,7 +111,7 @@ namespace MediaSDK
 
 			nFrameLeftRange = nUsedLength + nOffset;
 			nFrameRightRange = nFrameLeftRange + pAudioFrameSizeInByte[iFrameNumber] - 1;
-			nUsedLength += pAudioFrameSizeInByte[iFrameNumber];
+			nUsedLength += pAudioFrameSizeInByte[iFrameNumber];			
 
 			while (iMissingIndex < nNumberOfMissingBlocks && vMissingBlocks[iMissingIndex].second <= nFrameLeftRange)
 				++iMissingIndex;
@@ -165,9 +165,10 @@ namespace MediaSDK
 				}
 			}
 			else
-			{
+			{				
 				m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
 				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+				MediaLog(LOG_CODE_TRACE, "[LAPC] COMPLETE FRAME. FN:", iCurrentFrameNumber);
 			}
 
 			++iFrameNumber;
@@ -181,7 +182,7 @@ namespace MediaSDK
 			}
 
 			nPacketType = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize];
-			MediaLog(LOG_CODE_TRACE, "[LAPC]  PacketType = %d", nPacketType);
+			MediaLog(LOG_CODE_TRACE, "[LAPC]  PacketType = %d  Range[L:%d, R:%d]", nPacketType, nFrameLeftRange, nFrameRightRange);
 
 			/* Discarding broken Opus frame */
 			if (!bCompleteFrame && (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType || LIVE_PUBLISHER_PACKET_TYPE_OPUS == nPacketType))
@@ -198,7 +199,7 @@ namespace MediaSDK
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			nProcessedFramsCounter++;
 
-			MediaLog(LOG_INFO, "[LAPC] CompleteFrameNo = %lld, WholeFrameLength = %d", iCurrentFrameNumber, nCurrentFrameLenWithMediaHeader);
+			MediaLog(LOG_INFO, "[LAPC] PT=%d, CompleteFrameNo = %lld, WholeFrameLength = %d[%d]", nPacketType, iCurrentFrameNumber, nCurrentFrameLenWithMediaHeader, pAudioFrameSizeInByte[iFrameNumber-1]);
 
 			/*  Callee-Opus data */
 			if (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType)
