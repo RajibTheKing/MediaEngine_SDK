@@ -55,15 +55,19 @@ namespace MediaSDK
 
 		for (int i = 0; i < nRequiredCallPerticipantNumber; i++)
 		{
-			nQueueSize += m_vAudioFarEndBufferVector[i]->GetQueueSize();
+			 int nCurrentSize= m_vAudioFarEndBufferVector[i]->GetQueueSize();
+			 MediaLog(LOG_CODE_TRACE, "[AFEPV] [i:%d] QueueSize = %d", i, nCurrentSize);
+			 nQueueSize += nCurrentSize;
 		}
+
+		MediaLog(LOG_CODE_TRACE, "[AFEPV]  nQueueSize = %d nRequiredCallPerticipantNumber = %d", nQueueSize, nRequiredCallPerticipantNumber);
 
 		int nCalleeId = 1;
 		m_vFrameMissingBlocks.clear();
 		int iTotalFrameCounter = 0;
 		int naFrameNumbers[2];
 		naFrameNumbers[0] = naFrameNumbers[1] = -1;
-
+		
 		if (nQueueSize > 0)
 		{
 			m_pAudioMixer->ResetPCMAdder();
@@ -130,7 +134,7 @@ namespace MediaSDK
 						m_nDecodedFrameSize = m_pCalleeDecoderOpus->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
 					}
 					
-					MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
+					MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] FN: %d EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, iPacketNumber, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
 					PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);					
 
 					if (m_nDecodedFrameSize < 1)
@@ -141,8 +145,7 @@ namespace MediaSDK
 
 					naFrameNumbers[iterator] = iPacketNumber;
 
-					m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
-					MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber);
+					m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);					
 					LOGFARQUAD("Farquad calling SendToPlayer viewer");
 				}
 			}
@@ -150,7 +153,7 @@ namespace MediaSDK
 			m_pAudioMixer->GetAddedData(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	/*Mixed Audio Data*/
 
 			DumpDecodedFrame(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
-			MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, PublisherFN = %d, CalleeFN = %d", naFrameNumbers[0], naFrameNumbers[1]);
+			MediaLog(LOG_INFO, "[AFEPV] Viewer-SendToPlayer# PublisherFN = %d, CalleeFN = %d", naFrameNumbers[0], naFrameNumbers[1]);
 
 			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber);
 			Tools::SOSleep(0);
