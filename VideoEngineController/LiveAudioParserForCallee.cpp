@@ -168,7 +168,7 @@ namespace MediaSDK
 			{				
 				m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
 				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
-				MediaLog(LOG_CODE_TRACE, "[LAPC] COMPLETE FRAME. FN:%d", iCurrentFrameNumber);
+				MediaLog(LOG_CODE_TRACE, "[LAPC] COMPLETE FRAME. FN:%lld", iCurrentFrameNumber);
 			}
 
 			++iFrameNumber;
@@ -194,19 +194,24 @@ namespace MediaSDK
 			
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
-			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
+
+			/*Not OPUS Packet*/
+			if (LIVE_CALLEE_PACKET_TYPE_OPUS != nPacketType &&  LIVE_PUBLISHER_PACKET_TYPE_OPUS != nPacketType)
+			{
+				GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
+			}
 
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			nProcessedFramsCounter++;
 
-			MediaLog(LOG_INFO, "[LAPC] PT=%d, CompleteFrameNo = %lld, WholeFrameLength = %d[%d]", nPacketType, iCurrentFrameNumber, nCurrentFrameLenWithMediaHeader, pAudioFrameSizeInByte[iFrameNumber-1]);
+			MediaLog(LOG_INFO, "[LAPC] PT = %d, CompleteFrameNo = %lld, WholeFrameLength = %d[%d]", nPacketType, iCurrentFrameNumber, nCurrentFrameLenWithMediaHeader, pAudioFrameSizeInByte[iFrameNumber-1]);
 
 			/*  Callee-Opus data */
 			if (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType)
 			{
 				if (m_vAudioFarEndBufferVector[1])
 				{
-					MediaLog(LOG_CODE_TRACE, "[LAPC] Enqueu Callee Buffer# FN=%d",iCurrentFrameNumber); 
+					MediaLog(LOG_CODE_TRACE, "[LAPC] Enqueu Callee Buffer# FN = %lld",iCurrentFrameNumber); 
 					m_vAudioFarEndBufferVector[1]->EnQueue(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize, nCurrentFrameLenWithMediaHeader - 1, vCurrentAudioFrameMissingBlock);
 				}
 			}

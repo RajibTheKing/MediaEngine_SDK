@@ -101,13 +101,15 @@ namespace MediaSDK
 
 				if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 				{
-					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] nCurrentAudioPacketType = %d", iterator, nCurrentAudioPacketType);
+					MediaLog(LOG_WARNING, "[AFEPV] [iterator:%d] Not Processable based on Role!!!!!. PT = %d", iterator, nCurrentAudioPacketType);
 					continue;
 				}
 
+				m_nDecodedFrameSize = -1;
 				bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 				llNow = Tools::CurrentTimestamp();
 				bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);				
+				int nEncodedFrameSize = m_nDecodingFrameSize - nCurrentPacketHeaderLength;
 
 				if (bIsCompleteFrame)
 				{
@@ -121,7 +123,7 @@ namespace MediaSDK
 					}
 
 					llNow = Tools::CurrentTimestamp();
-					int nEncodedFrameSize = m_nDecodingFrameSize - nCurrentPacketHeaderLength;					
+					
 										
 					if (0 == iterator)
 					{
@@ -133,8 +135,7 @@ namespace MediaSDK
 						/* OPUS Decoder for Callee Data*/
 						m_nDecodedFrameSize = m_pCalleeDecoderOpus->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
 					}
-					
-					MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] FN: %d EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, iPacketNumber, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
+										
 					PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);					
 
 					if (m_nDecodedFrameSize < 1)
@@ -148,6 +149,8 @@ namespace MediaSDK
 					m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);					
 					LOGFARQUAD("Farquad calling SendToPlayer viewer");
 				}
+
+				MediaLog(LOG_CODE_TRACE, "[AFEPV]  [Iterator:%d] FN: %d EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, iPacketNumber, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
 			}
 			
 			m_pAudioMixer->GetAddedData(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);	/*Mixed Audio Data*/
