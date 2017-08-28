@@ -519,12 +519,13 @@ namespace MediaSDK
                                     
                                     HITLER("#@#@26022017# SENDING DATA WITH LENGTH = %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex);
                                     
-                                    int viewerDataIndex = index + m_iDataToSendIndex;
+                                    int viewerDataIndex = index + m_iDataToSendIndex;	/*Audio Data Start Index.*/
                                     int calleeDataIndex = viewerDataIndex + viewerDataLength;
                                     
                                     std::vector<std::pair<int, int> > liVector;
                                     
-                                    liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+									//liVector.push_back(std::make_pair(viewerDataIndex, viewerDataLength));
+									liVector.push_back(std::make_pair(viewerDataIndex, m_iAudioDataToSendIndex));
                                     liVector.push_back(std::make_pair(0, 0));
                                     
                                     LOG18("#18#Sent# viewerDataIndex=%d , viewerDataLength=%d", viewerDataIndex, viewerDataLength);
