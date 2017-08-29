@@ -57,11 +57,6 @@ namespace MediaSDK
 			}
 		}
 
-		if (firstFrameStartPos > secondFrameStartPos)
-		{
-			swap(firstFrameStartPos, secondFrameStartPos);
-		}
-
 		bool flag = true;
 		int numberOfMissingFrames = vMissingFrames.size();
 
