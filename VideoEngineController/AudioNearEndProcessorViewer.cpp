@@ -72,7 +72,7 @@ namespace MediaSDK
 				nFrameSizeInByte = 1 + m_MyAudioHeadersize + nEncodedFrameSizeB;				
 			}
 			
-			MediaLog(LOG_DEBUG, "[ANEPV] PacketType = %d, EncodedDataSize = %d ,nSendingDataSizeInByte = %d", nPacketType, nEncodedFrameSizeB, nFrameSizeInByte);
+			MediaLog(LOG_DEBUG, "[ANEPV] FrameNo = %d, RT = %lld, PacketType = %d, EncodedSize = %d ,nSendingDataSizeInByte = %d", m_iPacketNumber, llRelativeTime, nPacketType, nEncodedFrameSizeB, nFrameSizeInByte);
 
 			m_ucaRawFrameNonMuxed[0] = 0;
 			BuildAndGetHeaderInArray(nPacketType, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, nEncodedFrameSizeB,

@@ -82,13 +82,15 @@ namespace MediaSDK
 			BuildAndGetHeaderInArray(nSendingFramePacketType, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, nSendingDataSizeInByte,
 				iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 
+			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  FrameNo = %d, RT: %lld, SendingDataSizeInByte = %d HeaderLen = %d", m_iPacketNumber, llRelativeTime, nSendingDataSizeInByte, m_MyAudioHeadersize);
+
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)
 			{
 				m_iPacketNumber = 0;
 			}
 
-			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  StoreDataForChunk nSendingDataSizeInByte = %d m_MyAudioHeadersize = %d", nSendingDataSizeInByte, m_MyAudioHeadersize);
+			
 			
 			int nSendingFrameSizeInByte = 1 + m_MyAudioHeadersize + nSendingDataSizeInByte;
 

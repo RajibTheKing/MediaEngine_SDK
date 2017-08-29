@@ -24,7 +24,7 @@ namespace MediaSDK
 	{
 		int error = 0;
 
-		encoder = opus_encoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, AUDIO_APPLICATION, &err);
+		encoder = opus_encoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, OPUS_APPLICATION_AUDIO, &err);
 		if (err < 0)
 		{
 			return EXIT_FAILURE;

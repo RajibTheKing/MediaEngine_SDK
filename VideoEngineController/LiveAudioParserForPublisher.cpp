@@ -167,12 +167,22 @@ namespace MediaSDK
 			MediaLog(LOG_CODE_TRACE, "[LAPP]  PacketType = %d", nPacketType);
 
 			/* Discarding broken Opus frame */
-			if (!bCompleteFrame && (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType || LIVE_PUBLISHER_PACKET_TYPE_OPUS == nPacketType))
+			
+			if (!bCompleteFrame && LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType)
 			{
 				MediaLog(LOG_CODE_TRACE, "[LAPP]  Discarding Opus Packet. PT = %d", nPacketType);
 				continue;
 			}
-			
+
+			bool bIsProcessablePacket = (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType ||
+				AUDIO_LIVE_CALLEE_PACKET_TYPE == nPacketType);
+
+			if (false == bIsProcessablePacket)
+			{
+				MediaLog(LOG_CODE_TRACE, "[LAPP]  Discarding Packets# Not suitable for publisher. PT = %d", nPacketType);
+				continue;
+			}
+						
 			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER));
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
