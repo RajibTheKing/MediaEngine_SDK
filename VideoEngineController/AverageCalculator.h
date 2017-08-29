@@ -31,6 +31,8 @@ namespace MediaSDK
 
 		void StartingOperation(string sOperationName);
 		void EndingOperation();
+
+		void SetDeviceFPS(int nFPS);
         
         int GetDeviceFPS()
         {

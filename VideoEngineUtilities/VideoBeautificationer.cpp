@@ -939,6 +939,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
             m_sigma = 128;
         if(m_sigma < 32)
             m_sigma = 32;
+        
+        m_sigma-=3;
       
         /*
 		if (m_AvarageValue < 50)

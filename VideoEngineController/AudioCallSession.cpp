@@ -449,6 +449,8 @@ namespace MediaSDK
 #endif
 		}
 
+		m_recordBuffer->Clear();
+
 		m_ViewerInCallSentDataQueue->ResetBuffer();
 		m_pNearEndProcessor->StartCallInLive(m_nEntityType);
 		m_pFarEndProcessor->StartCallInLive(m_nEntityType);
@@ -506,6 +508,7 @@ namespace MediaSDK
 			m_nEntityType = ENTITY_TYPE_VIEWER;
 		}
 
+		m_recordBuffer->Clear();
 
 		m_iRole = m_nEntityType;
 
