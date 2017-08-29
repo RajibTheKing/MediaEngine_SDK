@@ -191,6 +191,17 @@ namespace MediaSDK
 				continue;
 			}
 
+			bool bIsProcessablePacketViewer = (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType ||
+				LIVE_PUBLISHER_PACKET_TYPE_OPUS == nPacketType ||
+				AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nPacketType ||
+				AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED == nPacketType);
+
+			if (false == bIsProcessablePacketViewer)
+			{
+				MediaLog(LOG_CODE_TRACE, "[LAPP]  Discarding Packets# Not suitable for Callee-Viewer. PT = %d", nPacketType);
+				continue;
+			}
+
 			
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
