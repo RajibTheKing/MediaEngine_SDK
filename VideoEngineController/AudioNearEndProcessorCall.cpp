@@ -8,6 +8,7 @@
 #include "AudioFileCodec.h"
 #include "AudioLinearBuffer.h"
 #include "Tools.h"
+#include "MediaLogger.h"
 
 
 
@@ -59,8 +60,12 @@ namespace MediaSDK
 			int iPrevRecvdSlotID = 0;
 			int iReceivedPacketsInPrevSlot = 0;
 			int nChannel = 0;
+			int nPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
 			BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, m_nEncodedFrameSize, iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaEncodedFrame[1]);
+
+			MediaLog(LOG_DEBUG, "[ANEPC] FrameNo = %d, RT = %lld, PacketType = %d, EncodedSize = %d",
+				m_iPacketNumber, llRelativeTime, nPacketType, m_nEncodedFrameSize);
 
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)
