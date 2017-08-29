@@ -56,7 +56,7 @@ namespace MediaSDK
 
 		memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 
-		for (int i = 0; i < MAX_NUMBER_OF_CALLEE; i++){
+		for (int i = 0; i < MAX_NUMBER_OF_CALL_PARTICIPANTS; i++){
 			m_vAudioFarEndBufferVector.push_back(new LiveAudioDecodingQueue());	//Need to delete.
 		}
 
@@ -158,7 +158,7 @@ namespace MediaSDK
 	}
 
 
-	void AudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType)
+	void AudioFarEndDataProcessor::DecodeAndPostProcessIfNeeded(const int iPacketNumber, const int nCurrentPacketHeaderLength, const int nCurrentAudioPacketType)
 	{
 		m_iLastDecodedPacketNumber = iPacketNumber;
 		LOGEF("Role %d, Before decode", m_iRole);
@@ -211,7 +211,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
 	{
-		COW("###^^^### SENT TO PLAYER DATA .................");
+		MediaLog(LOG_INFO, "[AFEDP] SENT TO PLAYER DATA .................");
 		long long llNow = 0;
 
 		if (m_bIsLiveStreamingRunning == true)
@@ -219,13 +219,13 @@ namespace MediaSDK
 
 			llNow = Tools::CurrentTimestamp();
 
-			__LOG("!@@@@@@@@@@@  #WQ     FN: %d -------- Receiver Time Diff : %lld    DataLength: %d",
-				iPacketNumber, llNow - llLastTime, nSentFrameSize);
+			MediaLog(LOG_INFO, "[AFEDP] Live Streaming Receiver Time Diff : %lld, DataLength: %d",
+				llNow - llLastTime, nSentFrameSize);
 
 			llLastTime = llNow;
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+			if (false == m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
-				LOG18("#18@# PUb enq , packet type %d", iCurrentPacketNumber);
+				MediaLog(LOG_INFO, "[AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
 				int iStartIndex = 0;
 				int iEndIndex = 1599;
 				int iCalleeId = 1;
@@ -234,11 +234,11 @@ namespace MediaSDK
 				int iMuxHeaderSize = AUDIO_MUX_HEADER_LENGHT;
 
 				MuxHeader audioMuxHeader(iCalleeId, iCurrentPacketNumber, m_vFrameMissingBlocks);
-
+				
 				m_pAudioCallSession->m_PublisherBufferForMuxing->EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 			}
 
-			HITLER("*STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
+			MediaLog(LOG_INFO, "[AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 //#ifdef __ANDROID__
 //			if (m_bIsLiveStreamingRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType))
 //			{
@@ -257,7 +257,7 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					m_nPacketPlayed ++;
-					MediaLog(LOG_INFO, "[AFEDP]Viewer# To Player [SendToPlayer]\n");
+					MediaLog(LOG_INFO, "[AFEDP] Viewer# To Player [SendToPlayer]\n");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 #ifdef PCM_DUMP
 					if (m_pAudioCallSession->PlayedFile)
@@ -347,20 +347,37 @@ namespace MediaSDK
 			return false;
 		}
 		else if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
-		{
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)	//
+		{			
+			if (m_pAudioCallSession->IsOpusEnable())	
 			{
-				if (nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
-					return true;
-			}
-			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
-			{
-				if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType || AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED == nCurrentAudioPacketType)
+				if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)	//
 				{
-					return true;
+					if (nCurrentAudioPacketType == LIVE_CALLEE_PACKET_TYPE_OPUS)
+						return true;
+				}
+				else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+				{
+					if (LIVE_CALLEE_PACKET_TYPE_OPUS == nCurrentAudioPacketType || LIVE_PUBLISHER_PACKET_TYPE_OPUS == nCurrentAudioPacketType)
+					{
+						return true;
+					}
 				}
 			}
-
+			else
+			{
+				if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)	//
+				{
+					if (nCurrentAudioPacketType == AUDIO_LIVE_CALLEE_PACKET_TYPE)
+						return true;
+				}
+				else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
+				{
+					if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType || AUDIO_LIVE_PUBLISHER_PACKET_TYPE_NONMUXED == nCurrentAudioPacketType)
+					{
+						return true;
+					}
+				}
+			}
 		}
 
 		return false;

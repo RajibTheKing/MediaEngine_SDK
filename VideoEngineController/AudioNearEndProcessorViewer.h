@@ -20,12 +20,7 @@ namespace MediaSDK
 		AudioNearEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 		~AudioNearEndProcessorViewer() { }
 
-		void ProcessNearEndData();
-
-
-	private:
-
-		int m_nRawFrameSize;
+		void ProcessNearEndData();		
 	};
 
 }  //namespace MediaSDK

@@ -2,6 +2,7 @@
 #include "AudioPacketHeader.h"
 #include "LogPrinter.h"
 #include "AudioCallSession.h"
+#include "MediaLogger.h"
 
 namespace MediaSDK
 {
@@ -24,7 +25,7 @@ namespace MediaSDK
 
 	bool AudioDePacketizer::dePacketize(unsigned char* uchBlock, int iBlockNo, int iTotalBlock, int iBlockLength, int iBlockOffset, int iPacketNumber, int nPacketLength, long long &llNow, long long &llLastTime)
 	{
-		HITLER("XXP@#@#MARUF BOKKOR IS RUNNING PACKET BN = %d  TB = %d  BL = %d BO = %d PN = %d PL = %d", iBlockNo, iTotalBlock, iBlockLength, iBlockOffset, iPacketNumber, nPacketLength);
+		MediaLog(LOG_CODE_TRACE,"[AFEPV][DP] BN = %d  TB = %d  BL = %d BO = %d PN = %d PL = %d", iBlockNo, iTotalBlock, iBlockLength, iBlockOffset, iPacketNumber, nPacketLength);
 
 		if (m_iPreviousPacketNumber == -1) {
 			m_iPreviousPacketNumber = iPacketNumber;
@@ -33,7 +34,7 @@ namespace MediaSDK
 			m_nFrameLength = nPacketLength;
 			if ((1 << iTotalBlock) == (m_iBlockOkayFlag + 1))
 			{
-				HITLER("XXP@#@#MARUF Packet Return True 1");
+				MediaLog(LOG_CODE_TRACE, "[AFEPV][DP] XXP@#@#MARUF Packet Return True 1");
 				return true;
 			}
 		}
@@ -52,7 +53,7 @@ namespace MediaSDK
 				m_nFrameLength = nPacketLength;
 				if ((1 << iTotalBlock) == (m_iBlockOkayFlag + 1))
 				{
-					HITLER("XXP@#@#MARUF Packet Return True 2");
+					MediaLog(LOG_CODE_TRACE, "[AFEPV][DP] XXP@#@#MARUF Packet Return True 2");
 					return true;
 				}
 			}
@@ -65,12 +66,12 @@ namespace MediaSDK
 				m_nFrameLength = nPacketLength;
 				if ((1 << iTotalBlock) == (m_iBlockOkayFlag + 1))
 				{
-					HITLER("XXP@#@#MARUF Packet Return True 2");
+					MediaLog(LOG_CODE_TRACE, "[AFEPV][DP] XXP@#@#MARUF Packet Return True 2");
 					return true;
 				}
 			}
 			else {
-				HITLER("XXP@#@#MARUF PACKET REMOVED DUE TO LOW PACKET NUMBER. PREV [%d] CUR [%d]", m_iPreviousPacketNumber, iPacketNumber);
+				MediaLog(LOG_CODE_TRACE, "[AFEPV][DP] XXP@#@#MARUF PACKET REMOVED DUE TO LOW PACKET NUMBER. PREV [%d] CUR [%d]", m_iPreviousPacketNumber, iPacketNumber);
 				return false;
 			}
 		}

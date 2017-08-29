@@ -28,6 +28,9 @@ namespace MediaSDK
 		long long getMax(int bitLength);
 		long long getMin(int bitLength);
 
+		void ResetPCMAdder();
+		void AddDataToPCMAdder(short *psPcmData, int nDataSizeInShort);
+		void GetAddedData(short *psPcmData, int nDataSizeInShort);
 
 	private:
 		
@@ -43,6 +46,8 @@ namespace MediaSDK
 		int m_iFrameNumberLengthInByte;
 
 		unsigned char m_uchCalleeBlockInfo[MAX_AUDIO_DECODER_FRAME_SIZE];
+
+		short m_sPcmAdder[AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING];
 
 		int m_iMixedData[MAX_AUDIO_DECODER_FRAME_SIZE];
 

@@ -36,7 +36,8 @@ namespace MediaSDK
 		m_bAudioEncodingThreadRunning(false),
 		m_bAudioEncodingThreadClosed(true),
 		m_iPacketNumber(0),
-		m_iRawDataSendIndexViewer(0),
+		m_nStoredDataLengthNear(0),
+		m_nStoredDataLengthFar(0),
 		m_llLastChunkLastFrameRT(-1),
 		m_llLastFrameRT(0),
 		m_pDataReadyListener(nullptr),
@@ -77,12 +78,12 @@ namespace MediaSDK
 	}
 
 
-	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nDataLengthInByte)
+	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte)
 	{
 		NearEndLockerStoreDataForChunk lock(*m_pAudioEncodingMutex);
 
 
-		if (0 == m_iRawDataSendIndexViewer && -1 == m_llLastChunkLastFrameRT)
+		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
 		{
 			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
 			m_llLastChunkLastFrameRT = llRelativeTime;
@@ -90,11 +91,41 @@ namespace MediaSDK
 
 		m_llLastFrameRT = llRelativeTime;
 
-		if ((m_iRawDataSendIndexViewer + nDataLengthInByte + m_MyAudioHeadersize + 1) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+		if ((m_nStoredDataLengthNear + nFrameLengthInByte) < MAX_AUDIO_DATA_TO_SEND_SIZE)
 		{
-			memcpy(m_ucaRawDataToSendViewer + m_iRawDataSendIndexViewer, uchDataToChunk, nDataLengthInByte + m_MyAudioHeadersize + 1);
-			m_iRawDataSendIndexViewer += (nDataLengthInByte + m_MyAudioHeadersize + 1);
-			m_vRawFrameLengthViewer.push_back(nDataLengthInByte + m_MyAudioHeadersize + 1);
+			memcpy(m_ucaRawDataToSendNear + m_nStoredDataLengthNear, uchDataToChunk, nFrameLengthInByte);
+			m_nStoredDataLengthNear += (nFrameLengthInByte);
+			m_vRawFrameLengthNear.push_back(nFrameLengthInByte);
+		}
+	}
+
+	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchNearData, int nNearFrameLengthInByte, 
+		unsigned char *uchFarData, int nFarFrameLengthInByte, long long llRelativeTime)
+	{
+		NearEndLockerStoreDataForChunk lock(*m_pAudioEncodingMutex);
+
+		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
+		{
+			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
+			m_llLastChunkLastFrameRT = llRelativeTime;
+		}
+
+		m_llLastFrameRT = llRelativeTime;
+
+		MediaLog(LOG_CODE_TRACE, "[ANEDP] m_nStoredDataLengthNear = %d[%d], m_nStoredDataLengthFar = %d[%d]", m_nStoredDataLengthNear, nNearFrameLengthInByte, m_nStoredDataLengthFar, nFarFrameLengthInByte);
+		
+		if ((m_nStoredDataLengthNear + nNearFrameLengthInByte) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+		{
+			memcpy(m_ucaRawDataToSendNear + m_nStoredDataLengthNear, uchNearData, nNearFrameLengthInByte);
+			m_nStoredDataLengthNear += (nNearFrameLengthInByte);
+			m_vRawFrameLengthNear.push_back(nNearFrameLengthInByte);
+		}
+
+		if (nFarFrameLengthInByte > 0 && (m_nStoredDataLengthFar + nFarFrameLengthInByte) < MAX_AUDIO_DATA_TO_SEND_SIZE)
+		{
+			memcpy(m_ucaRawDataToSendFar + m_nStoredDataLengthFar, uchFarData, nFarFrameLengthInByte);
+			m_nStoredDataLengthFar += (nFarFrameLengthInByte);
+			m_vRawFrameLengthFar.push_back(nFarFrameLengthInByte);
 		}
 	}
 
@@ -150,14 +181,14 @@ namespace MediaSDK
 	}
 
 	void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
-		int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
+		int &nDataLengthNear, int &nDataLengthFar, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 	{
 		NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
 
 		vCombinedDataLengthVector.clear();
 		CombinedLength = 0;
-		sendingLengthViewer = 0;
-		sendingLengthPeer = 0;
+		nDataLengthNear = 0;
+		nDataLengthFar = 0;
 		llAudioChunkDuration = 0;
 		llAudioChunkRelativeTime = -1;
 
@@ -166,7 +197,7 @@ namespace MediaSDK
 			return;
 		}
 
-		//	HITLER("#RT# lastFrameRT: %lld, lastChunkLastFrameRT: %lld", m_llLastFrameRT, m_llLastChunkLastFrameRT);
+		MediaLog(LOG_CODE_TRACE,"[ANEDP] lastFrameRT: %lld, lastChunkLastFrameRT: %lld", m_llLastFrameRT, m_llLastChunkLastFrameRT);
 
 		llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
 
@@ -177,15 +208,33 @@ namespace MediaSDK
 
 		llAudioChunkRelativeTime = m_llLastChunkLastFrameRT;
 		m_llLastChunkLastFrameRT = m_llLastFrameRT;
+		
+		/*  COPY NEAR_END DATA */
+		vCombinedDataLengthVector = m_vRawFrameLengthNear;
+		memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendNear, m_nStoredDataLengthNear); 
+		CombinedLength += m_nStoredDataLengthNear;
+		nDataLengthNear = m_nStoredDataLengthNear;
 
+		/*  COPY FAR_END DATA */
+		if (0 < m_nStoredDataLengthFar)
+		{
+			vCombinedDataLengthVector.insert(std::end(vCombinedDataLengthVector), std::begin(m_vRawFrameLengthFar), std::end(m_vRawFrameLengthFar));
+			memcpy(pAudioCombinedDataToSend + m_nStoredDataLengthNear, m_ucaRawDataToSendFar, m_nStoredDataLengthFar);
+			CombinedLength += m_nStoredDataLengthFar;
+			nDataLengthFar = m_nStoredDataLengthFar;
+		}
 
-		vCombinedDataLengthVector = m_vRawFrameLengthViewer;
-		memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendViewer, m_iRawDataSendIndexViewer);
-		CombinedLength += m_iRawDataSendIndexViewer;
-		sendingLengthViewer = m_iRawDataSendIndexViewer;
+		int nFrames = vCombinedDataLengthVector.size();
+		int nFramesNear = m_vRawFrameLengthNear.size();
+		int nFramesFar = m_vRawFrameLengthFar.size();
 
-		m_iRawDataSendIndexViewer = 0;
-		m_vRawFrameLengthViewer.clear();
+		MediaLog(LOG_DEBUG, "[ANEDP] RelativeTime:%lld [Dur:%lld], NearData=%d, FarData=%d, TotalData=%d FramesTotal=%d[N:%d,F:%d]",
+			llAudioChunkRelativeTime, llAudioChunkDuration, nDataLengthNear, nDataLengthFar, CombinedLength, nFrames, nFramesNear, nFramesFar);
+
+		m_nStoredDataLengthNear = 0;
+		m_nStoredDataLengthFar = 0;
+		m_vRawFrameLengthNear.clear();
+		m_vRawFrameLengthFar.clear();
 	}
 
 	void AudioNearEndDataProcessor::UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime)
@@ -207,8 +256,12 @@ namespace MediaSDK
 	{
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
+			NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
 			m_llLastChunkLastFrameRT = -1;
-			m_iRawDataSendIndexViewer = 0;
+			m_nStoredDataLengthNear = 0;
+			m_nStoredDataLengthFar = 0;
+			m_vRawFrameLengthNear.clear();
+			m_vRawFrameLengthFar.clear();
 		}
 		m_nEntityType = nEntityType;
 	}
@@ -218,8 +271,12 @@ namespace MediaSDK
 	{
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
+			NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
 			m_llLastChunkLastFrameRT = -1;
-			m_iRawDataSendIndexViewer = 0;
+			m_nStoredDataLengthNear = 0;
+			m_nStoredDataLengthFar = 0;
+			m_vRawFrameLengthNear.clear();
+			m_vRawFrameLengthFar.clear();
 		}
 		m_nEntityType = nEntityType;
 	}
