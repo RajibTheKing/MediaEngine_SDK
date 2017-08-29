@@ -130,17 +130,6 @@ namespace MediaSDK
 				videoHeader.SetPacketHeader(uchVideoData + 1 + iUsedLen);
 				int nCurrentFrameLen = videoHeader.GetPacketLength();
 
-				unsigned char *p = uchVideoData + iUsedLen + 1 + videoHeader.GetHeaderLength();
-
-				int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
-
-				CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector nCurrentFrameLen %d, nalType = %d, j=%d", nCurrentFrameLen, nalType, j);
-
-				if (nalType == 7)
-					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
-				else
-					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
-
 				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
 			}
 		}
