@@ -314,7 +314,9 @@ namespace MediaSDK
 			{
 				CLogPrinter_LOG(HEADER_TEST_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector (int)in_data[0] %d", (int)in_data[0]);
 
-				if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0] || VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0])
+				int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data);
+
+				if ((AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0] || VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0]) && streamType != STREAM_TYPE_CHANNEL)
 					return 0;
 
 				//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
@@ -426,7 +428,7 @@ namespace MediaSDK
 				int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 				int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
-				int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
+				streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
 				MediaLog(LOG_INFO, "[IAVE] AudioDataSize: %d [Frames: %d, SatartIndex: %d] VideoDataSize: %d [Frames: %d, StartIndex: %d]", 
 					lengthOfAudioData, numberOfAudioFrames, audioStartingPosition, lengthOfVideoData, numberOfVideoFrames, videoStartingPosition);				
 
