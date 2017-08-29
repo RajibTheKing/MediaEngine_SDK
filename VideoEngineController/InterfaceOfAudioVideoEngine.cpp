@@ -141,7 +141,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth)
+	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType)
 	{
 #ifdef LIVE_CHUNK_DUMPLINGS
 #if defined(__ANDROID__)
@@ -170,7 +170,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		bool bAudioCodecOpus = false;	//Enable opus codec for livestreaming.
+		bool bAudioCodecOpus = (AudioCodecType::AUDIO_CODEC_OPUS == iAudioCodecType);	//Enable opus codec for livestreaming.
 		
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER, bAudioCodecOpus);
 

@@ -46,6 +46,11 @@
 typedef long long IPVLongType;
 typedef long long LongLong;
 
+enum AudioCodecType
+{
+	AUDIO_CODEC_PCM = 1,
+	AUDIO_CODEC_OPUS = 2
+};
 
 //#define NO_CONNECTIVITY
 
@@ -76,7 +81,7 @@ namespace MediaSDK
 
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
-		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth);
+		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType);
 		bool StartChannelView(const IPVLongType llFriendID);
 
 		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive);
