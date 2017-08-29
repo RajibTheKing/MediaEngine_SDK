@@ -749,7 +749,7 @@ bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in
 	if (m_bLiveVideoStreamRunning)
 	{
 		if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
-			m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames);
+			m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames, m_nServiceType);
 
 		return true;
 	}

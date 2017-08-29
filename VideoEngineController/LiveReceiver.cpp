@@ -97,7 +97,7 @@ namespace MediaSDK
 		return flag;
 	}
 
-	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, int serviceType)
 	{
 		CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector called");
 
@@ -114,7 +114,7 @@ namespace MediaSDK
 		int iUsedLen = 3, nFrames = 0;
 		int tillIndex = offset + 3;
 
-		if ((int)uchVideoData[offset] != 0)
+		if ((int)uchVideoData[offset] != 0 && serviceType != SERVICE_TYPE_CHANNEL)
 		{
 			bool success = false;
 			
@@ -143,6 +143,12 @@ namespace MediaSDK
 
 				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
 			}
+		}
+		
+		if (serviceType == SERVICE_TYPE_CHANNEL)
+		{
+			iUsedLen = 0;
+			tillIndex = offset;
 		}
 
 		if (numberOfMissingFrames)
