@@ -114,12 +114,12 @@ namespace MediaSDK
 		int iUsedLen = 3, nFrames = 0;
 		int tillIndex = offset + 3;
 
-		if ((int)uchVideoData[offset] != 0 && serviceType != SERVICE_TYPE_CHANNEL)
+		if ((int)uchVideoData[0] != 0 && serviceType != SERVICE_TYPE_CHANNEL)
 		{
 			bool success = false;
 			
-			if ((int)uchVideoData[offset] == 2 )
-				success = isComplement((int)uchVideoData[offset + 1], (int)uchVideoData[offset + 2], offset + 3, uchVideoData, numberOfFrames, frameSizes, vMissingFrames, m_pBackupData);
+			if ((int)uchVideoData[0] == 2 )
+				success = isComplement((int)uchVideoData[1], (int)uchVideoData[2], 3, uchVideoData, numberOfFrames, frameSizes, vMissingFrames, m_pBackupData);
 
 			if (success)
 			{
@@ -154,7 +154,7 @@ namespace MediaSDK
 		{
 			nFrames++;
 
-			if ((int)uchVideoData[offset] != 0 && (j == (int)uchVideoData[offset + 1] || j == (int)uchVideoData[offset + 2]))
+			if ((int)uchVideoData[0] != 0 && (j == (int)uchVideoData[1] || j == (int)uchVideoData[2]))
 			{
 				iUsedLen += frameSizes[j];
 				continue;
