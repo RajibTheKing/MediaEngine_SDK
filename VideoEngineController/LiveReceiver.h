@@ -30,6 +30,8 @@ namespace MediaSDK
 
 		SharedPointer<CLockHandler> m_pLiveReceiverMutex;
 
+		unsigned char m_pBackupData[MAX_VIDEO_ENCODER_FRAME_SIZE];
+
 		LiveVideoDecodingQueue *m_pLiveVideoDecodingQueue;
 		CCommonElementsBucket* m_pCommonElementsBucket;
 	};

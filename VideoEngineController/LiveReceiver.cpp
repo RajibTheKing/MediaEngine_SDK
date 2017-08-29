@@ -58,28 +58,32 @@ namespace MediaSDK
 		}
 
 		bool flag = true;
+
 		int numberOfMissingFrames = vMissingFrames.size();
 
 		for (int i = 0; i < frameSizes[firstFrame]; i++)
 		{
 			bool missingFromFirstFrame = false, missingFromSecondFrame = false;
+
 			for (int j = 0; j < numberOfFrames; j++)
 			{
-				if (firstFrameStartPos + i >= vMissingFrames[j].first && firstFrameStartPos + i <= vMissingFrames[i].second)
+				if (firstFrameStartPos + i >= vMissingFrames[j].first && firstFrameStartPos + i <= vMissingFrames[j].second)
 				{
 					missingFromFirstFrame = true;
 				}
-				if (secondFrameStartPos + i >= vMissingFrames[j].first && secondFrameStartPos + i <= vMissingFrames[i].second)
+				if (secondFrameStartPos + i >= vMissingFrames[j].first && secondFrameStartPos + i <= vMissingFrames[j].second)
 				{
 					missingFromSecondFrame = true;
 				}
 				if (missingFromFirstFrame == true && missingFromSecondFrame == true)
 				{
 					flag = false;
+
 					j = numberOfFrames;
 					i = frameSizes[firstFrame];
 				}
 			}
+
 			if (missingFromSecondFrame == false)
 			{
 				constructedFrame[i] = uchVideoData[secondFrameStartPos + i];
@@ -107,8 +111,39 @@ namespace MediaSDK
 		int numberOfMissingFrames = vMissingFrames.size();
 		int numOfMissingFrames = 0;
 
-		int iUsedLen = 0, nFrames = 0;
+		int iUsedLen = 3, nFrames = 0;
 		int tillIndex = offset + 3;
+
+		if ((int)uchVideoData[offset] != 0)
+		{
+			bool success = false;
+			
+			if ((int)uchVideoData[offset] == 2 )
+				success = isComplement((int)uchVideoData[offset + 1], (int)uchVideoData[offset + 2], offset + 3, uchVideoData, numberOfFrames, frameSizes, vMissingFrames, m_pBackupData);
+
+			if (success)
+			{
+				CVideoHeader videoHeader;
+
+				CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector iUsedLen %d", iUsedLen);
+
+				videoHeader.SetPacketHeader(uchVideoData + 1 + iUsedLen);
+				int nCurrentFrameLen = videoHeader.GetPacketLength();
+
+				unsigned char *p = uchVideoData + iUsedLen + 1 + videoHeader.GetHeaderLength();
+
+				int nalType = p[2] == 1 ? (p[3] & 0x1f) : (p[4] & 0x1f);
+
+				CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector nCurrentFrameLen %d, nalType = %d, j=%d", nCurrentFrameLen, nalType, j);
+
+				if (nalType == 7)
+					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
+				else
+					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
+
+				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
+			}
+		}
 
 		if (numberOfMissingFrames)
 		{
@@ -123,6 +158,12 @@ namespace MediaSDK
 		for (int j = 0; iUsedLen < iLen; j++)
 		{
 			nFrames++;
+
+			if ((int)uchVideoData[offset] != 0 && (j == (int)uchVideoData[offset + 1] || j == (int)uchVideoData[offset + 2]))
+			{
+				iUsedLen += frameSizes[j];
+				continue;
+			}
 
 			int indexOfThisFrame = tillIndex;
 			int endOfThisFrame = indexOfThisFrame + frameSizes[j] - 1;
