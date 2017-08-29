@@ -1,3 +1,10 @@
+Release 11.0 (Date: 29-08-2017)
+---------------------------------
+- [Issue #4241] Opus in livestreaming with PCM options.
+- [Issue #4268] Dispatch audio frame from linear buffer maintaining 100 ms delay. Fix of large audio data in chunk.
+- Chunk header modified 
+
+
 Release 10.1.3 (Date: 28-08-2017)
 ---------------------------------
 - Video quality adaptation modified
