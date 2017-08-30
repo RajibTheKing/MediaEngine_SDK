@@ -65,7 +65,7 @@ namespace MediaSDK
 		{
 			bool missingFromFirstFrame = false, missingFromSecondFrame = false;
 
-			for (int j = 0; j < numberOfFrames; j++)
+			for (int j = 0; j < numberOfMissingFrames; j++)
 			{
 				if (firstFrameStartPos + i >= vMissingFrames[j].first && firstFrameStartPos + i <= vMissingFrames[j].second)
 				{
@@ -79,7 +79,7 @@ namespace MediaSDK
 				{
 					flag = false;
 
-					j = numberOfFrames;
+					j = numberOfMissingFrames;
 					i = frameSizes[firstFrame];
 				}
 			}
@@ -90,7 +90,7 @@ namespace MediaSDK
 			}
 			else if (missingFromFirstFrame == false)
 			{
-				constructedFrame[i] = uchVideoData[firstFrameStartPos + i];;
+				constructedFrame[i] = uchVideoData[firstFrameStartPos + i];
 			}
 		}
 
