@@ -166,7 +166,9 @@ namespace MediaSDK
 				if (i < numberOfMissingPartsFirstFrame && firstFrameMissingParts[i].first > startNow)
 				{
 					success = true;
-					memcpy(constructedFrame, uchVideoData + , firstFrameMissingParts[i].first - startNow);
+					memcpy(constructedFrame + startNow, uchVideoData + offset + startNow, firstFrameMissingParts[i].first - startNow);
+					startNow = firstFrameMissingParts[i].first;
+					i++;
 				}
 			}
 
@@ -176,7 +178,9 @@ namespace MediaSDK
 				if (j < numberOfMissingPartsSecondFrame && secondFrameMissingParts[j].first > startNow)
 				{
 					success = true;
-
+					memcpy(constructedFrame + startNow, uchVideoData + offset + startNow, secondFrameMissingParts[j].first - startNow);
+					startNow = secondFrameMissingParts[j].first;
+					j++;
 				}
 			}
 
