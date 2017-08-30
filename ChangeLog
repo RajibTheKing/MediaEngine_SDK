@@ -1,3 +1,8 @@
+Release 11.0.2 (Date: 30-08-2017)
+---------------------------------
+- Bug fixed of missing frame calculation
+
+
 Release 11.0 (Date: 29-08-2017)
 ---------------------------------
 - [Issue #4241] Opus in livestreaming with PCM options.
