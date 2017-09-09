@@ -1,4 +1,3 @@
-
 #include "LiveReceiver.h"
 #include "VideoHeader.h"
 #include "Tools.h"
@@ -159,7 +158,7 @@ namespace MediaSDK
 		bool flag = true;
 		int numberOfMissingPartsFirstFrame = firstFrameMissingParts.size(), numberOfMissingPartsSecondFrame = secondFrameMissingParts.size();
 
-		int startNow = offset;
+		int startNow = 0;
 		for (int i = 0, j = 0; startNow < frameSizes[firstFrame];)
 		{
 			bool success = false;
@@ -170,7 +169,7 @@ namespace MediaSDK
 				if (i < numberOfMissingPartsFirstFrame && firstFrameMissingParts[i].first > startNow)
 				{
 					success = true;
-					memcpy(constructedFrame + startNow - offset, uchVideoData + offset + startNow, firstFrameMissingParts[i].first - startNow);
+					memcpy(constructedFrame + startNow - offset, uchVideoData + firstFrameStartPos + startNow, firstFrameMissingParts[i].first - startNow);
 					startNow = firstFrameMissingParts[i].first;
 				}
 			}
@@ -181,7 +180,7 @@ namespace MediaSDK
 				if (j < numberOfMissingPartsSecondFrame && secondFrameMissingParts[j].first > startNow)
 				{
 					success = true;
-					memcpy(constructedFrame + startNow - offset, uchVideoData + offset + startNow, secondFrameMissingParts[j].first - startNow);
+					memcpy(constructedFrame + startNow - offset, uchVideoData + secondFrameStartPos + startNow, secondFrameMissingParts[j].first - startNow);
 					startNow = secondFrameMissingParts[j].first;
 				}
 			}
