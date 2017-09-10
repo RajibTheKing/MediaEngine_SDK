@@ -12,7 +12,7 @@
 
 #include "LiveReceiver.h"
 #include "LiveVideoDecodingQueue.h"
-#include "Globals.h"
+
 #include "InterfaceOfAudioVideoEngine.h"
 
 #ifdef CHANNEL_FROM_FILE

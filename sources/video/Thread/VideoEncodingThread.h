@@ -11,8 +11,8 @@
 #include "EncodedFrameDepacketizer.h"
 #include "EncodedFramePacketizer.h"
 #include "AverageCalculator.h"
-#include "../VideoEngineUtilities/VideoBeautificationer.h"
-#include "../VideoEngineUtilities/VideoEffects.h"
+#include "VideoBeautificationer.h"
+#include "VideoEffects.h"
 
 #include <thread>
 

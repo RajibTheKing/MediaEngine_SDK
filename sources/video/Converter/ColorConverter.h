@@ -4,7 +4,7 @@
 
 #include "SmartPointer.h"
 #include "CommonTypes.h"
-#include "../VideoEngineController/Size.h"
+#include "Size.h"
 #include "VideoBeautificationer.h"
 
 #if _MSC_VER > 1000

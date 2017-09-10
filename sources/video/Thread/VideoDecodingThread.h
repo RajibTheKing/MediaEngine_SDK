@@ -14,7 +14,7 @@
 #include "LiveVideoDecodingQueue.h"
 #include "VideoHeader.h"
 
-#include "../VideoEngineUtilities/VideoEffects.h"
+#include "VideoEffects.h"
 
 //#include "Helper_IOS.hpp"
 #include <thread>

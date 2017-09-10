@@ -2,7 +2,7 @@
 #include "EncodedFramePacketizer.h"
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
-#include "Globals.h"
+
 #include "VideoCallSession.h"
 
 namespace MediaSDK

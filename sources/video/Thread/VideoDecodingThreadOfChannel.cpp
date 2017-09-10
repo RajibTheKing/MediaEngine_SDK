@@ -1,7 +1,7 @@
 
 #include "VideoDecodingThreadOfChannel.h"
 #include "VideoCallSession.h"
-#include "Globals.h"
+
 #include "CommonElementsBucket.h"
 #include "LiveVideoDecodingQueue.h"
 

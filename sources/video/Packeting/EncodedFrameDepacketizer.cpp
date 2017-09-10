@@ -3,7 +3,7 @@
 #include "LogPrinter.h"
 #include "Tools.h"
 #include "ResendingBuffer.h"
-#include "Globals.h"
+
 
 namespace MediaSDK
 {

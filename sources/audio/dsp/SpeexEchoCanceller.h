@@ -5,8 +5,8 @@
 #include "EchoCancellerInterface.h"
 #include "AudioMacros.h"
 #ifdef USE_AECM
-#include "speex/speex_echo.h"
-#include "speex/speex_preprocess.h"
+#include "speex_echo.h"
+#include "speex_preprocess.h"
 #endif
 
 namespace MediaSDK

@@ -117,7 +117,7 @@
 #define PRIORITY CLogPrinter::DEBUGS
 
 
-#include "../VideoEngineUtilities/SmartPointer.h"
+#include "SmartPointer.h"
 
 #include <stdio.h>
 

@@ -1,7 +1,7 @@
 
 #include "ColorConverter.h"
-#include "../VideoEngineController/LogPrinter.h"
-#include "../VideoEngineController/CommonElementsBucket.h"
+#include "LogPrinter.h"
+#include "CommonElementsBucket.h"
 #include <math.h>
 
 #if defined(__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_WINDOWS_PHONE)

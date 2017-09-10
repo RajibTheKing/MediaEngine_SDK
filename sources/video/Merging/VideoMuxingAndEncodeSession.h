@@ -2,8 +2,8 @@
 #ifndef VIDEO_MUXING_ENCODE_SESSION
 #define VIDEO_MUXING_ENCODE_SESSION
 
-#include "../VideoEngineUtilities/ColorConverter.h"
-#include "../VideoEngineUtilities/MuxingVideoData.h"
+#include "ColorConverter.h"
+#include "MuxingVideoData.h"
 #include "VideoEncoder.h"
 #include "CommonElementsBucket.h"
 #include "SmartPointer.h"

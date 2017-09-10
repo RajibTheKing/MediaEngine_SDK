@@ -11,7 +11,7 @@
 
 #include "LiveReceiver.h"
 #include "LiveVideoDecodingQueue.h"
-#include "Globals.h"
+
 #include "InterfaceOfAudioVideoEngine.h"
 
 namespace MediaSDK

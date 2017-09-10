@@ -1,6 +1,6 @@
 
 #include "HashGenerator.h"
-#include "../VideoEngineController/LogPrinter.h"
+#include "LogPrinter.h"
 
 namespace MediaSDK
 {

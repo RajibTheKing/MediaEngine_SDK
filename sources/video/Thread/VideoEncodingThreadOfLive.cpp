@@ -1,7 +1,7 @@
 
 #include "VideoCallSession.h"
 #include "VideoEncodingThreadOfLive.h"
-#include "Globals.h"
+
 #include "LogPrinter.h"
 #include "VideoCallSession.h"
 #include "CommonElementsBucket.h"

@@ -1,8 +1,8 @@
 
 
 #include "MuxingVideoData.h"
-#include "../VideoEngineController/LogPrinter.h"
-#include "../VideoEngineController/ThreadTools.h"
+#include "LogPrinter.h"
+#include "ThreadTools.h"
 
 
 #if defined(__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_WINDOWS_PHONE)

@@ -1,7 +1,7 @@
 
 #include "VideoEffects.h"
-#include "../VideoEngineController/AverageCalculator.h"
-#include "../VideoEngineController/Tools.h"
+#include "AverageCalculator.h"
+#include "Tools.h"
 
 namespace MediaSDK
 {

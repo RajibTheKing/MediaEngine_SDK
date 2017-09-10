@@ -2,7 +2,7 @@
 #include "VideoCallSession.h"
 #include "CommonElementsBucket.h"
 #include "LogPrinter.h"
-#include "Globals.h"
+
 #include "Controller.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
