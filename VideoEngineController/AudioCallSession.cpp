@@ -62,6 +62,7 @@ namespace MediaSDK
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
 		m_llLastPlayTime(0),
+		m_nEchoExistsFlags(0),
 		m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
@@ -607,6 +608,7 @@ namespace MediaSDK
 	{
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
+		m_nEchoExistsFlags = 0;
 
 #ifdef USE_AECM
 
@@ -682,7 +684,7 @@ namespace MediaSDK
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time);
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
-					int nEchoExistsFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
+					m_nEchoExistsFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
 #ifdef PCM_DUMP
