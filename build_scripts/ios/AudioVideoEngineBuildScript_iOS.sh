@@ -2,9 +2,9 @@
 
 #Author: Rajib Chandra Das
 #
-SOURCE_DIRECTORY="./";
-BUILD_DIRECTORY="./";
-BUILD_NAME="";
+PROJECT_DIRECTORY="../../builds/ios";
+BUILD_DIRECTORY="../../output";
+BUILD_NAME="ios";
 #BUILD_CONFIGURATION="Release";
 #BUILD_CONFIGURATION="Debug";
 BUILD_CONFIGURATION=$1;
@@ -52,7 +52,7 @@ fi
 
 LogOutput "\n\nTheKing--> Just Started AudioVideoEngine Build";
 
-LogOutput "TheKing--> Source Path Root = $SOURCE_DIRECTORY" "RED";
+LogOutput "TheKing--> Source Path Root = $PROJECT_DIRECTORY" "RED";
 LogOutput "TheKing--> Build Path Root = $BUILD_DIRECTORY" "RED";
 LogOutput "TheKing--> Release Name = $BUILD_NAME" "RED";
 
@@ -63,7 +63,7 @@ CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/${BUILD_CONFIGURATIO
 
 LogOutput "\n\n\nTheKing--> Creating Library for ${BUILD_CONFIGURATION}-iphoneos\n\n\n";
 
-xcodebuild 	-project "${SOURCE_DIRECTORY}/AudioVideoEngine.xcodeproj" \
+xcodebuild 	-project "${PROJECT_DIRECTORY}/AudioVideoEngine.xcodeproj" \
 			-scheme AudioVideoEngine \
 			-configuration "${BUILD_CONFIGURATION}" \
 			-sdk iphoneos${XCODE_SDK_VERSION}  \
@@ -76,7 +76,7 @@ CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/${BUILD_CONFIGURATIO
 
 LogOutput "\n\n\nTheKing--> Creating Library for ${BUILD_CONFIGURATION}-iphonesimulator\n\n\n";
 
-xcodebuild 	-project "$SOURCE_DIRECTORY/AudioVideoEngine.xcodeproj" \
+xcodebuild 	-project "$PROJECT_DIRECTORY/AudioVideoEngine.xcodeproj" \
 			-scheme AudioVideoEngine \
 			-configuration "${BUILD_CONFIGURATION}" \
 			-sdk iphonesimulator${XCODE_SDK_VERSION}  \
@@ -98,7 +98,7 @@ CreateDirectoryIfNotExist "${BUILD_DIRECTORY}/${BUILD_NAME}/include/";
 
 LogOutput "\n\n\nTheKing--> Copy Header files related to libAudioVideoEngine..\n\n\n";
 
-cp "$SOURCE_DIRECTORY/VideoEngineController/InterfaceOfAudioVideoEngine.h" "$BUILD_DIRECTORY/${BUILD_NAME}/include/InterfaceOfAudioVideoEngine.h";
+cp "$PROJECT_DIRECTORY/../../sources/common/InterfaceOfAudioVideoEngine.h" "$BUILD_DIRECTORY/${BUILD_NAME}/include/InterfaceOfAudioVideoEngine.h";
 
 LogOutput "TheKing--> AudioVideoEngine BuildScript Finished Successfully...";
 

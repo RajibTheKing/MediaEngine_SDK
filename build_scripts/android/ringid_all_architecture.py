@@ -5,15 +5,15 @@ import sys
 import time
 
 
-videoengine = r'F:\git_Codes\AndroidTestClientVE_FTest\AndroidTestClientVE_FTest\app\src\main\jni\videoengine'
-callsdk = r'F:\git_Codes\callsdk_v2'
-testapp = r'F:\git_Codes\ringIDAndroid\ringID'
-ownClient = r'F:\git_Codes\AndroidTestClientVE_FTest\AndroidTestClientVE_FTest';
+videoengine = r'D:\Dev\MediaEngine_dev'
+callsdk = r'D:\Dev\callsdk_v2'
+testapp = r'D:\Dev\ringid_clients\ringIDAndroid\ringID'
+ownClient = r'D:\Dev\AndroidTestClient';
 
 
 
 
-application_mk = videoengine + r'\OthersLib\JNI\Application.mk'
+application_mk = videoengine + r'\builds\android\jni\Application.mk'
 
 ret = 0
 three = 0
@@ -37,7 +37,7 @@ def check():
 
 def buildEngine():
 	global ret
-	os.chdir(videoengine + r'\OthersLib\JNI')
+	os.chdir(videoengine + r'\builds\android\jni')
 	if clean_videoEngine == 1: 
 		ret = subprocess.call(["ndk-build","clean"], shell=True)
 		check()
@@ -45,15 +45,15 @@ def buildEngine():
 	else: ret = subprocess.call(["ndk-build"], shell=True)
 	check()
 	if one == 1: 
-		shutil.copy2( videoengine + r'\OthersLib\obj\local\armeabi\libvideoEngineController.a', callsdk + r'\libs\media\Android\libs\armeabi')
-		shutil.copy2( videoengine + r'\OthersLib\libs\armeabi\libRingIDSDK.so', ownClient + r'\app\src\main\jniLibs\armeabi')
+		shutil.copy2( videoengine + r'\builds\android\obj\local\armeabi\libvideoEngineController.a', callsdk + r'\libs\media\Android\libs\armeabi')
+		shutil.copy2( videoengine + r'\builds\android\libs\armeabi\libRingIDSDK.so', ownClient + r'\app\src\main\jniLibs\armeabi')
 	if two == 1: 
-		shutil.copy2( videoengine + r'\OthersLib\obj\local\armeabi-v7a\libvideoEngineController.a', callsdk + r'\libs\media\Android\libs\armeabi-v7a')
-		shutil.copy2( videoengine + r'\OthersLib\libs\armeabi-v7a\libRingIDSDK.so', ownClient + r'\app\src\main\jniLibs\armeabi-v7a')
+		shutil.copy2( videoengine + r'\builds\android\obj\local\armeabi-v7a\libvideoEngineController.a', callsdk + r'\libs\media\Android\libs\armeabi-v7a')
+		shutil.copy2( videoengine + r'\builds\android\libs\armeabi-v7a\libRingIDSDK.so', ownClient + r'\app\src\main\jniLibs\armeabi-v7a')
 	if three == 1: 
-		shutil.copy2( videoengine + r'\OthersLib\obj\local\x86\libvideoEngineController.a', callsdk + r'\libs\media\Android\libs\x86')
-		shutil.copy2( videoengine + r'\OthersLib\libs\x86\libRingIDSDK.so', ownClient + r'\app\src\main\jniLibs\x86')
-	shutil.copy2( videoengine + r'\\VideoEngineController\InterfaceOfAudioVideoEngine.h', callsdk + r'\libs\media\Android\include')
+		shutil.copy2( videoengine + r'\builds\android\obj\local\x86\libvideoEngineController.a', callsdk + r'\libs\media\Android\libs\x86')
+		shutil.copy2( videoengine + r'\builds\android\libs\x86\libRingIDSDK.so', ownClient + r'\app\src\main\jniLibs\x86')
+	shutil.copy2( videoengine + r'\\sources\common\InterfaceOfAudioVideoEngine.h', callsdk + r'\libs\media\Android\include')
 	print('******************************Copy successfull!***************************')
 
 ln = 60

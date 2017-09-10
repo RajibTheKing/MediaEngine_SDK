@@ -23,7 +23,7 @@ def check():
 
 def buildEngine():
 	global ret
-	os.chdir(videoengine + r'\MediaEngine_WindowsPhone')
+	os.chdir(videoengine + r'\output\winphone')
 	if clean_videoEngine == 1: 
 		ret = subprocess.call(["msbuild","MediaEngine_WindowsPhone.sln", "/t:Clean", "/p:configuration=debug"], shell=True)
 		check()
