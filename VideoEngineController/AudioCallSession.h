@@ -79,6 +79,7 @@ namespace MediaSDK
 		void SetEchoCanceller(bool bOn);
 		void ResetTrace();
 		void ResetAEC();
+		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
 		bool IsEchoCancellerEnabled();
 		bool IsTraceSendingEnabled();
 		

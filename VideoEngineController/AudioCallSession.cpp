@@ -553,6 +553,38 @@ namespace MediaSDK
 		}
 	}
 
+	void CAudioCallSession::HandleTrace(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+		{
+			MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled");
+			m_nFramesRecvdSinceTraceSent++;
+			if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+			{
+				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
+				m_FarendBuffer->ResetBuffer();
+				m_bTraceWillNotBeReceived = true; // 8-(
+			}
+			else
+			{
+				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES);
+				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
+				if (m_llDelayFraction != -1)
+				{
+					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction->m_llDelayFraction");
+					m_llTraceReceivingTime = Tools::CurrentTimestamp();
+					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+					//m_llDelayFraction = m_llDelay % 100;
+					m_iDelayFractionOrig = m_llDelayFraction;
+					m_llDelayFraction /= 8;
+					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+					m_bTraceRecieved = true;
+				}
+			}
+
+		}
+	}
+
 	void CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		long long llCurrentTime = Tools::CurrentTimestamp();
@@ -593,34 +625,8 @@ namespace MediaSDK
 				m_iDeleteCount--;
 			}
 			//Handle Trace
-			if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
-			{
-				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled");
-				m_nFramesRecvdSinceTraceSent++;
-				if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
-				{
-					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
-					m_FarendBuffer->ResetBuffer();
-					m_bTraceWillNotBeReceived = true; // 8-(
-				}
-				else
-				{
-					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES);
-					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
-					if (m_llDelayFraction != -1)
-					{
-						MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction->m_llDelayFraction");
-						m_llTraceReceivingTime = Tools::CurrentTimestamp();
-						m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
-						//m_llDelayFraction = m_llDelay % 100;
-						m_iDelayFractionOrig = m_llDelayFraction;
-						m_llDelayFraction /= 8;
-						memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-						m_bTraceRecieved = true;
-					}
-				}
+			HandleTrace(psaEncodingAudioData, unLength);
 
-			}
 			if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 			{
 				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_bTraceRecieved");
@@ -670,7 +676,7 @@ namespace MediaSDK
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 
 
-					m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
+					int nEchoExistsFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
 
 
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
