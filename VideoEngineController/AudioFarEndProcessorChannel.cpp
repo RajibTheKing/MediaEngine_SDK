@@ -73,7 +73,6 @@ namespace MediaSDK
 			}
 			llNow = Tools::CurrentTimestamp();
 
-			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
 
 			if (bIsCompleteFrame){
 				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");

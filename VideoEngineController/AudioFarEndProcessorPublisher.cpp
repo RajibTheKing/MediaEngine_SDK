@@ -87,7 +87,6 @@ namespace MediaSDK
 			}
 			llNow = Tools::CurrentTimestamp();
 
-			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
 
 			MediaLog(LOG_CODE_TRACE, "[AFEPP] nCurrentAudioPacketType = %d", nCurrentAudioPacketType);
 
