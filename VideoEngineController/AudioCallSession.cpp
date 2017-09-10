@@ -581,7 +581,25 @@ namespace MediaSDK
 					m_bTraceRecieved = true;
 				}
 			}
+		}
+	}
 
+	void CAudioCallSession::DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
+		{
+			MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace Recieved");
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+			m_iDeleteCount--;
+		}
+	}
+
+	void CAudioCallSession::DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
+		{
+			MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_bTraceRecieved");
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 	}
 
@@ -618,22 +636,12 @@ namespace MediaSDK
 			}
 
 			//If trace is received, current and next frames are deleted
-			if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
-			{
-				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace Recieved");
-				memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-				m_iDeleteCount--;
-			}
+			DeleteBeforeHandlingTrace(psaEncodingAudioData, unLength);
 			//Handle Trace
 			HandleTrace(psaEncodingAudioData, unLength);
+			//Some frames are deleted after detectiing trace, whether or not detection succeeds
+			DeleteAfterHandlingTrace(psaEncodingAudioData, unLength);
 
-			if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
-			{
-				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_bTraceRecieved");
-				memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-			}
-			//MediaLog(LOG_DEBUG, "[ACS] [Echo] PreprocessAudioData-> Delay = %lld, m_bTraceRecieved = %d, m_bTraceSent = %d, m_llTraceSendingTime = %lld, m_iDelayFractionOrig= %dfarnear m_bTraceRecieved = %d\n",
-			//	m_llDelay, m_bTraceRecieved, m_bTraceSent, m_llTraceSendingTime, m_iDelayFractionOrig, m_bTraceRecieved);
 
 #ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
@@ -674,10 +682,7 @@ namespace MediaSDK
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time);
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
-
-
 					int nEchoExistsFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
-
 
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
 #ifdef PCM_DUMP
