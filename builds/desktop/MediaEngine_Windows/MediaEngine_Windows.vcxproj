@@ -158,10 +158,6 @@
     <ClInclude Include="..\..\..\sources\video\Tools\AverageCalculator.h" />
     <ClInclude Include="..\..\..\sources\video\Tools\HashGenerator.h" />
     <ClInclude Include="..\..\..\sources\video\Tools\VersionController.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="MediaEngine_Windows.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.cpp" />
@@ -359,6 +355,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>welsdcore.lib;WelsDecPlus.lib;welsecore.lib;WelsEncPlus.lib;WelsVP.lib;g729test.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <ResourceOutputFileName />
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <Culture />
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
