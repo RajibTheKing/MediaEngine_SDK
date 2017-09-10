@@ -3,6 +3,9 @@ ARCH := $(TARGET_ARCH_ABI)
 
 THIRD_PARTY := ../../../third_party
 SOURCES := ../../../sources
+OUTPUT := ../../../output
+
+TARGET_OUT=$(OUTPUT)/android/$(ARCH)
 
 $(warning $(ARCH))
 # Prebuilt libopenh264
