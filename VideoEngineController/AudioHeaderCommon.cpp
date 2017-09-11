@@ -53,21 +53,18 @@ namespace MediaSDK
 
 	void AudioHeaderCommon::InitHeaderBitMap()
 	{
-		HeaderBitmap[0] = 8 /*INF_PACKETTYPE*/;
-		HeaderBitmap[1] = 6 /*INF_HEADERLENGTH*/;
-		HeaderBitmap[2] = 2 /*INF_NETWORKTYPE*/;
-		HeaderBitmap[3] = 5 /*INF_VERSIONCODE*/;
-		HeaderBitmap[4] = 31 /*INF_PACKETNUMBER*/;
-		HeaderBitmap[5] = 12 /*INF_BLOCK_LENGTH*/;
-		HeaderBitmap[6] = 3 /*INF_RECVDSLOTNUMBER*/;
-		HeaderBitmap[7] = 8 /*INF_NUMPACKETRECVD*/;
-		HeaderBitmap[8] = 2 /*INF_CHANNELS*/;
-		HeaderBitmap[9] = 3 /*INF_SLOTNUMBER*/;
-		HeaderBitmap[10] = 40 /*INF_TIMESTAMP*/;
-		HeaderBitmap[11] = 4 /*INF_BLOCK_NUMBER*/;
-		HeaderBitmap[12] = 4 /*INF_TOTAL_BLOCK*/;
-		HeaderBitmap[13] = 16 /*INF_BLOCK_OFFSET*/;
-		HeaderBitmap[14] = 16 /*INF_FRAME_LENGTH*/;
+		HeaderBitmap[INF_PACKETTYPE] = 8;
+		HeaderBitmap[INF_HEADERLENGTH] = 6;
+		HeaderBitmap[INF_NETWORKTYPE] = 2;
+		HeaderBitmap[INF_VERSIONCODE] = 5;
+		HeaderBitmap[INF_PACKETNUMBER] = 31;
+		HeaderBitmap[INF_BLOCK_LENGTH] = 12;
+		HeaderBitmap[INF_CHANNELS] = 2;
+		HeaderBitmap[INF_TIMESTAMP] = 40;
+		HeaderBitmap[INF_PACKET_BLOCK_NUMBER] = 4;
+		HeaderBitmap[INF_TOTAL_PACKET_BLOCKS] = 4;
+		HeaderBitmap[INF_BLOCK_OFFSET] = 16;
+		HeaderBitmap[INF_FRAME_LENGTH] = 16;
 	}
 
 	int AudioHeaderCommon::CopyInformationToHeader(unsigned int * Information)
@@ -264,10 +261,7 @@ namespace MediaSDK
 		SetInformation(params.packetType, INF_PACKETTYPE);
 		SetInformation(params.headerLength, INF_HEADERLENGTH);
 		SetInformation(params.packetNumber, INF_PACKETNUMBER);
-		SetInformation(params.slotNumber, INF_SLOTNUMBER);
 		SetInformation(params.blockLength, INF_BLOCK_LENGTH);
-		SetInformation(params.recvSlotNumber, INF_RECVDSLOTNUMBER);
-		SetInformation(params.numPacketRecv, INF_NUMPACKETRECVD);
 		SetInformation(params.version, INF_VERSIONCODE);
 		SetInformation(params.timestamp, INF_TIMESTAMP);
 		SetInformation(params.networkType, INF_NETWORKTYPE);
@@ -291,10 +285,7 @@ namespace MediaSDK
 		SetInformation(packetType, INF_PACKETTYPE);
 		SetInformation(nHeaderLength, INF_HEADERLENGTH);
 		SetInformation(packetNumber, INF_PACKETNUMBER);
-		SetInformation(slotNumber, INF_SLOTNUMBER);
 		SetInformation(packetLength, INF_BLOCK_LENGTH);
-		SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
-		SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
 		SetInformation(version, INF_VERSIONCODE);
 		SetInformation(timestamp, INF_TIMESTAMP);
 		SetInformation(networkType, INF_NETWORKTYPE);
