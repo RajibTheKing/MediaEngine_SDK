@@ -153,7 +153,7 @@ namespace MediaSDK
 		m_pAudioNearEndPacketHeader->SetInformation(0, INF_BLOCK_OFFSET);
 		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
 
-		m_pAudioNearEndPacketHeader->showDetails("@#BUILD");
+		m_pAudioNearEndPacketHeader->ShowDetails("@#BUILD");
 
 		m_pAudioNearEndPacketHeader->GetHeaderInByteArray(header);
 	}

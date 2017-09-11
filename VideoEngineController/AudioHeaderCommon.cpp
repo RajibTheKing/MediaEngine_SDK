@@ -220,7 +220,7 @@ namespace MediaSDK
 		return true;
 	}
 
-	void AudioHeaderCommon::showDetails(char prefix[])
+	void AudioHeaderCommon::ShowDetails(char prefix[])
 	{
 		HITLER("%s #-> "
 			"PT = %lld "
@@ -276,7 +276,7 @@ namespace MediaSDK
 		SetInformation(nBlockOffset, INF_BLOCK_OFFSET);
 		SetInformation(nFrameLength, INF_FRAME_LENGTH);
 
-		showDetails("@#BUILD");
+		ShowDetails("@#BUILD");
 
 		GetHeaderInByteArray(header);
 	}
@@ -314,7 +314,7 @@ namespace MediaSDK
 			nFrameLength = nBlockLength;
 		}
 
-		showDetails("@#PARSE");
+		ShowDetails("@#PARSE");
 	}
 
 } //namespace MediaSDK

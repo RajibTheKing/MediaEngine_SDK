@@ -36,7 +36,7 @@ namespace MediaSDK
 		bool IsPacketTypeSupported(unsigned int PacketType);
 		bool IsPacketTypeSupported();
 
-		void showDetails(char prefix[]);
+		void ShowDetails(char prefix[]);
 
 		bool PutInformationToArray(int InfoType);
 

@@ -77,7 +77,7 @@ namespace MediaSDK
 		virtual bool IsPacketTypeSupported(unsigned int PacketType) = 0;
 		virtual bool IsPacketTypeSupported() = 0;
 
-		virtual void showDetails(char prefix[]) = 0;
+		virtual void ShowDetails(char prefix[]) = 0;
 
 		virtual int GetHeaderSize()
 		{
