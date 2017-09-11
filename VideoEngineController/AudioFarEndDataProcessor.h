@@ -47,7 +47,7 @@ namespace MediaSDK
 	protected:
 
 		void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &packetNumber, int &packetLength, 
-			 int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
+			int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength, int &nEchoStateFlags);
 
 		bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);

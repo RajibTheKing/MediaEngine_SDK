@@ -299,7 +299,7 @@ namespace MediaSDK
 	}
 
 	void AudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &packetNumber, int &packetLength, 
-		 int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
+		int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength, int &nEchoStateFlags)
 	{
 		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
 
@@ -317,6 +317,7 @@ namespace MediaSDK
 		nNumberOfBlocks = m_pAudioFarEndPacketHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
 		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_OFFSET);
 		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_FRAME_LENGTH);
+		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_ECHO_STATE_FLAGS);
 
 		if (iBlockNumber == -1)
 		{
