@@ -257,30 +257,6 @@ namespace MediaSDK
 	}
 
 
-
-	void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength)
-	{
-		//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
-		//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
-		SetInformation(packetType, INF_PACKETTYPE);
-		SetInformation(nHeaderLength, INF_HEADERLENGTH);
-		SetInformation(packetNumber, INF_PACKETNUMBER);
-		SetInformation(packetLength, INF_BLOCK_LENGTH);
-		SetInformation(version, INF_VERSIONCODE);
-		SetInformation(timestamp, INF_TIMESTAMP);
-		SetInformation(networkType, INF_NETWORKTYPE);
-		SetInformation(channel, INF_CHANNELS);
-		SetInformation(iBlockNumber, INF_PACKET_BLOCK_NUMBER);
-		SetInformation(nTotalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
-		SetInformation(nBlockOffset, INF_BLOCK_OFFSET);
-		SetInformation(nFrameLength, INF_FRAME_LENGTH);
-
-		ShowDetails("@#BUILD");
-
-		GetHeaderInByteArray(header);
-	}
-
 	void AudioHeaderCommon::GetHeaderInfoAll(unsigned char* header, int &nHeaderLength, int &nFrameNumber, int &iBlockNumber, int &nNumberOfBlocks, int &nBlockLength, int &iOffsetOfBlock, int &nFrameLength)
 	{
 		CopyHeaderToInformation(header);
