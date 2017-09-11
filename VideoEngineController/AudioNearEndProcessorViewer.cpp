@@ -73,7 +73,7 @@ namespace MediaSDK
 
 			m_ucaRawFrameNonMuxed[0] = 0;
 			BuildAndGetHeaderInArray(nPacketType, m_MyAudioHeadersize, 0, m_iPacketNumber, nEncodedFrameSizeB,
-			    nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+				nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
 
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)

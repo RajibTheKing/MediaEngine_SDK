@@ -131,7 +131,7 @@ namespace MediaSDK
 
 
 	void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int packetNumber, int packetLength,
-		 int channel, int version, long long timestamp, unsigned char* header)
+		int channel, int version, long long timestamp, int echoStateFlags, unsigned char* header)
 	{
 		//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 		//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
@@ -149,6 +149,7 @@ namespace MediaSDK
 		m_pAudioNearEndPacketHeader->SetInformation(1, INF_TOTAL_PACKET_BLOCKS);
 		m_pAudioNearEndPacketHeader->SetInformation(0, INF_BLOCK_OFFSET);
 		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
+		m_pAudioNearEndPacketHeader->SetInformation(echoStateFlags, INF_ECHO_STATE_FLAGS);
 
 		m_pAudioNearEndPacketHeader->ShowDetails("@#BUILD");
 

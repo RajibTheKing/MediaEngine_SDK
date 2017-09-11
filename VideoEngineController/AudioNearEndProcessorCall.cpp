@@ -60,7 +60,7 @@ namespace MediaSDK
 			int nChannel = 0;
 			int nPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
-			BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iPacketNumber, m_nEncodedFrameSize, nChannel, version, llRelativeTime, &m_ucaEncodedFrame[1]);
+			BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iPacketNumber, m_nEncodedFrameSize, nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaEncodedFrame[1]);
 
 			MediaLog(LOG_DEBUG, "[ANEPC] FrameNo = %d, RT = %lld, PacketType = %d, EncodedSize = %d",
 				m_iPacketNumber, llRelativeTime, nPacketType, m_nEncodedFrameSize);
