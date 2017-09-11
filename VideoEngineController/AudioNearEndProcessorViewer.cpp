@@ -25,9 +25,6 @@ namespace MediaSDK
 
 		int version = 0;
 		long long llCapturedTime, llRelativeTime = 0, llLasstTime = -1;
-		int iSlotID = 0;
-		int iPrevRecvdSlotID = 0;
-		int iReceivedPacketsInPrevSlot = 0;
 		int nChannel = 0;
 		int nPacketType = 0;
 		int nEncodedFrameSizeB;
@@ -75,8 +72,8 @@ namespace MediaSDK
 			MediaLog(LOG_DEBUG, "[ANEPV] FrameNo = %d, RT = %lld, PacketType = %d, EncodedSize = %d ,nSendingDataSizeInByte = %d", m_iPacketNumber, llRelativeTime, nPacketType, nEncodedFrameSizeB, nFrameSizeInByte);
 
 			m_ucaRawFrameNonMuxed[0] = 0;
-			BuildAndGetHeaderInArray(nPacketType, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, nEncodedFrameSizeB,
-				iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
+			BuildAndGetHeaderInArray(nPacketType, m_MyAudioHeadersize, 0, m_iPacketNumber, nEncodedFrameSizeB,
+			    nChannel, version, llRelativeTime, &m_ucaRawFrameNonMuxed[1]);
 
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)

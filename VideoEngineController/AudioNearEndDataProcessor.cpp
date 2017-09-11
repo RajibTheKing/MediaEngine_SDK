@@ -130,8 +130,8 @@ namespace MediaSDK
 	}
 
 
-	void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-		int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header)
+	void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int packetNumber, int packetLength,
+		 int channel, int version, long long timestamp, unsigned char* header)
 	{
 		//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
 		//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
@@ -139,10 +139,7 @@ namespace MediaSDK
 		m_pAudioNearEndPacketHeader->SetInformation(packetType, INF_PACKETTYPE);
 		m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
 		m_pAudioNearEndPacketHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
-		m_pAudioNearEndPacketHeader->SetInformation(slotNumber, INF_SLOTNUMBER);
 		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_BLOCK_LENGTH);
-		m_pAudioNearEndPacketHeader->SetInformation(recvSlotNumber, INF_RECVDSLOTNUMBER);
-		m_pAudioNearEndPacketHeader->SetInformation(numPacketRecv, INF_NUMPACKETRECVD);
 		m_pAudioNearEndPacketHeader->SetInformation(version, INF_VERSIONCODE);
 		m_pAudioNearEndPacketHeader->SetInformation(timestamp, INF_TIMESTAMP);
 		m_pAudioNearEndPacketHeader->SetInformation(networkType, INF_NETWORKTYPE);
