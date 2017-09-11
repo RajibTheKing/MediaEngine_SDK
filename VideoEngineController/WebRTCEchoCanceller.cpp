@@ -104,13 +104,13 @@ namespace MediaSDK
 
 	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveStreamRunning, long long llDelay)
 	{
-		int nEchoExistsFlags = ECHO_TYPE_NO_ECHO; //int containing 10 flags telling whether the 10 80 sized flags contain echo
+		int nEchoStateFlags = ECHO_TYPE_NO_ECHO; //int containing 10 flags telling whether the 10 80 sized flags contain echo
 #ifdef USE_AECM
 
 		if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
 		{
 			ALOG("aec nearend Invalid size");
-			return nEchoExistsFlags;
+			return nEchoStateFlags;
 		}
 		LOG18("Nearending2");
 
@@ -154,13 +154,13 @@ namespace MediaSDK
 			}
 			if (gEchoType == ECHO_TYPE_JUST_ECHO || gEchoType == ECHO_TYPE_DOUBLE_TALK)
 			{
-				nEchoExistsFlags |= 1;
+				nEchoStateFlags |= 1;
 			}
 			else
 			{
-				nEchoExistsFlags |= 0;
+				nEchoStateFlags |= 0;
 			}
-			nEchoExistsFlags << 1;
+			nEchoStateFlags << 1;
 		}
 
 
@@ -180,7 +180,7 @@ namespace MediaSDK
 		}
 #endif
 #endif
-		return nEchoExistsFlags;
+		return nEchoStateFlags;
 	}
 
 	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize, bool isLiveStreamRunning)

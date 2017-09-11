@@ -143,7 +143,7 @@ namespace MediaSDK
 		int m_iNextPacketType;
 		int m_iPrevRecvdSlotID;
 		int m_iReceivedPacketsInPrevSlot;
-		int m_nEchoExistsFlags;
+		int m_nEchoStateFlags;
 
 		AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 		AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
