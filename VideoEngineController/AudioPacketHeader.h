@@ -22,7 +22,8 @@ namespace MediaSDK
 		INF_PACKET_BLOCK_NUMBER,
 		INF_TOTAL_PACKET_BLOCKS,
 		INF_BLOCK_OFFSET,
-		INF_FRAME_LENGTH
+		INF_FRAME_LENGTH,
+		MAXFIELDSINHEADER
 	};
 
 	enum AudioPacketTypes
@@ -50,7 +51,6 @@ namespace MediaSDK
 
 
 	enum MaxSizes{
-		MAXFIELDSINHEADER = 15,
 		MAXHEADERSIZE = 100
 	};
 
