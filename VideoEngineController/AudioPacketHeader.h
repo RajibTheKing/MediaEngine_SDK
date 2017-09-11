@@ -24,7 +24,7 @@ namespace MediaSDK
 		INF_TOTAL_PACKET_BLOCKS,
 		INF_BLOCK_OFFSET,
 		INF_FRAME_LENGTH,
-		MAXFIELDSINHEADER
+		NUMBER_OF_FIELDS_IN_AUDIO_HEADER
 	};
 
 	enum AudioPacketTypes
@@ -87,14 +87,14 @@ namespace MediaSDK
 
 	protected:
 
-		int HeaderBitmap[MAXFIELDSINHEADER];
-		string HeaderFieldNames[MAXFIELDSINHEADER];
+		int HeaderBitmap[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
+		string HeaderFieldNames[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
 
 		unsigned int m_nHeaderSizeInBit;
 		unsigned int m_nHeaderSizeInByte;
 		unsigned int m_nProcessingHeaderSizeInByte;
 
-		long long m_arrllInformation[MAXFIELDSINHEADER];
+		long long m_arrllInformation[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
 		unsigned char ma_uchHeader[MAXHEADERSIZE];
 
 	};

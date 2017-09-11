@@ -13,7 +13,7 @@ namespace MediaSDK
 		InitHeaderBitMap();
 
 		int headerSizeInBit = 0;
-		for (int i = 0; i < MAXFIELDSINHEADER; i++)
+		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
 		{
 			headerSizeInBit += HeaderBitmap[i];
 		}
@@ -83,7 +83,7 @@ namespace MediaSDK
 	int AudioHeaderCommon::CopyInformationToHeader(unsigned int * Information)
 	{
 		memcpy(m_arrllInformation, Information, m_nHeaderSizeInByte);
-		for (int i = 0; i < MAXFIELDSINHEADER; i++)
+		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
 		{
 			SetInformation(Information[i], i);
 		}
@@ -174,7 +174,7 @@ namespace MediaSDK
 
 		memcpy(ma_uchHeader, Header, m_nHeaderSizeInByte);
 
-		for (int i = 0; i < MAXFIELDSINHEADER; i++)
+		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
 		{
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
 			PutInformationToArray(i);
@@ -236,7 +236,7 @@ namespace MediaSDK
 	void AudioHeaderCommon::ShowDetails(char prefix[])
 	{
 		string str = "#-> \n";
-		for (int i = 0; i < MAXFIELDSINHEADER; i++)
+		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
 		{
 			str += HeaderFieldNames[i];
 			str += Tools::LongLongtoStringConvert(m_arrllInformation[i]);
