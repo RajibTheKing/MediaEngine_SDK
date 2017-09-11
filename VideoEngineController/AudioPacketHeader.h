@@ -9,25 +9,6 @@
 namespace MediaSDK
 {
 
-	typedef struct
-	{
-		int packetType;
-		int headerLength;
-		int networkType;
-		int slotNumber;
-		int packetNumber;
-		int blockLength;
-		int recvSlotNumber;
-		int numPacketRecv;
-		int channel;
-		int version;
-		long long timestamp;
-		int blockNumber;
-		int totalBlocksInThisFrame;
-		int blockOffset;
-		int frameLength;
-	} AudioHeaderFields;
-
 	enum AudioHeaderInfoTypes
 	{
 		INF_PACKETTYPE = 0,
@@ -85,11 +66,6 @@ namespace MediaSDK
 		AudioPacketHeader(){}
 		virtual ~AudioPacketHeader(){};
 
-		/*virtual void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-			int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength) = 0;*/
-
-		virtual void SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params) = 0;
-
 		virtual void CopyHeaderToInformation(unsigned char *Header) = 0;
 		virtual int GetHeaderInByteArray(unsigned char* data) = 0;
 
@@ -111,8 +87,6 @@ namespace MediaSDK
 	protected:
 
 		int HeaderBitmap[MAXFIELDSINHEADER];
-
-		AudioHeaderFields m_headerParams;
 
 		int nNumberOfHeaderElements;
 		unsigned int m_nHeaderSizeInBit;

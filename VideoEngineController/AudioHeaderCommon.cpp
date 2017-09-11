@@ -256,25 +256,6 @@ namespace MediaSDK
 			m_arrllInformation[14]);
 	}
 
-	void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params)
-	{
-		SetInformation(params.packetType, INF_PACKETTYPE);
-		SetInformation(params.headerLength, INF_HEADERLENGTH);
-		SetInformation(params.packetNumber, INF_PACKETNUMBER);
-		SetInformation(params.blockLength, INF_BLOCK_LENGTH);
-		SetInformation(params.version, INF_VERSIONCODE);
-		SetInformation(params.timestamp, INF_TIMESTAMP);
-		SetInformation(params.networkType, INF_NETWORKTYPE);
-		SetInformation(params.channel, INF_CHANNELS);
-		SetInformation(params.blockNumber, INF_PACKET_BLOCK_NUMBER);
-		SetInformation(params.totalBlocksInThisFrame, INF_TOTAL_PACKET_BLOCKS);
-		SetInformation(params.blockOffset, INF_BLOCK_OFFSET);
-		SetInformation(params.frameLength, INF_FRAME_LENGTH);
-
-		showDetails("@#BUILD");
-
-		GetHeaderInByteArray(header);
-	}
 
 
 	void AudioHeaderCommon::SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
