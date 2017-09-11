@@ -18,9 +18,6 @@ namespace MediaSDK
 
 		~AudioHeaderCommon();
 
-
-		void GetHeaderInfoAll(unsigned char* header, int &nHeaderLength, int &nFrameNumber, int &iBlockNumber, int &nNumberOfBlocks, int &nBlockLength, int &iOffsetOfBlock, int &nFrameLength);
-
 		void CopyHeaderToInformation(unsigned char *Header);
 		int GetHeaderInByteArray(unsigned char* data);
 

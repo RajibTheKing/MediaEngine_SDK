@@ -256,41 +256,4 @@ namespace MediaSDK
 			m_arrllInformation[14]);
 	}
 
-
-	void AudioHeaderCommon::GetHeaderInfoAll(unsigned char* header, int &nHeaderLength, int &nFrameNumber, int &iBlockNumber, int &nNumberOfBlocks, int &nBlockLength, int &iOffsetOfBlock, int &nFrameLength)
-	{
-		CopyHeaderToInformation(header);
-
-		// packetType = GetInformation(INF_PACKETTYPE);
-		nHeaderLength = GetInformation(INF_HEADERLENGTH);
-		// networkType = GetInformation(INF_NETWORKTYPE);
-		// slotNumber = GetInformation(INF_SLOTNUMBER);
-		nFrameNumber = GetInformation(INF_PACKETNUMBER);
-		nBlockLength = GetInformation(INF_BLOCK_LENGTH);
-		// recvSlotNumber = GetInformation(INF_RECVDSLOTNUMBER);
-		//numPacketRecv = GetInformation(INF_NUMPACKETRECVD);
-		// channel = GetInformation(INF_CHANNELS);
-		// version = GetInformation(INF_VERSIONCODE);
-		// timestamp = GetInformation(INF_TIMESTAMP);
-
-		iBlockNumber = GetInformation(INF_PACKET_BLOCK_NUMBER);
-		nNumberOfBlocks = GetInformation(INF_TOTAL_PACKET_BLOCKS);
-		iOffsetOfBlock = GetInformation(INF_BLOCK_OFFSET);
-		nFrameLength = GetInformation(INF_FRAME_LENGTH);
-
-		if (iBlockNumber == -1)
-		{
-			iBlockNumber = 0;
-		}
-
-		if (nNumberOfBlocks == -1)
-		{
-			nNumberOfBlocks = 1;
-			iOffsetOfBlock = 0;
-			nFrameLength = nBlockLength;
-		}
-
-		ShowDetails("@#PARSE");
-	}
-
 } //namespace MediaSDK
