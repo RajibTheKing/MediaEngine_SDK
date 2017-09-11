@@ -298,19 +298,16 @@ namespace MediaSDK
 #endif
 	}
 
-	void AudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
+	void AudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &packetNumber, int &packetLength, 
+		 int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
 	{
 		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
 
 		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETTYPE);
 		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_HEADERLENGTH);
 		networkType = m_pAudioFarEndPacketHeader->GetInformation(INF_NETWORKTYPE);
-		slotNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_SLOTNUMBER);
 		packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETNUMBER);
 		packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_LENGTH);
-		recvSlotNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_RECVDSLOTNUMBER);
-		numPacketRecv = m_pAudioFarEndPacketHeader->GetInformation(INF_NUMPACKETRECVD);
 		channel = m_pAudioFarEndPacketHeader->GetInformation(INF_CHANNELS);
 		version = m_pAudioFarEndPacketHeader->GetInformation(INF_VERSIONCODE);
 		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_TIMESTAMP);
@@ -475,6 +472,7 @@ namespace MediaSDK
 #endif
 	}
 
+#if 0
 	void AudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 	{
 		if (!m_bIsLiveStreamingRunning)
@@ -501,6 +499,7 @@ namespace MediaSDK
 			m_iReceivedPacketsInCurrentSlot++;
 		}
 	}
+#endif
 
 	void AudioFarEndDataProcessor::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)

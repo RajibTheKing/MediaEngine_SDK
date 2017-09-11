@@ -90,9 +90,9 @@ namespace MediaSDK
 				llCapturedTime = Tools::CurrentTimestamp();
 
 				int dummy;
-				int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
+				int nPacketDataLength, nChannel, nVersion;
 				int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-				ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
+				ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength,
 					nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
 				MediaLog(LOG_CODE_TRACE, "[AFEPV] [Iterator:%d] PT:%d PN:%d BN:%d DataLen:%d FL:%d", iterator, nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);				
@@ -205,9 +205,9 @@ namespace MediaSDK
 			llCapturedTime = Tools::CurrentTimestamp();
 
 			int dummy;
-			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
+			int nPacketDataLength, nChannel, nVersion;
 			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
+			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 
 			MediaLog(LOG_CODE_TRACE, "[AFEPV] PT:%d PN:%d BN:%d DataLen:%d FL:%d",  nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
