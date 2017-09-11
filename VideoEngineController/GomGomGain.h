@@ -23,7 +23,7 @@ namespace MediaSDK
 
 		bool AddFarEnd(short *sInBuf, int nBufferSize) { return true; };
 
-		bool AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning);
+		bool AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning, bool bPlayerSide, int nEchoStateFlags);
 
 	private:
 

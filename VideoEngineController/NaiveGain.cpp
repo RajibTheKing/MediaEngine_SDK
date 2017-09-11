@@ -48,7 +48,7 @@ namespace MediaSDK
 		return true;
 	}
 
-	bool NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
+	bool NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning, bool bPlayerSide, int nEchoStateFlags)
 	{
 #ifdef USE_AGC
 		if (!m_bGainEnabled)

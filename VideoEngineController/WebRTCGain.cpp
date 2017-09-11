@@ -182,7 +182,7 @@ namespace MediaSDK
 	}
 
 
-	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
+	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning, bool bPlayerSide, int nEchoStateFlags)
 	{
 #ifdef USE_AGC
 

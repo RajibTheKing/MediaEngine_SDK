@@ -34,17 +34,17 @@ namespace MediaSDK
 #endif
 	}
 
-	bool GomGomGain::AddGain(short *sInBuf, int sBufferSize, bool isLiveStreamRunning)
+	bool GomGomGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning, bool bPlayerSide, int nEchoStateFlags)
 	{
 #ifdef USE_AGC
 
-		for (int i = 0; i < sBufferSize; i++)
+		for (int i = 0; i < nBufferSize; i++)
 		{
 			//m_sFilteredFrame[i] = (short)(mFilter->do_sample((double)sInBuf[i]));
 			m_sFilteredFrame[i] = sInBuf[i];
 		}
 
-		for (int i = 0; i < sBufferSize; i++)
+		for (int i = 0; i < nBufferSize; i++)
 		{
 			m_nMovingSum += abs(m_sFilteredFrame[i]) - abs(m_sLastFilteredFrame[i]);
 
@@ -57,7 +57,7 @@ namespace MediaSDK
 				m_daMovingAvg[i] = m_nMovingSum / 800.0;
 			}
 		}
-		for (int i = 0; i < sBufferSize; i++)
+		for (int i = 0; i < nBufferSize; i++)
 		{
 			for (int j = MAX_GAIN; j >= 1; j--)
 			{
@@ -69,7 +69,7 @@ namespace MediaSDK
 				break;
 			}
 		}
-		for (int i = 0; i < sBufferSize; i++)
+		for (int i = 0; i < nBufferSize; i++)
 		{
 			int iTemp = m_sFilteredFrame[i] * m_naMultFactor[i];
 			if (iTemp > SHRT_MAX)
@@ -83,7 +83,7 @@ namespace MediaSDK
 			sInBuf[i] = iTemp;
 		}
 
-		memcpy(m_sLastFilteredFrame, m_sFilteredFrame, sBufferSize * sizeof(short));
+		memcpy(m_sLastFilteredFrame, m_sFilteredFrame, nBufferSize * sizeof(short));
 
 		b1stFrame = false;
 #endif
