@@ -65,6 +65,20 @@ namespace MediaSDK
 		HeaderBitmap[INF_TOTAL_PACKET_BLOCKS] = 4;
 		HeaderBitmap[INF_BLOCK_OFFSET] = 16;
 		HeaderBitmap[INF_FRAME_LENGTH] = 16;
+
+		HeaderFieldNames[INF_PACKETTYPE] = "INF_PACKETTYPE";
+		HeaderFieldNames[INF_HEADERLENGTH] = "INF_HEADERLENGTH";
+		HeaderFieldNames[INF_NETWORKTYPE] = "INF_NETWORKTYPE";
+		HeaderFieldNames[INF_VERSIONCODE] = "INF_VERSIONCODE";
+		HeaderFieldNames[INF_PACKETNUMBER] = "INF_PACKETNUMBER";
+		HeaderFieldNames[INF_BLOCK_LENGTH] = "INF_BLOCK_LENGTH";
+		HeaderFieldNames[INF_CHANNELS] = "INF_CHANNELS";
+		HeaderFieldNames[INF_TIMESTAMP] = "INF_TIMESTAMP";
+		HeaderFieldNames[INF_PACKET_BLOCK_NUMBER] = "INF_PACKET_BLOCK_NUMBER";
+		HeaderFieldNames[INF_TOTAL_PACKET_BLOCKS] = "INF_TOTAL_PACKET_BLOCKS";
+		HeaderFieldNames[INF_BLOCK_OFFSET] = "INF_BLOCK_OFFSET";
+		HeaderFieldNames[INF_FRAME_LENGTH] = "INF_FRAME_LENGTH";
+
 	}
 
 	int AudioHeaderCommon::CopyInformationToHeader(unsigned int * Information)

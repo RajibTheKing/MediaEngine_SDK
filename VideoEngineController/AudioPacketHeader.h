@@ -4,6 +4,7 @@
 
 #include "AudioTypes.h"
 #include "SmartPointer.h"
+using namespace std;
 
 
 namespace MediaSDK
@@ -87,6 +88,7 @@ namespace MediaSDK
 	protected:
 
 		int HeaderBitmap[MAXFIELDSINHEADER];
+		string HeaderFieldNames[MAXFIELDSINHEADER];
 
 		int nNumberOfHeaderElements;
 		unsigned int m_nHeaderSizeInBit;
