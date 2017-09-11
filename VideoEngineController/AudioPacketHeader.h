@@ -90,7 +90,6 @@ namespace MediaSDK
 		int HeaderBitmap[MAXFIELDSINHEADER];
 		string HeaderFieldNames[MAXFIELDSINHEADER];
 
-		int nNumberOfHeaderElements;
 		unsigned int m_nHeaderSizeInBit;
 		unsigned int m_nHeaderSizeInByte;
 		unsigned int m_nProcessingHeaderSizeInByte;

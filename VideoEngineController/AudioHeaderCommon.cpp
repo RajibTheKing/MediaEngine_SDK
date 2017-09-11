@@ -11,10 +11,8 @@ namespace MediaSDK
 
 		InitHeaderBitMap();
 
-		nNumberOfHeaderElements = sizeof(HeaderBitmap) / sizeof(int);
-
 		int headerSizeInBit = 0;
-		for (int i = 0; i < nNumberOfHeaderElements; i++)
+		for (int i = 0; i < MAXFIELDSINHEADER; i++)
 		{
 			headerSizeInBit += HeaderBitmap[i];
 		}
@@ -84,7 +82,7 @@ namespace MediaSDK
 	int AudioHeaderCommon::CopyInformationToHeader(unsigned int * Information)
 	{
 		memcpy(m_arrllInformation, Information, m_nHeaderSizeInByte);
-		for (int i = 0; i < nNumberOfHeaderElements; i++)
+		for (int i = 0; i < MAXFIELDSINHEADER; i++)
 		{
 			SetInformation(Information[i], i);
 		}
@@ -175,7 +173,7 @@ namespace MediaSDK
 
 		memcpy(ma_uchHeader, Header, m_nHeaderSizeInByte);
 
-		for (int i = 0; i < nNumberOfHeaderElements; i++)
+		for (int i = 0; i < MAXFIELDSINHEADER; i++)
 		{
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
 			PutInformationToArray(i);
@@ -236,6 +234,8 @@ namespace MediaSDK
 
 	void AudioHeaderCommon::ShowDetails(char prefix[])
 	{
+		string str = "";
+		
 		HITLER("%s #-> "
 			"PT = %lld "
 			"HL = %lld "
