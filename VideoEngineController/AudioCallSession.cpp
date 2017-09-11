@@ -558,21 +558,21 @@ namespace MediaSDK
 	{
 		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 		{
-			MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled");
+			MediaLog(LOG_DEBUG, "[ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled");
 			m_nFramesRecvdSinceTraceSent++;
 			if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 			{
-				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
+				MediaLog(LOG_DEBUG, "[ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
 				m_FarendBuffer->ResetBuffer();
 				m_bTraceWillNotBeReceived = true; // 8-(
 			}
 			else
 			{
 				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES);
-				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
+				MediaLog(LOG_DEBUG, "[ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)
 				{
-					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction->m_llDelayFraction");
+					MediaLog(LOG_DEBUG, "[ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction->m_llDelayFraction");
 					m_llTraceReceivingTime = Tools::CurrentTimestamp();
 					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
 					//m_llDelayFraction = m_llDelay % 100;
@@ -589,7 +589,7 @@ namespace MediaSDK
 	{
 		if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
 		{
-			MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->Trace Recieved");
+			MediaLog(LOG_DEBUG, "[ACS] DeleteBeforeHandlingTrace->IsEchoCancellerEnabled->Trace Recieved");
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			m_iDeleteCount--;
 		}
@@ -599,7 +599,7 @@ namespace MediaSDK
 	{
 		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
-			MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_bTraceRecieved");
+			MediaLog(LOG_DEBUG, "[ACS] DeleteAfterHandlingTrace->m_bTraceRecieved");
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 	}
