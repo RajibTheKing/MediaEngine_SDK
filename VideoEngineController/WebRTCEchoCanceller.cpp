@@ -156,13 +156,11 @@ namespace MediaSDK
 			{
 				nEchoStateFlags |= 1;
 			}
-			else
-			{
-				nEchoStateFlags |= 0;
-			}
+
 			nEchoStateFlags <<= 1;
 		}
 
+		nEchoStateFlags >>= 1;
 
 #ifdef USE_LOW_PASS
 		if (isLoudspeaker)
