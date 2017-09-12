@@ -243,6 +243,7 @@ namespace MediaSDK
 		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
 		{
 			str += HeaderFieldNames[i];
+			str += " = ";
 			str += Tools::LongLongtoStringConvert(m_arrllInformation[i]);
 			str += "\n";
 		}
