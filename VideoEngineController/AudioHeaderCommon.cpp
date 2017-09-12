@@ -244,8 +244,8 @@ namespace MediaSDK
 		{
 			str += HeaderFieldNames[i];
 			str += " = ";
-			str += Tools::LongLongtoStringConvert(m_arrllInformation[i]);
-			str += "\n";
+			str += Tools::getText(m_arrllInformation[i]);
+			str += " \n";
 		}
 		MediaLog(LOG_DEBUG, "%s\n", str.c_str());
 	}
