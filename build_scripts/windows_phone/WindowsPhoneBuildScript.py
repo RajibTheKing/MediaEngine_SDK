@@ -6,7 +6,6 @@ import time
 
 
 videoengine = r'F:\git_Codes\AndroidTestClientVE_FTest\AndroidTestClientVE_FTest\app\src\main\jni\videoengine'
-testCameraWindowsPhone = r'F:\git_Codes\AndroidTestClientVE_FTest\AndroidTestClientVE_FTest\app\src\main\jni\TestCamera_WindowsPhone'
 projectSocial = r'F:\git_Codes\ProjectSocial';
 
 
