@@ -133,8 +133,8 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int packetNumber, int packetLength,
 		int channel, int version, long long timestamp, int echoStateFlags, unsigned char* header)
 	{
-		//LOGEF("##EN### BuildAndGetHeader ptype %d ntype %d slotnumber %d packetnumber %d plength %d reslnumber %d npacrecv %d channel %d version %d time %lld",
-		//	packetType, networkType, slotNumber, packetNumber, packetLength, recvSlotNumber, numPacketRecv, channel, version, timestamp);
+		MediaLog(LOG_DEBUG, "[ECHOFLAG] BuildAndGetHeader ptype %d ntype %d  packetnumber %d plength %d  channel %d version %d time %lld echoStateFlags = %d",
+			packetType, networkType, packetNumber, packetLength, channel, version, timestamp, echoStateFlags);
 
 		m_pAudioNearEndPacketHeader->SetInformation(packetType, INF_PACKETTYPE);
 		m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
@@ -150,8 +150,9 @@ namespace MediaSDK
 		m_pAudioNearEndPacketHeader->SetInformation(0, INF_BLOCK_OFFSET);
 		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
 		m_pAudioNearEndPacketHeader->SetInformation(echoStateFlags, INF_ECHO_STATE_FLAGS);
+		MediaLog(LOG_DEBUG, "[ECHOFLAG] setting to header echoStateFlags = %d\n", echoStateFlags);
 
-		m_pAudioNearEndPacketHeader->ShowDetails("@#BUILD");
+		m_pAudioNearEndPacketHeader->ShowDetails("[ECHOFLAG] setting");
 
 		m_pAudioNearEndPacketHeader->GetHeaderInByteArray(header);
 	}

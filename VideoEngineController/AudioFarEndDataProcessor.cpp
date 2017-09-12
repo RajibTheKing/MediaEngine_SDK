@@ -303,6 +303,8 @@ namespace MediaSDK
 	{
 		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
 
+		m_pAudioFarEndPacketHeader->ShowDetails("[ECHOFLAG] getting");
+
 		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETTYPE);
 		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_HEADERLENGTH);
 		networkType = m_pAudioFarEndPacketHeader->GetInformation(INF_NETWORKTYPE);
@@ -318,6 +320,7 @@ namespace MediaSDK
 		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_OFFSET);
 		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_FRAME_LENGTH);
 		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_ECHO_STATE_FLAGS);
+		MediaLog(LOG_DEBUG, "[ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);
 
 		if (iBlockNumber == -1)
 		{
