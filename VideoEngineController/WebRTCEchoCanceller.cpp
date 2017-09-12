@@ -3,6 +3,13 @@
 #include "Tools.h"
 #include "LogPrinter.h"
 
+#ifdef USE_AECM
+extern int gEchoType;
+#else
+int gEchoType = ECHO_TYPE_NO_AEC;
+#endif
+
+
 //It is strongly recommended you don't remove this commented out code
 //#include "Filt.h"
 //#define USE_LOW_PASS
@@ -28,13 +35,6 @@ namespace MediaSDK
 #define ECHO_TYPE_NO_ECHO 0
 #define ECHO_TYPE_JUST_ECHO 1
 #define ECHO_TYPE_DOUBLE_TALK 2
-
-#ifdef USE_AECM
-	extern int gEchoType;
-#else
-	int gEchoType = ECHO_TYPE_NO_AEC;
-#endif
-
 
 
 	WebRTCEchoCanceller::WebRTCEchoCanceller(bool isLiveRunning) : m_bAecmCreated(false), m_bAecmInited(false)
