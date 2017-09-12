@@ -160,7 +160,7 @@ namespace MediaSDK
 			{
 				nEchoStateFlags |= 0;
 			}
-			nEchoStateFlags << 1;
+			nEchoStateFlags <<= 1;
 		}
 
 
