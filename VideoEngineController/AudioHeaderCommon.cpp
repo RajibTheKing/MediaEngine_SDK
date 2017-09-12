@@ -1,5 +1,6 @@
 #include "AudioHeaderCommon.h"
 
+#include "MediaLogger.h"
 #include "LogPrinter.h"
 #include "Tools.h"
 
@@ -245,7 +246,7 @@ namespace MediaSDK
 			str += Tools::LongLongtoStringConvert(m_arrllInformation[i]);
 			str += "\n";
 		}
-		HITLER("%s\n", str.c_str());
+		MediaLog(LOG_DEBUG, "%s\n", str.c_str());
 	}
 
 } //namespace MediaSDK
