@@ -685,7 +685,7 @@ namespace MediaSDK
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					m_nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, getIsAudioLiveStreamRunning(), m_llDelayFraction);
-
+					MediaLog(LOG_DEBUG, "[ECHOFLAG] m_nEchoStateFlags = %d\n", m_nEchoStateFlags);
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
 #ifdef PCM_DUMP
 					if (EchoCancelledFile)

@@ -50,6 +50,8 @@ namespace MediaSDK
 			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength,
 				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags);
 
+			MediaLog(LOG_DEBUG, "[ECHOFLAG] playerside nEchoStateFlags = %d\n", nEchoStateFlags);
+
 			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 
 			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
