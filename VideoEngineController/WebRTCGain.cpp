@@ -182,7 +182,7 @@ namespace MediaSDK
 	}
 
 
-	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning, bool bPlayerSide, int nEchoStateFlags)
+	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags)
 	{
 #ifdef USE_AGC
 
@@ -200,9 +200,9 @@ namespace MediaSDK
 		int32_t inMicLevel;
 		int32_t outMicLevel = 0;
 		bool bSucceeded = true;
-		int nNumEchoFlags = CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) / AGC_ANALYSIS_SAMPLES_IN_FRAME;
+		int nNumEchoFlags = nBufferSize / AGC_ANALYSIS_SAMPLES_IN_FRAME;
 		//int total = 0, counter = 0; //debugging purpose
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
+		for (int i = 0; i < nBufferSize; i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
 		{
 			bool bEchoExists = (nEchoStateFlags >> (nNumEchoFlags - i - 1)) & 1;
 
@@ -240,7 +240,7 @@ namespace MediaSDK
 		fwrite(sInBuf, 2, nBufferSize, gainIn);
 #endif
 
-		memcpy(sInBuf, m_sTempBuf, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
+		memcpy(sInBuf, m_sTempBuf, nBufferSize * sizeof(short));
 
 #ifdef GAIN_DUMP
 		fwrite(sInBuf, 2, nBufferSize, gainOut);

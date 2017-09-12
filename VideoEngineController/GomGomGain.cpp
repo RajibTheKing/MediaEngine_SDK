@@ -34,7 +34,7 @@ namespace MediaSDK
 #endif
 	}
 
-	bool GomGomGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning, bool bPlayerSide, int nEchoStateFlags)
+	bool GomGomGain::AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags)
 	{
 #ifdef USE_AGC
 

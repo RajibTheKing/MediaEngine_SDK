@@ -48,7 +48,7 @@ namespace MediaSDK
 		return true;
 	}
 
-	bool NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning, bool bPlayerSide, int nEchoStateFlags)
+	bool NaiveGain::AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags)
 	{
 #ifdef USE_AGC
 		if (!m_bGainEnabled)
@@ -56,7 +56,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i++)
+		for (int i = 0; i < nBufferSize; i++)
 		{
 			int temp = (int)sInBuf[i] * m_iVolume;
 			if (temp > SHRT_MAX)
