@@ -33,7 +33,7 @@ namespace MediaSDK
 
 		int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
 	
-		int CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay);
+		int CancelEcho(short *nearEndData, int dataLen, long long llDelay);
 
 	};
 
