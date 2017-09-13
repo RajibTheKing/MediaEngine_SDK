@@ -225,7 +225,7 @@ namespace MediaSDK
 
 				//total += outMicLevel; counter++;
 #ifdef OLD_GAIN_LIB
-				if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, m_sTempBuf + i, 0,
+				if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, sInBuf + i, 0,
 					outMicLevel, &inMicLevel, 0, &saturationWarning))
 #else
 				if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
@@ -242,7 +242,6 @@ namespace MediaSDK
 		fwrite(sInBuf, 2, nBufferSize, gainIn);
 #endif
 
-		memcpy(sInBuf, m_sTempBuf, nBufferSize * sizeof(short));
 
 #ifdef GAIN_DUMP
 		fwrite(sInBuf, 2, nBufferSize, gainOut);
