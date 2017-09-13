@@ -202,9 +202,11 @@ namespace MediaSDK
 		bool bSucceeded = true;
 		int nNumEchoFlags = nBufferSize / AGC_ANALYSIS_SAMPLES_IN_FRAME;
 		//int total = 0, counter = 0; //debugging purpose
+		int j = nNumEchoFlags - 1;
 		for (int i = 0; i < nBufferSize; i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
 		{
-			bool bEchoExists = (nEchoStateFlags >> (nNumEchoFlags - i - 1)) & 1;
+			bool bEchoExists = (nEchoStateFlags >> j) & 1;
+			j--;
 
 			if (!bPlayerSide || (bPlayerSide && !bEchoExists))
 			{
