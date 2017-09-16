@@ -246,6 +246,12 @@ namespace MediaSDK
 //			}
 //#endif
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+
+			if (m_nEntityType == ENTITY_TYPE_VIEWER && m_pAudioCallSession->GetPlayerGain().get())
+			{
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
+			}
+
 #ifdef USE_AECM
 			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 			{
