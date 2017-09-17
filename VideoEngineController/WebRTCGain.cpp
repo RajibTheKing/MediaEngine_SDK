@@ -199,14 +199,13 @@ namespace MediaSDK
 		uint8_t saturationWarning;
 		int32_t inMicLevel;
 		int32_t outMicLevel = 0;
-		bool bSucceeded = true;
+		bool bEchoExists, bSucceeded = true;
 		int nNumEchoFlags = nBufferSize / AGC_ANALYSIS_SAMPLES_IN_FRAME;
 		//int total = 0, counter = 0; //debugging purpose
-		int j = nNumEchoFlags - 1;
-		for (int i = 0; i < nBufferSize; i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
+		int echoStateMask = 1 << (nNumEchoFlags - 1);
+		for (int i = 0; i < nBufferSize; i += AGC_ANALYSIS_SAMPLES_IN_FRAME, echoStateMask >> 1)
 		{
-			bool bEchoExists = (nEchoStateFlags >> j) & 1;
-			j--;
+			bEchoExists = (nEchoStateFlags & echoStateMask);
 
 			if (!bPlayerSide || (bPlayerSide && !bEchoExists))
 			{
