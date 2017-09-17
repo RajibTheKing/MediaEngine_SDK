@@ -1,3 +1,6 @@
+
+#START_BUILDING_MEDIAENGINE
+
 LOCAL_PATH := $(call my-dir)
 ARCH := $(TARGET_ARCH_ABI)
 
@@ -6,6 +9,8 @@ SOURCES := ../../../sources
 OUTPUT := ../../../output
 
 TARGET_OUT=$(OUTPUT)/android/$(ARCH)
+
+#END_BUILDING_MEDIAENGINE
 
 $(warning $(ARCH))
 # Prebuilt libopenh264
@@ -50,6 +55,8 @@ include $(PREBUILT_STATIC_LIBRARY)
 # LOCAL_SRC_FILES := $(THIRD_PARTY)/webrtc/libs/android/$(ARCH)/libwebrtc_vad.a
 # include $(PREBUILT_STATIC_LIBRARY)
 
+#START_BUILDING_MEDIAENGINE
+
 define traverse
   $(wildcard $(1)) $(foreach e, $(wildcard $(1)/*), $(call traverse, $(e)))
 endef
@@ -69,6 +76,8 @@ LOCAL_C_INCLUDES += \
 			$(THIRD_PARTY)/speex/include
 
 include $(BUILD_STATIC_LIBRARY)
+
+#END_BUILDING_MEDIAENGINE
 
 # VideoEngine with RingIDSDK
 include $(CLEAR_VARS)
