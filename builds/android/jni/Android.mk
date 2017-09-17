@@ -33,10 +33,10 @@ LOCAL_SRC_FILES := $(THIRD_PARTY)/webrtc/libs/android/$(ARCH)/libwebrtc_aecm.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt NS
-include $(CLEAR_VARS)
-LOCAL_MODULE := NS
-LOCAL_SRC_FILES := $(THIRD_PARTY)/webrtc/libs/android/$(ARCH)/libwebrtc_ns.a
-include $(PREBUILT_STATIC_LIBRARY)
+#include $(CLEAR_VARS)
+#LOCAL_MODULE := NS
+#LOCAL_SRC_FILES := $(THIRD_PARTY)/webrtc/libs/android/$(ARCH)/libwebrtc_ns.a
+#include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt AGC
 include $(CLEAR_VARS)
