@@ -244,7 +244,7 @@ namespace MediaSDK
 
 			if (m_nEntityType == ENTITY_TYPE_VIEWER && m_pAudioCallSession->GetPlayerGain().get())
 			{
-				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, m_pAudioCallSession->m_nEchoStateFlags);
 			}
 
 #ifdef USE_AECM
