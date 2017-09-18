@@ -31,13 +31,13 @@ namespace MediaSDK
 	WebRTCGain::WebRTCGain() : m_bGainEnabled(true)
 	{
 #ifdef GAIN_DUMP
-		//gainIn = fopen("/sdcard/gain.input.pcm", "wb");
-		//gainOut = fopen("/sdcard/gain.output.pcm", "wb");
-        const std::string path = std::string(getenv("HOME")) + "/Documents/";
+		gainIn = fopen("/sdcard/gain.input.pcm", "wb");
+		gainOut = fopen("/sdcard/gain.output.pcm", "wb");
+        /*const std::string path = std::string(getenv("HOME")) + "/Documents/";
         std::string a = path + "gain.input.pcm";
         std::string b = path + "gain.output.pcm";
 		gainIn = fopen(a.c_str(), "wb");
-		gainOut = fopen(b.c_str(), "wb");
+		gainOut = fopen(b.c_str(), "wb");*/
 #endif
 
 		m_iSkipFrames = 20; //don't add gain for first 20 frames.
@@ -46,7 +46,7 @@ namespace MediaSDK
 		LOGT("###GN##55 #gain# WebRTCGain::WebRTCGain()");
 
 		m_iVolume = DEFAULT_GAIN;
-		m_sTempBuf = new short[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		m_sTempBuf = new short[3000]; //For channel max buffer size required is 2048 otherwise 800
 		int agcret = -1;
 
 #ifdef OLD_GAIN_LIB
@@ -62,13 +62,30 @@ namespace MediaSDK
 		AGC_instance = WebRtcAgc_Create();
 #endif
 
-		if ((agcret = WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, WEBRTC_AGC_MAX_LEVEL, MODE_ADAPTIVE_DIGITAL, AUDIO_SAMPLE_RATE)))
+
+#endif
+	}
+
+	void WebRTCGain::Init(int serviceType)
+	{
+		m_iServiceType = serviceType;
+		if (m_iServiceType == SERVICE_TYPE_CHANNEL)
+		{
+			m_iSampleSize = 160;
+		}
+		else
+		{
+			m_iSampleSize = 80;
+		}
+#ifdef USE_AGC
+		
+		if (WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, WEBRTC_AGC_MAX_LEVEL, MODE_ADAPTIVE_DIGITAL, serviceType == SERVICE_TYPE_CHANNEL ? 48000 : AUDIO_SAMPLE_RATE)) //Channel's audio sample rate is 44100 but webrtc fails on 44100
 		{
 			LOGT("###GN## WebRtcAgc_Init failed");
 		}
 		else
 		{
-			LOGT("###GN## WebRtcAgc_Init successful");
+			LOGT("###GN## WebRtcAgc_Init successful servicetype:%d", serviceType);
 		}
 
 		SetGain(m_iVolume);
@@ -89,8 +106,8 @@ namespace MediaSDK
 #endif
 		m_iSkipFrames = 0;
 #ifdef GAIN_DUMP
-		fclose(gainIn);
-		fclose(gainOut);
+		if(gainIn) fclose(gainIn);
+		if(gainOut) fclose(gainOut);
 #endif
 	}
 
@@ -124,17 +141,22 @@ namespace MediaSDK
 		// target level. Otherwise, the signal will be compressed but not limited
 		// above the target level.
 		*/
+		m_iVolume = iGain;
+
 #ifdef OLD_GAIN_LIB
 		WebRtcAgc_config_t gain_config;
-		m_iVolume = 13;
+		if (m_iServiceType != SERVICE_TYPE_CHANNEL)
+		{
+			m_iVolume = 13;
+		}
 #else
 		WebRtcAgcConfig gain_config;
-		m_iVolume = iGain;
 #endif
 
 		gain_config.targetLevelDbfs = 13 - m_iVolume;      /* m_iVolume's range is 1-10 */ /* so effective dbfs range is 12-3 */    /* possible range: 0 - 31 */
-		gain_config.compressionGaindB = 9;   /* possible range: 0 - 90 */
-		gain_config.limiterEnable = true;
+		gain_config.compressionGaindB = m_iServiceType == SERVICE_TYPE_CHANNEL ? 38 : (m_iVolume * 6);  /*For channel gain level 38 is set from hearing experience*/
+																										/* possible range: 0 - 90 */
+		gain_config.limiterEnable = m_iServiceType == SERVICE_TYPE_CHANNEL ? false : true;
 
 		if (WebRtcAgc_set_config(AGC_instance, gain_config))
 		{
@@ -146,7 +168,7 @@ namespace MediaSDK
 			LOGT("###GN## WebRtcAgc_set_config successful");
 		}
 
-		LOGT("###GN## setgain called with %d", iGain);
+		//LOGT("###GN## setgain called with %d", iGain);
 
 #endif
 
@@ -170,9 +192,9 @@ namespace MediaSDK
 
 		LOGT("###GN## #gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
 
-		for (int i = 0; i < nBufferSize; i += AGC_SAMPLES_IN_FRAME)
+		for (int i = 0; i < nBufferSize; i += m_iSampleSize)
 		{
-			if (0 != WebRtcAgc_AddFarend(AGC_instance, sInBuf + i, AGC_SAMPLES_IN_FRAME))
+			if (0 != WebRtcAgc_AddFarend(AGC_instance, sInBuf + i, m_iSampleSize))
 			{
 				LOGT("###GN## WebRtcAgc_AddFarend failed");
 			}
@@ -196,20 +218,25 @@ namespace MediaSDK
 			return true;
 		}
 
+#ifdef GAIN_DUMP
+		fwrite(sInBuf, 2, nBufferSize, gainIn);
+#endif
+
+		//int total = nBufferSize;
 		uint8_t saturationWarning;
 		int32_t inMicLevel;
 		int32_t outMicLevel = 0;
 		bool bSucceeded = true;
 		//int total = 0, counter = 0; //debugging purpose
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
+		for (int i = 0; i < nBufferSize; i += m_iSampleSize)
 		{
 			inMicLevel = 0;
 #ifdef OLD_GAIN_LIB
-			if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
+			if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, m_iSampleSize, inMicLevel, &outMicLevel))
 #else
 			int16_t* in_buf_temp = sInBuf + i;
 			int16_t* out_buf_temp = m_sTempBuf + i;
-			if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
+			if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, m_iSampleSize, inMicLevel, &outMicLevel))
 #endif
 			{
 				LOGT("###GN## WebRtcAgc_VirtualMic failed");
@@ -218,29 +245,27 @@ namespace MediaSDK
 			
 			//total += outMicLevel; counter++;
 #ifdef OLD_GAIN_LIB
-			if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, m_sTempBuf + i, 0,
+			if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, m_iSampleSize, m_sTempBuf + i, 0,
 				outMicLevel, &inMicLevel, 0, &saturationWarning))
 #else
-			if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
+			if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, m_iSampleSize,
 				(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
 #endif
 			{
 				LOGT("###GN## WebRtcAgc_Process failed");
 				bSucceeded = false;
 			}
+			//total -= m_iSampleSize;
+			//LOGT("##TTGN i:%d bufsize:%d total:%d", i, nBufferSize, total);
 		}
 
-#ifdef GAIN_DUMP
-		fwrite(sInBuf, 2, nBufferSize, gainIn);
-#endif
-
-		memcpy(sInBuf, m_sTempBuf, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
+		memcpy(sInBuf, m_sTempBuf, nBufferSize * sizeof(short));
 
 #ifdef GAIN_DUMP
 		fwrite(sInBuf, 2, nBufferSize, gainOut);
 #endif
 
-		LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d", nBufferSize, m_iVolume);
+		//LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d unprocessed:%d samplesize:%d", nBufferSize, m_iVolume, total, m_iSampleSize);
 
 		//LOGT("###GN## addgain done with : %d volumeaverage:%d", bSucceeded, (int)(total/counter));
 		return bSucceeded;

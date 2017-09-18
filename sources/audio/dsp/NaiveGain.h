@@ -16,6 +16,8 @@ namespace MediaSDK
 
 		virtual ~NaiveGain();
 
+		void Init(int serviceType){};
+
 		bool SetGain(int iGain);
 
 		bool AddFarEnd(short *sInBuf, int nBufferSize) { return true; };

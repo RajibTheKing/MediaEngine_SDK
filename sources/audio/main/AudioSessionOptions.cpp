@@ -149,7 +149,7 @@ namespace MediaSDK
 
 		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = No_ECM;
-		gainType = No_Gain;
+		gainType = WebRTC_Gain;
 
 		adaptEncoderBitrate = false;
 		adaptEncoderComplexity = false;
