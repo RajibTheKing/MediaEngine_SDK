@@ -38,10 +38,10 @@ LOCAL_SRC_FILES := $(THIRD_PARTY)/webrtc/libs/android/$(ARCH)/libwebrtc_aecm.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt NS
-#include $(CLEAR_VARS)
-#LOCAL_MODULE := NS
-#LOCAL_SRC_FILES := $(THIRD_PARTY)/webrtc/libs/android/$(ARCH)/libwebrtc_ns.a
-#include $(PREBUILT_STATIC_LIBRARY)
+include $(CLEAR_VARS)
+LOCAL_MODULE := NS
+LOCAL_SRC_FILES := $(THIRD_PARTY)/webrtc/libs/android/$(ARCH)/libwebrtc_ns.a
+include $(PREBUILT_STATIC_LIBRARY)
 
 # Prebuilt AGC
 include $(CLEAR_VARS)
@@ -63,7 +63,7 @@ endef
 
 # VideoEngine Static Lib
 include $(CLEAR_VARS)
-LOCAL_MODULE := videoEngineController
+LOCAL_MODULE := MediaEngine
 
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
@@ -101,6 +101,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
+LOCAL_SHARED_LIBRARIES := MediaEngine openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)
