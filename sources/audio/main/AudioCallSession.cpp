@@ -18,6 +18,8 @@
 #include "NoiseReducerProvider.h"
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
+#include "NoiseReducerInterface.h"
+#include "NoiseReducerProvider.h"
 #include "AudioEncoderProvider.h"
 #include "AudioDecoderProvider.h"
 #include "AudioEncoderInterface.h"
@@ -545,6 +547,11 @@ namespace MediaSDK
 	{
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
+
+		if (GetNoiseReducer().get())
+		{
+			GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, 0);
+		}
 
 #ifdef USE_AECM
 
