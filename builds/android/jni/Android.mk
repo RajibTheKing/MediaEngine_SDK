@@ -63,7 +63,7 @@ endef
 
 # VideoEngine Static Lib
 include $(CLEAR_VARS)
-LOCAL_MODULE := MediaEngine
+LOCAL_MODULE := videoEngineController
 
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
@@ -101,6 +101,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := MediaEngine openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
 
 include $(BUILD_SHARED_LIBRARY)
