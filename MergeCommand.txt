@@ -1,1 +1,0 @@
-lipo -create /Users/RajibTheKing/Library/Developer/Xcode/DerivedData/RingIDSDK-bzelcfvrdjjwpxeptysqvdzmsjqw/Build/Products/Debug-iphoneos/libRingIDSDK.a /Users/RajibTheKing/Library/Developer/Xcode/DerivedData/RingIDSDK-bzelcfvrdjjwpxeptysqvdzmsjqw/Build/Products/Debug-iphonesimulator/libRingIDSDK.a -output libRingIDSDK.a

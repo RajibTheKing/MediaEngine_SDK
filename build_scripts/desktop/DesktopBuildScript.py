@@ -5,13 +5,10 @@ import sys
 import time
 
 
-callsdk = r'D:\Work\Project\callsdk_v2'
-mediaEngine = r'D:\Work\Project\IPV-MediaEngine';
-ringidSDK = r'D:\Work\Project\IPV-RingIDSDK'
-ringidDesktop = r'D:\Work\Project\RingID-Desktop\ringID_WPF'
-libraryPath = r'E:\OnlyForDesktop\123\desktop'
-
-
+callsdk = r'D:\Dev\callsdk_v2'
+mediaEngine = r'D:\Dev\MediaEngine_dev';
+ringidSDK = r'D:\Dev\RingIDSDK'
+ringidDesktop = r'D:\Dev\ringid_clients\ringID_WPF'
 
 ret = 0
 clean_videoEngine = 0
@@ -31,7 +28,7 @@ def check():
 
 def buildEngine():
 	global ret
-	os.chdir(mediaEngine + r'\MediaEngine_Windows')
+	os.chdir(mediaEngine + r'\builds\desktop')
 	if log_enabled == 1:
 		if debugOrRelease == 0: 
 			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/t:Rebuild", "/p:DefineConstants=LOG_ENABLED", "/p:configuration=debug"], shell=True)
@@ -54,10 +51,10 @@ def buildEngine():
 			ret = subprocess.call(["msbuild.exe", "MediaEngine_Windows.sln", "/p:configuration=release"], shell=True)
 			check()
 	if debugOrRelease == 0: 
-		shutil.copy2( ringidSDK + r'\RingIDSDK_Windows\Libs_Windows\MediaEngine_Windows.lib', callsdk + r'\libs\media\desktop\libs\Debug')
+		shutil.copy2( mediaEngine + r'\output\desktop\debug\MediaEngine_Windows.lib', callsdk + r'\libs\media\desktop\libs\Debug')
 	else: 
-		shutil.copy2( ringidSDK + r'\RingIDSDK_Windows\Libs_Windows\Release\MediaEngine_Windows.lib', callsdk + r'\libs\media\desktop\libs\Release')
-	shutil.copy2( mediaEngine + r'\VideoEngineController\InterfaceOfAudioVideoEngine.h', callsdk + r'\libs\media\desktop\include')
+		shutil.copy2( mediaEngine + r'\output\desktop\release\MediaEngine_Windows.lib', callsdk + r'\libs\media\desktop\libs\Release')
+	shutil.copy2( mediaEngine + r'\sources\common\InterfaceOfAudioVideoEngine.h', callsdk + r'\libs\media\desktop\include')
 	print('******************************Copy successfull!***************************')
 
 def buildCallSDK():
@@ -203,9 +200,6 @@ if libraryRelease == 1:
 	buildEngine()
 	debugOrRelease = 1
 	buildEngine()
-	shutil.copy2( ringidSDK + r'\RingIDSDK_Windows\Libs_Windows\MediaEngine_Windows.lib', libraryPath + r'\libs\Debug')
-	shutil.copy2( ringidSDK + r'\RingIDSDK_Windows\Libs_Windows\Release\MediaEngine_Windows.lib', libraryPath + r'\libs\Release')
-	shutil.copy2( mediaEngine + r'\VideoEngineController\InterfaceOfAudioVideoEngine.h', libraryPath + r'\include')
 
 else:
 	buildEngine()
