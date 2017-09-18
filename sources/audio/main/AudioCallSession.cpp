@@ -697,13 +697,6 @@ namespace MediaSDK
 #endif
 
 		}
-		else
-		{
-			if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-			{
-				GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-			}
-		}
 
 #elif defined(DESKTOP_C_SHARP)
 		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
