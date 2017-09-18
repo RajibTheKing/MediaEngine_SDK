@@ -1,0 +1,393 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{e704a505-0908-4e40-9ea4-14520f920202}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>MediaEngine_WindowsPhone</ProjectName>
+    <RootNamespace>MediaEngine_WindowsPhone</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Phone Silverlight</ApplicationType>
+    <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)\..\..\sources\utility;$(SolutionDir)\..\..\sources\common;$(SolutionDir)\..\..\sources\audio\buffers;$(SolutionDir)\..\..\sources\audio\codecs;$(SolutionDir)\..\..\sources\audio\dsp;$(SolutionDir)\..\..\sources\audio\farend;$(SolutionDir)\..\..\sources\audio\main;$(SolutionDir)\..\..\sources\audio\nearend;$(SolutionDir)\..\..\sources\video\Bitrate;$(SolutionDir)\..\..\sources\video\Buffer;$(SolutionDir)\..\..\sources\video\Chunk;$(SolutionDir)\..\..\sources\video\Codec;$(SolutionDir)\..\..\sources\video\Converter;$(SolutionDir)\..\..\sources\video\Enhancement;$(SolutionDir)\..\..\sources\video\FPS;$(SolutionDir)\..\..\sources\video\Macro;$(SolutionDir)\..\..\sources\video\Merging;$(SolutionDir)\..\..\sources\video\Packeting;$(SolutionDir)\..\..\sources\video\Session;$(SolutionDir)\..\..\sources\video\Thread;$(SolutionDir)\..\..\sources\video\Tools;$(SolutionDir)\..\..\third_party\openH264\include;$(SolutionDir)\..\..\third_party\aac\include;$(SolutionDir)\..\..\third_party\opus\include;$(SolutionDir)\..\..\third_party\webrtc\include;$(SolutionDir)\..\..\third_party\speex\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\..\..\output\winphone\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)\..\..\sources\utility;$(SolutionDir)\..\..\sources\common;$(SolutionDir)\..\..\sources\audio\buffers;$(SolutionDir)\..\..\sources\audio\codecs;$(SolutionDir)\..\..\sources\audio\dsp;$(SolutionDir)\..\..\sources\audio\farend;$(SolutionDir)\..\..\sources\audio\main;$(SolutionDir)\..\..\sources\audio\nearend;$(SolutionDir)\..\..\sources\video\Bitrate;$(SolutionDir)\..\..\sources\video\Buffer;$(SolutionDir)\..\..\sources\video\Chunk;$(SolutionDir)\..\..\sources\video\Codec;$(SolutionDir)\..\..\sources\video\Converter;$(SolutionDir)\..\..\sources\video\Enhancement;$(SolutionDir)\..\..\sources\video\FPS;$(SolutionDir)\..\..\sources\video\Macro;$(SolutionDir)\..\..\sources\video\Merging;$(SolutionDir)\..\..\sources\video\Packeting;$(SolutionDir)\..\..\sources\video\Session;$(SolutionDir)\..\..\sources\video\Thread;$(SolutionDir)\..\..\sources\video\Tools;$(SolutionDir)\..\..\third_party\openH264\include;$(SolutionDir)\..\..\third_party\aac\include;$(SolutionDir)\..\..\third_party\opus\include;$(SolutionDir)\..\..\third_party\webrtc\include;$(SolutionDir)\..\..\third_party\speex\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\..\..\output\winphone\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>$(SolutionDir)\..\..\sources\utility;$(SolutionDir)\..\..\sources\common;$(SolutionDir)\..\..\sources\audio\buffers;$(SolutionDir)\..\..\sources\audio\codecs;$(SolutionDir)\..\..\sources\audio\dsp;$(SolutionDir)\..\..\sources\audio\farend;$(SolutionDir)\..\..\sources\audio\main;$(SolutionDir)\..\..\sources\audio\nearend;$(SolutionDir)\..\..\sources\video\Bitrate;$(SolutionDir)\..\..\sources\video\Buffer;$(SolutionDir)\..\..\sources\video\Chunk;$(SolutionDir)\..\..\sources\video\Codec;$(SolutionDir)\..\..\sources\video\Converter;$(SolutionDir)\..\..\sources\video\Enhancement;$(SolutionDir)\..\..\sources\video\FPS;$(SolutionDir)\..\..\sources\video\Macro;$(SolutionDir)\..\..\sources\video\Merging;$(SolutionDir)\..\..\sources\video\Packeting;$(SolutionDir)\..\..\sources\video\Session;$(SolutionDir)\..\..\sources\video\Thread;$(SolutionDir)\..\..\sources\video\Tools;$(SolutionDir)\..\..\third_party\openH264\include;$(SolutionDir)\..\..\third_party\aac\include;$(SolutionDir)\..\..\third_party\opus\include;$(SolutionDir)\..\..\third_party\webrtc\include;$(SolutionDir)\..\..\third_party\speex\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\..\..\output\winphone\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <IncludePath>$(SolutionDir)\..\..\sources\utility;$(SolutionDir)\..\..\sources\common;$(SolutionDir)\..\..\sources\audio\buffers;$(SolutionDir)\..\..\sources\audio\codecs;$(SolutionDir)\..\..\sources\audio\dsp;$(SolutionDir)\..\..\sources\audio\farend;$(SolutionDir)\..\..\sources\audio\main;$(SolutionDir)\..\..\sources\audio\nearend;$(SolutionDir)\..\..\sources\video\Bitrate;$(SolutionDir)\..\..\sources\video\Buffer;$(SolutionDir)\..\..\sources\video\Chunk;$(SolutionDir)\..\..\sources\video\Codec;$(SolutionDir)\..\..\sources\video\Converter;$(SolutionDir)\..\..\sources\video\Enhancement;$(SolutionDir)\..\..\sources\video\FPS;$(SolutionDir)\..\..\sources\video\Macro;$(SolutionDir)\..\..\sources\video\Merging;$(SolutionDir)\..\..\sources\video\Packeting;$(SolutionDir)\..\..\sources\video\Session;$(SolutionDir)\..\..\sources\video\Thread;$(SolutionDir)\..\..\sources\video\Tools;$(SolutionDir)\..\..\third_party\openH264\include;$(SolutionDir)\..\..\third_party\aac\include;$(SolutionDir)\..\..\third_party\opus\include;$(SolutionDir)\..\..\third_party\webrtc\include;$(SolutionDir)\..\..\third_party\speex\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\..\..\output\winphone\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;$(DefineConstants);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WINDOWS_UNIVERSAL;WINDOWS_PHONE_8;TARGET_OS_WINDOWS_PHONE;$(DefineConstants);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.h" />
+    <ClInclude Include="..\..\..\sources\audio\buffers\AudioEncoderBuffer.h" />
+    <ClInclude Include="..\..\..\sources\audio\buffers\AudioLinearBuffer.h" />
+    <ClInclude Include="..\..\..\sources\audio\buffers\AudioShortBufferForPublisherFarEnd.h" />
+    <ClInclude Include="..\..\..\sources\audio\buffers\LiveAudioDecodingQueue.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\aacdecoder.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\aacdecoder_lib.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\AudioDecoderInterface.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\AudioDecoderProvider.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\AudioEncoderInterface.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\AudioEncoderProvider.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\AudioFileCodec.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\AudioFileEncodeDecodeSession.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\DecoderAAC.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\DecoderOpus.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\DecoderPCM.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\DummyOpus.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\EncoderOpus.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\EncoderPCM.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\FDK_audio.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\genericStds.h" />
+    <ClInclude Include="..\..\..\sources\audio\codecs\machine_type.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\AudioGainInstanceProvider.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\AudioGainInterface.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\AudioMixer.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\EchoCancellerInterface.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\EchoCancellerProvider.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\Filt.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\GomGomGain.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\NaiveGain.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerInterface.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\Trace.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCGain.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioDePacketizer.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioFarEndDataProcessor.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioFarEndProcessorCall.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioFarEndProcessorChannel.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioFarEndProcessorPublisher.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioFarEndProcessorThread.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioFarEndProcessorViewer.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\AudioPlayingThread.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\LiveAudioParser.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\LiveAudioParserForCallee.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\LiveAudioParserForChannel.h" />
+    <ClInclude Include="..\..\..\sources\audio\farend\LiveAudioParserForPublisher.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioCallSession.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioCallSessionListHandler.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioHeaderCommon.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioMacros.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioPacketHeader.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioResources.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioSessionOptions.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioTypes.h" />
+    <ClInclude Include="..\..\..\sources\audio\nearend\AudioNearEndDataProcessor.h" />
+    <ClInclude Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorCall.h" />
+    <ClInclude Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorPublisher.h" />
+    <ClInclude Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorThread.h" />
+    <ClInclude Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorViewer.h" />
+    <ClInclude Include="..\..\..\sources\audio\nearend\AudioPacketizer.h" />
+    <ClInclude Include="..\..\..\sources\common\CommonElementsBucket.h" />
+    <ClInclude Include="..\..\..\sources\common\CommonMacros.h" />
+    <ClInclude Include="..\..\..\sources\common\CommonTypes.h" />
+    <ClInclude Include="..\..\..\sources\common\Controller.h" />
+    <ClInclude Include="..\..\..\sources\common\EventNotifier.h" />
+    <ClInclude Include="..\..\..\sources\common\InterfaceOfAudioVideoEngine.h" />
+    <ClInclude Include="..\..\..\sources\utility\CircularBuffer.h" />
+    <ClInclude Include="..\..\..\sources\utility\CustomLocker.h" />
+    <ClInclude Include="..\..\..\sources\utility\IPVThread.h" />
+    <ClInclude Include="..\..\..\sources\utility\LogPrinter.h" />
+    <ClInclude Include="..\..\..\sources\utility\PairMap.h" />
+    <ClInclude Include="..\..\..\sources\utility\SmartPointer.h" />
+    <ClInclude Include="..\..\..\sources\utility\SynchronizedMap.h" />
+    <ClInclude Include="..\..\..\sources\utility\ThreadTools.h" />
+    <ClInclude Include="..\..\..\sources\utility\Tools.h" />
+    <ClInclude Include="..\..\..\sources\video\Bitrate\BandwidthController.h" />
+    <ClInclude Include="..\..\..\sources\video\Bitrate\BitRateController.h" />
+    <ClInclude Include="..\..\..\sources\video\Bitrate\IDRFrameIntervalController.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\DecodingBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\DeviceCapabilityCheckBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\EncodingBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\LiveVideoDecodingQueue.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\RenderingBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\ResendingBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\RetransmitVideoPacketQueue.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\SendingBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\VideoPacketBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\VideoPacketQueue.h" />
+    <ClInclude Include="..\..\..\sources\video\Chunk\LiveReceiver.h" />
+    <ClInclude Include="..\..\..\sources\video\Chunk\LiveStreamingHeader.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\codec_api.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\codec_app_def.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\codec_def.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\codec_ver.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\macros.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\typedef.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\typedefs.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\VideoDecoder.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\VideoEncoder.h" />
+    <ClInclude Include="..\..\..\sources\video\Codec\VideoEncoderListHandler.h" />
+    <ClInclude Include="..\..\..\sources\video\Converter\ColorConverter.h" />
+    <ClInclude Include="..\..\..\sources\video\Enhancement\VideoBeautificationer.h" />
+    <ClInclude Include="..\..\..\sources\video\Enhancement\VideoEffects.h" />
+    <ClInclude Include="..\..\..\sources\video\FPS\FPSController.h" />
+    <ClInclude Include="..\..\..\sources\video\Macro\Size.h" />
+    <ClInclude Include="..\..\..\sources\video\Merging\MuxHeader.h" />
+    <ClInclude Include="..\..\..\sources\video\Merging\MuxingVideoData.h" />
+    <ClInclude Include="..\..\..\sources\video\Merging\VideoMuxingAndEncodeSession.h" />
+    <ClInclude Include="..\..\..\sources\video\Packeting\DepacketizationBufferIndex.h" />
+    <ClInclude Include="..\..\..\sources\video\Packeting\EncodedFrameDepacketizer.h" />
+    <ClInclude Include="..\..\..\sources\video\Packeting\EncodedFramePacketizer.h" />
+    <ClInclude Include="..\..\..\sources\video\Packeting\PacketHeader.h" />
+    <ClInclude Include="..\..\..\sources\video\Packeting\VideoHeader.h" />
+    <ClInclude Include="..\..\..\sources\video\Session\VideoCallSession.h" />
+    <ClInclude Include="..\..\..\sources\video\Session\VideoCallSessionListHandler.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\DepacketizationThread.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\DeviceCapabilityCheckThread.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\RenderingThread.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\RenderingThreadOfCall.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\RenderingThreadOfChannel.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\RenderingThreadOfLive.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\SendingThread.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\SendingThreadOfCall.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\SendingThreadOfLive.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\VideoDecodingThread.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\VideoDecodingThreadOfCall.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\VideoDecodingThreadOfChannel.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\VideoDecodingThreadOfLive.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\VideoEncodingThread.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\VideoEncodingThreadOfCall.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\VideoEncodingThreadOfLive.h" />
+    <ClInclude Include="..\..\..\sources\video\Tools\AverageCalculator.h" />
+    <ClInclude Include="..\..\..\sources\video\Tools\HashGenerator.h" />
+    <ClInclude Include="..\..\..\sources\video\Tools\VersionController.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\buffers\AudioEncoderBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\buffers\AudioLinearBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\buffers\AudioShortBufferForPublisherFarEnd.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\buffers\LiveAudioDecodingQueue.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\AudioDecoderProvider.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\AudioEncoderProvider.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\AudioFileCodec.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\AudioFileEncodeDecodeSession.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\DecoderAAC.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\DecoderOpus.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\DecoderPCM.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\EncoderOpus.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\codecs\EncoderPCM.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\AudioGainInstanceProvider.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\AudioMixer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\EchoCancellerProvider.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\Filt.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\GomGomGain.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\NaiveGain.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\Trace.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCGain.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioDePacketizer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioFarEndDataProcessor.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioFarEndProcessorCall.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioFarEndProcessorChannel.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioFarEndProcessorPublisher.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioFarEndProcessorThread.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioFarEndProcessorViewer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\AudioPlayingThread.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\LiveAudioParserForCallee.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\LiveAudioParserForChannel.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\farend\LiveAudioParserForPublisher.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\main\AudioCallSession.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\main\AudioCallSessionListHandler.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderCommon.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\main\AudioPacketHeader.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\main\AudioResources.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\main\AudioSessionOptions.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\nearend\AudioNearEndDataProcessor.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorCall.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorPublisher.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorThread.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\nearend\AudioNearEndProcessorViewer.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\nearend\AudioPacketizer.cpp" />
+    <ClCompile Include="..\..\..\sources\common\CommonElementsBucket.cpp" />
+    <ClCompile Include="..\..\..\sources\common\Controller.cpp" />
+    <ClCompile Include="..\..\..\sources\common\EventNotifier.cpp" />
+    <ClCompile Include="..\..\..\sources\common\InterfaceOfAudioVideoEngine.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\CircularBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\IPVThread.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\LogPrinter.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\PairMap.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\SynchronizedMap.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\Tools.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Bitrate\BandwidthController.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Bitrate\BitRateController.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Bitrate\IDRFrameIntervalController.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\DecodingBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\DeviceCapabilityCheckBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\EncodingBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\LiveVideoDecodingQueue.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\RenderingBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\ResendingBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\RetransmitVideoPacketQueue.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\SendingBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\VideoPacketBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\VideoPacketQueue.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Chunk\LiveReceiver.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Chunk\LiveStreamingHeader.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Codec\VideoDecoder.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Codec\VideoEncoder.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Codec\VideoEncoderListHandler.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Converter\ColorConverter.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Enhancement\VideoBeautificationer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Enhancement\VideoEffects.cpp" />
+    <ClCompile Include="..\..\..\sources\video\FPS\FPSController.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Merging\MuxHeader.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Merging\MuxingVideoData.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Merging\VideoMuxingAndEncodeSession.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Packeting\DepacketizationBufferIndex.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Packeting\EncodedFrameDepacketizer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Packeting\EncodedFramePacketizer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Packeting\PacketHeader.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Packeting\VideoHeader.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Session\VideoCallSession.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Session\VideoCallSessionListHandler.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\DepacketizationThread.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\DeviceCapabilityCheckThread.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\RenderingThread.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\RenderingThreadOfCall.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\RenderingThreadOfChannel.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\RenderingThreadOfLive.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\SendingThread.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\SendingThreadOfCall.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\SendingThreadOfLive.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\VideoDecodingThread.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\VideoDecodingThreadOfCall.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\VideoDecodingThreadOfChannel.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\VideoDecodingThreadOfLive.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\VideoEncodingThread.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\VideoEncodingThreadOfCall.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\VideoEncodingThreadOfLive.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Tools\AverageCalculator.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Tools\HashGenerator.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Tools\VersionController.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
