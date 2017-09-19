@@ -67,30 +67,33 @@ namespace MediaSDK
 
 		static SharedPointer<AudioPacketHeader> GetInstance(AudioHeaderTypes type);
 
+		int m_nNumberOfElementsInAudioHeader;
+
 		//Constructor
 		AudioPacketHeader(){}
 		virtual ~AudioPacketHeader(){};
 
-		virtual void CopyHeaderToInformation(unsigned char *Header) = 0;
-		virtual int GetHeaderInByteArray(unsigned char* data) = 0;
+		void CopyHeaderToInformation(unsigned char *Header);
+		int GetHeaderInByteArray(unsigned char* data);
 
-		virtual void SetInformation(long long Information, int InfoType) = 0;
-		virtual long long GetInformation(int InfoType) = 0;
+		void SetInformation(long long Information, int InfoType);
+		long long GetInformation(int InfoType);
 
-		virtual long long GetFieldCapacity(int InfoType) = 0;
+		long long GetFieldCapacity(int InfoType);
 
-		virtual bool IsPacketTypeSupported(unsigned int PacketType) = 0;
-		virtual bool IsPacketTypeSupported() = 0;
+		bool IsPacketTypeSupported(unsigned int PacketType);
+		bool IsPacketTypeSupported();
 
-		virtual void ShowDetails(char prefix[]) = 0;
+		void ShowDetails(char prefix[]);
 
-		virtual int GetHeaderSize()
-		{
-			return m_nHeaderSizeInByte;
-		}
+		bool PutInformationToArray(int InfoType);
+
+		int GetHeaderSize();
 
 	protected:
+		int CopyInformationToHeader(unsigned int * Information);
 
+	protected:
 		int HeaderBitmap[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
 		string HeaderFieldNames[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
 

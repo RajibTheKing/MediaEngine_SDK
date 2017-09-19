@@ -14,7 +14,7 @@ namespace MediaSDK
 		InitHeaderBitMap();
 
 		int headerSizeInBit = 0;
-		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
+		for (int i = 0; i < m_nNumberOfElementsInAudioHeader; i++)
 		{
 			headerSizeInBit += HeaderBitmap[i];
 		}
@@ -86,174 +86,11 @@ namespace MediaSDK
 		HeaderFieldNames[INF_TOTAL_PACKET_BLOCKS] = STRING(INF_TOTAL_PACKET_BLOCKS);
 		HeaderFieldNames[INF_BLOCK_OFFSET] = STRING(INF_BLOCK_OFFSET);
 		HeaderFieldNames[INF_FRAME_LENGTH] = STRING(INF_FRAME_LENGTH);
+
+		m_nNumberOfElementsInAudioHeader = NUMBER_OF_FIELDS_IN_AUDIO_HEADER;
 		
 
 	}
 
-	int AudioHeaderCommon::CopyInformationToHeader(unsigned int * Information)
-	{
-		memcpy(m_arrllInformation, Information, m_nHeaderSizeInByte);
-		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
-		{
-			SetInformation(Information[i], i);
-		}
-		return m_nHeaderSizeInByte;
-	}
-
-	long long AudioHeaderCommon::GetFieldCapacity(int InfoType)
-	{
-		return 1LL << HeaderBitmap[InfoType];
-	}
-
-
-	int AudioHeaderCommon::GetHeaderInByteArray(unsigned char* data)
-	{
-		memcpy(data, ma_uchHeader, m_nHeaderSizeInByte);
-		return m_nHeaderSizeInByte;
-	}
-
-	int AudioHeaderCommon::GetHeaderSize()
-	{
-		return m_nHeaderSizeInByte;
-	}
-
-	bool AudioHeaderCommon::IsPacketTypeSupported(unsigned int PacketType)
-	{
-		int nPacketTypes = sizeof(SupportedPacketTypes) / sizeof(int);
-		for (int i = 0; i < nPacketTypes; i++)
-		{
-			if (SupportedPacketTypes[i] == PacketType) return true;
-		}
-		return false;
-	}
-
-	bool AudioHeaderCommon::IsPacketTypeSupported()
-	{
-		unsigned int iPackeType = GetInformation(INF_PACKETTYPE);
-		return IsPacketTypeSupported(iPackeType);
-	}
-
-	void AudioHeaderCommon::SetInformation(long long Information, int InfoType)
-	{
-		Information = (Information & ((1LL << HeaderBitmap[InfoType]) - 1));
-		m_arrllInformation[InfoType] = Information;
-
-		int infoStartBit = 0;
-		for (int i = 0; i < InfoType; i++)
-		{
-			infoStartBit += HeaderBitmap[i];
-		}
-		int infoStartByte = infoStartBit / 8;
-		int infoStartBitOfByte = infoStartBit % 8;
-
-		int numberOfBitsIn1stByte;
-		if (8 - infoStartBitOfByte >= HeaderBitmap[InfoType])
-		{
-			numberOfBitsIn1stByte = min(HeaderBitmap[InfoType], 8 - infoStartBitOfByte);
-			ma_uchHeader[infoStartByte] &= ~(((1 << numberOfBitsIn1stByte) - 1) << (8 - infoStartBitOfByte - numberOfBitsIn1stByte));
-			ma_uchHeader[infoStartByte] |= (Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte)) << (8 - infoStartBitOfByte - numberOfBitsIn1stByte);
-		}
-		else
-		{
-			numberOfBitsIn1stByte = 8 - infoStartBitOfByte;
-			ma_uchHeader[infoStartByte] &= ~((1 << numberOfBitsIn1stByte) - 1);
-			ma_uchHeader[infoStartByte] |= (Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte));
-
-			int remainingBits = HeaderBitmap[InfoType] - numberOfBitsIn1stByte;
-			int remainingBytes = remainingBits / 8;
-			int nBitsInLastByte = remainingBits % 8;
-			int byte = 1;
-
-			for (int i = 0; i < remainingBytes; i++)
-			{
-				ma_uchHeader[infoStartByte + byte] = Information >> (HeaderBitmap[InfoType] - numberOfBitsIn1stByte - 8 * byte);
-				byte++;
-			}
-
-			if (nBitsInLastByte)
-			{
-				ma_uchHeader[infoStartByte + byte] &= ~(((1 << nBitsInLastByte) - 1) << (8 - nBitsInLastByte));
-				ma_uchHeader[infoStartByte + byte] |= 0xFF & (Information << (8 - nBitsInLastByte));
-			}
-		}
-	}
-
-	void AudioHeaderCommon::CopyHeaderToInformation(unsigned char *Header)
-	{
-		m_nProcessingHeaderSizeInByte = m_nHeaderSizeInByte;
-
-		memcpy(ma_uchHeader, Header, m_nHeaderSizeInByte);
-
-		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
-		{
-			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
-			PutInformationToArray(i);
-			if (INF_HEADERLENGTH == i && m_nHeaderSizeInByte != m_arrllInformation[INF_HEADERLENGTH]) {
-
-				m_nProcessingHeaderSizeInByte = m_arrllInformation[INF_HEADERLENGTH];
-				HITLER("XXP@#@#MARUF H LEN UPDATED ..%u", m_nProcessingHeaderSizeInByte);
-			}
-		}
-	}
-
-	long long AudioHeaderCommon::GetInformation(int InfoType)
-	{
-		return m_arrllInformation[InfoType];
-	}
-
-	bool AudioHeaderCommon::PutInformationToArray(int InfoType)
-	{
-		unsigned long long Information = 0;
-		int infoStartBit = 0;
-		for (int i = 0; i < InfoType; i++)
-		{
-			infoStartBit += HeaderBitmap[i];
-		}
-		int infoStartByte = infoStartBit / 8;
-		int infoStartBitOfByte = infoStartBit % 8;
-
-		if (infoStartBit + HeaderBitmap[InfoType] > (m_nProcessingHeaderSizeInByte << 3))
-		{
-			HITLER("XXP@#@#MARUF INFO type = %d , sum = %d bitsize %u", InfoType, infoStartByte + HeaderBitmap[InfoType], (m_nProcessingHeaderSizeInByte << 3));
-			m_arrllInformation[InfoType] = -1;
-			return false;
-		}
-
-		if (infoStartBitOfByte + HeaderBitmap[InfoType] <= 8)//fits in 1 byte
-		{
-			unsigned char temp = (ma_uchHeader[infoStartByte] << infoStartBitOfByte);
-			Information = (temp >> (8 - HeaderBitmap[InfoType]));
-		}
-		else
-		{
-			int nBitesToCopy = HeaderBitmap[InfoType] + infoStartBitOfByte;
-			int nBytesToCopy = nBitesToCopy / 8 + (nBitesToCopy % 8 != 0);
-			for (int i = 0; i < nBytesToCopy; i++)
-			{
-				Information <<= 8;
-				Information += ma_uchHeader[infoStartByte + i];
-			}
-
-			int shift = ((HeaderBitmap[InfoType] + infoStartBitOfByte) % 8);
-			if (shift)
-				Information >>= 8 - shift;
-			Information &= (1LL << HeaderBitmap[InfoType]) - 1;
-		}
-		m_arrllInformation[InfoType] = Information;
-		return true;
-	}
-
-	void AudioHeaderCommon::ShowDetails(char prefix[])
-	{
-		string str = string(prefix) + "\n";
-		for (int i = 0; i < NUMBER_OF_FIELDS_IN_AUDIO_HEADER; i++)
-		{
-			str += HeaderFieldNames[i];
-			str += " = ";
-			str += Tools::getText(m_arrllInformation[i]);
-			str += " \n";
-		}
-		MediaLog(LOG_DEBUG, "%s\n", str.c_str());
-	}
 
 } //namespace MediaSDK
