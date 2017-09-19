@@ -1,13 +1,11 @@
 #ifndef AUDIO_HEADER_COMMON_H
 #define AUDIO_HEADER_COMMON_H
 
-
-#include "AudioPacketHeader.h"
-
-
 namespace MediaSDK
 {
-	enum AudioHeaderInfoTypes
+	class AudioPacketHeader;
+
+	enum AudioHeaderInfoTypesCommon
 	{
 		INF_CALL_PACKETTYPE = 0,
 		INF_CALL_HEADERLENGTH,
