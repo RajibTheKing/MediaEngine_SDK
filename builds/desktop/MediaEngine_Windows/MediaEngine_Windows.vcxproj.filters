@@ -408,6 +408,9 @@
     <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderCall.cpp">
       <Filter>audio\main</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderLive.cpp">
+      <Filter>audio\main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.h">
@@ -825,6 +828,9 @@
       <Filter>audio\dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\main\AudioHeaderCall.h">
+      <Filter>audio\main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\audio\main\AudioHeaderLive.h">
       <Filter>audio\main</Filter>
     </ClInclude>
   </ItemGroup>
