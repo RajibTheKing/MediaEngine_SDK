@@ -47,7 +47,6 @@
 		D1E73A891F6575B900ACDE35 /* LiveAudioParserForPublisher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739AB1F6575B900ACDE35 /* LiveAudioParserForPublisher.cpp */; };
 		D1E73A8A1F6575B900ACDE35 /* AudioCallSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739AE1F6575B900ACDE35 /* AudioCallSession.cpp */; };
 		D1E73A8B1F6575B900ACDE35 /* AudioCallSessionListHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739B01F6575B900ACDE35 /* AudioCallSessionListHandler.cpp */; };
-		D1E73A8C1F6575B900ACDE35 /* AudioHeaderCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739B21F6575B900ACDE35 /* AudioHeaderCommon.cpp */; };
 		D1E73A8D1F6575B900ACDE35 /* AudioPacketHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739B51F6575B900ACDE35 /* AudioPacketHeader.cpp */; };
 		D1E73A8E1F6575B900ACDE35 /* AudioResources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739B71F6575B900ACDE35 /* AudioResources.cpp */; };
 		D1E73A8F1F6575B900ACDE35 /* AudioSessionOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739B91F6575B900ACDE35 /* AudioSessionOptions.cpp */; };
@@ -128,6 +127,8 @@
 		D1E73AE21F65782200ACDE35 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E73AE11F65782200ACDE35 /* libopus.a */; };
 		D1E73AE51F65783700ACDE35 /* libwebrtc-aecm-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E73AE31F65783700ACDE35 /* libwebrtc-aecm-ios.a */; };
 		D1E73AE61F65783700ACDE35 /* libwebrtc-agc-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E73AE41F65783700ACDE35 /* libwebrtc-agc-ios.a */; };
+		DA143E7B1F70F48B00BBB746 /* AudioHeaderCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E771F70F48B00BBB746 /* AudioHeaderCall.cpp */; };
+		DA143E7C1F70F48B00BBB746 /* AudioHeaderLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -236,8 +237,6 @@
 		D1E739AF1F6575B900ACDE35 /* AudioCallSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioCallSession.h; sourceTree = "<group>"; };
 		D1E739B01F6575B900ACDE35 /* AudioCallSessionListHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioCallSessionListHandler.cpp; sourceTree = "<group>"; };
 		D1E739B11F6575B900ACDE35 /* AudioCallSessionListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioCallSessionListHandler.h; sourceTree = "<group>"; };
-		D1E739B21F6575B900ACDE35 /* AudioHeaderCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioHeaderCommon.cpp; sourceTree = "<group>"; };
-		D1E739B31F6575B900ACDE35 /* AudioHeaderCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderCommon.h; sourceTree = "<group>"; };
 		D1E739B41F6575B900ACDE35 /* AudioMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioMacros.h; sourceTree = "<group>"; };
 		D1E739B51F6575B900ACDE35 /* AudioPacketHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioPacketHeader.cpp; sourceTree = "<group>"; };
 		D1E739B61F6575B900ACDE35 /* AudioPacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioPacketHeader.h; sourceTree = "<group>"; };
@@ -406,6 +405,10 @@
 		D1E73AE11F65782200ACDE35 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = ../../third_party/opus/libs/ios/libopus.a; sourceTree = "<group>"; };
 		D1E73AE31F65783700ACDE35 /* libwebrtc-aecm-ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwebrtc-aecm-ios.a"; path = "../../third_party/webrtc/libs/ios/libwebrtc-aecm-ios.a"; sourceTree = "<group>"; };
 		D1E73AE41F65783700ACDE35 /* libwebrtc-agc-ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwebrtc-agc-ios.a"; path = "../../third_party/webrtc/libs/ios/libwebrtc-agc-ios.a"; sourceTree = "<group>"; };
+		DA143E771F70F48B00BBB746 /* AudioHeaderCall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioHeaderCall.cpp; sourceTree = "<group>"; };
+		DA143E781F70F48B00BBB746 /* AudioHeaderCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderCall.h; sourceTree = "<group>"; };
+		DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioHeaderLive.cpp; sourceTree = "<group>"; };
+		DA143E7A1F70F48B00BBB746 /* AudioHeaderLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderLive.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -608,12 +611,14 @@
 		D1E739AD1F6575B900ACDE35 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				DA143E771F70F48B00BBB746 /* AudioHeaderCall.cpp */,
+				DA143E781F70F48B00BBB746 /* AudioHeaderCall.h */,
+				DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */,
+				DA143E7A1F70F48B00BBB746 /* AudioHeaderLive.h */,
 				D1E739AE1F6575B900ACDE35 /* AudioCallSession.cpp */,
 				D1E739AF1F6575B900ACDE35 /* AudioCallSession.h */,
 				D1E739B01F6575B900ACDE35 /* AudioCallSessionListHandler.cpp */,
 				D1E739B11F6575B900ACDE35 /* AudioCallSessionListHandler.h */,
-				D1E739B21F6575B900ACDE35 /* AudioHeaderCommon.cpp */,
-				D1E739B31F6575B900ACDE35 /* AudioHeaderCommon.h */,
 				D1E739B41F6575B900ACDE35 /* AudioMacros.h */,
 				D1E739B51F6575B900ACDE35 /* AudioPacketHeader.cpp */,
 				D1E739B61F6575B900ACDE35 /* AudioPacketHeader.h */,
@@ -1077,11 +1082,13 @@
 				D1E73A8A1F6575B900ACDE35 /* AudioCallSession.cpp in Sources */,
 				D1E73ABE1F6575B900ACDE35 /* VideoHeader.cpp in Sources */,
 				D1E73AB11F6575B900ACDE35 /* VideoEncoder.cpp in Sources */,
+				DA143E7C1F70F48B00BBB746 /* AudioHeaderLive.cpp in Sources */,
 				D1E73AA41F6575B900ACDE35 /* DecodingBuffer.cpp in Sources */,
 				D1E73AAE1F6575B900ACDE35 /* LiveReceiver.cpp in Sources */,
 				D1E73AC91F6575B900ACDE35 /* SendingThreadOfLive.cpp in Sources */,
 				D1E73A701F6575B900ACDE35 /* EncoderOpus.cpp in Sources */,
 				D1E73ACC1F6575B900ACDE35 /* VideoDecodingThreadOfChannel.cpp in Sources */,
+				DA143E7B1F70F48B00BBB746 /* AudioHeaderCall.cpp in Sources */,
 				D1E73AC11F6575B900ACDE35 /* DepacketizationThread.cpp in Sources */,
 				D1E73A761F6575B900ACDE35 /* GomGomGain.cpp in Sources */,
 				D1E73A941F6575B900ACDE35 /* AudioNearEndProcessorViewer.cpp in Sources */,
@@ -1089,7 +1096,6 @@
 				D1E73AD21F6575B900ACDE35 /* HashGenerator.cpp in Sources */,
 				D1E73AB81F6575B900ACDE35 /* MuxingVideoData.cpp in Sources */,
 				D1E73A8E1F6575B900ACDE35 /* AudioResources.cpp in Sources */,
-				D1E73A8C1F6575B900ACDE35 /* AudioHeaderCommon.cpp in Sources */,
 				D1E73A6D1F6575B900ACDE35 /* DecoderAAC.cpp in Sources */,
 				D1E73A6A1F6575B900ACDE35 /* AudioEncoderProvider.cpp in Sources */,
 				D1E73A801F6575B900ACDE35 /* AudioFarEndDataProcessor.cpp in Sources */,
