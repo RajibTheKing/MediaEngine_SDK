@@ -27,7 +27,7 @@ namespace MediaSDK
 		m_nHeaderSizeInBit = headerSizeInBit;
 		m_nHeaderSizeInByte = (headerSizeInBit + 7) / 8;
 		m_nProcessingHeaderSizeInByte = m_nHeaderSizeInByte;
-		memset(m_arrllInformation, 0, sizeof(m_arrllInformation));
+		memset(m_arrllInformation, 0, m_nNumberOfElementsInAudioHeader * sizeof(long long));
 		memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 	}
 
@@ -52,7 +52,6 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#resorce#header# AudioHeaderCall::~AudioHeaderCall()");
 
-		memset(m_arrllInformation, 0, sizeof(m_arrllInformation));
 		memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
 		delete[] HeaderBitmap;
 		delete[] HeaderFieldNames;
