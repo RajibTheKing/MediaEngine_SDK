@@ -138,9 +138,6 @@
     <ClCompile Include="..\..\..\sources\audio\main\AudioCallSessionListHandler.cpp">
       <Filter>audio\main</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderCommon.cpp">
-      <Filter>audio\main</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\audio\main\AudioPacketHeader.cpp">
       <Filter>audio\main</Filter>
     </ClCompile>
@@ -408,6 +405,9 @@
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.cpp">
       <Filter>audio\dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderCall.cpp">
+      <Filter>audio\main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.h">
@@ -498,9 +498,6 @@
       <Filter>audio\main</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\main\AudioCallSessionListHandler.h">
-      <Filter>audio\main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\audio\main\AudioHeaderCommon.h">
       <Filter>audio\main</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\main\AudioMacros.h">
@@ -826,6 +823,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.h">
       <Filter>audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\audio\main\AudioHeaderCall.h">
+      <Filter>audio\main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

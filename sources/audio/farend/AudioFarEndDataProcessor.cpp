@@ -23,6 +23,7 @@
 #include "AudioGainInterface.h"
 #include "Trace.h"
 #include "AudioMacros.h"
+#include "AudioHeaderCall.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>

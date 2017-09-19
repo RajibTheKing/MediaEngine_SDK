@@ -1,5 +1,5 @@
 #include "AudioPacketHeader.h"
-#include "AudioHeaderCommon.h"
+#include "AudioHeaderCall.h"
 #include "AudioSessionOptions.h"
 
 #include "MediaLogger.h"
@@ -17,7 +17,7 @@ namespace MediaSDK
 		switch (type)
 		{
 		case HEADER_COMMON:
-			pPacketHeader = new AudioHeaderCommon();
+			pPacketHeader = new AudioHeaderCall();
 			break;
 		case HEADER_CHANNEL:
 		case HEADER_CALL:

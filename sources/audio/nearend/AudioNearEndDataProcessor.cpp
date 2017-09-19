@@ -17,6 +17,7 @@
 #include "AudioEncoderInterface.h"
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"
+#include "AudioHeaderCall.h"
 
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)

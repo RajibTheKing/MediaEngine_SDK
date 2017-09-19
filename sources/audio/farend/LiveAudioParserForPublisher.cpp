@@ -5,6 +5,7 @@
 #include "AudioMacros.h"
 #include "CommonTypes.h"
 #include "MediaLogger.h"
+#include "AudioHeaderCall.h"
 
 
 namespace MediaSDK

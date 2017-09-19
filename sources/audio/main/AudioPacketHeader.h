@@ -10,27 +10,6 @@ using namespace std;
 namespace MediaSDK
 {
 
-	enum AudioHeaderInfoTypes
-	{
-		INF_CALL_PACKETTYPE = 0,
-		INF_CALL_HEADERLENGTH,
-		INF_CALL_NETWORKTYPE,
-		INF_CALL_VERSIONCODE,
-		INF_CALL_PACKETNUMBER,
-		INF_CALL_BLOCK_LENGTH,
-		INF_CALL_ECHO_STATE_FLAGS,
-		INF_CALL_UNUSED_1,
-		INF_CALL_CHANNELS,
-		INF_CALL_UNUSED_2,
-		INF_CALL_TIMESTAMP,
-		INF_CALL_PACKET_BLOCK_NUMBER,
-		INF_CALL_TOTAL_PACKET_BLOCKS,
-		INF_CALL_BLOCK_OFFSET,
-		INF_CALL_FRAME_LENGTH,
-		
-		NUMBER_OF_FIELDS_IN_AUDIO_HEADER
-	};
-
 	enum AudioPacketTypes
 	{
 		AUDIO_SKIP_PACKET_TYPE = 0,
@@ -94,14 +73,14 @@ namespace MediaSDK
 		int CopyInformationToHeader(unsigned int * Information);
 
 	protected:
-		int HeaderBitmap[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
-		string HeaderFieldNames[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
+		int *HeaderBitmap;
+		string *HeaderFieldNames;
 
 		unsigned int m_nHeaderSizeInBit;
 		unsigned int m_nHeaderSizeInByte;
 		unsigned int m_nProcessingHeaderSizeInByte;
 
-		long long m_arrllInformation[NUMBER_OF_FIELDS_IN_AUDIO_HEADER];
+		long long *m_arrllInformation;
 		unsigned char ma_uchHeader[MAXHEADERSIZE];
 
 	};

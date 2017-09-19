@@ -4,6 +4,7 @@
 #include "ThreadTools.h"
 #include "AudioMacros.h"
 #include "MediaLogger.h"
+#include "AudioHeaderCall.h"
 
 namespace MediaSDK
 {
