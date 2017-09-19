@@ -36,7 +36,7 @@ namespace MediaSDK
 	void CLiveAudioParserForChannel::GenMissingBlock(unsigned char* uchAudioData, int nFrameLeftRange, int nFrameRightRange, std::vector<std::pair<int, int>>&vMissingBlocks, std::vector<std::pair<int, int>>&vCurrentFrameMissingBlock)
 	{
 		m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
 		// add muxed header lenght with audio header length. 
 		if (uchAudioData[nFrameLeftRange + 1] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 			int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength + 1];
@@ -116,7 +116,7 @@ namespace MediaSDK
 					{
 						HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
-						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
 
 						HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
 

@@ -52,7 +52,7 @@ namespace MediaSDK
 
 		m_pAudioNearEndPacketHeader = pAudioCallSession->GetAudioNearEndPacketHeader();
 
-		m_llMaxAudioPacketNumber = (m_pAudioNearEndPacketHeader->GetFieldCapacity(INF_PACKETNUMBER) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
+		m_llMaxAudioPacketNumber = (m_pAudioNearEndPacketHeader->GetFieldCapacity(INF_CALL_PACKETNUMBER) / AUDIO_SLOT_SIZE) * AUDIO_SLOT_SIZE;
 
 		m_MyAudioHeadersize = m_pAudioNearEndPacketHeader->GetHeaderSize();
 		m_llEncodingTimeStampOffset = Tools::CurrentTimestamp();
@@ -136,20 +136,20 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[ECHOFLAG] BuildAndGetHeader ptype %d ntype %d  packetnumber %d plength %d  channel %d version %d time %lld echoStateFlags = %d",
 			packetType, networkType, packetNumber, packetLength, channel, version, timestamp, echoStateFlags);
 
-		m_pAudioNearEndPacketHeader->SetInformation(packetType, INF_PACKETTYPE);
-		m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_HEADERLENGTH);
-		m_pAudioNearEndPacketHeader->SetInformation(packetNumber, INF_PACKETNUMBER);
-		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_BLOCK_LENGTH);
-		m_pAudioNearEndPacketHeader->SetInformation(version, INF_VERSIONCODE);
-		m_pAudioNearEndPacketHeader->SetInformation(timestamp, INF_TIMESTAMP);
-		m_pAudioNearEndPacketHeader->SetInformation(networkType, INF_NETWORKTYPE);
-		m_pAudioNearEndPacketHeader->SetInformation(channel, INF_CHANNELS);
+		m_pAudioNearEndPacketHeader->SetInformation(packetType, INF_CALL_PACKETTYPE);
+		m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_CALL_HEADERLENGTH);
+		m_pAudioNearEndPacketHeader->SetInformation(packetNumber, INF_CALL_PACKETNUMBER);
+		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_CALL_BLOCK_LENGTH);
+		m_pAudioNearEndPacketHeader->SetInformation(version, INF_CALL_VERSIONCODE);
+		m_pAudioNearEndPacketHeader->SetInformation(timestamp, INF_CALL_TIMESTAMP);
+		m_pAudioNearEndPacketHeader->SetInformation(networkType, INF_CALL_NETWORKTYPE);
+		m_pAudioNearEndPacketHeader->SetInformation(channel, INF_CALL_CHANNELS);
 
-		m_pAudioNearEndPacketHeader->SetInformation(0, INF_PACKET_BLOCK_NUMBER);
-		m_pAudioNearEndPacketHeader->SetInformation(1, INF_TOTAL_PACKET_BLOCKS);
-		m_pAudioNearEndPacketHeader->SetInformation(0, INF_BLOCK_OFFSET);
-		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_FRAME_LENGTH);
-		m_pAudioNearEndPacketHeader->SetInformation(echoStateFlags, INF_ECHO_STATE_FLAGS);
+		m_pAudioNearEndPacketHeader->SetInformation(0, INF_CALL_PACKET_BLOCK_NUMBER);
+		m_pAudioNearEndPacketHeader->SetInformation(1, INF_CALL_TOTAL_PACKET_BLOCKS);
+		m_pAudioNearEndPacketHeader->SetInformation(0, INF_CALL_BLOCK_OFFSET);
+		m_pAudioNearEndPacketHeader->SetInformation(packetLength, INF_CALL_FRAME_LENGTH);
+		m_pAudioNearEndPacketHeader->SetInformation(echoStateFlags, INF_CALL_ECHO_STATE_FLAGS);
 		MediaLog(LOG_DEBUG, "[ECHOFLAG] setting to header echoStateFlags = %d\n", echoStateFlags);
 
 		m_pAudioNearEndPacketHeader->ShowDetails("[ECHOFLAG] setting");

@@ -40,7 +40,7 @@ namespace MediaSDK
 	{
 		int mediaByteSize = 1;
 		m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
-		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
 		// add muxed header lenght with audio header length. 
 
 		if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
@@ -129,7 +129,7 @@ namespace MediaSDK
 					{
 						HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
-						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);						
+						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);						
 
 						if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 							int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength + mediaByteSize];
@@ -183,7 +183,7 @@ namespace MediaSDK
 				continue;
 			}
 						
-			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER));
+			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_CALL_PACKETNUMBER));
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
 			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);

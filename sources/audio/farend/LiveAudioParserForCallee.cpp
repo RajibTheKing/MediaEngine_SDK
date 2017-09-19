@@ -40,7 +40,7 @@ namespace MediaSDK
 	{
 		int iMediaByteHeaderLength = 1; /**Media Byte Length = 1 Byte**/
 		m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderLength);
-		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
 		// add muxed header lenght with audio header length. 
 		if (uchAudioData[nFrameLeftRange + iMediaByteHeaderLength] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 			int totalCallee = uchAudioData[nFrameLeftRange + iMediaByteHeaderLength + validHeaderLength];
@@ -136,8 +136,8 @@ namespace MediaSDK
 						MediaLog(LOG_CODE_TRACE, "[LAPC] VALID HEADER");
 						// Get header length;
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
-						validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
-						iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+						validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
+						iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_CALL_PACKETNUMBER);
 
 						if (uchAudioData[nFrameLeftRange + iMediaByteHeaderSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 							int totalCallee = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize + validHeaderLength];
@@ -161,13 +161,13 @@ namespace MediaSDK
 				else
 				{
 					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);					
-					iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+					iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_CALL_PACKETNUMBER);
 				}
 			}
 			else
 			{				
 				m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
-				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_CALL_PACKETNUMBER);
 				MediaLog(LOG_CODE_TRACE, "[LAPC] COMPLETE FRAME. FrameNo = %lld", iCurrentFrameNumber);
 			}
 

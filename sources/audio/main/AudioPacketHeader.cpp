@@ -71,7 +71,7 @@ namespace MediaSDK
 
 	bool AudioPacketHeader::IsPacketTypeSupported()
 	{
-		unsigned int iPackeType = GetInformation(INF_PACKETTYPE);
+		unsigned int iPackeType = GetInformation(INF_CALL_PACKETTYPE);
 		return IsPacketTypeSupported(iPackeType);
 	}
 
@@ -130,9 +130,9 @@ namespace MediaSDK
 		{
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"#PutInformationToArray#");
 			PutInformationToArray(i);
-			if (INF_HEADERLENGTH == i && m_nHeaderSizeInByte != m_arrllInformation[INF_HEADERLENGTH]) {
+			if (INF_CALL_HEADERLENGTH == i && m_nHeaderSizeInByte != m_arrllInformation[INF_CALL_HEADERLENGTH]) {
 
-				m_nProcessingHeaderSizeInByte = m_arrllInformation[INF_HEADERLENGTH];
+				m_nProcessingHeaderSizeInByte = m_arrllInformation[INF_CALL_HEADERLENGTH];
 				HITLER("XXP@#@#MARUF H LEN UPDATED ..%u", m_nProcessingHeaderSizeInByte);
 			}
 		}

@@ -306,21 +306,21 @@ namespace MediaSDK
 
 		m_pAudioFarEndPacketHeader->ShowDetails("[ECHOFLAG] getting");
 
-		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETTYPE);
-		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_HEADERLENGTH);
-		networkType = m_pAudioFarEndPacketHeader->GetInformation(INF_NETWORKTYPE);
-		packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETNUMBER);
-		packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_LENGTH);
-		channel = m_pAudioFarEndPacketHeader->GetInformation(INF_CHANNELS);
-		version = m_pAudioFarEndPacketHeader->GetInformation(INF_VERSIONCODE);
-		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_TIMESTAMP);
+		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_PACKETTYPE);
+		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
+		networkType = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_NETWORKTYPE);
+		packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_PACKETNUMBER);
+		packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_BLOCK_LENGTH);
+		channel = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_CHANNELS);
+		version = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_VERSIONCODE);
+		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_TIMESTAMP);
 
 
-		iBlockNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKET_BLOCK_NUMBER);
-		nNumberOfBlocks = m_pAudioFarEndPacketHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
-		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_OFFSET);
-		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_FRAME_LENGTH);
-		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_ECHO_STATE_FLAGS);
+		iBlockNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_PACKET_BLOCK_NUMBER);
+		nNumberOfBlocks = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_TOTAL_PACKET_BLOCKS);
+		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_BLOCK_OFFSET);
+		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_FRAME_LENGTH);
+		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_ECHO_STATE_FLAGS);
 		MediaLog(LOG_DEBUG, "[ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);
 
 		if (iBlockNumber == -1)
