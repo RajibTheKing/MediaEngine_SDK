@@ -88,7 +88,7 @@ namespace MediaSDK
 					return;
 				}
 				LOG18("#18#FE#Channel SendToPlayer");
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
 				Tools::SOSleep(0);
 			}
 		}

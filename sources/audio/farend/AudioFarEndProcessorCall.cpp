@@ -93,7 +93,7 @@ namespace MediaSDK
 				}
 				LOG18("#18#FE#AudioCall SendToPlayer");
 
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
 #ifndef USE_AECM
 				ProcessPlayingData();
 #endif

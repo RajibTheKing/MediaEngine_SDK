@@ -62,7 +62,6 @@ namespace MediaSDK
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
 		m_llLastPlayTime(0),
-		m_nEchoStateFlags(0),
 		m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
@@ -604,11 +603,11 @@ namespace MediaSDK
 		}
 	}
 
-	void CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
+	int CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
-		m_nEchoStateFlags = 0;
+		int nEchoStateFlags = 0;
 
 #ifdef USE_AECM
 
@@ -684,8 +683,8 @@ namespace MediaSDK
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time);
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
-					m_nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction);
-					MediaLog(LOG_DEBUG, "[ECHOFLAG] m_nEchoStateFlags = %d\n", m_nEchoStateFlags);
+					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction);
+					MediaLog(LOG_DEBUG, "[ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
 #ifdef PCM_DUMP
 					if (EchoCancelledFile)
@@ -712,7 +711,7 @@ namespace MediaSDK
 				fwrite(psaEncodingAudioData, 2, unLength, AfterEchoCancellationFile);
 			}
 #endif
-
+			return nEchoStateFlags;
 		}
 
 #elif defined(DESKTOP_C_SHARP)
@@ -794,9 +793,9 @@ namespace MediaSDK
 	}
 
 
-	void CAudioCallSession::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber)
+	void CAudioCallSession::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags)
 	{
-		m_pFarEndProcessor->SendToPlayer(pshSentFrame, nSentFrameSize, llLastTime, iCurrentPacketNumber);
+		m_pFarEndProcessor->SendToPlayer(pshSentFrame, nSentFrameSize, llLastTime, iCurrentPacketNumber, nEchoStateFlags);
 	}
 
 

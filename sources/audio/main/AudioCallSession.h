@@ -63,12 +63,12 @@ namespace MediaSDK
 		void StartCallInLive(int iRole, int nCallInLiveType);
 		void EndCallInLive();
 
-		void PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
+		int PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
-		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
+		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags);
 
 		long long GetBaseOfRelativeTime();
 		void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector, int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
@@ -143,7 +143,6 @@ namespace MediaSDK
 		int m_iNextPacketType;
 		int m_iPrevRecvdSlotID;
 		int m_iReceivedPacketsInPrevSlot;
-		int m_nEchoStateFlags;
 
 		AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 		AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
