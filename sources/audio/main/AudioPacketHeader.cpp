@@ -1,5 +1,6 @@
 #include "AudioPacketHeader.h"
 #include "AudioHeaderCall.h"
+#include "AudioHeaderLive.h"
 #include "AudioSessionOptions.h"
 
 #include "MediaLogger.h"
@@ -16,6 +17,9 @@ namespace MediaSDK
 		AudioPacketHeader* pPacketHeader = nullptr;
 		switch (type)
 		{
+		case HEADER_LIVE:
+			pPacketHeader = new AudioHeaderLive();
+			break;
 		case HEADER_COMMON:
 			pPacketHeader = new AudioHeaderCall();
 			break;

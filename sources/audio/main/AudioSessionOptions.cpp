@@ -167,7 +167,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisher()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
 		encoderType = Opus_Encoder;
 		decoderType = Opus_Decoder;
@@ -192,7 +192,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisherInCall()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
 		encoderType = PCM_Encoder;
 		decoderType = PCM_Decoder;
@@ -217,7 +217,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewer()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
 		encoderType = Opus_Encoder;
 		decoderType = Opus_Decoder;
@@ -242,7 +242,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewerInCall()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
 		encoderType = PCM_Encoder;
 		decoderType = PCM_Decoder;
