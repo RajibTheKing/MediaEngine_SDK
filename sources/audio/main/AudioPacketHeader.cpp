@@ -31,6 +31,37 @@ namespace MediaSDK
 		return pHeader;
 	}
 
+	AudioPacketHeader::~AudioPacketHeader()
+	{
+		MR_DEBUG("#resorce#header# AudioHeaderCall::~AudioHeaderCall()");
+
+		memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
+		delete[] HeaderBitmap;
+		delete[] HeaderFieldNames;
+		delete[] m_arrllInformation;
+	}
+
+	void AudioPacketHeader::InitArrays()
+	{
+		HeaderBitmap = new int[m_nNumberOfElementsInAudioHeader];
+		HeaderFieldNames = new string[m_nNumberOfElementsInAudioHeader];
+		m_arrllInformation = new long long[m_nNumberOfElementsInAudioHeader];
+	}
+
+	void AudioPacketHeader::ClearMemories()
+	{
+		int headerSizeInBit = 0;
+		for (int i = 0; i < m_nNumberOfElementsInAudioHeader; i++)
+		{
+			headerSizeInBit += HeaderBitmap[i];
+		}
+
+		m_nHeaderSizeInBit = headerSizeInBit;
+		m_nHeaderSizeInByte = (headerSizeInBit + 7) / 8;
+		m_nProcessingHeaderSizeInByte = m_nHeaderSizeInByte;
+		memset(m_arrllInformation, 0, m_nNumberOfElementsInAudioHeader * sizeof(long long));
+		memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
+	}
 
 	int AudioPacketHeader::CopyInformationToHeader(unsigned int * Information)
 	{

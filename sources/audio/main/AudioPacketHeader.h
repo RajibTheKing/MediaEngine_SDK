@@ -50,7 +50,7 @@ namespace MediaSDK
 
 		//Constructor
 		AudioPacketHeader(){}
-		virtual ~AudioPacketHeader(){};
+		~AudioPacketHeader();
 
 		void CopyHeaderToInformation(unsigned char *Header);
 		int GetHeaderInByteArray(unsigned char* data);
@@ -71,6 +71,8 @@ namespace MediaSDK
 
 	protected:
 		int CopyInformationToHeader(unsigned int * Information);
+		void InitArrays();
+		void ClearMemories();
 
 	protected:
 		int *HeaderBitmap;

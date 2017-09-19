@@ -12,23 +12,9 @@ namespace MediaSDK
 		MR_DEBUG("#resorce#header# AudioHeaderCall::AudioHeaderCall() - 1");
 
 		m_nNumberOfElementsInAudioHeader = NUMBER_OF_FIELDS_IN_AUDIO_HEADER_CALL;
-		HeaderBitmap = new int[m_nNumberOfElementsInAudioHeader];
-		HeaderFieldNames = new string[m_nNumberOfElementsInAudioHeader];
-		m_arrllInformation = new long long[m_nNumberOfElementsInAudioHeader];
-
+		InitArrays();
 		InitHeaderBitMap();
-
-		int headerSizeInBit = 0;
-		for (int i = 0; i < m_nNumberOfElementsInAudioHeader; i++)
-		{
-			headerSizeInBit += HeaderBitmap[i];
-		}
-
-		m_nHeaderSizeInBit = headerSizeInBit;
-		m_nHeaderSizeInByte = (headerSizeInBit + 7) / 8;
-		m_nProcessingHeaderSizeInByte = m_nHeaderSizeInByte;
-		memset(m_arrllInformation, 0, m_nNumberOfElementsInAudioHeader * sizeof(long long));
-		memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
+		ClearMemories();
 	}
 
 	AudioHeaderCall::AudioHeaderCall(unsigned int * Information)
@@ -48,15 +34,6 @@ namespace MediaSDK
 		CopyHeaderToInformation(Header);
 	}
 
-	AudioHeaderCall::~AudioHeaderCall()
-	{
-		MR_DEBUG("#resorce#header# AudioHeaderCall::~AudioHeaderCall()");
-
-		memset(ma_uchHeader, 0, m_nHeaderSizeInByte);
-		delete[] HeaderBitmap;
-		delete[] HeaderFieldNames;
-		delete[] m_arrllInformation;
-	}
 
 	void AudioHeaderCall::InitHeaderBitMap()
 	{
@@ -93,9 +70,6 @@ namespace MediaSDK
 		HeaderFieldNames[INF_CALL_TOTAL_PACKET_BLOCKS] = STRING(INF_CALL_TOTAL_PACKET_BLOCKS);
 		HeaderFieldNames[INF_CALL_BLOCK_OFFSET] = STRING(INF_CALL_BLOCK_OFFSET);
 		HeaderFieldNames[INF_CALL_FRAME_LENGTH] = STRING(INF_CALL_FRAME_LENGTH);
-
-		
-		
 
 	}
 

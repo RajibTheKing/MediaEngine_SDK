@@ -36,9 +36,6 @@ namespace MediaSDK
 		AudioHeaderCall(unsigned int * Information);
 		AudioHeaderCall(unsigned char *Header);
 
-		~AudioHeaderCall();
-
-
 	private:
 		void InitHeaderBitMap();
 
