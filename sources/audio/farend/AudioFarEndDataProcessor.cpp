@@ -306,7 +306,7 @@ namespace MediaSDK
 	{
 		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
 
-		m_pAudioFarEndPacketHeader->ShowDetails("[ECHOFLAG] getting");
+		m_pAudioFarEndPacketHeader->ShowDetails("[AFEDP] getting");
 
 		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_PACKETTYPE);
 		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
@@ -323,7 +323,7 @@ namespace MediaSDK
 		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_BLOCK_OFFSET);
 		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_FRAME_LENGTH);
 		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_ECHO_STATE_FLAGS);
-		MediaLog(LOG_DEBUG, "[ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);
+		MediaLog(LOG_DEBUG, "[AFEDP] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);
 
 		if (iBlockNumber == -1)
 		{
@@ -344,7 +344,7 @@ namespace MediaSDK
 	{
 		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
 
-		m_pAudioFarEndPacketHeader->ShowDetails("[ECHOFLAG] getting");
+		m_pAudioFarEndPacketHeader->ShowDetails("[AFEDP][ECHOFLAG] ParseLiveHeader");
 
 		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_PACKETTYPE);
 		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);
@@ -354,7 +354,7 @@ namespace MediaSDK
 		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_TIMESTAMP);
 		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_ECHO_STATE_FLAGS);
 
-		MediaLog(LOG_DEBUG, "[ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);		
+		MediaLog(LOG_DEBUG, "[AFEDP][ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);		
 	}
 
 
