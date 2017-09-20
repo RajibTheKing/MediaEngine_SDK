@@ -243,7 +243,7 @@ namespace MediaSDK
 				if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, m_iSampleSize, inMicLevel, &outMicLevel))
 #else
 				int16_t* in_buf_temp = sInBuf + i;
-				int16_t* out_buf_temp = m_sTempBuf + i;
+				//int16_t* out_buf_temp = sInBuf + i;
 				if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, m_iSampleSize, inMicLevel, &outMicLevel))
 #endif
 				{
@@ -257,7 +257,7 @@ namespace MediaSDK
 					outMicLevel, &inMicLevel, 0, &saturationWarning))
 #else
 				if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, m_iSampleSize,
-					(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
+					(int16_t* const*)&in_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
 #endif
 				{
 					LOGT("###GN## WebRtcAgc_Process failed");
@@ -273,6 +273,7 @@ namespace MediaSDK
 #endif
 
 		//LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d unprocessed:%d samplesize:%d", nBufferSize, m_iVolume, total, m_iSampleSize);
+		LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d samplesize:%d", nBufferSize, m_iVolume, m_iSampleSize);
 
 		//LOGT("###GN## addgain done with : %d volumeaverage:%d", bSucceeded, (int)(total/counter));
 		return bSucceeded;
