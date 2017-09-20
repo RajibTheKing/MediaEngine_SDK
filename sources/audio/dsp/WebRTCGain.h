@@ -21,7 +21,7 @@ namespace MediaSDK
 	{
 	private:
 		bool m_bGainEnabled;
-		short *m_sTempBuf = nullptr;
+		//short *m_sTempBuf = nullptr;
 		int m_iVolume;
 		int m_iSkipFrames;
 		int m_iSampleSize = -1;

@@ -46,7 +46,7 @@ namespace MediaSDK
 		LOGT("###GN##55 #gain# WebRTCGain::WebRTCGain()");
 
 		m_iVolume = DEFAULT_GAIN;
-		m_sTempBuf = new short[3000]; //For channel max buffer size required is 2048 otherwise 800
+		//m_sTempBuf = new short[3000]; //For channel max buffer size required is 2048 otherwise 800
 		int agcret = -1;
 
 #ifdef OLD_GAIN_LIB
@@ -99,10 +99,11 @@ namespace MediaSDK
 		LOGT("###GN## #gain# WebRTCGain::~WebRTCGain()");
 
 		WebRtcAgc_Free(AGC_instance);
+/*
 		if (m_sTempBuf)
 		{
 			delete m_sTempBuf;
-		}
+		}*/
 #endif
 		m_iSkipFrames = 0;
 #ifdef GAIN_DUMP
