@@ -340,6 +340,11 @@ namespace MediaSDK
 		if (m_pAudioEncoder.get())
 		{
 			m_pAudioEncoder->CreateAudioEncoder();
+			
+			if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType && IsOpusEnable())
+			{
+				m_pAudioEncoder->SetBitrate(OPUS_BITRATE_INIT_LIVE);
+			}
 		}
 
 		m_pAudioDecoder = audioResources.GetDecoder();

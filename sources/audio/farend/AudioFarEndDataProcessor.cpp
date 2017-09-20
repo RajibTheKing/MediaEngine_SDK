@@ -519,8 +519,8 @@ namespace MediaSDK
 				if (m_pAudioCallSession->GetIsVideoCallRunning()) {
 					this->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 				}
-				else if (m_pAudioEncoder->GetCurrentBitrate() != AUDIO_BITRATE_INIT){
-					m_pAudioEncoder->SetBitrate(AUDIO_BITRATE_INIT);
+				else if (m_pAudioEncoder->GetCurrentBitrate() != OPUS_BITRATE_INIT_CALL){
+					m_pAudioEncoder->SetBitrate(OPUS_BITRATE_INIT_CALL);
 				}
 			}
 			m_iReceivedPacketsInCurrentSlot++;
