@@ -5,7 +5,7 @@
 #include "AudioMacros.h"
 #include "CommonTypes.h"
 #include "MediaLogger.h"
-#include "AudioHeaderCall.h"
+#include "AudioHeaderLive.h"
 
 
 namespace MediaSDK
@@ -17,12 +17,11 @@ namespace MediaSDK
 		m_bIsCurrentlyParsingAudioData = false;
 		m_bIsRoleChanging = false;
 
-		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
+		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
 	}
 
 	CLiveAudioParserForPublisher::~CLiveAudioParserForPublisher(){
-		SHARED_PTR_DELETE(m_pLiveReceiverMutex);
-		//delete m_pAudioPacketHeader;
+		SHARED_PTR_DELETE(m_pLiveReceiverMutex);		
 	}
 
 	void CLiveAudioParserForPublisher::SetRoleChanging(bool bFlah){
@@ -41,7 +40,7 @@ namespace MediaSDK
 	{
 		int mediaByteSize = 1;
 		m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
-		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
+		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);
 		// add muxed header lenght with audio header length. 
 
 		if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
@@ -71,7 +70,7 @@ namespace MediaSDK
 
 		for (auto &missing : vMissingBlocks)
 		{
-			HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
+			MediaLog(LOG_INFO, "XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
 			int left = max(nOffset, missing.first);
 			if (left < missing.second)
 			{
@@ -128,16 +127,16 @@ namespace MediaSDK
 
 					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
 					{
-						HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
+						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
-						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);						
+						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);						
 
 						if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 							int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength + mediaByteSize];
 							validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 						}
 
-						HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
+						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
 
 						if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
 							HITLER("XXP@#@#MARUF LIVE HEADER INCOMPLETE");
@@ -146,21 +145,19 @@ namespace MediaSDK
 					}
 					else
 					{
-						HITLER("XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
+						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
 						bCompleteFrameHeader = false;
 					}
 				}
 			}
 
 			++iFrameNumber;
-			HITLER("#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
+			//MediaLog(LOG_CODE_TRACE, "#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
 
 			if (!bCompleteFrameHeader)
-			{
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
-
+			{				
 				numOfMissingFrames++;
-				LOG18("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
+				//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
 				continue;
 			}
 
@@ -184,7 +181,7 @@ namespace MediaSDK
 				continue;
 			}
 						
-			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_CALL_PACKETNUMBER));
+			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER));
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
 			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);

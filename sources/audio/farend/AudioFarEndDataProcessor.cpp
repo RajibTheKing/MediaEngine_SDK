@@ -24,6 +24,7 @@
 #include "Trace.h"
 #include "AudioMacros.h"
 #include "AudioHeaderCall.h"
+#include "AudioHeaderLive.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -336,6 +337,26 @@ namespace MediaSDK
 			nFrameLength = packetLength;
 		}
 	}
+
+
+	void AudioFarEndDataProcessor::ParseLiveHeader(int &packetType, int &nHeaderLength, int &version, int &packetNumber, int &packetLength,
+		 long long &timestamp, int &nEchoStateFlags, unsigned char* header)
+	{
+		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
+
+		m_pAudioFarEndPacketHeader->ShowDetails("[ECHOFLAG] getting");
+
+		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_PACKETTYPE);
+		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);
+		version = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_VERSIONCODE);
+		packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER);
+		packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_FRAME_LENGTH);
+		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_TIMESTAMP);
+		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_ECHO_STATE_FLAGS);
+
+		MediaLog(LOG_DEBUG, "[ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);		
+	}
+
 
 	bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 	{

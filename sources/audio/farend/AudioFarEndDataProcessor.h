@@ -49,6 +49,9 @@ namespace MediaSDK
 		void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &packetNumber, int &packetLength, 
 			int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength, int &nEchoStateFlags);
 
+		void ParseLiveHeader(int &packetType, int &nHeaderLength, int &version, int &packetNumber, int &packetLength,
+			long long &timestamp, int &nEchoStateFlags, unsigned char* header);
+
 		bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
