@@ -138,6 +138,8 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[ECHOFLAG] BuildAndGetHeader ptype %d ntype %d  packetnumber %d plength %d  channel %d version %d time %lld echoStateFlags = %d",
 			packetType, networkType, packetNumber, packetLength, channel, version, timestamp, echoStateFlags);
 
+		echoStateFlags = 0;
+
 		m_pAudioNearEndPacketHeader->SetInformation(packetType, INF_CALL_PACKETTYPE);
 		m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_CALL_HEADERLENGTH);
 		m_pAudioNearEndPacketHeader->SetInformation(packetNumber, INF_CALL_PACKETNUMBER);
@@ -166,6 +168,8 @@ namespace MediaSDK
 	{
 		MediaLog(LOG_DEBUG, "[ANEDP][ECHOFLAG] BuildHeaderForLive PT=%d HL=%d V=%d PN=%d PL=%d RTS=%lld ESF=%d",
 			nPacketType, nHeaderLength, nVersion, nPacketLength, nPacketLength, llRelativeTime, nEchoStateFlags);
+
+		nEchoStateFlags = 0;
 
 		m_pAudioNearEndPacketHeader->SetInformation(nPacketType, INF_LIVE_PACKETTYPE);
 		m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_LIVE_HEADERLENGTH);
