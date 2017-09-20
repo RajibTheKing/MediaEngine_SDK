@@ -201,13 +201,15 @@ namespace MediaSDK
 
 			llCapturedTime = Tools::CurrentTimestamp();
 
-			int dummy;
-			int nPacketDataLength, nChannel, nVersion;
-			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength,
-				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags);
+			int nPacketDataLength, nVersion;
+			int nEchoStateFlags;
 
-			MediaLog(LOG_CODE_TRACE, "[AFEPV] PT:%d PN:%d BN:%d DataLen:%d FL:%d",  nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			ParseLiveHeader(nCurrentAudioPacketType, nCurrentPacketHeaderLength, nVersion, iPacketNumber, nPacketDataLength,
+				llRelativeTime, nEchoStateFlags, m_ucaDecodingFrame);
+			
+			m_nDecodingFrameSize = nPacketDataLength;
+
+			MediaLog(LOG_CODE_TRACE, "[AFEPV] PT:%d PN:%d DataLen:%d RT:%lld ESF:%d", nCurrentAudioPacketType, iPacketNumber, nPacketDataLength, llRelativeTime, nEchoStateFlags);
 
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
@@ -216,100 +218,91 @@ namespace MediaSDK
 			}
 
 			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
-			llNow = Tools::CurrentTimestamp();
-			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
-			MediaLog(LOG_CODE_TRACE, "[AFEPV] [%d %d]", iPacketNumber, iBlockNumber);
-			if (bIsCompleteFrame){
-				//m_ucaDecodingFrame
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] Complete[%d %d]", iPacketNumber, iBlockNumber);
-
-				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
-				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
-				{
-					MediaLog(LOG_CODE_TRACE, "[AFEPV] REMOVED ON RELATIVE TIME");
-					return;
-				}
+			llNow = Tools::CurrentTimestamp();						
+							
+			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+			{
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] REMOVED ON RELATIVE TIME");
+				return;
 			}
-			llNow = Tools::CurrentTimestamp();
 
-			if (bIsCompleteFrame){
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] WORKING ON COMPLETE FRAME . ");
-				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
 
-				//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+			MediaLog(LOG_CODE_TRACE, "[AFEPV] WORKING ON COMPLETE FRAME . ");
+			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
+			MediaLog(LOG_CODE_TRACE, "[AFEPV] -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
 
-				if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType)
+			//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
+
+			if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType)
+			{
+				if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
 				{
-					if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+					nCalleeId = 1;	//Should be fixed.
+					long long nGetOwnFrameNumber;
+					nGetOwnFrameNumber = m_pAudioMixer->GetAudioFrameByParsingMixHeader(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nCalleeId);
+					long long llLastFrameNumber;
+					int nSize;
+					bool bFound = false;
+
+					//MediaLog(LOG_CODE_TRACE, "[AFEPV] m_ViewerInCallSentDataQueue # Queue Size %d", m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize());
+
+					while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue->GetQueueSize())
 					{
-						nCalleeId = 1;	//Should be fixed.
-						long long nGetOwnFrameNumber;
-						nGetOwnFrameNumber = m_pAudioMixer->GetAudioFrameByParsingMixHeader(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nCalleeId);
-						long long llLastFrameNumber;
-						int nSize;
-						bool bFound = false;
+						nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue->DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);
+						MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
 
-						//MediaLog(LOG_CODE_TRACE, "[AFEPV] m_ViewerInCallSentDataQueue # Queue Size %d", m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize());
-
-						while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue->GetQueueSize())
-						{
-							nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue->DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);
-							MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
-
-							if (nSize == -1) {
-								MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND EITHER CURRENT FRAME IS GREATER THAN FRONT OF QUEUE OR NO DATA IN QUEUE");
-								break;
-							}
-
-							if (nGetOwnFrameNumber == llLastFrameNumber)
-							{
-								bFound = true;
-		 						break;
-							}
+						if (nSize == -1) {
+							MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND EITHER CURRENT FRAME IS GREATER THAN FRONT OF QUEUE OR NO DATA IN QUEUE");
+							break;
 						}
-						if (bFound)
+
+						if (nGetOwnFrameNumber == llLastFrameNumber)
 						{
-							MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA");
-							m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
-						}
-						else
-						{
-							//Do Some thing;
-							MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA with -1");
-							nCalleeId = -1;
-							m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
+							bFound = true;
+		 					break;
 						}
 					}
-					else //For Only Viewers
+					if (bFound)
 					{
-						MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA ONLY VIEWR");
+						MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA");
+						m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
+					}
+					else
+					{
+						//Do Some thing;
+						MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA with -1");
 						nCalleeId = -1;
 						m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 					}
 				}
-				else
+				else //For Only Viewers
 				{
-					MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA ONLY VIEWR wrong media");
-					memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
-					m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
+					MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA ONLY VIEWR");
+					nCalleeId = -1;
+					m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
 				}
-
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] Viewer  m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
-				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
-				if (m_nDecodedFrameSize < 1)
-				{
-					MediaLog(LOG_CODE_TRACE, "[AFEPV] REMOVED FOR LOW SIZE.");
-					return;
-				}
-
-				MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber); 
-				LOGFARQUAD("Farquad calling SendToPlayer viewer");
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
-				Tools::SOSleep(0);
 			}
+			else
+			{
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA ONLY VIEWR wrong media");
+				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
+				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
+			}
+
+			MediaLog(LOG_CODE_TRACE, "[AFEPV] Viewer  m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
+			DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
+			MediaLog(LOG_CODE_TRACE, "[AFEPV] AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
+			if (m_nDecodedFrameSize < 1)
+			{
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] REMOVED FOR LOW SIZE.");
+				return;
+			}
+
+			MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber); 
+			LOGFARQUAD("Farquad calling SendToPlayer viewer");
+			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
+			Tools::SOSleep(0);			
 		}
 		else 
 		{
