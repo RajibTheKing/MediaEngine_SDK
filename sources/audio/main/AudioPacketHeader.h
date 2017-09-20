@@ -5,47 +5,8 @@
 #include "AudioTypes.h"
 #include "SmartPointer.h"
 
-
 namespace MediaSDK
 {
-
-	typedef struct
-	{
-		int packetType;
-		int headerLength;
-		int networkType;
-		int slotNumber;
-		int packetNumber;
-		int blockLength;
-		int recvSlotNumber;
-		int numPacketRecv;
-		int channel;
-		int version;
-		long long timestamp;
-		int blockNumber;
-		int totalBlocksInThisFrame;
-		int blockOffset;
-		int frameLength;
-	} AudioHeaderFields;
-
-	enum AudioHeaderInfoTypes
-	{
-		INF_PACKETTYPE = 0,
-		INF_HEADERLENGTH,
-		INF_NETWORKTYPE,
-		INF_VERSIONCODE,
-		INF_PACKETNUMBER,
-		INF_BLOCK_LENGTH,
-		INF_RECVDSLOTNUMBER,
-		INF_NUMPACKETRECVD,
-		INF_CHANNELS,
-		INF_SLOTNUMBER,
-		INF_TIMESTAMP,
-		INF_PACKET_BLOCK_NUMBER,
-		INF_TOTAL_PACKET_BLOCKS,
-		INF_BLOCK_OFFSET,
-		INF_FRAME_LENGTH
-	};
 
 	enum AudioPacketTypes
 	{
@@ -72,7 +33,6 @@ namespace MediaSDK
 
 
 	enum MaxSizes{
-		MAXFIELDSINHEADER = 15,
 		MAXHEADERSIZE = 100
 	};
 
@@ -84,45 +44,43 @@ namespace MediaSDK
 
 		static SharedPointer<AudioPacketHeader> GetInstance(AudioHeaderTypes type);
 
+		int m_nNumberOfElementsInAudioHeader;
+
 		//Constructor
 		AudioPacketHeader(){}
-		virtual ~AudioPacketHeader(){};
+		~AudioPacketHeader();
 
-		/*virtual void SetHeaderAllInByteArray(unsigned char* header, int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber,
-			int numPacketRecv, int channel, int version, long long timestamp, int iBlockNumber, int nTotalBlocksInThisFrame, int nBlockOffset, int nFrameLength) = 0;*/
+		void CopyHeaderToInformation(unsigned char *Header);
+		int GetHeaderInByteArray(unsigned char* data);
 
-		virtual void SetHeaderAllInByteArray(unsigned char* header, const AudioHeaderFields& params) = 0;
+		void SetInformation(long long Information, int InfoType);
+		long long GetInformation(int InfoType);
 
-		virtual void CopyHeaderToInformation(unsigned char *Header) = 0;
-		virtual int GetHeaderInByteArray(unsigned char* data) = 0;
+		long long GetFieldCapacity(int InfoType);
 
-		virtual void SetInformation(long long Information, int InfoType) = 0;
-		virtual long long GetInformation(int InfoType) = 0;
+		bool IsPacketTypeSupported(unsigned int PacketType);
+		bool IsPacketTypeSupported();
 
-		virtual long long GetFieldCapacity(int InfoType) = 0;
+		void ShowDetails(char prefix[]);
 
-		virtual bool IsPacketTypeSupported(unsigned int PacketType) = 0;
-		virtual bool IsPacketTypeSupported() = 0;
+		bool PutInformationToArray(int InfoType);
 
-		virtual void showDetails(char prefix[]) = 0;
-
-		virtual int GetHeaderSize()
-		{
-			return m_nHeaderSizeInByte;
-		}
+		int GetHeaderSize();
 
 	protected:
+		int CopyInformationToHeader(unsigned int * Information);
+		void InitArrays();
+		void ClearMemories();
 
-		int HeaderBitmap[MAXFIELDSINHEADER];
+	protected:
+		int *HeaderBitmap;
+		std::string *HeaderFieldNames;
 
-		AudioHeaderFields m_headerParams;
-
-		int nNumberOfHeaderElements;
 		unsigned int m_nHeaderSizeInBit;
 		unsigned int m_nHeaderSizeInByte;
 		unsigned int m_nProcessingHeaderSizeInByte;
 
-		long long m_arrllInformation[MAXFIELDSINHEADER];
+		long long *m_arrllInformation;
 		unsigned char ma_uchHeader[MAXHEADERSIZE];
 
 	};

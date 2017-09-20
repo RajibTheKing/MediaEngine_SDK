@@ -49,7 +49,7 @@ namespace MediaSDK
 			return EXIT_FAILURE;
 		}
 
-		int nBitRate = AUDIO_BITRATE_INIT;
+		int nBitRate = OPUS_BITRATE_INIT_CALL;
 		SetBitrate(nBitRate);
 		
 		int iSignalType = OPUS_SIGNAL_MUSIC;

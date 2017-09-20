@@ -5,6 +5,8 @@
 #include <string>
 #include <chrono>
 
+#define STRING(X) #X
+
 #if defined(__ANDROID__)
 #include <sys/prctl.h>
 #endif

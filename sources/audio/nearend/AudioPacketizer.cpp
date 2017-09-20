@@ -20,16 +20,16 @@ namespace MediaSDK
 		//delete m_AudioPacketHeader;
 	}
 
+#if 0 
 	void AudioPacketizer::Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, PackatizedDataListener* dataListener)
 	{
-
 		int nNumberOfBlocks = (headerParams.frameLength /*nDataLength*/ + m_nMaxDataSyzeInEachBlock - 1) / m_nMaxDataSyzeInEachBlock;
 		int nBlockOffset = 0;
 		int nMediaByteSize = 1, nCurrentBlockLength;
 
-		int iSlotID = headerParams.packetNumber /*nFrameNumber*/ / AUDIO_SLOT_SIZE;
+		//int iSlotID = headerParams.packetNumber /*nFrameNumber*/ / AUDIO_SLOT_SIZE;
 
-		iSlotID %= m_AudioPacketHeader->GetFieldCapacity(INF_SLOTNUMBER);
+		//iSlotID %= m_AudioPacketHeader->GetFieldCapacity(INF_CALL_SLOTNUMBER);
 		//LOGT("##NF###XXP@#@#MARUF INIT PACKETING .... data Len = %d numBlock %d, SlotId %d", headerParams.frameLength /*nDataLength*/, nNumberOfBlocks, iSlotID);
 		for (int iBlockNumber = 0; iBlockNumber < nNumberOfBlocks; iBlockNumber++) {
 
@@ -56,5 +56,6 @@ namespace MediaSDK
 
 		HITLER("XXP@#@#MARUF PACKETING ENDS.");
 	}
+#endif
 
 } //namespace MediaSDK

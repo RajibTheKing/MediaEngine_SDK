@@ -40,20 +40,23 @@ namespace MediaSDK
 		void StopCallInLive(int nEntityType);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
-		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
+		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags);
 		void SetEventCallback(DataEventListener* pDataListener, NetworkChangeListener* networkListener, AudioAlarmListener* alarmListener);
 
 
 	protected:
 
-		void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-			int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
+		void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &packetNumber, int &packetLength, 
+			int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength, int &nEchoStateFlags);
+
+		void ParseLiveHeader(int &packetType, int &nHeaderLength, int &version, int &packetNumber, int &packetLength,
+			long long &timestamp, int &nEchoStateFlags, unsigned char* header);
 
 		bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 
-		void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
+		//void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
 		void DecodeAndPostProcessIfNeeded(const int iPacketNumber, const int nCurrentPacketHeaderLength, const int nCurrentAudioPacketType);
 		void DecideToChangeBitrate(int iNumPacketRecvd);
 
@@ -82,7 +85,6 @@ namespace MediaSDK
 		int m_nEntityType;
 		int m_nDecodingFrameSize = 0;
 		int m_nDecodedFrameSize = 0;
-		int m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 
 		long long m_llLastTime;
 

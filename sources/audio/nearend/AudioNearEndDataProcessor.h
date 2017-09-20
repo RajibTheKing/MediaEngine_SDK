@@ -42,7 +42,9 @@ namespace MediaSDK
 		void DumpEncodingFrame();
 		void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 		bool PreProcessAudioBeforeEncoding();
-		void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int slotNumber, int packetNumber, int packetLength, int recvSlotNumber, int numPacketRecv, int channel, int version, long long timestamp, unsigned char* header);
+		void BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int packetNumber, int packetLength, int channel, int version, long long timestamp, int echoStateFlags, unsigned char* header);
+		void BuildHeaderForLive(int nPacketType, int nHeaderLength, int nVersion, int nPacketNumber, int nPacketLength,
+			long long llRelativeTime, int nEchoStateFlags, unsigned char* ucpHeader);
 		void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte);
 		void StoreDataForChunk(unsigned char *uchNearData, int nNearFrameLengthInByte, unsigned char *uchFarData, int nFarFrameLengthInByte, long long llRelativeTime);
 

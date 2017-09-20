@@ -67,7 +67,7 @@ namespace MediaSDK
 		int iTotalFrameCounter = 0;
 		int naFrameNumbers[2];
 		naFrameNumbers[0] = naFrameNumbers[1] = -1;
-		
+		int nEchoStateFlags = 0;
 		if (nQueueSize > 0)
 		{
 			m_pAudioMixer->ResetPCMAdder();
@@ -89,13 +89,14 @@ namespace MediaSDK
 
 				llCapturedTime = Tools::CurrentTimestamp();
 
-				int dummy;
-				int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-				int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-				ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-					nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+				
+				int nPacketDataLength, nChannel, nVersion;
+								
 
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] [Iterator:%d] PT:%d PN:%d BN:%d DataLen:%d FL:%d", iterator, nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);				
+				ParseLiveHeader(nCurrentAudioPacketType, nCurrentPacketHeaderLength, nVersion, iPacketNumber, nPacketDataLength,
+					llRelativeTime, nEchoStateFlags, m_ucaDecodingFrame);
+
+				MediaLog(LOG_CODE_TRACE, "[AFEPV] [Iterator:%d] PT:%d PN:%d DL:%d RT:%lld", iterator, nCurrentAudioPacketType, iPacketNumber, nPacketDataLength, llRelativeTime);
 
 				if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 				{
@@ -106,48 +107,44 @@ namespace MediaSDK
 				m_nDecodedFrameSize = -1;
 				bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 				llNow = Tools::CurrentTimestamp();
-				//bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);				
+				
 				int nEncodedFrameSize = m_nDecodingFrameSize - nCurrentPacketHeaderLength;
 
 				MediaLog(LOG_CODE_TRACE, "[AFEPV] bIsCompleteFrame = %d\n", bIsCompleteFrame);
-				//if (bIsCompleteFrame)
+				
+				/*Skip delay packet only for publisher.*/
+				if (0 == iterator && !IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
 				{
-					//m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
-
-					/*Skip delay packet only for publisher.*/
-					if (0 == iterator && !IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
-					{
-						MediaLog(LOG_WARNING, "[AFEPV]  [Iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
-						continue;
-					}
-
-					llNow = Tools::CurrentTimestamp();
-					
-										
-					if (0 == iterator)
-					{
-						/* OPUS Decoder for Publisher*/
-						m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
-					}
-					else
-					{
-						/* OPUS Decoder for Callee Data*/
-						m_nDecodedFrameSize = m_pCalleeDecoderOpus->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
-					}
-										
-					PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);					
-
-					if (m_nDecodedFrameSize < 1)
-					{
-						MediaLog(LOG_WARNING, "[AFEPV] [Iterator:%d] REMOVED DECODED FRAME# LEN = %d", m_nDecodedFrameSize);
-						continue;
-					}
-
-					naFrameNumbers[iterator] = iPacketNumber;
-
-					m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);					
-					LOGFARQUAD("Farquad calling SendToPlayer viewer");
+					MediaLog(LOG_WARNING, "[AFEPV]  [Iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
+					continue;
 				}
+
+				llNow = Tools::CurrentTimestamp();
+															
+				if (0 == iterator)
+				{
+					/* OPUS Decoder for Publisher*/
+					m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
+				}
+				else
+				{
+					/* OPUS Decoder for Callee Data*/
+					m_nDecodedFrameSize = m_pCalleeDecoderOpus->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nEncodedFrameSize, m_saDecodedFrame);
+				}
+										
+				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);					
+
+				if (m_nDecodedFrameSize < 1)
+				{
+					MediaLog(LOG_WARNING, "[AFEPV] [Iterator:%d] REMOVED DECODED FRAME# LEN = %d", m_nDecodedFrameSize);
+					continue;
+				}
+
+				naFrameNumbers[iterator] = iPacketNumber;
+
+				m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);					
+				LOGFARQUAD("Farquad calling SendToPlayer viewer");
+				
 
 				MediaLog(LOG_CODE_TRACE, "[AFEPV] [Iterator:%d] USED FRAME# FN: %d EncodedFrameSize = %d, DecodedFrameSize = %d, HL=%d", iterator, iPacketNumber, nEncodedFrameSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
 			}
@@ -157,7 +154,7 @@ namespace MediaSDK
 			DumpDecodedFrame(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 			MediaLog(LOG_INFO, "[AFEPV] Viewer-SendToPlayer# PublisherFN = %d, CalleeFN = %d", naFrameNumbers[0], naFrameNumbers[1]);
 
-			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber);
+			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber, nEchoStateFlags);
 			Tools::SOSleep(0);
 		}
 		else
@@ -205,10 +202,10 @@ namespace MediaSDK
 			llCapturedTime = Tools::CurrentTimestamp();
 
 			int dummy;
-			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+			int nPacketDataLength, nChannel, nVersion;
+			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags;
+			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength,
+				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags);
 
 			MediaLog(LOG_CODE_TRACE, "[AFEPV] PT:%d PN:%d BN:%d DataLen:%d FL:%d",  nCurrentAudioPacketType, iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 
@@ -310,7 +307,7 @@ namespace MediaSDK
 
 				MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber); 
 				LOGFARQUAD("Farquad calling SendToPlayer viewer");
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
 				Tools::SOSleep(0);
 			}
 		}

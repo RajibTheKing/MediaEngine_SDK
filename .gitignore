@@ -42,3 +42,9 @@ VideoEngineUtilities/x64/Debug/VideoEngineUtilities.log
 VideoEngineUtilities/x64/Debug/vc120.pdb
 include/g729/G729_Wndows.v12.suo
 include/g729/G729_Wndows.vcxproj.user
+*.o
+*.d
+*.tlog
+*.sdf
+*.idb
+*.opensdf

@@ -4,6 +4,8 @@
 #include "ThreadTools.h"
 #include "AudioMacros.h"
 #include "MediaLogger.h"
+#include "AudioHeaderLive.h"
+
 
 namespace MediaSDK
 {
@@ -16,7 +18,7 @@ namespace MediaSDK
 
 		m_llLastProcessedFrameNo = -1;
 
-		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
+		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
 	}
 
 	CLiveAudioParserForCallee::~CLiveAudioParserForCallee(){
@@ -40,7 +42,7 @@ namespace MediaSDK
 	{
 		int iMediaByteHeaderLength = 1; /**Media Byte Length = 1 Byte**/
 		m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderLength);
-		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);
 		// add muxed header lenght with audio header length. 
 		if (uchAudioData[nFrameLeftRange + iMediaByteHeaderLength] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 			int totalCallee = uchAudioData[nFrameLeftRange + iMediaByteHeaderLength + validHeaderLength];
@@ -136,8 +138,8 @@ namespace MediaSDK
 						MediaLog(LOG_CODE_TRACE, "[LAPC] VALID HEADER");
 						// Get header length;
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
-						validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
-						iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+						validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);
+						iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER);
 
 						if (uchAudioData[nFrameLeftRange + iMediaByteHeaderSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 							int totalCallee = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize + validHeaderLength];
@@ -161,13 +163,13 @@ namespace MediaSDK
 				else
 				{
 					m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);					
-					iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+					iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER);
 				}
 			}
 			else
 			{				
 				m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize);
-				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER);
+				iCurrentFrameNumber = m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER);
 				MediaLog(LOG_CODE_TRACE, "[LAPC] COMPLETE FRAME. FrameNo = %lld", iCurrentFrameNumber);
 			}
 

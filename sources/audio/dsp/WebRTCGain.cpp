@@ -182,7 +182,7 @@ namespace MediaSDK
 	}
 
 
-	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning)
+	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags)
 	{
 #ifdef USE_AGC
 
@@ -199,34 +199,41 @@ namespace MediaSDK
 		uint8_t saturationWarning;
 		int32_t inMicLevel;
 		int32_t outMicLevel = 0;
-		bool bSucceeded = true;
+		bool bEchoExists, bSucceeded = true;
+		int nNumEchoFlags = nBufferSize / AGC_ANALYSIS_SAMPLES_IN_FRAME;
 		//int total = 0, counter = 0; //debugging purpose
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AGC_ANALYSIS_SAMPLES_IN_FRAME)
+		int echoStateMask = 1 << (nNumEchoFlags - 1);
+		for (int i = 0; i < nBufferSize; i += AGC_ANALYSIS_SAMPLES_IN_FRAME, echoStateMask >> 1)
 		{
-			inMicLevel = 0;
-#ifdef OLD_GAIN_LIB
-			if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
-#else
-			int16_t* in_buf_temp = sInBuf + i;
-			int16_t* out_buf_temp = m_sTempBuf + i;
-			if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
-#endif
+			bEchoExists = (nEchoStateFlags & echoStateMask);
+
+			if (!bPlayerSide || (bPlayerSide && !bEchoExists))
 			{
-				LOGT("###GN## WebRtcAgc_VirtualMic failed");
-				bSucceeded = false;
-			}
-			
-			//total += outMicLevel; counter++;
+				inMicLevel = 0;
 #ifdef OLD_GAIN_LIB
-			if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, m_sTempBuf + i, 0,
-				outMicLevel, &inMicLevel, 0, &saturationWarning))
+				if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
 #else
-			if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
-				(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
+				int16_t* in_buf_temp = sInBuf + i;
+				int16_t* out_buf_temp = m_sTempBuf + i;
+				if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME, inMicLevel, &outMicLevel))
 #endif
-			{
-				LOGT("###GN## WebRtcAgc_Process failed");
-				bSucceeded = false;
+				{
+					LOGT("###GN## WebRtcAgc_VirtualMic failed");
+					bSucceeded = false;
+				}
+
+				//total += outMicLevel; counter++;
+#ifdef OLD_GAIN_LIB
+				if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, AGC_SAMPLES_IN_FRAME, sInBuf + i, 0,
+					outMicLevel, &inMicLevel, 0, &saturationWarning))
+#else
+				if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, AGC_SAMPLES_IN_FRAME,
+					(int16_t* const*)&out_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
+#endif
+				{
+					LOGT("###GN## WebRtcAgc_Process failed");
+					bSucceeded = false;
+				}
 			}
 		}
 
@@ -234,7 +241,6 @@ namespace MediaSDK
 		fwrite(sInBuf, 2, nBufferSize, gainIn);
 #endif
 
-		memcpy(sInBuf, m_sTempBuf, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
 
 #ifdef GAIN_DUMP
 		fwrite(sInBuf, 2, nBufferSize, gainOut);
@@ -244,9 +250,9 @@ namespace MediaSDK
 
 		//LOGT("###GN## addgain done with : %d volumeaverage:%d", bSucceeded, (int)(total/counter));
 		return bSucceeded;
-#endif
-
+#else
 		return true;
+#endif
 	}
 
 } //namespace MediaSDK

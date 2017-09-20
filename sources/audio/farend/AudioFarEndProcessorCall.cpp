@@ -45,10 +45,12 @@ namespace MediaSDK
 			llCapturedTime = Tools::CurrentTimestamp();
 
 			int dummy;
-			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+			int nPacketDataLength, nChannel, nVersion;
+			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags;
+			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength,
+				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags);
+
+			MediaLog(LOG_DEBUG, "[ECHOFLAG] playerside nEchoStateFlags = %d\n", nEchoStateFlags);
 
 			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 
@@ -91,7 +93,7 @@ namespace MediaSDK
 				}
 				LOG18("#18#FE#AudioCall SendToPlayer");
 
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
 #ifndef USE_AECM
 				ProcessPlayingData();
 #endif

@@ -23,6 +23,8 @@
 #include "AudioGainInterface.h"
 #include "Trace.h"
 #include "AudioMacros.h"
+#include "AudioHeaderCall.h"
+#include "AudioHeaderLive.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -209,7 +211,7 @@ namespace MediaSDK
 		}
 	}
 
-	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
+	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags)
 	{
 		MediaLog(LOG_INFO, "[AFEDP] SENT TO PLAYER DATA .................");
 		long long llNow = 0;
@@ -239,17 +241,12 @@ namespace MediaSDK
 			}
 
 			MediaLog(LOG_INFO, "[AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
-//#ifdef __ANDROID__
-//			if (m_bIsLiveStreamingRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType))
-//			{
-//				m_pGomGomGain->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
-//			}
-//#endif
+
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 
 			if (m_nEntityType == ENTITY_TYPE_VIEWER && m_pAudioCallSession->GetPlayerGain().get())
 			{
-				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, m_bIsLiveStreamingRunning);
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, nEchoStateFlags);
 			}
 
 #ifdef USE_AECM
@@ -287,7 +284,7 @@ namespace MediaSDK
 #ifdef __ANDROID__
 			if (m_pAudioCallSession->GetPlayerGain().get())
 			{
-				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, false);
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, nEchoStateFlags);
 			}
 #endif // __ANDROID__
 
@@ -304,28 +301,29 @@ namespace MediaSDK
 #endif
 	}
 
-	void AudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-		int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength)
+	void AudioFarEndDataProcessor::ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &packetNumber, int &packetLength, 
+		int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength, int &nEchoStateFlags)
 	{
 		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
 
-		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETTYPE);
-		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_HEADERLENGTH);
-		networkType = m_pAudioFarEndPacketHeader->GetInformation(INF_NETWORKTYPE);
-		slotNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_SLOTNUMBER);
-		packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKETNUMBER);
-		packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_LENGTH);
-		recvSlotNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_RECVDSLOTNUMBER);
-		numPacketRecv = m_pAudioFarEndPacketHeader->GetInformation(INF_NUMPACKETRECVD);
-		channel = m_pAudioFarEndPacketHeader->GetInformation(INF_CHANNELS);
-		version = m_pAudioFarEndPacketHeader->GetInformation(INF_VERSIONCODE);
-		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_TIMESTAMP);
+		m_pAudioFarEndPacketHeader->ShowDetails("[AFEDP] getting");
+
+		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_PACKETTYPE);
+		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
+		networkType = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_NETWORKTYPE);
+		packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_PACKETNUMBER);
+		packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_BLOCK_LENGTH);
+		channel = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_CHANNELS);
+		version = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_VERSIONCODE);
+		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_TIMESTAMP);
 
 
-		iBlockNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_PACKET_BLOCK_NUMBER);
-		nNumberOfBlocks = m_pAudioFarEndPacketHeader->GetInformation(INF_TOTAL_PACKET_BLOCKS);
-		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_BLOCK_OFFSET);
-		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_FRAME_LENGTH);
+		iBlockNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_PACKET_BLOCK_NUMBER);
+		nNumberOfBlocks = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_TOTAL_PACKET_BLOCKS);
+		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_BLOCK_OFFSET);
+		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_FRAME_LENGTH);
+		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_ECHO_STATE_FLAGS);
+		MediaLog(LOG_DEBUG, "[AFEDP] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);
 
 		if (iBlockNumber == -1)
 		{
@@ -339,6 +337,26 @@ namespace MediaSDK
 			nFrameLength = packetLength;
 		}
 	}
+
+
+	void AudioFarEndDataProcessor::ParseLiveHeader(int &packetType, int &nHeaderLength, int &version, int &packetNumber, int &packetLength,
+		 long long &timestamp, int &nEchoStateFlags, unsigned char* header)
+	{
+		m_pAudioFarEndPacketHeader->CopyHeaderToInformation(header);
+
+		m_pAudioFarEndPacketHeader->ShowDetails("[AFEDP][ECHOFLAG] ParseLiveHeader");
+
+		packetType = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_PACKETTYPE);
+		nHeaderLength = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);
+		version = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_VERSIONCODE);
+		packetNumber = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER);
+		packetLength = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_FRAME_LENGTH);
+		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_TIMESTAMP);
+		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_ECHO_STATE_FLAGS);
+
+		MediaLog(LOG_DEBUG, "[AFEDP][ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);		
+	}
+
 
 	bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 	{
@@ -481,6 +499,7 @@ namespace MediaSDK
 #endif
 	}
 
+#if 0
 	void AudioFarEndDataProcessor::SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber)
 	{
 		if (!m_bIsLiveStreamingRunning)
@@ -500,13 +519,14 @@ namespace MediaSDK
 				if (m_pAudioCallSession->GetIsVideoCallRunning()) {
 					this->DecideToChangeBitrate(m_iOpponentReceivedPackets);
 				}
-				else if (m_pAudioEncoder->GetCurrentBitrate() != AUDIO_BITRATE_INIT){
-					m_pAudioEncoder->SetBitrate(AUDIO_BITRATE_INIT);
+				else if (m_pAudioEncoder->GetCurrentBitrate() != OPUS_BITRATE_INIT_CALL){
+					m_pAudioEncoder->SetBitrate(OPUS_BITRATE_INIT_CALL);
 				}
 			}
 			m_iReceivedPacketsInCurrentSlot++;
 		}
 	}
+#endif
 
 	void AudioFarEndDataProcessor::PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec,
 		long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime)
