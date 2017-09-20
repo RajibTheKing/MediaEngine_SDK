@@ -738,7 +738,7 @@ namespace MediaSDK
 			if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
 			{
 				MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
-				GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+				GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
 			}
 		}
 

@@ -207,6 +207,7 @@ namespace MediaSDK
 	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags)
 	{
 		//if not in call (normal or live), set nEchoStateFlags to 0
+		//TODO: handle addgain parameter's for channel
 #ifdef USE_AGC
 
 		if (!m_bGainEnabled)
@@ -228,7 +229,7 @@ namespace MediaSDK
 		int32_t inMicLevel;
 		int32_t outMicLevel = 0;
 		bool bEchoExists, bSucceeded = true;
-		int nNumEchoFlags = nBufferSize / AGC_ANALYSIS_SAMPLES_IN_FRAME;
+		int nNumEchoFlags = nBufferSize / m_iSampleSize;
 		//int total = 0, counter = 0; //debugging purpose
 		int echoStateMask = 1 << (nNumEchoFlags - 1);
 		for (int i = 0; i < nBufferSize; i += m_iSampleSize, echoStateMask >> 1)
@@ -266,13 +267,6 @@ namespace MediaSDK
 			//total -= m_iSampleSize;
 			//LOGT("##TTGN i:%d bufsize:%d total:%d", i, nBufferSize, total);
 		}
-
-		}
-
-#ifdef GAIN_DUMP
-		fwrite(sInBuf, 2, nBufferSize, gainIn);
-#endif
-
 
 #ifdef GAIN_DUMP
 		fwrite(sInBuf, 2, nBufferSize, gainOut);
