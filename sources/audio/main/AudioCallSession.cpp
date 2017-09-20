@@ -81,8 +81,16 @@ namespace MediaSDK
 		SetResources(audioResources);
 		if (GetPlayerGain().get())
 		{
+			GetPlayerGain()->Init(m_nServiceType);
 			GetPlayerGain()->SetGain(0);
+			//GetPlayerGain()->SetGain(10); //TODO: remove this
 		}
+
+		if (GetRecorderGain().get())
+		{
+			GetRecorderGain()->Init(m_nServiceType);
+		}
+
 		m_pTrace = new CTrace();
 
 		m_iSpeakerType = nAudioSpeakerType;
@@ -638,11 +646,11 @@ namespace MediaSDK
 				}
 				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()-> m_llDelayFraction : %d", m_llDelayFraction);
 				
-                if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-                {
-                    MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
-                    GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
-                }
+				if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+				{
+					MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
+					GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, m_nServiceType == SERVICE_TYPE_LIVE_STREAM);
+				}
 
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 				if (iFarendDataLength > 0)
