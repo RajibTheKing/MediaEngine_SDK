@@ -217,7 +217,7 @@ namespace MediaSDK
 			bool success = false;
 			
 			if ((int)uchVideoData[0] == 2 )
-				success = isComplementEfficient((int)uchVideoData[1], (int)uchVideoData[2], 3, uchVideoData, numberOfFrames, frameSizes, vMissingFrames, m_pBackupData);
+				success = isComplement((int)uchVideoData[1], (int)uchVideoData[2], 3, uchVideoData, numberOfFrames, frameSizes, vMissingFrames, m_pBackupData);
 
 			if (success)
 			{
