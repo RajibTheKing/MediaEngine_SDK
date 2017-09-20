@@ -27,7 +27,7 @@ namespace MediaSDK
 		@return: Data length of packatized data
 
 		*/
-		void Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, PackatizedDataListener* callback);
+		//void Packetize(unsigned char* uchData, const AudioHeaderFields& headerParams, PackatizedDataListener* callback);
 
 	private:
 

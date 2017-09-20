@@ -167,10 +167,10 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisher()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
-		encoderType = PCM_Encoder;
-		decoderType = No_Decoder;
+		encoderType = Opus_Encoder;
+		decoderType = Opus_Decoder;
 
 		noiseReducerType = WebRTC_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
@@ -192,7 +192,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForPublisherInCall()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
 		encoderType = PCM_Encoder;
 		decoderType = PCM_Decoder;
@@ -217,10 +217,10 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewer()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
-		encoderType = No_Encoder;
-		decoderType = PCM_Decoder;
+		encoderType = Opus_Encoder;
+		decoderType = Opus_Decoder;
 
 		noiseReducerType = WebRTC_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
@@ -242,7 +242,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#aso# AudioSessionOptions::SetOptionsForViewerInCall()");
 
-		headerType = HEADER_COMMON;
+		headerType = HEADER_LIVE;
 
 		encoderType = PCM_Encoder;
 		decoderType = PCM_Decoder;

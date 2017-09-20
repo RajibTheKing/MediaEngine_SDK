@@ -32,7 +32,7 @@ namespace MediaSDK
 		void SendingThreadProcedure();
 		static void *CreateVideoSendingThread(void* param);
 
-		int ParseChunk(unsigned char *in_data, unsigned int unLength);
+		static int ParseChunk(unsigned char *in_data, unsigned int unLength, std::string tag);
 
 		void ResetForViewerCallerCallEnd();
 		void ResetForPublisherCallerCallStartAudioOnly();
@@ -62,6 +62,7 @@ namespace MediaSDK
 		CSendingBuffer *m_SendingBuffer;
 
 		bool m_bIsCheckCall;
+		int m_nChunkNumber;
 
 		bool m_bPassOnlyAudio;
 

@@ -4,7 +4,10 @@
 #include "AudioDePacketizer.h"
 #include "LiveAudioDecodingQueue.h"
 #include "Tools.h"
-
+#include "AudioDecoderBuffer.h"
+#include "AudioDecoderInterface.h"
+#include "MediaLogger.h"
+#include "AudioPacketHeader.h"
 
 namespace MediaSDK
 {
@@ -17,9 +20,7 @@ namespace MediaSDK
 
 
 	void FarEndProcessorPublisher::ProcessFarEndData()
-	{
-		//	MR_DEBUG("#farEnd# FarEndProcessorPublisher::ProcessFarEndData()");
-
+	{		
 		int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 		long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
 		double dbTotalTime = 0; //MeaningLess
@@ -27,72 +28,83 @@ namespace MediaSDK
 		int iDataSentInCurrentSec = 0; //NeedToFix.
 		long long llTimeStamp = 0;
 		int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
+		
 		m_vFrameMissingBlocks.clear();
+
 		if (nQueueSize > 0)
 		{
-			m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
+			const int nFarEndPacketSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
 
-			LOG18("#18#FE#Publisher..");
+			m_nDecodingFrameSize = nFarEndPacketSize - 1;
+			
 			if (m_nDecodingFrameSize < 1)
 			{
-				//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
+				MediaLog(LOG_WARNING, "[AFEPP] m_nDecodingFrameSize = %d\n", m_nDecodingFrameSize);
 				return;
 			}
 
 			/// ----------------------------------------- TEST CODE FOR PUBLISHER IN CALL ----------------------------------------------///
 
-			llCapturedTime = Tools::CurrentTimestamp();
+			llCapturedTime = Tools::CurrentTimestamp();			
+			int nPacketDataLength, nChannel, nVersion;
+			int nEchoStateFlags;
 
-			int dummy;
-			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+			//ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength,
+			//	nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame + 1, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags);
 
-			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			ParseLiveHeader(nCurrentAudioPacketType, nCurrentPacketHeaderLength, nVersion, iPacketNumber, nPacketDataLength,
+				llRelativeTime, nEchoStateFlags, m_ucaDecodingFrame + 1);			
+			
+			MediaLog(LOG_CODE_TRACE, "[AFEPP] PT:%d PN:%d DL:%d[%d] RT:%lld ESF:%d", nCurrentAudioPacketType, iPacketNumber, nPacketDataLength, nFarEndPacketSize, llRelativeTime, nEchoStateFlags);
+
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
 			{
-				HITLER("XXP@#@#MARUF REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
+				MediaLog(LOG_CODE_TRACE, "[AFEPP] REMOVED IN BASED ON PACKET PROCESSABLE ON ROLE");
+				return;
+			}
+												
+			if (m_pAudioCallSession->IsOpusEnable())
+			{
+				MediaLog(LOG_CODE_TRACE, "[AFEPP] PushOpus Farend: %d\n", nFarEndPacketSize);
+				m_pAudioCallSession->m_FarEndBufferOpus->EnQueue(m_ucaDecodingFrame, nFarEndPacketSize);
+			}
+			
+			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+			{
+				MediaLog(LOG_WARNING, "[AFEPP] REMOVED ON RELATIVE TIME");
 				return;
 			}
 
-			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 			llNow = Tools::CurrentTimestamp();
-			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
-			HITLER("XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
-			if (bIsCompleteFrame){
-				//m_ucaDecodingFrame
-				HITLER("XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
+						
+			if (LIVE_CALLEE_PACKET_TYPE_OPUS == nCurrentAudioPacketType)	/*Decoding for OPUS*/
+			{
+				int nEncodedDataSize = nFarEndPacketSize - 1 - nCurrentPacketHeaderLength;
+				m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength + 1, nEncodedDataSize, m_saDecodedFrame);
 
-				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
-				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
-				{
-					HITLER("XXP@#@#MARUF REMOVED ON RELATIVE TIME");
-					return;
-				}
+				MediaLog(LOG_CODE_TRACE, "[AFEPP] OPUS# EncodedSize = %d, DecodedSize = %d HeaderLen = %d", nEncodedDataSize, m_nDecodedFrameSize, nCurrentPacketHeaderLength);
 			}
-			llNow = Tools::CurrentTimestamp();
-
-			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
-
-			if (bIsCompleteFrame){
-				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
+			else{	/*PCM*/
 				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-				HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
-				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
-				HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
-				if (m_nDecodedFrameSize < 1)
-				{
-					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
-					return;
-				}
-				MediaLog(LOG_INFO, "[AFEDPP] Publisher# SendToPlayer, FN = %d", iPacketNumber);
+										
+				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength + 1, nCurrentAudioPacketType);
 
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
-				Tools::SOSleep(0);
+				MediaLog(LOG_CODE_TRACE, "[AFEPP] PCM# m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
 			}
+				
+			DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
+			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
+				
+			if (m_nDecodedFrameSize < 1)
+			{
+				MediaLog(LOG_INFO, "[AFEPP]  REMOVED FOR LOW SIZE.");
+				return;
+			}
+
+			MediaLog(LOG_INFO, "[AFEPP] Publisher# SendToPlayer, FN = %d", iPacketNumber);
+
+			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
+			Tools::SOSleep(0);			
 		}
 		else 
 		{

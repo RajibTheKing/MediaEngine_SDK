@@ -40,21 +40,24 @@ namespace MediaSDK
 		void StopCallInLive(int nEntityType);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
-		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
+		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags);
 		void SetEventCallback(DataEventListener* pDataListener, NetworkChangeListener* networkListener, AudioAlarmListener* alarmListener);
 
 
 	protected:
 
-		void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &slotNumber, int &packetNumber, int &packetLength, int &recvSlotNumber,
-			int &numPacketRecv, int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength);
+		void ParseHeaderAndGetValues(int &packetType, int &nHeaderLength, int &networkType, int &packetNumber, int &packetLength, 
+			int &channel, int &version, long long &timestamp, unsigned char* header, int &iBlockNumber, int &nNumberOfBlocks, int &iOffsetOfBlock, int &nFrameLength, int &nEchoStateFlags);
+
+		void ParseLiveHeader(int &packetType, int &nHeaderLength, int &version, int &packetNumber, int &packetLength,
+			long long &timestamp, int &nEchoStateFlags, unsigned char* header);
 
 		bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
 
-		void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
-		void DecodeAndPostProcessIfNeeded(int &iPacketNumber, int &nCurrentPacketHeaderLength, int &nCurrentAudioPacketType);
+		//void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
+		void DecodeAndPostProcessIfNeeded(const int iPacketNumber, const int nCurrentPacketHeaderLength, const int nCurrentAudioPacketType);
 		void DecideToChangeBitrate(int iNumPacketRecvd);
 
 		void PrintDecodingTimeStats(long long &llNow, long long &llTimeStamp, int &iDataSentInCurrentSec, long long &nDecodingTime, double &dbTotalTime, long long &llCapturedTime);
@@ -67,14 +70,12 @@ namespace MediaSDK
 	
 		long long m_llDecodingTimeStampOffset = -1;
 		short tmpBuffer[2048];
-		short m_saPlayingData[MAX_AUDIO_FRAME_Length];
+		short m_saPlayingData[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 
 		//LiveReceiver *m_pLiveReceiverAudio = nullptr;
 		ILiveAudioParser* m_pLiveAudioParser;
 		AudioDePacketizer* m_pAudioDePacketizer = nullptr;
-		SharedPointer<CAudioByteBuffer> m_AudioReceivedBuffer;
-
-		
+		SharedPointer<CAudioByteBuffer> m_AudioReceivedBuffer;		
 	protected:
 
 		AudioAlarmListener* m_pAudioAlarmListener;
@@ -84,12 +85,11 @@ namespace MediaSDK
 		int m_nEntityType;
 		int m_nDecodingFrameSize = 0;
 		int m_nDecodedFrameSize = 0;
-		int m_iOpponentReceivedPackets = AUDIO_SLOT_SIZE;
 
 		long long m_llLastTime;
 
-		unsigned char m_ucaDecodingFrame[MAX_AUDIO_FRAME_Length];
-		short m_saDecodedFrame[MAX_AUDIO_FRAME_Length];
+		unsigned char m_ucaDecodingFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
+		short m_saDecodedFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 
 		std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
 		std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;

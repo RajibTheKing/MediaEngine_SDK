@@ -400,6 +400,20 @@ namespace MediaSDK
 		return number;
 	}
 
+	void Tools::SetMediaUnitChunkNumberInMediaChunck(int number, unsigned char data[])
+	{
+		SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_CHUNK_NUMBER_BLOCK_POSITION, LIVE_MEDIA_UNIT_CHUNK_NUMBER_BLOCK_SIZE, number);
+	}
+
+	int Tools::GetMediaUnitChunkNumberFromMediaChunck(unsigned char data[])
+	{
+		int number;
+
+		number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_CHUNK_NUMBER_BLOCK_POSITION, LIVE_MEDIA_UNIT_CHUNK_NUMBER_BLOCK_SIZE);
+
+		return number;
+	}
+
 	void Tools::SetAudioBlockSizeInMediaChunck(int number, unsigned char data[])
 	{
 		SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_POSITION, LIVE_MEDIA_UNIT_AUDIO_SIZE_BLOCK_SIZE, number);
@@ -485,6 +499,34 @@ namespace MediaSDK
 		int number;
 
 		number = GetIntegerFromUnsignedChar(data, index, LIVE_MEDIA_UNIT_NUMBER_OF_VIDEO_FRAME_BLOCK_SIZE);
+
+		return number;
+	}
+
+	void Tools::SetServiceTypeInMediaChunck(int number, unsigned char data[])
+	{
+		SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_SERVICE_TYPE_BLOCK_POSITION, LIVE_MEDIA_UNIT_SERVICE_TYPE_BLOCK_SIZE, number);
+	}
+
+	int Tools::GetServiceTypeFromMediaChunck(unsigned char data[])
+	{
+		int number;
+
+		number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_SERVICE_TYPE_BLOCK_POSITION, LIVE_MEDIA_UNIT_SERVICE_TYPE_BLOCK_SIZE);
+
+		return number;
+	}
+
+	void Tools::SetEntityTypeInMediaChunck(int number, unsigned char data[])
+	{
+		SetIntegerIntoUnsignedChar(data, LIVE_MEDIA_UNIT_ENTITY_TYPE_BLOCK_POSITION, LIVE_MEDIA_UNIT_ENTITY_TYPE_BLOCK_SIZE, number);
+	}
+
+	int Tools::GetEntityTypeFromMediaChunck(unsigned char data[])
+	{
+		int number;
+
+		number = GetIntegerFromUnsignedChar(data, LIVE_MEDIA_UNIT_ENTITY_TYPE_BLOCK_POSITION, LIVE_MEDIA_UNIT_ENTITY_TYPE_BLOCK_SIZE);
 
 		return number;
 	}

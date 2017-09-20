@@ -67,23 +67,17 @@ namespace MediaSDK
 	}
 
 
-int SpeexEchoCanceller::CancelEcho(short *nearEndData, int dataLen, bool isLiveStreamRunning, long long llDelay)
+	int SpeexEchoCanceller::CancelEcho(short *nearEndData, int nBufferSize, long long llDelay)
 {
 #ifdef USE_AECM
 #ifdef __ANDROID__
-		if (dataLen != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
-		{
-			ALOG("aec nearend Invalid size");
-			return false;
-		}
-
 		while (m_bWritingFarend)
 		{
 			Tools::SOSleep(1);
 		}
 		m_bReadingFarend = true;
 
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
+		for (int i = 0; i < nBufferSize; i += AECM_SAMPLES_IN_FRAME)
 		{
 			speex_echo_playback(st, m_sSpeexFarendBuf + i);
 			speex_echo_capture(st, nearEndData + i, nearEndData + i);

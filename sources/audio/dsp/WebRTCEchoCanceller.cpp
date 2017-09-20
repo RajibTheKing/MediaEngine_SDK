@@ -3,6 +3,13 @@
 #include "Tools.h"
 #include "LogPrinter.h"
 
+#ifdef USE_AECM
+extern int gEchoType;
+#else
+int gEchoType = ECHO_TYPE_NO_AEC;
+#endif
+
+
 //It is strongly recommended you don't remove this commented out code
 //#include "Filt.h"
 //#define USE_LOW_PASS
@@ -23,6 +30,12 @@ FILE *EchoFile = nullptr;
 
 namespace MediaSDK
 {
+
+#define ECHO_TYPE_NO_AEC -1
+#define ECHO_TYPE_NO_ECHO 0
+#define ECHO_TYPE_JUST_ECHO 1
+#define ECHO_TYPE_DOUBLE_TALK 2
+
 
 	WebRTCEchoCanceller::WebRTCEchoCanceller(bool isLiveRunning) : m_bAecmCreated(false), m_bAecmInited(false)
 	{
@@ -89,20 +102,13 @@ namespace MediaSDK
 	}
 
 
-	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int sBufferSize, bool isLiveStreamRunning, long long llDelay)
+	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int nBufferSize, long long llDelay)
 	{
+		int nEchoStateFlags = ECHO_TYPE_NO_ECHO; //int containing 10 flags telling whether the 10 80 sized flags contain echo
 #ifdef USE_AECM
-		if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
-		{
-			ALOG("aec nearend Invalid size");
-			return false;
-		}
-		LOG18("Nearending2");
-
-
 		iCounter++;
 
-		for (int i = 0; i < CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning); i += AECM_SAMPLES_IN_FRAME)
+		for (int i = 0; i < nBufferSize; i += AECM_SAMPLES_IN_FRAME)
 		{
 
 			while (m_bNearEndingOrFarEnding)
@@ -133,9 +139,19 @@ namespace MediaSDK
 				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
 			}
 			m_bNearEndingOrFarEnding = false;
+			if (gEchoType == ECHO_TYPE_JUST_ECHO)
+			{
+				memset(sInBuf + i, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
+			}
+			if (gEchoType == ECHO_TYPE_JUST_ECHO || gEchoType == ECHO_TYPE_DOUBLE_TALK)
+			{
+				nEchoStateFlags |= 1;
+			}
 
+			nEchoStateFlags <<= 1;
 		}
 
+		nEchoStateFlags >>= 1;
 
 #ifdef USE_LOW_PASS
 		if (isLoudspeaker)
@@ -153,7 +169,7 @@ namespace MediaSDK
 		}
 #endif
 #endif
-		return true;
+		return nEchoStateFlags;
 	}
 
 	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize, bool isLiveStreamRunning)

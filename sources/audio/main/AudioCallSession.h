@@ -44,6 +44,7 @@ namespace MediaSDK
 	class CAudioShortBuffer;
 	class CTrace;
 	class AudioLinearBuffer;
+	class CAudioByteBuffer;
 
 
 	class CAudioCallSession : 
@@ -56,18 +57,18 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType);
+		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType, bool bOpusCodec);
 		~CAudioCallSession();
 
 		void StartCallInLive(int iRole, int nCallInLiveType);
 		void EndCallInLive();
 
-		void PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
+		int PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
-		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber);
+		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags);
 
 		long long GetBaseOfRelativeTime();
 		void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector, int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
@@ -78,6 +79,9 @@ namespace MediaSDK
 		void SetEchoCanceller(bool bOn);
 		void ResetTrace();
 		void ResetAEC();
+		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
+		void DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
+		void DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
 		bool IsEchoCancellerEnabled();
 		bool IsTraceSendingEnabled();
 		
@@ -89,6 +93,8 @@ namespace MediaSDK
 		int GetEntityType()  { return m_nEntityType; }
 		bool getIsAudioLiveStreamRunning() { return m_bLiveAudioStreamRunning; }
 		bool GetIsVideoCallRunning() { return m_bIsVideoCallRunning; }
+
+		bool IsOpusEnable()	{ return m_bIsOpusCodec; }
 		
 
 		SharedPointer<AudioPacketHeader> GetAudioNearEndPacketHeader() { return m_pAudioNearEndPacketHeader; }
@@ -132,7 +138,7 @@ namespace MediaSDK
 		bool m_b1stRecordedDataSinceCallStarted;
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
-		short m_saFarendData[MAX_AUDIO_FRAME_Length];
+		short m_saFarendData[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 		
 		int m_iNextPacketType;
 		int m_iPrevRecvdSlotID;
@@ -144,6 +150,7 @@ namespace MediaSDK
 		SharedPointer<CAudioShortBuffer> m_AudioNearEndBuffer;
 		SharedPointer<CAudioShortBuffer> m_ViewerInCallSentDataQueue;
 		SharedPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
+		SharedPointer<CAudioByteBuffer> m_FarEndBufferOpus;
 
 		CTrace *m_pTrace;
 		AudioLinearBuffer* m_recordBuffer = nullptr;
@@ -170,7 +177,8 @@ namespace MediaSDK
 	private:
 		
 		SendFunctionPointerType m_cbClientSendFunction;
-
+		
+		bool m_bIsOpusCodec;
 		bool m_bNeedToResetEcho;
 
 		bool m_bUsingLoudSpeaker;

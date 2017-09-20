@@ -3,11 +3,14 @@
 #include "LogPrinter.h"
 #include "AudioCallSession.h"
 #include "AudioEncoderBuffer.h"
+#include "AudioDecoderBuffer.h"
 #include "AudioPacketHeader.h"
 #include "AudioEncoderInterface.h"
+#include "AudioFarEndDataProcessor.h"
 #include "AudioFileCodec.h"
 #include "AudioLinearBuffer.h"
 #include "Tools.h"
+#include "MediaLogger.h"
 
 
 
@@ -36,7 +39,8 @@ namespace MediaSDK
 		else
 		{
 			//LOGT("##TT dequed #18#NE#AudioCall...");
-			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			llCapturedTime = Tools::CurrentTimestamp();
+			int nEchoStateFlags = m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 
 			DumpEncodingFrame();
@@ -56,11 +60,13 @@ namespace MediaSDK
 
 
 			int iSlotID = 0;
-			int iPrevRecvdSlotID = 0;
-			int iReceivedPacketsInPrevSlot = 0;
 			int nChannel = 0;
+			int nPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
-			BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, iSlotID, m_iPacketNumber, m_nEncodedFrameSize, iPrevRecvdSlotID, iReceivedPacketsInPrevSlot, nChannel, version, llRelativeTime, &m_ucaEncodedFrame[1]);
+			BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iPacketNumber, m_nEncodedFrameSize, nChannel, version, llRelativeTime, nEchoStateFlags, &m_ucaEncodedFrame[1]);
+
+			MediaLog(LOG_DEBUG, "[ANEPC] FrameNo = %d, RT = %lld, PacketType = %d, EncodedSize = %d",
+				m_iPacketNumber, llRelativeTime, nPacketType, m_nEncodedFrameSize);
 
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)

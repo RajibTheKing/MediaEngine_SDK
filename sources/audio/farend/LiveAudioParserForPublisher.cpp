@@ -5,6 +5,7 @@
 #include "AudioMacros.h"
 #include "CommonTypes.h"
 #include "MediaLogger.h"
+#include "AudioHeaderLive.h"
 
 
 namespace MediaSDK
@@ -16,12 +17,11 @@ namespace MediaSDK
 		m_bIsCurrentlyParsingAudioData = false;
 		m_bIsRoleChanging = false;
 
-		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
+		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
 	}
 
 	CLiveAudioParserForPublisher::~CLiveAudioParserForPublisher(){
-		SHARED_PTR_DELETE(m_pLiveReceiverMutex);
-		//delete m_pAudioPacketHeader;
+		SHARED_PTR_DELETE(m_pLiveReceiverMutex);		
 	}
 
 	void CLiveAudioParserForPublisher::SetRoleChanging(bool bFlah){
@@ -40,7 +40,7 @@ namespace MediaSDK
 	{
 		int mediaByteSize = 1;
 		m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
-		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+		int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);
 		// add muxed header lenght with audio header length. 
 
 		if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
@@ -70,7 +70,7 @@ namespace MediaSDK
 
 		for (auto &missing : vMissingBlocks)
 		{
-			HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
+			MediaLog(LOG_INFO, "XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
 			int left = max(nOffset, missing.first);
 			if (left < missing.second)
 			{
@@ -93,6 +93,7 @@ namespace MediaSDK
 		nFrameLeftRange = nOffset;
 		int numOfMissingFrames = 0;
 		int nProcessedFramsCounter = 0;
+		int nPacketType;
 
 		int mediaByteSize = 1;
 
@@ -109,7 +110,7 @@ namespace MediaSDK
 
 			while (iMissingIndex < nNumberOfMissingBlocks && vMissingBlocks[iMissingIndex].second <= nFrameLeftRange)
 				++iMissingIndex;
-
+			
 			if (iMissingIndex < nNumberOfMissingBlocks)
 			{
 				iLeftRange = vMissingBlocks[iMissingIndex].first;
@@ -117,23 +118,25 @@ namespace MediaSDK
 
 				iLeftRange = max(nFrameLeftRange, iLeftRange);
 				iRightRange = min(nFrameRightRange, iRightRange);
-				HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
+				
 				if (iLeftRange <= iRightRange)	//The frame is not complete.
 				{
 					bCompleteFrame = false;
-					HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
+
+					MediaLog(LOG_CODE_TRACE, "[LAPP] LIVE FRAME INCOMPLETE. MissingSize = %03d", (iRightRange - iLeftRange));
+
 					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
 					{
-						HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
+						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
-						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_HEADERLENGTH);
+						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);						
 
 						if (uchAudioData[nFrameLeftRange + mediaByteSize] == AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED) {
 							int totalCallee = uchAudioData[nFrameLeftRange + validHeaderLength + mediaByteSize];
 							validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 						}
 
-						HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
+						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
 
 						if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
 							HITLER("XXP@#@#MARUF LIVE HEADER INCOMPLETE");
@@ -142,25 +145,43 @@ namespace MediaSDK
 					}
 					else
 					{
-						HITLER("XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
+						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
 						bCompleteFrameHeader = false;
 					}
 				}
 			}
 
 			++iFrameNumber;
-			HITLER("#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
+			//MediaLog(LOG_CODE_TRACE, "#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
 
 			if (!bCompleteFrameHeader)
-			{
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
-
+			{				
 				numOfMissingFrames++;
-				LOG18("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
+				//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
 				continue;
 			}
+
+			nPacketType = uchAudioData[nFrameLeftRange + mediaByteSize];
+			MediaLog(LOG_CODE_TRACE, "[LAPP]  PacketType = %d", nPacketType);
+
+			/* Discarding broken Opus frame */
 			
-			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_PACKETNUMBER));
+			if (!bCompleteFrame && LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType)
+			{
+				MediaLog(LOG_CODE_TRACE, "[LAPP]  Discarding Opus Packet. PT = %d", nPacketType);
+				continue;
+			}
+
+			bool bIsProcessablePacket = (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType ||
+				AUDIO_LIVE_CALLEE_PACKET_TYPE == nPacketType);
+
+			if (false == bIsProcessablePacket)
+			{
+				MediaLog(LOG_CODE_TRACE, "[LAPP]  Discarding Packets# Not suitable for publisher. PT = %d", nPacketType);
+				continue;
+			}
+						
+			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER));
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
 			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
@@ -169,7 +190,7 @@ namespace MediaSDK
 			nProcessedFramsCounter++;
 			if (m_vAudioFarEndBufferVector[iId])
 			{
-				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1, vCurrentAudioFrameMissingBlock);
+				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange, nCurrentFrameLenWithMediaHeader , vCurrentAudioFrameMissingBlock);
 			}
 		}
 

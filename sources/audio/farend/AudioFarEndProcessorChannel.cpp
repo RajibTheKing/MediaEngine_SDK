@@ -44,10 +44,10 @@ namespace MediaSDK
 			llCapturedTime = Tools::CurrentTimestamp();
 
 			int dummy;
-			int nSlotNumber, nPacketDataLength, recvdSlotNumber, nChannel, nVersion;
-			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength;
-			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, nSlotNumber, iPacketNumber, nPacketDataLength, recvdSlotNumber, m_iOpponentReceivedPackets,
-				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
+			int nPacketDataLength, nChannel, nVersion;
+			int iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags;
+			ParseHeaderAndGetValues(nCurrentAudioPacketType, nCurrentPacketHeaderLength, dummy, iPacketNumber, nPacketDataLength, 
+				nChannel, nVersion, llRelativeTime, m_ucaDecodingFrame, iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength, nEchoStateFlags);
 
 			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
@@ -73,7 +73,6 @@ namespace MediaSDK
 			}
 			llNow = Tools::CurrentTimestamp();
 
-			SetSlotStatesAndDecideToChangeBitRate(nSlotNumber);
 
 			if (bIsCompleteFrame){
 				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
@@ -89,7 +88,7 @@ namespace MediaSDK
 					return;
 				}
 				LOG18("#18#FE#Channel SendToPlayer");
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
 				Tools::SOSleep(0);
 			}
 		}

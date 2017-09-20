@@ -187,7 +187,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		m_nRC = aacDecoder_DecodeFrame(m_hDecoder, outputDataBuffer, MAX_AUDIO_FRAME_Length, 0);
+		m_nRC = aacDecoder_DecodeFrame(m_hDecoder, outputDataBuffer, AUDIO_MAX_FRAME_LENGTH_IN_BYTE, 0);
 
 		if (m_nRC != AAC_DEC_OK)
 		{

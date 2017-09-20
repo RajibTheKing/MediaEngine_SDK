@@ -114,7 +114,8 @@ namespace MediaSDK
 	{
 		HEADER_COMMON,
 		HEADER_CHANNEL,
-		HEADER_CALL
+		HEADER_CALL,
+		HEADER_LIVE
 	};
 
 } //namespace MediaSDK

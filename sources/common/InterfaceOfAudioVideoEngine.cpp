@@ -20,7 +20,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-	    bool bTerminalWriteEnabled = false;  //Always writes on file whether terminal is enabled or not. 
+	    bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
 		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		G_pInterfaceOfAudioVideoEngine = this;
@@ -38,7 +38,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
-		bool bTerminalWriteEnabled = false;  //Always writes on file whether terminal is enabled or not. 
+		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
 		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		m_pcController = nullptr;
@@ -102,7 +102,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType, true);
 
 		return bReturnedValue;
 	}
@@ -141,7 +141,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth)
+	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType)
 	{
 #ifdef LIVE_CHUNK_DUMPLINGS
 #if defined(__ANDROID__)
@@ -170,7 +170,9 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER);
+		bool bAudioCodecOpus = (AudioCodecType::AUDIO_CODEC_OPUS == iAudioCodecType);	//Enable opus codec for livestreaming.
+		
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER, bAudioCodecOpus);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
@@ -195,7 +197,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT, true);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
@@ -310,6 +312,13 @@ namespace MediaSDK
 
 			if ((mediaType == MEDIA_TYPE_LIVE_STREAM && (nEntityType == ENTITY_TYPE_VIEWER || nEntityType == ENTITY_TYPE_VIEWER_CALLEE)) || ((mediaType == MEDIA_TYPE_LIVE_CALL_AUDIO || mediaType == MEDIA_TYPE_LIVE_CALL_VIDEO) && nEntityType == ENTITY_TYPE_PUBLISHER_CALLER))
 			{
+				CLogPrinter_LOG(HEADER_TEST_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector (int)in_data[0] %d", (int)in_data[0]);
+
+				int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data);
+
+				if ((AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0] || VIDEO_PACKET_MEDIA_TYPE == (int)in_data[0]) && streamType != STREAM_TYPE_CHANNEL)
+					return 0;
+
 				//int lengthOfVideoData = m_Tools.UnsignedCharToIntConversion(in_data, 0);
 				//int lengthOfAudioData = m_Tools.UnsignedCharToIntConversion(in_data, 4);
 
@@ -329,6 +338,9 @@ namespace MediaSDK
 				long long itIsNow = m_Tools.CurrentTimestamp();
 				long long llCurrentChunkRelativeTime = m_Tools.GetMediaUnitTimestampInMediaChunck(in_data + nValidHeaderOffset);
 
+				//CSendingThread::ParseChunk(in_data, unLength, "[IAVE][CHUNK]");
+
+
 				if (llLastChunkRelativeTime + m_pcController->m_llLastChunkDuration + MIN_CHUNK_DURATION_SAFE < llCurrentChunkRelativeTime)
 				{
 					long long llChunkGap = llCurrentChunkRelativeTime - llLastChunkRelativeTime - m_pcController->m_llLastChunkDuration;
@@ -337,6 +349,8 @@ namespace MediaSDK
 				}
 
 				int version = m_Tools.GetMediaUnitVersionFromMediaChunck(in_data + nValidHeaderOffset);
+
+				CLogPrinter_LOG(HEADER_TEST_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector version %d", version);
 
 				int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
 				int llCurrentChunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
@@ -407,12 +421,14 @@ namespace MediaSDK
 					index += LIVE_MEDIA_UNIT_VIDEO_SIZE_BLOCK_SIZE;
 				}
 
-				
+				int nEntityType = m_Tools.GetEntityTypeFromMediaChunck(in_data + nValidHeaderOffset);
+				int nServiceType = m_Tools.GetServiceTypeFromMediaChunck(in_data + nValidHeaderOffset);
+				int nChunkNumber = m_Tools.GetMediaUnitChunkNumberFromMediaChunck(in_data + nValidHeaderOffset);
 
 				int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 				int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
-				int streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
+				streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
 				MediaLog(LOG_INFO, "[IAVE] AudioDataSize: %d [Frames: %d, SatartIndex: %d] VideoDataSize: %d [Frames: %d, StartIndex: %d]", 
 					lengthOfAudioData, numberOfAudioFrames, audioStartingPosition, lengthOfVideoData, numberOfVideoFrames, videoStartingPosition);				
 

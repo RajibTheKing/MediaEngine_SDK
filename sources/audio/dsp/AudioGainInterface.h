@@ -24,7 +24,7 @@ namespace MediaSDK
 
 		virtual bool AddFarEnd(short *sInBuf, int nBufferSize) = 0;
 
-		virtual bool AddGain(short *sInBuf, int nBufferSize, bool isLiveStreamRunning) = 0;
+		virtual bool AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags) = 0;
 
 		virtual ~AudioGainInterface() { }
 	};

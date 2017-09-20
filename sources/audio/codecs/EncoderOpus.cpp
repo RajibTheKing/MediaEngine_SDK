@@ -1,6 +1,7 @@
 #include "EncoderOpus.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "MediaLogger.h"
 
 #include <stdlib.h>
 
@@ -29,8 +30,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#resorce#encoder#opus# EncoderOpus::CreateAudioEncoder()");
 
-		int error = 0;
-		int sampling_rate = AUDIO_SAMPLE_RATE;
+		int error = 0;		
 		int dummyDataSize = MAX_AUDIO_FRAME_SAMPLE_SIZE;
 
 		for (int i = 0; i < dummyDataSize; i++)
@@ -38,13 +38,22 @@ namespace MediaSDK
 			m_DummyData[i] = rand();
 		}
 
-		encoder = opus_encoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, AUDIO_APPLICATION, &err);
+		int iApplicationType = OPUS_APPLICATION_AUDIO;
+		int sampling_rate = AUDIO_SAMPLE_RATE;
+		int iAudioChannelType = AUDIO_CHANNELS;
+
+		encoder = opus_encoder_create(sampling_rate, iAudioChannelType, iApplicationType, &err);
+
 		if (err < 0)
 		{
 			return EXIT_FAILURE;
 		}
 
-		SetBitrate(AUDIO_BITRATE_INIT);
+		int nBitRate = OPUS_BITRATE_INIT_CALL;
+		SetBitrate(nBitRate);
+		
+		int iSignalType = OPUS_SIGNAL_MUSIC;
+		opus_encoder_ctl(encoder, OPUS_SET_SIGNAL(iSignalType));
 
 		m_iComplexity = 10;
 		long long encodingTime = 0;
@@ -63,6 +72,9 @@ namespace MediaSDK
 				break;
 			}
 		}
+
+		MediaLog(LOG_DEBUG, "[EO] OPUS-SETTING# SampleRate = %d, BitRate = %d, Complexity = %d, AppType = %d, Channels = %d, SignalType = %d",
+			sampling_rate, nBitRate, m_iComplexity, iApplicationType, iAudioChannelType, iSignalType);
 
 		return EXIT_SUCCESS;
 	}
