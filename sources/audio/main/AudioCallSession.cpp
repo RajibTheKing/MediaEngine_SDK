@@ -731,7 +731,6 @@ namespace MediaSDK
 				fwrite(psaEncodingAudioData, 2, unLength, AfterEchoCancellationFile);
 			}
 #endif
-			return nEchoStateFlags;
 		}
 		else
 		{
@@ -749,6 +748,7 @@ namespace MediaSDK
 		}
 		else LOGT("##TT encodeaudiodata no gain\n");
 #endif
+        return nEchoStateFlags;
 	}
 
 	int CAudioCallSession::PushAudioData(short *psaEncodingAudioData, unsigned int unLength)
