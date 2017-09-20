@@ -284,7 +284,7 @@ namespace MediaSDK
 #ifdef __ANDROID__
 			if (m_pAudioCallSession->GetPlayerGain().get())
 			{
-				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, m_pAudioCallSession -> m_nEchoStateFlags);
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, nEchoStateFlags);
 			}
 #endif // __ANDROID__
 
