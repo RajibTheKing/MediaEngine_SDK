@@ -80,10 +80,9 @@ namespace MediaSDK
 			//	nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
 
 			BuildHeaderForLive(nSendingFramePacketType, m_MyAudioHeadersize, version, m_iPacketNumber, nSendingDataSizeInByte,
-				llRelativeTime, nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
-			
+				llRelativeTime, nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);						
 
-			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  FrameNo = %d, RT: %lld, SendingDataSizeInByte = %d HeaderLen = %d", m_iPacketNumber, llRelativeTime, nEchoStateFlags , nSendingDataSizeInByte, m_MyAudioHeadersize);
+			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  FrameNo = %d, RT: %lld, SendingDataSizeInByte = %d HeaderLen = %d ESF: %d", m_iPacketNumber, llRelativeTime, nSendingDataSizeInByte, m_MyAudioHeadersize, nEchoStateFlags);
 
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)

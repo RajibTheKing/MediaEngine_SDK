@@ -164,7 +164,7 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::BuildHeaderForLive(int nPacketType, int nHeaderLength, int nVersion, int nPacketNumber, int nPacketLength,
 		long long llRelativeTime, int nEchoStateFlags, unsigned char* ucpHeader)
 	{
-		MediaLog(LOG_DEBUG, "[ECHOFLAG] BuildHeaderForLive PT=%d HL=%d V=%d PN=%d PL=%d RTS=%lld ESF=%d",
+		MediaLog(LOG_DEBUG, "[ANEDP][ECHOFLAG] BuildHeaderForLive PT=%d HL=%d V=%d PN=%d PL=%d RTS=%lld ESF=%d",
 			nPacketType, nHeaderLength, nVersion, nPacketLength, nPacketLength, llRelativeTime, nEchoStateFlags);
 
 		m_pAudioNearEndPacketHeader->SetInformation(nPacketType, INF_LIVE_PACKETTYPE);
@@ -174,9 +174,9 @@ namespace MediaSDK
 		m_pAudioNearEndPacketHeader->SetInformation(llRelativeTime, INF_LIVE_TIMESTAMP);
 		m_pAudioNearEndPacketHeader->SetInformation(nEchoStateFlags, INF_LIVE_ECHO_STATE_FLAGS);
 					
-		MediaLog(LOG_DEBUG, "[ECHOFLAG] setting to header nEchoStateFlags = %d\n", nEchoStateFlags);
+		MediaLog(LOG_DEBUG, "[ANEDP][ECHOFLAG] setting to header nEchoStateFlags = %d\n", nEchoStateFlags);
 
-		m_pAudioNearEndPacketHeader->ShowDetails("[ECHOFLAG] setting");
+		m_pAudioNearEndPacketHeader->ShowDetails("[ANEDP] BuildHeaderForLive");
 
 		m_pAudioNearEndPacketHeader->GetHeaderInByteArray(ucpHeader);
 	}

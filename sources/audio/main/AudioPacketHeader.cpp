@@ -222,13 +222,13 @@ namespace MediaSDK
 
 	void AudioPacketHeader::ShowDetails(char prefix[])
 	{
-		string str = string(prefix) + "\n";
+		string str = string(prefix) + " # ";
 		for (int i = 0; i < m_nNumberOfElementsInAudioHeader; i++)
 		{
 			str += HeaderFieldNames[i];
-			str += " = ";
+			str += "=";
 			str += Tools::getText(m_arrllInformation[i]);
-			str += " \n";
+			str += ", ";
 		}
 		MediaLog(LOG_DEBUG, "%s\n", str.c_str());
 	}
