@@ -67,7 +67,7 @@ namespace MediaSDK
 		int iTotalFrameCounter = 0;
 		int naFrameNumbers[2];
 		naFrameNumbers[0] = naFrameNumbers[1] = -1;
-		
+		int nEchoStateFlags = 0;
 		if (nQueueSize > 0)
 		{
 			m_pAudioMixer->ResetPCMAdder();
@@ -91,7 +91,7 @@ namespace MediaSDK
 
 				
 				int nPacketDataLength, nChannel, nVersion;
-				int nEchoStateFlags;				
+								
 
 				ParseLiveHeader(nCurrentAudioPacketType, nCurrentPacketHeaderLength, nVersion, iPacketNumber, nPacketDataLength,
 					llRelativeTime, nEchoStateFlags, m_ucaDecodingFrame);
@@ -154,7 +154,7 @@ namespace MediaSDK
 			DumpDecodedFrame(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 			MediaLog(LOG_INFO, "[AFEPV] Viewer-SendToPlayer# PublisherFN = %d, CalleeFN = %d", naFrameNumbers[0], naFrameNumbers[1]);
 
-			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber);
+			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber, nEchoStateFlags);
 			Tools::SOSleep(0);
 		}
 		else
@@ -307,7 +307,7 @@ namespace MediaSDK
 
 				MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber); 
 				LOGFARQUAD("Farquad calling SendToPlayer viewer");
-				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber);
+				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
 				Tools::SOSleep(0);
 			}
 		}

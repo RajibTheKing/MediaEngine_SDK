@@ -211,7 +211,7 @@ namespace MediaSDK
 		}
 	}
 
-	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber)
+	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags)
 	{
 		MediaLog(LOG_INFO, "[AFEDP] SENT TO PLAYER DATA .................");
 		long long llNow = 0;
@@ -246,7 +246,7 @@ namespace MediaSDK
 
 			if (m_nEntityType == ENTITY_TYPE_VIEWER && m_pAudioCallSession->GetPlayerGain().get())
 			{
-				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, m_pAudioCallSession->m_nEchoStateFlags);
+				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, nEchoStateFlags);
 			}
 
 #ifdef USE_AECM

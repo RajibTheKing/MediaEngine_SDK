@@ -39,7 +39,8 @@ namespace MediaSDK
 		else
 		{
 			//LOGT("##TT dequed #18#NE#AudioCall...");
-			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			llCapturedTime = Tools::CurrentTimestamp();
+			int nEchoStateFlags = m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 
 			DumpEncodingFrame();
@@ -62,7 +63,7 @@ namespace MediaSDK
 			int nChannel = 0;
 			int nPacketType = AUDIO_NORMAL_PACKET_TYPE;
 
-			BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iPacketNumber, m_nEncodedFrameSize, nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaEncodedFrame[1]);
+			BuildAndGetHeaderInArray(AUDIO_NORMAL_PACKET_TYPE, m_MyAudioHeadersize, 0, m_iPacketNumber, m_nEncodedFrameSize, nChannel, version, llRelativeTime, nEchoStateFlags, &m_ucaEncodedFrame[1]);
 
 			MediaLog(LOG_DEBUG, "[ANEPC] FrameNo = %d, RT = %lld, PacketType = %d, EncodedSize = %d",
 				m_iPacketNumber, llRelativeTime, nPacketType, m_nEncodedFrameSize);

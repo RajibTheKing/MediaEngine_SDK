@@ -40,7 +40,7 @@ namespace MediaSDK
 		void StopCallInLive(int nEntityType);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > &vMissingFrames);
-		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber);
+		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags);
 		void SetEventCallback(DataEventListener* pDataListener, NetworkChangeListener* networkListener, AudioAlarmListener* alarmListener);
 
 

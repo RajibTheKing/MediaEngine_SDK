@@ -46,7 +46,7 @@ namespace MediaSDK
 			LOGT("##TT#18#NE#Publisher...");
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 			llCapturedTime = Tools::CurrentTimestamp();
-			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			int nEchoStateFlags = m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			DumpEncodingFrame();
 
 			int nSendingDataSizeInByte = PCM_FRAME_SIZE_IN_BYTE;	//Or contain 18 bit data with mixed header.
@@ -80,10 +80,10 @@ namespace MediaSDK
 			//	nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
 
 			BuildHeaderForLive(nSendingFramePacketType, m_MyAudioHeadersize, version, m_iPacketNumber, nSendingDataSizeInByte,
-				llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
+				llRelativeTime, nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
 			
 
-			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  FrameNo = %d, RT: %lld, SendingDataSizeInByte = %d HeaderLen = %d", m_iPacketNumber, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, nSendingDataSizeInByte, m_MyAudioHeadersize);
+			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  FrameNo = %d, RT: %lld, SendingDataSizeInByte = %d HeaderLen = %d", m_iPacketNumber, llRelativeTime, nEchoStateFlags , nSendingDataSizeInByte, m_MyAudioHeadersize);
 
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)

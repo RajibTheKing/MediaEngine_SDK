@@ -88,6 +88,7 @@ namespace MediaSDK
 
 	void AudioDePacketizer::SentIncompleteFrame(int iLastPacketNumber, long long &llNow, long long &llLastTime)
 	{
+		/*
 		HITLER("XXP@#@#MARUF SENDING INCOMPLETE FRAME");
 		memcpy(m_saDataToPlay, m_uchAudioStorageBuffer, m_nFrameLength);
 		int nFrameLenInShort = m_nFrameLength / 2;
@@ -95,7 +96,8 @@ namespace MediaSDK
 		m_pAudioCallSession->DumpDecodedFrame(m_saDataToPlay, nFrameLenInShort);
 
 		long long llTemp1 = -1, llTemp2 = -1;
-		m_pAudioCallSession->SendToPlayer(m_saDataToPlay, nFrameLenInShort, llNow, llLastTime, iLastPacketNumber);
+		m_pAudioCallSession->SendToPlayer(m_saDataToPlay, nFrameLenInShort, llNow, llLastTime, iLastPacketNumber)
+		*/
 	}
 
 	void AudioDePacketizer::ResetDepacketizer()

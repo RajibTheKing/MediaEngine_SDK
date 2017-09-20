@@ -34,7 +34,7 @@ namespace MediaSDK
 		}
 		else
 		{
-			m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			int nEchoStateFlags = m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			llCapturedTime = Tools::CurrentTimestamp();
 
 			int nDataLenthInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
@@ -71,11 +71,12 @@ namespace MediaSDK
 			MediaLog(LOG_DEBUG, "[ANEPV] FrameNo = %d, RT = %lld, PacketType = %d, EncodedSize = %d ,nSendingDataSizeInByte = %d", m_iPacketNumber, llRelativeTime, nPacketType, nEncodedFrameSizeB, nFrameSizeInByte);
 
 			m_ucaRawFrameNonMuxed[0] = 0;
-			/*BuildAndGetHeaderInArray(nPacketType, m_MyAudioHeadersize, 0, m_iPacketNumber, nEncodedFrameSizeB,
+/*BuildAndGetHeaderInArray(nPacketType, m_MyAudioHeadersize, 0, m_iPacketNumber, nEncodedFrameSizeB,
 				nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);*/
 
 			BuildHeaderForLive(nPacketType, m_MyAudioHeadersize, version, m_iPacketNumber, nEncodedFrameSizeB,
-				llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
+				llRelativeTime, nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
+
 
 			++m_iPacketNumber;
 			if (m_iPacketNumber == m_llMaxAudioPacketNumber)
