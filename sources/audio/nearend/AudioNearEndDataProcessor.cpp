@@ -4,6 +4,7 @@
 #include "AudioEncoderBuffer.h"
 #include "AudioMacros.h"
 #include "AudioPacketHeader.h"
+#include "AudioHeaderLive.h"
 #include "CommonElementsBucket.h"
 #include "InterfaceOfAudioVideoEngine.h"
 #include "AudioPacketizer.h"
@@ -156,6 +157,28 @@ namespace MediaSDK
 		m_pAudioNearEndPacketHeader->ShowDetails("[ECHOFLAG] setting");
 
 		m_pAudioNearEndPacketHeader->GetHeaderInByteArray(header);
+	}
+
+
+
+	void AudioNearEndDataProcessor::BuildHeaderForLive(int nPacketType, int nHeaderLength, int nVersion, int nPacketNumber, int nPacketLength,
+		long long llRelativeTime, int nEchoStateFlags, unsigned char* ucpHeader)
+	{
+		MediaLog(LOG_DEBUG, "[ECHOFLAG] BuildHeaderForLive PT=%d HL=%d V=%d PN=%d PL=%d RTS=%lld ESF=%d",
+			nPacketType, nHeaderLength, nVersion, nPacketLength, nPacketLength, llRelativeTime, nEchoStateFlags);
+
+		m_pAudioNearEndPacketHeader->SetInformation(nPacketType, INF_LIVE_PACKETTYPE);
+		m_pAudioNearEndPacketHeader->SetInformation(nHeaderLength, INF_LIVE_HEADERLENGTH);
+		m_pAudioNearEndPacketHeader->SetInformation(nVersion, INF_LIVE_VERSIONCODE);
+		m_pAudioNearEndPacketHeader->SetInformation(nPacketNumber, INF_LIVE_FRAME_LENGTH);
+		m_pAudioNearEndPacketHeader->SetInformation(llRelativeTime, INF_LIVE_TIMESTAMP);
+		m_pAudioNearEndPacketHeader->SetInformation(nEchoStateFlags, INF_LIVE_ECHO_STATE_FLAGS);
+					
+		MediaLog(LOG_DEBUG, "[ECHOFLAG] setting to header nEchoStateFlags = %d\n", nEchoStateFlags);
+
+		m_pAudioNearEndPacketHeader->ShowDetails("[ECHOFLAG] setting");
+
+		m_pAudioNearEndPacketHeader->GetHeaderInByteArray(ucpHeader);
 	}
 
 	bool AudioNearEndDataProcessor::PreProcessAudioBeforeEncoding()

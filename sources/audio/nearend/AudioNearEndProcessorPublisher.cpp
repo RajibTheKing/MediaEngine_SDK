@@ -33,7 +33,7 @@ namespace MediaSDK
 		int version = 0;
 		int nSendingFramePacketType = 0;
 		long long llCapturedTime = 0, llRelativeTime = 0, llLasstTime = -1;
-		int nChannel = 0;
+		
 
 		if (m_pAudioCallSession->m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
 		//if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
@@ -76,8 +76,12 @@ namespace MediaSDK
 		
 			m_ucaRawFrameNonMuxed[0] = 0;	//Media packet type.
 
-			BuildAndGetHeaderInArray(nSendingFramePacketType, m_MyAudioHeadersize, 0,  m_iPacketNumber, nSendingDataSizeInByte,
-				nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
+			//BuildAndGetHeaderInArray(nSendingFramePacketType, m_MyAudioHeadersize, 0,  m_iPacketNumber, nSendingDataSizeInByte,
+			//	nChannel, version, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
+
+			BuildHeaderForLive(nSendingFramePacketType, m_MyAudioHeadersize, version, m_iPacketNumber, nSendingDataSizeInByte,
+				llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, &m_ucaRawFrameNonMuxed[1]);
+			
 
 			MediaLog(LOG_CODE_TRACE, "[ANEPP] Publish#  FrameNo = %d, RT: %lld, SendingDataSizeInByte = %d HeaderLen = %d", m_iPacketNumber, llRelativeTime, m_pAudioCallSession->m_nEchoStateFlags, nSendingDataSizeInByte, m_MyAudioHeadersize);
 
