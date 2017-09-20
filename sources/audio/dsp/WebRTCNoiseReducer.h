@@ -2,9 +2,10 @@
 #define WEBRTC_NOISE_REDUCER_H
 
 #include "NoiseReducerInterface.h"
+#include "AudioMacros.h"
 
 #ifdef USE_ANS
-#include "noise_suppression.h"
+#include "noise_suppression_x.h"
 #endif
 
 namespace MediaSDK
@@ -13,7 +14,8 @@ namespace MediaSDK
 	class WebRTCNoiseReducer : public NoiseReducerInterface
 	{
 #ifdef USE_ANS
-		NsHandle* NS_instance;
+		NsxHandle* NS_instance = 0;
+		short m_tmpbuffer[1600];
 #endif
 
 	public:

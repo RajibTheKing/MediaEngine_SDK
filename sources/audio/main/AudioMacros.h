@@ -82,6 +82,7 @@
 #ifdef __ANDROID__
 #define USE_AECM
 #define USE_AGC
+#define USE_ANS
 #endif
 
 #ifdef DESKTOP_C_SHARP

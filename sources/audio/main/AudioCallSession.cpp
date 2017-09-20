@@ -18,6 +18,8 @@
 #include "NoiseReducerProvider.h"
 #include "AudioGainInstanceProvider.h"
 #include "AudioGainInterface.h"
+#include "NoiseReducerInterface.h"
+#include "NoiseReducerProvider.h"
 #include "AudioEncoderProvider.h"
 #include "AudioDecoderProvider.h"
 #include "AudioEncoderInterface.h"
@@ -91,8 +93,16 @@ namespace MediaSDK
 		SetResources(audioResources);
 		if (GetPlayerGain().get())
 		{
+			GetPlayerGain()->Init(m_nServiceType);
 			GetPlayerGain()->SetGain(0);
+			//GetPlayerGain()->SetGain(10); //TODO: remove this
 		}
+
+		if (GetRecorderGain().get())
+		{
+			GetRecorderGain()->Init(m_nServiceType);
+		}
+
 		m_pTrace = new CTrace();
 
 		m_iSpeakerType = nAudioSpeakerType;
@@ -614,6 +624,11 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 		int nEchoStateFlags = 0;
 
+		if (GetNoiseReducer().get())
+		{
+			GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, 0);
+		}
+
 #ifdef USE_AECM
 
 #ifdef PCM_DUMP
@@ -716,7 +731,14 @@ namespace MediaSDK
 				fwrite(psaEncodingAudioData, 2, unLength, AfterEchoCancellationFile);
 			}
 #endif
-			return nEchoStateFlags;
+		}
+		else
+		{
+			if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+			{
+				MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
+				GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
+			}
 		}
 
 #elif defined(DESKTOP_C_SHARP)
@@ -726,6 +748,7 @@ namespace MediaSDK
 		}
 		else LOGT("##TT encodeaudiodata no gain\n");
 #endif
+        return nEchoStateFlags;
 	}
 
 	int CAudioCallSession::PushAudioData(short *psaEncodingAudioData, unsigned int unLength)

@@ -3,9 +3,6 @@
 
 #include "AudioGainInterface.h"
 
-#define AGC_SAMPLES_IN_FRAME 80
-#define AGC_ANALYSIS_SAMPLES_IN_FRAME 80
-
 #define WEBRTC_AGC_MIN_LEVEL 1
 #define WEBRTC_AGC_MAX_LEVEL 255
 
@@ -24,16 +21,19 @@ namespace MediaSDK
 	{
 	private:
 		bool m_bGainEnabled;
-		short *m_sTempBuf = nullptr;
+		//short *m_sTempBuf = nullptr;
 		int m_iVolume;
 		int m_iSkipFrames;
-
+		int m_iSampleSize = -1;
+		int m_iServiceType = -1;
 
 		void* AGC_instance;
 
 
 	public:
 		WebRTCGain();
+
+		void Init(int serviceType);
 		virtual ~WebRTCGain();
 
 		bool SetGain(int iGain);

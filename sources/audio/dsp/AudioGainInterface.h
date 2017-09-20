@@ -18,6 +18,8 @@ namespace MediaSDK
 
 	public:
 
+		virtual void Init(int serviceType) = 0;
+
 		virtual bool SetGain(int iGain) = 0;
 
 		virtual bool AddFarEnd(short *sInBuf, int nBufferSize) = 0;
