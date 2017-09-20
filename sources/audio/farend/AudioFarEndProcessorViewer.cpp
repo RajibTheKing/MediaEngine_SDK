@@ -207,7 +207,7 @@ namespace MediaSDK
 			ParseLiveHeader(nCurrentAudioPacketType, nCurrentPacketHeaderLength, nVersion, iPacketNumber, nPacketDataLength,
 				llRelativeTime, nEchoStateFlags, m_ucaDecodingFrame);
 			
-			m_nDecodingFrameSize = nPacketDataLength;
+			//m_nDecodingFrameSize = nPacketDataLength;
 
 			MediaLog(LOG_CODE_TRACE, "[AFEPV] PT:%d PN:%d DataLen:%d RT:%lld ESF:%d", nCurrentAudioPacketType, iPacketNumber, nPacketDataLength, llRelativeTime, nEchoStateFlags);
 
@@ -225,7 +225,6 @@ namespace MediaSDK
 				MediaLog(LOG_CODE_TRACE, "[AFEPV] REMOVED ON RELATIVE TIME");
 				return;
 			}
-
 
 			MediaLog(LOG_CODE_TRACE, "[AFEPV] WORKING ON COMPLETE FRAME . ");
 			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
