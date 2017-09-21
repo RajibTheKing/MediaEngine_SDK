@@ -63,4 +63,16 @@ namespace MediaSDK
 		return  iFrameCounter * AUDIO_FRAME_SIZE;
 	}
 
+	bool DecoderOpus::SetGain(int gainLevel)
+	{
+		if (gainLevel < 0 || gainLevel > 10)
+		{
+			return false;
+		}
+
+		const int gainFactor = 256; //TODO: Must adjust the gain factor using trial and error;
+
+		return OPUS_BAD_ARG != opus_decoder_ctl(decoder, OPUS_SET_GAIN(gainLevel * gainFactor)) ? true : false;
+	}
+
 } //namespace MediaSDK

@@ -22,6 +22,13 @@ namespace MediaSDK
 
 		bool SetParameters(int sampleRate, int numberOfChannels) { return true; }
 
+		/**
+		Sets the decoder gain level.
+
+		@param [in] gainLevel The gain factor with which the decoded output shall be scaled. Possible value is 0 to 10.
+		*/
+		bool SetGain(int gainLevel);
+
 		int DecodeAudio(unsigned char *in_data, unsigned int in_size, short *out_buffer);
 
 	};
