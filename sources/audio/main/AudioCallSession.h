@@ -77,6 +77,17 @@ namespace MediaSDK
 		void SetVolume(int iVolume, bool bRecorder);
 		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
+
+		/**
+		Sets the quality of the audio. Quality adaption is done when server signals network strength.
+		Server considers strength as STRONG(3) when packet loss is 0%-3%, MEDIUM(2) when loss is 4%-12% and WEAK(1) when loss is 13%-25%
+
+		@param [in] level The current quality level of the audio. Possible values are 3 for best, 2 for good, 1 for normal.
+
+		@return Returns true when sets quality successfully, false otherwise.
+		*/
+		bool SetAudioQuality(int level);
+
 		void ResetTrace();
 		void ResetAEC();
 		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);

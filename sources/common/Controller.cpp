@@ -715,8 +715,17 @@ int CController::SetBeautification(const IPVLongType llFriendID, bool bIsEnable)
     }
 }
 
-int CController::SetVideoQualityForLive(const IPVLongType llFriendID, int quality)
+int CController::SetMediaQualityForLive(const IPVLongType llFriendID, int quality)
 {
+	/*
+	CAudioCallSession* pAudioSession = nullptr;
+
+	if (m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(llFriendID, pAudioSession))
+	{
+	pAudioSession->SetAudioQuality(quality);
+	}
+	*/
+
 	CVideoCallSession* pVideoSession;
 
 	SetBeautifyLocker lock(*m_pVideoSendMutex);

@@ -538,7 +538,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		int iReturnedValue = m_pcController->SetVideoQualityForLive(llFriendID, quality);
+		int iReturnedValue = m_pcController->SetMediaQualityForLive(llFriendID, quality);
 
 		return iReturnedValue;
 	}

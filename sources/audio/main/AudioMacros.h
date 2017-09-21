@@ -38,6 +38,9 @@
 #define OPUS_BITRATE_INIT_CALL 24000
 #define OPUS_BITRATE_INIT_LIVE 32000
 
+///Default packet loss on network, in percentage
+#define AUDIO_PACKET_LOSS_DEFAULT	3
+
 #define MAX_AUDIO_PACKET_SIZE 508
 
 #define AUDIO_SLOT_SIZE 30
@@ -54,7 +57,10 @@
 
 #define AUDIO_FRAME_SIZE 160
 #define AUDIO_SAMPLE_RATE 8000
-#define AUDIO_CHANNELS 1
+
+#define AUDIO_CHANNELS			1
+#define AUDIO_CHANNEL_MONO		1
+#define AUDIO_CHANNEL_STEREO	2
 
 #define AUDIO_MAX_FRAME_SIZE 6*960
 #define AUDIO_MAX_PACKET_SIZE (3*1276)

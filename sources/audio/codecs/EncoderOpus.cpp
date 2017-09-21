@@ -49,20 +49,38 @@ namespace MediaSDK
 			return EXIT_FAILURE;
 		}
 
-		int nBitRate = OPUS_BITRATE_INIT_CALL;
-		SetBitrate(nBitRate);
+		SetBitrate(OPUS_BITRATE_INIT_CALL);
 		
 		int iSignalType = OPUS_SIGNAL_MUSIC;
 		opus_encoder_ctl(encoder, OPUS_SET_SIGNAL(iSignalType));
 
+		//We work with mono sound, so tell it to the encoder
+		opus_encoder_ctl(encoder, OPUS_SET_FORCE_CHANNELS(AUDIO_CHANNEL_MONO));
+
+		//Set the audio bandwidth to auto
+		opus_encoder_ctl(encoder, OPUS_SET_MAX_BANDWIDTH(OPUS_AUTO));
+
+		//Set the default packet loss on network
+		opus_encoder_ctl(encoder, OPUS_SET_PACKET_LOSS_PERC(AUDIO_PACKET_LOSS_DEFAULT));
+
+		//Enable the Forward error correction to provide robustness against packet loss
+		opus_encoder_ctl(encoder, OPUS_SET_INBAND_FEC(1)); //1: Enable, 0: Disable
+
+		//Enable discontinuous transmission that shall reduce
+		//the bitrate during silence or background noise
+		opus_encoder_ctl(encoder, OPUS_SET_DTX(1)); ///1: Enable, 0: Disable
+
 		m_iComplexity = 10;
 		long long encodingTime = 0;
+
 		while (m_iComplexity >= 2)
 		{
 			opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(m_iComplexity));
+
 			encodingTime = Tools::CurrentTimestamp();
 			EncodeAudio(m_DummyData, dummyDataSize, m_DummyDataOut);
 			encodingTime = Tools::CurrentTimestamp() - encodingTime;
+
 			if (encodingTime > AUDIO_MAX_TOLERABLE_ENCODING_TIME)
 			{
 				m_iComplexity--;
@@ -74,7 +92,7 @@ namespace MediaSDK
 		}
 
 		MediaLog(LOG_DEBUG, "[EO] OPUS-SETTING# SampleRate = %d, BitRate = %d, Complexity = %d, AppType = %d, Channels = %d, SignalType = %d",
-			sampling_rate, nBitRate, m_iComplexity, iApplicationType, iAudioChannelType, iSignalType);
+			sampling_rate, OPUS_BITRATE_INIT_CALL, m_iComplexity, iApplicationType, iAudioChannelType, iSignalType);
 
 		return EXIT_SUCCESS;
 	}
@@ -138,6 +156,37 @@ namespace MediaSDK
 		m_iComplexity = nComplexity;
 
 		return ret != 0;
+	}
+
+	bool EncoderOpus::SetAudioQuality(int level)
+	{
+		int packetLoss; //in percentage
+		bool disablePrediction;
+
+		switch (level)
+		{
+		case 1:
+			packetLoss = 25;
+			disablePrediction = false; //Enabled
+			break;
+		case 2:
+			packetLoss = 9;
+			disablePrediction = false; //Enabled
+			break;
+
+		case 3:
+			packetLoss = 3;
+			disablePrediction = true; //Disable prediction when network is too bad
+			break;
+		}
+
+		//Sets the packet loss percentage
+		opus_encoder_ctl(encoder, OPUS_SET_PACKET_LOSS_PERC(packetLoss));
+
+		//Sets the prediction state
+		opus_encoder_ctl(encoder, OPUS_SET_PREDICTION_DISABLED((int)disablePrediction));
+
+		return true;
 	}
 
 } //namespace MediaSDK

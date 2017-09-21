@@ -425,6 +425,16 @@ namespace MediaSDK
 
 	}
 
+	bool CAudioCallSession::SetAudioQuality(int level)
+	{
+		if (level < 1 || level > 3) return false;
+
+		if (m_pAudioEncoder.get())
+		{
+			return m_pAudioEncoder->SetAudioQuality(level);
+		}
+
+	}
 
 	void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
 	{

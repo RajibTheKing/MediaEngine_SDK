@@ -63,7 +63,7 @@ namespace MediaSDK
 
         int SetBeautification(const IPVLongType llFriendID, bool bIsEnable);
 
-		int SetVideoQualityForLive(const IPVLongType llFriendID, int quality);
+		int SetMediaQualityForLive(const IPVLongType llFriendID, int quality);
 
 		int SetVideoEffect(const long long llFriendID, int nEffectStatus);
 
