@@ -6,7 +6,7 @@
 #ifdef USE_AECM
 extern int gEchoType;
 #else
-int gEchoType = ECHO_TYPE_NO_AEC;
+int gEchoType = -1;
 #endif
 
 
