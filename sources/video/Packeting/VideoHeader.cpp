@@ -31,6 +31,9 @@
 #define ENCODE_FAIL_INDEX 30
 #define LIBRARY_VERSION_INDEX 31
 
+//LiveVideoQualityLevel
+#define LIVE_VIDEO_QUALITY_LEVEL_INDEX 32
+
 
 
 #define QUALITY_BITS_N      3
@@ -86,6 +89,9 @@ namespace MediaSDK
         m_iDeviceFPS = 0; //5 bit
         m_iNumberOfEncodeFailPerFPS = 0; //5 bit
         m_iMediaEngineVersion = 0; //6 bit
+        
+        //LiveVideoQualityLevel
+        m_iLiveVideoQualityLevel = 0; //3 bit
 
 	}
 
@@ -123,7 +129,7 @@ namespace MediaSDK
 		SetInsetWidths(headerData + INSET_HEIGHT_WIDTH_INDEX, m_nNumberOfInset);    nowIndex += 2;
         
         
-        if(m_iVersionCode == 2)
+        if(m_iVersionCode == 2 || m_iVersionCode == 3)
         {
             printf("here inside new Header parsing\n");
             SetSigmaValue(headerData + SIGMA_VALUE_INDEX);                          nowIndex += 1;
@@ -132,6 +138,11 @@ namespace MediaSDK
             SetEncodeFailPerFPS(headerData + ENCODE_FAIL_INDEX);                    nowIndex += 1;
             SetLibraryVersion(headerData + LIBRARY_VERSION_INDEX);                  nowIndex += 1;
             
+        }
+        
+        if(m_iVersionCode == 3)
+        {
+            SetLiveVideoQualityLevel(headerData + LIVE_VIDEO_QUALITY_LEVEL_INDEX);  nowIndex += 1;
         }
         
 	}
@@ -158,7 +169,8 @@ namespace MediaSDK
                                        int iBrightnessValue,
                                        int iDeviceFPS,
                                        int iNumberOfEncodeFailPerFps,
-                                       int iMediaEngineVersion
+                                       int iMediaEngineVersion,
+                                       int iLiveVideoQualityLevel
                                        
 		)
 	{
@@ -201,7 +213,10 @@ namespace MediaSDK
         m_iDeviceFPS = iDeviceFPS;
         m_iNumberOfEncodeFailPerFPS = iNumberOfEncodeFailPerFps;
         m_iMediaEngineVersion = iMediaEngineVersion;
-	}
+        
+        //LiveVideoQualityLevel
+        m_iLiveVideoQualityLevel = iLiveVideoQualityLevel;
+    }
 
 	void CVideoHeader::ShowDetails(string sTag)
 	{
@@ -228,6 +243,7 @@ namespace MediaSDK
             + " dFPS:" + Tools::getText(m_iDeviceFPS)
             + " EF:" + Tools::getText(m_iNumberOfEncodeFailPerFPS)
             + " LV:" + Tools::getText(m_iMediaEngineVersion)
+            + " LVQL:" + Tools::getText(m_iLiveVideoQualityLevel)
 			;
 
 		unsigned char pLocalData[100];
@@ -339,6 +355,10 @@ namespace MediaSDK
         temp2 = temp2 & 0x3F;
         data[index++] = temp1 | temp2;
         
+        //LiveVideoQuality
+        data[index] = 0;
+        data[index] |= (m_iLiveVideoQualityLevel & 0x07);
+        index++;
         
         
         
@@ -545,6 +565,13 @@ namespace MediaSDK
     void CVideoHeader::SetLibraryVersion(unsigned char *pData)
     {
         m_iMediaEngineVersion = pData[0] & 0x3F;
+    }
+    
+    void CVideoHeader::SetLiveVideoQualityLevel(unsigned char *pData)
+    {
+        int val = pData[0];
+        m_iLiveVideoQualityLevel = val & 0x07;
+        
     }
     
     
