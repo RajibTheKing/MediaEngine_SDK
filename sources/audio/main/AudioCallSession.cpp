@@ -433,7 +433,7 @@ namespace MediaSDK
 		{
 			return m_pAudioEncoder->SetAudioQuality(level);
 		}
-
+		return false;
 	}
 
 	void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
