@@ -1,3 +1,7 @@
+Release 12.1 (Date: 23-09-2017)
+---------------------------------
+- [Issue #4183] Suitable opus setting for VOIP.
+
 Release 12.0 (Date: 21-09-2017)
 ---------------------------------
 - [Issue #4241] Opus in live streaming.
