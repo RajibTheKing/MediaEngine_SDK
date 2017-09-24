@@ -696,6 +696,12 @@ namespace MediaSDK
                                 llNowTimeDiff = llNowLiveSendingTimeStamp - m_llPrevTimeWhileSendingToLive;
                                 m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
                             }
+
+							m_VideoDataToSend[0] = (unsigned char)0;
+							m_VideoDataToSend[1] = (unsigned char)0;
+							m_VideoDataToSend[2] = (unsigned char)0;
+
+							m_iDataToSendIndex = 3;
                         }
                         
                         CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() 200 ms not ready");
@@ -710,17 +716,17 @@ namespace MediaSDK
                             memcpy(m_VideoDataToSend + m_iDataToSendIndex, m_EncodedFrame, packetSize);
                             
                             //CPacketHeader packetHeader;
-                            CVideoHeader packetHeader;
-                            long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
+                            //CVideoHeader packetHeader;
+                            //long long frameNumberHeader = packetHeader.GetFrameNumberDirectly(m_EncodedFrame + 1);
                             
                             //LOGEF("THeKing--> sending --> Video frameNumber = %d, frameNumberFromHeader = %d, FrameLength  = %lld\n", frameNumber, frameNumberHeader, packetSize);
                             
-                            unsigned char *p = m_VideoDataToSend + m_iDataToSendIndex + 1;
-                            int nCurrentFrameLen = ((int)p[13] << 8) + p[14];
+                           // unsigned char *p = m_VideoDataToSend + m_iDataToSendIndex + 1;
+                            //int nCurrentFrameLen = ((int)p[13] << 8) + p[14];
                             //CPacketHeader   ccc;
-                            CVideoHeader ccc;
-                            ccc.SetPacketHeader(p);
-                            int nTemp = ccc.GetPacketLength();
+                            //CVideoHeader ccc;
+                            //ccc.SetPacketHeader(p);
+                            //int nTemp = ccc.GetPacketLength();
                             //printf("SendingSide--> nCurrentFrameLen = %d, but packetSize = %d, iDataToSendIndex = %d, gotLengthFromHeader = %d\n", nCurrentFrameLen, packetSize, m_iDataToSendIndex, nTemp); 
                             
                             m_iDataToSendIndex += (packetSize);
