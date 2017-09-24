@@ -259,6 +259,7 @@ namespace MediaSDK
             {
                 m_SendingBuffer->ResetBuffer();
                 firstFrame = true;
+				m_nChunkNumber = 0;
                 
                 m_bResetForViewerCallerCallEnd = false;
             }
