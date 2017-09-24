@@ -698,6 +698,8 @@ namespace MediaSDK
                                 m_llPrevTimeWhileSendingToLive = llNowLiveSendingTimeStamp;
                             }
 
+							numberOfVideoPackets = 0;
+
 							m_VideoDataToSend[0] = (unsigned char)0;
 							m_VideoDataToSend[1] = (unsigned char)0;
 							m_VideoDataToSend[2] = (unsigned char)0;
