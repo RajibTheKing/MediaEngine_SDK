@@ -4,7 +4,7 @@
 
 #include "EchoCancellerInterface.h"
 #include "AudioMacros.h"
-#ifdef USE_AECM
+#if 0
 #include "speex_echo.h"
 #include "speex_preprocess.h"
 #endif
@@ -19,7 +19,7 @@ namespace MediaSDK
 		bool m_bReadingFarend, m_bWritingFarend;
 
 		short m_sSpeexFarendBuf[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-#ifdef USE_AECM
+#if 0
 		SpeexEchoState *st;
 		SpeexPreprocessState *den;
 #endif
