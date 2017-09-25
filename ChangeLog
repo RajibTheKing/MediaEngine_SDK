@@ -1,3 +1,9 @@
+Release 12.3 (Date: 25-09-2017)
+---------------------------------
+- Fixed call in live crush for audio only live.
+- webrtc simulator support added
+
+
 Release 12.2 (Date: 24-09-2017)
 ---------------------------------
 - Fixed call in live crush.
