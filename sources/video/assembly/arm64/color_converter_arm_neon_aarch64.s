@@ -1,12 +1,13 @@
 //
-//  Neon_Assembly.s
-//  TestCamera
+//  IPV-MediaEngine
+//  color_converter_arm_neon_aarch64.s
+//
 //
 //  Created by Rajib Chandra Das on 7/26/17.
 //
 //
 
-#if defined(HAVE_NEON_AARCH64_BAAD)
+#if defined(HAVE_NEON_AARCH64)
 
 .macro NEON_ARM_AACH64_FUNC_BEGIN
 .text
