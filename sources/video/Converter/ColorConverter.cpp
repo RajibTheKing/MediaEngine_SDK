@@ -67,6 +67,8 @@ m_lfriendID(lfriendID)
 
 
 	//LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
+    
+    m_pNeonAssemblyWrapper = new NeonAssemblyWrapper();
 
 
 }
@@ -250,11 +252,16 @@ int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideo
 
 	return UVPlaneEnd;
 }
-
+    
 int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
-
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    printf("TheKing--> Here Inside convert_nv12_to_i420_assembly\n");
+    m_pNeonAssemblyWrapper->convert_nv12_to_i420_assembly(convertingData, iVideoHeight, iVideoWidth);
+    return iVideoHeight * iVideoWidth * 3 / 2;
+#else
+    printf("TheKing--> Here Inside ConvertNV12ToI420\n");
 	int i, j, k;
 
 	int YPlaneLength = iVideoHeight*iVideoWidth;
@@ -269,8 +276,9 @@ int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData, int iVideo
 	}
 
 	memcpy(convertingData + UVPlaneMidPoint, m_pVPlane, VPlaneLength);
-
-	return UVPlaneEnd;
+    return UVPlaneEnd;
+#endif
+	
 }
 
 /*
@@ -1889,10 +1897,17 @@ int CColorConverter::Crop_RGB24(unsigned char* pData, int inHeight, int inWidth,
     
     return outWidth * outHeight * 3;
 }
-
+    
 int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
 {
+    
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    printf("TheKing--> Here Inside Crop_yuv420_assembly\n");
+    m_pNeonAssemblyWrapper->Crop_yuv420_assembly(pData, inHeight, inWidth, startXDiff, endXDiff, startYDiff, endYDiff, outputData, outHeight, outWidth);
+    return outHeight * outWidth * 3 / 2;
+#else
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    printf("TheKing--> Here Inside Crop_YUV420\n");
     int YPlaneLength = inHeight*inWidth;
     int UPlaneLength = YPlaneLength >> 2;
     int indx = 0;
@@ -1933,6 +1948,8 @@ int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth
     //printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
     
     return outHeight*outWidth*3/2;
+    
+#endif
     
 }
 
