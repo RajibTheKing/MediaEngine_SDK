@@ -7,10 +7,47 @@ ARCH := $(TARGET_ARCH_ABI)
 THIRD_PARTY := ../../../third_party
 SOURCES := ../../../sources
 OUTPUT := ../../../output
+CONNECTIVITY := ../../../../RingIDSDK/jni/precompiled
 
 TARGET_OUT=$(OUTPUT)/android/$(ARCH)
 
 #END_BUILDING_MEDIAENGINE
+
+# Prebuilt IPVFileTransfer
+include $(CLEAR_VARS)
+LOCAL_MODULE := IPVFileTransfer
+LOCAL_SRC_FILES := $(CONNECTIVITY)/$(ARCH)/libFileTransfer.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+$(warning $(ARCH))
+# Prebuilt IPVConnectivityDll
+include $(CLEAR_VARS)
+LOCAL_MODULE := IPVConnectivityDll
+LOCAL_SRC_FILES := $(CONNECTIVITY)/$(ARCH)/libIPVConnectivityDll.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+$(warning $(ARCH))
+# Prebuilt IPVConnectivityManager
+include $(CLEAR_VARS)
+LOCAL_MODULE := IPVConnectivityManager
+LOCAL_SRC_FILES := $(CONNECTIVITY)/$(ARCH)/libIPVConnectivityManager.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+$(warning $(ARCH))
+# Prebuilt IPVSocket
+include $(CLEAR_VARS)
+LOCAL_MODULE := IPVSocket
+LOCAL_SRC_FILES := $(CONNECTIVITY)/$(ARCH)/libIPVSocket.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+$(warning $(ARCH))
+# Prebuilt IPVStunMessage
+include $(CLEAR_VARS)
+LOCAL_MODULE := IPVStunMessage
+LOCAL_SRC_FILES := $(CONNECTIVITY)/$(ARCH)/libIPVStunMessage.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+
 
 $(warning $(ARCH))
 # Prebuilt libopenh264
@@ -91,16 +128,14 @@ LOCAL_SRC_FILES := \
             $(RINGID_SDK)/RingIDSDK.cpp \
 			$(RINGID_SDK)/JNIInterfaceOfRingSDK.cpp \
 
-LOCAL_C_INCLUDES := \
-            ../../VideoEngineUtilities \
-			../../VideoEngineController \
-			../../OthersLib/WinOpenH264 \
-			../../../RingIDSDK \
-			../../include/g729 \
-			../../include \
+LOCAL_C_INCLUDES += \
+			$(RINGID_SDK) \
+			$(THIRD_PARTY)/opus/include \
+			$(THIRD_PARTY)/webrtc/include \
+			$(THIRD_PARTY)/speex/include
 
 LOCAL_CFLAGS := -DANDROID_NDK
 LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
+LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage IPVFileTransfer
 
 include $(BUILD_SHARED_LIBRARY)
