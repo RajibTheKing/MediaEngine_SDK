@@ -94,6 +94,7 @@
 #ifdef DESKTOP_C_SHARP
 #define USE_AECM
 #define USE_AGC
+#define USE_ANS
 #endif
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
