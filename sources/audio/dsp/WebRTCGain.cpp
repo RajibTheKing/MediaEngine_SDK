@@ -5,12 +5,7 @@
 
 #ifdef USE_AGC
 
-#ifdef DESKTOP_C_SHARP
-#define OLD_GAIN_LIB
-#include "gain_control_old.h"
-#else
 #include "gain_control.h"
-#endif
 
 #endif
 
@@ -49,19 +44,7 @@ namespace MediaSDK
 		//m_sTempBuf = new short[3000]; //For channel max buffer size required is 2048 otherwise 800
 		int agcret = -1;
 
-#ifdef OLD_GAIN_LIB
-		if ((agcret = WebRtcAgc_Create(&AGC_instance)))
-		{
-			LOGT("WebRtcAgc_Create failed with error code = %d" , Tools::IntegertoStringConvert(agcret));
-		}
-		else
-		{
-			LOGT("WebRtcAgc_Create successful");
-		}
-#else
 		AGC_instance = WebRtcAgc_Create();
-#endif
-
 
 #endif
 	}
@@ -144,15 +127,7 @@ namespace MediaSDK
 		*/
 		m_iVolume = iGain;
 
-#ifdef OLD_GAIN_LIB
-		WebRtcAgc_config_t gain_config;
-		if (m_iServiceType != SERVICE_TYPE_CHANNEL)
-		{
-			m_iVolume = 13;
-		}
-#else
 		WebRtcAgcConfig gain_config;
-#endif
 
 		gain_config.targetLevelDbfs = 13 - m_iVolume;      /* m_iVolume's range is 1-10 */ /* so effective dbfs range is 12-3 */    /* possible range: 0 - 31 */
 		gain_config.compressionGaindB = m_iServiceType == SERVICE_TYPE_CHANNEL ? 38 : (m_iVolume * 6);  /*For channel gain level 38 is set from hearing experience*/
@@ -240,26 +215,17 @@ namespace MediaSDK
 			if (!bPlayerSide || (bPlayerSide && !bEchoExists))
 			{
 				inMicLevel = 0;
-#ifdef OLD_GAIN_LIB
-				if (0 != WebRtcAgc_VirtualMic(AGC_instance, sInBuf + i, 0, m_iSampleSize, inMicLevel, &outMicLevel))
-#else
 				int16_t* in_buf_temp = sInBuf + i;
 				//int16_t* out_buf_temp = sInBuf + i;
 				if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, m_iSampleSize, inMicLevel, &outMicLevel))
-#endif
 				{
 					LOGT("###GN## WebRtcAgc_VirtualMic failed");
 					bSucceeded = false;
 				}
 
 				//total += outMicLevel; counter++;
-#ifdef OLD_GAIN_LIB
-				if (0 != WebRtcAgc_Process(AGC_instance, sInBuf + i, 0, m_iSampleSize, sInBuf + i, 0,
-					outMicLevel, &inMicLevel, 0, &saturationWarning))
-#else
 				if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, m_iSampleSize,
 					(int16_t* const*)&in_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
-#endif
 				{
 					LOGT("###GN## WebRtcAgc_Process failed");
 					bSucceeded = false;
