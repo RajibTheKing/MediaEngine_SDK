@@ -9,10 +9,13 @@ namespace MediaSDK
 {
 
 	LiveReceiver::LiveReceiver(CCommonElementsBucket* sharedObject) :
-		m_pCommonElementsBucket(sharedObject)
+		m_pCommonElementsBucket(sharedObject),
+		m_nGotFrameCounter(0),
+		m_nMissedFrameCounter(0),
+		m_nIFrameGap(0),
+		m_nPreviousIFrameNumber(0)
 
 	{
-		missedFrameCounter = 0;
 		m_pLiveVideoDecodingQueue = NULL;
 		m_pLiveReceiverMutex.reset(new CLockHandler);
 	}
@@ -214,6 +217,8 @@ namespace MediaSDK
 
 		if ((int)uchVideoData[0] != 0 && serviceType != SERVICE_TYPE_CHANNEL)
 		{
+			CLogPrinter_LOG(WRONG_ENTRY_LOG, "LiveReceiver::PushVideoDataVector Wrong Entry in concealing");
+
 			bool success = false;
 			
 			if ((int)uchVideoData[0] == 2 )
@@ -279,7 +284,7 @@ namespace MediaSDK
 
 			if (!bBroken)	
 			{
-				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector CORRECT entered number %d size %d missCounter %d", j, frameSizes[j], missedFrameCounter);
+				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector CORRECT entered number %d size %d missCounter %d", j, frameSizes[j], m_nMissedFrameCounter);
 
 				CVideoHeader videoHeader;
 
@@ -297,24 +302,31 @@ namespace MediaSDK
                 CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector nCurrentFrameLen %d, nalType = %d, j=%d", nCurrentFrameLen, nalType, j);
 
 				if (nalType == 7)
-					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frome j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
+				{
+					m_nIFrameGap = m_nGotFrameCounter - m_nPreviousIFrameNumber;
+					m_nPreviousIFrameNumber = m_nGotFrameCounter;
+
+					CLogPrinter_LOG(GOT_FRAME_TYPE_LOG, "LiveReceiver::PushVideoDataVector got correct IIIIIIIIIIIIIII Frame Gap %d", m_nIFrameGap);
+				}
 				else
-					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector() found frame j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
+					CLogPrinter_LOG(GOT_FRAME_TYPE_LOG, "LiveReceiver::PushVideoDataVector got correct P frame");
 
 				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
 			}
 			else
 			{
-				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector BROKENNNNNNNNNN entered number %d size %d missCounter %d", j, frameSizes[j], missedFrameCounter);
+				CLogPrinter_LOG(CRASH_CHECK_LOG || BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector BROKENNNNNNNNNN entered number %d size %d missCounter %d", j, frameSizes[j], m_nMissedFrameCounter);
 
 				numOfMissingFrames++;
-				missedFrameCounter++;;
+				m_nMissedFrameCounter++;;
 				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::PushVideoDataVector video frame broken j = " + Tools::getText(j) + " size " + Tools::getText(frameSizes[j]));
 			}
 
 
 			iUsedLen += frameSizes[j];
 			tillIndex = endOfThisFrame + 1;
+
+			m_nGotFrameCounter++;
 		}
 
 		LOG_AAC("#aac#b4q# TotalVideoFrames: %d, PushedVideoFrames: %d, NumOfMissingVideoFrames: %d", numberOfFrames, (numberOfFrames - numOfMissingFrames), numOfMissingFrames);

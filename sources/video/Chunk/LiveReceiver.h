@@ -28,7 +28,10 @@ namespace MediaSDK
 
 	private:
 
-		int missedFrameCounter;
+		int m_nMissedFrameCounter;
+		int m_nGotFrameCounter;
+		int m_nIFrameGap;
+		int m_nPreviousIFrameNumber;
 
 		SharedPointer<CLockHandler> m_pLiveReceiverMutex;
 
