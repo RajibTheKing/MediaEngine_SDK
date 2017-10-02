@@ -247,8 +247,8 @@ namespace MediaSDK
 
 		//CLogPrinter_WriteLog(CLogPrinter::INFO, PACKET_DETAILS_LOG, sss);
 
-		CLogPrinter::Log("%s\n", sLog.c_str());
-		//CLogPrinter_LOG(PACKET_DETAILS_LOG, "CVideoHeader::ShowDetails %s", sLog.c_str());
+		//CLogPrinter::Log("%s\n", sLog.c_str());
+		CLogPrinter_LOG(PACKET_DETAILS_LOG, "CVideoHeader::ShowDetails %s", sLog.c_str());
 
 	}
 	int CVideoHeader::GetHeaderInByteArray(unsigned char* data)
