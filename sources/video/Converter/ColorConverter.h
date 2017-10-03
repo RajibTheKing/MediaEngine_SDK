@@ -64,6 +64,9 @@ namespace MediaSDK
 		int DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff);
 		int DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth);
 
+		int DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+		int DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
+
 		void mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth);
 
 		bool GetSmallFrameStatus();
@@ -134,13 +137,13 @@ namespace MediaSDK
 		unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 		unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
 
-		//int CumulativeSum[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
-		//int CumulativeSum_U[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
-		//int CumulativeSum_V[MAX_FRAME_HEIGHT][MAX_FRAME_HEIGHT];
+		//int CumulativeSum[MAX_FRAME_HEIGHT + 1][MAX_FRAME_HEIGHT + 1];
+		//int CumulativeSum_U[MAX_FRAME_HEIGHT + 1][MAX_FRAME_HEIGHT + 1];
+		//int CumulativeSum_V[MAX_FRAME_HEIGHT + 1][MAX_FRAME_HEIGHT + 1];
 
-		int CumulativeSum[1920][1920];
-		int CumulativeSum_U[1920][1920];
-		int CumulativeSum_V[1920][1920];
+		int CumulativeSum[1921][1921];
+		int CumulativeSum_U[1921][1921];
+		int CumulativeSum_V[1921][1921];
 
 		unsigned char m_pClip[900];
 		bool m_bClipInitialization;
