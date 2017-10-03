@@ -257,7 +257,7 @@ namespace MediaSDK
 		{
 			nFrames++;
 
-			if ((int)uchVideoData[0] != 0 && (j == (int)uchVideoData[1] || j == (int)uchVideoData[2]))
+			if (serviceType != SERVICE_TYPE_CHANNEL && (int)uchVideoData[0] != 0 && (j == (int)uchVideoData[1] || j == (int)uchVideoData[2]))
 			{
 				iUsedLen += frameSizes[j];
 				continue;
