@@ -247,9 +247,11 @@ namespace MediaSDK
 				#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM7a
 				#define MEDIA_ARCH_ARMv7a
 
-				#if defined(__ARM_NEON__)
+				#if defined(__ARM_NEON__) || defined(__ARM_NEON)
 
+					///Defined only when we have NEON support
 					#define MEDIA_ARCH_NEON
+
 					#if defined(__ARM_PCS_VFP)
 						#define MEDIA_ABI "armeabi-v7a/NEON (hard-float)"
 					#else
@@ -320,7 +322,18 @@ namespace MediaSDK
 
 			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__ARM64
 			#define MEDIA_ARCH_ARM64
-			#define MEDIA_ABI "arm64-v8a"
+
+			#if defined(__ARM_NEON__) || defined(__ARM_NEON)
+
+				///Defined only when we have NEON support
+				#define MEDIA_ARCH_NEON
+				#define MEDIA_ABI "arm64-v8/NEON"
+			
+			#elif
+
+				#define MEDIA_ABI "arm64-v8"
+			
+			#endif
 
 		#else
 
