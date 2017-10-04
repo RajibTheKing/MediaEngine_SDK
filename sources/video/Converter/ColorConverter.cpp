@@ -1529,155 +1529,148 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
 int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
 	int idx = 0;
-	memset(CumulativeSum, 0, sizeof(CumulativeSum));
-
-	for (int i = 0; i < iHeight; i++)
+	for (int i = 0; i < iHeight; i += 4)
 	{
-		int tmp = 0;
-
-		for (int j = 0; j < iWidth; j++)
+		for (int j = 0; j < iWidth; j += 4)
 		{
-			tmp += pData[i*iWidth + j];
-			CumulativeSum[i + 1][j + 1] = CumulativeSum[i][j + 1] + tmp;
-
-			if ((i % 4 == 3) && (j % 4 == 3))
-			{
-				int sum = CumulativeSum[i + 1][j + 1] + CumulativeSum[i - 3][j - 3] - CumulativeSum[i + 1][j - 3] - CumulativeSum[i - 3][j + 1];
-				int avg = sum / 16;
-
-				outputData[idx++] = avg;
-			}
+            int tmp = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = k*iWidth;
+                for(int l = j; l < j + 4; l++)
+                {
+                    tmp += pData[kw + l];
+                }
+            }
+            outputData[idx++] = tmp >> 4;
 		}
 	}
-
-	memset(CumulativeSum_U, 0, sizeof(CumulativeSum_U));
-	memset(CumulativeSum_V, 0, sizeof(CumulativeSum_V));
 
 	int halfHeight = iHeight >> 1;
 	int offset = iHeight*iWidth;
 
-	for (int i = 0; i < halfHeight; i++)
+	for (int i = 0; i < halfHeight; i += 4)
 	{
-		int tmpU = 0;
-		int tmpV = 0;
-
-		for (int j = 0; j < iWidth; j++)
+		for (int j = 0; j < iWidth; j += 8)
 		{
-			if (j % 2 == 0)
-			{
-				tmpU += pData[offset + i*iWidth + j];
-			}
-			else
-			{
-				tmpV += pData[offset + i*iWidth + j];
-			}
-
-			CumulativeSum_U[i + 1][j + 1] = CumulativeSum_U[i][j + 1] + tmpU;
-			CumulativeSum_V[i + 1][j + 1] = CumulativeSum_V[i][j + 1] + tmpV;
-
-			if ((i % 4 == 3) && (j % 8 == 7))
-			{
-				int sumU = CumulativeSum_U[i + 1][j + 1] + CumulativeSum_U[i - 3][j - 7] - CumulativeSum_U[i + 1][j - 7] - CumulativeSum_U[i - 3][j + 1];
-				int sumV = CumulativeSum_V[i + 1][j + 1] + CumulativeSum_V[i - 3][j - 7] - CumulativeSum_V[i + 1][j - 7] - CumulativeSum_V[i - 3][j + 1];
-
-				int avgU = sumU / 16;
-				int avgV = sumV / 16;
-
-				outputData[idx++] = avgU;
-				outputData[idx++] = avgV;
-			}
+            int tmpU = 0;
+            int tmpV = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = offset + k*iWidth;
+                for(int l = j; l < j + 8; l++)
+                {
+                    if (l % 2 == 0)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                    else
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpU >> 4;
+            outputData[idx++] = tmpV >> 4;
 		}
 	}
 
-	int outHeight = iHeight / 4;
-	int outWidth = iWidth / 4;
+	int outHeight = iHeight >> 2;
+	int outWidth = iWidth >> 2;
 
-	return outHeight * outWidth * 3 / 2;
+	return (outHeight * outWidth * 3) >> 1;
 }
 
 int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
-	int idx = 0;
-	memset(CumulativeSum, 0, sizeof(CumulativeSum));
-
-	for (int i = 0; i < iHeight; i++)
-	{
-		int tmp = 0;
-
-		for (int j = 0; j < iWidth; j++)
-		{
-			tmp += pData[i*iWidth + j];
-			CumulativeSum[i + 1][j + 1] = CumulativeSum[i][j + 1] + tmp;
-
-			if ((i % 4 == 3) && (j % 4 == 3))
-			{
-				int sum = CumulativeSum[i + 1][j + 1] + CumulativeSum[i - 3][j - 3] - CumulativeSum[i + 1][j - 3] - CumulativeSum[i - 3][j + 1];
-				int avg = sum / 16;
-
-				outputData[idx++] = avg;
-			}
-		}
-	}
-
-	memset(CumulativeSum_U, 0, sizeof(CumulativeSum_U));
+    int idx = 0;
+    for (int i = 0; i < iHeight; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += 4)
+        {
+            int tmp = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = k*iWidth;
+                for(int l = j; l < j + 4; l++)
+                {
+                    tmp += pData[kw + l];
+                }
+            }
+            outputData[idx++] = tmp >> 4;
+        }
+    }
 
 	int quarterHeight = iHeight >> 2;
 	int offset = iHeight*iWidth;
+    int incr = 4;
 
-	for (int i = 0; i < quarterHeight; i++)
-	{
-		int tmpU = 0;
+    for (int i = 0; i < quarterHeight; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += incr)
+        {
+            int tmpU = 0;
+            if(i + 4 > quarterHeight)
+            {
+                incr = 8;
+                for(int k = i; k < i + 2; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                }
+            }
+            else
+            {
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpU >> 4;
+        }
+    }
 
-		for (int j = 0; j < iWidth; j++)
-		{
-			tmpU += pData[offset + i*iWidth + j];
-			CumulativeSum_U[i + 1][j + 1] = CumulativeSum_U[i][j + 1] + tmpU;
-
-			if ((i % 4 == 3) && (j % 4 == 3))
-			{
-				int sumU = CumulativeSum_U[i + 1][j + 1] + CumulativeSum_U[i - 3][j - 3] - CumulativeSum_U[i + 1][j - 3] - CumulativeSum_U[i - 3][j + 1];
-				int avgU = sumU / 16;
-
-				outputData[idx++] = avgU;
-			}
-			else if ((i == quarterHeight - 1) && (i % 2 == 1) && (j % 8 == 7))
-			{
-				int sumU = CumulativeSum_U[i + 1][j + 1] + CumulativeSum_U[i - 1][j - 7] - CumulativeSum_U[i + 1][j - 7] - CumulativeSum_U[i - 1][j + 1];
-				int avgU = sumU / 16;
-
-				outputData[idx++] = avgU;
-			}
-		}
-	}
-
-	memset(CumulativeSum_V, 0, sizeof(CumulativeSum_V));
 	offset += quarterHeight*iWidth;
+    incr = 4;
 
-	for (int i = 0; i < quarterHeight; i++)
-	{
-		int tmpV = 0;
-
-		for (int j = 0; j < iWidth; j++)
-		{
-			tmpV += pData[offset + i*iWidth + j];
-			CumulativeSum_V[i + 1][j + 1] = CumulativeSum_V[i][j + 1] + tmpV;
-
-			if ((i % 4 == 3) && (j % 4 == 3))
-			{
-				int sumV = CumulativeSum_V[i + 1][j + 1] + CumulativeSum_V[i - 3][j - 3] - CumulativeSum_V[i + 1][j - 3] - CumulativeSum_V[i - 3][j + 1];
-				int avgV = sumV / 16;
-
-				outputData[idx++] = avgV;
-			}
-			else if ((i == quarterHeight - 1) && (i % 2 == 1) && (j % 8 == 7))
-			{
-				int sumV = CumulativeSum_V[i + 1][j + 1] + CumulativeSum_V[i - 1][j - 7] - CumulativeSum_V[i + 1][j - 7] - CumulativeSum_V[i - 1][j + 1];
-				int avgV = sumV / 16;
-
-				outputData[idx++] = avgV;
-			}
-		}
-	}
+    for (int i = 0; i < quarterHeight; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += incr)
+        {
+            int tmpV = 0;
+            if(i + 4 > quarterHeight)
+            {
+                incr = 8;
+                for(int k = i; k < i + 2; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            else
+            {
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpV >> 4;
+        }
+    }
 
 	int outHeight = iHeight / 4;
 	int outWidth = iWidth / 4;
