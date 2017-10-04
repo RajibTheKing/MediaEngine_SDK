@@ -337,8 +337,6 @@ namespace MediaSDK
 	*/
 	#define IS_ARCH(Media_Arch) ( (Media_Arch) & MEDIA_ARCH_TYPE )
 
-	#define MIN_CHUNK_DURATION_SAFE 50
-
 } //namespace
 
 #endif

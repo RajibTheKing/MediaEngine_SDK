@@ -22,6 +22,7 @@ namespace MediaSDK
 
 //#define	LIVE_CHUNK_DUMPLINGS
 
+#define MIN_CHUNK_DURATION_SAFE 50
 
 } // namespace MediaSDK
 
