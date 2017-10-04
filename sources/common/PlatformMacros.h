@@ -83,7 +83,7 @@ namespace MediaSDK
 	#else
 
 		//This is an alien
-		#error "Unknown compiler"
+		#error "Unknown OS"
 		#define OS_TYPE OS_UNKNOWN
 		#define OS_TYPE_UNKNOWN
 
@@ -141,6 +141,9 @@ namespace MediaSDK
 		#define COMPILER_TYPE COMPILER_GCC
 	#elif defined(_MSC_VER)
 		#define COMPILER_TYPE COMPILER_MSVC
+	#else
+		/// Comment out if you are working with an alien
+		#error "Unknown Compiler"
 	#endif
 
 	#if (COMPILER_TYPE == COMPILER_MSVC)
@@ -340,6 +343,9 @@ namespace MediaSDK
 			#define MEDIA_ARCH_TYPE	MEDIA_ARCH__UNKNOWN
 			#define MEDIA_ARCH_UNKNOWN
 			#define MEDIA_ABI "unknown"
+
+			/// Comment out below line if you really don't know what you are doing ~:~
+			#error "Unknown Architecture"
 
 		#endif
 
