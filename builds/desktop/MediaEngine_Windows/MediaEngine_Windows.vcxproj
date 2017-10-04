@@ -90,6 +90,7 @@
     <ClInclude Include="..\..\..\sources\common\Controller.h" />
     <ClInclude Include="..\..\..\sources\common\EventNotifier.h" />
     <ClInclude Include="..\..\..\sources\common\InterfaceOfAudioVideoEngine.h" />
+    <ClInclude Include="..\..\..\sources\common\PlatformMacros.h" />
     <ClInclude Include="..\..\..\sources\utility\CircularBuffer.h" />
     <ClInclude Include="..\..\..\sources\utility\CustomLocker.h" />
     <ClInclude Include="..\..\..\sources\utility\IPVThread.h" />
