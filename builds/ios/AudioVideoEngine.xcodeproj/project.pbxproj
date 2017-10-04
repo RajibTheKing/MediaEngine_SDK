@@ -411,6 +411,7 @@
 		DA143E7A1F70F48B00BBB746 /* AudioHeaderLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderLive.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
+		DA98E7B21F84B9B90003BE9E /* PlatformMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformMacros.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -653,6 +654,7 @@
 		D1E739C91F6575B900ACDE35 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				DA98E7B21F84B9B90003BE9E /* PlatformMacros.h */,
 				D1E739CA1F6575B900ACDE35 /* CommonElementsBucket.cpp */,
 				D1E739CB1F6575B900ACDE35 /* CommonElementsBucket.h */,
 				D1E739CC1F6575B900ACDE35 /* CommonMacros.h */,
