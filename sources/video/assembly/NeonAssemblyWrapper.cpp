@@ -29,8 +29,11 @@ NeonAssemblyWrapper::~NeonAssemblyWrapper()
 
 void NeonAssemblyWrapper::convert_nv12_to_i420_assembly(unsigned char* __restrict src, int iHeight, int iWidth)
 {
-#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+#if defined(HAVE_NEON)
     convert_nv12_to_i420_arm_neon(src, m_pTempArray, iHeight, iWidth);
+    memcpy(src, m_pTempArray, iHeight * iWidth * 3 / 2);
+#elif defined(HAVE_NEON_AARCH64)
+    convert_nv12_to_i420_arm_neon_aarch64(src, m_pTempArray, iHeight, iWidth);
     memcpy(src, m_pTempArray, iHeight * iWidth * 3 / 2);
 #endif
     
@@ -38,7 +41,7 @@ void NeonAssemblyWrapper::convert_nv12_to_i420_assembly(unsigned char* __restric
 
 void NeonAssemblyWrapper::Crop_yuv420_assembly(unsigned char* src, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* dst, int &outHeight, int &outWidth)
 {
-#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+
     outHeight = inHeight - startYDiff - endYDiff;
     outWidth = inWidth - startXDiff - endXDiff;
     param[0] = inHeight;
@@ -50,10 +53,13 @@ void NeonAssemblyWrapper::Crop_yuv420_assembly(unsigned char* src, int inHeight,
     param[6] = outHeight;
     param[7] = outWidth;
     
+#if defined(HAVE_NEON)
     crop_yuv420_arm_neon(src, dst, param);
+#elif defined(HAVE_NEON_AARCH64)
+    crop_yuv420_arm_neon_aarch64(src, dst, param);
+#endif
     
     //ARM_NEON: 2017-08-26 19:45:28.245923 MediaEngine[442:110984] TimeElapsed = 0, frames = 1016, totalDiff = 123
     //C++: 2017-08-26 19:46:39.203911 MediaEngine[445:111660] TimeElapsed = 0, frames = 1016, totalDiff = 588
-#endif
 }
 

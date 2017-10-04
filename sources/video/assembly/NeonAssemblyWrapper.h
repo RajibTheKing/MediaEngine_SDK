@@ -12,11 +12,20 @@
 #include <stdio.h>
 #include "Size.h"
 
+#if defined(HAVE_NEON)
 extern "C"
 {
     void convert_nv12_to_i420_arm_neon(unsigned char* __restrict src, unsigned char* __restrict dest, int iHeight, int iWidth);
     void crop_yuv420_arm_neon(unsigned char* __restrict src, unsigned char* __restrict dst, unsigned int* __restrict param);
 }
+#elif defined(HAVE_NEON_AARCH64)
+extern "C"
+{
+    void convert_nv12_to_i420_arm_neon_aarch64(unsigned char* __restrict src, unsigned char* __restrict dest, int iHeight, int iWidth);
+    void crop_yuv420_arm_neon_aarch64(unsigned char* __restrict src, unsigned char* __restrict dst, unsigned int* __restrict param);
+}
+#endif
+
 
 class NeonAssemblyWrapper
 {
