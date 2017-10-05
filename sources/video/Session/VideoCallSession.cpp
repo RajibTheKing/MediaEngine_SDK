@@ -515,6 +515,9 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
     
     iVideoHeight /= 4;
     iVideoWidth /= 4;
+#ifdef __ANDROID__
+	iVideoWidth += 2;
+#endif
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
     
@@ -1006,7 +1009,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	//int tempW = 1920;
 
 #ifdef __ANDROID__
-	int tempHs = m_nVideoCallWidth * 4;
+	int tempHs = m_nVideoCallWidth * 4 - 8;
 	int tempWs = m_nVideoCallHeight * 4;
 #else
     int tempHs = m_nVideoCallHeight * 4;
@@ -1027,16 +1030,23 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     //printf("DownScaleYUVNV12_YUVNV21 Time = %lld\n", m_Tools.CurrentTimestamp() - startTime);
     
     tempHs /= 4;
+#ifdef __ANDROID__
+	tempHs += 2;
+#endif
     tempWs /= 4;
 
     
 	//m_pColorConverter->ConvertI420ToNV21(buf, tempHs, tempWs);
 
     
-
+#ifdef __ANDROID__
+	int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempWs, tempHs, nCaptureTimeDiff, device_orientation);
+#else
+	int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempHs, tempWs, nCaptureTimeDiff, device_orientation);
+#endif
 
 	//int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
-	int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempHs, tempWs, nCaptureTimeDiff, device_orientation);
+	//int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempWs, tempHs, nCaptureTimeDiff, device_orientation);
     
 	delete[] buf;
 
