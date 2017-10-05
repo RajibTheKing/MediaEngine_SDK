@@ -342,6 +342,14 @@ namespace MediaSDK
 		CLockHandler& m_mutex;
 	};
 
+	class VideoFrameBufferLocker {
+	public:
+		VideoFrameBufferLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex)	{ m_mutex.lock(); }
+		~VideoFrameBufferLocker() { m_mutex.unlock(); }
+	private:
+		CLockHandler& m_mutex;
+	};
+
 	class SendingBufferLocker {
 	public:
 		SendingBufferLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex)	{ m_mutex.lock(); }

@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "LogPrinter.h"
+#include "Size.h"
 
 namespace MediaSDK
 {
@@ -23,6 +24,7 @@ namespace MediaSDK
 
 
 		void fireVideoEvent(long long friendID, int eventType, long long frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iOrientation);
+		void fireMultVideoEvent(unsigned char data[][MAX_VIDEO_DECODER_FRAME_SIZE], int iDataLength[], int iTargetHeight[], int iTargetWidth[], int nLen);
 
 
 		void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);
@@ -33,6 +35,8 @@ namespace MediaSDK
 
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
+
+		void SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_DECODER_FRAME_SIZE], int*, int*, int*, int));
 
 
 		void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));

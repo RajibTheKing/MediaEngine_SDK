@@ -9,7 +9,7 @@ namespace MediaSDK
 
 	/********Enable to create log************/
 
-//#define LOG_ENABLED
+#define LOG_ENABLED
 
 	/*******ENABLE MEDIA LOGGER *******/
 #ifdef LOG_ENABLED

@@ -9,7 +9,13 @@
 #include "AudioCallSession.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
+#if  defined(__ANDROID__)
 
+#include <android/log.h>
+#define LOG_TAG "LibraryLog"
+#define LOGFF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
+#endif
 
 namespace MediaSDK
 {
@@ -55,6 +61,8 @@ m_llLastTimeStamp(-1)
 	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
+
+	m_pMultiResolutionSession = NULL;
 }
 
 CController::CController(const char* sLoggerPath, int iLoggerPrintLevel) :
@@ -94,6 +102,8 @@ m_llLastTimeStamp(-1)
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
 	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
+
+	m_pMultiResolutionSession = NULL;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
@@ -1205,6 +1215,41 @@ int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 		return 0;
 }
 
+int CController::StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen)
+{
+	if (NULL == m_pMultiResolutionSession)
+	{
+		m_pMultiResolutionSession = new MultiResolutionSession(m_pCommonElementsBucket);
+	}
+
+	m_pMultiResolutionSession->Initialize(targetHeight, targetWidth, iLen);
+	return 1;
+}
+
+int CController::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen, int iHeight, int iWidth)
+{
+    LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> iLen = %d", iLen);
+	if (NULL != m_pMultiResolutionSession)
+	{
+        LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> ************ iLen = %d", iLen);
+		m_pMultiResolutionSession->PushIntoBuffer(pVideoYuv, iLen, iHeight, iWidth);
+		return 1;
+	}
+	return 0;
+}
+
+int CController::StopMultiResolutionVideoSession()
+{
+	if (NULL != m_pMultiResolutionSession)
+	{
+		delete m_pMultiResolutionSession;
+		m_pMultiResolutionSession = NULL;
+		return 1;
+	}
+	else
+		return 0;
+}
+
 
 void CController::UninitializeLibrary()
 {
@@ -1246,6 +1291,11 @@ void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointe
 void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
+}
+
+void CController::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_DECODER_FRAME_SIZE],  int*, int*, int*, int))
+{
+	m_EventNotifier.SetNotifyClientWithMultVideoDataCallback(callBackFunctionPointer);
 }
 
 
