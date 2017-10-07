@@ -1529,7 +1529,7 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
 int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
 	int idx = 0;
-	for (int i = 0; i < iHeight; i += 4)
+	for (int i = 4; i < iHeight - 4; i += 4)
 	{
 		for (int j = 0; j < iWidth; j += 4)
 		{
@@ -1549,7 +1549,7 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, in
 	int halfHeight = iHeight >> 1;
 	int offset = iHeight*iWidth;
 
-	for (int i = 0; i < halfHeight; i += 4)
+	for (int i = 2; i < halfHeight - 2; i += 4)
 	{
 		for (int j = 0; j < iWidth; j += 8)
 		{
@@ -1584,7 +1584,7 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, in
 int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
     int idx = 0;
-    for (int i = 0; i < iHeight; i += 4)
+    for (int i = 4; i < iHeight - 4; i += 4)
     {
         for (int j = 0; j < iWidth; j += 4)
         {
@@ -1605,7 +1605,7 @@ int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeigh
 	int offset = iHeight*iWidth;
     int incr = 4;
 
-    for (int i = 0; i < quarterHeight; i += 4)
+    for (int i = 1; i < quarterHeight - 1; i += 4)
     {
         for (int j = 0; j < iWidth; j += incr)
         {
@@ -1640,7 +1640,7 @@ int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeigh
 	offset += quarterHeight*iWidth;
     incr = 4;
 
-    for (int i = 0; i < quarterHeight; i += 4)
+    for (int i = 1; i < quarterHeight - 1; i += 4)
     {
         for (int j = 0; j < iWidth; j += incr)
         {
@@ -1672,10 +1672,10 @@ int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeigh
         }
     }
 
-	int outHeight = iHeight / 4;
-	int outWidth = iWidth / 4;
+	int outHeight = iHeight >> 2;
+	int outWidth = iWidth >> 2;
 
-	return outHeight * outWidth * 3 / 2;
+	return (outHeight * outWidth * 3) >> 1;
 }
 
 //This Function will return UIndex based on YUV_420 Data

@@ -516,7 +516,7 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
     iVideoHeight /= 4;
     iVideoWidth /= 4;
 #ifdef __ANDROID__
-	iVideoWidth += 2;
+	iVideoWidth -= 2;
 #endif
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
@@ -1009,7 +1009,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	//int tempW = 1920;
 
 #ifdef __ANDROID__
-	int tempHs = m_nVideoCallWidth * 4 - 8;
+	int tempHs = m_nVideoCallWidth * 4 + 8;
 	int tempWs = m_nVideoCallHeight * 4;
 #else
     int tempHs = m_nVideoCallHeight * 4;
@@ -1031,7 +1031,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     
     tempHs /= 4;
 #ifdef __ANDROID__
-	tempHs += 2;
+	tempHs -= 2;
 #endif
     tempWs /= 4;
 
