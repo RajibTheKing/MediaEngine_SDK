@@ -1,5 +1,6 @@
 
 #include "MultiResolutionThread.h"
+#include "Size.h"
 
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -14,6 +15,10 @@
 
 #endif
 
+#define IFRAME_INTERVAL_MULT_SESSION 15
+#define FPS_MULT_SESSION 30
+
+
 namespace MediaSDK
 {
 
@@ -26,7 +31,21 @@ namespace MediaSDK
 		m_Len = iLen;
 
 		m_pcCommonElementsBucket =  pCommonElementsBucket;
+
 		this->m_pColorConverter = new CColorConverter(352, 352, m_pcCommonElementsBucket, 200);
+
+		this->m_pVideoDecoder = new CVideoDecoder(m_pcCommonElementsBucket);
+
+
+		for (int i = 0; i < iLen; ++i) {
+
+			CVideoEncoder *pvideoEncoder = new CVideoEncoder(m_pcCommonElementsBucket, 200);
+			pvideoEncoder->CreateVideoEncoder(targetHeight[i], targetWidth[i], FPS_MULT_SESSION, IFRAME_INTERVAL_MULT_SESSION, false, SERVICE_TYPE_LIVE_STREAM);
+			m_pVideoEncoderVecotr.push_back(pvideoEncoder);
+		}
+
+		m_pVideoDecoder->CreateVideoDecoder();
+
 	}
 
 	MultiResolutionThread::~MultiResolutionThread()
@@ -110,9 +129,10 @@ namespace MediaSDK
 
 		Tools toolsObject;
         toolsObject.SetThreadName("MultiResolutionThread");
-        int frameSize;
+        int encodedFrameSize;
         
 		int videoHeight, videoWidth;
+        int decodedFrameSize;
 
 
 		while (m_bMultiResolutionThreadRunning)
@@ -130,18 +150,23 @@ namespace MediaSDK
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() GOT FRAME for Rendering method");
 
 
-				frameSize = m_pcVideoFrameBuffer->DeQueue( m_ucaVideoFrame, videoHeight, videoWidth);
+				encodedFrameSize = m_pcVideoFrameBuffer->DeQueue( m_ucaEncodedVideoFrame);
 
-				int iDataLength[m_Len];
+                decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(m_ucaEncodedVideoFrame, encodedFrameSize, m_ucaVideoFrame, videoHeight, videoWidth);
+
                 for(int i= 0; i < m_Len; i++)
 				{
-					iDataLength[i] = this->m_pColorConverter->DownScaleYUV420_Dynamic_Version2(m_ucaVideoFrame, videoHeight, videoWidth, m_ucaMultVideoFrame[i], m_TargetHeight[i], m_TargetWidth[i]);
 
-					LOGFF("fahad ------->>  ----------- dataLength = %d, targetHeight = %d, targetWidth = %d, m_Len = %d", iDataLength[i], m_TargetHeight[i], m_TargetWidth[i], m_Len);
+                    int iNewFrameLength = this->m_pColorConverter->DownScaleYUV420_Dynamic_Version2(m_ucaVideoFrame, videoHeight, videoWidth, m_ucaNewVideoFrame, m_TargetHeight[i], m_TargetWidth[i]);
+
+                    m_iDataLength[i] = m_pVideoEncoderVecotr.at(i)->EncodeVideoFrame(m_ucaNewVideoFrame, iNewFrameLength, m_ucaMultEncodedVideoFrame[i], false);
+
+
+					LOGFF("fahad ------->>  ----------- dataLength = %d, targetHeight = %d, targetWidth = %d, m_Len = %d", m_iDataLength[i], m_TargetHeight[i], m_TargetWidth[i], m_Len);
 				}
 
 
-				m_pcCommonElementsBucket->m_pEventNotifier->fireMultVideoEvent(m_ucaMultVideoFrame, iDataLength, m_TargetHeight, m_TargetWidth, m_Len);
+				m_pcCommonElementsBucket->m_pEventNotifier->fireMultVideoEvent(m_ucaMultEncodedVideoFrame, m_iDataLength, m_TargetHeight, m_TargetWidth, m_Len);
 
 				toolsObject.SOSleep(1);
 

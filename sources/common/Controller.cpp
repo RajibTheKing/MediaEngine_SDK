@@ -14,7 +14,8 @@
 #include <android/log.h>
 #define LOG_TAG "LibraryLog"
 #define LOGFF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
+#else
+#define LOGFF(...)
 #endif
 
 namespace MediaSDK
@@ -1189,14 +1190,14 @@ int CController::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int 
 	return m_pVideoMuxingAndEncodeSession->StartVideoMuxingAndEncodeSession(pBMP32Data, iLen, nVideoHeight, nVideoWidth);
 }
 
-int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth)
+int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int nVideoHeight, int nVideoWidth)
 {
 	if (NULL == m_pVideoMuxingAndEncodeSession)
 	{
 		return 0;
 	}
 	else
-		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth);
+		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv , nVideoHeight, nVideoWidth);
 }
 
 int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
@@ -1226,13 +1227,13 @@ int CController::StartMultiResolutionVideoSession(int *targetHeight, int *target
 	return 1;
 }
 
-int CController::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen, int iHeight, int iWidth)
+int CController::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen )
 {
     LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> iLen = %d", iLen);
 	if (NULL != m_pMultiResolutionSession)
 	{
         LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> ************ iLen = %d", iLen);
-		m_pMultiResolutionSession->PushIntoBuffer(pVideoYuv, iLen, iHeight, iWidth);
+		m_pMultiResolutionSession->PushIntoBuffer(pVideoYuv, iLen );
 		return 1;
 	}
 	return 0;

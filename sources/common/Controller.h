@@ -94,7 +94,7 @@ namespace MediaSDK
 		int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
 		int StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen);
-		int MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen, int iHeight, int iWidth);
+		int MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen );
 		int StopMultiResolutionVideoSession();
 
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));

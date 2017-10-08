@@ -21,7 +21,7 @@ namespace MediaSDK {
 
         void Initialize(int *targetHeight, int *targetWidth, int iLen);
 
-        int PushIntoBuffer(unsigned char *in_data, int iLen, int iHeight, int iWidth);
+        int PushIntoBuffer(unsigned char *in_data, int iLen );
 
 
     private:

@@ -800,7 +800,7 @@ namespace MediaSDK
         return nReturnedValue;
     }
 
-    int CInterfaceOfAudioVideoEngine::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen, int iHeight, int iWidth)
+    int CInterfaceOfAudioVideoEngine::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen )
     {
         int nReturnedValue = 0;
 
@@ -808,7 +808,7 @@ namespace MediaSDK
 
         if (nullptr != m_pcController)
         {
-            nReturnedValue = m_pcController->MakeMultiResolutionVideo(pVideoYuv, iLen, iHeight, iWidth);
+            nReturnedValue = m_pcController->MakeMultiResolutionVideo(pVideoYuv, iLen );
         }
 
         return nReturnedValue;

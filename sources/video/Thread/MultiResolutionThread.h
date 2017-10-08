@@ -9,6 +9,9 @@
 #include "ColorConverter.h"
 #include <thread>
 #include "CommonElementsBucket.h"
+#include "VideoEncoder.h"
+#include "VideoDecoder.h"
+#include <vector>
 
 namespace MediaSDK
 {
@@ -36,11 +39,23 @@ namespace MediaSDK
 		bool m_bMultiResolutionThreadRunning;
 		bool m_bMultiResolutionThreadClosed;
 
+
+		int m_iDataLength[5];
+
+		unsigned char m_ucaEncodedVideoFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 		unsigned char m_ucaVideoFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
-		unsigned char m_ucaMultVideoFrame[5][MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_ucaMultEncodedVideoFrame[5][MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_ucaNewVideoFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 		Tools m_Tools;
+
+
+		std::vector<CVideoEncoder*> m_pVideoEncoderVecotr;
+
+		//CVideoEncoder *m_pVideoEncoder;
+		CVideoDecoder *m_pVideoDecoder;
+
 
 		VideoFrameBuffer *m_pcVideoFrameBuffer;
 		CCommonElementsBucket* m_pcCommonElementsBucket;

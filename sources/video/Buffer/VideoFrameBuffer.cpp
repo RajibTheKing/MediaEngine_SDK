@@ -32,7 +32,7 @@ namespace MediaSDK
 		m_nQueueSize = 0;
 	}
 
-	int VideoFrameBuffer::Queue(unsigned char *ucaDecodedVideoFrameData, int nLength, int nVideoHeight, int nVideoWidth)
+	int VideoFrameBuffer::Queue(unsigned char *ucaDecodedVideoFrameData, int nLength)
 	{
 		if (m_nQueueSize >= MAX_VIDEO_RENDERER_BUFFER_SIZE)
 			printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
@@ -42,8 +42,7 @@ namespace MediaSDK
 		memcpy(m_uc2aDecodedVideoDataBuffer[m_iPushIndex], ucaDecodedVideoFrameData, nLength);
 
 		m_naBufferDataLengths[m_iPushIndex] = nLength;
-		m_naBufferVideoHeights[m_iPushIndex] = nVideoHeight;
-		m_naBufferVideoWidths[m_iPushIndex] = nVideoWidth;
+
 
 		if (m_nQueueSize == m_nQueueCapacity)
 		{
@@ -61,7 +60,7 @@ namespace MediaSDK
 		return 1;
 	}
 
-	int VideoFrameBuffer::DeQueue(unsigned char *ucaDecodedVideoFrameData, int &rnVideoHeight, int &rnVideoWidth)
+	int VideoFrameBuffer::DeQueue(unsigned char *ucaDecodedVideoFrameData)
 	{
 		VideoFrameBufferLocker lock(*m_pVideoFrameBufferMutex);
 
@@ -74,8 +73,6 @@ namespace MediaSDK
 			int nLength;
 
 			nLength = m_naBufferDataLengths[m_iPopIndex];
-			rnVideoHeight = m_naBufferVideoHeights[m_iPopIndex];
-			rnVideoWidth = m_naBufferVideoWidths[m_iPopIndex];
 
 			memcpy(ucaDecodedVideoFrameData, m_uc2aDecodedVideoDataBuffer[m_iPopIndex], nLength);
 

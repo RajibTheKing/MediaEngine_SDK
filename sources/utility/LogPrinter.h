@@ -28,7 +28,8 @@
 #include <android/log.h>
 #define LOG_TAG "LibraryLog"
 #define LOGFF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
+#else
+#define LOGFF(...)
 #endif
 
 #define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
