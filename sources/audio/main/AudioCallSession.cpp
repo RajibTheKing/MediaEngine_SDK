@@ -562,7 +562,7 @@ namespace MediaSDK
 	{
 		if (m_b1stRecordedDataSinceCallStarted)
 		{
-			//Tools::SOSleep(100);
+			Tools::SOSleep(100);
 			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
 			m_b1stRecordedDataSinceCallStarted = false;
@@ -634,10 +634,10 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 		int nEchoStateFlags = 0;
 
-		if (GetNoiseReducer().get())
+		/*if (GetNoiseReducer().get())
 		{
 			GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, 0);
-		}
+		}*/
 
 #ifdef USE_AECM
 
