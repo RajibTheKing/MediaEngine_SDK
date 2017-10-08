@@ -20,6 +20,22 @@ namespace MediaSDK
 
 //#define BENCHMARK_ENABLED
 
+#ifdef LOG_ENABLED
+	/// Code inside the braces of this macro shall be vanished when log is disabled
+	#define LogBlock(logSpecificCodes) logSpecificCodes
+
+	/// Code inside the braces of this macro shall be vanished when log is disabled
+	/// Additionally this macro shall create it's own scope, so variables declared inside this macro scope is deleted
+	#define LogScope(logSpecificCodes) {logSpecificCodes}
+#else
+	/// Code inside the braces of this macro shall be vanished when log is disabled
+	#define LogBlock(logSpecificCodes)
+
+	/// Code inside the braces of this macro shall be vanished when log is disabled
+	/// Additionally this macro shall create it's own scope, so variables declared inside this macro scope is deleted
+	#define LogScope(logSpecificCodes)
+#endif
+
 //#define	LIVE_CHUNK_DUMPLINGS
 
 #define MIN_CHUNK_DURATION_SAFE 50
