@@ -1545,6 +1545,8 @@ void CVideoCallSession::SetBeautification(bool bIsEnable)
 
 void CVideoCallSession::SetVideoQualityForLive(int quality)
 {
+	CLogPrinter_LOG(LIVE_QUALITY_LOG, "CVideoCallSession::SetVideoQualityForLive m_bLiveVideoQuality %d quality %d", m_bLiveVideoQuality, quality);
+
 	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality != VIDEO_QUALITY_HIGH)
 	{
 		m_bFrameReduce = false;
