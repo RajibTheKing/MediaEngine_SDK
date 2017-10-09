@@ -6,6 +6,8 @@
 #include "CommonTypes.h"
 #include "Size.h"
 #include "VideoBeautificationer.h"
+#include "NeonAssemblyWrapper.h"
+
 
 #if _MSC_VER > 1000
 #pragma once
@@ -145,6 +147,8 @@ namespace MediaSDK
 		int m_Multiplication[641][641];
 
 		//CVideoBeautificationer *m_VideoBeautificationer;
+        
+        NeonAssemblyWrapper *m_pNeonAssemblyWrapper;
 
 		SharedPointer<CLockHandler> m_pColorConverterMutex;
 	};
