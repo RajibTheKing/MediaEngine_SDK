@@ -257,11 +257,11 @@ int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData, int iVideo
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 #if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
-    printf("TheKing--> Here Inside convert_nv12_to_i420_assembly\n");
+    //printf("TheKing--> Here Inside convert_nv12_to_i420_assembly\n");
     m_pNeonAssemblyWrapper->convert_nv12_to_i420_assembly(convertingData, iVideoHeight, iVideoWidth);
     return iVideoHeight * iVideoWidth * 3 / 2;
 #else
-    printf("TheKing--> Here Inside ConvertNV12ToI420\n");
+    //printf("TheKing--> Here Inside ConvertNV12ToI420\n");
 	int i, j, k;
 
 	int YPlaneLength = iVideoHeight*iVideoWidth;
@@ -1902,12 +1902,12 @@ int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth
 {
     
 #if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
-    printf("TheKing--> Here Inside Crop_yuv420_assembly\n");
+    //printf("TheKing--> Here Inside Crop_yuv420_assembly\n");
     m_pNeonAssemblyWrapper->Crop_yuv420_assembly(pData, inHeight, inWidth, startXDiff, endXDiff, startYDiff, endYDiff, outputData, outHeight, outWidth);
     return outHeight * outWidth * 3 / 2;
 #else
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
-    printf("TheKing--> Here Inside Crop_YUV420\n");
+    //printf("TheKing--> Here Inside Crop_YUV420\n");
     int YPlaneLength = inHeight*inWidth;
     int UPlaneLength = YPlaneLength >> 2;
     int indx = 0;

@@ -420,7 +420,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             
             long long convertStartTime = m_Tools.CurrentTimestamp();
 			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame, iGotHeight, iGotWidth);
-            printf("TheKing--> convertTimeDiff = %lld\n", m_Tools.CurrentTimestamp() - convertStartTime);
+            //printf("TheKing--> convertTimeDiff = %lld\n", m_Tools.CurrentTimestamp() - convertStartTime);
 
 #elif defined(DESKTOP_C_SHARP)
 
