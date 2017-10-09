@@ -122,7 +122,7 @@ namespace MediaSDK
 		encoderType = Opus_Encoder;
 		decoderType = Opus_Decoder;
 
-		noiseReducerType = WebRTC_NoiseReducer;
+		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
 		gainType = WebRTC_Gain;
 
@@ -197,7 +197,7 @@ namespace MediaSDK
 		encoderType = PCM_Encoder;
 		decoderType = PCM_Decoder;
 
-		noiseReducerType = WebRTC_NoiseReducer;
+		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
 		gainType = WebRTC_Gain;
 
@@ -222,7 +222,7 @@ namespace MediaSDK
 		encoderType = Opus_Encoder;
 		decoderType = Opus_Decoder;
 
-		noiseReducerType = WebRTC_NoiseReducer;
+		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
 		gainType = WebRTC_Gain;
 
@@ -247,7 +247,7 @@ namespace MediaSDK
 		encoderType = PCM_Encoder;
 		decoderType = PCM_Decoder;
 
-		noiseReducerType = WebRTC_NoiseReducer;
+		noiseReducerType = No_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
 		gainType = WebRTC_Gain;
 

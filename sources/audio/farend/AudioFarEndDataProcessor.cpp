@@ -423,7 +423,7 @@ namespace MediaSDK
 			}
 			if (-1 == m_llDecodingTimeStampOffset)
 			{
-				Tools::SOSleep(__LIVE_FIRST_FRAME_SLEEP_TIME__);
+				Tools::SOSleep(LIVE_FIRST_FRAME_SLEEP_TIME_AUDIO);
 				m_llDecodingTimeStampOffset = Tools::CurrentTimestamp() - llCurrentFrameRelativeTime;
 				LOGENEW("iPacketNumber resyncing");
 				m_nExpectedNextPacketNumber = iPacketNumber++;
