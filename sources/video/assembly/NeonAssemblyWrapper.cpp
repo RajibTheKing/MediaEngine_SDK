@@ -27,7 +27,7 @@ NeonAssemblyWrapper::~NeonAssemblyWrapper()
 }
 
 
-void NeonAssemblyWrapper::convert_nv12_to_i420_assembly(unsigned char* __restrict src, int iHeight, int iWidth)
+void NeonAssemblyWrapper::convert_nv12_to_i420_assembly(unsigned char*  src, int iHeight, int iWidth)
 {
 #if defined(HAVE_NEON)
     convert_nv12_to_i420_arm_neon(src, m_pTempArray, iHeight, iWidth);

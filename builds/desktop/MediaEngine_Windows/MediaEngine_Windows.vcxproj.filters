@@ -70,6 +70,9 @@
     <Filter Include="audio\dsp">
       <UniqueIdentifier>{88960645-bacc-4359-9f92-bcde0f7b890d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="video\assembly">
+      <UniqueIdentifier>{e22cb103-9f98-4012-bb7e-344503119edc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.cpp">
@@ -410,6 +413,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderLive.cpp">
       <Filter>audio\main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.cpp">
+      <Filter>video\assembly</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -835,6 +841,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\common\PlatformMacros.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.h">
+      <Filter>video\assembly</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

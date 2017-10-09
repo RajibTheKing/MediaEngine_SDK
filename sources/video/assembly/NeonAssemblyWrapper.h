@@ -15,14 +15,14 @@
 #if defined(HAVE_NEON)
 extern "C"
 {
-    void convert_nv12_to_i420_arm_neon(unsigned char* __restrict src, unsigned char* __restrict dest, int iHeight, int iWidth);
-    void crop_yuv420_arm_neon(unsigned char* __restrict src, unsigned char* __restrict dst, unsigned int* __restrict param);
+    void convert_nv12_to_i420_arm_neon(unsigned char*  src, unsigned char*  dest, int iHeight, int iWidth);
+    void crop_yuv420_arm_neon(unsigned char*  src, unsigned char*  dst, unsigned int*  param);
 }
 #elif defined(HAVE_NEON_AARCH64)
 extern "C"
 {
-    void convert_nv12_to_i420_arm_neon_aarch64(unsigned char* __restrict src, unsigned char* __restrict dest, int iHeight, int iWidth);
-    void crop_yuv420_arm_neon_aarch64(unsigned char* __restrict src, unsigned char* __restrict dst, unsigned int* __restrict param);
+    void convert_nv12_to_i420_arm_neon_aarch64(unsigned char*  src, unsigned char*  dest, int iHeight, int iWidth);
+    void crop_yuv420_arm_neon_aarch64(unsigned char*  src, unsigned char*  dst, unsigned int*  param);
 }
 #endif
 
@@ -33,10 +33,10 @@ public:
     NeonAssemblyWrapper();
     ~NeonAssemblyWrapper();
     
-    void convert_nv12_to_i420_assembly(unsigned char* __restrict src, int iHeight, int iWidth);
+    void convert_nv12_to_i420_assembly(unsigned char*  src, int iHeight, int iWidth);
     void Crop_yuv420_assembly(unsigned char* src, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* dst, int &outHeight, int &outWidth);
-    unsigned int* __restrict param;
-    unsigned char __restrict m_pTempArray[MAX_FRAME_WIDTH * MAX_FRAME_HEIGHT * 3];
+    unsigned int* param;
+    unsigned char m_pTempArray[MAX_FRAME_WIDTH * MAX_FRAME_HEIGHT * 3];
     
 };
 
