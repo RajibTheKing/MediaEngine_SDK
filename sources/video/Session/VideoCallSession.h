@@ -166,6 +166,8 @@ public:
     
     CAverageCalculator* getFpsCalculator();
     
+    int getLiveVideoQualityLevel();
+    
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
