@@ -7,15 +7,30 @@
 //
 //
 
-#if defined(HAVE_NEON_AARCH64)
+.ifdef HAVE_NEON_AARCH64
 
-.macro NEON_ARM_AACH64_FUNC_BEGIN
+.ifdef TARGET_OS_IPHONE
+.macro NEON_ARM_FUNC_BEGIN
 .text
 .extern printf
 .align 2
 .globl _$0
 _$0:
 .endm
+.endif
+
+
+.ifdef __ANDROID__
+.macro NEON_ARM_FUNC_BEGIN func_name
+.text
+.extern printf
+.align 2
+.global \func_name
+\func_name:
+.endm
+.endif
+
+
 
 .macro NEON_ARM_AACH64_FUNC_END
 ret
@@ -246,6 +261,6 @@ NEON_ARM_AACH64_FUNC_BEGIN CalculateSumOfLast64_ARM_NEON
 NEON_ARM_AACH64_FUNC_END
 
 
-#endif
+.endif
 
 
