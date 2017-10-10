@@ -12,7 +12,7 @@ namespace MediaSDK
 		m_iPushIndex(0),
 		m_iPopIndex(0),
 		m_nQueueSize(0),
-		m_nQueueCapacity(MAX_VIDEO_RENDERER_BUFFER_SIZE)
+		m_nQueueCapacity(MAX_VIDEO_FRAME_BUFFER_SIZE)
 
 	{
 		m_pVideoFrameBufferMutex.reset(new CLockHandler);
@@ -34,8 +34,8 @@ namespace MediaSDK
 
 	int VideoFrameBuffer::Queue(unsigned char *ucaDecodedVideoFrameData, int nLength)
 	{
-		if (m_nQueueSize >= MAX_VIDEO_RENDERER_BUFFER_SIZE)
-			printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
+		if (m_nQueueSize >= MAX_VIDEO_FRAME_BUFFER_SIZE)
+			printf("Rendering, VideoFrameBuffer = %d\n", m_nQueueSize);
 
 		VideoFrameBufferLocker lock(*m_pVideoFrameBufferMutex);
 

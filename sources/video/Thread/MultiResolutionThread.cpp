@@ -131,8 +131,8 @@ namespace MediaSDK
         toolsObject.SetThreadName("MultiResolutionThread");
         int encodedFrameSize;
         
-		int videoHeight, videoWidth;
-        int decodedFrameSize;
+		int videoHeight = 0, videoWidth = 0;
+        int decodedFrameSize = 0;
 
 
 		while (m_bMultiResolutionThreadRunning)
@@ -143,6 +143,8 @@ namespace MediaSDK
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() NOTHING for Rendering method");
 
+				printf("fahad -->>   Library MultiResolutionThread:: m_pcVideoFrameBuffer->GetQueueSize()  = 0\n" );
+
 				toolsObject.SOSleep(10);
 			}
 			else
@@ -152,21 +154,32 @@ namespace MediaSDK
 
 				encodedFrameSize = m_pcVideoFrameBuffer->DeQueue( m_ucaEncodedVideoFrame);
 
+				printf("fahad -->>   Library MultiResolutionThread:: encoded frame size = %d\n", encodedFrameSize);
+
                 decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(m_ucaEncodedVideoFrame, encodedFrameSize, m_ucaVideoFrame, videoHeight, videoWidth);
 
-                for(int i= 0; i < m_Len; i++)
+				printf("fahad -->>   Library MultiResolutionThread:: decodedFrameSize = %d, videoHeight = %d, videoWidth = %d\n", decodedFrameSize, videoHeight, videoWidth);
+
+				if (decodedFrameSize > 5)
 				{
 
-                    int iNewFrameLength = this->m_pColorConverter->DownScaleYUV420_Dynamic_Version2(m_ucaVideoFrame, videoHeight, videoWidth, m_ucaNewVideoFrame, m_TargetHeight[i], m_TargetWidth[i]);
+					for(int i= 0; i < m_Len; i++)
+					{
 
-                    m_iDataLength[i] = m_pVideoEncoderVecotr.at(i)->EncodeVideoFrame(m_ucaNewVideoFrame, iNewFrameLength, m_ucaMultEncodedVideoFrame[i], false);
+						int iNewFrameLength = this->m_pColorConverter->DownScaleYUV420_Dynamic_Version2(m_ucaVideoFrame, videoHeight, videoWidth, m_ucaNewVideoFrame, m_TargetHeight[i], m_TargetWidth[i]);
+
+						m_iDataLength[i] = m_pVideoEncoderVecotr.at(i)->EncodeVideoFrame(m_ucaNewVideoFrame, iNewFrameLength, m_ucaMultEncodedVideoFrame[i], false);
 
 
-					LOGFF("fahad ------->>  ----------- dataLength = %d, targetHeight = %d, targetWidth = %d, m_Len = %d", m_iDataLength[i], m_TargetHeight[i], m_TargetWidth[i], m_Len);
+						printf("fahad ------->>  MultiResolutionThread ----------- dataLength = %d, targetHeight = %d, targetWidth = %d, m_Len = %d", m_iDataLength[i], m_TargetHeight[i], m_TargetWidth[i], m_Len);
+					}
+
+
+					m_pcCommonElementsBucket->m_pEventNotifier->fireMultVideoEvent(m_ucaMultEncodedVideoFrame, m_iDataLength, m_TargetHeight, m_TargetWidth, m_Len);
 				}
-
-
-				m_pcCommonElementsBucket->m_pEventNotifier->fireMultVideoEvent(m_ucaMultEncodedVideoFrame, m_iDataLength, m_TargetHeight, m_TargetWidth, m_Len);
+				else{
+					m_pcCommonElementsBucket->m_pEventNotifier->fireMultVideoEvent(m_ucaMultEncodedVideoFrame, m_iDataLength, m_TargetHeight, m_TargetWidth, 0);
+				}
 
 				toolsObject.SOSleep(1);
 
