@@ -1,7 +1,14 @@
+Release 12.6 (Date: 10-10-2017)
+---------------------------------
+- Some assembly codes added for iOS platform.
+- Video header modified.
+
+
 Release 12.5 (Date: 09-10-2017)
 ---------------------------------
 - [Issue #2141] Noise is working for only for publisher without call in android and desktop.
 - [Issue #4811] Decrease audio delay by 250 MS.
+
 
 Release 12.4 (Date: 03-10-2017)
 ---------------------------------
@@ -9,6 +16,7 @@ Release 12.4 (Date: 03-10-2017)
 - [Issue #2141] Noise suppression for desktop.
 - [Issue #4423] Channel gain for all platform except WinPhone.
 - [Issue #778] Gain based on echo state flags.
+
 
 Release 12.3 (Date: 25-09-2017)
 ---------------------------------
