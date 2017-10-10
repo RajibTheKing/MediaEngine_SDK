@@ -1663,7 +1663,7 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
     
 int CVideoCallSession::SetVideoEffect(int nEffectStatus)
 {
-	if (nEffectStatus == 1)
+	if (nEffectStatus != 0)
 		m_bVideoEffectEnabled = true;
 	else if (nEffectStatus == 0)
 		m_bVideoEffectEnabled = false;
