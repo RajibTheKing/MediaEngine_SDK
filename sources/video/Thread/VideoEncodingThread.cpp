@@ -915,7 +915,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     
                     long long cropStartTime = m_Tools.CurrentTimestamp();
                     iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nColorFormatType);
-                    printf("TheKing--> CropTimeDiff = %lld\n", m_Tools.CurrentTimestamp() - cropStartTime);
+                    //printf("TheKing--> CropTimeDiff = %lld\n", m_Tools.CurrentTimestamp() - cropStartTime);
                         
                     //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
                     
