@@ -124,10 +124,6 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := RingIDSDK
 LOCAL_ALLOW_UNDEFINED_SYMBOLS := true
 
-
-TEST := 'HelloWorld --> $(ARCH)'
-$(warning $(TEST))
-
 LOCAL_SRC_FILES := \
             $(RINGID_SDK)/CInterfaceOfRingSDK.cpp \
             $(RINGID_SDK)/RingIDSDK.cpp \
