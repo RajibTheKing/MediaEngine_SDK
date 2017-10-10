@@ -103,13 +103,13 @@ ALL_FILE := $(call traverse, $(SOURCES))
 LOCAL_SRC_FILES := $(filter %.cpp, $(ALL_FILE))
 
 ifeq ($(ARCH),armeabi-v7a)
-LOCAL_CFLAGS   += -DHAVE_NEON -mfloat-abi=softfp -mfpu=neon -ffast-math
-LOCAL_SRC_FILES += $(SOURCES)/video/assembly/arm/color_converter_arm_neon_aarch32.s
+LOCAL_CFLAGS   += -DHAVE_NEON -DASSEMBLY_ANDROID -mfloat-abi=softfp -mfpu=neon -ffast-math
+LOCAL_SRC_FILES += $(SOURCES)/video/assembly/arm/color_converter_arm_neon_aarch32.S
 LOCAL_ARM_NEON := true
 endif
 
 
-LOCAL_C_INCLUDES := $(filter-out %.cpp %.h %.s, $(ALL_FILE))
+LOCAL_C_INCLUDES := $(filter-out %.cpp %.h %.S, $(ALL_FILE))
 LOCAL_C_INCLUDES += \
 			$(THIRD_PARTY)/opus/include \
 			$(THIRD_PARTY)/webrtc/include \
