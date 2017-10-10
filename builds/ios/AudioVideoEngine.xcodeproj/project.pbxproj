@@ -130,8 +130,8 @@
 		DA143E7B1F70F48B00BBB746 /* AudioHeaderCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E771F70F48B00BBB746 /* AudioHeaderCall.cpp */; };
 		DA143E7C1F70F48B00BBB746 /* AudioHeaderLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */; };
 		DAAD0E151F78CE1F00606887 /* NeonAssemblyWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E131F78CE1F00606887 /* NeonAssemblyWrapper.cpp */; };
-		DAAD0E171F78CE2C00606887 /* color_converter_arm_neon_aarch32.s in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.s */; };
-		DAAD0E261F78FCCF00606887 /* color_converter_arm_neon_aarch64.s in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.s */; };
+		DAAD0E171F78CE2C00606887 /* color_converter_arm_neon_aarch32.S in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.S */; };
+		DAAD0E261F78FCCF00606887 /* color_converter_arm_neon_aarch64.S in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.S */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -414,11 +414,11 @@
 		DA143E7A1F70F48B00BBB746 /* AudioHeaderLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderLive.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
+		DA98E7B21F84B9B90003BE9E /* PlatformMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformMacros.h; sourceTree = "<group>"; };
 		DAAD0E131F78CE1F00606887 /* NeonAssemblyWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NeonAssemblyWrapper.cpp; path = assembly/NeonAssemblyWrapper.cpp; sourceTree = "<group>"; };
 		DAAD0E141F78CE1F00606887 /* NeonAssemblyWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeonAssemblyWrapper.h; path = assembly/NeonAssemblyWrapper.h; sourceTree = "<group>"; };
-		DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = color_converter_arm_neon_aarch32.s; path = assembly/arm/color_converter_arm_neon_aarch32.s; sourceTree = "<group>"; };
-		DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = color_converter_arm_neon_aarch64.s; path = assembly/arm64/color_converter_arm_neon_aarch64.s; sourceTree = "<group>"; };
-		DA98E7B21F84B9B90003BE9E /* PlatformMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformMacros.h; sourceTree = "<group>"; };
+		DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = color_converter_arm_neon_aarch32.S; path = assembly/arm/color_converter_arm_neon_aarch32.S; sourceTree = "<group>"; };
+		DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = color_converter_arm_neon_aarch64.S; path = assembly/arm64/color_converter_arm_neon_aarch64.S; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -947,7 +947,7 @@
 		DAAD0E121F78CE0800606887 /* arm */ = {
 			isa = PBXGroup;
 			children = (
-				DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.s */,
+				DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.S */,
 			);
 			name = arm;
 			sourceTree = "<group>";
@@ -955,7 +955,7 @@
 		DAAD0E241F78FCA800606887 /* arm64 */ = {
 			isa = PBXGroup;
 			children = (
-				DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.s */,
+				DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.S */,
 			);
 			name = arm64;
 			sourceTree = "<group>";
@@ -1066,7 +1066,7 @@
 				D1E73A951F6575B900ACDE35 /* AudioPacketizer.cpp in Sources */,
 				D1E73A7B1F6575B900ACDE35 /* Voice.cpp in Sources */,
 				D1E73AD31F6575B900ACDE35 /* VersionController.cpp in Sources */,
-				DAAD0E171F78CE2C00606887 /* color_converter_arm_neon_aarch32.s in Sources */,
+				DAAD0E171F78CE2C00606887 /* color_converter_arm_neon_aarch32.S in Sources */,
 				D1E73A921F6575B900ACDE35 /* AudioNearEndProcessorPublisher.cpp in Sources */,
 				D1E73A9B1F6575B900ACDE35 /* IPVThread.cpp in Sources */,
 				D1E73AA21F6575B900ACDE35 /* BitRateController.cpp in Sources */,
@@ -1124,7 +1124,7 @@
 				DA143E7C1F70F48B00BBB746 /* AudioHeaderLive.cpp in Sources */,
 				D1E73AA41F6575B900ACDE35 /* DecodingBuffer.cpp in Sources */,
 				D1E73AAE1F6575B900ACDE35 /* LiveReceiver.cpp in Sources */,
-				DAAD0E261F78FCCF00606887 /* color_converter_arm_neon_aarch64.s in Sources */,
+				DAAD0E261F78FCCF00606887 /* color_converter_arm_neon_aarch64.S in Sources */,
 				D1E73AC91F6575B900ACDE35 /* SendingThreadOfLive.cpp in Sources */,
 				D1E73A701F6575B900ACDE35 /* EncoderOpus.cpp in Sources */,
 				D1E73ACC1F6575B900ACDE35 /* VideoDecodingThreadOfChannel.cpp in Sources */,
@@ -1268,9 +1268,18 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=iphoneos*][arch=arm64]" = HAVE_NEON_AARCH64;
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=iphoneos*][arch=armv7]" = HAVE_NEON;
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=iphoneos*][arch=armv7s]" = HAVE_NEON;
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=iphoneos*][arch=arm64]" = (
+					HAVE_NEON_AARCH64,
+					ASSEMBLY_IOS,
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=iphoneos*][arch=armv7]" = (
+					HAVE_NEON,
+					ASSEMBLY_IOS,
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=iphoneos*][arch=armv7s]" = (
+					HAVE_NEON,
+					ASSEMBLY_IOS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../sources\"/**",

@@ -7,8 +7,9 @@
 //
 //
 
-#if defined(HAVE_NEON_AARCH64)
+#ifdef HAVE_NEON_AARCH64
 
+#ifdef ASSEMBLY_IOS
 .macro NEON_ARM_AACH64_FUNC_BEGIN
 .text
 .extern printf
@@ -16,6 +17,20 @@
 .globl _$0
 _$0:
 .endm
+#endif
+
+
+#ifdef ASSEMBLY_ANDROID
+.macro NEON_ARM_AACH64_FUNC_BEGIN func_name
+.text
+.extern printf
+.align 2
+.global \func_name
+\func_name:
+.endm
+#endif
+
+
 
 .macro NEON_ARM_AACH64_FUNC_END
 ret
