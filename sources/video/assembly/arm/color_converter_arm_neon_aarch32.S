@@ -6,9 +6,9 @@
 //
 //
 
-.ifdef HAVE_NEON
+#ifdef HAVE_NEON
 
-.ifdef TARGET_OS_IPHONE
+#ifdef ASSEMBLY_IOS
 .macro NEON_ARM_FUNC_BEGIN
 .syntax unified
 .text
@@ -18,10 +18,10 @@
 .globl _$0
 _$0:
 .endm
-.endif
+#endif
 
 
-.ifdef __ANDROID__
+#ifdef ASSEMBLY_ANDROID
 .macro NEON_ARM_FUNC_BEGIN func_name
 .syntax unified
 .text
@@ -31,7 +31,7 @@ _$0:
 .global \func_name
 \func_name:
 .endm
-.endif
+#endif
 
 
 
@@ -100,11 +100,11 @@ pop { r4-r8, pc }
 
 NEON_ARM_FUNC_END
 
-.ifdef TARGET_OS_IPHONE
+#ifdef ASSEMBLY_IOS
 .section	__TEXT,__cstring,cstring_literals
 output:                               ; @.str
 .asciz	"Is this ok.. The Value FF is: %d Yes I am done\n"
-.endif
+#endif
 
 NEON_ARM_FUNC_BEGIN crop_yuv420_arm_neon
 #r0 src data
@@ -229,6 +229,6 @@ pop { r3-r11, pc }
 NEON_ARM_FUNC_END
 
 
-.endif
+#endif
 
 
