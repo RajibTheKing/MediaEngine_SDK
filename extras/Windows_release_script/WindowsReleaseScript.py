@@ -16,7 +16,7 @@ import zipfile
 
 
 
-MediaDirectory = r'D:\Current\call-in-live\app\src\main\jni\videoengine'
+MediaDirectory = r'..\..'
 
 
 
