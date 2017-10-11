@@ -204,6 +204,22 @@ namespace MediaSDK
 		return true;
 	}
 
+	long long AudioNearEndDataProcessor::GetAudioChunkDuration()
+	{
+		if (-1 == m_llLastChunkLastFrameRT)
+		{
+			return m_llLastFrameRT;
+		}
+
+		long long llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
+		return llAudioChunkDuration;
+	}
+
+	unsigned int AudioNearEndDataProcessor::GetFrameNumber()
+	{
+		return m_vRawFrameLengthNear.size();
+	}
+
 	void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &nDataLengthNear, int &nDataLengthFar, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 	{

@@ -35,6 +35,8 @@ namespace MediaSDK
 
 		void SetDataReadyCallback(DataReadyListenerInterface* pDataReady) { m_pDataReadyListener = pDataReady; }
 		void SetEventCallback(PacketEventListener* pEventListener) { m_pPacketEventListener = pEventListener; }
+		long long GetAudioChunkDuration();
+		unsigned int GetFrameNumber();
 
 		
 	protected:

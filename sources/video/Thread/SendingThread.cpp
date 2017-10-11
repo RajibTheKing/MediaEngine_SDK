@@ -283,14 +283,37 @@ namespace MediaSDK
                 m_bPassOnlyAudio = false;
             
             LOGSS("##SS## m_bPassOnlyAudio %d ", m_bPassOnlyAudio);
+
+			unsigned int uNumerOfFrames;
+			if (m_bPassOnlyAudio == true)
+			{
+				CAudioCallSession *audioSession;
+				int bCallExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, audioSession);
+				if (bCallExist == false)
+				{
+					uNumerOfFrames = 0;
+				}
+				else
+				{
+					uNumerOfFrames = audioSession->GetFrameNumber();
+				}
+				MediaLog(LOG_DEBUG, "[ST] [007] Audio Exist: %d, Frame Size: %u", bCallExist, uNumerOfFrames);
+			}
+
+
+
             
-            if ((m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (m_Tools.CurrentTimestamp() - chunkStartTime < MEDIA_CHUNK_TIME_SLOT)))
+            if ((m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false) )
             {
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
                 
                 toolsObject.SOSleep(10);
             }
-            else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (m_Tools.CurrentTimestamp() - chunkStartTime >= MEDIA_CHUNK_TIME_SLOT)))
+			else if (m_bPassOnlyAudio == true && uNumerOfFrames < 2)
+			{
+				toolsObject.SOSleep(10);
+			}
+			else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (uNumerOfFrames >= 2)))
             {
                 chunkStartTime = m_Tools.CurrentTimestamp();
                 
