@@ -635,6 +635,15 @@ namespace MediaSDK
 		CLockHandler& m_mutex;
 	};
 
+	class CMultiResolutionLocker {
+	public:
+		CMultiResolutionLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex)	{ m_mutex.lock(); }
+		~CMultiResolutionLocker() { m_mutex.unlock(); }
+	private:
+		CLockHandler& m_mutex;
+	};
+
+
 } //namespace MediaSDK
 
 

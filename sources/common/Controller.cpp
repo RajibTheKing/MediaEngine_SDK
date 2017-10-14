@@ -1218,6 +1218,8 @@ int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 
 int CController::StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen)
 {
+	m_pMultiResoVideoMutex.reset(new CLockHandler);
+
 	if (NULL == m_pMultiResolutionSession)
 	{
 		m_pMultiResolutionSession = new MultiResolutionSession(m_pCommonElementsBucket);
@@ -1230,17 +1232,23 @@ int CController::StartMultiResolutionVideoSession(int *targetHeight, int *target
 int CController::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen )
 {
     LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> iLen = %d", iLen);
+
+	CMultiResolutionLocker lock(*m_pMultiResoVideoMutex);
+
 	if (NULL != m_pMultiResolutionSession)
 	{
         LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> ************ iLen = %d", iLen);
 		m_pMultiResolutionSession->PushIntoBuffer(pVideoYuv, iLen );
 		return 1;
 	}
+
 	return 0;
 }
 
 int CController::StopMultiResolutionVideoSession()
 {
+	CMultiResolutionLocker lock(*m_pMultiResoVideoMutex);
+
 	if (NULL != m_pMultiResolutionSession)
 	{
 		delete m_pMultiResolutionSession;

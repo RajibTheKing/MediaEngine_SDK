@@ -14,7 +14,8 @@ namespace MediaSDK {
         m_pMultiResolutionThread = NULL;
     }
 
-    MultiResolutionSession::~MultiResolutionSession() {
+    MultiResolutionSession::~MultiResolutionSession()
+    {
         if (NULL != m_pMultiResolutionThread) {
             m_pMultiResolutionThread->StopMultiResolutionThread();
             delete m_pMultiResolutionThread;
