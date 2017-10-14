@@ -12,7 +12,6 @@ TARGET_OUT=$(OUTPUT)/android/$(ARCH)
 
 #END_BUILDING_MEDIAENGINE
 
-$(warning $(ARCH))
 # Prebuilt libopenh264
 include $(CLEAR_VARS)
 LOCAL_MODULE := openh264lib
