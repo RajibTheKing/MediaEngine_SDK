@@ -68,7 +68,7 @@ namespace MediaSDK
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr),
-		m_bNeedToResetEcho(false),
+		m_bNeedToResetEcho(true),
 		m_bIsOpusCodec(bOpusCodec)
 	{
 		MediaLog(LOG_DEBUG, "\n[ACS]   ---------------OPUS_ENABLED[%d]----------\n", (int)m_bIsOpusCodec);
@@ -278,6 +278,7 @@ namespace MediaSDK
 
 	void CAudioCallSession::ResetTrace()
 	{
+		MediaLog(LOG_CODE_TRACE, "Reset Trace Starting")
 		//Trace and Delay Related
 		m_bRecordingStarted = false;
 		m_llTraceSendingTime = 0;
@@ -294,6 +295,7 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_b1stPlaying = true;
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
 		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
+		MediaLog(LOG_CODE_TRACE, "Reset Trace Ending")
 	}
 
 	void CAudioCallSession::ResetAEC()

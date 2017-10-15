@@ -658,6 +658,7 @@ namespace MediaSDK
 		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 		if (m_b1stPlaying)
 		{
+			MediaLog(LOG_CODE_TRACE, "[AFEDP] 1st playing - processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
 			m_llNextPlayingTime = llCurrentTimeStamp + 100;
 			m_b1stPlaying = false;
 		}
