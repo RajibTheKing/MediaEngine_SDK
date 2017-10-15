@@ -52,7 +52,7 @@ namespace MediaSDK
 		m_pNetworkChangeListener(nullptr),
 		m_pAudioAlarmListener(nullptr)
 	{
-		m_b1stPlaying = true;
+		m_bPlayingNotStartedYet = true;
 		m_llNextPlayingTime = -1;
 		m_AudioReceivedBuffer.reset(new CAudioByteBuffer());
 
@@ -151,6 +151,8 @@ namespace MediaSDK
 		}
 		m_AudioReceivedBuffer->ResetBuffer();
 		m_nEntityType = nEntityType;
+
+
 	}
 
 	void AudioFarEndDataProcessor::StopCallInLive(int nEntityType)
@@ -656,11 +658,11 @@ namespace MediaSDK
 	void AudioFarEndDataProcessor::SyncPlayingTime()
 	{
 		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-		if (m_b1stPlaying)
+		if (m_bPlayingNotStartedYet)
 		{
 			MediaLog(LOG_CODE_TRACE, "[AFEDP] 1st playing - processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
 			m_llNextPlayingTime = llCurrentTimeStamp + 100;
-			m_b1stPlaying = false;
+			m_bPlayingNotStartedYet = false;
 		}
 		else
 		{

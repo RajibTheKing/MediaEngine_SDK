@@ -71,6 +71,7 @@ namespace MediaSDK
 		m_bNeedToResetEcho(true),
 		m_bIsOpusCodec(bOpusCodec)
 	{
+		m_bRecordingStarted = false;
 		MediaLog(LOG_DEBUG, "\n[ACS]   ---------------OPUS_ENABLED[%d]----------\n", (int)m_bIsOpusCodec);
 
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
@@ -280,7 +281,7 @@ namespace MediaSDK
 	{
 		MediaLog(LOG_CODE_TRACE, "Reset Trace Starting")
 		//Trace and Delay Related
-		m_bRecordingStarted = false;
+		m_bRecordingStarted = true;
 		m_llTraceSendingTime = 0;
 		m_llTraceReceivingTime = 0;
 		m_b1stRecordedDataSinceCallStarted = true;
@@ -292,7 +293,7 @@ namespace MediaSDK
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
 		m_FarendBuffer->ResetBuffer();
-		m_pFarEndProcessor->m_b1stPlaying = true;
+		m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
 		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
 		MediaLog(LOG_CODE_TRACE, "Reset Trace Ending")
@@ -459,7 +460,7 @@ namespace MediaSDK
 			return;
 		}
 
-		
+		m_bRecordingStarted = false;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
@@ -796,7 +797,7 @@ namespace MediaSDK
 		return -1;
 		}*/
 		//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-		m_bRecordingStarted = true;
+		//m_bRecordingStarted = true;
 		//LOGT("##TT encodeaudiodata");
 		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, Tools::CurrentTimestamp());
 		m_recordBuffer->PushData(psaEncodingAudioData, unLength);
@@ -835,7 +836,8 @@ namespace MediaSDK
 
 	void CAudioCallSession::SetSpeakerType(int iSpeakerType)
 	{
-		if (m_iSpeakerType != iSpeakerType)
+		m_bRecordingStarted = false;
+		//if (m_iSpeakerType != iSpeakerType)
 		{
 			m_bNeedToResetEcho = true;
 		}

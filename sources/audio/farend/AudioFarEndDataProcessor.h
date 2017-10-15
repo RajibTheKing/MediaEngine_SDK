@@ -65,7 +65,7 @@ namespace MediaSDK
 	
 	public:
 
-		bool m_b1stPlaying;
+		bool m_bPlayingNotStartedYet;
 		long long m_llNextPlayingTime;
 	
 		long long m_llDecodingTimeStampOffset = -1;
