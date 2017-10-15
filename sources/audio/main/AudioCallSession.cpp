@@ -620,7 +620,8 @@ namespace MediaSDK
 					m_iDelayFractionOrig = m_llDelayFraction;
 					m_llDelayFraction /= 8;
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-					m_bTraceRecieved = true;
+					m_bTraceRecieved = true;			
+					MediaLog(LOG_DEBUG, "[NE][ACS][HT] m_llDelay = %d, m_llDelayFraction = %lld", m_llDelay, m_llDelayFraction);
 				}
 			}
 		}
@@ -715,6 +716,9 @@ namespace MediaSDK
                 }
 
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+				int nFarEndBufferSize = m_FarendBuffer->GetQueueSize();
+								
+
 				if (iFarendDataLength > 0)
 				{
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength");
@@ -727,14 +731,14 @@ namespace MediaSDK
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
 					m_llLastEchoLogTime = llCurrentTimeStamp;
-					MediaLog(LOG_DEBUG, "[ACS] [Echo] PreprocessAudioData->m_pEcho.get()-> m_FarendBufferSize = %d, m_iStartingBufferSize = %d,"
-						"m_llDelay = %lld, m_bTraceRecieved = %d llEchoLogTimeDiff = %lld, Time Taken = %lld",
+					MediaLog(LOG_DEBUG, "[NE][ACS][Echo] PreprocessAudioData->m_pEcho.get()-> m_FarendBufferSize = %d, m_iStartingBufferSize = %d,"
+						"m_llDelay = %lld, m_bTraceRecieved = %d llEchoLogTimeDiff = %lld, Time Taken = %lld, iFarendDataLength = %d FarBuffSize = %d",
 						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
-						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time);
+						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction);
-					MediaLog(LOG_DEBUG, "[ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
+					MediaLog(LOG_DEBUG, "[ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
 #ifdef PCM_DUMP
 					if (EchoCancelledFile)
