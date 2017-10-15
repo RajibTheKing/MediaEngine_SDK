@@ -279,8 +279,7 @@ namespace MediaSDK
 	void CAudioCallSession::ResetTrace()
 	{
 		MediaLog(LOG_CODE_TRACE, "Reset Trace Starting")
-		//Trace and Delay Related
-		m_bRecordingStarted = true;
+		//Trace and Delay Related		
 		m_llTraceSendingTime = 0;
 		m_llTraceReceivingTime = 0;
 		m_b1stRecordedDataSinceCallStarted = true;
@@ -295,6 +294,10 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
 		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
+
+
+		m_bRecordingStarted = true;
+
 		MediaLog(LOG_CODE_TRACE, "Reset Trace Ending")
 	}
 
