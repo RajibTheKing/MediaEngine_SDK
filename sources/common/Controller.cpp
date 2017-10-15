@@ -9,14 +9,6 @@
 #include "AudioCallSession.h"
 #include "InterfaceOfAudioVideoEngine.h"
 
-#if  defined(__ANDROID__)
-
-#include <android/log.h>
-#define LOG_TAG "LibraryLog"
-#define LOGFF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#else
-#define LOGFF(...)
-#endif
 
 namespace MediaSDK
 {
@@ -57,6 +49,7 @@ m_llLastTimeStamp(-1)
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
 	m_pAudioLockMutex.reset(new CLockHandler);
+    m_pMultiResoVideoMutex.reset(new CLockHandler);
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
 	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
@@ -1218,7 +1211,7 @@ int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 
 int CController::StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen)
 {
-	m_pMultiResoVideoMutex.reset(new CLockHandler);
+    CMultiResolutionLocker lock(*m_pMultiResoVideoMutex);
 
 	if (NULL == m_pMultiResolutionSession)
 	{
@@ -1231,13 +1224,13 @@ int CController::StartMultiResolutionVideoSession(int *targetHeight, int *target
 
 int CController::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen )
 {
-    LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> iLen = %d", iLen);
+    //LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> iLen = %d", iLen);
 
 	CMultiResolutionLocker lock(*m_pMultiResoVideoMutex);
 
 	if (NULL != m_pMultiResolutionSession)
 	{
-        LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> ************ iLen = %d", iLen);
+        //LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> ************ iLen = %d", iLen);
 		m_pMultiResolutionSession->PushIntoBuffer(pVideoYuv, iLen );
 		return 1;
 	}
@@ -1277,6 +1270,7 @@ void CController::UninitializeLibrary()
 	UninitLibLocker lock3(*m_pAudioLockMutex);
 	UninitLibLocker lock4(*m_pAudioSendMutex);
 	UninitLibLocker lock5(*m_pAudioReceiveMutex);
+	UninitLibLocker lock6(*m_pMultiResoVideoMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary remoging sessions");
 

@@ -23,15 +23,6 @@
 
 //#define  __SPECIFIC_LOG6__
 
-#if  defined(__ANDROID__)
-
-#include <android/log.h>
-#define LOG_TAG "LibraryLog"
-#define LOGFF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#else
-#define LOGFF(...)
-#endif
-
 #define LLG(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
 #define ON 1
@@ -61,6 +52,7 @@
 #define BITRATE_CHNANGE_LOG		OFF
 #define DEPACKETIZATION_LOG		OFF
 #define VIDEO_NOTIFICATION_LOG  OFF
+#define MULTI_RESOLUTION_LOG    OFF
 
 
 

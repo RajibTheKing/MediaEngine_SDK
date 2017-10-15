@@ -38,7 +38,8 @@ namespace MediaSDK {
 
     int MultiResolutionSession::PushIntoBuffer(unsigned char *in_data, int iLen)
     {
-        printf("fahad -->>  MultiResolutionSession::PushIntoBuffer == iLen = %d ******* \n", iLen);
+        CLogPrinter_LOG(MULTI_RESOLUTION_LOG, "MultiResolutionSession::PushIntoBuffer == iLen = %d ******* ", iLen);
+
         m_pVideoFrameBuffer->Queue(in_data, iLen);
 		return 1;
     }

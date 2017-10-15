@@ -7,13 +7,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-#if __ANDROID__
-
-#include <android/log.h>
-#define LOG_TAG "LibraryLog"
-#define LOGFF(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
-#endif
 
 #define IFRAME_INTERVAL_MULT_SESSION 15
 #define FPS_MULT_SESSION 30
@@ -55,7 +48,7 @@ namespace MediaSDK
 
 	void MultiResolutionThread::StopMultiResolutionThread()
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::StopMultiResolutionThread() called");
+		CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::StopMultiResolutionThread() called");
 
 		//if (pInternalThread.get())
 		{
@@ -84,12 +77,12 @@ namespace MediaSDK
 
 		//pInternalThread.reset();
 
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::StopMultiResolutionThread() Rendering Thread STOPPPP");
+		CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::StopMultiResolutionThread() Rendering Thread STOPPPP");
 	}
 
 	void MultiResolutionThread::StartMultiResolutionThread()
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::StartMultiResolutionThread() called");
+		CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::StartMultiResolutionThread() called");
 
 
 		m_bMultiResolutionThreadRunning = true;
@@ -109,7 +102,7 @@ namespace MediaSDK
 
 #endif
 
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::StartMultiResolutionThread() Rendering Thread started");
+		CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::StartMultiResolutionThread() Rendering Thread started");
 
 		return;
 	}
@@ -125,7 +118,7 @@ namespace MediaSDK
 
 	void MultiResolutionThread::MultiResolutionThreadProcedure()
 	{
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() started MultiResolutionThreadProcedure method");
+		CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() started MultiResolutionThreadProcedure method");
 
 		Tools toolsObject;
         toolsObject.SetThreadName("MultiResolutionThread");
@@ -137,41 +130,37 @@ namespace MediaSDK
 
 		while (m_bMultiResolutionThreadRunning)
 		{
-			//CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG ,"MultiResolutionThread::MultiResolutionThreadProcedure() RUNNING MultiResolutionThreadProcedure method");
+			//CLogPrinter_LOG( MULTI_RESOLUTION_LOG ,"MultiResolutionThread::MultiResolutionThreadProcedure() RUNNING MultiResolutionThreadProcedure method");
 
 			if (m_pcVideoFrameBuffer->GetQueueSize() == 0)
 			{
-				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() NOTHING for Rendering method");
-
-				printf("fahad -->>   Library MultiResolutionThread:: m_pcVideoFrameBuffer->GetQueueSize()  = 0\n" );
+				CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() NOTHING for Rendering method");
 
 				toolsObject.SOSleep(10);
 			}
 			else
 			{
-				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() GOT FRAME for Rendering method");
+				CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() GOT FRAME for Rendering method");
 
 
 				encodedFrameSize = m_pcVideoFrameBuffer->DeQueue( m_ucaEncodedVideoFrame);
 
-				printf("fahad -->>   Library MultiResolutionThread:: encoded frame size = %d\n", encodedFrameSize);
+				CLogPrinter_LOG(MULTI_RESOLUTION_LOG, "Library MultiResolutionThread:: encoded frame size = %d", encodedFrameSize);
 
                 decodedFrameSize = m_pVideoDecoder->DecodeVideoFrame(m_ucaEncodedVideoFrame, encodedFrameSize, m_ucaVideoFrame, videoHeight, videoWidth);
 
-				printf("fahad -->>   Library MultiResolutionThread:: decodedFrameSize = %d, videoHeight = %d, videoWidth = %d\n", decodedFrameSize, videoHeight, videoWidth);
+				CLogPrinter_LOG(MULTI_RESOLUTION_LOG, "Library MultiResolutionThread:: decodedFrameSize = %d, videoHeight = %d, videoWidth = %d", decodedFrameSize, videoHeight, videoWidth);
 
 				if (decodedFrameSize > 5)
 				{
 
 					for(int i= 0; i < m_Len; i++)
 					{
-
 						int iNewFrameLength = this->m_pColorConverter->DownScaleYUV420_Dynamic_Version2(m_ucaVideoFrame, videoHeight, videoWidth, m_ucaNewVideoFrame, m_TargetHeight[i], m_TargetWidth[i]);
 
 						m_iDataLength[i] = m_pVideoEncoderVecotr.at(i)->EncodeVideoFrame(m_ucaNewVideoFrame, iNewFrameLength, m_ucaMultEncodedVideoFrame[i], false);
 
-
-						printf("fahad ------->>  MultiResolutionThread ----------- dataLength = %d, targetHeight = %d, targetWidth = %d, m_Len = %d", m_iDataLength[i], m_TargetHeight[i], m_TargetWidth[i], m_Len);
+						CLogPrinter_LOG(MULTI_RESOLUTION_LOG, "MultiResolutionThread ----------- dataLength = %d, targetHeight = %d, targetWidth = %d, m_Len = %d", m_iDataLength[i], m_TargetHeight[i], m_TargetWidth[i], m_Len);
 					}
 
 
@@ -188,7 +177,7 @@ namespace MediaSDK
 
 		m_bMultiResolutionThreadClosed = true;
 
-		CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() stopped MultiResolutionThreadProcedure method.");
+		CLogPrinter_LOG( MULTI_RESOLUTION_LOG, "MultiResolutionThread::MultiResolutionThreadProcedure() stopped MultiResolutionThreadProcedure method.");
 	}
 
 

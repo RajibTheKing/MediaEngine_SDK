@@ -171,7 +171,6 @@ namespace MediaSDK
 		SharedPointer<CLockHandler> m_pAudioSendMutex;
 		SharedPointer<CLockHandler> m_pAudioReceiveMutex;
 		SharedPointer<CLockHandler> m_pAudioLockMutex;
-
 		SharedPointer<CLockHandler> m_pMultiResoVideoMutex;
 	};
 
