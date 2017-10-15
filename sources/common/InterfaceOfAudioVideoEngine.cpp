@@ -429,8 +429,8 @@ namespace MediaSDK
 				int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
 				streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
-				MediaLog(LOG_INFO, "[IAVE] AudioDataSize: %d [Frames: %d, SatartIndex: %d] VideoDataSize: %d [Frames: %d, StartIndex: %d]", 
-					lengthOfAudioData, numberOfAudioFrames, audioStartingPosition, lengthOfVideoData, numberOfVideoFrames, videoStartingPosition);				
+				CLogPrinter_LOG(HEADER_TEST_LOG, "streamType = %d, llCurrentChunkRelativeTime = %lld, version = %d, headerLength = %d, llCurrentChunkDuration = %d, lengthOfAudioData = %d, lengthOfVideoData = %d, blockInfoPosition = %d, numberOfAudioFrames = %d, numberOfVideoFrames = %d, nEntityType = %d, nServiceType = %d, nChunkNumber = %d, audioStartingPosition = %d, videoStartingPosition = %d",
+					streamType, llCurrentChunkRelativeTime, version, headerLength, llCurrentChunkDuration, lengthOfAudioData, lengthOfVideoData, blockInfoPosition, numberOfAudioFrames, numberOfVideoFrames, nEntityType, nServiceType, nChunkNumber, audioStartingPosition, videoStartingPosition);
 
 				iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, audioStartingPosition, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 
@@ -788,7 +788,46 @@ namespace MediaSDK
 
 	}
 
-	void CInterfaceOfAudioVideoEngine::InterruptOccured(const LongLong lFriendID)
+    int CInterfaceOfAudioVideoEngine::StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen)
+    {
+        int nReturnedValue = 0;
+
+        if (nullptr != m_pcController)
+        {
+            nReturnedValue = m_pcController->StartMultiResolutionVideoSession(targetHeight, targetWidth, iLen);
+        }
+
+        return nReturnedValue;
+    }
+
+    int CInterfaceOfAudioVideoEngine::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen )
+    {
+        int nReturnedValue = 0;
+
+		//LOGFF("fahad -->>  CInterfaceOfAudioVideoEngine::MakeMultiResolutionVideo == iLen = %d", iLen);
+
+        if (nullptr != m_pcController)
+        {
+            nReturnedValue = m_pcController->MakeMultiResolutionVideo(pVideoYuv, iLen );
+        }
+
+        return nReturnedValue;
+    }
+
+    int CInterfaceOfAudioVideoEngine::StopMultiResolutionVideoSession()
+    {
+        int nReturnedValue = 0;
+
+        if (nullptr != m_pcController)
+        {
+            nReturnedValue = m_pcController->StopMultiResolutionVideoSession();
+        }
+
+        return nReturnedValue;
+    }
+
+
+    void CInterfaceOfAudioVideoEngine::InterruptOccured(const LongLong lFriendID)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::InterruptOccured called 1 ID %lld", lFriendID);
 
@@ -831,6 +870,14 @@ namespace MediaSDK
 		if (nullptr != m_pcController)
 		{
 			m_pcController->SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
+		}
+	}
+
+	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_DECODER_FRAME_SIZE], int*, int*, int*, int))
+	{
+		if (nullptr != m_pcController)
+		{
+			m_pcController->SetNotifyClientWithMultVideoDataCallback(callBackFunctionPointer);
 		}
 	}
 

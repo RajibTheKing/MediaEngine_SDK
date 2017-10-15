@@ -10,7 +10,6 @@
 #include "InterfaceOfAudioVideoEngine.h"
 
 
-
 namespace MediaSDK
 {
 
@@ -50,11 +49,14 @@ m_llLastTimeStamp(-1)
     m_pAudioSendMutex.reset(new CLockHandler);
     m_pAudioReceiveMutex.reset(new CLockHandler);
 	m_pAudioLockMutex.reset(new CLockHandler);
+    m_pMultiResoVideoMutex.reset(new CLockHandler);
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
 	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
+
+	m_pMultiResolutionSession = NULL;
 }
 
 CController::CController(const char* sLoggerPath, int iLoggerPrintLevel) :
@@ -94,6 +96,8 @@ m_llLastTimeStamp(-1)
 
 	m_pDeviceCapabilityCheckBuffer = new CDeviceCapabilityCheckBuffer();
 	m_pDeviceCapabilityCheckThread = new CDeviceCapabilityCheckThread(this, m_pDeviceCapabilityCheckBuffer, m_pCommonElementsBucket);
+
+	m_pMultiResolutionSession = NULL;
 
 	CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::CController() AudioVideoEngine Initialization completed");
 }
@@ -1179,14 +1183,14 @@ int CController::StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data,int 
 	return m_pVideoMuxingAndEncodeSession->StartVideoMuxingAndEncodeSession(pBMP32Data, iLen, nVideoHeight, nVideoWidth);
 }
 
-int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int iHeight, int iWidth)
+int CController::FrameMuxAndEncode( unsigned char *pVideoYuv, int nVideoHeight, int nVideoWidth)
 {
 	if (NULL == m_pVideoMuxingAndEncodeSession)
 	{
 		return 0;
 	}
 	else
-		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv, iHeight, iWidth);
+		return m_pVideoMuxingAndEncodeSession->FrameMuxAndEncode(pVideoYuv , nVideoHeight, nVideoWidth);
 }
 
 int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
@@ -1200,6 +1204,49 @@ int CController::StopVideoMuxingAndEncodeSession(unsigned char *finalData)
 		m_pVideoMuxingAndEncodeSession = NULL;
 
 		return ret;
+	}
+	else
+		return 0;
+}
+
+int CController::StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen)
+{
+    CMultiResolutionLocker lock(*m_pMultiResoVideoMutex);
+
+	if (NULL == m_pMultiResolutionSession)
+	{
+		m_pMultiResolutionSession = new MultiResolutionSession(m_pCommonElementsBucket);
+	}
+
+	m_pMultiResolutionSession->Initialize(targetHeight, targetWidth, iLen);
+	return 1;
+}
+
+int CController::MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen )
+{
+    //LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> iLen = %d", iLen);
+
+	CMultiResolutionLocker lock(*m_pMultiResoVideoMutex);
+
+	if (NULL != m_pMultiResolutionSession)
+	{
+        //LOGFF("fahad --> CController::MakeMultiResolutionVideo --->> ************ iLen = %d", iLen);
+		m_pMultiResolutionSession->PushIntoBuffer(pVideoYuv, iLen );
+		return 1;
+	}
+
+	return 0;
+}
+
+int CController::StopMultiResolutionVideoSession()
+{
+	CMultiResolutionLocker lock(*m_pMultiResoVideoMutex);
+
+	if (NULL != m_pMultiResolutionSession)
+	{
+		delete m_pMultiResolutionSession;
+		m_pMultiResolutionSession = NULL;
+		return 1;
 	}
 	else
 		return 0;
@@ -1223,6 +1270,7 @@ void CController::UninitializeLibrary()
 	UninitLibLocker lock3(*m_pAudioLockMutex);
 	UninitLibLocker lock4(*m_pAudioSendMutex);
 	UninitLibLocker lock5(*m_pAudioReceiveMutex);
+	UninitLibLocker lock6(*m_pMultiResoVideoMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::UninitializeLibrary remoging sessions");
 
@@ -1246,6 +1294,11 @@ void CController::SetNotifyClientWithPacketCallback(void(*callBackFunctionPointe
 void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int))
 {
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
+}
+
+void CController::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_DECODER_FRAME_SIZE],  int*, int*, int*, int))
+{
+	m_EventNotifier.SetNotifyClientWithMultVideoDataCallback(callBackFunctionPointer);
 }
 
 
