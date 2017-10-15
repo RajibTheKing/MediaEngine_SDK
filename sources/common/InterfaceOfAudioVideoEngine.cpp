@@ -804,7 +804,7 @@ namespace MediaSDK
     {
         int nReturnedValue = 0;
 
-		LOGFF("fahad -->>  CInterfaceOfAudioVideoEngine::MakeMultiResolutionVideo == iLen = %d", iLen);
+		//LOGFF("fahad -->>  CInterfaceOfAudioVideoEngine::MakeMultiResolutionVideo == iLen = %d", iLen);
 
         if (nullptr != m_pcController)
         {
