@@ -68,7 +68,7 @@ namespace MediaSDK
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr),
-		m_bNeedToResetEcho(true),
+		m_bNeedToResetTrace(true),
 		m_bIsOpusCodec(bOpusCodec)
 	{
 		m_bRecordingStarted = false;
@@ -201,7 +201,6 @@ namespace MediaSDK
 		InitNearEndDataProcessing();
 		InitFarEndDataProcessing();
 
-		ResetTrace();
 
 		m_cNearEndProcessorThread = new AudioNearEndProcessorThread(m_pNearEndProcessor);
 		if (m_cNearEndProcessorThread != nullptr)
@@ -507,7 +506,7 @@ namespace MediaSDK
 			FileInputMuxed = fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
 		}
 #endif
-		m_bNeedToResetEcho = true;
+		m_bNeedToResetTrace = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 		MediaLog(LOG_INFO, "\n\n[ACS]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");
 	}
@@ -675,12 +674,12 @@ namespace MediaSDK
 		if (IsEchoCancellerEnabled())
 		{
 			MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled");
-			if (m_bNeedToResetEcho)
+			if (m_bNeedToResetTrace)
 			{
-				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->m_bNeedToResetEcho");
+				MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->IsEchoCancellerEnabled->m_bNeedToResetTrace");
 				ResetAEC();
 				ResetTrace();
-				m_bNeedToResetEcho = false;
+				m_bNeedToResetTrace = false;
 			}
 			//Sleep to maintain 100 ms recording time diff
 			long long llb4Time = Tools::CurrentTimestamp();
@@ -839,7 +838,7 @@ namespace MediaSDK
 		m_bRecordingStarted = false;
 		//if (m_iSpeakerType != iSpeakerType)
 		{
-			m_bNeedToResetEcho = true;
+			m_bNeedToResetTrace = true;
 		}
 		m_iSpeakerType = iSpeakerType;
 	}

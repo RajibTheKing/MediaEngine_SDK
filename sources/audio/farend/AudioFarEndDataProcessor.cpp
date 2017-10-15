@@ -695,13 +695,10 @@ namespace MediaSDK
 				m_pAudioCallSession->m_bTraceSent = true;
 				MediaLog(LOG_DEBUG, "[FE][AFEDP][PPD] Buffer Size = %d, m_llTraceSendingTime = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_llTraceSendingTime);
 			}
-		}
 
-		if (m_pAudioCallSession->m_bTraceSent)
-		{
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			if (m_pDataEventListener != nullptr)
-			{				
+			{
 				MediaLog(LOG_INFO, "[AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
 				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
@@ -712,19 +709,21 @@ namespace MediaSDK
 #endif
 			}
 			llCurrentTimeStamp = Tools::CurrentTimestamp();
-			
+
 			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
 			{
 				SyncPlayingTime();
 			}
 			MediaLog(LOG_DEBUG, "[AFEDP] [ECHO] Pushing to farend buffer");
 			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
-			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));			
+			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
+						
 		}
 		else
-		{			
+		{
 			Tools::SOSleep(20);
 		}
+
 #else
 		if (m_pDataEventListener != nullptr)
 		{
