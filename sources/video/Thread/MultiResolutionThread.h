@@ -42,11 +42,11 @@ namespace MediaSDK
 
 		int m_iDataLength[5];
 
-		unsigned char m_ucaEncodedVideoFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
-		unsigned char m_ucaVideoFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_ucaEncodedVideoFrame[DECODED_MACRO_FRAME_SIZE_FOR_MULTI];
+		unsigned char m_ucaVideoFrame[DECODED_MACRO_FRAME_SIZE_FOR_MULTI];
 
-		unsigned char m_ucaMultEncodedVideoFrame[5][MAX_VIDEO_DECODER_FRAME_SIZE];
-		unsigned char m_ucaNewVideoFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
+		unsigned char m_ucaMultEncodedVideoFrame[5][DECODED_MACRO_FRAME_SIZE_FOR_MULTI];
+		unsigned char m_ucaNewVideoFrame[DECODED_MACRO_FRAME_SIZE_FOR_MULTI];
 
 		Tools m_Tools;
 

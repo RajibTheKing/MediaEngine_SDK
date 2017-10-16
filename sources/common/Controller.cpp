@@ -1296,7 +1296,7 @@ void CController::SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPoi
 	m_EventNotifier.SetNotifyClientWithVideoDataCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_DECODER_FRAME_SIZE],  int*, int*, int*, int))
+void CController::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int*, int*, int*, int))
 {
 	m_EventNotifier.SetNotifyClientWithMultVideoDataCallback(callBackFunctionPointer);
 }

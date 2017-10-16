@@ -52,7 +52,7 @@ enum AudioCodecType
 	AUDIO_CODEC_OPUS = 2
 };
 
-#define MAX_VIDEO_ENCODER_FRAME_SIZE (480 * 640 * 3) + 1
+#define DECODED_MACRO_FRAME_SIZE_FOR_MULTI (480 * 640 * 3)/2 + 1
 
 //#define NO_CONNECTIVITY
 
@@ -120,7 +120,7 @@ namespace MediaSDK
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
 
-		void SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_ENCODER_FRAME_SIZE], int*, int*, int*, int));
+		void SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int*, int*, int*, int));
 
 		void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));

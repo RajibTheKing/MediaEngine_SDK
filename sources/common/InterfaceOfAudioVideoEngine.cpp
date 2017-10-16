@@ -873,7 +873,7 @@ namespace MediaSDK
 		}
 	}
 
-	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_ENCODER_FRAME_SIZE], int*, int*, int*, int))
+	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int*, int*, int*, int))
 	{
 		if (nullptr != m_pcController)
 		{

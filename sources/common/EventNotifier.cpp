@@ -13,7 +13,7 @@ namespace MediaSDK
 
 	void(*notifyClientWithVideoDataCallback)(long long, int, unsigned char*, int, int, int, int, int, int) = NULL;
 
-	void(*notifyClientWithMultVideoDataCallback)(unsigned char[][MAX_VIDEO_DECODER_FRAME_SIZE], int*, int*, int*, int) = NULL;
+	void(*notifyClientWithMultVideoDataCallback)(unsigned char[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int*, int*, int*, int) = NULL;
 
 
 	void(*notifyClientWithVideoNotificationCallback)(long long, int) = NULL;
@@ -45,7 +45,7 @@ namespace MediaSDK
 		notifyClientWithVideoDataCallback(friendID, eventType, data, dataLenth, iVideoHeight, iVideoWidth, nInsetHeight, nInsetWidth, iDeviceOrientation);
 	}
 
-	void CEventNotifier::fireMultVideoEvent(unsigned char data[][MAX_VIDEO_DECODER_FRAME_SIZE], int iDataLength[], int iTargetHeight[], int iTargetWidth[], int nLen)
+	void CEventNotifier::fireMultVideoEvent(unsigned char data[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int iDataLength[], int iTargetHeight[], int iTargetWidth[], int nLen)
 	{
 		//    CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG,"CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType) + ", FrameNumber = " + Tools::IntegertoStringConvert(frameNumber) + " iOrientation --> " + Tools::IntegertoStringConvert(iDeviceOrientation));
 
@@ -137,7 +137,7 @@ namespace MediaSDK
 		notifyClientWithVideoDataCallback = callBackFunctionPointer;
 	}
 
-	void CEventNotifier::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][MAX_VIDEO_DECODER_FRAME_SIZE], int*, int*, int*, int))
+	void CEventNotifier::SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int*, int*, int*, int))
 	{
 		notifyClientWithMultVideoDataCallback = callBackFunctionPointer;
 	}
