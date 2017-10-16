@@ -38,7 +38,16 @@ void NeonAssemblyWrapper::convert_nv12_to_i420_assembly(unsigned char*  src, int
 #endif
     
 }
-
+void NeonAssemblyWrapper::convert_i420_to_nv12_assembly(unsigned char*  src, int iHeight, int iWidth)
+{
+#if defined(HAVE_NEON)
+    convert_i420_to_nv12_arm_neon(src, m_pTempArray, iHeight, iWidth);
+    memcpy(src, m_pTempArray, iHeight * iWidth * 3 / 2);
+#elif defined(HAVE_NEON_AARCH64)
+    convert_i420_to_nv12_arm_neon_aarch64(src, m_pTempArray, iHeight, iWidth);
+    memcpy(src, m_pTempArray, iHeight * iWidth * 3 / 2);
+#endif
+}
 void NeonAssemblyWrapper::Crop_yuv420_assembly(unsigned char* src, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* dst, int &outHeight, int &outWidth)
 {
 

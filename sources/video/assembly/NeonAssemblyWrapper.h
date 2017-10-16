@@ -16,12 +16,14 @@
 extern "C"
 {
     void convert_nv12_to_i420_arm_neon(unsigned char*  src, unsigned char*  dest, int iHeight, int iWidth);
+    void convert_i420_to_nv12_arm_neon(unsigned char*  src, unsigned char*  dest, int iHeight, int iWidth);
     void crop_yuv420_arm_neon(unsigned char*  src, unsigned char*  dst, unsigned int*  param);
 }
 #elif defined(HAVE_NEON_AARCH64)
 extern "C"
 {
     void convert_nv12_to_i420_arm_neon_aarch64(unsigned char*  src, unsigned char*  dest, int iHeight, int iWidth);
+    void convert_i420_to_nv12_arm_neon_aarch64(unsigned char*  src, unsigned char*  dest, int iHeight, int iWidth);
     void crop_yuv420_arm_neon_aarch64(unsigned char*  src, unsigned char*  dst, unsigned int*  param);
 }
 #endif
@@ -34,6 +36,7 @@ public:
     ~NeonAssemblyWrapper();
     
     void convert_nv12_to_i420_assembly(unsigned char*  src, int iHeight, int iWidth);
+    void convert_i420_to_nv12_assembly(unsigned char*  src, int iHeight, int iWidth);
     void Crop_yuv420_assembly(unsigned char* src, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* dst, int &outHeight, int &outWidth);
     unsigned int* param;
     unsigned char m_pTempArray[MAX_FRAME_WIDTH * MAX_FRAME_HEIGHT * 3];
