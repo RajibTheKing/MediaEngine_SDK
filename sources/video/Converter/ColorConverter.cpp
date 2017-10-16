@@ -49,7 +49,7 @@ m_lfriendID(lfriendID)
 	int nNewHeight;
 	int nNewWidth;
 
-	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
+	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, DEVICE_SCREEN_HEIGHT, DEVICE_SCREEN_WIDTH, nNewHeight, nNewWidth);
 
 	//m_VideoBeautificationer = new CVideoBeautificationer(nNewHeight, nNewWidth);
 
@@ -106,7 +106,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 	int nNewHeight;
 	int nNewWidth;
 
-	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
+	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, DEVICE_SCREEN_HEIGHT, DEVICE_SCREEN_WIDTH, nNewHeight, nNewWidth);
 
 	//m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
     
@@ -125,8 +125,8 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 
-    m_iDeviceHeight = 1920; //iVideoHeight;
-    m_iDeviceWidth = 1130; //iVideoWidth;
+    m_iDeviceHeight = DEVICE_SCREEN_HEIGHT; //iVideoHeight;
+    m_iDeviceWidth = DEVICE_SCREEN_WIDTH; //iVideoWidth;
 
 	//m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
@@ -217,10 +217,18 @@ int CColorConverter::ConvertYUY2ToI420(unsigned char * input, unsigned char * ou
 	return pixels* 3 / 2;
 }
 
+    
 int CColorConverter::ConvertI420ToNV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
+    
 	ColorConverterLocker lock(*m_pColorConverterMutex);
-
+    
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    //Total TimeDiff = 114, frame = 1000
+    m_pNeonAssemblyWrapper->convert_i420_to_nv12_assembly(convertingData, iVideoHeight, iVideoWidth);
+    return iVideoHeight * iVideoWidth * 3 / 2;
+#else
+    //Total TimeDiff = 129, frame = 1000
 	int i, j, k;
 
 	int YPlaneLength = iVideoHeight*iVideoWidth;
@@ -235,8 +243,9 @@ int CColorConverter::ConvertI420ToNV12(unsigned char *convertingData, int iVideo
 		convertingData[i] = m_pUPlane[j];
 		convertingData[i + 1] = convertingData[k];
 	}
-
 	return UVPlaneEnd;
+#endif
+    
 }
 
 int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
