@@ -6,6 +6,10 @@
 #include "CommonTypes.h"
 #include "Size.h"
 #include "VideoBeautificationer.h"
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include "NeonAssemblyWrapper.h"
+#endif
+
 
 #if _MSC_VER > 1000
 #pragma once
@@ -145,6 +149,12 @@ namespace MediaSDK
 		int m_Multiplication[641][641];
 
 		//CVideoBeautificationer *m_VideoBeautificationer;
+        
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+        NeonAssemblyWrapper *m_pNeonAssemblyWrapper;
+
+#endif
 
 		SharedPointer<CLockHandler> m_pColorConverterMutex;
 	};

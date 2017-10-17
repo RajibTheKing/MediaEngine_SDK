@@ -417,8 +417,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			llCalculatingTime = CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
+            
+            long long convertStartTime = m_Tools.CurrentTimestamp();
 			this->m_pColorConverter->ConvertNV12ToI420(m_ucaEncodingFrame, iGotHeight, iGotWidth);
+            //printf("TheKing--> convertTimeDiff = %lld\n", m_Tools.CurrentTimestamp() - convertStartTime);
 
 #elif defined(DESKTOP_C_SHARP)
 
@@ -910,7 +912,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                         nColorFormatType = YUVYV12;
                     }
                     
+                    
+                    long long cropStartTime = m_Tools.CurrentTimestamp();
                     iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nColorFormatType);
+                    //printf("TheKing--> CropTimeDiff = %lld\n", m_Tools.CurrentTimestamp() - cropStartTime);
                         
                     //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
                     

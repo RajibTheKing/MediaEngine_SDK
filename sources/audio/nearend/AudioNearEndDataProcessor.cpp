@@ -88,7 +88,7 @@ namespace MediaSDK
 		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
 		{
 			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
-			m_llLastChunkLastFrameRT = llRelativeTime;
+			m_llLastChunkLastFrameRT = max(0LL, llRelativeTime-100);
 		}
 
 		m_llLastFrameRT = llRelativeTime;
@@ -109,7 +109,7 @@ namespace MediaSDK
 		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
 		{
 			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
-			m_llLastChunkLastFrameRT = llRelativeTime;
+			m_llLastChunkLastFrameRT = max(0LL, llRelativeTime - 100);
 		}
 
 		m_llLastFrameRT = llRelativeTime;

@@ -87,6 +87,8 @@ namespace MediaSDK
         }
         int iMediaEngineVersion = LIBRARY_VERSION;
         
+        int iLiveVideoQualityLevel = m_pcVideoCallSession->getLiveVideoQualityLevel();
+        
         
         //std::string sOperatingSystemVersion = "10.3";
         //std::string sDeviceModel = "Iphone6";
@@ -116,7 +118,8 @@ namespace MediaSDK
                                            iBrightnessValue,                        //Brightness Value
                                            nDeviceFPS,                              //Device FPS
                                            nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
-                                           iMediaEngineVersion                      //MediaEngineVersion
+                                           iMediaEngineVersion,                      //MediaEngineVersion
+                                           iLiveVideoQualityLevel                   //LiveiVideoQualityLevel
                                            );
 
 			m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
@@ -161,7 +164,8 @@ namespace MediaSDK
                                            iBrightnessValue,                        //Brightness Value
                                            nDeviceFPS,                              //Device FPS
                                            nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
-                                           iMediaEngineVersion                      //MediaEngineVersion
+                                           iMediaEngineVersion,                      //MediaEngineVersion
+                                           iLiveVideoQualityLevel                   //LiveiVideoQualityLevel
                                            );
 
 
@@ -237,7 +241,8 @@ namespace MediaSDK
                                                iBrightnessValue,                        //Brightness Value
                                                nDeviceFPS,                              //Device FPS
                                                nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
-                                               iMediaEngineVersion                      //MediaEngineVersion
+                                               iMediaEngineVersion,                      //MediaEngineVersion
+                                               iLiveVideoQualityLevel                   //LiveiVideoQualityLevel
                                                );
                 
                 

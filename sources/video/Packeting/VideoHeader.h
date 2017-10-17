@@ -7,8 +7,8 @@
 #include <string>
 #include <bitset>
 
-#define VIDEO_HEADER_LENGTH 32
-#define LIBRARY_VERSION 3
+#define VIDEO_HEADER_LENGTH 33
+#define LIBRARY_VERSION 4
 
 namespace MediaSDK
 {
@@ -43,7 +43,8 @@ namespace MediaSDK
                              int iBrightnessValue,
                              int iDeviceFPS,
                              int iNumberOfEncodeFailPerFps,
-                             int iMediaEngineVersion
+                             int iMediaEngineVersion,
+                             int iLiveVideoQualityLevel
 			);
         
         int GetHeaderInByteArray(unsigned char* data);
@@ -187,6 +188,12 @@ namespace MediaSDK
             return m_iMediaEngineVersion;
         }
         
+        void SetLiveVideoQualityLevel(unsigned char *pData);
+        int GetLiveVideoQualityLevel()
+        {
+            return m_iLiveVideoQualityLevel;
+        }
+        
 	private:
 
 		//unsigned char m_ucPacketType;
@@ -249,6 +256,11 @@ namespace MediaSDK
         int m_iMediaEngineVersion; //6 bit
         
         //Total: (23 + 1 + 1 * 4) = 32 byte
+        
+        int m_iLiveVideoQualityLevel; //3 bit
+        //Total 32 + 1 = 33 byte
+        
+        
         
 
         

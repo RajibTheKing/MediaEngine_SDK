@@ -12,7 +12,6 @@ TARGET_OUT=$(OUTPUT)/android/$(ARCH)
 
 #END_BUILDING_MEDIAENGINE
 
-$(warning $(ARCH))
 # Prebuilt libopenh264
 include $(CLEAR_VARS)
 LOCAL_MODULE := openh264lib
@@ -68,8 +67,17 @@ LOCAL_MODULE := videoEngineController
 LOCAL_CFLAGS := -DANDROID_NDK -Wno-deprecated -DPAL_ENABLED -D_LINUX -D_INDENT_DB_PRINT -fsigned-char -fno-inline -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DUSE_JNI -D_POSIX_PER_PROCESS_TIMER_SOURCE -D_PTHREADS -DUNICODE -lssl -lcrypto
 
 ALL_FILE := $(call traverse, $(SOURCES))
+
 LOCAL_SRC_FILES := $(filter %.cpp, $(ALL_FILE))
-LOCAL_C_INCLUDES := $(filter-out %.cpp %.h, $(ALL_FILE))
+
+ifeq ($(ARCH),armeabi-v7a)
+LOCAL_CFLAGS   += -DHAVE_NEON -DASSEMBLY_ANDROID -mfloat-abi=softfp -mfpu=neon -ffast-math
+LOCAL_SRC_FILES += $(SOURCES)/video/assembly/arm/color_converter_arm_neon_aarch32.S
+LOCAL_ARM_NEON := true
+endif
+
+
+LOCAL_C_INCLUDES := $(filter-out %.cpp %.h %.S, $(ALL_FILE))
 LOCAL_C_INCLUDES += \
 			$(THIRD_PARTY)/opus/include \
 			$(THIRD_PARTY)/webrtc/include \
@@ -78,29 +86,3 @@ LOCAL_C_INCLUDES += \
 include $(BUILD_STATIC_LIBRARY)
 
 #END_BUILDING_MEDIAENGINE
-
-# VideoEngine with RingIDSDK
-include $(CLEAR_VARS)
-LOCAL_MODULE := RingIDSDK
-LOCAL_ALLOW_UNDEFINED_SYMBOLS := true
-
-RINGID_SDK := ../../../../RingIDSDK
-
-LOCAL_SRC_FILES := \
-            $(RINGID_SDK)/CInterfaceOfRingSDK.cpp \
-            $(RINGID_SDK)/RingIDSDK.cpp \
-			$(RINGID_SDK)/JNIInterfaceOfRingSDK.cpp \
-
-LOCAL_C_INCLUDES := \
-            ../../VideoEngineUtilities \
-			../../VideoEngineController \
-			../../OthersLib/WinOpenH264 \
-			../../../RingIDSDK \
-			../../include/g729 \
-			../../include \
-
-LOCAL_CFLAGS := -DANDROID_NDK
-LOCAL_LDLIBS := -llog
-LOCAL_SHARED_LIBRARIES := videoEngineController openh264lib  ring_codec AAC Opus AGC AECM NS SPEEXAECM IPVConnectivityDll IPVConnectivityManager IPVSocket IPVStunMessage
-
-include $(BUILD_SHARED_LIBRARY)

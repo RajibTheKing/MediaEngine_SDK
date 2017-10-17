@@ -1,1 +1,1 @@
-copy "..\libs\armeabi-v7a\libRingIDSDK.so" "..\..\..\..\jniLibs\armeabi-v7a\libRingIDSDK.so"
+copy "..\libs\armeabi-v7a\libRingIDSDK.so" "..\..\..\..\..\jniLibs\armeabi-v7a\libRingIDSDK.so"

@@ -59,6 +59,8 @@ namespace MediaSDK
 		//m_iEffectSelection = 0;
 		//m_iNumberOfEffect = 6;
 		//m_iNumberOfEffectedFrame = 0;
+
+		//pFile = fopen ("/sdcard/myfile.h264","w");
 	}
 
 	CVideoDecodingThread::~CVideoDecodingThread()
@@ -74,6 +76,8 @@ namespace MediaSDK
 			delete m_pVideoEffect;
 			m_pVideoEffect = NULL;
 		}
+
+		//fclose(pFile);
 	}
 
 	void CVideoDecodingThread::SetCallFPS(int nFPS)
@@ -562,6 +566,9 @@ namespace MediaSDK
 
 		if (frameSize > 0)
 		{
+
+			//fwrite (in_data , sizeof(char), frameSize, pFile);
+			//fflush(pFile);
 
 #if defined(TARGET_OS_WINDOWS_PHONE)
 

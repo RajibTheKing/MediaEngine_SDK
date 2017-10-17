@@ -101,6 +101,12 @@ namespace MediaSDK
 		if (GetRecorderGain().get())
 		{
 			GetRecorderGain()->Init(m_nServiceType);
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+			{
+				//Gain level is incremented to recover losses due to noise.
+				//And noise is only applied to publisher NOT in call.
+				GetRecorderGain()->SetGain(DEFAULT_GAIN + 1);
+			}
 		}
 
 		m_pTrace = new CTrace();
@@ -458,6 +464,12 @@ namespace MediaSDK
 			Tools::SOSleep(1);
 		}
 
+		if (GetRecorderGain().get() && GetNoiseReducer().get() && m_nEntityType == ENTITY_TYPE_PUBLISHER)
+		{
+			//Gain reseted down to default state. As noise suppression will NOT occur in live call.
+			GetRecorderGain()->SetGain(DEFAULT_GAIN);
+		}
+
 		//LOGE("### Start call in live");
 		m_nEntityType = iRole;
 		m_iRole = iRole;
@@ -524,6 +536,11 @@ namespace MediaSDK
 
 		Tools::SOSleep(20);
 
+		if (GetRecorderGain().get() && GetNoiseReducer().get() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
+		{
+			//Again going back to publisher NOT in call. So increasing gain level. 
+			GetRecorderGain()->SetGain(DEFAULT_GAIN + 1);
+		}
 
 		if (ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 		{
@@ -634,9 +651,12 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
 		int nEchoStateFlags = 0;
 
-		if (GetNoiseReducer().get())
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
 		{
-			GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, 0);
+			if (GetNoiseReducer().get())
+			{
+				GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, 0);
+			}
 		}
 
 #ifdef USE_AECM
@@ -698,11 +718,11 @@ namespace MediaSDK
 				if (iFarendDataLength > 0)
 				{
 					MediaLog(LOG_DEBUG, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength");
-					/*if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
 					{
 						MediaLog(LOG_INFO, "[ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()");
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
-					}*/
+					}
 
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;

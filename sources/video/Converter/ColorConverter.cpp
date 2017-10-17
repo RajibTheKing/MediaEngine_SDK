@@ -67,7 +67,12 @@ m_lfriendID(lfriendID)
 
 
 	//LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
+    
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
+    m_pNeonAssemblyWrapper = new NeonAssemblyWrapper();
+
+#endif
 
 }
 
@@ -250,11 +255,18 @@ int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideo
 
 	return UVPlaneEnd;
 }
-
+    
 int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    //printf("TheKing--> Here Inside convert_nv12_to_i420_assembly\n");
+    m_pNeonAssemblyWrapper->convert_nv12_to_i420_assembly(convertingData, iVideoHeight, iVideoWidth);
+    return iVideoHeight * iVideoWidth * 3 / 2;
+#else
+    //printf("TheKing--> Here Inside ConvertNV12ToI420\n");
 	int i, j, k;
 
 	int YPlaneLength = iVideoHeight*iVideoWidth;
@@ -269,8 +281,25 @@ int CColorConverter::ConvertNV12ToI420(unsigned char *convertingData, int iVideo
 	}
 
 	memcpy(convertingData + UVPlaneMidPoint, m_pVPlane, VPlaneLength);
+    return UVPlaneEnd;
+#endif
+#else
+	int i, j, k;
 
+	int YPlaneLength = iVideoHeight*iVideoWidth;
+	int VPlaneLength = YPlaneLength >> 2;
+	int UVPlaneMidPoint = YPlaneLength + VPlaneLength;
+	int UVPlaneEnd = UVPlaneMidPoint + VPlaneLength;
+
+	for (i = YPlaneLength, j = 0, k = i; i < UVPlaneEnd; i += 2, j++, k++)
+	{
+		m_pVPlane[j] = convertingData[i + 1];
+		convertingData[k] = convertingData[i];
+	}
+
+	memcpy(convertingData + UVPlaneMidPoint, m_pVPlane, VPlaneLength);
 	return UVPlaneEnd;
+#endif
 }
 
 /*
@@ -1889,10 +1918,18 @@ int CColorConverter::Crop_RGB24(unsigned char* pData, int inHeight, int inWidth,
     
     return outWidth * outHeight * 3;
 }
-
+    
 int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
 {
+   
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    //printf("TheKing--> Here Inside Crop_yuv420_assembly\n");
+    m_pNeonAssemblyWrapper->Crop_yuv420_assembly(pData, inHeight, inWidth, startXDiff, endXDiff, startYDiff, endYDiff, outputData, outHeight, outWidth);
+    return outHeight * outWidth * 3 / 2;
+#else
     //cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+    //printf("TheKing--> Here Inside Crop_YUV420\n");
     int YPlaneLength = inHeight*inWidth;
     int UPlaneLength = YPlaneLength >> 2;
     int indx = 0;
@@ -1933,6 +1970,48 @@ int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth
     //printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
     
     return outHeight*outWidth*3/2;
+    
+#endif
+#else
+
+	int YPlaneLength = inHeight*inWidth;
+	int UPlaneLength = YPlaneLength >> 2;
+	int indx = 0;
+	outHeight = inHeight - startYDiff - endYDiff;
+	outWidth = inWidth - startXDiff - endXDiff;
+
+	for (int i = startYDiff; i<(inHeight - endYDiff); i++)
+	{
+		for (int j = startXDiff; j<(inWidth - endXDiff); j++)
+		{
+			outputData[indx++] = pData[i*inWidth + j];
+		}
+	}
+
+	byte *p = pData + YPlaneLength;
+	byte *q = pData + YPlaneLength + UPlaneLength;
+
+	int uIndex = indx;
+	int vIndex = indx + (outHeight * outWidth) / 4;
+
+	int halfH = inHeight >> 1, halfW = inWidth >> 1;
+
+	for (int i = startYDiff / 2; i<(halfH - endYDiff / 2); i++)
+	{
+		for (int j = startXDiff / 2; j<(halfW - endXDiff / 2); j++)
+		{
+			outputData[uIndex] = p[i*halfW + j];
+			outputData[vIndex] = q[i*halfW + j];
+			uIndex++;
+			vIndex++;
+		}
+	}
+
+	//printf("Now, First Block, H:W -->%d,%d  Indx = %d, uIndex = %d, vIndex = %d\n", outHeight, outWidth, indx, uIndex, vIndex);
+
+	return outHeight*outWidth * 3 / 2;
+
+#endif
     
 }
 

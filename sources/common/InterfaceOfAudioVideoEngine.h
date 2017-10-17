@@ -52,6 +52,8 @@ enum AudioCodecType
 	AUDIO_CODEC_OPUS = 2
 };
 
+#define DECODED_MACRO_FRAME_SIZE_FOR_MULTI (480 * 640 * 3)/2 + 1
+
 //#define NO_CONNECTIVITY
 
 namespace MediaSDK
@@ -118,6 +120,8 @@ namespace MediaSDK
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
 
+		void SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int*, int*, int*, int));
+
 		void SetNotifyClientWithVideoNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
 		void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
@@ -129,6 +133,11 @@ namespace MediaSDK
 		int StartVideoMuxingAndEncodeSession(unsigned char *pBMP32Data, int iLen, int nVideoHeight, int nVideoWidth);
 		int FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth);
 		int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
+
+		int StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen);
+		int MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen );
+		int StopMultiResolutionVideoSession();
+
 		void InterruptOccured(const LongLong lFriendID);
 		void InterruptOver(const LongLong lFriendID);
 
