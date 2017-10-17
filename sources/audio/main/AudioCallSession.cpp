@@ -72,7 +72,7 @@ namespace MediaSDK
 		m_bIsOpusCodec(bOpusCodec)
 	{
 		m_bRecordingStarted = false;
-		MediaLog(LOG_DEBUG, "\n[NE][ACS] AudioCallSession# Initialized. ServiceType=%d, EntityType=%d, Opus[%d]----------\n", nServiceType, nEntityType, (int)m_bIsOpusCodec);
+		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. ServiceType=%d, EntityType=%d, Opus[%d]----------\n", nServiceType, nEntityType, (int)m_bIsOpusCodec);
 
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
 
@@ -214,13 +214,14 @@ namespace MediaSDK
 			m_cFarEndProcessorThread->StartFarEndThread();
 		}
 
-
+		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!");
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 	}
 
 	CAudioCallSession::~CAudioCallSession()
 	{
+		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitializating...");
 		if (m_cNearEndProcessorThread != nullptr)
 		{
 			delete m_cNearEndProcessorThread;
@@ -274,6 +275,7 @@ namespace MediaSDK
 			delete m_recordBuffer;
 		}
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
+		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
 
 	void CAudioCallSession::ResetTrace()
