@@ -72,7 +72,7 @@ namespace MediaSDK
 		m_bIsOpusCodec(bOpusCodec)
 	{
 		m_bRecordingStarted = false;
-		MediaLog(LOG_DEBUG, "\n[NE][ACS]   ---------------OPUS_ENABLED[%d]----------\n", (int)m_bIsOpusCodec);
+		MediaLog(LOG_DEBUG, "\n[NE][ACS] AudioCallSession# Initialized. ServiceType=%d, EntityType=%d, Opus[%d]----------\n", nServiceType, nEntityType, (int)m_bIsOpusCodec);
 
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
 
