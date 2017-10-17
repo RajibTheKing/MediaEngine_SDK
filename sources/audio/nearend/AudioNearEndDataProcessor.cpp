@@ -204,17 +204,6 @@ namespace MediaSDK
 		return true;
 	}
 
-	long long AudioNearEndDataProcessor::GetAudioChunkDuration()
-	{
-		if (-1 == m_llLastChunkLastFrameRT)
-		{
-			return m_llLastFrameRT;
-		}
-
-		long long llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
-		return llAudioChunkDuration;
-	}
-
 	unsigned int AudioNearEndDataProcessor::GetFrameNumber()
 	{
 		return m_vRawFrameLengthNear.size();
@@ -240,6 +229,8 @@ namespace MediaSDK
 		MediaLog(LOG_CODE_TRACE,"[ANEDP] lastFrameRT: %lld, lastChunkLastFrameRT: %lld", m_llLastFrameRT, m_llLastChunkLastFrameRT);
 
 		llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
+
+		MediaLog(LOG_DEBUG, "[ANEDP] [007] Audio Chunk Duration: %lld", llAudioChunkDuration);
 
 		if (0 == llAudioChunkDuration)
 		{

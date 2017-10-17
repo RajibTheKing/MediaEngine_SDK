@@ -299,11 +299,8 @@ namespace MediaSDK
 				}
 				MediaLog(LOG_DEBUG, "[ST] [007] Audio Exist: %d, Frame Size: %u", bCallExist, uNumerOfFrames);
 			}
-
-
-
             
-            if ((m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false) )
+            if (m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false)
             {
                 CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CSendingThread::SendingThreadProcedure() NOTHING for Sending method");
                 
@@ -313,7 +310,7 @@ namespace MediaSDK
 			{
 				toolsObject.SOSleep(10);
 			}
-			else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && (uNumerOfFrames >= 2)))
+			else if ((m_SendingBuffer->GetQueueSize() > 0 && m_bPassOnlyAudio == false) || (m_bPassOnlyAudio == true && uNumerOfFrames >= 2))
             {
                 chunkStartTime = m_Tools.CurrentTimestamp();
                 
