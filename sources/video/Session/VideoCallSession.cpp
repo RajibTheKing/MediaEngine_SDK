@@ -1555,7 +1555,7 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 		m_bFrameReduce = false;
 
 		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_STREAM);
-		m_pVideoEncoder->SetMaxBitrate((int)(BITRATE_BEGIN_FOR_STREAM/1.25));
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN_FOR_STREAM);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_HIGH;
 	}
