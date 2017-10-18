@@ -606,11 +606,11 @@ namespace MediaSDK
 	{
 		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled");
+			MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled");
 			m_nFramesRecvdSinceTraceSent++;
 			if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
 				m_FarendBuffer->ResetBuffer();
 				m_bTraceWillNotBeReceived = true; // 8-(
 			}
@@ -619,16 +619,15 @@ namespace MediaSDK
 				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES);
 				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)
-				{
-					MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction->m_llDelayFraction");
+				{					
 					m_llTraceReceivingTime = Tools::CurrentTimestamp();
 					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
 					//m_llDelayFraction = m_llDelay % 100;
 					m_iDelayFractionOrig = m_llDelayFraction;
 					m_llDelayFraction /= 8;
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-					m_bTraceRecieved = true;			
-					MediaLog(LOG_DEBUG, "[NE][ACS][HT] m_llDelay = %d, m_llDelayFraction = %lld", m_llDelay, m_llDelayFraction);
+					m_bTraceRecieved = true;								
+					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra = %lld[Sample:%d]", m_llDelay, m_llDelayFraction, m_iDelayFractionOrig);
 				}
 			}
 		}
@@ -656,13 +655,15 @@ namespace MediaSDK
 	int CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		long long llCurrentTime = Tools::CurrentTimestamp();
-		MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData NearEnd & Echo Cancellation Time= %lld", llCurrentTime);
+		
 		int nEchoStateFlags = 0;
+		bool bIsNsWorking = false;
 
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
 		{
 			if (GetNoiseReducer().get())
 			{
+				bIsNsWorking = true;
 				GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, 0);
 			}
 		}
@@ -675,13 +676,17 @@ namespace MediaSDK
 			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
 		}
 #endif
+		bool bIsGainWorking = (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER && GetRecorderGain().get());
+
+		MediaLog(LOG_DEBUG, "[NE][ACS][GAIN][NS] PreprocessAudioData# CurrentTime=%lld, IsGainWorking=%d, IsNS=%d", llCurrentTime, bIsGainWorking, bIsNsWorking);
 
 		if (IsEchoCancellerEnabled())
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData->IsEchoCancellerEnabled");
+			MediaLog(LOG_CODE_TRACE, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
+
 			if (m_bNeedToResetTrace)
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData->IsEchoCancellerEnabled->m_bNeedToResetTrace");
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting Trace.");
 				ResetAEC();
 				ResetTrace();
 				m_bNeedToResetTrace = false;
@@ -689,8 +694,7 @@ namespace MediaSDK
 			//Sleep to maintain 100 ms recording time diff
 			long long llb4Time = Tools::CurrentTimestamp();
 			if (m_bEnableRecorderTimeSyncDuringEchoCancellation)
-			{
-				MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData->IsEchoCancellerEnabled->m_bEnableRecorderTimeSyncDuringEchoCancellation");
+			{				
 				SyncRecordingTime();
 			}
 
@@ -707,46 +711,44 @@ namespace MediaSDK
 #endif //DUMP_FILE
 
 			if (m_pEcho.get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
-			{
-				MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData->m_pEcho.get()");
+			{				
 				long long llTS;
 				if (m_iStartingBufferSize == -1)
-				{
+				{					
 					m_iStartingBufferSize = m_FarendBuffer->GetQueueSize();
-				}
-				MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData->m_pEcho.get()-> m_llDelayFraction : %d", m_llDelayFraction);
-				
-                if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-                {
-                    MediaLog(LOG_INFO, "[NE][ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] First Time Updated m_iStartingBufferSize = %d", m_iStartingBufferSize);
+				}											
+
+				if (bIsGainWorking)
+                {                    
                     GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
                 }
 
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 				int nFarEndBufferSize = m_FarendBuffer->GetQueueSize();
-								
+												
+				MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] DataLength=%dS, FarBufSize=%d[%d], IsGainWorking=%d", iFarendDataLength, nFarEndBufferSize, m_iStartingBufferSize, bIsGainWorking);
+										
 
 				if (iFarendDataLength > 0)
-				{
-					MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength");
-					if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-					{
-						MediaLog(LOG_INFO, "[NE][ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()");
+				{								
+					if (bIsGainWorking)
+					{						
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
 					}
 
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
 					m_llLastEchoLogTime = llCurrentTimeStamp;
-					MediaLog(LOG_DEBUG, "[NE][ACS][Echo] PreprocessAudioData->m_pEcho.get()-> m_FarendBufferSize = %d, m_iStartingBufferSize = %d,"
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] FarendBufferSize = %d, m_iStartingBufferSize = %d,"
 						"m_llDelay = %lld, m_bTraceRecieved = %d llEchoLogTimeDiff = %lld, Time Taken = %lld, iFarendDataLength = %d FarBuffSize = %d",
 						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction);
-					MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
-					MediaLog(LOG_DEBUG, "[NE][ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength Successful farnear");
+					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
+					
 #ifdef PCM_DUMP
 					if (EchoCancelledFile)
 					{
@@ -756,7 +758,7 @@ namespace MediaSDK
 				}
 				else
 				{
-					MediaLog(LOG_WARNING, "[NE][ACS] PreprocessAudioData->m_pEcho.get() UnSuccessful farnear");
+					MediaLog(LOG_WARNING, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
 				}
                 
                 
@@ -775,9 +777,9 @@ namespace MediaSDK
 		}
 		else
 		{
-			if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+			if (bIsGainWorking)
 			{
-				MediaLog(LOG_INFO, "[NE][ACS] PreprocessAudioData->m_pEcho.get()->iFarendDataLength->GetRecorderGain().get()2\n");
+				MediaLog(LOG_CODE_TRACE, "[NE][ACS][GAIN] Recorder Gain Added.");
 				GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
 			}
 		}

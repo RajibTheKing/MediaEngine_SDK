@@ -658,20 +658,21 @@ namespace MediaSDK
 	void AudioFarEndDataProcessor::SyncPlayingTime()
 	{
 		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+		
+		MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] CurrnetTime=%lld, NextPlayTime=%lld, bPlayingStarted=%d", llCurrentTimeStamp, m_llNextPlayingTime, m_bPlayingNotStartedYet);
+
 		if (m_bPlayingNotStartedYet)
-		{
-			MediaLog(LOG_CODE_TRACE, "[AFEDP] 1st playing - processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
+		{			
 			m_llNextPlayingTime = llCurrentTimeStamp + 100;
 			m_bPlayingNotStartedYet = false;
+			MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] PlayingStarted !!!!! CurrentTime=%lld, NextPlayTime=%lld", Tools::CurrentTimestamp(), m_llNextPlayingTime);
 		}
 		else
-		{
-			MediaLog(LOG_CODE_TRACE, "[AFEDP] Processplayingdata sleeping time = %d", m_llNextPlayingTime - llCurrentTimeStamp - 20);
+		{			
 			if (llCurrentTimeStamp + 20 < m_llNextPlayingTime)
 			{				
 				Tools::SOSleep(m_llNextPlayingTime - llCurrentTimeStamp - 20);
-			}			
-			MediaLog(LOG_CODE_TRACE, "[AFEDP] processplayingdata timestamp = %lld", Tools::CurrentTimestamp());
+			}						
 			m_llNextPlayingTime += 100;
 		}
 	}
@@ -684,22 +685,21 @@ namespace MediaSDK
 			if (m_pAudioCallSession->IsTraceSendingEnabled() && m_pAudioCallSession->m_bTraceTailRemains)
 			{				
 				m_pAudioCallSession->m_bTraceTailRemains = m_pAudioCallSession -> m_pTrace -> GenerateTrace(m_saPlayingData, 800);
-				MediaLog(LOG_DEBUG, "[FE][AFEDP][PPD] Buffer Size = %d, TraceTailRemains = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_bTraceTailRemains);
+				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] Buffer Size = %d, TraceTailRemains = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_bTraceTailRemains);
 			}
 			
 			if (!m_pAudioCallSession->m_bTraceSent)
-			{
-				MediaLog(LOG_DEBUG, "[AFEDP][ECHO] After sending trace clearing buffer");
+			{				
 				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
 				m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
 				m_pAudioCallSession->m_bTraceSent = true;
-				MediaLog(LOG_DEBUG, "[FE][AFEDP][PPD] Buffer Size = %d, m_llTraceSendingTime = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_llTraceSendingTime);
+				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] TraceSent!!!!# Buffer Size=%d, TraceSendingTime=%d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_llTraceSendingTime);
 			}
 
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			if (m_pDataEventListener != nullptr)
 			{
-				MediaLog(LOG_INFO, "[AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
+				MediaLog(LOG_CODE_TRACE, "[FE][AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
 				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 #ifdef PCM_DUMP
 				if (m_pAudioCallSession->PlayedFile)
@@ -713,8 +713,7 @@ namespace MediaSDK
 			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
 			{
 				SyncPlayingTime();
-			}
-			MediaLog(LOG_DEBUG, "[AFEDP] [ECHO] Pushing to farend buffer");
+			}			
 			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
 			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 						
