@@ -89,6 +89,8 @@ namespace MediaSDK
         
         int iLiveVideoQualityLevel = m_pcVideoCallSession->getLiveVideoQualityLevel();
         
+        int iLiveVideoBitrate = m_pcVideoCallSession->GetVideoEncoder()->GetBitrate();
+        int iLiveVideoMaxBitrate = m_pcVideoCallSession->GetVideoEncoder()->GetMaxBitrate();
         
         //std::string sOperatingSystemVersion = "10.3";
         //std::string sDeviceModel = "Iphone6";
@@ -119,7 +121,9 @@ namespace MediaSDK
                                            nDeviceFPS,                              //Device FPS
                                            nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
                                            iMediaEngineVersion,                      //MediaEngineVersion
-                                           iLiveVideoQualityLevel                   //LiveiVideoQualityLevel
+                                           iLiveVideoQualityLevel,                   //LiveiVideoQualityLevel
+                                           iLiveVideoBitrate,                   //LiveiVideoQualityLevel
+                                           iLiveVideoMaxBitrate                   //LiveiVideoQualityLevel
                                            );
 
 			m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
@@ -165,7 +169,9 @@ namespace MediaSDK
                                            nDeviceFPS,                              //Device FPS
                                            nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
                                            iMediaEngineVersion,                      //MediaEngineVersion
-                                           iLiveVideoQualityLevel                   //LiveiVideoQualityLevel
+                                           iLiveVideoQualityLevel,                   //LiveiVideoQualityLevel
+                                           iLiveVideoBitrate,                   //LiveiVideoQualityLevel
+                                           iLiveVideoMaxBitrate                   //LiveiVideoQualityLevel
                                            );
 
 
@@ -242,7 +248,9 @@ namespace MediaSDK
                                                nDeviceFPS,                              //Device FPS
                                                nNumberOfEncodeFailPerFps,               //Number of Encode Fail Per FPS
                                                iMediaEngineVersion,                      //MediaEngineVersion
-                                               iLiveVideoQualityLevel                   //LiveiVideoQualityLevel
+                                               iLiveVideoQualityLevel,                   //LiveiVideoQualityLevel
+                                               iLiveVideoBitrate,                   //LiveiVideoQualityLevel
+                                               iLiveVideoMaxBitrate                   //LiveiVideoQualityLevel
                                                );
                 
                 

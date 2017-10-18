@@ -1088,7 +1088,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
                                      0,                                        //Sigma Value
                                      0,                                        //Brightness Value
                                      0,                                        //Media Engine Version
-                                     0                                         //LiveVideoQualityLevel
+                                     0,                                         //LiveVideoQualityLevel
+                                     0,                                         //LiveVideoBitrate
+                                     0                                         //LiveVideoMaxBitrate
                                     );
         
         printf("TheKing--> SlotID = %d, Received Byte = %d\n", m_miniPacketBandCounter, nByteReceivedOrNetworkType);
@@ -1122,7 +1124,9 @@ void CVideoCallSession::CreateAndSendMiniPacket(int nByteReceivedOrNetworkType, 
                                      0,                                        //Device FPS
                                      0,                                        //Number of Encode Fail Per FPS
                                      0,                                        //Media Engine Version
-                                     0                                         //LiveVideoQualityLevel
+                                     0,                                         //LiveVideoQualityLevel
+                                     0,                                         //LiveVideoBitrate
+                                     0                                         //LiveVideoMaxBitrate
                                      );
 	}
 
@@ -1169,7 +1173,9 @@ void CVideoCallSession::CreateAndSend_IDR_Frame_Info_Packet(long long llMissedFr
                                  0,                                        //Device FPS
                                  0,                                        //Number of Encode Fail Per FPS
                                  0,                                        //Media Engine Version
-                                 0                                         //LiveVideoQualityLevel
+                                 0,                                         //LiveVideoQualityLevel
+                                 0,                                         //LiveVideoBitrate
+                                 0                                         //LiveVideoMaxBitrate
                                  );
     
     m_miniPacket[0] = (int)VIDEO_PACKET_MEDIA_TYPE;
