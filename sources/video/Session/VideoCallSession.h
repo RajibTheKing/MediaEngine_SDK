@@ -205,6 +205,8 @@ private:
 	int m_EncodingFrameCounter;
 	bool m_bSkipFirstByteCalculation;
 
+	int m_nDUCounter;
+
 	int m_bLiveVideoQuality;
 
 	bool m_bVideoEffectEnabled;
@@ -221,6 +223,8 @@ private:
 	int m_nFrameCount;
 
 	int m_nReduceCheckNumber;
+
+	bool m_bDoubleUpdate;
 
 	int m_iRole;
 

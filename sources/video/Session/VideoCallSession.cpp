@@ -65,6 +65,8 @@ m_bVideoOnlyLive(false),
 m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 m_bSelfViewOnly(bSelfViewOnly),
 m_nFrameCount(0),
+m_nDUCounter(0),
+m_bDoubleUpdate(false),
 
 #ifdef OLD_SENDING_THREAD
 
@@ -847,6 +849,20 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	m_nCapturedFrameCounter++;
 
+
+	if (m_bDoubleUpdate)
+	{
+		m_nDUCounter++;
+
+		if (m_nDUCounter >= 3)
+		{
+			m_nDUCounter = 0;
+			m_bDoubleUpdate = false;
+
+			SetVideoQualityForLive(VIDEO_QUALITY_HIGH);
+		}
+	}
+
 	if (m_bFrameReduce == true && m_nCapturedFrameCounter % m_nReduceCheckNumber == 0)
 		return 1;
     
@@ -1550,12 +1566,18 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 {
 	CLogPrinter_LOG(LIVE_QUALITY_LOG, "CVideoCallSession::SetVideoQualityForLive m_bLiveVideoQuality %d quality %d", m_bLiveVideoQuality, quality);
 
+	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality == VIDEO_QUALITY_LOW)
+	{
+		quality = VIDEO_QUALITY_MEDIUM;
+		m_bDoubleUpdate = true;
+	}
+
 	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality != VIDEO_QUALITY_HIGH)
 	{
 		m_bFrameReduce = false;
 
-		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_STREAM);
-		m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN_FOR_STREAM);
+		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_STREAM, m_nServiceType);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN_FOR_STREAM, m_nServiceType);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_HIGH;
 	}
@@ -1575,8 +1597,8 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 			m_VideoFpsCalculator->SetDeviceFPS(nDeviceFPS);
 		}
 
-		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MEDIUM_STREAM);
-		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_MEDIUM_STREAM);
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MEDIUM_STREAM, m_nServiceType);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_MEDIUM_STREAM, m_nServiceType);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_MEDIUM;
 	}
@@ -1606,8 +1628,8 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 			m_VideoFpsCalculator->SetDeviceFPS(nDeviceFPS);
 		}
 
-		m_pVideoEncoder->SetBitrate(BITRATE_FOR_LOW_STREAM);
-		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_LOW_STREAM);
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_LOW_STREAM, m_nServiceType);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_LOW_STREAM, m_nServiceType);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_LOW;
 	}

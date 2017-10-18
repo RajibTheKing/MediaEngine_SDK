@@ -323,7 +323,7 @@ namespace MediaSDK
 		return 1;
 	}
 
-	int CVideoEncoder::SetBitrate(int nBitRate)
+	int CVideoEncoder::SetBitrate(int nBitRate, int nServiceType)
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
@@ -340,6 +340,12 @@ namespace MediaSDK
 
 		if (nTargetBitRate > BITRATE_MAX)
 			nTargetBitRate = BITRATE_MAX;
+
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
+		{
+			if (nTargetBitRate == 575000)
+				nTargetBitRate = 580000;
+		}
 
 		SBitrateInfo targetEncoderBitrateInfo;
 
@@ -377,7 +383,7 @@ namespace MediaSDK
 		m_nNetworkType = nNetworkType;
 	}
 
-	int CVideoEncoder::SetMaxBitrate(int nBitRate)
+	int CVideoEncoder::SetMaxBitrate(int nBitRate, int nServiceType)
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
@@ -390,6 +396,12 @@ namespace MediaSDK
 
 		if (nTargetBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE)
 			nTargetBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
+
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
+		{
+			if (nTargetBitRate == 725000)
+				nTargetBitRate = 700000;
+		}
 
 		SBitrateInfo maxEncoderBitRateInfo;
 
