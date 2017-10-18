@@ -15,6 +15,7 @@
 #include "DeviceCapabilityCheckBuffer.h"
 #include "AudioFileEncodeDecodeSession.h"
 #include "VideoMuxingAndEncodeSession.h"
+#include "MultiResolutionSession.h"
 
 namespace MediaSDK
 {
@@ -92,8 +93,14 @@ namespace MediaSDK
 		int FrameMuxAndEncode(unsigned char *pVideoYuv, int iHeight, int iWidth);
 		int StopVideoMuxingAndEncodeSession(unsigned char *finalData);
 
+		int StartMultiResolutionVideoSession(int *targetHeight, int *targetWidth, int iLen);
+		int MakeMultiResolutionVideo( unsigned char *pVideoYuv, int iLen );
+		int StopMultiResolutionVideoSession();
+
 		void SetNotifyClientWithPacketCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
 		void SetNotifyClientWithVideoDataCallback(void(*callBackFunctionPointer)(long long, int, unsigned char*, int, int, int, int, int, int));
+
+		void SetNotifyClientWithMultVideoDataCallback(void(*callBackFunctionPointer)(unsigned char[][DECODED_MACRO_FRAME_SIZE_FOR_MULTI], int*, int*, int*, int));
 
 		void TraverseReceivedVideoData(int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 
@@ -146,6 +153,7 @@ namespace MediaSDK
 		CAudioFileEncodeDecodeSession *m_pAudioEncodeDecodeSession;
 
 		CVideoMuxingAndEncodeSession *m_pVideoMuxingAndEncodeSession;
+		MultiResolutionSession *m_pMultiResolutionSession;
 
 
 		CDeviceCapabilityCheckThread *m_pDeviceCapabilityCheckThread;
@@ -163,6 +171,7 @@ namespace MediaSDK
 		SharedPointer<CLockHandler> m_pAudioSendMutex;
 		SharedPointer<CLockHandler> m_pAudioReceiveMutex;
 		SharedPointer<CLockHandler> m_pAudioLockMutex;
+		SharedPointer<CLockHandler> m_pMultiResoVideoMutex;
 	};
 
 } //namespace MediaSDK

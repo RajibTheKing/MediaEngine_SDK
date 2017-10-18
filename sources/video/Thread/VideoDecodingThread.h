@@ -15,6 +15,7 @@
 #include "VideoHeader.h"
 
 #include "VideoEffects.h"
+#include <stdio.h>
 
 //#include "Helper_IOS.hpp"
 #include <thread>
@@ -60,6 +61,9 @@ namespace MediaSDK
 		int DecodeAndSendToClient2();
 
 	private:
+
+		//FILE * pFile;
+
 
 		CVideoCallSession* m_pVideoCallSession;
 		bool bDecodingThreadRunning;

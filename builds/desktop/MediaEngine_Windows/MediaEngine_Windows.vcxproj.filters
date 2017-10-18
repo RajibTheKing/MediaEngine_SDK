@@ -414,6 +414,15 @@
     <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderLive.cpp">
       <Filter>audio\main</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\Buffer\VideoFrameBuffer.cpp">
+      <Filter>video\buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\Session\MultiResolutionSession.cpp">
+      <Filter>video\session</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\Thread\MultiResolutionThread.cpp">
+      <Filter>video\thread</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.cpp">
       <Filter>video\assembly</Filter>
     </ClCompile>
@@ -838,6 +847,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\main\AudioHeaderLive.h">
       <Filter>audio\main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\Buffer\VideoFrameBuffer.h">
+      <Filter>video\buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\Session\MultiResolutionSession.h">
+      <Filter>video\session</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\Thread\MultiResolutionThread.h">
+      <Filter>video\thread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\common\PlatformMacros.h">
       <Filter>common</Filter>
