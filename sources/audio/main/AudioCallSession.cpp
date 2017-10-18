@@ -335,6 +335,7 @@ namespace MediaSDK
 	{
 #ifdef USE_AECM
 #if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+		MediaLog(LOG_DEBUG, "[ACS][ECHO] m_iSpeakerType = %d\n", m_iSpeakerType);
 		if (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			return true;
