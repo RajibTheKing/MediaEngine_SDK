@@ -204,8 +204,9 @@ namespace MediaSDK
 		return true;
 	}
 
-	unsigned int AudioNearEndDataProcessor::GetFrameNumber()
+	unsigned int AudioNearEndDataProcessor::GetNumberOfFrameForChunk()
 	{
+		NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
 		return m_vRawFrameLengthNear.size();
 	}
 

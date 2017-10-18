@@ -295,7 +295,7 @@ namespace MediaSDK
 				}
 				else
 				{
-					uNumerOfFrames = audioSession->GetFrameNumber();
+					uNumerOfFrames = audioSession->GetNumberOfFrameForChunk();
 				}
 				MediaLog(LOG_DEBUG, "[ST] [007] Audio Exist: %d, Frame Size: %u", bCallExist, uNumerOfFrames);
 			}

@@ -863,9 +863,9 @@ namespace MediaSDK
 		m_pNearEndProcessor->GetAudioDataToSend(pAudioCombinedDataToSend, CombinedLength, vCombinedDataLengthVector, sendingLengthViewer, sendingLengthPeer, llAudioChunkDuration, llAudioChunkRelativeTime);
 	}
 
-	unsigned int CAudioCallSession::GetFrameNumber()
+	unsigned int CAudioCallSession::GetNumberOfFrameForChunk()
 	{
-		return m_pNearEndProcessor->GetFrameNumber();
+		return m_pNearEndProcessor->GetNumberOfFrameForChunk();
 	}
 
 
