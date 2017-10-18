@@ -527,6 +527,8 @@ namespace MediaSDK
 			return;
 		}
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
+		m_bNeedToResetTrace = true;
+		m_bRecordingStarted = false;
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
 			Tools::SOSleep(1);
