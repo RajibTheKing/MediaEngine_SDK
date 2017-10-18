@@ -415,6 +415,15 @@
     <ClCompile Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.cpp">
       <Filter>video\assembly</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\Buffer\VideoFrameBuffer.cpp">
+      <Filter>video\buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\Thread\MultiResolutionThread.cpp">
+      <Filter>video\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\Session\MultiResolutionSession.cpp">
+      <Filter>video\session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h" />
@@ -834,6 +843,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.h">
       <Filter>video\assembly</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\Buffer\VideoFrameBuffer.h">
+      <Filter>video\buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\Thread\MultiResolutionThread.h">
+      <Filter>video\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\Session\MultiResolutionSession.h">
+      <Filter>video\session</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
