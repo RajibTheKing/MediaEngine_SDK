@@ -696,6 +696,11 @@ namespace MediaSDK
 				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] TraceSent!!!!# Buffer Size=%d, TraceSendingTime=%d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_llTraceSendingTime);
 			}
 
+			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
+			{
+				SyncPlayingTime();
+			}
+
 			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 			if (m_pDataEventListener != nullptr)
 			{
@@ -708,13 +713,7 @@ namespace MediaSDK
 				}
 #endif
 			}
-			llCurrentTimeStamp = Tools::CurrentTimestamp();
-
-			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
-			{
-				SyncPlayingTime();
-			}			
-			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
+			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);									
 			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
 						
 		}
