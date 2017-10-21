@@ -33,7 +33,7 @@ namespace MediaSDK
 			if (m_llNextPopTime > Tools::CurrentTimestamp())
 			{
 				//LOGE_MAIN("##KK too early %lld > %lld(~1)", m_llNextPopTime, Tools::CurrentTimestamp());
-				return 0;
+				//return 0;
 			}
 		}
 
