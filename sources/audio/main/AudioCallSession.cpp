@@ -593,13 +593,19 @@ namespace MediaSDK
 			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
 			m_b1stRecordedDataSinceCallStarted = false;
+			MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , 1st time,  ts = %lld", m_ll1stRecordedDataTime);
 		}
 		else
 		{
 			long long llNOw = Tools::CurrentTimestamp();
 			if (llNOw + 20 < m_llnextRecordedDataTime)
 			{
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = %lld", m_ll1stRecordedDataTime, m_llnextRecordedDataTime - llNOw - 20);
 				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+			}
+			else
+			{
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = 0", m_ll1stRecordedDataTime);
 			}
 			m_llnextRecordedDataTime += 100;
 		}
