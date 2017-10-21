@@ -72,6 +72,7 @@ namespace MediaSDK
 
 		long long GetBaseOfRelativeTime();
 		void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector, int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
+		unsigned int GetNumberOfFrameForChunk();
 
 		void SetCallInLiveType(int nCallInLiveType);
 		void SetVolume(int iVolume, bool bRecorder);

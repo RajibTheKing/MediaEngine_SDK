@@ -35,6 +35,7 @@ namespace MediaSDK
 
 		void SetDataReadyCallback(DataReadyListenerInterface* pDataReady) { m_pDataReadyListener = pDataReady; }
 		void SetEventCallback(PacketEventListener* pEventListener) { m_pPacketEventListener = pEventListener; }
+		unsigned int GetNumberOfFrameForChunk();
 
 		
 	protected:
