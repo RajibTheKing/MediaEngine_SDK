@@ -589,7 +589,7 @@ namespace MediaSDK
 	{
 		if (m_b1stRecordedDataSinceCallStarted)
 		{
-			Tools::SOSleep(100);
+			Tools::SOSleep(150);
 			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
 			m_b1stRecordedDataSinceCallStarted = false;
