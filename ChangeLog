@@ -1,3 +1,7 @@
+Release 12.8 (Date: 22-10-2017)
+---------------------------------
+- Now chunk duration and relative time of audio only live are calculating from audio frame. [Issue #4863] 
+
 Release 12.7 (Date: 18-10-2017)
 ---------------------------------
 - Video header modified.
