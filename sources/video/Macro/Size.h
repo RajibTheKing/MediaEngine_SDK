@@ -386,9 +386,15 @@
 //#define CALL_IN_LIVE_INSET_LOWER_PADDING 24
 
 #if defined(DESKTOP_C_SHARP)
-	#define BRIGHTNESS_SCALE 20
+	#define BRIGHTNESS_SCALE_OLD 20
 #else
-	#define BRIGHTNESS_SCALE 10
+	#define BRIGHTNESS_SCALE_OLD 10
+#endif
+
+#if defined(DESKTOP_C_SHARP)
+	#define BRIGHTNESS_SCALE_NEW 20
+#else
+	#define BRIGHTNESS_SCALE_NEW 30
 #endif
 
 

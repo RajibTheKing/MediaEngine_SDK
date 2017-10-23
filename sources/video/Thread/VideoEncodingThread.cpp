@@ -467,11 +467,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             	memcpy(m_ucaEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
 #else
 
-				nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
-				memcpy(m_ucaConvertedEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
+				//nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
+				//memcpy(m_ucaConvertedEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
 #endif
-				iGotHeight = iChangedGotHeight;
-				iGotWidth = iChangedGotWidth;
+				//iGotHeight = iChangedGotHeight;
+				//iGotWidth = iChangedGotWidth;
 			}
             else
 			{
@@ -548,7 +548,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight, iGotWidth, true);
 						}
 						else
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						{
+							if (13 == m_filterToApply)
+								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+							else
+								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+
+						}
 					}
 					else
 					{
@@ -560,6 +566,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
+
+					//m_VideoEffects->WarmColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
+					//m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, /*5.0*//*1.3*/1.6);
+					//m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 5/*10*/);
 
 					if (0 == m_filterToApply)
 					{
@@ -626,6 +636,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						m_VideoEffects->PlaitEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
 					}
 					//LOGE_MAIN("tAhmid--->H:W = %d:%d\n", iGotHeight, iGotWidth);
+					else if (13 == m_filterToApply)
+					{
+						m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, /*5.0*//*1.3*/1.5);
+						m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 5/*10*/);
+					}
 
 
 				}

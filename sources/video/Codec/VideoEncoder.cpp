@@ -189,8 +189,8 @@ namespace MediaSDK
 	int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
-		nVideoHeight = 352;
-		nVideoWidth = 288;
+		//nVideoHeight = 352;
+		//nVideoWidth = 288;
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 

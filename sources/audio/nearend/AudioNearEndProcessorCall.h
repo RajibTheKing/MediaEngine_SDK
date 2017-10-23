@@ -31,6 +31,7 @@ namespace MediaSDK
 
 	private:
 
+		PacketEventListener* m_pPacketEventListener;
 		const bool &m_bIsVideoCallRunning;
 		int m_nEncodedFrameSize;
 	};
