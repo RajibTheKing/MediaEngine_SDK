@@ -34,6 +34,9 @@
 //LiveVideoQualityLevel
 #define LIVE_VIDEO_QUALITY_LEVEL_INDEX 32
 
+//LiveStreamBitrate
+#define LIVE_STREAM_VIDEO_BITRATE_INDEX 33
+#define LIVE_STREAM_VIDEO_MAX_BITRATE_INDEX 36
 
 
 #define QUALITY_BITS_N      3
@@ -129,7 +132,7 @@ namespace MediaSDK
 		SetInsetWidths(headerData + INSET_HEIGHT_WIDTH_INDEX, m_nNumberOfInset);    nowIndex += 2;
         
         
-        if(m_iVersionCode == 2 || m_iVersionCode == 3)
+        if(m_iVersionCode == 2 || m_iVersionCode == 3 || m_iVersionCode == 4)
         {
             printf("here inside new Header parsing\n");
             SetSigmaValue(headerData + SIGMA_VALUE_INDEX);                          nowIndex += 1;
@@ -140,11 +143,16 @@ namespace MediaSDK
             
         }
         
-        if(m_iVersionCode == 3)
+        if(m_iVersionCode == 3 || m_iVersionCode == 4)
         {
             SetLiveVideoQualityLevel(headerData + LIVE_VIDEO_QUALITY_LEVEL_INDEX);  nowIndex += 1;
         }
         
+        if(m_iVersionCode == 4)
+        {
+            setLiveStreamVideoBitrate(headerData + LIVE_STREAM_VIDEO_BITRATE_INDEX);         nowIndex += 3;
+            setLiveStreamVideoMaxBitrate(headerData + LIVE_STREAM_VIDEO_MAX_BITRATE_INDEX);  nowIndex += 3;
+        }
 	}
     
 	void CVideoHeader::SetPacketHeader(unsigned char packetType,
@@ -170,7 +178,9 @@ namespace MediaSDK
                                        int iDeviceFPS,
                                        int iNumberOfEncodeFailPerFps,
                                        int iMediaEngineVersion,
-                                       int iLiveVideoQualityLevel
+                                       int iLiveVideoQualityLevel,
+                                       int iLiveStreamBitrate,
+                                       int iLiveStreamMaxBitrate
                                        
 		)
 	{
@@ -216,6 +226,12 @@ namespace MediaSDK
         
         //LiveVideoQualityLevel
         m_iLiveVideoQualityLevel = iLiveVideoQualityLevel;
+        
+        //LiveVideo Bitrate
+        m_iLiveStreamBitrate = iLiveStreamBitrate;
+        
+        //LiveVideo MaxBitrate
+        m_iLiveStreamMaxBitrate = iLiveStreamMaxBitrate;
     }
 
 	void CVideoHeader::ShowDetails(string sTag)
@@ -244,6 +260,8 @@ namespace MediaSDK
             + " EF:" + Tools::getText(m_iNumberOfEncodeFailPerFPS)
             + " LV:" + Tools::getText(m_iMediaEngineVersion)
             + " LVQL:" + Tools::getText(m_iLiveVideoQualityLevel)
+            + " LVBR:" + Tools::getText(m_iLiveStreamBitrate)
+            + " LVMBR:" + Tools::getText(m_iLiveStreamMaxBitrate)
 			;
 
 		unsigned char pLocalData[100];
@@ -360,7 +378,15 @@ namespace MediaSDK
         data[index] |= (m_iLiveVideoQualityLevel & 0x07);
         index++;
         
+        //LiveStreamBitrate
+        data[index++] = (m_iLiveStreamBitrate >> 16);
+        data[index++] = (m_iLiveStreamBitrate >> 8);
+        data[index++] = (m_iLiveStreamBitrate >> 0);
         
+        //LiveStreamMaxBitrate
+        data[index++] = (m_iLiveStreamMaxBitrate >> 16);
+        data[index++] = (m_iLiveStreamMaxBitrate >> 8);
+        data[index++] = (m_iLiveStreamMaxBitrate >> 0);
         
 		return index;
 	}
@@ -574,8 +600,15 @@ namespace MediaSDK
         
     }
     
+    void CVideoHeader::setLiveStreamVideoBitrate(unsigned char *pData)
+    {
+        m_iLiveStreamBitrate = GetIntFromChar(pData, 0, 3);
+    }
+    void CVideoHeader::setLiveStreamVideoMaxBitrate(unsigned char *pData)
+    {
+        m_iLiveStreamMaxBitrate = GetIntFromChar(pData, 0, 3);
+    }
     
-
 } //namespace MediaSDK
 
 

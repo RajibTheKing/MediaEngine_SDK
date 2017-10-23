@@ -130,7 +130,7 @@ namespace MediaSDK
 		WebRtcAgcConfig gain_config;
 
 		gain_config.targetLevelDbfs = 13 - m_iVolume;      /* m_iVolume's range is 1-10 */ /* so effective dbfs range is 12-3 */    /* possible range: 0 - 31 */
-		gain_config.compressionGaindB = m_iServiceType == SERVICE_TYPE_CHANNEL ? 38 : (m_iVolume * 6);  /*For channel gain level 38 is set from hearing experience*/
+		gain_config.compressionGaindB = m_iServiceType == SERVICE_TYPE_CHANNEL ? 38 : 9;  /*For channel gain level 38 is set from hearing experience*/
 																										/* possible range: 0 - 90 */
 		gain_config.limiterEnable = m_iServiceType == SERVICE_TYPE_CHANNEL ? false : true;
 

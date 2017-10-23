@@ -227,6 +227,7 @@
     <ClInclude Include="..\..\..\sources\video\Buffer\ResendingBuffer.h" />
     <ClInclude Include="..\..\..\sources\video\Buffer\RetransmitVideoPacketQueue.h" />
     <ClInclude Include="..\..\..\sources\video\Buffer\SendingBuffer.h" />
+    <ClInclude Include="..\..\..\sources\video\Buffer\VideoFrameBuffer.h" />
     <ClInclude Include="..\..\..\sources\video\Buffer\VideoPacketBuffer.h" />
     <ClInclude Include="..\..\..\sources\video\Buffer\VideoPacketQueue.h" />
     <ClInclude Include="..\..\..\sources\video\Chunk\LiveReceiver.h" />
@@ -254,10 +255,12 @@
     <ClInclude Include="..\..\..\sources\video\Packeting\EncodedFramePacketizer.h" />
     <ClInclude Include="..\..\..\sources\video\Packeting\PacketHeader.h" />
     <ClInclude Include="..\..\..\sources\video\Packeting\VideoHeader.h" />
+    <ClInclude Include="..\..\..\sources\video\Session\MultiResolutionSession.h" />
     <ClInclude Include="..\..\..\sources\video\Session\VideoCallSession.h" />
     <ClInclude Include="..\..\..\sources\video\Session\VideoCallSessionListHandler.h" />
     <ClInclude Include="..\..\..\sources\video\Thread\DepacketizationThread.h" />
     <ClInclude Include="..\..\..\sources\video\Thread\DeviceCapabilityCheckThread.h" />
+    <ClInclude Include="..\..\..\sources\video\Thread\MultiResolutionThread.h" />
     <ClInclude Include="..\..\..\sources\video\Thread\RenderingThread.h" />
     <ClInclude Include="..\..\..\sources\video\Thread\RenderingThreadOfCall.h" />
     <ClInclude Include="..\..\..\sources\video\Thread\RenderingThreadOfChannel.h" />
@@ -350,6 +353,7 @@
     <ClCompile Include="..\..\..\sources\video\Buffer\ResendingBuffer.cpp" />
     <ClCompile Include="..\..\..\sources\video\Buffer\RetransmitVideoPacketQueue.cpp" />
     <ClCompile Include="..\..\..\sources\video\Buffer\SendingBuffer.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Buffer\VideoFrameBuffer.cpp" />
     <ClCompile Include="..\..\..\sources\video\Buffer\VideoPacketBuffer.cpp" />
     <ClCompile Include="..\..\..\sources\video\Buffer\VideoPacketQueue.cpp" />
     <ClCompile Include="..\..\..\sources\video\Chunk\LiveReceiver.cpp" />
@@ -369,10 +373,12 @@
     <ClCompile Include="..\..\..\sources\video\Packeting\EncodedFramePacketizer.cpp" />
     <ClCompile Include="..\..\..\sources\video\Packeting\PacketHeader.cpp" />
     <ClCompile Include="..\..\..\sources\video\Packeting\VideoHeader.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Session\MultiResolutionSession.cpp" />
     <ClCompile Include="..\..\..\sources\video\Session\VideoCallSession.cpp" />
     <ClCompile Include="..\..\..\sources\video\Session\VideoCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\..\sources\video\Thread\DepacketizationThread.cpp" />
     <ClCompile Include="..\..\..\sources\video\Thread\DeviceCapabilityCheckThread.cpp" />
+    <ClCompile Include="..\..\..\sources\video\Thread\MultiResolutionThread.cpp" />
     <ClCompile Include="..\..\..\sources\video\Thread\RenderingThread.cpp" />
     <ClCompile Include="..\..\..\sources\video\Thread\RenderingThreadOfCall.cpp" />
     <ClCompile Include="..\..\..\sources\video\Thread\RenderingThreadOfChannel.cpp" />

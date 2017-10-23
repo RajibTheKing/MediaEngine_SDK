@@ -88,7 +88,7 @@ namespace MediaSDK
 		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
 		{
 			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
-			m_llLastChunkLastFrameRT = llRelativeTime;
+			m_llLastChunkLastFrameRT = max(0LL, llRelativeTime-100);
 		}
 
 		m_llLastFrameRT = llRelativeTime;
@@ -109,7 +109,7 @@ namespace MediaSDK
 		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
 		{
 			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
-			m_llLastChunkLastFrameRT = llRelativeTime;
+			m_llLastChunkLastFrameRT = max(0LL, llRelativeTime - 100);
 		}
 
 		m_llLastFrameRT = llRelativeTime;
@@ -204,6 +204,12 @@ namespace MediaSDK
 		return true;
 	}
 
+	unsigned int AudioNearEndDataProcessor::GetNumberOfFrameForChunk()
+	{
+		NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
+		return m_vRawFrameLengthNear.size();
+	}
+
 	void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &nDataLengthNear, int &nDataLengthFar, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 	{
@@ -224,6 +230,8 @@ namespace MediaSDK
 		MediaLog(LOG_CODE_TRACE,"[ANEDP] lastFrameRT: %lld, lastChunkLastFrameRT: %lld", m_llLastFrameRT, m_llLastChunkLastFrameRT);
 
 		llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
+
+		MediaLog(LOG_DEBUG, "[ANEDP] [007] Audio Chunk Duration: %lld", llAudioChunkDuration);
 
 		if (0 == llAudioChunkDuration)
 		{

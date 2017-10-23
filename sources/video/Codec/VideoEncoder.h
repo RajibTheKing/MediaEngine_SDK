@@ -24,9 +24,9 @@ namespace MediaSDK
 		int CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType);
 		int EncodeVideoFrame(unsigned char *ucaEncodingVideoFrameData, unsigned int unLenght, unsigned char *ucaEncodedVideoFrameData, bool bIsForceIFrame);
 
-		int SetBitrate(int nBitRate);
+		int SetBitrate(int nBitRate, int nServiceType = 0);
 		void SetNetworkType(int nNetworkType);
-		int SetMaxBitrate(int nBitRate);
+		int SetMaxBitrate(int nBitRate, int nServiceType = 0);
 		int GetBitrate();
 		int GetMaxBitrate();
 		int SetHeightWidth(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType, int nDataType);
