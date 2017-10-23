@@ -1,3 +1,7 @@
+Release 12.9 (Date: 23-10-2017)
+---------------------------------
+- Modified audio player and recorder time controlling. [Issue #4930] 
+
 Release 12.8 (Date: 22-10-2017)
 ---------------------------------
 - Now chunk duration and relative time of audio only live are calculating from audio frame. [Issue #4863] 
