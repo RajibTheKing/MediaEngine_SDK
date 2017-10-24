@@ -303,6 +303,11 @@ private:
     int m_nOpponentVideoWidth;
 
     bool m_bDynamic_IDR_Sending_Mechanism;
+
+	int newH;
+	int newW;
+	int fullH;
+	int fullW;
     
     
 

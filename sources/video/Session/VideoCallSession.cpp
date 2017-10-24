@@ -200,6 +200,11 @@ m_nPublisherInsetNumber(0)
 	m_BitRateController->SetSharedObject(sharedObject);
     
     m_bDynamic_IDR_Sending_Mechanism = true;
+
+	newH = 352;
+	newW = 204;
+	fullH = 1920;
+	fullW = 1080;
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
@@ -513,10 +518,10 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
     m_nServiceType = nServiceType;
     
-    iVideoHeight /= 4;
-    iVideoWidth /= 4;
+    iVideoHeight = newH;
+    iVideoWidth = newW;
 #ifdef __ANDROID__
-	iVideoWidth -= 2;
+	iVideoWidth -= 0;
 #endif
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
@@ -1009,8 +1014,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	//int tempW = 1920;
 
 #ifdef __ANDROID__
-	int tempHs = m_nVideoCallWidth * 4 + 8;
-	int tempWs = m_nVideoCallHeight * 4;
+	int tempHs = fullW;
+	int tempWs = fullH;
 #else
     int tempHs = m_nVideoCallHeight * 4;
     int tempWs = m_nVideoCallWidth * 4;
@@ -1018,25 +1023,26 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	unsigned char* buf = new unsigned char[tempHs * tempWs * 3 / 2];
     //long long startTime = m_Tools.CurrentTimestamp();
-    m_pColorConverter->DownScaleYUVNV12_YUVNV21_OneFourth(in_data, tempHs, tempWs, buf);
+    //m_pColorConverter->DownScaleYUVNV12_YUVNV21_OneFourth(in_data, tempHs, tempWs, buf);
     //m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempHs, tempWs, buf, tempHs/4, tempWs/4);
     //printf("DownScaleYUVNV12_YUVNV21 Time = %lld\n", m_Tools.CurrentTimestamp() - startTime);
     
     
     
-    //m_pColorConverter->ConvertNV21ToI420(in_data, tempHs, tempWs);
+    m_pColorConverter->ConvertNV21ToI420(in_data, tempHs, tempWs);
     //long long startTime = m_Tools.CurrentTimestamp();
+	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempHs, tempWs, buf, newW, newH);
 	//m_pColorConverter->DownScaleYUV420_OneFourth(in_data, tempHs, tempWs, buf);
     //printf("DownScaleYUVNV12_YUVNV21 Time = %lld\n", m_Tools.CurrentTimestamp() - startTime);
     
-    tempHs /= 4;
+    tempHs = newW;
 #ifdef __ANDROID__
-	tempHs -= 2;
+	tempHs -= 0;
 #endif
-    tempWs /= 4;
+    tempWs = newH;
 
     
-	//m_pColorConverter->ConvertI420ToNV21(buf, tempHs, tempWs);
+	m_pColorConverter->ConvertI420ToNV21(buf, tempHs, tempWs);
 
     
 #ifdef __ANDROID__

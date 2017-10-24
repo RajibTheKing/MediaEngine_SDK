@@ -120,6 +120,7 @@ namespace MediaSDK
 
 		Tools m_Tools;
 		CAverageCalculator *m_pCalculatorDecodeTime;
+		CVideoBeautificationer *m_VideoBeautificationer;
 		SharedPointer<std::thread> pDecodingThread;
 
 
