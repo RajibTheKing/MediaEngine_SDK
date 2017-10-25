@@ -66,7 +66,7 @@ namespace MediaSDK
 
 		for (auto &missing : vMissingBlocks)
 		{
-			MediaLog(LOG_INFO, "[FE][LAPCh][PLA] missing block -> [ST-%d:ED-%d]", missing.first, missing.second);
+			MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] missing block -> [ST-%d:ED-%d]", missing.first, missing.second);
 			int left = max(nOffset, missing.first);
 			if (left < missing.second)
 			{
@@ -90,7 +90,7 @@ namespace MediaSDK
 		int numOfMissingFrames = 0;
 		int nProcessedFramsCounter = 0;
 
-		MediaLog(LOG_INFO, "[FE][LAPCh][PLA]  nOffset = %d, nDataLength = %d, #(AudioFrames) = %d, #(MissingBlocks) = %u", nOffset, nDataLength, nNumberOfAudioFrames, nNumberOfMissingBlocks);
+		MediaLog(LOG_INFO, "[FE][LAPCh][PLA] #(AudioFrames)=%d, #(MissingBlocks)=%u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
 		while (iFrameNumber < nNumberOfAudioFrames)
 		{
 			bCompleteFrame = true;
@@ -117,7 +117,7 @@ namespace MediaSDK
 					MediaLog(LOG_INFO, "[FE][LAPCh][PLA] frame imcomplete -> missing length = %d", (iRightRange - iLeftRange));
 					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE) //missing block is only within data part not damaging header
 					{
-						MediaLog(LOG_INFO, "[FE][LAPCh][PLA] missing block din NOT damage the header");
+						MediaLog(LOG_INFO, "[FE][LAPCh][PLA] missing block did NOT damage the header");
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
 						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
 
@@ -136,12 +136,12 @@ namespace MediaSDK
 			}
 
 			++iFrameNumber;
-			MediaLog(LOG_INFO, "[FE][LAPCh][PLA] frame no = %d", iFrameNumber);
+			MediaLog(LOG_INFO, "[FE][LAPCh][PLA] FrameNo = %d", iFrameNumber);
 
 			if (!bCompleteFrame)
 			{
 				numOfMissingFrames++;
-				MediaLog(LOG_INFO, "[FE][LAPCh][PLA] missed frame no = %d, numOfMissingFrames = %d", iFrameNumber-1, numOfMissingFrames);
+				MediaLog(LOG_INFO, "[FE][LAPCh][PLA] missedFrameNo = %d, numOfMissingFrames = %d", iFrameNumber - 1, numOfMissingFrames);
 				continue;
 			}
 
