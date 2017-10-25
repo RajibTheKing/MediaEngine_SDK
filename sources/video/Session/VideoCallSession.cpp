@@ -1029,14 +1029,15 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	//long long startTime = m_Tools.CurrentTimestamp();
 	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempWs, tempHs, buf, newW, newH);
 	m_pColorConverter->ConvertI420ToNV21(buf, newW, newH);
-	int returnedValue = m_EncodingBuffer->Queue(buf, newW * newH * 3 / 2, newW, newH, nCaptureTimeDiff, device_orientation);
 #else
     m_pColorConverter->ConvertNV12ToI420(in_data, tempHs, tempWs);
     //long long startTime = m_Tools.CurrentTimestamp();
     m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempHs, tempWs, buf, newH, newW);
     m_pColorConverter->ConvertI420ToNV12(buf, newH, newW);
-    int returnedValue = m_EncodingBuffer->Queue(buf, newH * newW * 3 / 2, newH, newW, nCaptureTimeDiff, device_orientation);
 #endif
+
+	int returnedValue = m_EncodingBuffer->Queue(buf, newH * newW * 3 / 2, newH, newW, nCaptureTimeDiff, device_orientation);
+
 
 
 	//int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
