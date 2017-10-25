@@ -639,7 +639,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					else if (13 == m_filterToApply)
 					{
 						m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, /*5.0*//*1.3*/1.5);
-						m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 5/*10*/);
+						//m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 5/*10*/);
 					}
 
 
