@@ -203,8 +203,8 @@ m_nPublisherInsetNumber(0)
 
 	newH = 352;
 	newW = 204;
-	fullH = 1920;
-	fullW = 1080;
+	fullH = 1280;
+	fullW = 720;
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
@@ -1017,8 +1017,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	int tempHs = fullW;
 	int tempWs = fullH;
 #else
-    int tempHs = m_nVideoCallHeight * 4;
-    int tempWs = m_nVideoCallWidth * 4;
+	int tempHs = fullH;
+	int tempWs = fullW;
 #endif
 
 	unsigned char* buf = new unsigned char[tempHs * tempWs * 3 / 2];
