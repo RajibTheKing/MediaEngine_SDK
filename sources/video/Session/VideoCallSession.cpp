@@ -203,8 +203,6 @@ m_nPublisherInsetNumber(0)
 
 	newH = 352;
 	newW = 204;
-	fullH = 1280;
-	fullW = 720;
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
@@ -517,9 +515,10 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
     m_nServiceType = nServiceType;
-    
-    iVideoHeight = newH;
-    iVideoWidth = newW;
+    fullH = iVideoHeight;
+    fullW = iVideoWidth;
+    iVideoHeight = newH; //352
+    iVideoWidth = newW; //204
 #ifdef __ANDROID__
 	iVideoWidth -= 0;
 #endif
@@ -1013,13 +1012,10 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	//int tempH = 1080;
 	//int tempW = 1920;
 
-#ifdef __ANDROID__
-	int tempHs = fullW;
-	int tempWs = fullH;
-#else
+
 	int tempHs = fullH;
 	int tempWs = fullW;
-#endif
+
 
 	unsigned char* buf = new unsigned char[tempHs * tempWs * 3 / 2];
     //long long startTime = m_Tools.CurrentTimestamp();
@@ -1028,28 +1024,20 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
     //printf("DownScaleYUVNV12_YUVNV21 Time = %lld\n", m_Tools.CurrentTimestamp() - startTime);
     
     
-    
-    m_pColorConverter->ConvertNV21ToI420(in_data, tempHs, tempWs);
-    //long long startTime = m_Tools.CurrentTimestamp();
-	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempHs, tempWs, buf, newW, newH);
-	//m_pColorConverter->DownScaleYUV420_OneFourth(in_data, tempHs, tempWs, buf);
-    //printf("DownScaleYUVNV12_YUVNV21 Time = %lld\n", m_Tools.CurrentTimestamp() - startTime);
-    
-    tempHs = newW;
 #ifdef __ANDROID__
-	tempHs -= 0;
-#endif
-    tempWs = newH;
-
-    
-	m_pColorConverter->ConvertI420ToNV21(buf, tempHs, tempWs);
-
-    
-#ifdef __ANDROID__
-	int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempWs, tempHs, nCaptureTimeDiff, device_orientation);
+	m_pColorConverter->ConvertNV21ToI420(in_data, tempWs, tempHs);
+	//long long startTime = m_Tools.CurrentTimestamp();
+	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempWs, tempHs, buf, newW, newH);
+	m_pColorConverter->ConvertI420ToNV21(buf, newW, newH);
+	int returnedValue = m_EncodingBuffer->Queue(buf, newW * newH * 3 / 2, newW, newH, nCaptureTimeDiff, device_orientation);
 #else
-	int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempHs, tempWs, nCaptureTimeDiff, device_orientation);
+    m_pColorConverter->ConvertNV12ToI420(in_data, tempHs, tempWs);
+    //long long startTime = m_Tools.CurrentTimestamp();
+    m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempHs, tempWs, buf, newH, newW);
+    m_pColorConverter->ConvertI420ToNV12(buf, newH, newW);
+    int returnedValue = m_EncodingBuffer->Queue(buf, newH * newW * 3 / 2, newH, newW, nCaptureTimeDiff, device_orientation);
 #endif
+
 
 	//int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
 	//int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempWs, tempHs, nCaptureTimeDiff, device_orientation);
