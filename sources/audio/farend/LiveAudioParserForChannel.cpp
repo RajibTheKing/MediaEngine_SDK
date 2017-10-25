@@ -1,5 +1,6 @@
 #include "LiveAudioParserForChannel.h"
 #include "LogPrinter.h"
+#include "MediaLogger.h"
 #include "AudioPacketHeader.h"
 #include "ThreadTools.h"
 #include "AudioMacros.h"
@@ -65,7 +66,7 @@ namespace MediaSDK
 
 		for (auto &missing : vMissingBlocks)
 		{
-			HITLER("XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
+			MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] missing block -> [ST-%d:ED-%d]", missing.first, missing.second);
 			int left = max(nOffset, missing.first);
 			if (left < missing.second)
 			{
@@ -89,6 +90,7 @@ namespace MediaSDK
 		int numOfMissingFrames = 0;
 		int nProcessedFramsCounter = 0;
 
+		MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] #(AudioFrames)=%d, #(MissingBlocks)=%u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
 		while (iFrameNumber < nNumberOfAudioFrames)
 		{
 			bCompleteFrame = true;
@@ -112,37 +114,34 @@ namespace MediaSDK
 				if (iLeftRange <= iRightRange)	//The frame is not complete.
 				{
 					bCompleteFrame = false;
-					HITLER("XXP@#@#MARUF LIVE FRAME INCOMPLETE. [%03d]", (iLeftRange - nFrameLeftRange));
-					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
+					MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] frame imcomplete -> missing length = %d", (iRightRange - iLeftRange));
+					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE) //missing block is only within data part not damaging header
 					{
-						HITLER("XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
+						MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] missing block did NOT damage the header");
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + 1);
 						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_CALL_HEADERLENGTH);
 
-						HITLER("XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
-
+						MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] checking for undamaged header -> undamaged prefix length = %d, validHeaderLength = %d", iLeftRange - nFrameLeftRange, validHeaderLength);
 						if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
-							HITLER("XXP@#@#MARUF LIVE HEADER INCOMPLETE");
+							MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] header incomplete");
 							bCompleteFrameHeader = false;
 						}
 					}
 					else
 					{
-						HITLER("XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
+						MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] header incomplete 2"); //missing block is damaging the header
 						bCompleteFrameHeader = false;
 					}
 				}
 			}
 
 			++iFrameNumber;
-			HITLER("#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
+			MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] FrameNo = %d", iFrameNumber);
 
 			if (!bCompleteFrame)
 			{
-				CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "LiveReceiver::ProcessAudioStreamVector AUDIO frame broken");
-
 				numOfMissingFrames++;
-				HITLER("XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
+				MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] missedFrameNo = %d, numOfMissingFrames = %d", iFrameNumber - 1, numOfMissingFrames);
 				continue;
 			}
 
@@ -155,10 +154,8 @@ namespace MediaSDK
 			}
 		}
 
-		HITLER("#@LR -> Totla= %d Used = %d Missing = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
+		MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] number of frames -> Total = %d Used = %d Missed = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
 		m_bIsCurrentlyParsingAudioData = false;
-
-		LOG_AAC("#aac#b4q# TotalAudioFrames: %d, PushedAudioFrames: %d, NumOfMissingAudioFrames: %d", nNumberOfAudioFrames, (nNumberOfAudioFrames - numOfMissingFrames), numOfMissingFrames);
 	}
 
 } //namespace MediaSDK

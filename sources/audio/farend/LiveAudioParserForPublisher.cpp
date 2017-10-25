@@ -70,7 +70,7 @@ namespace MediaSDK
 
 		for (auto &missing : vMissingBlocks)
 		{
-			MediaLog(LOG_INFO, "XXP@#@#MARUF LIVE ST %d ED %d", missing.first, missing.second);
+			MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] missing block -> [ST-%d:ED-%d]", missing.first, missing.second);
 			int left = max(nOffset, missing.first);
 			if (left < missing.second)
 			{
@@ -96,9 +96,8 @@ namespace MediaSDK
 		int nPacketType;
 
 		int mediaByteSize = 1;
-
-		MediaLog(LOG_INFO, "[LAPP] AudioFrames = %d, MissingBlocks = %u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
-
+		
+		MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] #(AudioFrames)=%d, #(MissingBlocks)=%u",nNumberOfAudioFrames, nNumberOfMissingBlocks);
 		while (iFrameNumber < nNumberOfAudioFrames)
 		{
 			bCompleteFrame = true;
@@ -123,11 +122,11 @@ namespace MediaSDK
 				{
 					bCompleteFrame = false;
 
-					MediaLog(LOG_CODE_TRACE, "[LAPP] LIVE FRAME INCOMPLETE. MissingSize = %03d", (iRightRange - iLeftRange));
+					MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] frame imcomplete -> missing length = %d", (iRightRange - iLeftRange));
 
-					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)
+					if (nFrameLeftRange < vMissingBlocks[iMissingIndex].first && (iLeftRange - nFrameLeftRange) >= MINIMUM_AUDIO_HEADER_SIZE)//missing block is only within data part not damaging header
 					{
-						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE FRAME CHECK FOR VALID HEADER");
+						MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] missing block did NOT damage the header");
 						m_pAudioPacketHeader->CopyHeaderToInformation(uchAudioData + nFrameLeftRange + mediaByteSize);
 						int validHeaderLength = m_pAudioPacketHeader->GetInformation(INF_LIVE_HEADERLENGTH);						
 
@@ -136,39 +135,38 @@ namespace MediaSDK
 							validHeaderLength += (totalCallee * AUDIO_MUX_HEADER_LENGHT + 2);
 						}
 
-						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE FRAME CHECKED FOR VALID HEADER EXISTING DATA [%02d], VALID HEADER [%02d]", iLeftRange - nFrameLeftRange, validHeaderLength);
-
+						MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] checking for undamaged header -> undamaged prefix length = %d, validHeaderLength = %d", iLeftRange - nFrameLeftRange, validHeaderLength);
 						if (validHeaderLength > (iLeftRange - nFrameLeftRange)) {
-							HITLER("XXP@#@#MARUF LIVE HEADER INCOMPLETE");
+							MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] header incomplete");
 							bCompleteFrameHeader = false;
 						}
 					}
 					else
 					{
-						//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF LIVE INCOMLETE FOR START INDEX IN MISSING POSITION");
+						MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] header incomplete 2"); //missing block is damaging the header
 						bCompleteFrameHeader = false;
 					}
 				}
 			}
 
 			++iFrameNumber;
-			//MediaLog(LOG_CODE_TRACE, "#@#@ livereceiver receivedpacket frameno:%d", iFrameNumber);
+			MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] FrameNo = %d", iFrameNumber);
 
 			if (!bCompleteFrameHeader)
 			{				
 				numOfMissingFrames++;
-				//MediaLog(LOG_CODE_TRACE, "XXP@#@#MARUF -> live receiver continue PACKETNUMBER = %d", iFrameNumber);
+				MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] missedFrameNo = %d, numOfMissingFrames = %d", iFrameNumber - 1, numOfMissingFrames);
 				continue;
 			}
 
 			nPacketType = uchAudioData[nFrameLeftRange + mediaByteSize];
-			MediaLog(LOG_CODE_TRACE, "[LAPP]  PacketType = %d", nPacketType);
+			MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA]  PacketType = %d", nPacketType);
 
 			/* Discarding broken Opus frame */
 			
 			if (!bCompleteFrame && LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType)
 			{
-				MediaLog(LOG_CODE_TRACE, "[LAPP]  Discarding Opus Packet. PT = %d", nPacketType);
+				MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] Discarding Opus Packet. PT = %d", nPacketType);
 				continue;
 			}
 
@@ -177,11 +175,11 @@ namespace MediaSDK
 
 			if (false == bIsProcessablePacket)
 			{
-				MediaLog(LOG_CODE_TRACE, "[LAPP]  Discarding Packets# Not suitable for publisher. PT = %d", nPacketType);
+				MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] Discarding Packets# Not suitable for publisher. PT = %d", nPacketType);
 				continue;
 			}
 						
-			MediaLog(LOG_INFO, "[LAPP] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER));
+			MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER));
 			///calculate missing vector 
 			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
 			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
@@ -194,8 +192,9 @@ namespace MediaSDK
 			}
 		}
 
-		MediaLog(LOG_INFO, "[LAPP] CHUNK# Totla = %d Used = %d Missing = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
+		MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] number of frames -> Total = %d Used = %d Missed = %d", nNumberOfAudioFrames, nProcessedFramsCounter, nNumberOfAudioFrames - nProcessedFramsCounter);
 		m_bIsCurrentlyParsingAudioData = false;		
 	}
 
 } //namespace MediaSDK
+ 
