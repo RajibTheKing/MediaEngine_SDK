@@ -20,7 +20,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-	    bool bTerminalWriteEnabled = false;  //Always writes on file whether terminal is enabled or not. 
+		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
 		MediaLogInit(LOG_DEBUG, false, bTerminalWriteEnabled);
 
 		G_pInterfaceOfAudioVideoEngine = this;
