@@ -132,8 +132,8 @@ namespace MediaSDK
 		CCommonElementsBucket* m_pCommonElementsBucket;
 		long long m_lfriendID;
 
-		unsigned char m_pVPlane[(1920 * 1080) >> 2];
-		unsigned char m_pUPlane[(1920 * 1080) >> 2];
+		unsigned char m_pVPlane[(MAX_VIDEO_FRAME_INPUT_HEIGHT * MAX_VIDEO_FRAME_INPUT_WIDTH) >> 2];
+		unsigned char m_pUPlane[(MAX_VIDEO_FRAME_INPUT_HEIGHT * MAX_VIDEO_FRAME_INPUT_WIDTH) >> 2];
 		unsigned char m_pTempPlane[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 2];
 		unsigned char m_pSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
 
@@ -141,9 +141,9 @@ namespace MediaSDK
 		//int CumulativeSum_U[MAX_FRAME_HEIGHT + 1][MAX_FRAME_HEIGHT + 1];
 		//int CumulativeSum_V[MAX_FRAME_HEIGHT + 1][MAX_FRAME_HEIGHT + 1];
 
-		int CumulativeSum[1921][1921];
-		int CumulativeSum_U[1921][1921];
-		int CumulativeSum_V[1921][1921];
+		int CumulativeSum[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
+		int CumulativeSum_U[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
+		int CumulativeSum_V[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
 
 		unsigned char m_pClip[900];
 		bool m_bClipInitialization;

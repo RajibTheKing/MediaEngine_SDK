@@ -189,8 +189,6 @@ namespace MediaSDK
 	int CVideoEncoder::CreateVideoEncoder(int nVideoHeight, int nVideoWidth, int nFPS, int nIFrameInterval, bool bCheckDeviceCapability, int nServiceType)
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
-		//nVideoHeight = 352;
-		//nVideoWidth = 288;
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
@@ -216,9 +214,6 @@ namespace MediaSDK
 			m_nVideoWidth = nVideoWidth;
 			m_nVideoHeight = nVideoHeight;
 		}
-
-		//m_nVideoHeight = 352;
-		//m_nVideoWidth = 288;
 
 		SEncParamExt encoderParemeters;
 

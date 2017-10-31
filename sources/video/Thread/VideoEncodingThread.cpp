@@ -467,11 +467,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             	memcpy(m_ucaEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
 #else
 
-				//nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
-				//memcpy(m_ucaConvertedEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
+				nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
+				memcpy(m_ucaConvertedEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
 #endif
-				//iGotHeight = iChangedGotHeight;
-				//iGotWidth = iChangedGotWidth;
+				iGotHeight = iChangedGotHeight;
+				iGotWidth = iChangedGotWidth;
 			}
             else
 			{
@@ -549,9 +549,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						}
 						else
 						{
-							if (13 == m_filterToApply)
-								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
-							else
+						//	if (13 == m_filterToApply)
+						//		pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						//	else
 								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
 
 						}
@@ -566,83 +566,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 					//m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(resultPair.first, resultPair.second);
 #endif
-
-					//m_VideoEffects->WarmColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					//m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, /*5.0*//*1.3*/1.6);
-					//m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 5/*10*/);
-
-					if (0 == m_filterToApply)
-					{
-
-					}
-					else if (1 == m_filterToApply)
-					{
-						m_VideoEffects->WarmColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					else if (2 == m_filterToApply)
-					{
-						m_VideoEffects->NegetiveColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					else if (3 == m_filterToApply)
-					{
-						m_VideoEffects->BlackAndWhiteColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					else if (4 == m_filterToApply)
-					{
-						m_VideoEffects->SapiaColorEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					else if (5 == m_filterToApply)
-					{
-						m_VideoEffects->TintColorBlueEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					else if (6 == m_filterToApply)
-					{
-						m_VideoEffects->TintColorPinkEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					else if (7 == m_filterToApply)
-					{
-						m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 5.0/*0.6*/);
-					}
-					else if (8 == m_filterToApply)
-					{
-						m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -1.0);
-					}
-					else if (9 == m_filterToApply)
-					{
-						m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 80/*10*/);
-					}
-					/*else if (10 == m_filterToApply)
-					{
-						//m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, -80);
-					}*/
-					else if (10 == m_filterToApply)
-					{
-						m_VideoEffects->PencilSketchGrayEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					/*else if (12 == m_filterToApply)
-					{
-						//m_VideoEffects->PencilSketchWhiteEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}*/
-					else if (11 == m_filterToApply)
-					{
-						m_VideoEffects->ColorSketchEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					/*else if (14 == m_filterToApply)
-					{
-						//m_VideoEffects->CartoonEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}*/
-					else if (12 == m_filterToApply)
-					{
-						m_VideoEffects->PlaitEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth);
-					}
-					//LOGE_MAIN("tAhmid--->H:W = %d:%d\n", iGotHeight, iGotWidth);
-					else if (13 == m_filterToApply)
-					{
-						//m_VideoEffects->SaturationChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, /*5.0*//*1.3*/1.5);
-						//m_VideoEffects->ContrastChangeEffect(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 5/*10*/);
-					}
-
-
 				}
 
 				if (m_nOrientationType == ORIENTATION_90_MIRRORED)

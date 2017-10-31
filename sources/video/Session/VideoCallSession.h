@@ -288,6 +288,8 @@ private:
 	unsigned char m_CroppedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	unsigned char m_miniPacket[VIDEO_HEADER_LENGTH + 1];
+
+	unsigned char m_ucaReceivedLargeFrame[MAX_VIDEO_FRAME_INPUT_SIZE];
     
     CVersionController *m_pVersionController;
     CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;
@@ -304,12 +306,10 @@ private:
 
     bool m_bDynamic_IDR_Sending_Mechanism;
 
-	int newH;
-	int newW;
-	int fullH;
-	int fullW;
-    
-    
+	int m_nSmalledFrameHeight;
+	int m_nSmalledFrameWidth;
+	int m_nGivenFrameHeight;
+	int m_nGivenFrameWidth;   
 
 protected:
 

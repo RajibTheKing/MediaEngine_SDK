@@ -201,8 +201,8 @@ m_nPublisherInsetNumber(0)
     
     m_bDynamic_IDR_Sending_Mechanism = true;
 
-	newH = 352;
-	newW = 204;
+	m_nSmalledFrameHeight = 352;
+	m_nSmalledFrameWidth = 204;
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
 }
@@ -515,18 +515,13 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
     m_nServiceType = nServiceType;
-    fullH = iVideoHeight;
-    fullW = iVideoWidth;
-    iVideoHeight = newH; //352
-    iVideoWidth = newW; //204
-#ifdef __ANDROID__
-	iVideoWidth -= 0;
-#endif
+    m_nGivenFrameHeight = iVideoHeight;
+    m_nGivenFrameWidth = iVideoWidth;
+    iVideoHeight = m_nSmalledFrameHeight; //352
+    iVideoWidth = m_nSmalledFrameWidth; //204
+
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
-    
-    printf("Tahmid---> H:W = %d:%d\n",m_nVideoCallHeight,m_nVideoCallWidth);
-
     
     m_pVersionController = new CVersionController();
     
@@ -843,12 +838,8 @@ bool CVideoCallSession::PushPacketForMerging(unsigned char *in_data, unsigned in
 map<int, long long> g_TimeTraceFromCaptureToSend;
 int g_CapturingFrameCounter = 0;
 
-
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
-	LOGE_MAIN("CVideoCallSession::PushIntoBufferForEncoding starts in_size = %d", in_size);
-    //CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 1");
-
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && (m_nEntityType == ENTITY_TYPE_PUBLISHER || m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER) && m_bAudioOnlyLive == true)
 		return -10;
 
@@ -1008,42 +999,30 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	//int nCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(in_data, 352, 288, 1920, 1130, m_CroppedFrame, nCroppedHeight, nCroppedWidth, YUVNV12);
 
-	LOGE_MAIN("CVideoCallSession::PushIntoBufferForEncoding  m_nVideoCallHeight = %d m_nVideoCallWidth = %d", m_nVideoCallHeight, m_nVideoCallWidth);
-	//int tempH = 1080;
-	//int tempW = 1920;
-
-
-	int tempHs = fullH;
-	int tempWs = fullW;
-
-
-	unsigned char* buf = new unsigned char[tempHs * tempWs * 3 / 2];
     //long long startTime = m_Tools.CurrentTimestamp();
-    //m_pColorConverter->DownScaleYUVNV12_YUVNV21_OneFourth(in_data, tempHs, tempWs, buf);
-    //m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempHs, tempWs, buf, tempHs/4, tempWs/4);
+    //m_pColorConverter->DownScaleYUVNV12_YUVNV21_OneFourth(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth, m_ucaReceivedLargeFrame);
+    //m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth, m_ucaReceivedLargeFrame, m_nGivenFrameHeight/4, m_nGivenFrameWidth/4);
     //printf("DownScaleYUVNV12_YUVNV21 Time = %lld\n", m_Tools.CurrentTimestamp() - startTime);
     
     
 #ifdef __ANDROID__
-	m_pColorConverter->ConvertNV21ToI420(in_data, tempWs, tempHs);
+	m_pColorConverter->ConvertNV21ToI420(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight);
 	//long long startTime = m_Tools.CurrentTimestamp();
-	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempWs, tempHs, buf, newW, newH);
-	m_pColorConverter->ConvertI420ToNV21(buf, newW, newH);
+	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight, m_ucaReceivedLargeFrame, m_nSmalledFrameWidth, m_nSmalledFrameHeight);
+	m_pColorConverter->ConvertI420ToNV21(m_ucaReceivedLargeFrame, m_nSmalledFrameWidth, m_nSmalledFrameHeight);
 #else
-    m_pColorConverter->ConvertNV12ToI420(in_data, tempHs, tempWs);
+    m_pColorConverter->ConvertNV12ToI420(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth);
     //long long startTime = m_Tools.CurrentTimestamp();
-    m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, tempHs, tempWs, buf, newH, newW);
-    m_pColorConverter->ConvertI420ToNV12(buf, newH, newW);
+    m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth, m_ucaReceivedLargeFrame, m_nSmalledFrameHeight, m_nSmalledFrameWidth);
+    m_pColorConverter->ConvertI420ToNV12(m_ucaReceivedLargeFrame, m_nSmalledFrameHeight, m_nSmalledFrameWidth);
 #endif
 
-	int returnedValue = m_EncodingBuffer->Queue(buf, newH * newW * 3 / 2, newH, newW, nCaptureTimeDiff, device_orientation);
+	int returnedValue = m_EncodingBuffer->Queue(m_ucaReceivedLargeFrame, m_nSmalledFrameHeight * m_nSmalledFrameWidth * 3 / 2, m_nSmalledFrameHeight, m_nSmalledFrameWidth, nCaptureTimeDiff, device_orientation);
 
 
 
 	//int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
-	//int returnedValue = m_EncodingBuffer->Queue(buf, tempHs * tempWs * 3 / 2, tempWs, tempHs, nCaptureTimeDiff, device_orientation);
-    
-	delete[] buf;
+	//int returnedValue = m_EncodingBuffer->Queue(m_ucaReceivedLargeFrame, m_nGivenFrameHeight * m_nGivenFrameWidth * 3 / 2, m_nGivenFrameWidth, m_nGivenFrameHeight, nCaptureTimeDiff, device_orientation);
 
     //CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG || INSTENT_TEST_LOG, " nCaptureTimeDiff = " +  m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - mt_llCapturePrevTime));
     mt_llCapturePrevTime = m_Tools.CurrentTimestamp();

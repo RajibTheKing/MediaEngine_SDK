@@ -54,9 +54,6 @@
 #define VIDEO_NOTIFICATION_LOG  OFF
 
 
-
-#define LOG_ENABLED
-
 #if  defined(__ANDROID__) && defined(LOG_ENABLED)
 
 #include <android/log.h>
