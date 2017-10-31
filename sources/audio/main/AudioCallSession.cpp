@@ -165,6 +165,11 @@ namespace MediaSDK
 		m_clientSocket->SetAudioCallSession(this);
 #endif
 
+		string FilePath = "/sdcard/";
+		m_pInputPcm = new CAudioDumper(FilePath, "recorded.pcm", DUMP_ENABLE);
+		m_pInputProcessedPcm = new CAudioDumper(FilePath, "processed.pcm", DUMP_ENABLE);
+		m_pOutputPcm = new CAudioDumper(FilePath, "played.pcm", DUMP_ENABLE);
+
 #ifdef PCM_DUMP
 		long long llcurrentTime;
 		std::string sCurrentTime;
@@ -222,6 +227,7 @@ namespace MediaSDK
 	CAudioCallSession::~CAudioCallSession()
 	{
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitializating...");
+
 		if (m_cNearEndProcessorThread != nullptr)
 		{
 			delete m_cNearEndProcessorThread;
@@ -263,6 +269,22 @@ namespace MediaSDK
 		fclose(FileInputPreGain);
 #endif
 
+		if (m_pInputPcm)
+		{
+			delete m_pInputPcm;
+			m_pInputPcm = NULL;
+		}
+		if (m_pInputProcessedPcm)
+
+		{
+			delete m_pInputProcessedPcm;
+			m_pInputProcessedPcm = NULL;
+		}
+		if (m_pOutputPcm)
+		{
+			delete m_pOutputPcm;
+			m_pOutputPcm = NULL;
+		}
 #ifdef PCM_DUMP
 		if (RecordedFile) fclose(RecordedFile);
 		if (EchoCancelledFile) fclose(EchoCancelledFile);
@@ -679,6 +701,7 @@ namespace MediaSDK
 
 #ifdef USE_AECM
 
+		m_pInputPcm->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
 #ifdef PCM_DUMP
 		if (RecordedFile)
 		{
@@ -758,6 +781,7 @@ namespace MediaSDK
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction);
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
+					m_pInputPcm->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
 #ifdef PCM_DUMP
 					if (EchoCancelledFile)
 					{
@@ -777,6 +801,8 @@ namespace MediaSDK
 #endif
 
 			}
+
+			m_pInputProcessedPcm->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
 #ifdef PCM_DUMP
 			if (AfterEchoCancellationFile)
 			{

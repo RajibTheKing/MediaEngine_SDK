@@ -264,6 +264,7 @@ namespace MediaSDK
 					m_nPacketPlayed ++;
 					MediaLog(LOG_INFO, "[AFEDP] Viewer# To Player [SendToPlayer]\n");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+					m_pAudioCallSession->m_pOutputPcm->WriteDump(pshSentFrame, 2, nSentFrameSize, DUMP_ENABLE);
 #ifdef PCM_DUMP
 					if (m_pAudioCallSession->PlayedFile)
 					{
@@ -706,6 +707,7 @@ namespace MediaSDK
 			{
 				MediaLog(LOG_CODE_TRACE, "[FE][AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
 				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+
 #ifdef PCM_DUMP
 				if (m_pAudioCallSession->PlayedFile)
 				{
