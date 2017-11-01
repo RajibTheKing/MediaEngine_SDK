@@ -1053,7 +1053,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 		returnedValue = m_EncodingBuffer->Queue(m_ucaReceivedLargeFrame, m_nVideoCallHeight * m_nVideoCallWidth * 3 / 2, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
 	}
 	else
-		returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
+		returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nGivenFrameHeight, m_nGivenFrameWidth, nCaptureTimeDiff, device_orientation);
 
 
 	//int returnedValue = m_EncodingBuffer->Queue(in_data, in_size, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
