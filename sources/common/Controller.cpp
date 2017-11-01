@@ -334,7 +334,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
     
 #if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
     
-    if(iVideoHeight > 352 || iVideoWidth > 352)
+    if(iVideoHeight > 640 || iVideoWidth > 640)
     {
         iVideoHeight = iVideoHeight / 2;
         iVideoWidth = iVideoWidth / 2;
@@ -688,7 +688,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
     
 #if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
     
-    if(height > 352 || width > 352)
+    if(height > 640 || width > 640)
     {
         height = height / 2;
         width = width / 2;
@@ -860,7 +860,7 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
     
 #if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
     
-    if(iHeightHigh > 352 || iWidthHigh > 352)
+    if(iHeightHigh > 640 || iWidthHigh > 640)
     {
         iHeightHigh = iHeightHigh / 2;
         iWidthHigh = iWidthHigh / 2;
@@ -907,7 +907,7 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
 	if (m_pDeviceCapabilityCheckBuffer->GetQueueSize() == 0)
 	{
 
-		int iRet = m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(iHeightHigh, iWidthHigh);
+		int iRet = m_pDeviceCapabilityCheckThread->StartDeviceCapabilityCheckThread(640, 480);
 
 		if(iRet == -1)
 		{
@@ -918,7 +918,7 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability queueing ID %lld", lFriendID);
 
-	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, iHeightHigh, iWidthHigh);
+	m_pDeviceCapabilityCheckBuffer->Queue(lFriendID, START_DEVICE_CHECK, DEVICE_CHECK_STARTING, 640, 480);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability done ID %lld", lFriendID);
 	
@@ -932,7 +932,7 @@ int CController::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, 
     
 #if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
     
-    if(iHeightHigh > 352 || iWidthHigh > 352)
+    if(iHeightHigh > 640 || iWidthHigh > 640)
     {
         iHeightHigh = iHeightHigh / 2;
         iWidthHigh = iWidthHigh / 2;

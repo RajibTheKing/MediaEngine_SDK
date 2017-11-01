@@ -518,7 +518,7 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
     m_nServiceType = nServiceType;
     
-    if(iVideoHeight > 352 || iVideoWidth > 352)
+    if(iVideoHeight > 640 || iVideoWidth > 640)
     {
         m_nGivenFrameHeight = iVideoHeight * 2;
         m_nGivenFrameWidth = iVideoWidth * 2;
@@ -1035,7 +1035,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	int returnedValue;
 
-	if (m_nGivenFrameHeight > 352 || m_nGivenFrameWidth > 352)
+	if (m_nGivenFrameHeight > 640 || m_nGivenFrameWidth > 640)
 	{
 		//LOGE_MAIN("fahad -->> m_nGivenFrameHeight = %d || m_nGivenFrameWidth = %d", m_nGivenFrameHeight, m_nGivenFrameWidth);
 #ifdef __ANDROID__
