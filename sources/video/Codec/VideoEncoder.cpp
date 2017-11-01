@@ -215,7 +215,6 @@ namespace MediaSDK
 			m_nVideoHeight = nVideoHeight;
 		}
 
-
 		SEncParamExt encoderParemeters;
 
 		memset(&encoderParemeters, 0, sizeof(SEncParamExt));

@@ -33,6 +33,7 @@ namespace MediaSDK
 		m_bResetForPublisherCallerCallEnd(false),
 		m_bResetForViewerCallerCallStartEnd(false),
 		m_HasPreviousValues(false),
+		//m_VideoBeautificationer(NULL),
 		m_llFriendID(llFriendID)
 
 	{
@@ -70,6 +71,12 @@ namespace MediaSDK
 			delete m_pCalculatorDecodeTime;
 			m_pCalculatorDecodeTime = NULL;
 		}
+
+		/*if (NULL != m_VideoBeautificationer)
+		{
+			delete m_VideoBeautificationer;
+			m_VideoBeautificationer = NULL;
+		}*/
 
 		if (NULL != m_pVideoEffect)
 		{
@@ -617,6 +624,13 @@ namespace MediaSDK
 
 			return -1;
 		}
+
+		/*if (m_VideoBeautificationer == NULL)
+		{
+			m_VideoBeautificationer = new CVideoBeautificationer(m_decodingHeight, m_decodingWidth);
+		}*/
+
+		//pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_DecodedFrame, m_decodedFrameSize, m_decodingHeight, m_decodingWidth, m_decodingHeight, m_decodingWidth, true);
 
 		// CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime) + ", CurrentCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth) + ", AverageDecodeTime --> " + m_Tools.DoubleToString(m_pCalculatorDecodeTime->GetAverage()) + ", Decoder returned = " + m_Tools.IntegertoStringConvert(m_decodedFrameSize) + ", FrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 

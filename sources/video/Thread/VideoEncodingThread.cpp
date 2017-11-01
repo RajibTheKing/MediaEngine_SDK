@@ -213,7 +213,7 @@ void CVideoEncodingThread::SetFrameNumber(int nFrameNumber)
 
 int CVideoEncodingThread::SetVideoEffect(int nEffectStatus)
 {
-	if (nEffectStatus == 1)
+	if (nEffectStatus != 0)
 		m_bVideoEffectEnabled = true;
 	else if (nEffectStatus == 0)
 		m_bVideoEffectEnabled = false;
@@ -550,7 +550,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight, iGotWidth, true);
 						}
 						else
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						{
+						//	if (13 == m_filterToApply)
+								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						//	else
+						//		pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+
+						}
 					}
 					else
 					{

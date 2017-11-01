@@ -1555,6 +1555,157 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
     
 }
 
+int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
+{
+	int idx = 0;
+	for (int i = 4; i < iHeight - 4; i += 4)
+	{
+		for (int j = 0; j < iWidth; j += 4)
+		{
+            int tmp = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = k*iWidth;
+                for(int l = j; l < j + 4; l++)
+                {
+                    tmp += pData[kw + l];
+                }
+            }
+            outputData[idx++] = tmp >> 4;
+		}
+	}
+
+	int halfHeight = iHeight >> 1;
+	int offset = iHeight*iWidth;
+
+	for (int i = 2; i < halfHeight - 2; i += 4)
+	{
+		for (int j = 0; j < iWidth; j += 8)
+		{
+            int tmpU = 0;
+            int tmpV = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = offset + k*iWidth;
+                for(int l = j; l < j + 8; l++)
+                {
+                    if (l % 2 == 0)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                    else
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpU >> 4;
+            outputData[idx++] = tmpV >> 4;
+		}
+	}
+
+	int outHeight = iHeight >> 2;
+	int outWidth = iWidth >> 2;
+
+	return (outHeight * outWidth * 3) >> 1;
+}
+
+int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
+{
+    int idx = 0;
+    for (int i = 4; i < iHeight - 4; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += 4)
+        {
+            int tmp = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = k*iWidth;
+                for(int l = j; l < j + 4; l++)
+                {
+                    tmp += pData[kw + l];
+                }
+            }
+            outputData[idx++] = tmp >> 4;
+        }
+    }
+
+	int quarterHeight = iHeight >> 2;
+	int offset = iHeight*iWidth;
+    int incr = 4;
+
+    for (int i = 1; i < quarterHeight - 1; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += incr)
+        {
+            int tmpU = 0;
+            if(i + 4 > quarterHeight)
+            {
+                incr = 8;
+                for(int k = i; k < i + 2; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                }
+            }
+            else
+            {
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpU >> 4;
+        }
+    }
+
+	offset += quarterHeight*iWidth;
+    incr = 4;
+
+    for (int i = 1; i < quarterHeight - 1; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += incr)
+        {
+            int tmpV = 0;
+            if(i + 4 > quarterHeight)
+            {
+                incr = 8;
+                for(int k = i; k < i + 2; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            else
+            {
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpV >> 4;
+        }
+    }
+
+	int outHeight = iHeight >> 2;
+	int outWidth = iWidth >> 2;
+
+	return (outHeight * outWidth * 3) >> 1;
+}
 
 //This Function will return UIndex based on YUV_420 Data
 int CColorConverter::getUIndex(int h, int w, int yVertical, int xHorizontal, int& total)

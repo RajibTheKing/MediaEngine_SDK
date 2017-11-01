@@ -59,9 +59,6 @@
 
 
 
-
-
-
 #if  defined(__ANDROID__) && defined(LOG_ENABLED)
 
 #include <android/log.h>

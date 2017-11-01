@@ -171,19 +171,25 @@ m_EffectValue(10)
 	for (int i = 0; i < 256; i++)
 	{
 		m_preBrightness[i] = i;
-		
+		m_preBrightnessNew[i] = i;
+
 		if (i >= 25 && i <= 125) 
 		{
-			m_preBrightness[i] += (i - 25) * BRIGHTNESS_SCALE / firstDif;
+			m_preBrightness[i] += (i - 25) * BRIGHTNESS_SCALE_OLD / firstDif;
+			m_preBrightnessNew[i] += (i - 25) * BRIGHTNESS_SCALE_NEW / firstDif;
 		}
 		else if (i >= 125 && i <= 225) 
 		{
-			m_preBrightness[i] += (225 - i) * BRIGHTNESS_SCALE / secondDif;
+			m_preBrightness[i] += (225 - i) * BRIGHTNESS_SCALE_OLD / secondDif;
+			m_preBrightnessNew[i] += (225 - i) * BRIGHTNESS_SCALE_NEW / secondDif;
 		}
 	}
 
 	for (int i = 0; i < 256; i++)
+	{
 		m_ucpreBrightness[i] = (unsigned char)m_preBrightness[i];
+		m_ucpreBrightnessNew[i] = (unsigned char)m_preBrightnessNew[i];
+	}
 
 	memset(m_mean, m_nVideoHeight*m_nVideoWidth, 0);
 	memset(m_variance, m_nVideoHeight*m_nVideoWidth, 0);
@@ -1037,6 +1043,330 @@ pair<int, int> CVideoBeautificationer::BeautificationFilter(unsigned char *pBlur
 
 	//LOGE("VideoBeautificcationer -->> sharpingTimeDiff = %lld, filterTimeDiff = %lld, totalTimeDiff =% lld", -(startSharpingTime - endSharpingTime), -(endSharpingTime - endFilterTime), -(startSharpingTime - endFilterTime));
 	
+	pair<int, int> result = { m_mean[iHeight][iWidth] / (iHeight*iWidth), m_variance[iHeight][iWidth] / (iHeight*iWidth) };
+
+	return result;
+}
+
+pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp)
+{
+	BeautyLocker lock(*m_pVideoBeautificationMutex);
+
+	if (m_applyBeatification != 1)
+	{
+		pair<int, int> result = { 0, 0 };
+
+		return result;
+	}
+
+	/*if (effectParam[0] != 0)m_sigma = effectParam[0];
+	if (effectParam[1] != 0)m_radius = effectParam[1];
+	if (effectParam[2] != 0)m_EffectValue = effectParam[2];*/
+
+	int startWidth = (iWidth - iNewWidth) / 2 + 1;
+	int endWidth = iWidth - startWidth + 1;
+
+	int shiftDigit;
+
+	if (m_nIsGreaterThen5s > 0)
+	{
+		shiftDigit = 2;
+	}
+	else
+	{
+		shiftDigit = 4;
+	}
+
+	//for (int i = 0; i <= iHeight; i++)
+	//{
+	//	m_mean[i][0] = 0;
+	//}
+
+	//memset(m_mean, iWidth, 0);
+	/*
+	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+	{
+	for (int j = startWidth; j <= endWidth; j++)
+	{
+	m_mean[i][j] = pBlurConvertingData[iw + j - 1];
+	}
+	}
+	*/
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	if (doSharp)
+
+#else
+
+	if (doSharp)
+
+#endif
+
+	{
+		for (int i = 1, iw = 0, iw2 = -iWidth; i <= iHeight; i++, iw += iWidth, iw2 += iWidth)
+		{
+			for (int j = startWidth; j <= endWidth; j++)
+			{
+				m_mean[i][j] = pBlurConvertingData[iw + j - 1];
+
+				if (i > 2 && j>1 && j<endWidth)
+				{
+					//if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> shiftDigit)));
+#elif defined(__ANDROID__)
+					if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
+						pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 2)));
+					else
+						pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
+#else
+					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 10)));
+#endif
+				}
+			}
+		}
+	}
+
+
+
+
+	//for (int i = 0; i <= iHeight; i++) 
+	//{
+	//	m_mean[i][startWidth - 1] = 0;
+	//	m_variance[i][startWidth - 1] = 0;
+	//}
+
+	//memset(m_mean, iWidth, 0);
+	//memset(m_variance, iWidth, 0);
+
+	int tmp, tmp2;
+	int totalYValue = 0;
+	int yLen = iWidth * iHeight;
+
+#if defined(__ANDROID__)
+	/*int totalYValue = 0;*/
+	//int yLen = iWidth * iHeight;
+#endif
+
+	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+	{
+		tmp = 0, tmp2 = 0;
+		m_mean[i][startWidth - 1] = 0;
+
+		for (int j = startWidth; j <= endWidth; j++)
+		{
+
+#if defined(DESKTOP_C_SHARP)
+			pBlurConvertingData[iw + j - 1] = max(0, pBlurConvertingData[iw + j - 1] - brightness_shift);
+#endif
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+			//MakePixelBrightNew(&pBlurConvertingData[iw + j - 1]);
+
+			pBlurConvertingData[iw + j - 1] = m_ucpreBrightnessNew[pBlurConvertingData[iw + j - 1]];
+
+#else
+
+			//if (pBlurConvertingData[iw + j - 1] >= luminaceHigh - m_nPreviousAddValueForBrightening)
+			//	pBlurConvertingData[iw + j - 1] = luminaceHigh;
+			//else
+			//	pBlurConvertingData[iw + j - 1] += m_nPreviousAddValueForBrightening;
+
+			//pBlurConvertingData[iw + j - 1] = modifYUV[pBlurConvertingData[iw + j - 1]];
+
+
+			pBlurConvertingData[iw + j - 1] = m_ucpreBrightnessNew[pBlurConvertingData[iw + j - 1]];
+
+#endif
+
+
+
+			totalYValue += pBlurConvertingData[iw + j - 1];
+
+
+			tmp += pBlurConvertingData[iw + j - 1];
+			m_mean[i][j] = tmp + m_mean[i - 1][j];
+
+			tmp2 += (pBlurConvertingData[iw + j - 1] * pBlurConvertingData[iw + j - 1]);
+			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
+/*
+			//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+			if (pBlurConvertingData[m_pUIndex[iw + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw + j - 2]] > 175)
+			{
+				pBlurConvertingData[m_pUIndex[iw + j - 1]] += 0;
+				pBlurConvertingData[m_pVIndex[iw + j - 1]] -= 0;
+			}
+			else
+			{
+				pBlurConvertingData[m_pUIndex[iw + j - 1]] += 1;
+				pBlurConvertingData[m_pVIndex[iw + j - 1]] -= 1;
+			}
+			//#endif
+ */
+
+		}
+	}
+
+	m_AvarageValue = totalYValue / yLen;
+
+	/*#if defined(__ANDROID__)
+
+	if (m_AvarageValue < 50)
+	{
+	m_sigma = m_Step3Sigma;
+	m_sigmaDigit = m_Step3SigmaDigit;
+	}
+	else if (m_AvarageValue < 100)
+	{
+	m_sigma = m_Step2Sigma;
+	m_sigmaDigit = m_Step2SigmaDigit;
+	}
+	else
+	{
+	m_sigma = m_Step1Sigma;
+	m_sigmaDigit = m_Step1SigmaDigit;
+	}*/
+
+	/*#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)*/
+
+	/*
+	if (m_AvarageValue < 50)
+	{
+	m_sigma = m_Step2Sigma;
+	m_sigmaDigit = m_Step2SigmaDigit;
+	}
+	else
+	{
+	if (m_nIsGreaterThen5s > 0)
+	{
+	m_sigma = m_Step0Sigma;
+	m_sigmaDigit = m_Step0SigmaDigit;
+	}
+	else
+	{
+	m_sigma = m_Step1Sigma;
+	m_sigmaDigit = m_Step1SigmaDigit;
+	}
+	}
+	*/
+
+	//if (m_nIsGreaterThen5s > 0)
+	//{
+
+	m_sigma = (int)((16 * m_AvarageValue) / 25);
+
+	m_sigma++;
+
+	if (m_sigma > 128)
+		m_sigma = 128;
+	if (m_sigma < 32)
+		m_sigma = 32;
+
+	m_sigma -= 10;
+	int ns_sigma = m_sigma - 20;
+	if (ns_sigma <= 0)ns_sigma = 1;
+
+	/*
+	if (m_AvarageValue < 50)
+	{
+	m_sigma = m_Step2Sigma;
+	m_sigmaDigit = m_Step2SigmaDigit;
+	}
+	else if (m_AvarageValue < 100)
+	{
+	m_sigma = m_Step1Sigma;
+	m_sigmaDigit = m_Step1SigmaDigit;
+	}
+	else
+	{
+	m_sigma = m_Step0Sigma;
+	m_sigmaDigit = m_Step0SigmaDigit;
+	}
+	*/
+	//}
+	/*else
+	{
+	m_sigma = (int)((16 * m_AvarageValue) / 50);
+
+	m_sigma++;
+
+	if(m_sigma > 64)
+	m_sigma = 64;
+	if(m_sigma < 16)
+	m_sigma = 16;
+
+
+	/*
+	if (m_AvarageValue < 50)
+	{
+	m_sigma = m_Step3Sigma;
+	m_sigmaDigit = m_Step3SigmaDigit;
+	}
+	else if (m_AvarageValue < 100)
+	{
+	m_sigma = m_Step2Sigma;
+	m_sigmaDigit = m_Step2SigmaDigit;
+	}
+	else
+	{
+	m_sigma = m_Step1Sigma;
+	m_sigmaDigit = m_Step1SigmaDigit;
+	}
+	*/
+	//}
+
+	//#endif
+
+	//SetBrighteningValue(m_AvarageValue, 10);
+
+	int niHeight = iHeight - m_rr;
+	int niWidth = endWidth - m_rr;
+	int iw = m_radius * iWidth + m_radius;
+	double sigmaPix = m_sigma * m_pixels;
+	double ns_sigmaPix = ns_sigma * m_pixels;
+
+	//m_sigma = 255 - m_mean[iHeight][iWidth] / (iHeight * iWidth);
+
+	CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "sigma value " + m_Tools.getText(m_sigma));
+
+	for (int hl = 0, hr = m_rr; hl < niHeight; hl++, hr++)
+	{
+		for (int wl = startWidth, wr = m_rr + startWidth; wl < niWidth; wl++, wr++)
+		{
+			int miu = m_mean[hl][wl] + m_mean[hr][wr] - m_mean[hl][wr] - m_mean[hr][wl];
+			int viu = m_variance[hl][wl] + m_variance[hr][wr] - m_variance[hl][wr] - m_variance[hr][wl];
+
+			//double men = miu / m_pixels;
+			//double var = (viu - (miu * miu) / m_pixels) / m_pixels;
+			//var = abs(var);
+
+			//m_tmpPixel[iw + wl] = (m_sigma * men + var * pBlurConvertingData[iw + wl]) / (var + m_sigma);
+
+			double var = viu - (miu * miu / m_pixels);
+
+			//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+			if (pBlurConvertingData[m_pUIndex[iw + wl]] < 95 || pBlurConvertingData[m_pUIndex[iw + wl]] > 125 || pBlurConvertingData[m_pVIndex[iw + wl]] < 135 || pBlurConvertingData[m_pVIndex[iw + wl]] > 175)
+				pBlurConvertingData[iw + wl] = min(255., max(0., ((miu * ns_sigma) + var * pBlurConvertingData[iw + wl]) / (var + ns_sigmaPix)));
+			else
+				pBlurConvertingData[iw + wl] = min(255., max(0., ((miu * m_sigma) + var * pBlurConvertingData[iw + wl]) / (var + sigmaPix)));
+
+			//#else
+
+			//pBlurConvertingData[iw + wl] = min(255., max(0., ((miu << m_sigmaDigit) + var * pBlurConvertingData[iw + wl]) / (var + sigmaPix)));
+			//#endif
+
+		}
+
+		iw += iWidth;
+	}
+
+	long long endFilterTime = m_Tools.CurrentTimestamp();
+
+	//LOGE("VideoBeautificcationer -->> sharpingTimeDiff = %lld, filterTimeDiff = %lld, totalTimeDiff =% lld", -(startSharpingTime - endSharpingTime), -(endSharpingTime - endFilterTime), -(startSharpingTime - endFilterTime));
+
 	pair<int, int> result = { m_mean[iHeight][iWidth] / (iHeight*iWidth), m_variance[iHeight][iWidth] / (iHeight*iWidth) };
 
 	return result;
