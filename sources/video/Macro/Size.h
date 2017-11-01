@@ -399,7 +399,7 @@
 #if defined(DESKTOP_C_SHARP)
 	#define BRIGHTNESS_SCALE_NEW 20
 #else
-	#define BRIGHTNESS_SCALE_NEW 30
+	#define BRIGHTNESS_SCALE_NEW 10
 #endif
 
 

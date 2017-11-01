@@ -1192,7 +1192,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pB
 
 			tmp2 += (pBlurConvertingData[iw + j - 1] * pBlurConvertingData[iw + j - 1]);
 			m_variance[i][j] = tmp2 + m_variance[i - 1][j];
-
+/*
 			//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 			if (pBlurConvertingData[m_pUIndex[iw + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw + j - 2]] > 175)
 			{
@@ -1205,6 +1205,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pB
 				pBlurConvertingData[m_pVIndex[iw + j - 1]] -= 1;
 			}
 			//#endif
+ */
 
 		}
 	}
@@ -1264,8 +1265,8 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pB
 	if (m_sigma < 32)
 		m_sigma = 32;
 
-	m_sigma -= 20;
-	int ns_sigma = m_sigma - 30;
+	m_sigma -= 10;
+	int ns_sigma = m_sigma - 20;
 	if (ns_sigma <= 0)ns_sigma = 1;
 
 	/*

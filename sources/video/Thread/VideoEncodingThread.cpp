@@ -550,9 +550,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						else
 						{
 						//	if (13 == m_filterToApply)
-						//		pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
 						//	else
-								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						//		pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
 
 						}
 					}
