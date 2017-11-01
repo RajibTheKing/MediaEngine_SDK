@@ -515,8 +515,17 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
     m_nServiceType = nServiceType;
-    m_nGivenFrameHeight = iVideoHeight;
-    m_nGivenFrameWidth = iVideoWidth;
+    
+    if(iVideoHeight >= 352 || iVideoWidth >= 352)
+    {
+        m_nGivenFrameHeight = iVideoHeight * 2;
+        m_nGivenFrameWidth = iVideoWidth * 2;
+    }
+    else
+    {
+        m_nGivenFrameHeight = iVideoHeight;
+        m_nGivenFrameWidth = iVideoWidth;
+    }
     
     if(nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
     {
