@@ -517,8 +517,12 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
     m_nServiceType = nServiceType;
     m_nGivenFrameHeight = iVideoHeight;
     m_nGivenFrameWidth = iVideoWidth;
-    iVideoHeight = m_nSmalledFrameHeight; //352
-    iVideoWidth = m_nSmalledFrameWidth; //204
+    
+    if(nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+    {
+        iVideoHeight = m_nSmalledFrameHeight; //352
+        iVideoWidth = m_nSmalledFrameWidth; //204
+    }
 
 	m_nVideoCallHeight = iVideoHeight;
 	m_nVideoCallWidth = iVideoWidth;
@@ -1008,16 +1012,16 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 #ifdef __ANDROID__
 	m_pColorConverter->ConvertNV21ToI420(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight);
 	//long long startTime = m_Tools.CurrentTimestamp();
-	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight, m_ucaReceivedLargeFrame, m_nSmalledFrameWidth, m_nSmalledFrameHeight);
-	m_pColorConverter->ConvertI420ToNV21(m_ucaReceivedLargeFrame, m_nSmalledFrameWidth, m_nSmalledFrameHeight);
+	m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight, m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
+	m_pColorConverter->ConvertI420ToNV21(m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
 #else
     m_pColorConverter->ConvertNV12ToI420(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth);
     //long long startTime = m_Tools.CurrentTimestamp();
-    m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth, m_ucaReceivedLargeFrame, m_nSmalledFrameHeight, m_nSmalledFrameWidth);
-    m_pColorConverter->ConvertI420ToNV12(m_ucaReceivedLargeFrame, m_nSmalledFrameHeight, m_nSmalledFrameWidth);
+    m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth, m_ucaReceivedLargeFrame, m_nVideoCallHeight, m_nVideoCallWidth);
+    m_pColorConverter->ConvertI420ToNV12(m_ucaReceivedLargeFrame, m_nVideoCallHeight, m_nVideoCallWidth);
 #endif
 
-	int returnedValue = m_EncodingBuffer->Queue(m_ucaReceivedLargeFrame, m_nSmalledFrameHeight * m_nSmalledFrameWidth * 3 / 2, m_nSmalledFrameHeight, m_nSmalledFrameWidth, nCaptureTimeDiff, device_orientation);
+	int returnedValue = m_EncodingBuffer->Queue(m_ucaReceivedLargeFrame, m_nVideoCallHeight * m_nVideoCallWidth * 3 / 2, m_nVideoCallHeight, m_nVideoCallWidth, nCaptureTimeDiff, device_orientation);
 
 
 
