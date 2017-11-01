@@ -1,7 +1,7 @@
 #ifndef AUDIO_MACROS_H
 #define AUDIO_MACROS_H
 
-
+#define DUMP_ENABLE 1
 //#define PCM_DUMP
 
 #define LIVE_FIRST_FRAME_SLEEP_TIME_AUDIO 50

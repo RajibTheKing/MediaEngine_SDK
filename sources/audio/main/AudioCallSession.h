@@ -12,7 +12,6 @@
 #include "AudioMacros.h"
 #include "AudioDumper.h"
 
-#define DUMP_ENABLE 1
 
 namespace MediaSDK
 {

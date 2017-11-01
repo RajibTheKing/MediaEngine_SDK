@@ -685,6 +685,14 @@ namespace MediaSDK
 
 	int CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
+		m_pInputPcm->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
+#ifdef PCM_DUMP
+		if (RecordedFile)
+		{
+			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
+		}
+#endif
+
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		
 		int nEchoStateFlags = 0;
@@ -701,13 +709,6 @@ namespace MediaSDK
 
 #ifdef USE_AECM
 
-		m_pInputPcm->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
-#ifdef PCM_DUMP
-		if (RecordedFile)
-		{
-			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
-		}
-#endif
 		bool bIsGainWorking = (m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER && GetRecorderGain().get());
 
 		MediaLog(LOG_DEBUG, "[NE][ACS][GAIN][NS] PreprocessAudioData# CurrentTime=%lld, IsGainWorking=%d, IsNS=%d", llCurrentTime, bIsGainWorking, bIsNsWorking);
