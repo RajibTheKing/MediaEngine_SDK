@@ -65,7 +65,7 @@ namespace MediaSDK
 
 		AecmConfig aecConfig;
 		aecConfig.cngMode = AecmFalse;
-		aecConfig.echoMode = isLiveRunning ? ECHO_LEVEL_LIVE : ECHO_LEVEL_CALL;
+		aecConfig.echoMode = 4;
 		LOG18("##TT echo level %d", (int)aecConfig.echoMode);
 		if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
 		{
@@ -139,10 +139,10 @@ namespace MediaSDK
 				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
 			}
 			m_bNearEndingOrFarEnding = false;
-			if (gEchoType == ECHO_TYPE_JUST_ECHO)
+			/*if (gEchoType == ECHO_TYPE_JUST_ECHO)
 			{
 				memset(sInBuf + i, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
-			}
+			}*/
 			if (gEchoType == ECHO_TYPE_JUST_ECHO || gEchoType == ECHO_TYPE_DOUBLE_TALK)
 			{
 				nEchoStateFlags |= 1;

@@ -53,7 +53,6 @@
     <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\Trace.h" />
-    <ClInclude Include="..\..\..\sources\audio\dsp\Voice.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCGain.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.h" />
@@ -189,7 +188,6 @@
     <ClCompile Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\Trace.cpp" />
-    <ClCompile Include="..\..\..\sources\audio\dsp\Voice.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCGain.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.cpp" />
