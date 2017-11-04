@@ -165,11 +165,9 @@ namespace MediaSDK
 		m_clientSocket->SetAudioCallSession(this);
 #endif
 
-		string FilePath = "/sdcard/";
-		m_pInputPcm = new CAudioDumper(FilePath, "recorded.pcm", DUMP_ENABLE);
-		m_pInputProcessedPcm = new CAudioDumper(FilePath, "processed.pcm", DUMP_ENABLE);
-		m_pOutputPcm = new CAudioDumper(FilePath, "played.pcm", DUMP_ENABLE);
-
+		m_pInputPcm = new CAudioDumper("recorded.pcm", DUMP_ENABLE);
+		m_pInputProcessedPcm = new CAudioDumper("processed.pcm", DUMP_ENABLE);
+		m_pOutputPcm = new CAudioDumper("played.pcm", DUMP_ENABLE);
 #ifdef PCM_DUMP
 		long long llcurrentTime;
 		std::string sCurrentTime;
