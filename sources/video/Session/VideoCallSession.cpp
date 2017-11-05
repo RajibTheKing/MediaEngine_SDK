@@ -1566,6 +1566,17 @@ void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
 
 int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType)
 {
+	if (height >= 640 || width >= 640)
+	{
+		m_nGivenFrameHeight = height * 2;
+		m_nGivenFrameWidth = width * 2;
+	}
+	else
+	{
+		m_nGivenFrameHeight = height;
+		m_nGivenFrameWidth = width;
+	}
+
 	if (m_nVideoCallHeight != height || m_nVideoCallWidth != width || m_nOwnDeviceType == DEVICE_TYPE_DESKTOP)
 	{
 		m_nVideoCallHeight = height;
