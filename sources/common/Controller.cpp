@@ -331,16 +331,20 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called 1 ID %lld", lFriendID);
 
 	StartCallLocker lock1(*m_pVideoStartMutex);
-    
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+
+	bool bDownscaled;
     
     if(iVideoHeight > 640 || iVideoWidth > 640)
     {
         iVideoHeight = iVideoHeight / 2;
         iVideoWidth = iVideoWidth / 2;
+
+		bDownscaled = true;
     }
-    
-#endif
+	else
+	{
+		bDownscaled = false;
+	}
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called 2 ID %lld", lFriendID);
 
@@ -393,7 +397,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
 		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel, nServiceType, nEntityType, bAudioOnlyLive, bSelfViewOnly);
 
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth,nServiceType,iNetworkType);
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, nServiceType, iNetworkType, bDownscaled);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
@@ -685,16 +689,20 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 	CVideoCallSession* pVideoSession;
 
 	SetEncoderLocker lock(*m_pVideoSendMutex);
-    
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
+
+	bool bDownscaled;
     
     if(height > 640 || width > 640)
     {
         height = height / 2;
         width = width / 2;
+
+		bDownscaled = true;
     }
-    
-#endif
+	else
+	{
+		bDownscaled = false;
+	}
     
 	if(height * width > 352 * 288)
 	{
@@ -712,7 +720,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 
 	if (bExist)
 	{
-		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width, nDataType);
+		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width, nDataType, bDownscaled);
 	}
 	else
 	{
@@ -858,15 +866,11 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
 
 	StartCheckCapabilityLocker lock1(*m_pVideoStartMutex);
     
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
-    
     if(iHeightHigh > 640 || iWidthHigh > 640)
     {
         iHeightHigh = iHeightHigh / 2;
         iWidthHigh = iWidthHigh / 2;
     }
-    
-#endif
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::CheckDeviceCapability called 2 ID %lld", lFriendID);
 
@@ -928,17 +932,12 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
 }
 
 int CController::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
-{
-    
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__) || defined(TARGET_IPHONE_SIMULATOR)
-    
+{   
     if(iHeightHigh > 640 || iWidthHigh > 640)
     {
         iHeightHigh = iHeightHigh / 2;
         iWidthHigh = iWidthHigh / 2;
     }
-    
-#endif
     
     m_Quality[0].iHeight = iHeightLow;
     m_Quality[0].iWidth = iWidthLow;

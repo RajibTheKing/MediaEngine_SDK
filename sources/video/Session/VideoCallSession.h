@@ -54,7 +54,7 @@ public:
 	~CVideoCallSession();
 
 	long long GetFriendID();
-	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType);
+	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType, bool downscaled);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
@@ -136,7 +136,7 @@ public:
 
 	void SetCallInLiveType(int nCallInLiveType);
 
-	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType);
+	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType, bool bDownscaled);
 	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
     void SetBeautification(bool bIsEnable);
@@ -183,7 +183,7 @@ public:
 private:
 
 	int m_nPublisherInsetNumber;
-
+	bool m_bDownscaled;
 	CSendingThread *m_pSendingThread;
 
 	bool m_bFrameReduce;

@@ -67,6 +67,7 @@ m_bSelfViewOnly(bSelfViewOnly),
 m_nFrameCount(0),
 m_nDUCounter(0),
 m_bDoubleUpdate(false),
+m_bDownscaled(false),
 
 #ifdef OLD_SENDING_THREAD
 
@@ -512,13 +513,15 @@ long long CVideoCallSession::GetFriendID()
 	return m_lfriendID;
 }
 
-void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType)
+void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType, bool downscaled)
 {
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
     m_nServiceType = nServiceType;
+
+	m_bDownscaled = downscaled;
     
-    if(iVideoHeight >= 640 || iVideoWidth >= 640)
+	if (downscaled)
     {
         m_nGivenFrameHeight = iVideoHeight * 2;
         m_nGivenFrameWidth = iVideoWidth * 2;
@@ -1035,7 +1038,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	int returnedValue;
 
-	if (m_nGivenFrameHeight > 640 || m_nGivenFrameWidth > 640)
+	if (m_bDownscaled)
 	{
 		//LOGE_MAIN("fahad -->> m_nGivenFrameHeight = %d || m_nGivenFrameWidth = %d", m_nGivenFrameHeight, m_nGivenFrameWidth);
 #ifdef __ANDROID__
@@ -1564,9 +1567,11 @@ void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
 	m_nCallInLiveType = nCallInLiveType;
 }
 
-int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType)
+int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType, bool bDownscaled)
 {
-	if (height >= 640 || width >= 640)
+	m_bDownscaled = bDownscaled;
+
+	if (bDownscaled)
 	{
 		m_nGivenFrameHeight = height * 2;
 		m_nGivenFrameWidth = width * 2;
