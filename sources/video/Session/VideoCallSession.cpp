@@ -518,7 +518,7 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
     m_nServiceType = nServiceType;
     
-    if(iVideoHeight > 640 || iVideoWidth > 640)
+    if(iVideoHeight >= 640 || iVideoWidth >= 640)
     {
         m_nGivenFrameHeight = iVideoHeight * 2;
         m_nGivenFrameWidth = iVideoWidth * 2;
