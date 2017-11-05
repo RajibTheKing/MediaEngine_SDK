@@ -143,6 +143,7 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType)
 	{
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth, iAudioCodecType) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth, iAudioCodecType);
 #ifdef LIVE_CHUNK_DUMPLINGS
 #if defined(__ANDROID__)
 		std::string dpath = "/sdcard/";
@@ -485,6 +486,7 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
 	{
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, unLength, nOrientationType,  device_orientation) = (%llu, %d, %d, %d)", llFriendID, unLength, nOrientationType, device_orientation);
 		if (nullptr == m_pcController)
 		{
 			return false;
@@ -497,6 +499,7 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nDataType)
 	{
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, H, W, nDataType) = (%lld, %d, %d, %d)", llFriendID, nVideoHeight, nVideoWidth, nDataType);
 		if (nullptr == m_pcController)
 		{
 			return false;
@@ -611,6 +614,7 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 	{
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SetDeviceCapabilityResults (Notification, HH, WH, HL, WL) = (%d, %d, %d, %d, %d)", iNotification, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 		if (nullptr == m_pcController)
 		{
 			return false;
