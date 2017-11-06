@@ -1046,12 +1046,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 #ifdef __ANDROID__
 		m_pColorConverter->ConvertNV21ToI420(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight);
 		//long long startTime = m_Tools.CurrentTimestamp();
-		m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight, m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
+		m_pColorConverter->DownScaleYUV420_Dynamic_Version222(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight, m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
 		m_pColorConverter->ConvertI420ToNV21(m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
 #else
 		m_pColorConverter->ConvertNV12ToI420(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth);
 		//long long startTime = m_Tools.CurrentTimestamp();
-		m_pColorConverter->DownScaleYUV420_Dynamic_Version2(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth, m_ucaReceivedLargeFrame, m_nVideoCallHeight, m_nVideoCallWidth);
+		m_pColorConverter->DownScaleYUV420_Dynamic_Version222(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth, m_ucaReceivedLargeFrame, m_nVideoCallHeight, m_nVideoCallWidth);
 		m_pColorConverter->ConvertI420ToNV12(m_ucaReceivedLargeFrame, m_nVideoCallHeight, m_nVideoCallWidth);
 #endif
 

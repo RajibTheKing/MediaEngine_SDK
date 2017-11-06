@@ -67,6 +67,7 @@ namespace MediaSDK
 		int DownScaleYUV420_EvenVersion(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
 		int DownScaleYUV420_Dynamic(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData, int diff);
 		int DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth);
+		int DownScaleYUV420_Dynamic_Version222(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth);
 
 		int DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
 		int DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData);
@@ -148,6 +149,10 @@ namespace MediaSDK
 		int CumulativeSum[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
 		int CumulativeSum_U[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
 		int CumulativeSum_V[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
+
+		int CumulativeSum2[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
+		int CumulativeSum_U2[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
+		int CumulativeSum_V2[MAX_VIDEO_FRAME_INPUT_HEIGHT + 1][MAX_VIDEO_FRAME_INPUT_HEIGHT + 1];
 
 		unsigned char m_pClip[900];
 		bool m_bClipInitialization;
