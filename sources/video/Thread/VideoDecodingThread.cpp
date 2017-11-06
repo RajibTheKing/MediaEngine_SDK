@@ -680,15 +680,20 @@ namespace MediaSDK
                     {
                         //do nothing
                     }
+
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient before rotation m_decodingHeight %d, m_decodingWidth %d, rotatedHeight %d, rotatedWidth %d, nOrientationForRotation %d", m_decodingHeight, m_decodingWidth, rotatedHeight, rotatedWidth, nOrientationForRotation);
                     
 					int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientationForRotation);
                     
                     memcpy(m_DecodedFrame, m_RotatedFrame, iLen);
                     m_decodingHeight = rotatedHeight;
                     m_decodingWidth = rotatedWidth;
+
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient after rotation m_decodingHeight %d, m_decodingWidth %d, rotatedHeight %d, rotatedWidth %d, nOrientationForRotation %d", m_decodingHeight, m_decodingWidth, rotatedHeight, rotatedWidth, nOrientationForRotation);
                 }
                 
-                
+				CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient betfore setting small frame m_decodingHeight %d, m_decodingWidth %d, iHeight %d, iWidth %d", m_decodingHeight, m_decodingWidth, iHeight, iWidth);
+
                 this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)

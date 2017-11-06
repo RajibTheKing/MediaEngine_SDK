@@ -623,8 +623,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 					iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 000 iInsetLowerPadding %d, iSmallWidth %d, iSmallHeight %d", iInsetLowerPadding, iSmallWidth, iSmallHeight);
+
 					int iPosX = iWidth - iSmallWidth;
 					int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
+
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 1 iPosX %d, iPosY %d", iPosX, iPosY);
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
                     
