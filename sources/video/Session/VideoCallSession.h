@@ -168,16 +168,26 @@ public:
     
     int getLiveVideoQualityLevel();
     
+    int getVideoCallHeight()
+    {
+        return m_nVideoCallHeight;
+    }
+    
+    int getVideoCallWidth()
+    {
+        return m_nVideoCallWidth;
+    }
+    
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
     bool m_bLiveVideoStreamRunning;
 
-	int m_nVideoCallHeight;
-	int m_nVideoCallWidth;
+
 
 	CVideoEncodingThread *m_pVideoEncodingThread;
-    
+    int m_nVideoCallHeight;
+    int m_nVideoCallWidth;
     
 
 private:
@@ -315,7 +325,9 @@ private:
 	int m_nSmalledFrameHeight;
 	int m_nSmalledFrameWidth;
 	int m_nGivenFrameHeight;
-	int m_nGivenFrameWidth;   
+	int m_nGivenFrameWidth;
+    
+
 
 protected:
 
