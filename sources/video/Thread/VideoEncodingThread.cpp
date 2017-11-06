@@ -56,12 +56,12 @@ m_bNewSessionStarted(true)
          {
              memset(m_ucaDummmyFrame[k], 0, sizeof(m_ucaDummmyFrame[k]));
              
-             for(int i=0;i<m_pVideoCallSession->m_nVideoCallHeight;i++)
+             for(int i=0;i<m_pVideoCallSession->getVideoCallHeight();i++)
              {
                  int color = rand()%255;
-                 for(int j = 0; j <  m_pVideoCallSession->m_nVideoCallWidth; j ++)
+                 for(int j = 0; j <  m_pVideoCallSession->getVideoCallWidth(); j ++)
                  {
-                     m_ucaDummmyFrame[k][i * m_pVideoCallSession->m_nVideoCallHeight + j ] = color;
+                     m_ucaDummmyFrame[k][i * m_pVideoCallSession->getVideoCallHeight() + j ] = color;
                  }
                  
              }
@@ -254,11 +254,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
     int iNumberOfEncodeFailCounter = 0;
 #if defined(DESKTOP_C_SHARP)
 
-	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallHeight,  m_pVideoCallSession->m_nVideoCallWidth, RGB24);
+	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->getVideoCallHeight(),  m_pVideoCallSession->getVideoCallWidth(), RGB24);
 
 #else
 
-	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallHeight,  m_pVideoCallSession->m_nVideoCallWidth, YUV420);
+	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->getVideoCallHeight(),  m_pVideoCallSession->getVideoCallWidth(), YUV420);
 
 #endif
 

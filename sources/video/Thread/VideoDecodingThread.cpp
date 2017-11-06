@@ -664,8 +664,8 @@ namespace MediaSDK
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
 
-				int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
-				int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
+				int iHeight = m_pVideoCallSession->getVideoCallHeight();
+				int iWidth = m_pVideoCallSession->getVideoCallWidth();
                 
                 if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
                 {

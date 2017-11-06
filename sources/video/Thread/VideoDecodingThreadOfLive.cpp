@@ -467,8 +467,8 @@ namespace MediaSDK
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThreadOfLive::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
 
-				int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
-				int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
+				int iHeight = m_pVideoCallSession->getVideoCallHeight();
+				int iWidth = m_pVideoCallSession->getVideoCallWidth();
 				this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
@@ -513,8 +513,8 @@ namespace MediaSDK
 
 		if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
 		{
-			int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
-			int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
+			int iHeight = m_pVideoCallSession->getVideoCallHeight();
+			int iWidth = m_pVideoCallSession->getVideoCallWidth();
 
 			int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
 			int iScreenWidth = this->m_pColorConverter->GetScreenWidth();
@@ -568,8 +568,8 @@ namespace MediaSDK
 
 		if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM) && (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP))
 		{
-			int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
-			int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
+			int iHeight = m_pVideoCallSession->getVideoCallHeight();
+			int iWidth = m_pVideoCallSession->getVideoCallWidth();
 
 			int iScreenHeight = this->m_pColorConverter->GetScreenHeight();
 			int iScreenWidth = this->m_pColorConverter->GetScreenWidth();

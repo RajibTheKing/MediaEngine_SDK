@@ -92,6 +92,9 @@ namespace MediaSDK
         int iLiveVideoBitrate = m_pcVideoCallSession->GetVideoEncoder()->GetBitrate();
         int iLiveVideoMaxBitrate = m_pcVideoCallSession->GetVideoEncoder()->GetMaxBitrate();
         
+        int iVideoHeight4th = m_pcVideoCallSession->getVideoCallHeight() / 4;
+        int iVideoWidth4th = m_pcVideoCallSession->getVideoCallWidth() / 4;
+        
         //std::string sOperatingSystemVersion = "10.3";
         //std::string sDeviceModel = "Iphone6";
         
@@ -123,7 +126,9 @@ namespace MediaSDK
                                            iMediaEngineVersion,                      //MediaEngineVersion
                                            iLiveVideoQualityLevel,                   //LiveiVideoQualityLevel
                                            iLiveVideoBitrate,                   //LiveiVideoQualityLevel
-                                           iLiveVideoMaxBitrate                   //LiveiVideoQualityLevel
+                                           iLiveVideoMaxBitrate,                   //LiveiVideoQualityLevel
+                                           iVideoHeight4th,                         //VideoHeight4th
+                                           iVideoWidth4th                         //VideoWidth4th
                                            );
 
 			m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
@@ -171,7 +176,9 @@ namespace MediaSDK
                                            iMediaEngineVersion,                      //MediaEngineVersion
                                            iLiveVideoQualityLevel,                   //LiveiVideoQualityLevel
                                            iLiveVideoBitrate,                   //LiveiVideoQualityLevel
-                                           iLiveVideoMaxBitrate                   //LiveiVideoQualityLevel
+                                           iLiveVideoMaxBitrate,                   //LiveiVideoQualityLevel
+                                           iVideoHeight4th,                         //VideoHeight4th
+                                           iVideoWidth4th                         //VideoWidth4th
                                            );
 
 
@@ -250,7 +257,9 @@ namespace MediaSDK
                                                iMediaEngineVersion,                      //MediaEngineVersion
                                                iLiveVideoQualityLevel,                   //LiveiVideoQualityLevel
                                                iLiveVideoBitrate,                   //LiveiVideoQualityLevel
-                                               iLiveVideoMaxBitrate                   //LiveiVideoQualityLevel
+                                               iLiveVideoMaxBitrate,                   //LiveiVideoQualityLevel
+                                               iVideoHeight4th,                         //VideoHeight4th
+                                               iVideoWidth4th                         //VideoWidth4th
                                                );
                 
                 
