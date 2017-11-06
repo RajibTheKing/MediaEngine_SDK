@@ -347,8 +347,8 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
     
     if(iVideoHeight > 640 || iVideoWidth > 640)
     {
-        iVideoHeight = iVideoHeight / 2;
-        iVideoWidth = iVideoWidth / 2;
+        iVideoHeight = iVideoHeight / 4;
+        iVideoWidth = iVideoWidth / 4;
 
 		bDownscaled = true;
     }
@@ -709,8 +709,8 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
     
     if(height > 640 || width > 640)
     {
-        height = height / 2;
-        width = width / 2;
+        height = height / 4;
+        width = width / 4;
 
 		bDownscaled = true;
     }

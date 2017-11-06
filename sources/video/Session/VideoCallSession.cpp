@@ -523,10 +523,8 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
     
 	if (downscaled)
     {
-        m_nGivenFrameHeight = iVideoHeight * 2;
-        m_nGivenFrameWidth = iVideoWidth * 2;
-        
-        
+        m_nGivenFrameHeight = iVideoHeight * 4;
+        m_nGivenFrameWidth = iVideoWidth * 4;
     }
     else
     {
@@ -1583,8 +1581,8 @@ int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int hei
 
 	if (bDownscaled)
 	{
-		m_nGivenFrameHeight = height * 2;
-		m_nGivenFrameWidth = width * 2;
+		m_nGivenFrameHeight = height * 4;
+		m_nGivenFrameWidth = width * 4;
 	}
 	else
 	{
