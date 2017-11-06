@@ -336,16 +336,8 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	if (m_nSupportedResolutionFPSLevel == SUPPORTED_RESOLUTION_FPS_640_25 || m_nSupportedResolutionFPSLevel == SUPPORTED_RESOLUTION_FPS_352_25)
-	{
 		iVideoHeight = 1280;
 		iVideoWidth = 720;
-	}
-	else
-	{
-		iVideoHeight = 352;
-		iVideoWidth = 288;
-	}
 
 #endif
 
