@@ -1117,9 +1117,9 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pB
 
 					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> shiftDigit)));
 #elif defined(__ANDROID__)
-					if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
-						pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 2)));
-					else
+					//if (pBlurConvertingData[m_pUIndex[iw2 + j - 1]] < 95 || pBlurConvertingData[m_pUIndex[iw2 + j - 1]] > 125 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] < 135 || pBlurConvertingData[m_pVIndex[iw2 + j - 2]] > 175)
+				//		pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 2)));
+					//else
 						pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
 #else
 					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 10)));
@@ -1266,7 +1266,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pB
 		m_sigma = 32;
 
 	m_sigma -= 10;
-	int ns_sigma = m_sigma - 20;
+	int ns_sigma = m_sigma - 25;
 	if (ns_sigma <= 0)ns_sigma = 1;
 
 	/*
