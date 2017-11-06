@@ -308,7 +308,7 @@ CVideoCallSession* CController::StartTestVideoCall(const long long& lFriendID, i
 
 		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, ENTITY_TYPE_CALLER, false, false);
 
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType, false);
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType, false, VIDEO_CALL_TYPE_UNCHECKED);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
@@ -347,8 +347,24 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
     
     if(iVideoHeight > 640 || iVideoWidth > 640)
     {
-        iVideoHeight = iVideoHeight / 4;
-        iVideoWidth = iVideoWidth / 4;
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		{
+			iVideoHeight = iVideoHeight / 4;
+			iVideoWidth = iVideoWidth / 4;
+		}
+		else if (nServiceType == SERVICE_TYPE_CALL)
+		{
+			if (m_nSupportedResolutionFPSLevel == VIDEO_CALL_TYPE_640_25FPS)
+			{
+				iVideoHeight = iVideoHeight / 2;
+				iVideoWidth = iVideoWidth / 2;
+			}
+			else
+			{
+				iVideoHeight = iVideoHeight / 4;
+				iVideoWidth = iVideoWidth / 4;
+			}
+		}
 
 		bDownscaled = true;
     }
@@ -408,7 +424,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
 		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel, nServiceType, nEntityType, bAudioOnlyLive, bSelfViewOnly);
 
-		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, nServiceType, iNetworkType, bDownscaled);
+		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, nServiceType, iNetworkType, bDownscaled, m_nSupportedResolutionFPSLevel);
 
 		m_pCommonElementsBucket->m_pVideoCallSessionList->AddToVideoSessionList(lFriendID, pVideoSession);
 
@@ -704,22 +720,6 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 	SetEncoderLocker lock(*m_pVideoSendMutex);
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::SetEncoderHeightWidth after lock called 1 ID %lld height %d width %d", lFriendID, height, width);
-
-	bool bDownscaled;
-    
-    if(height > 640 || width > 640)
-    {
-        height = height / 4;
-        width = width / 4;
-
-		bDownscaled = true;
-    }
-	else
-	{
-		bDownscaled = false;
-	}
-
-	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::SetEncoderHeightWidth after reduction called 1 ID %lld height %d width %d", lFriendID, height, width);
     
 	if(height * width > 352 * 288)
 	{
@@ -732,12 +732,56 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 		m_Quality[0].iWidth = width;
 	}
     
-
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 
 	if (bExist)
 	{
-		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width, nDataType, bDownscaled);
+		bool bDownscaled;
+
+		if (height > 640 || width > 640)
+		{
+			int nServiceType = pVideoSession->GetServiceType();
+
+			if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+			{
+				height = height / 4;
+				width = width / 4;
+			}
+			else if (nServiceType == SERVICE_TYPE_CALL)
+			{
+				if (m_nSupportedResolutionFPSLevel == VIDEO_CALL_TYPE_640_25FPS)
+				{
+					height = height / 2;
+					width = width / 2;
+				}
+				else
+				{
+					height = height / 4;
+					width = width / 4;
+				}
+			}
+
+			bDownscaled = true;
+		}
+		else
+		{
+			bDownscaled = false;
+		}
+
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::SetEncoderHeightWidth after reduction called 1 ID %lld height %d width %d", lFriendID, height, width);
+
+		if (height * width > 352 * 288)
+		{
+			m_Quality[1].iHeight = height;
+			m_Quality[1].iWidth = width;
+		}
+		else
+		{
+			m_Quality[0].iHeight = height;
+			m_Quality[0].iWidth = width;
+		}
+
+		return pVideoSession->SetEncoderHeightWidth(lFriendID, height, width, nDataType, bDownscaled, m_nSupportedResolutionFPSLevel);
 	}
 	else
 	{

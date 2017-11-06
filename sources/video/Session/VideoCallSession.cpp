@@ -513,7 +513,7 @@ long long CVideoCallSession::GetFriendID()
 	return m_lfriendID;
 }
 
-void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType, bool downscaled)
+void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int iNetworkType, bool downscaled, int deviceCapability)
 {
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::InitializeVideoSession 232");
@@ -523,15 +523,29 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
     
 	if (downscaled)
     {
-        m_nGivenFrameHeight = iVideoHeight * 4;
-        m_nGivenFrameWidth = iVideoWidth * 4;
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		{
+			m_nGivenFrameHeight = iVideoHeight * 4;
+			m_nGivenFrameWidth = iVideoWidth * 4;
+		}
+		else if (nServiceType == SERVICE_TYPE_CALL)
+		{
+			if (deviceCapability == VIDEO_CALL_TYPE_640_25FPS)
+			{
+				m_nGivenFrameHeight = iVideoHeight * 2;
+				m_nGivenFrameWidth = iVideoWidth * 2;
+			}
+			else
+			{
+				m_nGivenFrameHeight = iVideoHeight * 4;
+				m_nGivenFrameWidth = iVideoWidth * 4;
+			}
+		}
     }
     else
     {
         m_nGivenFrameHeight = iVideoHeight;
         m_nGivenFrameWidth = iVideoWidth;
-        
-        
     }
     
     if(nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
@@ -1575,14 +1589,30 @@ void CVideoCallSession::SetCallInLiveType(int nCallInLiveType)
 	m_nCallInLiveType = nCallInLiveType;
 }
 
-int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType, bool bDownscaled)
+int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType, bool bDownscaled, int deviceCapability)
 {
 	m_bDownscaled = bDownscaled;
 
 	if (bDownscaled)
 	{
-		m_nGivenFrameHeight = height * 4;
-		m_nGivenFrameWidth = width * 4;
+		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+		{
+			m_nGivenFrameHeight = height * 4;
+			m_nGivenFrameWidth = width * 4;
+		}
+		else if (m_nServiceType == SERVICE_TYPE_CALL)
+		{
+			if (deviceCapability == VIDEO_CALL_TYPE_640_25FPS)
+			{
+				m_nGivenFrameHeight = height * 2;
+				m_nGivenFrameHeight = width * 2;
+			}
+			else
+			{
+				m_nGivenFrameHeight = height * 4;
+				m_nGivenFrameHeight = width * 4;
+			}
+		}
 	}
 	else
 	{

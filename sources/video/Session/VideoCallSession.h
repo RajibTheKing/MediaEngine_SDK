@@ -54,7 +54,7 @@ public:
 	~CVideoCallSession();
 
 	long long GetFriendID();
-	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType, bool downscaled);
+	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType, bool downscaled, int deviceCapability);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
@@ -136,7 +136,7 @@ public:
 
 	void SetCallInLiveType(int nCallInLiveType);
 
-	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType, bool bDownscaled);
+	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType, bool bDownscaled, int deviceCapability);
 	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
     void SetBeautification(bool bIsEnable);
@@ -177,16 +177,16 @@ public:
     {
         return m_nVideoCallWidth;
     }
-    
-    int getGivenFrameHeight()
-    {
-        return m_nGivenFrameHeight;
-    }
-    
-    int getGivenFrameWidth()
-    {
-        return m_nGivenFrameWidth;
-    }
+
+	int getGivenFrameHeight()
+	{
+		return m_nGivenFrameHeight;
+	}
+
+	int getGivenFrameWidth()
+	{
+		return m_nGivenFrameWidth;
+	}
     
 	bool m_bVideoCallStarted;
     CController *m_pController;
