@@ -46,7 +46,9 @@ namespace MediaSDK
                              int iMediaEngineVersion,
                              int iLiveVideoQualityLevel,
                              int iLiveStreamBitrate,
-                             int iLiveStreamMaxBitrate
+                             int iLiveStreamMaxBitrate,
+                             int iVideoHeightFourth,
+                             int iVideoWidthFourth
 			);
         
         int GetHeaderInByteArray(unsigned char* data);
@@ -208,6 +210,20 @@ namespace MediaSDK
             return m_iLiveStreamMaxBitrate;
         }
         
+        void setVideoHeightFourth(unsigned char *pData);
+        int GetVideoHeightFourth()
+        {
+            return m_iVideoHeightFourth;
+        }
+        
+        void setVideoWidthFourth(unsigned char *pData);
+        int GetVideoWidthFourth()
+        {
+            return m_iVideoWidthFourth;
+        }
+        
+        
+        
 	private:
 
 		//unsigned char m_ucPacketType;
@@ -278,6 +294,9 @@ namespace MediaSDK
         int m_iLiveStreamMaxBitrate; //3 byte
         //Total 33 + 6 = 39 byte
         
+        int m_iVideoHeightFourth; //1 byte
+        int m_iVideoWidthFourth; //1 byte
+        //Total 39 + 2 = 41 byte
 
         
 	};

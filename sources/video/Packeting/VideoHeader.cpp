@@ -38,6 +38,9 @@
 #define LIVE_STREAM_VIDEO_BITRATE_INDEX 33
 #define LIVE_STREAM_VIDEO_MAX_BITRATE_INDEX 36
 
+//VideoHeightWidth by 4
+#define VIDEO_HEIGTH_FOURTH_INDEX 39
+#define VIDEO_WIDTH_FOURTH_INDEX 40
 
 #define QUALITY_BITS_N      3
 #define ORIENTATION_BITS_N  2
@@ -95,6 +98,16 @@ namespace MediaSDK
         
         //LiveVideoQualityLevel
         m_iLiveVideoQualityLevel = 0; //3 bit
+        
+        //LiveStreamBitrates
+        m_iLiveStreamBitrate = 0; //3 byte
+        m_iLiveStreamMaxBitrate = 0; //3 byte
+        
+        
+        //VideoHeightWidth by 4
+        m_iVideoHeightFourth = 0; //1 byte
+        m_iVideoWidthFourth = 0; //1 byte
+        
 
 	}
 
@@ -132,7 +145,7 @@ namespace MediaSDK
 		SetInsetWidths(headerData + INSET_HEIGHT_WIDTH_INDEX, m_nNumberOfInset);    nowIndex += 2;
         
         
-        if(m_iVersionCode == 2 || m_iVersionCode == 3 || m_iVersionCode == 4)
+        if(m_iVersionCode == 2 || m_iVersionCode == 3 || m_iVersionCode == 4 || m_iVersionCode == 5)
         {
             printf("here inside new Header parsing\n");
             SetSigmaValue(headerData + SIGMA_VALUE_INDEX);                          nowIndex += 1;
@@ -143,16 +156,23 @@ namespace MediaSDK
             
         }
         
-        if(m_iVersionCode == 3 || m_iVersionCode == 4)
+        if(m_iVersionCode == 3 || m_iVersionCode == 4 || m_iVersionCode == 5)
         {
             SetLiveVideoQualityLevel(headerData + LIVE_VIDEO_QUALITY_LEVEL_INDEX);  nowIndex += 1;
         }
         
-        if(m_iVersionCode == 4)
+        if(m_iVersionCode == 4 || m_iVersionCode == 5)
         {
             setLiveStreamVideoBitrate(headerData + LIVE_STREAM_VIDEO_BITRATE_INDEX);         nowIndex += 3;
             setLiveStreamVideoMaxBitrate(headerData + LIVE_STREAM_VIDEO_MAX_BITRATE_INDEX);  nowIndex += 3;
         }
+        
+        if(m_iVersionCode == 5)
+        {
+            setVideoHeightFourth(headerData + VIDEO_HEIGTH_FOURTH_INDEX);                   nowIndex += 1;
+            setVideoWidthFourth(headerData + VIDEO_WIDTH_FOURTH_INDEX);                     nowIndex += 1;
+        }
+        
 	}
     
 	void CVideoHeader::SetPacketHeader(unsigned char packetType,
@@ -180,7 +200,9 @@ namespace MediaSDK
                                        int iMediaEngineVersion,
                                        int iLiveVideoQualityLevel,
                                        int iLiveStreamBitrate,
-                                       int iLiveStreamMaxBitrate
+                                       int iLiveStreamMaxBitrate,
+                                       int iVideoHeightFourth,
+                                       int iVideoWidthFourth
                                        
 		)
 	{
@@ -232,6 +254,10 @@ namespace MediaSDK
         
         //LiveVideo MaxBitrate
         m_iLiveStreamMaxBitrate = iLiveStreamMaxBitrate;
+        
+        //VideoHeightWidth by 4
+        m_iVideoHeightFourth = iVideoHeightFourth;
+        m_iVideoWidthFourth = iVideoWidthFourth;
     }
 
 	void CVideoHeader::ShowDetails(string sTag)
@@ -262,6 +288,8 @@ namespace MediaSDK
 			+ " brightness:" + Tools::getText(m_iBrightnessValue)
             + " LVBR:" + Tools::getText(m_iLiveStreamBitrate)
             + " LVMBR:" + Tools::getText(m_iLiveStreamMaxBitrate)
+            + " H:" + Tools::getText(m_iVideoHeightFourth)
+            + " W:" + Tools::getText(m_iVideoWidthFourth)
 			;
 
 		unsigned char pLocalData[100];
@@ -388,6 +416,10 @@ namespace MediaSDK
         data[index++] = (m_iLiveStreamMaxBitrate >> 8);
         data[index++] = (m_iLiveStreamMaxBitrate >> 0);
         
+        
+        //VideoHeightWidthFourth
+        data[index++] = (unsigned char)m_iVideoHeightFourth;
+        data[index++] = (unsigned char)m_iVideoWidthFourth;
 		return index;
 	}
 
@@ -608,6 +640,20 @@ namespace MediaSDK
     {
         m_iLiveStreamMaxBitrate = GetIntFromChar(pData, 0, 3);
     }
+    
+    void CVideoHeader::setVideoHeightFourth(unsigned char *pData)
+    {
+        m_iVideoHeightFourth = (int)pData[0];
+    }
+
+    
+    void CVideoHeader::setVideoWidthFourth(unsigned char *pData)
+    {
+        m_iVideoWidthFourth = (int)pData[0];
+    }
+
+    
+    
     
 } //namespace MediaSDK
 
