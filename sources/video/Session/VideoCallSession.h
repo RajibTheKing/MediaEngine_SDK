@@ -178,6 +178,16 @@ public:
         return m_nVideoCallWidth;
     }
     
+    int getGivenFrameHeight()
+    {
+        return m_nGivenFrameHeight;
+    }
+    
+    int getGivenFrameWidth()
+    {
+        return m_nGivenFrameWidth;
+    }
+    
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;

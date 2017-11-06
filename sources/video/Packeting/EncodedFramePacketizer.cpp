@@ -92,8 +92,8 @@ namespace MediaSDK
         int iLiveVideoBitrate = m_pcVideoCallSession->GetVideoEncoder()->GetBitrate();
         int iLiveVideoMaxBitrate = m_pcVideoCallSession->GetVideoEncoder()->GetMaxBitrate();
         
-        int iVideoHeight4th = m_pcVideoCallSession->getVideoCallHeight() / 4;
-        int iVideoWidth4th = m_pcVideoCallSession->getVideoCallWidth() / 4;
+        int iVideoHeight4th = m_pcVideoCallSession->getGivenFrameHeight()/ 8;
+        int iVideoWidth4th = m_pcVideoCallSession->getGivenFrameWidth() / 8;
         
         //std::string sOperatingSystemVersion = "10.3";
         //std::string sDeviceModel = "Iphone6";
