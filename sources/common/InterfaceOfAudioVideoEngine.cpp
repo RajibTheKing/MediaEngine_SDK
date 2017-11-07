@@ -488,7 +488,8 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
 	{
-        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, unLength, nOrientationType,  device_orientation) = (%llu, %d, %d, %d)", llFriendID, unLength, nOrientationType, device_orientation);
+        //CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, unLength, nOrientationType,  device_orientation) = (%llu, %d, %d, %d)", llFriendID, unLength, nOrientationType, device_orientation);
+		
 		if (nullptr == m_pcController)
 		{
 			return false;
@@ -501,7 +502,7 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nDataType)
 	{
-        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, H, W, nDataType) = (%lld, %d, %d, %d)", llFriendID, nVideoHeight, nVideoWidth, nDataType);
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth (llFriendID, H, W, nDataType) = (%lld, %d, %d, %d)", llFriendID, nVideoHeight, nVideoWidth, nDataType);
 
 		if (nullptr == m_pcController)
 		{
