@@ -36,7 +36,7 @@ public:
     void convert_nv12_to_i420_assembly(unsigned char*  src, int iHeight, int iWidth);
     void Crop_yuv420_assembly(unsigned char* src, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* dst, int &outHeight, int &outWidth);
     unsigned int* param;
-    unsigned char m_pTempArray[MAX_FRAME_WIDTH * MAX_FRAME_HEIGHT * 3];
+    unsigned char m_pTempArray[MAX_VIDEO_FRAME_INPUT_HEIGHT * MAX_VIDEO_FRAME_INPUT_WIDTH * 3];
     
 };
 

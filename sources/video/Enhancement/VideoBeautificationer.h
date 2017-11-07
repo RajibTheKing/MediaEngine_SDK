@@ -61,6 +61,7 @@ public:
 	void boxBlurH_4 (unsigned char *scl, unsigned char *tcl, int h, int w, int r);
 
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp);
+	pair<int, int> BeautificationFilterNew(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp);
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, bool doSharp);
 	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
 
@@ -120,6 +121,9 @@ private:
 
 	int m_preBrightness[260];
 	unsigned char m_ucpreBrightness[260];
+
+	int m_preBrightnessNew[260];
+	unsigned char m_ucpreBrightnessNew[260];
 
 	int m_pUIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH + 1];
 	int m_pVIndex[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH  + 1];

@@ -1299,6 +1299,8 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
 void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
+
+	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 0 iHeight %d, iWidth %d, iTargetHeight %d, iTargetWidth %d", iHeight, iWidth, iTargetHeight, iTargetWidth);
     
     //int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
     int iOutputHeight, iOutputWidth;
@@ -1309,6 +1311,8 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 
     iOutputHeight = iOutputHeight - iOutputHeight%4;
     iOutputWidth = iOutputWidth - iOutputWidth%4;
+
+	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 1 iOutputHeight %d, iOutputWidth %d", iOutputHeight, iOutputWidth);
     
     CLogPrinter::Log("TheKing--> iHeight, iWidth, iTargetHeight, iTargetWidth, outputHeight, outputWidth = %d:%d, %d:%d, %d:%d\n", iHeight, iWidth, iTargetHeight, iTargetWidth, iOutputHeight, iOutputWidth);
     
@@ -1320,6 +1324,8 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     if(bShouldBeCropped)
     {
         CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, m_iDeviceHeight, m_iDeviceWidth, iNewHeight, iNewWidth);
+
+		CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 2 iHeight %d, iWidth %d, iNewHeight %d, iNewWidth %d", iHeight, iWidth, iNewHeight, iNewWidth);
     
         if(iHeight == iNewHeight && iWidth == iNewWidth)
         {
@@ -1332,6 +1338,8 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
             diff_width = iWidth - iNewWidth;
             diff_height = iHeight - iNewHeight;
             Crop_YUV420(smallFrame, iHeight, iWidth, diff_width/2, diff_width/2, diff_height/2, diff_height/2, m_pSmallFrame, iNewHeight, iNewWidth);
+
+			CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 3 iHeight %d, iWidth %d, iNewHeight %d, iNewWidth %d", iHeight, iWidth, iNewHeight, iNewWidth);
         }
     
         iHeight = iNewHeight;
@@ -1340,6 +1348,9 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
     
     m_iSmallFrameHeight = iHeight;
     m_iSmallFrameWidth = iWidth;
+
+	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 4 m_iSmallFrameHeight %d, m_iSmallFrameWidth %d", m_iSmallFrameHeight, m_iSmallFrameWidth);
+
 	m_iSmallFrameSize = iHeight * iWidth * 3 / 2;
     iLen = CreateFrameBorder(m_pSmallFrame, iHeight, iWidth, 0, 128, 128); // [Y:0, U:128, V:128] = Black
 
@@ -1555,6 +1566,356 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version2(unsigned char* pData, int 
     
 }
 
+int CColorConverter::DownScaleYUV420_Dynamic_Version222(unsigned char* pData, int inHeight, int inWidth, unsigned char* outputData, int outHeight, int outWidth)
+{
+	//cout<<"inHeight,inWidth = "<<iHeight<<", "<<iWidth<<endl;
+	double ratioHeight, ratioWidth;
+
+	int YPlaneLength = inHeight*inWidth;
+	int UPlaneLength = YPlaneLength >> 2;
+	int halfH = inHeight >> 1, halfW = inWidth >> 1;
+
+	ratioHeight = inHeight * (1.0) / outHeight;
+	ratioWidth = inWidth * (1.0) / outWidth;
+	int MaximumFraction = 10000;
+	int factorH = (int)floor(ratioHeight);
+	int factorW = (int)floor(ratioWidth);
+	int fractionH = (int)((ratioHeight - factorH) * MaximumFraction);
+	int fractionW = (int)((ratioWidth - factorW) * MaximumFraction);
+
+
+
+	int indx = 0;
+
+	int avg, sum, sum1, sum2, Valuecounter;
+	int ii, iiFraction, jj, jjFraction;
+
+	int iHeightCounter = 0, iWidthCounter = 0;
+
+
+	CumulativeSum2[0][0] = (int)pData[0];
+
+	for (int i = 1, iw = inWidth; i<inHeight; i++, iw += inWidth)
+	{
+		CumulativeSum2[i][0] = (int)(CumulativeSum2[i - 1][0] + pData[iw]);
+	}
+	for (int j = 1; j<inWidth; j++)
+	{
+		CumulativeSum2[0][j] = (int)(CumulativeSum2[0][j - 1] + (int)pData[j]);
+	}
+
+	for (int i = 1, iw = inWidth; i<inHeight; i++, iw += inWidth)
+	{
+		for (int j = 1; j<inWidth; j++)
+		{
+			CumulativeSum2[i][j] = (int)(CumulativeSum2[i][j - 1] + CumulativeSum2[i - 1][j] - CumulativeSum2[i - 1][j - 1] + pData[iw + j]);
+		}
+	}
+
+	for (ii = 0, iiFraction = 0; ii<inHeight; ii += factorH, iiFraction += fractionH)
+	{
+		if (iiFraction >= MaximumFraction)
+		{
+			ii++;
+			iiFraction -= MaximumFraction;
+		}
+		iHeightCounter++;
+
+		if (iHeightCounter>outHeight) break;
+		iWidthCounter = 0;
+
+		for (jj = 0, jjFraction = 0; jj<inWidth; jj += factorW, jjFraction += fractionW)
+		{
+			if (jjFraction >= MaximumFraction)
+			{
+				jj++;
+				jjFraction -= MaximumFraction;
+			}
+
+			iWidthCounter++;
+			if (iWidthCounter>outWidth) break;
+
+			sum = 0;
+			Valuecounter = 0;
+
+			int startY = ii;
+			int endY = ii + factorH - 1;
+			if (iiFraction + fractionH >= MaximumFraction) endY++;
+
+			int startX = jj;
+			int endX = jj + factorW - 1;
+			if (jjFraction + fractionW >= MaximumFraction) endX++;
+
+
+			Valuecounter = (endY - startY + 1) * (endX - startX + 1);
+			int now, corner, up, left;
+
+			corner = (startX - 1) < 0 ? 0 : (startY - 1) < 0 ? 0 : CumulativeSum2[startY - 1][startX - 1];
+			left = (startX - 1) < 0 ? 0 : endY >= inHeight ? 0 : CumulativeSum2[endY][startX - 1];
+			up = endX >= inWidth ? 0 : (startY - 1) < 0 ? 0 : CumulativeSum2[startY - 1][endX];
+			now = endX >= inWidth ? 0 : (endY) >= inHeight ? 0 : CumulativeSum2[endY][endX];
+
+			sum = now - up - left + corner;
+			avg = sum / Valuecounter;
+			outputData[indx++] = (byte)avg;
+
+			//printf("RajibTheKing--> sum = %d values = %d ,now = %d ,up = %d, left = %d, corner = %d\n", sum, Valuecounter,now,up,left,corner);
+
+		}
+	}
+
+	//printf("index = %d\n", indx);
+
+	byte *p = pData + YPlaneLength;
+	byte *q = pData + YPlaneLength + UPlaneLength;
+	int uIndex = indx;
+	int vIndex = indx + (outHeight * outWidth) / 4;
+	iHeightCounter = 0;
+
+
+	CumulativeSum_U2[0][0] = (int)p[0];
+	CumulativeSum_V2[0][0] = (int)q[0];
+
+	for (int i = 1, iw = halfW; i<halfH; i++, iw += halfW)
+	{
+		CumulativeSum_U2[i][0] = (int)(CumulativeSum_U2[i - 1][0] + p[iw]);
+		CumulativeSum_V2[i][0] = (int)(CumulativeSum_V2[i - 1][0] + q[iw]);
+	}
+	for (int j = 1; j<halfW; j++)
+	{
+		CumulativeSum_U2[0][j] = (int)(CumulativeSum_U2[0][j - 1] + (int)p[j]);
+		CumulativeSum_V2[0][j] = (int)(CumulativeSum_V2[0][j - 1] + (int)q[j]);
+	}
+
+	for (int i = 1, iw = halfW; i<halfH; i++, iw += halfW)
+	{
+		for (int j = 1; j<halfW; j++)
+		{
+			CumulativeSum_U2[i][j] = (int)(CumulativeSum_U2[i][j - 1] + p[iw + j] + CumulativeSum_U2[i - 1][j] - CumulativeSum_U2[i - 1][j - 1]);
+			CumulativeSum_V2[i][j] = (int)(CumulativeSum_V2[i][j - 1] + q[iw + j] + CumulativeSum_V2[i - 1][j] - CumulativeSum_V2[i - 1][j - 1]);
+		}
+	}
+
+	for (ii = 0, iiFraction = 0; ii<halfH; ii += factorH, iiFraction += fractionH)
+	{
+		if (iiFraction >= MaximumFraction)
+		{
+			ii++;
+			iiFraction -= MaximumFraction;
+		}
+		iHeightCounter++;
+
+		if (iHeightCounter >(outHeight >> 1)) break;
+		iWidthCounter = 0;
+
+		for (jj = 0, jjFraction = 0; jj<halfW; jj += factorW, jjFraction += fractionW)
+		{
+			if (jjFraction >= MaximumFraction)
+			{
+				jj++;
+				jjFraction -= MaximumFraction;
+			}
+			iWidthCounter++;
+			if (iWidthCounter>(outWidth >> 1))  break;
+
+			sum1 = 0;
+			sum2 = 0;
+			Valuecounter = 0;
+
+			int startY = ii;
+			int endY = ii + factorH - 1;
+			if (iiFraction + fractionH >= MaximumFraction) endY++;
+
+			int startX = jj;
+			int endX = jj + factorW - 1;
+			if (jjFraction + fractionW >= MaximumFraction) endX++;
+
+
+			Valuecounter = (endY - startY + 1) * (endX - startX + 1);
+			//printf("Valuecounter = %d\n", Valuecounter);
+			int now, corner, up, left;
+
+			corner = (startX - 1) < 0 ? 0 : (startY - 1) < 0 ? 0 : CumulativeSum_U2[startY - 1][startX - 1];
+			left = (startX - 1) < 0 ? 0 : endY >= halfH ? 0 : CumulativeSum_U2[endY][startX - 1];
+			up = endX >= halfW ? 0 : (startY - 1) < 0 ? 0 : CumulativeSum_U2[startY - 1][endX];
+			now = endX >= halfW ? 0 : (endY) >= halfH ? 0 : CumulativeSum_U2[endY][endX];
+
+			sum = now - up - left + corner;
+			avg = sum / Valuecounter;
+			outputData[uIndex++] = (byte)avg;
+
+
+			corner = (startX - 1) < 0 ? 0 : (startY - 1) < 0 ? 0 : CumulativeSum_V2[startY - 1][startX - 1];
+			left = (startX - 1) < 0 ? 0 : endY >= halfH ? 0 : CumulativeSum_V2[endY][startX - 1];
+			up = endX >= halfW ? 0 : (startY - 1) < 0 ? 0 : CumulativeSum_V2[startY - 1][endX];
+			now = endX >= halfW ? 0 : (endY) >= halfH ? 0 : CumulativeSum_V2[endY][endX];
+
+			sum = now - up - left + corner;
+			avg = sum / Valuecounter;
+			outputData[vIndex++] = (byte)avg;
+
+		}
+	}
+
+
+	//printf("uIndex, vIndex = %d, %d\n", uIndex, vIndex);
+
+
+	return outHeight * outWidth * 3 / 2;
+
+}
+
+int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
+{
+	int idx = 0;
+	for (int i = 4; i < iHeight - 4; i += 4)
+	{
+		for (int j = 0; j < iWidth; j += 4)
+		{
+            int tmp = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = k*iWidth;
+                for(int l = j; l < j + 4; l++)
+                {
+                    tmp += pData[kw + l];
+                }
+            }
+            outputData[idx++] = tmp >> 4;
+		}
+	}
+
+	int halfHeight = iHeight >> 1;
+	int offset = iHeight*iWidth;
+
+	for (int i = 2; i < halfHeight - 2; i += 4)
+	{
+		for (int j = 0; j < iWidth; j += 8)
+		{
+            int tmpU = 0;
+            int tmpV = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = offset + k*iWidth;
+                for(int l = j; l < j + 8; l++)
+                {
+                    if (l % 2 == 0)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                    else
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpU >> 4;
+            outputData[idx++] = tmpV >> 4;
+		}
+	}
+
+	int outHeight = iHeight >> 2;
+	int outWidth = iWidth >> 2;
+
+	return (outHeight * outWidth * 3) >> 1;
+}
+
+int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
+{
+    int idx = 0;
+    for (int i = 4; i < iHeight - 4; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += 4)
+        {
+            int tmp = 0;
+            for(int k = i; k < i + 4; k++)
+            {
+                int kw = k*iWidth;
+                for(int l = j; l < j + 4; l++)
+                {
+                    tmp += pData[kw + l];
+                }
+            }
+            outputData[idx++] = tmp >> 4;
+        }
+    }
+
+	int quarterHeight = iHeight >> 2;
+	int offset = iHeight*iWidth;
+    int incr = 4;
+
+    for (int i = 1; i < quarterHeight - 1; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += incr)
+        {
+            int tmpU = 0;
+            if(i + 4 > quarterHeight)
+            {
+                incr = 8;
+                for(int k = i; k < i + 2; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                }
+            }
+            else
+            {
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmpU += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpU >> 4;
+        }
+    }
+
+	offset += quarterHeight*iWidth;
+    incr = 4;
+
+    for (int i = 1; i < quarterHeight - 1; i += 4)
+    {
+        for (int j = 0; j < iWidth; j += incr)
+        {
+            int tmpV = 0;
+            if(i + 4 > quarterHeight)
+            {
+                incr = 8;
+                for(int k = i; k < i + 2; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            else
+            {
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmpV += pData[kw + l];
+                    }
+                }
+            }
+            outputData[idx++] = tmpV >> 4;
+        }
+    }
+
+	int outHeight = iHeight >> 2;
+	int outWidth = iWidth >> 2;
+
+	return (outHeight * outWidth * 3) >> 1;
+}
 
 //This Function will return UIndex based on YUV_420 Data
 int CColorConverter::getUIndex(int h, int w, int yVertical, int xHorizontal, int& total)
@@ -1609,6 +1970,8 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 	int w1 = iVideoWidth;
 	int h2 = /* m_iVideoHeight >> 2 */ m_iSmallFrameHeight;
 	int w2 = /* m_iVideoWidth >> 2 */ m_iSmallFrameWidth;
+
+	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::Merge_Two_Video h1 %d w1 %d h2 %d w2 %d", h1, w1, h2, w2);
 
 	int iLen1 = h1 * w1 * 3 / 2;
 	int iLen2 = h2 * w2 * 3 / 2;
@@ -1842,6 +2205,8 @@ int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int
     
     iPosX = inWidth - m_iSmallFrameWidth - diff_Width/2;
     iPosY = inHeight - m_iSmallFrameHeight - iInsetLowerPadding - diff_Height/2;
+
+	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::GetInsetLocation 0 iPosX %d, iPosY %d m_iSmallFrameWidth %d m_iSmallFrameHeight %d iInsetLowerPadding %d", iPosX, iPosY, m_iSmallFrameWidth, m_iSmallFrameHeight, iInsetLowerPadding);
 
     
     //printf("TheKing--> H:W = %d:%d, nH:nW = %d:%d, iPosY:iPosX = %d:%d\n", inHeight, inWidth, newHeight, newWidth, iPosY, iPosX);
