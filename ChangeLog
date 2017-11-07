@@ -1,3 +1,9 @@
+Release 12.12 (Date: 07-11-2017)
+---------------------------------
+- Beautification Improved
+- Input dimension changed for some devices but output dimension remains same
+
+
 Release 12.11 (Date: 06-11-2017)
 ---------------------------------
 - Trace shortened, 1st 5 recorded data are discarded, silencing based on echo flag reenabled, AECM delay increased by 10. [Issue #5076] 
