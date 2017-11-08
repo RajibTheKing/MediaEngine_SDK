@@ -1059,6 +1059,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	int returnedValue;
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "LIVE_INSET_LOG CVideoCallSession::PushIntoBufferForEncoding m_nGivenFrameHeight %d, m_nGivenFrameWidth %d, m_nVideoCallHeight %d, m_nVideoCallWidth %d, in_size %d", m_nGivenFrameHeight, m_nGivenFrameWidth, m_nVideoCallHeight, m_nVideoCallWidth, in_size);
+
 	if (m_bDownscaled)
 	{
 		//LOGE_MAIN("fahad -->> m_nGivenFrameHeight = %d || m_nGivenFrameWidth = %d", m_nGivenFrameHeight, m_nGivenFrameWidth);
@@ -1610,12 +1612,12 @@ int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int hei
 			if (deviceCapability == VIDEO_CALL_TYPE_640_25FPS)
 			{
 				m_nGivenFrameHeight = height * 2;
-				m_nGivenFrameHeight = width * 2;
+				m_nGivenFrameWidth = width * 2;
 			}
 			else
 			{
 				m_nGivenFrameHeight = height * 4;
-				m_nGivenFrameHeight = width * 4;
+				m_nGivenFrameWidth = width * 4;
 			}
 		}
 	}
