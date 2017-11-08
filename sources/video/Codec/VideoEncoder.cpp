@@ -182,6 +182,8 @@ namespace MediaSDK
 		{
 			CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to initialize OpenH264 encoder ");
 
+			CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::SetHeightWidth unable to initialize OpenH264 encoder");
+
 			return 0;
 		}
 
