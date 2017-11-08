@@ -1768,7 +1768,7 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version222(unsigned char* pData, in
 int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
 	int idx = 0;
-	for (int i = 4; i < iHeight - 4; i += 4)
+	for (int i = 0; i < iHeight; i += 4)
 	{
 		for (int j = 0; j < iWidth; j += 4)
 		{
@@ -1788,7 +1788,7 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, in
 	int halfHeight = iHeight >> 1;
 	int offset = iHeight*iWidth;
 
-	for (int i = 2; i < halfHeight - 2; i += 4)
+	for (int i = 0; i < halfHeight; i += 4)
 	{
 		for (int j = 0; j < iWidth; j += 8)
 		{
