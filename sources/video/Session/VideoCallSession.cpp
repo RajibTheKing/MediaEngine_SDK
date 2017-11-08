@@ -550,8 +550,8 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
     
     if(nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
     {
-        iVideoHeight = m_nSmalledFrameHeight; //352
-        iVideoWidth = m_nSmalledFrameWidth; //204
+        //iVideoHeight = m_nSmalledFrameHeight; //352
+        //iVideoWidth = m_nSmalledFrameWidth; //204
     }
 
 	m_nVideoCallHeight = iVideoHeight;
