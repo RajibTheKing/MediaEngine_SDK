@@ -544,8 +544,13 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 
 		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
 		{
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+#else
 			iVideoHeight = m_nSmalledFrameHeight; //352
 			iVideoWidth = m_nSmalledFrameWidth; //204
+#endif
 		}
     }
     else
