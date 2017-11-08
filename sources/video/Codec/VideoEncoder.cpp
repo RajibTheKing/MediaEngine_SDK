@@ -45,6 +45,8 @@ namespace MediaSDK
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::SetHeightWidth nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", nVideoHeight, nVideoWidth, nServiceType, bCheckDeviceCapability);
+
 		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 #if defined(DESKTOP_C_SHARP)
@@ -81,6 +83,8 @@ namespace MediaSDK
 			m_nVideoHeight = nVideoHeight;
 			m_nVideoWidth = nVideoWidth;
 		}
+
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::SetHeightWidth after change nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", m_nVideoHeight, m_nVideoWidth, nServiceType, bCheckDeviceCapability);
 
 		SEncParamExt encoderParemeters;
 
@@ -192,6 +196,8 @@ namespace MediaSDK
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::CreateVideoEncoder nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", nVideoHeight, nVideoWidth, nServiceType, bCheckDeviceCapability);
+
 		long nReturnedValueFromEncoder = WelsCreateSVCEncoder(&m_pcSVCVideoEncoder);
 
 		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
@@ -214,6 +220,8 @@ namespace MediaSDK
 			m_nVideoWidth = nVideoWidth;
 			m_nVideoHeight = nVideoHeight;
 		}
+
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::CreateVideoEncoder after change nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", nVideoHeight, nVideoWidth, nServiceType, bCheckDeviceCapability);
 
 		SEncParamExt encoderParemeters;
 

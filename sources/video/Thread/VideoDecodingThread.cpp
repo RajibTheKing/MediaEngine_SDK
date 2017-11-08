@@ -594,7 +594,7 @@ namespace MediaSDK
 		if (frameSize == 0)
 			m_NoFrameCounter++;
 
-		CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoDecodingThread::DecodeAndSendToClient frameSize %d m_decodedFrameSize %d m_NoFrameCounter %d m_DecodeFailCounter %d", frameSize, m_decodedFrameSize, m_NoFrameCounter, m_DecodeFailCounter);
+		CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoDecodingThread::DecodeAndSendToClient frameSize %d m_decodedFrameSize %d m_decodingHeight %d, m_decodingWidth %d, m_NoFrameCounter %d m_DecodeFailCounter %d", frameSize, m_decodedFrameSize, m_decodingHeight, m_decodingWidth, m_NoFrameCounter, m_DecodeFailCounter);
 
 		CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
 
