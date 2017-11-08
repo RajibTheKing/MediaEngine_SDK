@@ -334,7 +334,12 @@ namespace MediaSDK
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
-		int nTargetBitRate = nBitRate - (nBitRate % 25000);
+		int nTargetBitRate;
+		
+		if (nServiceType == SERVICE_TYPE_CALL)
+			nTargetBitRate = nBitRate - (nBitRate % 100000);
+		else
+			nTargetBitRate = nBitRate - (nBitRate % 25000);
 
 		/*	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN)
 				nTargetBitRate = BITRATE_MIN;
@@ -394,9 +399,20 @@ namespace MediaSDK
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
-		nBitRate = (int)(nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
+		int nTargetBitRate;
 
-		int nTargetBitRate = nBitRate - (nBitRate % 25000);
+		if (nServiceType == SERVICE_TYPE_CALL)
+		{
+			nTargetBitRate = nBitRate - (nBitRate % 100000);
+
+			nTargetBitRate = (int)(nTargetBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
+		}
+		else
+		{
+			nBitRate = (int)(nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
+
+			nTargetBitRate = nBitRate - (nBitRate % 25000);
+		}
 
 		if (nTargetBitRate<BITRATE_MIN)
 			nTargetBitRate = BITRATE_MIN;
