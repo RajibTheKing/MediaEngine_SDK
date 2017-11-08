@@ -336,8 +336,11 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
+	if(nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CALL || nServiceType == SERVICE_TYPE_SELF_CALL)
+	{
 		iVideoHeight = 1280;
 		iVideoWidth = 720;
+	}
 
 #endif
 
