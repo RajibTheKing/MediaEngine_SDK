@@ -1070,7 +1070,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pB
 
 	if (m_nIsGreaterThen5s > 0)
 	{
-		shiftDigit = 2;
+		shiftDigit = 3;
 	}
 	else
 	{
@@ -1265,9 +1265,19 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterNew(unsigned char *pB
 	if (m_sigma < 32)
 		m_sigma = 32;
 
-	m_sigma -= 10;
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	m_sigma -= 5;
 	int ns_sigma = m_sigma - 25;
 	if (ns_sigma <= 0)ns_sigma = 1;
+
+#else
+
+	m_sigma -= 10;
+	int ns_sigma = m_sigma - 20;
+	if (ns_sigma <= 0)ns_sigma = 1;
+
+#endif
 
 	/*
 	if (m_AvarageValue < 50)
