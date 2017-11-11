@@ -548,8 +548,8 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
 #else
-			iVideoHeight = m_nSmalledFrameHeight; //352
-			iVideoWidth = m_nSmalledFrameWidth; //204
+			//iVideoHeight = m_nSmalledFrameHeight; //352
+			//iVideoWidth = m_nSmalledFrameWidth; //204
 #endif
 		}
     }
@@ -1065,10 +1065,10 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	{
 		//LOGE_MAIN("fahad -->> m_nGivenFrameHeight = %d || m_nGivenFrameWidth = %d", m_nGivenFrameHeight, m_nGivenFrameWidth);
 #ifdef __ANDROID__
-		m_pColorConverter->ConvertNV21ToI420(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight);
+		//m_pColorConverter->ConvertNV21ToI420(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight);
 		//long long startTime = m_Tools.CurrentTimestamp();
-		m_pColorConverter->DownScaleYUV420_Dynamic_Version222(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight, m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
-		m_pColorConverter->ConvertI420ToNV21(m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
+		m_pColorConverter->DownScaleYUVNV12_YUVNV21_OneFourth(in_data, m_nGivenFrameWidth, m_nGivenFrameHeight, m_ucaReceivedLargeFrame);
+		//m_pColorConverter->ConvertI420ToNV21(m_ucaReceivedLargeFrame, m_nVideoCallWidth, m_nVideoCallHeight);
 #else
 		//m_pColorConverter->ConvertNV12ToI420(in_data, m_nGivenFrameHeight, m_nGivenFrameWidth);
 		//long long startTime = m_Tools.CurrentTimestamp();
