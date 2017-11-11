@@ -1,3 +1,8 @@
+Release 12.15.1 (Date: 11-11-2017)
+---------------------------------
+- Android input stream made similar to iOS
+
+
 Release 12.15 (Date: 08-11-2017)
 ---------------------------------
 - Android Video call issue fixed
@@ -18,6 +23,7 @@ Release 12.13 (Date: 08-11-2017)
 Release 12.12 (Date: 07-11-2017)
 ---------------------------------
 - Beautification Improved
+- Video header changed
 - Input dimension changed for some devices but output dimension remains same
 
 
