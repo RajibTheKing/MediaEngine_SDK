@@ -173,6 +173,8 @@ namespace MediaSDK
 		FILE* EchoCancelledFile;
 		FILE* AfterEchoCancellationFile;
 		FILE* PlayedFile;
+        FILE* PlayedFilePublisher;
+        FILE* PlayedFileCallee;
 #endif
 		
 	#ifdef DUMP_FILE
