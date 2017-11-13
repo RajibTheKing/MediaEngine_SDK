@@ -531,6 +531,17 @@ namespace MediaSDK
 									}
 									else
 									{
+										for (int i = 0; i < vAudioDataLengthVector.size(); i++)
+										{
+											if (i == 0)
+											{												
+												if (pAudioSession->m_pChunckedNE) pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + 21, 1, vAudioDataLengthVector[0], DUMP_ENABLE);
+											}
+											else
+											{
+												if (pAudioSession->m_pChunckedNE) pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + vAudioDataLengthVector[i - 1] + 21, 1, vAudioDataLengthVector[i], DUMP_ENABLE);
+											}											
+										}
 #ifdef PCM_DUMP
 										for (int i = 0; i < vAudioDataLengthVector.size(); i++)
 										{
