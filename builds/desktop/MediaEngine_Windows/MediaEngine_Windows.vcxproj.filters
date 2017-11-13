@@ -396,9 +396,6 @@
     <ClCompile Include="..\..\..\sources\audio\dsp\Trace.cpp">
       <Filter>audio\dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\audio\dsp\Voice.cpp">
-      <Filter>audio\dsp</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.cpp">
       <Filter>audio\dsp</Filter>
     </ClCompile>
@@ -831,9 +828,6 @@
       <Filter>audio\dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\dsp\Trace.h">
-      <Filter>audio\dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\audio\dsp\Voice.h">
       <Filter>audio\dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.h">

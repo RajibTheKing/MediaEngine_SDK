@@ -54,7 +54,7 @@ public:
 	~CVideoCallSession();
 
 	long long GetFriendID();
-	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType);
+	void InitializeVideoSession(long long lFriendID, int iVideoHeight, int iVideoWidth,int nServiceType, int iNetworkType, bool downscaled, int deviceCapability);
 	CVideoEncoder* GetVideoEncoder();
 	int PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation);
 	CVideoDecoder* GetVideoDecoder();
@@ -136,7 +136,7 @@ public:
 
 	void SetCallInLiveType(int nCallInLiveType);
 
-	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType);
+	int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType, bool bDownscaled, int deviceCapability);
 	int SetDeviceHeightWidth(const long long& lFriendID, int height, int width);
 
     void SetBeautification(bool bIsEnable);
@@ -168,22 +168,42 @@ public:
     
     int getLiveVideoQualityLevel();
     
+    int getVideoCallHeight()
+    {
+        return m_nVideoCallHeight;
+    }
+    
+    int getVideoCallWidth()
+    {
+        return m_nVideoCallWidth;
+    }
+
+	int getGivenFrameHeight()
+	{
+		return m_nGivenFrameHeight;
+	}
+
+	int getGivenFrameWidth()
+	{
+		return m_nGivenFrameWidth;
+	}
+    
 	bool m_bVideoCallStarted;
     CController *m_pController;
 	int m_nCallFPS;
     bool m_bLiveVideoStreamRunning;
 
-	int m_nVideoCallHeight;
-	int m_nVideoCallWidth;
+
 
 	CVideoEncodingThread *m_pVideoEncodingThread;
-    
+    int m_nVideoCallHeight;
+    int m_nVideoCallWidth;
     
 
 private:
 
 	int m_nPublisherInsetNumber;
-
+	bool m_bDownscaled;
 	CSendingThread *m_pSendingThread;
 
 	bool m_bFrameReduce;
@@ -294,6 +314,8 @@ private:
 	unsigned char m_CroppedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
 	unsigned char m_miniPacket[VIDEO_HEADER_LENGTH + 1];
+
+	unsigned char m_ucaReceivedLargeFrame[MAX_VIDEO_FRAME_INPUT_SIZE];
     
     CVersionController *m_pVersionController;
     CDeviceCapabilityCheckBuffer *m_pDeviceCheckCapabilityBuffer = NULL;
@@ -309,8 +331,13 @@ private:
     int m_nOpponentVideoWidth;
 
     bool m_bDynamic_IDR_Sending_Mechanism;
+
+	int m_nSmalledFrameHeight;
+	int m_nSmalledFrameWidth;
+	int m_nGivenFrameHeight;
+	int m_nGivenFrameWidth;
     
-    
+
 
 protected:
 

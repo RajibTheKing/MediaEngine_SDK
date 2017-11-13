@@ -16,7 +16,7 @@
 namespace MediaSDK
 {
     #define AUDIO_CALL_VERSION  0
-    #define AUDIO_LIVE_VERSION  0
+    #define AUDIO_LIVE_VERSION  1
 		
 	//#define LOCAL_SERVER_LIVE_CALL
 	//#define AUDIO_SELF_CALL
@@ -173,6 +173,8 @@ namespace MediaSDK
 		FILE* EchoCancelledFile;
 		FILE* AfterEchoCancellationFile;
 		FILE* PlayedFile;
+        FILE* PlayedFilePublisher;
+        FILE* PlayedFileCallee;
 #endif
 		
 	#ifdef DUMP_FILE

@@ -56,12 +56,12 @@ m_bNewSessionStarted(true)
          {
              memset(m_ucaDummmyFrame[k], 0, sizeof(m_ucaDummmyFrame[k]));
              
-             for(int i=0;i<m_pVideoCallSession->m_nVideoCallHeight;i++)
+             for(int i=0;i<m_pVideoCallSession->getVideoCallHeight();i++)
              {
                  int color = rand()%255;
-                 for(int j = 0; j <  m_pVideoCallSession->m_nVideoCallWidth; j ++)
+                 for(int j = 0; j <  m_pVideoCallSession->getVideoCallWidth(); j ++)
                  {
-                     m_ucaDummmyFrame[k][i * m_pVideoCallSession->m_nVideoCallHeight + j ] = color;
+                     m_ucaDummmyFrame[k][i * m_pVideoCallSession->getVideoCallHeight() + j ] = color;
                  }
                  
              }
@@ -213,7 +213,7 @@ void CVideoEncodingThread::SetFrameNumber(int nFrameNumber)
 
 int CVideoEncodingThread::SetVideoEffect(int nEffectStatus)
 {
-	if (nEffectStatus == 1)
+	if (nEffectStatus != 0)
 		m_bVideoEffectEnabled = true;
 	else if (nEffectStatus == 0)
 		m_bVideoEffectEnabled = false;
@@ -254,11 +254,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
     int iNumberOfEncodeFailCounter = 0;
 #if defined(DESKTOP_C_SHARP)
 
-	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallHeight,  m_pVideoCallSession->m_nVideoCallWidth, RGB24);
+	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->getVideoCallHeight(),  m_pVideoCallSession->getVideoCallWidth(), RGB24);
 
 #else
 
-	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->m_nVideoCallHeight,  m_pVideoCallSession->m_nVideoCallWidth, YUV420);
+	MakeBlackScreen(m_ucaDummmyStillFrame,  m_pVideoCallSession->getVideoCallHeight(),  m_pVideoCallSession->getVideoCallWidth(), YUV420);
 
 #endif
 
@@ -310,7 +310,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			if (m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == RESOLUTION_FPS_SUPPORT_NOT_TESTED || m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_15)
 				m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_pVideoCallSession->GetFriendID(), m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288);
 			else if (m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_352_25)
-				m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_pVideoCallSession->GetFriendID(), m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_352x288);
+				m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_pVideoCallSession->GetFriendID(), m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480);
 			else if (m_pVideoCallSession->GetCurrentVideoCallQualityLevel() == SUPPORTED_RESOLUTION_FPS_640_25)
 				m_pCommonElementBucket->m_pEventNotifier->fireVideoNotificationEvent(m_pVideoCallSession->GetFriendID(), m_pCommonElementBucket->m_pEventNotifier->SET_CAMERA_RESOLUTION_640x480);
 
@@ -526,7 +526,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetOwnVideoCallQualityLevel() != SUPPORTED_RESOLUTION_FPS_352_15)
 					{
-						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
 					
 					}
 					else
@@ -550,7 +550,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, iGotHeight, iGotWidth, true);
 						}
 						else
-							pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						{
+						//	if (13 == m_filterToApply)
+								pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+						//	else
+						//		pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilter(m_ucaConvertedEncodingFrame, nEncodingFrameSize, iGotHeight, iGotWidth, newHeight, newWidth, true);
+
+						}
 					}
 					else
 					{
@@ -617,8 +623,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 					iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 000 iInsetLowerPadding %d, iSmallWidth %d, iSmallHeight %d", iInsetLowerPadding, iSmallWidth, iSmallHeight);
+
 					int iPosX = iWidth - iSmallWidth;
 					int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
+
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 1 iPosX %d, iPosY %d", iPosX, iPosY);
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
                     

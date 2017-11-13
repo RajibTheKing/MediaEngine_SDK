@@ -6,6 +6,8 @@
 
 namespace MediaSDK
 {
+
+#define DELETE_1ST_DATA_COUNT 5
 	//TODO: wait notify, release mechanism
 
 	AudioLinearBuffer::AudioLinearBuffer(int size) :
@@ -14,7 +16,7 @@ namespace MediaSDK
 		m_endPos(-1)
 	{
 		m_buffer = new short[m_bufferMaxSize];
-		m_bDelete1stData = true;
+		m_nDelete1stDataCount = DELETE_1ST_DATA_COUNT;
 	}
 
 	AudioLinearBuffer::~AudioLinearBuffer()
@@ -67,9 +69,9 @@ namespace MediaSDK
 	{
 		std::lock_guard<std::mutex> guard(m_mutex);
 		//TODO: handle bigger data than max buffer size
-		if (m_bDelete1stData)
+		if (m_nDelete1stDataCount > 0)
 		{
-			m_bDelete1stData = false;
+			m_nDelete1stDataCount --;
 			return;
 		}
 		short* data_pointer = data;
@@ -126,7 +128,7 @@ namespace MediaSDK
 	void AudioLinearBuffer::Clear()
 	{
 		std::lock_guard<std::mutex> guard(m_mutex);
-		m_bDelete1stData = true;
+		m_nDelete1stDataCount = DELETE_1ST_DATA_COUNT;
 
 		//LOGE_MAIN("##KK Clearing..");
 		m_beginPos = 0;

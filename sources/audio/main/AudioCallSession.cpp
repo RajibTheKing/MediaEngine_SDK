@@ -190,6 +190,8 @@ namespace MediaSDK
 		std::string RecordedFileName = filePrefix + sCurrentTime + "-Recorded" + fileExtension;
 		std::string EchoCancelledFileName = filePrefix + sCurrentTime + "-Cancelled" + fileExtension;
 		std::string PlayedFileName = filePrefix + sCurrentTime + "-Played" + fileExtension;
+        std::string PlayedFileNamePublisher = filePrefix + sCurrentTime + "-PlayedPublisher" + fileExtension;
+        std::string PlayedFileNameCallee = filePrefix + sCurrentTime + "-PlayedCallee" + fileExtension;
 		std::string RecordedChunckedFileName = filePrefix + sCurrentTime + "-RecordedChuncked" + fileExtension;
 		std::string AfterEchoCancellationFileName = filePrefix + sCurrentTime + "-AfterCancellation" + fileExtension;
 
@@ -198,6 +200,8 @@ namespace MediaSDK
 		AfterEchoCancellationFile = fopen(AfterEchoCancellationFileName.c_str(), "wb");
 		RecordedChunckedFile = fopen(RecordedChunckedFileName.c_str(), "wb");
 		PlayedFile = fopen(PlayedFileName.c_str(), "wb");
+        PlayedFilePublisher = fopen(PlayedFileNamePublisher.c_str(), "wb");
+        PlayedFileCallee = fopen(PlayedFileNameCallee.c_str(), "wb");
 
 #endif 
 
@@ -289,6 +293,8 @@ namespace MediaSDK
 		if (AfterEchoCancellationFile) fclose(AfterEchoCancellationFile);
 		if (RecordedChunckedFile) fclose(RecordedChunckedFile);
 		if (PlayedFile) fclose(PlayedFile);
+        if (PlayedFilePublisher) fclose(PlayedFilePublisher);
+        if (PlayedFileCallee) fclose(PlayedFileCallee);
 #endif
 		if (m_recordBuffer)
 		{
@@ -777,7 +783,7 @@ namespace MediaSDK
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
-					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction);
+					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
 					m_pInputPcm->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);

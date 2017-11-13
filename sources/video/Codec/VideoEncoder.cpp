@@ -45,6 +45,8 @@ namespace MediaSDK
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
 
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::SetHeightWidth nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", nVideoHeight, nVideoWidth, nServiceType, bCheckDeviceCapability);
+
 		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 #if defined(DESKTOP_C_SHARP)
@@ -81,6 +83,8 @@ namespace MediaSDK
 			m_nVideoHeight = nVideoHeight;
 			m_nVideoWidth = nVideoWidth;
 		}
+
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::SetHeightWidth after change nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", m_nVideoHeight, m_nVideoWidth, nServiceType, bCheckDeviceCapability);
 
 		SEncParamExt encoderParemeters;
 
@@ -178,6 +182,8 @@ namespace MediaSDK
 		{
 			CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder unable to initialize OpenH264 encoder ");
 
+			CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::SetHeightWidth unable to initialize OpenH264 encoder");
+
 			return 0;
 		}
 
@@ -191,6 +197,8 @@ namespace MediaSDK
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CVideoEncoder::CreateVideoEncoder");
+
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::CreateVideoEncoder nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", nVideoHeight, nVideoWidth, nServiceType, bCheckDeviceCapability);
 
 		long nReturnedValueFromEncoder = WelsCreateSVCEncoder(&m_pcSVCVideoEncoder);
 
@@ -215,6 +223,7 @@ namespace MediaSDK
 			m_nVideoHeight = nVideoHeight;
 		}
 
+		CLogPrinter_LOG(ENCODER_DIMENSION_LOG, "CVideoEncoder::CreateVideoEncoder after change nVideoHeight %d nVideoWidth %d nServiceType %d, bCheckDeviceCapability %d", nVideoHeight, nVideoWidth, nServiceType, bCheckDeviceCapability);
 
 		SEncParamExt encoderParemeters;
 
@@ -327,7 +336,12 @@ namespace MediaSDK
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
-		int nTargetBitRate = nBitRate - (nBitRate % 25000);
+		int nTargetBitRate;
+		
+		if (nServiceType == SERVICE_TYPE_CALL)
+			nTargetBitRate = nBitRate - (nBitRate % 100000);
+		else
+			nTargetBitRate = nBitRate - (nBitRate % 25000);
 
 		/*	if (m_nNetworkType == NETWORK_TYPE_NOT_2G && nTargetBitRate<BITRATE_MIN)
 				nTargetBitRate = BITRATE_MIN;
@@ -387,9 +401,20 @@ namespace MediaSDK
 	{
 		EncoderLocker lock(*m_pVideoEncoderMutex);
 
-		nBitRate = (int)(nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
+		int nTargetBitRate;
 
-		int nTargetBitRate = nBitRate - (nBitRate % 25000);
+		if (nServiceType == SERVICE_TYPE_CALL)
+		{
+			nTargetBitRate = nBitRate - (nBitRate % 100000);
+
+			nTargetBitRate = (int)(nTargetBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
+		}
+		else
+		{
+			nBitRate = (int)(nBitRate * MAX_BITRATE_MULTIPLICATION_FACTOR);
+
+			nTargetBitRate = nBitRate - (nBitRate % 25000);
+		}
 
 		if (nTargetBitRate<BITRATE_MIN)
 			nTargetBitRate = BITRATE_MIN;

@@ -20,7 +20,7 @@ namespace MediaSDK
 
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
-	    bool bTerminalWriteEnabled = false;  //Always writes on file whether terminal is enabled or not. 
+		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
 		MediaLogInit(LOG_DEBUG, false, bTerminalWriteEnabled);
 
 		G_pInterfaceOfAudioVideoEngine = this;
@@ -143,6 +143,8 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType)
 	{
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth, iAudioCodecType) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth, iAudioCodecType);
+
 #ifdef LIVE_CHUNK_DUMPLINGS
 #if defined(__ANDROID__)
 		std::string dpath = "/sdcard/";
@@ -159,6 +161,7 @@ namespace MediaSDK
 
 		LOGE_MAIN("###PPP stalivest call filepath:%s", data_file.c_str());
 #endif
+
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 1 ID %lld", llFriendID);
 
 		m_llTimeOffset = -1;
@@ -211,7 +214,7 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive)
 	{
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall called 1 ID %lld", llFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall called 1 ID %lld nVideoHeight %d nVideoWidth %d", llFriendID, nVideoHeight, nVideoWidth);
 
 		m_llTimeOffset = -1;
 		bool bSelfViewOnly = false;
@@ -485,6 +488,8 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
 	{
+        //CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, unLength, nOrientationType,  device_orientation) = (%llu, %d, %d, %d)", llFriendID, unLength, nOrientationType, device_orientation);
+		
 		if (nullptr == m_pcController)
 		{
 			return false;
@@ -497,6 +502,8 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nDataType)
 	{
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SetEncoderHeightWidth (llFriendID, H, W, nDataType) = (%lld, %d, %d, %d)", llFriendID, nVideoHeight, nVideoWidth, nDataType);
+
 		if (nullptr == m_pcController)
 		{
 			return false;
@@ -593,24 +600,26 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::CheckDeviceCapability(const LongLong& lFriendID, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 	{
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability called 1 ID %lld", lFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability called 1 ID %lld iHeightHigh %d, iWidthHigh %d, iHeightLow %d, iWidthLow %d", lFriendID, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability called 2 ID %lld", lFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability called 2 ID %lld iHeightHigh %d, iWidthHigh %d, iHeightLow %d, iWidthLow %d", lFriendID, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 
 		int iReturnedValue = m_pcController->CheckDeviceCapability(lFriendID, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability done ID %lld", lFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::CheckDeviceCapability done ID %lld iHeightHigh %d, iWidthHigh %d, iHeightLow %d, iWidthLow %d", lFriendID, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
 		
 		return iReturnedValue;
 	}
 
 	int CInterfaceOfAudioVideoEngine::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, int iWidthHigh, int iHeightLow, int iWidthLow)
 	{
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SetDeviceCapabilityResults (Notification, HH, WH, HL, WL) = (%d, %d, %d, %d, %d)", iNotification, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
+		
 		if (nullptr == m_pcController)
 		{
 			return false;
