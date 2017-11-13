@@ -213,6 +213,38 @@ namespace MediaSDK
 
 	}
 
+	size_t Tools::GetDateTime(char* buffer)
+	{
+		bool ShowDate = false;
+		unsigned long long epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
+
+		SYSTEMTIME st;
+
+		GetLocalTime(&st);
+
+		if (ShowDate)
+			return _snprintf(buffer, 40, "[%02d-%02d-%04d %02d:%02d:%02d %llu] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, epoch);
+		else
+		{
+			//return _snprintf(buffer, 40, "[%02d:%02d:%02d %llu] ", st.wHour, st.wMinute, st.wSecond, epoch);
+			return _snprintf(buffer, 40, "%02d-%02d-%02d_", st.wHour, st.wMinute, st.wSecond);
+		}
+#else
+
+		timeval curTime;
+		gettimeofday(&curTime, NULL);
+		//int milli = curTime.tv_usec / 1000, pos;
+		int pos;
+
+		pos = ShowDate ? strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec)) : strftime(buffer, 22, "%H-%M-%S_", localtime(&curTime.tv_sec));
+		//pos += snprintf(buffer + pos, 20, " %llu] ", epoch);
+
+		return pos;
+#endif 
+	}
+
 	void Tools::WriteToFile(short* saDataToWriteToFile, int nLength)
 	{
 		if (NULL == m_filePointerToWriteShortData)

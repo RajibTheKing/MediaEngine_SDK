@@ -149,6 +149,7 @@ namespace MediaSDK
 		static void SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index, int nLenght, long long value);
 
 		static void SetThreadName(const char* threadName);
+		static size_t GetDateTime(char* buffer);
 
 	private:
 
