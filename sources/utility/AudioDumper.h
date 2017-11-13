@@ -3,6 +3,7 @@
 #define AUDIODUMP_H
 #include <string>
 #include "MediaLogger.h"
+#include "Tools.h"
 
 namespace MediaSDK
 {

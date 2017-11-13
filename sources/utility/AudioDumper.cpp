@@ -2,19 +2,19 @@
 
 namespace MediaSDK
 {
+#define DATE_TIME_LENGTH 10
 	CAudioDumper::CAudioDumper(std::string fileName, bool enable)
 	{
 		std::string filePath;
 #if defined(__ANDROID__)
-		std::string filePath = "/sdcard/";
+		filePath = "/sdcard/";
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-		std::string filePath = std::string(getenv("HOME")) + "/Documents/";
+		filePath = std::string(getenv("HOME")) + "/Documents/";
 #elif defined(DESKTOP_C_SHARP)
-		std::string filePath = "";
+		filePath = "";
 #endif
-		char prefix[512];
-		MediaLogger *loggerInstance = NULL;
-		loggerInstance->GetDateTime(prefix);
+		char prefix[DATE_TIME_LENGTH];
+		Tools::GetDateTime(prefix);
 		std::string filePathwithFileName = filePath + std::string(prefix) + fileName;
 		if (enable) dumpfile = fopen(filePathwithFileName.c_str(), "wb");
 	}
