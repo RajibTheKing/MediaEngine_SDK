@@ -142,22 +142,13 @@ namespace MediaSDK
 
 				if (0 == iterator && m_pAudioCallSession->m_pPlayedPublisherFE)
 				{
-					m_pAudioCallSession->m_pPlayedPublisherFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, DUMP_ENABLE);
+					m_pAudioCallSession->m_pPlayedPublisherFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, PCM_DUMP);
 				}
 				if (1 == iterator && m_pAudioCallSession->m_pPlayedCalleeFE)
 				{
-					m_pAudioCallSession->m_pPlayedCalleeFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, DUMP_ENABLE);
+					m_pAudioCallSession->m_pPlayedCalleeFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, PCM_DUMP);
 				}				
-#ifdef PCM_DUMP
-                if (0 == iterator && m_pAudioCallSession->PlayedFilePublisher)
-                {
-                    fwrite(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_pAudioCallSession->PlayedFilePublisher);
-                }
-                if (1 == iterator && m_pAudioCallSession->PlayedFileCallee)
-                {
-                    fwrite(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_pAudioCallSession->PlayedFileCallee);
-                }
-#endif
+
 				naFrameNumbers[iterator] = iPacketNumber;
 
 				m_pAudioMixer->AddDataToPCMAdder(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);					

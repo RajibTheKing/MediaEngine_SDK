@@ -165,50 +165,14 @@ namespace MediaSDK
 		m_clientSocket->SetAudioCallSession(this);
 #endif
 
-		m_pRecordedNE = new CAudioDumper("recorded.pcm", DUMP_ENABLE);
-		m_pProcessedNE = new CAudioDumper("processed.pcm", DUMP_ENABLE);
-		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", DUMP_ENABLE);
-		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", DUMP_ENABLE);
-		m_pPlayedFE = new CAudioDumper("played.pcm", DUMP_ENABLE);
-		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", DUMP_ENABLE);
-		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", DUMP_ENABLE);
+		m_pRecordedNE = new CAudioDumper("recorded.pcm", PCM_DUMP);
+		m_pProcessedNE = new CAudioDumper("processed.pcm", PCM_DUMP);
+		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", PCM_DUMP);
+		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", PCM_DUMP);
+		m_pPlayedFE = new CAudioDumper("played.pcm", PCM_DUMP);
+		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", PCM_DUMP);
+		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", PCM_DUMP);
 
-#ifdef PCM_DUMP
-		long long llcurrentTime;
-		std::string sCurrentTime;
-		std::stringstream ss;
-
-		ss.clear();
-		llcurrentTime = (Tools::CurrentTimestamp() / 10000) % 100000;
-		ss << llcurrentTime;
-		ss >> sCurrentTime;
-
-#if defined(__ANDROID__)
-		std::string filePrefix = "/sdcard/";
-#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-		std::string filePrefix = std::string(getenv("HOME")) + "/Documents/";
-#elif defined(DESKTOP_C_SHARP)
-		std::string filePrefix = "";
-#endif
-		std::string fileExtension = ".pcm";
-
-		std::string RecordedFileName = filePrefix + sCurrentTime + "-Recorded" + fileExtension;
-		std::string EchoCancelledFileName = filePrefix + sCurrentTime + "-Cancelled" + fileExtension;
-		std::string PlayedFileName = filePrefix + sCurrentTime + "-Played" + fileExtension;
-        std::string PlayedFileNamePublisher = filePrefix + sCurrentTime + "-PlayedPublisher" + fileExtension;
-        std::string PlayedFileNameCallee = filePrefix + sCurrentTime + "-PlayedCallee" + fileExtension;
-		std::string RecordedChunckedFileName = filePrefix + sCurrentTime + "-RecordedChuncked" + fileExtension;
-		std::string AfterEchoCancellationFileName = filePrefix + sCurrentTime + "-AfterCancellation" + fileExtension;
-
-		RecordedFile = fopen(RecordedFileName.c_str(), "wb");
-		EchoCancelledFile = fopen(EchoCancelledFileName.c_str(), "wb");
-		AfterEchoCancellationFile = fopen(AfterEchoCancellationFileName.c_str(), "wb");
-		RecordedChunckedFile = fopen(RecordedChunckedFileName.c_str(), "wb");
-		PlayedFile = fopen(PlayedFileName.c_str(), "wb");
-        PlayedFilePublisher = fopen(PlayedFileNamePublisher.c_str(), "wb");
-        PlayedFileCallee = fopen(PlayedFileNameCallee.c_str(), "wb");
-
-#endif 
 
 		InitNearEndDataProcessing();
 		InitFarEndDataProcessing();
@@ -311,15 +275,7 @@ namespace MediaSDK
 			delete m_pPlayedCalleeFE;
 			m_pPlayedCalleeFE = NULL;
 	}
-#ifdef PCM_DUMP
-		if (RecordedFile) fclose(RecordedFile);
-		if (EchoCancelledFile) fclose(EchoCancelledFile);
-		if (AfterEchoCancellationFile) fclose(AfterEchoCancellationFile);
-		if (RecordedChunckedFile) fclose(RecordedChunckedFile);
-		if (PlayedFile) fclose(PlayedFile);
-        if (PlayedFilePublisher) fclose(PlayedFilePublisher);
-        if (PlayedFileCallee) fclose(PlayedFileCallee);
-#endif
+
 		if (m_recordBuffer)
 		{
 			delete m_recordBuffer;
@@ -713,13 +669,7 @@ namespace MediaSDK
 
 	int CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		if (m_pRecordedNE) m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
-#ifdef PCM_DUMP
-		if (RecordedFile)
-		{
-			fwrite(psaEncodingAudioData, 2, unLength, RecordedFile);
-		}
-#endif
+		if (m_pRecordedNE) m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength, PCM_DUMP);
 
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		
@@ -810,13 +760,8 @@ namespace MediaSDK
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
-					if (m_pProcessedNE) m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
-#ifdef PCM_DUMP
-					if (EchoCancelledFile)
-					{
-						fwrite(psaEncodingAudioData, 2, unLength, EchoCancelledFile);
-					}
-#endif
+					if (m_pProcessedNE) m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength, PCM_DUMP);
+
 				}
 				else
 				{
@@ -831,13 +776,7 @@ namespace MediaSDK
 
 			}
 
-			if (m_pProcessed2NE) m_pProcessed2NE->WriteDump(psaEncodingAudioData, 2, unLength, DUMP_ENABLE);
-#ifdef PCM_DUMP
-			if (AfterEchoCancellationFile)
-			{
-				fwrite(psaEncodingAudioData, 2, unLength, AfterEchoCancellationFile);
-			}
-#endif
+			if (m_pProcessed2NE) m_pProcessed2NE->WriteDump(psaEncodingAudioData, 2, unLength, PCM_DUMP);
 		}
 		else
 		{

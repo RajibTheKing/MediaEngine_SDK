@@ -264,13 +264,7 @@ namespace MediaSDK
 					m_nPacketPlayed ++;
 					MediaLog(LOG_INFO, "[AFEDP] Viewer# To Player [SendToPlayer]\n");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-					if(m_pAudioCallSession->m_pPlayedFE) m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize, DUMP_ENABLE);
-#ifdef PCM_DUMP
-					if (m_pAudioCallSession->PlayedFile)
-					{
-						fwrite(pshSentFrame, 2, nSentFrameSize, m_pAudioCallSession->PlayedFile);
-					}
-#endif
+					if(m_pAudioCallSession->m_pPlayedFE) m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize, PCM_DUMP);
 				}
 			}
 #else
@@ -707,13 +701,7 @@ namespace MediaSDK
 			{
 				MediaLog(LOG_CODE_TRACE, "[FE][AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
 				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
-				if(m_pAudioCallSession->m_pPlayedFE) m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), DUMP_ENABLE);
-#ifdef PCM_DUMP
-				if (m_pAudioCallSession->PlayedFile)
-				{
-					fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
-				}
-#endif
+				if(m_pAudioCallSession->m_pPlayedFE) m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), PCM_DUMP);
 			}
 			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);									
 			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
@@ -728,13 +716,7 @@ namespace MediaSDK
 		if (m_pDataEventListener != nullptr)
 		{
 			m_pDataEventListener->FireDataEvent(m_pAudioCallSession -> GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
-			if(m_pAudioCallSession->m_pPlayedFE) m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), DUMP_ENABLE);
-#ifdef PCM_DUMP
-			if (m_pAudioCallSession->PlayedFile)
-			{
-				fwrite(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_pAudioCallSession->PlayedFile);
-			}
-#endif
+			if(m_pAudioCallSession->m_pPlayedFE) m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), PCM_DUMP);
 		}
 #endif
 	}

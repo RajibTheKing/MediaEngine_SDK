@@ -167,15 +167,6 @@ namespace MediaSDK
 		CTrace *m_pTrace;
 		AudioLinearBuffer* m_recordBuffer = nullptr;
 		CAudioDumper *m_pRecordedNE = NULL, *m_pProcessedNE = NULL, *m_pProcessed2NE = NULL, *m_pChunckedNE = NULL, *m_pPlayedFE = NULL, *m_pPlayedPublisherFE = NULL, *m_pPlayedCalleeFE = NULL;
-#ifdef PCM_DUMP
-		FILE* RecordedFile;
-		FILE* RecordedChunckedFile;
-		FILE* EchoCancelledFile;
-		FILE* AfterEchoCancellationFile;
-		FILE* PlayedFile;
-        FILE* PlayedFilePublisher;
-        FILE* PlayedFileCallee;
-#endif
 		
 	#ifdef DUMP_FILE
 		FILE *FileInput;
