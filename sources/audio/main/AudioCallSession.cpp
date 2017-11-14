@@ -165,13 +165,13 @@ namespace MediaSDK
 		m_clientSocket->SetAudioCallSession(this);
 #endif
 
-		m_pRecordedNE = new CAudioDumper("recorded.pcm", 1);
-		m_pProcessedNE = new CAudioDumper("processed.pcm", 1);
-		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", 1);
-		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", 0);
-		m_pPlayedFE = new CAudioDumper("played.pcm", 1);
-		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", 1);
-		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", 1);
+		m_pRecordedNE = new CAudioDumper("recorded.pcm", true);
+		m_pProcessedNE = new CAudioDumper("processed.pcm", true);
+		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", true);
+		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", false);
+		m_pPlayedFE = new CAudioDumper("played.pcm", true);
+		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", true);
+		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", true);
 
 
 		InitNearEndDataProcessing();
