@@ -863,9 +863,5 @@
     <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="MediaEngine_Windows.rc" />
   </ItemGroup>
 </Project>
