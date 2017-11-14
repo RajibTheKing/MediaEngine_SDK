@@ -1,4 +1,5 @@
 #include "AudioDumper.h"
+#include "AudioMacros.h"
 
 namespace MediaSDK
 {
