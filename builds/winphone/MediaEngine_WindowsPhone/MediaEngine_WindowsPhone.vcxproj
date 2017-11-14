@@ -206,6 +206,7 @@
     <ClInclude Include="..\..\..\sources\common\Controller.h" />
     <ClInclude Include="..\..\..\sources\common\EventNotifier.h" />
     <ClInclude Include="..\..\..\sources\common\InterfaceOfAudioVideoEngine.h" />
+    <ClInclude Include="..\..\..\sources\utility\AudioDumper.h" />
     <ClInclude Include="..\..\..\sources\utility\CircularBuffer.h" />
     <ClInclude Include="..\..\..\sources\utility\CustomLocker.h" />
     <ClInclude Include="..\..\..\sources\utility\IPVThread.h" />
@@ -335,6 +336,7 @@
     <ClCompile Include="..\..\..\sources\common\Controller.cpp" />
     <ClCompile Include="..\..\..\sources\common\EventNotifier.cpp" />
     <ClCompile Include="..\..\..\sources\common\InterfaceOfAudioVideoEngine.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp" />
     <ClCompile Include="..\..\..\sources\utility\CircularBuffer.cpp" />
     <ClCompile Include="..\..\..\sources\utility\IPVThread.cpp" />
     <ClCompile Include="..\..\..\sources\utility\LogPrinter.cpp" />

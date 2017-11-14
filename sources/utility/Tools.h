@@ -149,6 +149,10 @@ namespace MediaSDK
 		static void SetIntegerLongLongUnsignedChar(unsigned char *packetData, int index, int nLenght, long long value);
 
 		static void SetThreadName(const char* threadName);
+		static unsigned long long GetEpoch();
+		static size_t GetTime(char* buffer);
+		static size_t GetDateTime(char* buffer);
+		static std::string GetCurrentDirectoryAny();
 
 	private:
 

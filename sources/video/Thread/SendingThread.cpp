@@ -570,19 +570,18 @@ namespace MediaSDK
                                     }
                                     else
                                     {
-#ifdef PCM_DUMP
 										for (int i = 0; i < vAudioDataLengthVector.size(); i++)
 										{
 											if (i == 0)
 											{
-												fwrite(m_AudioVideoDataToSend + index + m_iDataToSendIndex + 21, 1, vAudioDataLengthVector[0], pAudioSession->RecordedChunckedFile);
+												pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + 21, 1, vAudioDataLengthVector[0]);
 											}
 											else
 											{
-												fwrite(m_AudioVideoDataToSend + index + m_iDataToSendIndex + vAudioDataLengthVector[i - 1] + 21, 1, vAudioDataLengthVector[i], pAudioSession->RecordedChunckedFile);
+												pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + vAudioDataLengthVector[i - 1] + 21, 1, vAudioDataLengthVector[i]);
 											}
 										}
-#endif
+
                                         CLogPrinter_LOG(CHUNK_SENDING_LOG, "CSendingThread::SendingThreadProcedure sending chunk size %d duration %d", index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff);
                                         
                                         m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);

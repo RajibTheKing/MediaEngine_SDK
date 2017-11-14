@@ -10,7 +10,7 @@
 #include "Size.h"
 #include "MediaLogger.h"
 #include "AudioMacros.h"
-
+#include "AudioDumper.h"
 
 
 namespace MediaSDK
@@ -166,16 +166,7 @@ namespace MediaSDK
 
 		CTrace *m_pTrace;
 		AudioLinearBuffer* m_recordBuffer = nullptr;
-
-#ifdef PCM_DUMP
-		FILE* RecordedFile;
-		FILE* RecordedChunckedFile;
-		FILE* EchoCancelledFile;
-		FILE* AfterEchoCancellationFile;
-		FILE* PlayedFile;
-        FILE* PlayedFilePublisher;
-        FILE* PlayedFileCallee;
-#endif
+		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr, *m_pPlayedCalleeFE = nullptr;
 		
 	#ifdef DUMP_FILE
 		FILE *FileInput;

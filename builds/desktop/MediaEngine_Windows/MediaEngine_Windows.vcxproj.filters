@@ -423,6 +423,9 @@
     <ClCompile Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.cpp">
       <Filter>video\assembly</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.h">
@@ -856,6 +859,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.h">
       <Filter>video\assembly</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
+      <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
