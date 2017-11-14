@@ -165,13 +165,13 @@ namespace MediaSDK
 		m_clientSocket->SetAudioCallSession(this);
 #endif
 
-		m_pRecordedNE = new CAudioDumper("recorded.pcm", PCM_DUMP);
-		m_pProcessedNE = new CAudioDumper("processed.pcm", PCM_DUMP);
-		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", PCM_DUMP);
-		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", PCM_DUMP);
-		m_pPlayedFE = new CAudioDumper("played.pcm", PCM_DUMP);
-		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", PCM_DUMP);
-		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", PCM_DUMP);
+		m_pRecordedNE = new CAudioDumper("recorded.pcm", DUMP_ENABLE);
+		m_pProcessedNE = new CAudioDumper("processed.pcm", DUMP_ENABLE);
+		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", DUMP_ENABLE);
+		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", DUMP_ENABLE);
+		m_pPlayedFE = new CAudioDumper("played.pcm", DUMP_ENABLE);
+		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", DUMP_ENABLE);
+		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", DUMP_ENABLE);
 
 
 		InitNearEndDataProcessing();
@@ -669,7 +669,7 @@ namespace MediaSDK
 
 	int CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		if (m_pRecordedNE) m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength, PCM_DUMP);
+		m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 
 		long long llCurrentTime = Tools::CurrentTimestamp();
 		
@@ -760,7 +760,7 @@ namespace MediaSDK
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
-					if (m_pProcessedNE) m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength, PCM_DUMP);
+					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 
 				}
 				else
@@ -776,7 +776,7 @@ namespace MediaSDK
 
 			}
 
-			if (m_pProcessed2NE) m_pProcessed2NE->WriteDump(psaEncodingAudioData, 2, unLength, PCM_DUMP);
+			m_pProcessed2NE->WriteDump(psaEncodingAudioData, 2, unLength);
 		}
 		else
 		{

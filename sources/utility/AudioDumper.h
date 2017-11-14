@@ -12,7 +12,7 @@ namespace MediaSDK
 	public:
 		CAudioDumper(std::string fileName, bool enable);
 		~CAudioDumper();
-		void WriteDump(void* audioData, int typeSize, int dataSize, bool enable);
+		void WriteDump(void* audioData, int typeSize, int dataSize);
 
 	private:
 		FILE *dumpfile = nullptr;

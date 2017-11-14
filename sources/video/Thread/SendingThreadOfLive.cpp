@@ -535,11 +535,11 @@ namespace MediaSDK
 										{
 											if (i == 0)
 											{												
-												if (pAudioSession->m_pChunckedNE) pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + 21, 1, vAudioDataLengthVector[0], PCM_DUMP);
+												pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + 21, 1, vAudioDataLengthVector[0]);
 											}
 											else
 											{
-												if (pAudioSession->m_pChunckedNE) pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + vAudioDataLengthVector[i - 1] + 21, 1, vAudioDataLengthVector[i], PCM_DUMP);
+												pAudioSession->m_pChunckedNE->WriteDump(m_AudioVideoDataToSend + index + m_iDataToSendIndex + vAudioDataLengthVector[i - 1] + 21, 1, vAudioDataLengthVector[i]);
 											}											
 										}
 										m_pCommonElementsBucket->SendFunctionPointer(index, MEDIA_TYPE_LIVE_STREAM, m_AudioVideoDataToSend, index + m_iDataToSendIndex + m_iAudioDataToSendIndex, diff, liVector);

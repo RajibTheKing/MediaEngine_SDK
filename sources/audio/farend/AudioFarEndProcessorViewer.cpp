@@ -140,13 +140,13 @@ namespace MediaSDK
 					continue;
 				}
 
-				if (0 == iterator && m_pAudioCallSession->m_pPlayedPublisherFE)
+				if (0 == iterator)
 				{
-					m_pAudioCallSession->m_pPlayedPublisherFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, PCM_DUMP);
+					m_pAudioCallSession->m_pPlayedPublisherFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 				}
-				if (1 == iterator && m_pAudioCallSession->m_pPlayedCalleeFE)
+				if (1 == iterator)
 				{
-					m_pAudioCallSession->m_pPlayedCalleeFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, PCM_DUMP);
+					m_pAudioCallSession->m_pPlayedCalleeFE->WriteDump(m_saDecodedFrame, 2, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 				}				
 
 				naFrameNumbers[iterator] = iPacketNumber;
