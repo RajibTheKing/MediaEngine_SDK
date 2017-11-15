@@ -68,7 +68,7 @@ m_lfriendID(lfriendID)
 
 	//LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
     
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
 
     m_pNeonAssemblyWrapper = new NeonAssemblyWrapper();
 
@@ -1783,6 +1783,7 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, in
     if(iHeight % 4 == 0 && iWidth % 16 == 0)
     {
 #if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+        //LOGE_MAIN("TheKing--> Here Inside DownScaleOneFourthAssembly = ");
         m_pNeonAssemblyWrapper->DownScaleOneFourthAssembly(pData, iHeight, iWidth, outputData);
 #else
         
@@ -2297,7 +2298,7 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pD
     int newHeight, newWidth, diff_width, diff_height;
     
     CalculateAspectRatioWithScreenAndModifyHeightWidth(inHeight, inWidth, screenHeight, screenWidth, newHeight, newWidth);
-    
+    //LOGE_MAIN("TheKing--> fahad -->> CropWithAspectRatio_YUVNV12_YUVNV21_RGB24 : inHeight = %d, newHeight = %d, inWidth = %d, newWidth = %d",inHeight, newHeight, inWidth, newWidth);
     if(inHeight == newHeight && inWidth == newWidth)
     {
         //Do Nothing
@@ -2362,7 +2363,7 @@ int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth
    
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
 #if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
-    //printf("TheKing--> Here Inside Crop_yuv420_assembly\n");
+    //LOGE_MAIN("TheKing--> Here Inside Crop_yuv420_assembly = inHeight = %d, inWidth= %d, startXDiff = %d, endXDiff = %d", inHeight, inWidth, startXDiff, endXDiff);
     m_pNeonAssemblyWrapper->Crop_yuv420_assembly(pData, inHeight, inWidth, startXDiff, endXDiff, startYDiff, endYDiff, outputData, outHeight, outWidth);
     return outHeight * outWidth * 3 / 2;
 #else
