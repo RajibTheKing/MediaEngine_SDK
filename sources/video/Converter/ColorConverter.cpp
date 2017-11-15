@@ -1780,60 +1780,111 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version222(unsigned char* pData, in
 
 int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
+    if(iHeight % 4 == 0 && iWidth % 16 == 0)
+    {
 #if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
-    m_pNeonAssemblyWrapper->DownScaleOneFourthAssembly(pData, iHeight, iWidth, outputData);
+        m_pNeonAssemblyWrapper->DownScaleOneFourthAssembly(pData, iHeight, iWidth, outputData);
 #else
-    
-    
-	int idx = 0;
-	for (int i = 0; i < iHeight; i += 4)
-	{
-		for (int j = 0; j < iWidth; j += 4)
-		{
-            int tmp = 0;
-            for(int k = i; k < i + 4; k++)
+        
+        
+        int idx = 0;
+        for (int i = 0; i < iHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 4)
             {
-                int kw = k*iWidth;
-                for(int l = j; l < j + 4; l++)
+                int tmp = 0;
+                for(int k = i; k < i + 4; k++)
                 {
-                    tmp += pData[kw + l];
-                }
-            }
-            outputData[idx++] = tmp >> 4;
-		}
-	}
-
-	int halfHeight = iHeight >> 1;
-	int offset = iHeight*iWidth;
-
-	for (int i = 0; i < halfHeight; i += 4)
-	{
-		for (int j = 0; j < iWidth; j += 8)
-		{
-            int tmpU = 0;
-            int tmpV = 0;
-            for(int k = i; k < i + 4; k++)
-            {
-                int kw = offset + k*iWidth;
-                for(int l = j; l < j + 8; l++)
-                {
-                    if (l % 2 == 0)
+                    int kw = k*iWidth;
+                    for(int l = j; l < j + 4; l++)
                     {
-                        tmpU += pData[kw + l];
-                    }
-                    else
-                    {
-                        tmpV += pData[kw + l];
+                        tmp += pData[kw + l];
                     }
                 }
+                outputData[idx++] = tmp >> 4;
             }
-            outputData[idx++] = tmpU >> 4;
-            outputData[idx++] = tmpV >> 4;
-		}
-	}
-
-	
+        }
+        
+        int halfHeight = iHeight >> 1;
+        int offset = iHeight*iWidth;
+        
+        for (int i = 0; i < halfHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 8)
+            {
+                int tmpU = 0;
+                int tmpV = 0;
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        if (l % 2 == 0)
+                        {
+                            tmpU += pData[kw + l];
+                        }
+                        else
+                        {
+                            tmpV += pData[kw + l];
+                        }
+                    }
+                }
+                outputData[idx++] = tmpU >> 4;
+                outputData[idx++] = tmpV >> 4;
+            }
+        }
 #endif
+    }
+    else
+    {
+        int idx = 0;
+        for (int i = 0; i < iHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 4)
+            {
+                int tmp = 0;
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmp += pData[kw + l];
+                    }
+                }
+                outputData[idx++] = tmp >> 4;
+            }
+        }
+        
+        int halfHeight = iHeight >> 1;
+        int offset = iHeight*iWidth;
+        
+        for (int i = 0; i < halfHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 8)
+            {
+                int tmpU = 0;
+                int tmpV = 0;
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        if (l % 2 == 0)
+                        {
+                            tmpU += pData[kw + l];
+                        }
+                        else
+                        {
+                            tmpV += pData[kw + l];
+                        }
+                    }
+                }
+                outputData[idx++] = tmpU >> 4;
+                outputData[idx++] = tmpV >> 4;
+            }
+        }
+    }
+
     
     int outHeight = iHeight >> 2;
     int outWidth = iWidth >> 2;
