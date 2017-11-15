@@ -689,7 +689,9 @@ int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char
 void CColorConverter::mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
-
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    m_pNeonAssemblyWrapper->Mirror_YUV420_Assembly(pFrame, pData, iHeight, iWidth);
+#else
 	int yLen = m_Multiplication[iHeight][iWidth];;
 	int uvLen = yLen >> 2;
 	int vStartIndex = yLen + uvLen;
@@ -732,6 +734,8 @@ void CColorConverter::mirrorYUVI420(unsigned char *pFrame, unsigned char *pData,
 		}
 
 	}
+#endif
+    
 }
 
 
@@ -1776,6 +1780,11 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version222(unsigned char* pData, in
 
 int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    m_pNeonAssemblyWrapper->DownScaleOneFourthAssembly(pData, iHeight, iWidth, outputData);
+#else
+    
+    
 	int idx = 0;
 	for (int i = 0; i < iHeight; i += 4)
 	{
@@ -1823,10 +1832,14 @@ int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, in
 		}
 	}
 
-	int outHeight = iHeight >> 2;
-	int outWidth = iWidth >> 2;
-
-	return (outHeight * outWidth * 3) >> 1;
+	
+#endif
+    
+    int outHeight = iHeight >> 2;
+    int outWidth = iWidth >> 2;
+    
+    return (outHeight * outWidth * 3) >> 1;
+    
 }
 
 int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
