@@ -2287,7 +2287,7 @@ int CColorConverter::Crop_RGB24(unsigned char* pData, int inHeight, int inWidth,
 int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
 {
    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
 #if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
     //printf("TheKing--> Here Inside Crop_yuv420_assembly\n");
     m_pNeonAssemblyWrapper->Crop_yuv420_assembly(pData, inHeight, inWidth, startXDiff, endXDiff, startYDiff, endYDiff, outputData, outHeight, outWidth);
