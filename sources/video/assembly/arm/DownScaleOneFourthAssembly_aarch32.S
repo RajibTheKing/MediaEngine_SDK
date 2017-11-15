@@ -104,7 +104,7 @@ mov dx, #0
         bne loopSecond
 
     add dy, dy, #4
-    add pInData, pIndata, jumpDiff
+    add pInData, pInData, jumpDiff
     cmp dy, iHeight
 bne loopMain
 
@@ -176,7 +176,7 @@ mov dx, #0
         bne loopSecondUV
 
 add dy, dy, #4
-add pInData, pIndata, jumpDiff
+add pInData, pInData, jumpDiff
 cmp dy, iHeight
 bne loopMainUV
 

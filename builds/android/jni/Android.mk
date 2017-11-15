@@ -73,6 +73,8 @@ LOCAL_SRC_FILES := $(filter %.cpp, $(ALL_FILE))
 ifeq ($(ARCH),armeabi-v7a)
 LOCAL_CFLAGS   += -DHAVE_NEON -DASSEMBLY_ANDROID -mfloat-abi=softfp -mfpu=neon -ffast-math
 LOCAL_SRC_FILES += $(SOURCES)/video/assembly/arm/color_converter_arm_neon_aarch32.S
+LOCAL_SRC_FILES += $(SOURCES)/video/assembly/arm/DownScaleOneFourthAssembly_aarch32.S
+LOCAL_SRC_FILES += $(SOURCES)/video/assembly/arm/mirror_YUV420_Assembly_aarch32.S
 LOCAL_ARM_NEON := true
 endif
 
