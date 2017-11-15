@@ -10,13 +10,13 @@
 #include "Size.h"
 #include "MediaLogger.h"
 #include "AudioMacros.h"
-
+#include "AudioDumper.h"
 
 
 namespace MediaSDK
 {
     #define AUDIO_CALL_VERSION  0
-    #define AUDIO_LIVE_VERSION  0
+    #define AUDIO_LIVE_VERSION  1
 		
 	//#define LOCAL_SERVER_LIVE_CALL
 	//#define AUDIO_SELF_CALL
@@ -72,6 +72,7 @@ namespace MediaSDK
 
 		long long GetBaseOfRelativeTime();
 		void GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector, int &sendingLengthViewer, int &sendingLengthPeer, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime);
+		unsigned int GetNumberOfFrameForChunk();
 
 		void SetCallInLiveType(int nCallInLiveType);
 		void SetVolume(int iVolume, bool bRecorder);
@@ -165,14 +166,7 @@ namespace MediaSDK
 
 		CTrace *m_pTrace;
 		AudioLinearBuffer* m_recordBuffer = nullptr;
-
-#ifdef PCM_DUMP
-		FILE* RecordedFile;
-		FILE* RecordedChunckedFile;
-		FILE* EchoCancelledFile;
-		FILE* AfterEchoCancellationFile;
-		FILE* PlayedFile;
-#endif
+		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr, *m_pPlayedCalleeFE = nullptr;
 		
 	#ifdef DUMP_FILE
 		FILE *FileInput;
@@ -190,7 +184,7 @@ namespace MediaSDK
 		SendFunctionPointerType m_cbClientSendFunction;
 		
 		bool m_bIsOpusCodec;
-		bool m_bNeedToResetEcho;
+		bool m_bNeedToResetTrace;
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;

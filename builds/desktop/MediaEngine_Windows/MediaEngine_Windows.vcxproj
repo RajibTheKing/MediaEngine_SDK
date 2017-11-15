@@ -53,7 +53,6 @@
     <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\Trace.h" />
-    <ClInclude Include="..\..\..\sources\audio\dsp\Voice.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCGain.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.h" />
@@ -91,6 +90,7 @@
     <ClInclude Include="..\..\..\sources\common\EventNotifier.h" />
     <ClInclude Include="..\..\..\sources\common\InterfaceOfAudioVideoEngine.h" />
     <ClInclude Include="..\..\..\sources\common\PlatformMacros.h" />
+    <ClInclude Include="..\..\..\sources\utility\AudioDumper.h" />
     <ClInclude Include="..\..\..\sources\utility\CircularBuffer.h" />
     <ClInclude Include="..\..\..\sources\utility\CustomLocker.h" />
     <ClInclude Include="..\..\..\sources\utility\IPVThread.h" />
@@ -189,7 +189,6 @@
     <ClCompile Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\Trace.cpp" />
-    <ClCompile Include="..\..\..\sources\audio\dsp\Voice.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCGain.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCNoiseReducer.cpp" />
@@ -221,6 +220,7 @@
     <ClCompile Include="..\..\..\sources\common\Controller.cpp" />
     <ClCompile Include="..\..\..\sources\common\EventNotifier.cpp" />
     <ClCompile Include="..\..\..\sources\common\InterfaceOfAudioVideoEngine.cpp" />
+    <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp" />
     <ClCompile Include="..\..\..\sources\utility\CircularBuffer.cpp" />
     <ClCompile Include="..\..\..\sources\utility\IPVThread.cpp" />
     <ClCompile Include="..\..\..\sources\utility\LogPrinter.cpp" />
@@ -284,6 +284,7 @@
     <ClCompile Include="..\..\..\sources\video\Tools\HashGenerator.cpp" />
     <ClCompile Include="..\..\..\sources\video\Tools\VersionController.cpp" />
   </ItemGroup>
+
   <PropertyGroup Label="Globals">
     <ProjectGuid>{99D73CE9-BE72-460B-A0F3-E688C0E4FB99}</ProjectGuid>
     <RootNamespace>MediaEngine_Windows</RootNamespace>

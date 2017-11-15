@@ -29,7 +29,7 @@
 #define MEDIA_LOG_MAX_SIZE	512
 
 /// MAX Size 10 MB, 1 MB = 1048576 bytes
-#define MAX_LOG_FILE_SIZE_BYTES 10485760
+#define MAX_LOG_FILE_SIZE_BYTES 1048576*3
 
 #define MEDIA_LOGGING_FILE_NAME "MediaLog"
 #define MEDIA_LOGGING_FILE_EXT ".log"
@@ -71,6 +71,8 @@ namespace MediaSDK
 		
 		std::string GetFilePath();
 		LogLevel GetLogLevel();
+		size_t GetThreadID(char* buffer);
+		size_t GetDateTime(char* buffer);
 
 	private:
 		
@@ -78,17 +80,13 @@ namespace MediaSDK
 		void WriteLogToFile();
 		void RenameFile();
 
-		void InternalLog(const char *format, ...);
-		
-		size_t GetThreadID(char* buffer);
-		size_t GetDateTime(char* buffer);
+		void InternalLog(const char *format, ...);	
 
 		void StartMediaLoggingThread();
 		void StopMediaLoggingThread();
 		static void* CreateLoggingThread(void* param);
-		
-	private:
-		
+	
+
 		std::unique_ptr<CLockHandler> m_pMediaLoggerMutex;
 		std::unique_ptr<std::thread> m_pThreadInstance;
 		bool m_bMediaLoggingThreadRunning;

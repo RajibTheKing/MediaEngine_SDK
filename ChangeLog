@@ -1,3 +1,59 @@
+Release 12.15.1 (Date: 11-11-2017)
+---------------------------------
+- Android input stream made similar to iOS
+
+
+Release 12.15 (Date: 08-11-2017)
+---------------------------------
+- Android Video call issue fixed
+- iOS Channel problem fixed
+
+
+Release 12.14 (Date: 08-11-2017)
+---------------------------------
+- IOS live start fix
+
+
+Release 12.13 (Date: 08-11-2017)
+---------------------------------
+- Beautification Improved
+- Call bitrate logic changed
+
+
+Release 12.12 (Date: 07-11-2017)
+---------------------------------
+- Beautification Improved
+- Video header changed
+- Input dimension changed for some devices but output dimension remains same
+
+
+Release 12.11 (Date: 06-11-2017)
+---------------------------------
+- Trace shortened, 1st 5 recorded data are discarded, silencing based on echo flag reenabled, AECM delay increased by 10. [Issue #5076] 
+
+
+Release 12.10 (Date: 05-11-2017)
+---------------------------------
+- WebRTC AECM startup convergence parameter = 512 and double talk threshould = 400. [Issue #5061] 
+- Live audio version = 1 [Audio]
+
+
+Release 12.9 (Date: 23-10-2017)
+---------------------------------
+- Modified audio player and recorder time controlling. [Issue #4930] 
+
+
+Release 12.8 (Date: 22-10-2017)
+---------------------------------
+- Now chunk duration and relative time of audio only live are calculating from audio frame. [Issue #4863] 
+
+
+Release 12.7 (Date: 18-10-2017)
+---------------------------------
+- Video header modified.
+- Crash prevention procedure added.
+
+
 Release 12.6 (Date: 10-10-2017)
 ---------------------------------
 - Some assembly codes added for iOS platform.

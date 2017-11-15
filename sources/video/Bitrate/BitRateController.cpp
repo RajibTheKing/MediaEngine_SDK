@@ -418,7 +418,7 @@ namespace MediaSDK
 					m_nContinuousUpCounterLimitToJump = GOOD_MEGASLOT_TO_UP_LIMIT_TO_BITRATE_JUMP;
 					m_nContinuousUpCounter = 0;
 
-					return BITRATE_CHANGE_UP_JUMP;
+					return BITRATE_CHANGE_UP;
 				}
 				else
 					return BITRATE_CHANGE_UP;

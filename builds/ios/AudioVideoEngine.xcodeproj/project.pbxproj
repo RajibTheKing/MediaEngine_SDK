@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6A04F6151FBAAE24009DAC6B /* AudioDumper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A04F6131FBAAE24009DAC6B /* AudioDumper.cpp */; };
 		D1E73A641F6575B900ACDE35 /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739521F6575B900ACDE35 /* AudioDecoderBuffer.cpp */; };
 		D1E73A651F6575B900ACDE35 /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739541F6575B900ACDE35 /* AudioEncoderBuffer.cpp */; };
 		D1E73A661F6575B900ACDE35 /* AudioLinearBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739561F6575B900ACDE35 /* AudioLinearBuffer.cpp */; };
@@ -129,6 +130,9 @@
 		D1E73AE61F65783700ACDE35 /* libwebrtc-agc-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E73AE41F65783700ACDE35 /* libwebrtc-agc-ios.a */; };
 		DA143E7B1F70F48B00BBB746 /* AudioHeaderCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E771F70F48B00BBB746 /* AudioHeaderCall.cpp */; };
 		DA143E7C1F70F48B00BBB746 /* AudioHeaderLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */; };
+		DA61CBEA1F97608B00640ACB /* MultiResolutionThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA61CBE81F97608A00640ACB /* MultiResolutionThread.cpp */; };
+		DA61CBED1F97609800640ACB /* MultiResolutionSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA61CBEB1F97609800640ACB /* MultiResolutionSession.cpp */; };
+		DA61CBF01F9760A300640ACB /* VideoFrameBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA61CBEE1F9760A200640ACB /* VideoFrameBuffer.cpp */; };
 		DAAD0E151F78CE1F00606887 /* NeonAssemblyWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E131F78CE1F00606887 /* NeonAssemblyWrapper.cpp */; };
 		DAAD0E171F78CE2C00606887 /* color_converter_arm_neon_aarch32.S in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.S */; };
 		DAAD0E261F78FCCF00606887 /* color_converter_arm_neon_aarch64.S in Sources */ = {isa = PBXBuildFile; fileRef = DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.S */; };
@@ -148,6 +152,8 @@
 
 /* Begin PBXFileReference section */
 		1852B3471BCE1D3A000FF5C4 /* libAudioVideoEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAudioVideoEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A04F6131FBAAE24009DAC6B /* AudioDumper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDumper.cpp; sourceTree = "<group>"; };
+		6A04F6141FBAAE24009DAC6B /* AudioDumper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDumper.h; sourceTree = "<group>"; };
 		D1E739521F6575B900ACDE35 /* AudioDecoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDecoderBuffer.cpp; sourceTree = "<group>"; };
 		D1E739531F6575B900ACDE35 /* AudioDecoderBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoderBuffer.h; sourceTree = "<group>"; };
 		D1E739541F6575B900ACDE35 /* AudioEncoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoderBuffer.cpp; sourceTree = "<group>"; };
@@ -412,6 +418,12 @@
 		DA143E781F70F48B00BBB746 /* AudioHeaderCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderCall.h; sourceTree = "<group>"; };
 		DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioHeaderLive.cpp; sourceTree = "<group>"; };
 		DA143E7A1F70F48B00BBB746 /* AudioHeaderLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderLive.h; sourceTree = "<group>"; };
+		DA61CBE81F97608A00640ACB /* MultiResolutionThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiResolutionThread.cpp; sourceTree = "<group>"; };
+		DA61CBE91F97608B00640ACB /* MultiResolutionThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiResolutionThread.h; sourceTree = "<group>"; };
+		DA61CBEB1F97609800640ACB /* MultiResolutionSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiResolutionSession.cpp; sourceTree = "<group>"; };
+		DA61CBEC1F97609800640ACB /* MultiResolutionSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiResolutionSession.h; sourceTree = "<group>"; };
+		DA61CBEE1F9760A200640ACB /* VideoFrameBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoFrameBuffer.cpp; sourceTree = "<group>"; };
+		DA61CBEF1F9760A300640ACB /* VideoFrameBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoFrameBuffer.h; sourceTree = "<group>"; };
 		DA63DA7A1C7C6DF500EF3793 /* Helper_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helper_IOS.h; path = ExtraFiles/Helper_IOS.h; sourceTree = "<group>"; };
 		DA63DA7B1C7C6E2800EF3793 /* Helper_IOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Helper_IOS.mm; path = ExtraFiles/Helper_IOS.mm; sourceTree = "<group>"; };
 		DA98E7B21F84B9B90003BE9E /* PlatformMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformMacros.h; sourceTree = "<group>"; };
@@ -679,6 +691,8 @@
 		D1E739D41F6575B900ACDE35 /* utility */ = {
 			isa = PBXGroup;
 			children = (
+				6A04F6131FBAAE24009DAC6B /* AudioDumper.cpp */,
+				6A04F6141FBAAE24009DAC6B /* AudioDumper.h */,
 				D1E739D51F6575B900ACDE35 /* CircularBuffer.cpp */,
 				D1E739D61F6575B900ACDE35 /* CircularBuffer.h */,
 				D1E739D71F6575B900ACDE35 /* CustomLocker.h */,
@@ -737,6 +751,8 @@
 		D1E739EE1F6575B900ACDE35 /* Buffer */ = {
 			isa = PBXGroup;
 			children = (
+				DA61CBEE1F9760A200640ACB /* VideoFrameBuffer.cpp */,
+				DA61CBEF1F9760A300640ACB /* VideoFrameBuffer.h */,
 				D1E739EF1F6575B900ACDE35 /* DecodingBuffer.cpp */,
 				D1E739F01F6575B900ACDE35 /* DecodingBuffer.h */,
 				D1E739F11F6575B900ACDE35 /* DeviceCapabilityCheckBuffer.cpp */,
@@ -862,6 +878,8 @@
 		D1E73A351F6575B900ACDE35 /* Session */ = {
 			isa = PBXGroup;
 			children = (
+				DA61CBEB1F97609800640ACB /* MultiResolutionSession.cpp */,
+				DA61CBEC1F97609800640ACB /* MultiResolutionSession.h */,
 				D1E73A361F6575B900ACDE35 /* VideoCallSession.cpp */,
 				D1E73A371F6575B900ACDE35 /* VideoCallSession.h */,
 				D1E73A381F6575B900ACDE35 /* VideoCallSessionListHandler.cpp */,
@@ -873,6 +891,8 @@
 		D1E73A3A1F6575B900ACDE35 /* Thread */ = {
 			isa = PBXGroup;
 			children = (
+				DA61CBE81F97608A00640ACB /* MultiResolutionThread.cpp */,
+				DA61CBE91F97608B00640ACB /* MultiResolutionThread.h */,
 				D1E73A3B1F6575B900ACDE35 /* DepacketizationThread.cpp */,
 				D1E73A3C1F6575B900ACDE35 /* DepacketizationThread.h */,
 				D1E73A3D1F6575B900ACDE35 /* DeviceCapabilityCheckThread.cpp */,
@@ -1079,6 +1099,7 @@
 				D1E73A6B1F6575B900ACDE35 /* AudioFileCodec.cpp in Sources */,
 				D1E73AA51F6575B900ACDE35 /* DeviceCapabilityCheckBuffer.cpp in Sources */,
 				D1E73A891F6575B900ACDE35 /* LiveAudioParserForPublisher.cpp in Sources */,
+				DA61CBEA1F97608B00640ACB /* MultiResolutionThread.cpp in Sources */,
 				D1E73A731F6575B900ACDE35 /* AudioMixer.cpp in Sources */,
 				D1E73AC71F6575B900ACDE35 /* SendingThread.cpp in Sources */,
 				D1E73A661F6575B900ACDE35 /* AudioLinearBuffer.cpp in Sources */,
@@ -1100,8 +1121,10 @@
 				D1E73A811F6575B900ACDE35 /* AudioFarEndProcessorCall.cpp in Sources */,
 				D1E73A9C1F6575B900ACDE35 /* LogPrinter.cpp in Sources */,
 				DAAD0E151F78CE1F00606887 /* NeonAssemblyWrapper.cpp in Sources */,
+				DA61CBED1F97609800640ACB /* MultiResolutionSession.cpp in Sources */,
 				D1E73A691F6575B900ACDE35 /* AudioDecoderProvider.cpp in Sources */,
 				D1E73AC41F6575B900ACDE35 /* RenderingThreadOfCall.cpp in Sources */,
+				6A04F6151FBAAE24009DAC6B /* AudioDumper.cpp in Sources */,
 				D1E73AA61F6575B900ACDE35 /* EncodingBuffer.cpp in Sources */,
 				D1E73ACE1F6575B900ACDE35 /* VideoEncodingThread.cpp in Sources */,
 				D1E73A651F6575B900ACDE35 /* AudioEncoderBuffer.cpp in Sources */,
@@ -1110,6 +1133,7 @@
 				D1E73A7A1F6575B900ACDE35 /* Trace.cpp in Sources */,
 				D1E73A901F6575B900ACDE35 /* AudioNearEndDataProcessor.cpp in Sources */,
 				D1E73AC01F6575B900ACDE35 /* VideoCallSessionListHandler.cpp in Sources */,
+				DA61CBF01F9760A300640ACB /* VideoFrameBuffer.cpp in Sources */,
 				D1E73AB41F6575B900ACDE35 /* VideoBeautificationer.cpp in Sources */,
 				D1E73AA11F6575B900ACDE35 /* BandwidthController.cpp in Sources */,
 				D1E73AD01F6575B900ACDE35 /* VideoEncodingThreadOfLive.cpp in Sources */,

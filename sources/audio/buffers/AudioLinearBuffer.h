@@ -14,6 +14,7 @@ namespace MediaSDK
 		int m_bufferMaxSize = -1;
 		int m_beginPos = -1, m_endPos = -1;
 		long long m_llNextPopTime = -1;
+		int m_nDelete1stDataCount;
 
 		std::mutex m_mutex;
 	public:

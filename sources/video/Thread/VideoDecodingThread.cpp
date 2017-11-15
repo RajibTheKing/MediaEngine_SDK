@@ -33,6 +33,7 @@ namespace MediaSDK
 		m_bResetForPublisherCallerCallEnd(false),
 		m_bResetForViewerCallerCallStartEnd(false),
 		m_HasPreviousValues(false),
+		//m_VideoBeautificationer(NULL),
 		m_llFriendID(llFriendID)
 
 	{
@@ -70,6 +71,12 @@ namespace MediaSDK
 			delete m_pCalculatorDecodeTime;
 			m_pCalculatorDecodeTime = NULL;
 		}
+
+		/*if (NULL != m_VideoBeautificationer)
+		{
+			delete m_VideoBeautificationer;
+			m_VideoBeautificationer = NULL;
+		}*/
 
 		if (NULL != m_pVideoEffect)
 		{
@@ -587,7 +594,7 @@ namespace MediaSDK
 		if (frameSize == 0)
 			m_NoFrameCounter++;
 
-		CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoDecodingThread::DecodeAndSendToClient frameSize %d m_decodedFrameSize %d m_NoFrameCounter %d m_DecodeFailCounter %d", frameSize, m_decodedFrameSize, m_NoFrameCounter, m_DecodeFailCounter);
+		CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoDecodingThread::DecodeAndSendToClient frameSize %d m_decodedFrameSize %d m_decodingHeight %d, m_decodingWidth %d, m_NoFrameCounter %d m_DecodeFailCounter %d", frameSize, m_decodedFrameSize, m_decodingHeight, m_decodingWidth, m_NoFrameCounter, m_DecodeFailCounter);
 
 		CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CVideoDecodingThread::DecodeAndSendToClient() Decoded Frame m_decodedFrameSize " + m_Tools.getText(m_decodedFrameSize));
 
@@ -617,6 +624,13 @@ namespace MediaSDK
 
 			return -1;
 		}
+
+		/*if (m_VideoBeautificationer == NULL)
+		{
+			m_VideoBeautificationer = new CVideoBeautificationer(m_decodingHeight, m_decodingWidth);
+		}*/
+
+		//pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterNew(m_DecodedFrame, m_decodedFrameSize, m_decodingHeight, m_decodingWidth, m_decodingHeight, m_decodingWidth, true);
 
 		// CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "TheKing--> DecodingTime  = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - decTime) + ", CurrentCallFPS = " + m_Tools.IntegertoStringConvert(m_nCallFPS) + ", iVideoheight = " + m_Tools.IntegertoStringConvert(m_decodingHeight) + ", iVideoWidth = " + m_Tools.IntegertoStringConvert(m_decodingWidth) + ", AverageDecodeTime --> " + m_Tools.DoubleToString(m_pCalculatorDecodeTime->GetAverage()) + ", Decoder returned = " + m_Tools.IntegertoStringConvert(m_decodedFrameSize) + ", FrameNumber = " + m_Tools.IntegertoStringConvert(nFramNumber));
 
@@ -650,8 +664,8 @@ namespace MediaSDK
 			{
 				CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoDecodingThread::DecodeAndSendToClient() SetSmallFrame m_decodingHeight " + m_Tools.getText(m_decodingHeight) + " m_decodingWidth " + m_Tools.getText(m_decodingWidth));
 
-				int iHeight = m_pVideoCallSession->m_nVideoCallHeight;
-				int iWidth = m_pVideoCallSession->m_nVideoCallWidth;
+				int iHeight = m_pVideoCallSession->getVideoCallHeight();
+				int iWidth = m_pVideoCallSession->getVideoCallWidth();
                 
                 if(m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP && m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP)
                 {
@@ -666,15 +680,20 @@ namespace MediaSDK
                     {
                         //do nothing
                     }
+
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient before rotation m_decodingHeight %d, m_decodingWidth %d, rotatedHeight %d, rotatedWidth %d, nOrientationForRotation %d", m_decodingHeight, m_decodingWidth, rotatedHeight, rotatedWidth, nOrientationForRotation);
                     
 					int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientationForRotation);
                     
                     memcpy(m_DecodedFrame, m_RotatedFrame, iLen);
                     m_decodingHeight = rotatedHeight;
                     m_decodingWidth = rotatedWidth;
+
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient after rotation m_decodingHeight %d, m_decodingWidth %d, rotatedHeight %d, rotatedWidth %d, nOrientationForRotation %d", m_decodingHeight, m_decodingWidth, rotatedHeight, rotatedWidth, nOrientationForRotation);
                 }
                 
-                
+				CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient betfore setting small frame m_decodingHeight %d, m_decodingWidth %d, iHeight %d, iWidth %d", m_decodingHeight, m_decodingWidth, iHeight, iWidth);
+
                 this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)

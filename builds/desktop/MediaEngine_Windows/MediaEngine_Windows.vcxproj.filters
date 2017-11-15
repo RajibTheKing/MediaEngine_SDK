@@ -396,9 +396,6 @@
     <ClCompile Include="..\..\..\sources\audio\dsp\Trace.cpp">
       <Filter>audio\dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\audio\dsp\Voice.cpp">
-      <Filter>audio\dsp</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.cpp">
       <Filter>audio\dsp</Filter>
     </ClCompile>
@@ -425,6 +422,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.cpp">
       <Filter>video\assembly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp">
+      <Filter>utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -830,9 +830,6 @@
     <ClInclude Include="..\..\..\sources\audio\dsp\Trace.h">
       <Filter>audio\dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sources\audio\dsp\Voice.h">
-      <Filter>audio\dsp</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\dsp\WebRTCEchoCanceller.h">
       <Filter>audio\dsp</Filter>
     </ClInclude>
@@ -862,6 +859,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.h">
       <Filter>video\assembly</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
+      <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,8 +7,8 @@
 #include <string>
 #include <bitset>
 
-#define VIDEO_HEADER_LENGTH 33
-#define LIBRARY_VERSION 4
+#define VIDEO_HEADER_LENGTH 41
+#define LIBRARY_VERSION 6
 
 namespace MediaSDK
 {
@@ -44,7 +44,11 @@ namespace MediaSDK
                              int iDeviceFPS,
                              int iNumberOfEncodeFailPerFps,
                              int iMediaEngineVersion,
-                             int iLiveVideoQualityLevel
+                             int iLiveVideoQualityLevel,
+                             int iLiveStreamBitrate,
+                             int iLiveStreamMaxBitrate,
+                             int iVideoHeightFourth,
+                             int iVideoWidthFourth
 			);
         
         int GetHeaderInByteArray(unsigned char* data);
@@ -194,6 +198,32 @@ namespace MediaSDK
             return m_iLiveVideoQualityLevel;
         }
         
+        void setLiveStreamVideoBitrate(unsigned char *pData);
+        int GetLiveStreamVideoBitrate()
+        {
+            return m_iLiveStreamBitrate;
+        }
+        
+        void setLiveStreamVideoMaxBitrate(unsigned char *pData);
+        int GetLiveStreamVideoMaxBitrate()
+        {
+            return m_iLiveStreamMaxBitrate;
+        }
+        
+        void setVideoHeightFourth(unsigned char *pData);
+        int GetVideoHeightFourth()
+        {
+            return m_iVideoHeightFourth;
+        }
+        
+        void setVideoWidthFourth(unsigned char *pData);
+        int GetVideoWidthFourth()
+        {
+            return m_iVideoWidthFourth;
+        }
+        
+        
+        
 	private:
 
 		//unsigned char m_ucPacketType;
@@ -260,8 +290,13 @@ namespace MediaSDK
         int m_iLiveVideoQualityLevel; //3 bit
         //Total 32 + 1 = 33 byte
         
+        int m_iLiveStreamBitrate; //3 byte
+        int m_iLiveStreamMaxBitrate; //3 byte
+        //Total 33 + 6 = 39 byte
         
-        
+        int m_iVideoHeightFourth; //1 byte
+        int m_iVideoWidthFourth; //1 byte
+        //Total 39 + 2 = 41 byte
 
         
 	};
