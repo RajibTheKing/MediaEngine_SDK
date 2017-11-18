@@ -103,7 +103,7 @@ namespace MediaSDK
 		int nPacketType;		 
 		const int iMediaByteHeaderSize = 1;
 		
-		MediaLog(LOG_CODE_TRACE, "[FE][LAPC][PLA] #(AudioFrames)=%d, #(MissingBlocks)=%u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
+		MediaLog(LOG_DEBUG, "[FE][LAPC][PLA] #(AudioFrames)=%d, #(MissingBlocks)=%u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
 		while (iFrameNumber < nNumberOfAudioFrames)
 		{
 			bCompleteFrame = true;
@@ -182,7 +182,7 @@ namespace MediaSDK
 			}
 
 			nPacketType = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize];
-			MediaLog(LOG_CODE_TRACE, "[FE][LAPC][PLA]  FrameCounter:%d PacketType = %d  Range[L:%d, R:%d]", iFrameNumber-1, nPacketType, nFrameLeftRange, nFrameRightRange);
+			MediaLog(LOG_DEBUG, "[FE][LAPC][PLA]  FrameCounter:%d PacketType = %d  Range[L:%d, R:%d]", iFrameNumber-1, nPacketType, nFrameLeftRange, nFrameRightRange);
 
 			/* Discarding broken Opus frame */
 			if (!bCompleteFrame && (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType || LIVE_PUBLISHER_PACKET_TYPE_OPUS == nPacketType))

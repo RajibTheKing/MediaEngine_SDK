@@ -48,7 +48,7 @@ namespace MediaSDK
 			long long llRelativeTime, int nEchoStateFlags, unsigned char* ucpHeader);
 		void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte);
 		void StoreDataForChunk(unsigned char *uchNearData, int nNearFrameLengthInByte, unsigned char *uchFarData, int nFarFrameLengthInByte, long long llRelativeTime);
-
+		void StoreDataForChunkDeviceInformation(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte);
 
 	public:
 		
@@ -68,6 +68,7 @@ namespace MediaSDK
 		short m_saAudioRecorderFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];    //Always contains UnMuxed Data
 		unsigned char m_ucaEncodedFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 		unsigned char m_ucaRawFrameNonMuxed[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
+		unsigned char m_ucaRawFrameForInformation[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 
 		SharedPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
 		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;

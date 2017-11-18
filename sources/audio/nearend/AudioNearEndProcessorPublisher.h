@@ -11,6 +11,7 @@ namespace MediaSDK
 	class CAudioShortBuffer;
 	class AudioMixer;
 	class AudioPacketHeader;
+	class AudioDeviceInformation;
 
 
 	class AudioNearEndProcessorPublisher : public AudioNearEndDataProcessor
@@ -37,7 +38,10 @@ namespace MediaSDK
 
 		SharedPointer<AudioMixer> m_pAudioMixer;
 		SharedPointer<AudioPacketHeader>m_pHeader;
+
+		AudioDeviceInformation *m_pAudioDeviceInformation;
 		
+		int m_nTotalSentFrameSize;
 	};
 
 }   //namespace MediaSDK

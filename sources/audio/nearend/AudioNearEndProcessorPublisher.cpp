@@ -10,6 +10,7 @@
 #include "AudioEncoderInterface.h"
 #include "Tools.h"
 #include "AudioDecoderBuffer.h"
+#include "AudioDeviceInformation.h"
 
 
 
@@ -22,6 +23,10 @@ namespace MediaSDK
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorPublisher::AudioNearEndProcessorPublisher()");
 		m_pHeader = AudioPacketHeader::GetInstance(HEADER_COMMON);
 		m_pAudioMixer.reset(new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING));
+
+		m_nTotalSentFrameSize = 0;
+
+		m_pAudioDeviceInformation = new AudioDeviceInformation();
 	}
 
 	//FILE* fp = fopen("/sdcard/out.pcm", "wb");
@@ -57,6 +62,38 @@ namespace MediaSDK
 				return;
 			}
 			
+
+			m_nTotalSentFrameSize += m_iPacketNumber + 1;
+			if (m_nTotalSentFrameSize % 200 == 0)
+			{
+				MediaLog(LOG_DEBUG, "Entered into info send %d", m_nTotalSentFrameSize);
+				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
+
+				long long llDelay, llDelayFraction, llCurrentFarendBufferSizeMax, llCurrentFarendBufferSizeMin, llStarupFarendBufferSize, llAverageTimeDiff;
+				m_pAudioCallSession->GetDeviceInformation(llDelay, llDelayFraction, llStarupFarendBufferSize, llCurrentFarendBufferSizeMin, llCurrentFarendBufferSizeMax, llAverageTimeDiff);
+				m_pAudioCallSession->ResetDeviceInformation();
+
+				m_pAudioDeviceInformation->Reset();
+				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY, llDelay);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeDelayFraction, DEVICE_INFORMATION_DELAY_FRACTION, llDelayFraction);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_STARTUP_FAREND_BUFFER_SIZE, llStarupFarendBufferSize);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MAX, llCurrentFarendBufferSizeMax);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN, llCurrentFarendBufferSizeMin);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF, llAverageTimeDiff);
+
+				m_ucaRawFrameForInformation[0] = 0;
+				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
+
+				BuildHeaderForLive(0, m_MyAudioHeadersize, version, m_iPacketNumber, nSendingDataSizeInByte, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
+
+				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation( &(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]) );
+				nNowSendingDataSizeInByte += nSizeOfInformation;
+
+				StoreDataForChunkDeviceInformation(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
+
+				llCapturedTime = Tools::CurrentTimestamp();
+			}
+
 			UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
 			//For opus livestreaming.
