@@ -1352,7 +1352,7 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 4 m_iSmallFrameHeight %d, m_iSmallFrameWidth %d", m_iSmallFrameHeight, m_iSmallFrameWidth);
 
 	m_iSmallFrameSize = iHeight * iWidth * 3 / 2;
-    iLen = CreateFrameBorder(m_pSmallFrame, iHeight, iWidth, 0, 128, 128); // [Y:0, U:128, V:128] = Black
+    //iLen = CreateFrameBorder(m_pSmallFrame, iHeight, iWidth, 0, 128, 128); // [Y:0, U:128, V:128] = Black
 
 	if (m_bMergingSmallFrameEnabled == false)
 	{
