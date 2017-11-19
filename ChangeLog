@@ -1,3 +1,8 @@
+Release 12.16 (Date: 19-11-2017)
+---------------------------------
+- Boarder removed for live call inset
+
+
 Release 12.15.1 (Date: 11-11-2017)
 ---------------------------------
 - Android input stream made similar to iOS
