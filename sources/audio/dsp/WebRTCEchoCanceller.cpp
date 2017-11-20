@@ -97,7 +97,7 @@ namespace MediaSDK
 	}
 
 
-	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int nBufferSize, long long llDelay)
+	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int nBufferSize, long long llDelay, short *NearEndNoisyData)
 	{
 		int nEchoStateFlags = ECHO_TYPE_NO_ECHO; //int containing 10 flags telling whether the 10 80 sized flags contain echo
 #ifdef USE_AECM
@@ -119,7 +119,16 @@ namespace MediaSDK
 			fwrite(sInBuf + i, sizeof(short), AECM_SAMPLES_IN_FRAME, EchoFile);
 #endif
 			bool bFailed = false, bZeroed = false;
-			if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay))
+			int iAecmResult = 0;
+			if (NearEndNoisyData == nullptr)
+			{
+				iAecmResult = WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay);
+			}
+			else
+			{
+				iAecmResult = WebRtcAecm_Process(AECM_instance, NearEndNoisyData + i, sInBuf + i, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay);
+			}
+			if (0 != iAecmResult)
 			{
 				ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)llDelay)
 					+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
@@ -127,12 +136,7 @@ namespace MediaSDK
 					+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
 				bFailed = true;
 			}
-			else
-			{
-				/*ALOG("WebRtcAec_Process successful Delay = " + m_Tools.IntegertoStringConvert((int)delay) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
-				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
-			}
+	
 			m_bNearEndingOrFarEnding = false;
 			if (gEchoType == ECHO_TYPE_JUST_ECHO)
 			{

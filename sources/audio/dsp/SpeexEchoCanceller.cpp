@@ -61,7 +61,7 @@ namespace MediaSDK
 	}
 
 
-	int SpeexEchoCanceller::CancelEcho(short *nearEndData, int nBufferSize, long long llDelay)
+	int SpeexEchoCanceller::CancelEcho(short *nearEndData, int nBufferSize, long long llDelay, short *NearEndNoisyData)
 {
 #if 0
 		while (m_bWritingFarend)

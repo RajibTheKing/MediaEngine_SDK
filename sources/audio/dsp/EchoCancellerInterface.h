@@ -15,7 +15,7 @@ namespace MediaSDK
 
 		virtual int AddFarEndData(short *farEndData, int dataLen) = 0;
 
-		virtual int CancelEcho(short *nearEndData, int dataLen, long long llDelay) = 0;
+		virtual int CancelEcho(short *nearEndData, int dataLen, long long llDelay, short *NearEndNoisyData = nullptr) = 0;
 
 		virtual ~EchoCancellerInterface() {	}
 	};
