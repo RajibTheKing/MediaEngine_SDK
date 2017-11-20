@@ -138,10 +138,10 @@ namespace MediaSDK
 			}
 	
 			m_bNearEndingOrFarEnding = false;
-			if (gEchoType == ECHO_TYPE_JUST_ECHO)
+			/*if (gEchoType == ECHO_TYPE_JUST_ECHO)
 			{
 				memset(sInBuf + i, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
-			}
+			}*/
 			if (gEchoType == ECHO_TYPE_JUST_ECHO || gEchoType == ECHO_TYPE_DOUBLE_TALK)
 			{
 				nEchoStateFlags |= 1;
