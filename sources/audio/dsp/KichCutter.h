@@ -5,6 +5,7 @@ class KichCutter
 public:
 	KichCutter();
 	~KichCutter();
+	void Despike(short *sBuffer);
 
 private:
 	short m_sZeroSampleCount;
@@ -14,6 +15,8 @@ private:
 	bool m_bRemoveContinentalShelves;
 	int m_nDataBufSize;
 	int m_nDataBufIOSize;
+	int m_nDataBufCopySize;
+
 
 	short *m_sSilentBuf;
 	short *m_sSilentFillBuf;
