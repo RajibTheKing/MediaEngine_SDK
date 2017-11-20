@@ -6,7 +6,7 @@
 namespace MediaSDK
 {
 
-	#define ByteSizeDelay 1
+	#define ByteSizeDelay 2
 	#define ByteSizeDelayFraction 1
 	#define ByteSizeFarendSize 1
 	#define ByteSizeAverageTimeDiff 1
