@@ -1,10 +1,10 @@
 #ifndef KICHCUTTER_H
 
-class KichCutter
+class CKichCutter
 {
 public:
-	KichCutter();
-	~KichCutter();
+	CKichCutter();
+	~CKichCutter();
 	void Despike(short *sBuffer);
 
 private:

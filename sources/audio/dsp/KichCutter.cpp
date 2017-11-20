@@ -4,7 +4,7 @@
 #include "string.h"
 #include "stdlib.h"
 
-KichCutter::KichCutter()
+CKichCutter::CKichCutter()
 {
 	m_sZeroSampleCount = MAX_AUDIO_FRAME_SAMPLE_SIZE / 8; //100
 	m_sSpikeSampleCount = MAX_AUDIO_FRAME_SAMPLE_SIZE * 9 / 8; //900
@@ -22,7 +22,7 @@ KichCutter::KichCutter()
 
 }
 
-KichCutter::~KichCutter()
+CKichCutter::~CKichCutter()
 {
 	if (m_sSilentBuf) delete[] m_sSilentBuf;
 	if (m_sSilentFillBuf) delete[] m_sSilentFillBuf;
@@ -30,7 +30,7 @@ KichCutter::~KichCutter()
 	if (m_sDataBuf) delete[] m_sDataBuf;
 }
 
-void KichCutter::Despike(short *sBuffer)
+void CKichCutter::Despike(short *sBuffer)
 {
 	memcpy(m_sDataBuf, m_sDataBuf + m_nDataBufIOSize, m_nDataBufCopySize * sizeof(short));
 	memcpy(m_sDataBuf + m_nDataBufCopySize, sBuffer, m_nDataBufIOSize * sizeof(short));
