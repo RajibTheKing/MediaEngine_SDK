@@ -29,6 +29,11 @@ namespace MediaSDK
 		m_pAudioDeviceInformation = new AudioDeviceInformation();
 	}
 
+	AudioNearEndProcessorPublisher::~AudioNearEndProcessorPublisher()
+	{
+		delete m_pAudioDeviceInformation;
+	}
+
 	//FILE* fp = fopen("/sdcard/out.pcm", "wb");
 
 	void AudioNearEndProcessorPublisher::ProcessNearEndData()
@@ -72,7 +77,7 @@ namespace MediaSDK
 				m_pAudioCallSession->GetDeviceInformation(llDelay, llDelayFraction, llStarupFarendBufferSize, llCurrentFarendBufferSizeMin, llCurrentFarendBufferSizeMax, llAverageTimeDiff);
 				m_pAudioCallSession->ResetDeviceInformation();
 
-				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER) llIsCalling = 1;
+				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE) llIsCalling = 1;
 				else llIsCalling = 0;
 
 				m_pAudioDeviceInformation->Reset();

@@ -296,6 +296,8 @@ namespace MediaSDK
 
 	void CAudioCallSession::ResetDeviceInformation()
 	{
+		m_llDeviceInformationDelay = SHRT_MAX;
+		m_llDeviceInformationDelayFraction = 255;
 		m_llDeviceInformationCurrentFarendBufferSizeMax = LONG_MIN;
 		m_llDeviceInformationCurrentFarendBufferSizeMin = LONG_MAX;
 		m_llDeviceInformationAverageTimeRecorderTimeDiff = 0;
@@ -595,6 +597,9 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
+
+		m_llDeviceInformationDelay = SHRT_MAX;
+		m_llDeviceInformationDelayFraction = 255;
 
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  EndCallInLive !!!!!!!!!\n\n");
 	}

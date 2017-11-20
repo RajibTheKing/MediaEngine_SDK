@@ -6,7 +6,7 @@
 #include "AudioLinearBuffer.h"
 #include "Tools.h"
 #include "AudioEncoderInterface.h"
-
+#include "AudioDeviceInformation.h"
 
 
 namespace MediaSDK
@@ -16,6 +16,12 @@ namespace MediaSDK
 		AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorViewerInCall::AudioNearEndProcessorViewerInCall()");
+		m_pAudioDeviceInformation = new AudioDeviceInformation();
+	}
+
+	AudioNearEndProcessorViewer::~AudioNearEndProcessorViewer()
+	{
+		delete m_pAudioDeviceInformation;
 	}
 
 
@@ -42,6 +48,41 @@ namespace MediaSDK
 			if (false == m_pAudioCallSession->IsOpusEnable())
 			{
 				m_pAudioCallSession->m_ViewerInCallSentDataQueue->EnQueue(m_saAudioRecorderFrame, nDataLenthInShort, m_iPacketNumber);
+			}
+
+			m_nTotalSentFrameSize += m_iPacketNumber + 1;
+			if (m_nTotalSentFrameSize % 200 == 0)
+			{
+				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
+
+				long long llDelay, llDelayFraction, llCurrentFarendBufferSizeMax, llCurrentFarendBufferSizeMin, llStarupFarendBufferSize, llAverageTimeDiff, llIsCalling;
+				m_pAudioCallSession->GetDeviceInformation(llDelay, llDelayFraction, llStarupFarendBufferSize, llCurrentFarendBufferSizeMin, llCurrentFarendBufferSizeMax, llAverageTimeDiff);
+				m_pAudioCallSession->ResetDeviceInformation();
+
+				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE) llIsCalling = 1;
+				else llIsCalling = 0;
+
+				m_pAudioDeviceInformation->Reset();
+				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY, llDelay);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeDelayFraction, DEVICE_INFORMATION_DELAY_FRACTION, llDelayFraction);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_STARTUP_FAREND_BUFFER_SIZE, llStarupFarendBufferSize);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MAX, llCurrentFarendBufferSizeMax);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN, llCurrentFarendBufferSizeMin);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF, llAverageTimeDiff);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeIsCalling, DEVICE_INFORMATION_IS_CALLING, llIsCalling);
+
+				m_ucaRawFrameForInformation[0] = 0;
+				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
+
+				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
+				BuildHeaderForLive(0, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
+
+				
+				nNowSendingDataSizeInByte += nSizeOfInformation;
+
+				StoreDataForChunkDeviceInformation(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
+
+				llCapturedTime = Tools::CurrentTimestamp();
 			}
 
 			DumpEncodingFrame();

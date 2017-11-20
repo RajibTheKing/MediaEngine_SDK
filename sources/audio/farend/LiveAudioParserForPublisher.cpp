@@ -6,7 +6,7 @@
 #include "CommonTypes.h"
 #include "MediaLogger.h"
 #include "AudioHeaderLive.h"
-
+#include "AudioDeviceInformation.h"
 
 namespace MediaSDK
 {
@@ -18,10 +18,12 @@ namespace MediaSDK
 		m_bIsRoleChanging = false;
 
 		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
+		m_pAudioDeviceInformation = new AudioDeviceInformation();
 	}
 
 	CLiveAudioParserForPublisher::~CLiveAudioParserForPublisher(){
 		SHARED_PTR_DELETE(m_pLiveReceiverMutex);		
+		delete m_pAudioDeviceInformation;
 	}
 
 	void CLiveAudioParserForPublisher::SetRoleChanging(bool bFlah){
@@ -161,6 +163,13 @@ namespace MediaSDK
 
 			nPacketType = uchAudioData[nFrameLeftRange + mediaByteSize];
 			MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA]  PacketType = %d", nPacketType);
+
+			if (nPacketType == 0)
+			{
+				int n_HeaderSize = m_pAudioPacketHeader->GetHeaderSize();
+				MediaLog(LOG_DEBUG, "[LAPE][007] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, mediaByteSize, n_HeaderSize);
+				std::vector < std::pair<int, long long> > v = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + mediaByteSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - mediaByteSize - n_HeaderSize + 1);
+			}
 
 			/* Discarding broken Opus frame */
 			

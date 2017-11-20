@@ -8,6 +8,7 @@
 namespace MediaSDK
 {
 	class AudioPacketHeader;
+	class AudioDeviceInformation;
 
 	class CLiveAudioParserForPublisher : public ILiveAudioParser
 	{
@@ -19,6 +20,7 @@ namespace MediaSDK
 		bool m_bIsCurrentlyParsingAudioData;
 		bool m_bIsRoleChanging;
 
+		AudioDeviceInformation *m_pAudioDeviceInformation;
 
 	public:
 		CLiveAudioParserForPublisher(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector);

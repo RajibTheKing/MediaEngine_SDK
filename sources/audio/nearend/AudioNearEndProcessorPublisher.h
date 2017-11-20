@@ -20,7 +20,7 @@ namespace MediaSDK
 	public:
 
 		AudioNearEndProcessorPublisher(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
-		~AudioNearEndProcessorPublisher() { }
+		~AudioNearEndProcessorPublisher();
 
 		void ProcessNearEndData();
 
