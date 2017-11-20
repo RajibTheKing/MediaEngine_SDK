@@ -91,6 +91,7 @@ namespace MediaSDK
 
 		void ResetTrace();
 		void ResetAEC();
+		void ResetNS();
 		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);

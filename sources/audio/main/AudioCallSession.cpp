@@ -319,6 +319,16 @@ namespace MediaSDK
 		m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, m_bLiveAudioStreamRunning);
 	}
 
+	void CAudioCallSession::ResetNS()
+	{
+		if (m_pNoiseReducer.get())
+		{
+			m_pNoiseReducer.reset();
+		}
+
+		m_pNoiseReducer = NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer);
+	}
+
 	bool CAudioCallSession::IsEchoCancellerEnabled()
 	{
 #ifdef USE_AECM
