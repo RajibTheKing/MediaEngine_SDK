@@ -710,6 +710,7 @@ namespace MediaSDK
 				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting Trace.");
 				ResetAEC();
 				ResetTrace();
+				ResetNS();
 				m_bNeedToResetTrace = false;
 			}
 			//Sleep to maintain 100 ms recording time diff
