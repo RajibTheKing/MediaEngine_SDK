@@ -37,6 +37,7 @@
 #include "AudioDecoderBuffer.h"
 #include "Trace.h"
 #include "AudioLinearBuffer.h"
+#include "KichCutter.h"
 
 
 

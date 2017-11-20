@@ -43,6 +43,7 @@ namespace MediaSDK
 	class AudioShortBufferForPublisherFarEnd;
 	class CAudioShortBuffer;
 	class CTrace;
+	class CKichCutter;
 	class AudioLinearBuffer;
 	class CAudioByteBuffer;
 
@@ -165,10 +166,11 @@ namespace MediaSDK
 		SharedPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
 		SharedPointer<CAudioByteBuffer> m_FarEndBufferOpus;
 
-		CTrace *m_pTrace;
 		AudioLinearBuffer* m_recordBuffer = nullptr;
 		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr, *m_pPlayedCalleeFE = nullptr;
-		
+		CTrace *m_pTrace;
+		CKichCutter *m_pKichCutter;
+
 	#ifdef DUMP_FILE
 		FILE *FileInput;
 		FILE *FileOutput;
@@ -220,6 +222,8 @@ namespace MediaSDK
 		SharedPointer<NoiseReducerInterface> m_pNoiseReducer;
 		SharedPointer<AudioGainInterface> m_pRecorderGain;
 		SharedPointer<AudioGainInterface> m_pPlayerGain;
+
+		
 		
 	#ifdef USE_VAD
 		CVoice *m_pVoice;
