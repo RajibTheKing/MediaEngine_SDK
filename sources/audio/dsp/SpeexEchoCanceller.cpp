@@ -45,7 +45,7 @@ namespace MediaSDK
 	}
 
 	
-	int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning)
+	int SpeexEchoCanceller::AddFarEndData(short *farEndData, int dataLen)
 	{
 #if 0
 		while (m_bReadingFarend)
@@ -53,7 +53,7 @@ namespace MediaSDK
 			Tools::SOSleep(1);
 		}
 		m_bWritingFarend = true;
-		memcpy(m_sSpeexFarendBuf, farEndData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning) * sizeof(short));
+		memcpy(m_sSpeexFarendBuf, farEndData, dataLen);
 		m_bWritingFarend = false;
 #endif
 

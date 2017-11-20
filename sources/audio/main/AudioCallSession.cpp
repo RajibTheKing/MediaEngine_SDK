@@ -756,7 +756,7 @@ namespace MediaSDK
 						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
-					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
+					m_pEcho->AddFarEndData(m_saFarendData, unLength);
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
@@ -818,22 +818,6 @@ namespace MediaSDK
 
 	int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 	{
-		/*LOG_50MS("_+_+ FarEnd Time= %lld", Tools::CurrentTimestamp());
-
-		if (m_bEchoCancellerEnabled &&
-		(!m_bLiveAudioStreamRunning ||
-		(m_bLiveAudioStreamRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole))))
-		{
-		m_bIsAECMFarEndThreadBusy = true;
-
-		if (m_pEcho.get())
-		{
-		m_pEcho->AddFarEndData(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning());
-		}
-
-		m_bIsAECMFarEndThreadBusy = false;
-		}*/
-
 		return true;
 	}
 

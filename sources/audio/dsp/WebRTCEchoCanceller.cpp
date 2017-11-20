@@ -9,12 +9,7 @@ extern int gEchoType;
 int gEchoType = -1;
 #endif
 
-
-//It is strongly recommended you don't remove this commented out code
-//#include "Filt.h"
-//#define USE_LOW_PASS
-
-#define ECHO_ANALYSIS
+//#define ECHO_ANALYSIS
 
 #ifdef ECHO_ANALYSIS
 FILE *EchoFile = nullptr;
@@ -153,34 +148,13 @@ namespace MediaSDK
 
 		nEchoStateFlags >>= 1;
 
-#ifdef USE_LOW_PASS
-		if (isLoudspeaker)
-		{
-			LowPass(sInBuf, sBufferSize);
-			//DeAmplitude(sInBuf, sBufferSize);
-			/ *for (int i = 0; i < sBufferSize; i++)
-			{
-				if (sInBuf[i] > 10922)
-				{
-					LOGE("###CE### %d", (int)sInBuf[i]);
-				}
-				sInBuf[i] *= 2;
-			}*/
-		}
-#endif
 #endif
 		return nEchoStateFlags;
 	}
 
-	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize, bool isLiveStreamRunning)
+	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize)
 	{
 #ifdef USE_AECM
-
-		if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
-		{
-			ALOG("aec farend Invalid size");
-			return false;
-		}
 
 		LOG18("Farending2");
 
@@ -220,39 +194,5 @@ namespace MediaSDK
 
 		return true;
 	}
-
-	//It is strongly recommended you don't remove this commented out code
-	/*
-	int CEcho::DeAmplitude(short *sInBuf, int sBufferSize)
-	{
-	int iAmplitudeThreshold = 50;
-	int iAmplitudeSum = 0;
-
-	for (int i = 0; i < sBufferSize; i++)
-	{
-	iAmplitudeSum += abs(sInBuf[i]);
-	}
-	short iAvgAmplitude = iAmplitudeSum / sBufferSize;
-
-	if (iAvgAmplitude <= iAmplitudeThreshold)
-	{
-	for (int i = 0; i < sBufferSize; i++)
-	{
-	sInBuf[i] = 0;
-	}
-	}
-	return true;
-	}
-	int CEcho::LowPass(short *sInBuf, int sBufferSize)
-	{
-	Filter *my_filter = new Filter(LPF, 51, 8, 2.0);
-	for (int i = 0; i < sBufferSize; i++)
-	{
-	sInBuf[i] = (short)(my_filter->do_sample((double)sInBuf[i]));
-	}
-	return true;
-	}
-	*/
-
 } //namespace MediaSDK
 
