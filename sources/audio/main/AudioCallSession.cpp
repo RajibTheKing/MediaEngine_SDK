@@ -768,7 +768,18 @@ namespace MediaSDK
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength);
-					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+
+					if (m_bTraceRecieved)
+					{
+						short sDenoisedData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+						m_pNoiseReducer->Denoise(psaEncodingAudioData, unLength, sDenoisedData, getIsAudioLiveStreamRunning());
+						nEchoStateFlags = m_pEcho->CancelEcho(sDenoisedData, unLength, m_llDelayFraction + 10, psaEncodingAudioData);
+					}
+					else
+					{
+						m_pEcho->AddFarEndData(m_saFarendData, unLength);
+						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+					}
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
 					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
