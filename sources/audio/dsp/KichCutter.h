@@ -1,27 +1,30 @@
 #ifndef KICHCUTTER_H
-
-class CKichCutter
+#define KICHCUTTER_H
+namespace MediaSDK
 {
-public:
-	CKichCutter();
-	~CKichCutter();
-	void Despike(short *sBuffer);
+	class CKichCutter
+	{
+	public:
+		CKichCutter();
+		~CKichCutter();
+		void Despike(short *sBuffer);
 
-private:
-	short m_sZeroSampleCount;
-	short m_sSpikeSampleCount;
-	short m_sThreshold;
-	short m_sTotalSpikeSampleCount;
-	bool m_bRemoveContinentalShelves;
-	int m_nDataBufSize;
-	int m_nDataBufIOSize;
-	int m_nDataBufCopySize;
+	private:
+		short m_sZeroSampleCount;
+		short m_sSpikeSampleCount;
+		short m_sThreshold;
+		short m_sTotalSpikeSampleCount;
+		bool m_bRemoveContinentalShelves;
+		int m_nDataBufSize;
+		int m_nDataBufIOSize;
+		int m_nDataBufCopySize;
 
 
-	short *m_sSilentBuf;
-	short *m_sSilentFillBuf;
-	short *m_sTempBuf;
-	short *m_sDataBuf;
-};
+		short *m_sSilentBuf;
+		short *m_sSilentFillBuf;
+		short *m_sTempBuf;
+		short *m_sDataBuf;
+	};
+}
 
 #endif // !KICHCUTTER_H
