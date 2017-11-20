@@ -284,14 +284,6 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
 
-	void CAudioCallSession::ResetDeviceInformation()
-	{
-		m_llDeviceInformationCurrentFarendBufferSizeMax = LONG_MIN;
-		m_llDeviceInformationCurrentFarendBufferSizeMin = LONG_MAX;
-		m_llDeviceInformationAverageTimeRecorderTimeDiff = 0;
-		m_llDeviceInformationLastTime = -1;
-	}
-
 	void CAudioCallSession::GetDeviceInformation(long long &llDelay, long long &llDelayFraction, long long &llStartupFarendBufferSize, long long &llCurrentFarendBufferSizeMax, long long &llCurrentFarendBufferSizeMin, long long &llAverageTimeDiff)
 	{
 		llDelay = m_llDeviceInformationDelay;
@@ -300,6 +292,14 @@ namespace MediaSDK
 		llCurrentFarendBufferSizeMax = m_llDeviceInformationCurrentFarendBufferSizeMax;
 		llCurrentFarendBufferSizeMin = m_llDeviceInformationCurrentFarendBufferSizeMin;
 		llAverageTimeDiff = (long long)(m_llDeviceInformationAverageTimeRecorderTimeDiff / 150LL);
+	}
+
+	void CAudioCallSession::ResetDeviceInformation()
+	{
+		m_llDeviceInformationCurrentFarendBufferSizeMax = LONG_MIN;
+		m_llDeviceInformationCurrentFarendBufferSizeMin = LONG_MAX;
+		m_llDeviceInformationAverageTimeRecorderTimeDiff = 0;
+		m_llDeviceInformationLastTime = -1;
 	}
 
 	void CAudioCallSession::ResetTrace()
@@ -792,8 +792,8 @@ namespace MediaSDK
 						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
-					m_llDeviceInformationCurrentFarendBufferSizeMax = max(m_llDeviceInformationCurrentFarendBufferSizeMax, m_FarendBuffer->GetQueueSize());
-					m_llDeviceInformationCurrentFarendBufferSizeMin = max(m_llDeviceInformationCurrentFarendBufferSizeMin, m_FarendBuffer->GetQueueSize());
+					m_llDeviceInformationCurrentFarendBufferSizeMax = max(m_llDeviceInformationCurrentFarendBufferSizeMax, (long long) m_FarendBuffer->GetQueueSize());
+					m_llDeviceInformationCurrentFarendBufferSizeMin = max(m_llDeviceInformationCurrentFarendBufferSizeMin, (long long) m_FarendBuffer->GetQueueSize());
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);

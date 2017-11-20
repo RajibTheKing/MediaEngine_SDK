@@ -5,7 +5,8 @@
 #include "AudioMacros.h"
 #include "MediaLogger.h"
 #include "AudioHeaderLive.h"
-
+#include "AudioDeviceInformation.h"
+#include <vector> 
 
 namespace MediaSDK
 {
@@ -19,6 +20,7 @@ namespace MediaSDK
 		m_llLastProcessedFrameNo = -1;
 
 		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
+		m_pAudioDeviceInformation = new AudioDeviceInformation();
 	}
 
 	CLiveAudioParserForCallee::~CLiveAudioParserForCallee(){
@@ -183,6 +185,16 @@ namespace MediaSDK
 
 			nPacketType = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize];
 			MediaLog(LOG_DEBUG, "[FE][LAPC][PLA]  FrameCounter:%d PacketType = %d  Range[L:%d, R:%d]", iFrameNumber-1, nPacketType, nFrameLeftRange, nFrameRightRange);
+
+			if (nPacketType == 0)
+			{
+				MediaLog(LOG_DEBUG, "[LAPE][007] Left: %d, Right: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, iMediaByteHeaderSize+);
+				std::vector < std::pair<int, long long> > v = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize + 1);
+				for (int i = 0; i < v.size(); ++i)
+				{
+					MediaLog(LOG_DEBUG, "[LAPE][007] Type: %d, Value: %d", v[i].first, v[i].second);
+				}
+			}
 
 			/* Discarding broken Opus frame */
 			if (!bCompleteFrame && (LIVE_CALLEE_PACKET_TYPE_OPUS == nPacketType || LIVE_PUBLISHER_PACKET_TYPE_OPUS == nPacketType))

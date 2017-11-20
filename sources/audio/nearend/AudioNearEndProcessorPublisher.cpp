@@ -73,6 +73,13 @@ namespace MediaSDK
 				m_pAudioCallSession->GetDeviceInformation(llDelay, llDelayFraction, llStarupFarendBufferSize, llCurrentFarendBufferSizeMin, llCurrentFarendBufferSizeMax, llAverageTimeDiff);
 				m_pAudioCallSession->ResetDeviceInformation();
 
+				llDelay = 1;
+				llDelayFraction = 2;
+				llStarupFarendBufferSize = 3;
+				llCurrentFarendBufferSizeMax = 4;
+				llCurrentFarendBufferSizeMin = 5;
+				llAverageTimeDiff = 6;
+
 				m_pAudioDeviceInformation->Reset();
 				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY, llDelay);
 				m_pAudioDeviceInformation->SetInformation(ByteSizeDelayFraction, DEVICE_INFORMATION_DELAY_FRACTION, llDelayFraction);

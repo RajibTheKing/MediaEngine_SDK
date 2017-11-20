@@ -48,3 +48,4 @@ include/g729/G729_Wndows.vcxproj.user
 *.sdf
 *.idb
 *.opensdf
+*.obj

@@ -9,6 +9,7 @@
 namespace MediaSDK
 {
 	class AudioPacketHeader;
+	class AudioDeviceInformation;
 
 	class CLiveAudioParserForCallee : public ILiveAudioParser
 	{
@@ -20,7 +21,8 @@ namespace MediaSDK
 		bool m_bIsCurrentlyParsingAudioData;
 		bool m_bIsRoleChanging;
 		long long m_llLastProcessedFrameNo;
-	
+
+		AudioDeviceInformation *m_pAudioDeviceInformation;
 
 	public:
 

@@ -41,7 +41,7 @@ namespace MediaSDK
 		return m_nBufferSize;
 	}
 
-	std::vector < std::pair < int, long long > > ParseInformation(unsigned char *ucaInfo, int len)
+	std::vector < std::pair < int, long long > > AudioDeviceInformation::ParseInformation(unsigned char *ucaInfo, int len)
 	{
 		int i;
 		std::vector < std::pair < int, long long > > v;
