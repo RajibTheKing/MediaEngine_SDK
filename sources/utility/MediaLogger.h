@@ -71,6 +71,8 @@ namespace MediaSDK
 		
 		std::string GetFilePath();
 		LogLevel GetLogLevel();
+		size_t GetThreadID(char* buffer);
+		size_t GetDateTime(char* buffer);
 
 	private:
 		
@@ -78,17 +80,13 @@ namespace MediaSDK
 		void WriteLogToFile();
 		void RenameFile();
 
-		void InternalLog(const char *format, ...);
-		
-		size_t GetThreadID(char* buffer);
-		size_t GetDateTime(char* buffer);
+		void InternalLog(const char *format, ...);	
 
 		void StartMediaLoggingThread();
 		void StopMediaLoggingThread();
 		static void* CreateLoggingThread(void* param);
-		
-	private:
-		
+	
+
 		std::unique_ptr<CLockHandler> m_pMediaLoggerMutex;
 		std::unique_ptr<std::thread> m_pThreadInstance;
 		bool m_bMediaLoggingThreadRunning;

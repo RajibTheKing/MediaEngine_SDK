@@ -424,6 +424,9 @@
     <ClCompile Include="..\..\..\sources\video\Session\MultiResolutionSession.cpp">
       <Filter>video\session</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h" />
@@ -852,6 +855,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\video\Session\MultiResolutionSession.h">
       <Filter>video\session</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
+      <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

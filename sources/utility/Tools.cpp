@@ -213,6 +213,63 @@ namespace MediaSDK
 
 	}
 
+	unsigned long long Tools::GetEpoch()
+	{
+		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	}
+
+	size_t Tools::GetTime(char* buffer)
+	{
+
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
+
+		SYSTEMTIME st;
+		GetLocalTime(&st);
+		return _snprintf(buffer, 40, "%02d-%02d-%02d_", st.wHour, st.wMinute, st.wSecond);
+#else
+
+		timeval curTime;
+		gettimeofday(&curTime, NULL);
+		int pos;
+		pos = strftime(buffer, 10, "%H-%M-%S_", localtime(&curTime.tv_sec));
+		return pos;
+#endif 
+	}
+
+	size_t Tools::GetDateTime(char* buffer)
+	{
+		unsigned long long epoch = GetEpoch();
+
+#if IS_OS(MEDIA_OS_WINDOWS_ALL)
+
+		SYSTEMTIME st;
+		GetLocalTime(&st);
+		return _snprintf(buffer, 40, "[%02d-%02d-%04d %02d:%02d:%02d %llu] ", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, epoch);
+#else
+
+		timeval curTime;
+		gettimeofday(&curTime, NULL);
+		int pos;
+		pos = strftime(buffer, 22, "[%d-%m-%Y %H:%M:%S", localtime(&curTime.tv_sec));
+		pos += snprintf(buffer + pos, 20, " %llu] ", epoch);
+
+		return pos;
+#endif 
+	}
+
+	std::string Tools::GetCurrentDirectoryAny()
+	{
+		std::string Directory;
+#if defined(__ANDROID__)
+		Directory = "/sdcard/";
+#elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+		Directory = std::string(getenv("HOME")) + "/Documents/";
+#elif defined(DESKTOP_C_SHARP)
+		Directory = "";
+#endif
+		return Directory;
+	}
+
 	void Tools::WriteToFile(short* saDataToWriteToFile, int nLength)
 	{
 		if (NULL == m_filePointerToWriteShortData)
