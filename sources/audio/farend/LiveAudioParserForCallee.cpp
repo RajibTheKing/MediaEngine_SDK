@@ -188,12 +188,9 @@ namespace MediaSDK
 
 			if (nPacketType == 0)
 			{
-				MediaLog(LOG_DEBUG, "[LAPE][007] Left: %d, Right: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, iMediaByteHeaderSize+);
-				std::vector < std::pair<int, long long> > v = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize + 1);
-				for (int i = 0; i < v.size(); ++i)
-				{
-					MediaLog(LOG_DEBUG, "[LAPE][007] Type: %d, Value: %d", v[i].first, v[i].second);
-				}
+				int n_HeaderSize = m_pAudioPacketHeader->GetHeaderSize();
+				MediaLog(LOG_DEBUG, "[LAPE][007] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, iMediaByteHeaderSize, n_HeaderSize);
+				std::vector < std::pair<int, long long> > v = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize - n_HeaderSize + 1);
 			}
 
 			/* Discarding broken Opus frame */

@@ -10,6 +10,7 @@ namespace MediaSDK
 	#define ByteSizeDelayFraction 1
 	#define ByteSizeFarendSize 1
 	#define ByteSizeAverageTimeDiff 1
+	#define ByteSizeIsCalling 1
 
 	class AudioDeviceInformation
 	{

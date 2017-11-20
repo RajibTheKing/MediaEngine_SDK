@@ -28,7 +28,7 @@ namespace MediaSDK
 		int i = 0;
 		for (i = 0; i < nInfoSize; ++i, ++m_nBufferSize)
 		{
-			m_ucaBuffer[i] = (unsigned char)((ullInfo >> (nInfoSize - 1 - i) * 8) & 0xFFu);
+			m_ucaBuffer[m_nBufferSize] = (unsigned char)((ullInfo >> (nInfoSize - 1 - i) * 8) & 0xFFu);
 		}
 	}
 
@@ -45,18 +45,19 @@ namespace MediaSDK
 	{
 		int i;
 		std::vector < std::pair < int, long long > > v;
-		for (i = 0; i < len; ++i)
+		for (i = 0; i < len;)
 		{
 			int nInfoSize = ucaInfo[i++];
 			int nInfoType = ucaInfo[i++];
 
-			int j = 1;
 			long long val = 0;
-			for (; j <= nInfoSize; j++, i++)
+			for (int j=1; j <= nInfoSize; ++j, ++i)
 			{
-				val = ucaInfo[i];
+				val = val | ucaInfo[i];
 				val = val << 8;
 			}
+			val = val >> 8;
+
 			v.push_back(std::make_pair(nInfoType, val));
 		}
 		return v;

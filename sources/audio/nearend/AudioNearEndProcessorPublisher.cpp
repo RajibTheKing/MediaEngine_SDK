@@ -66,19 +66,14 @@ namespace MediaSDK
 			m_nTotalSentFrameSize += m_iPacketNumber + 1;
 			if (m_nTotalSentFrameSize % 200 == 0)
 			{
-				MediaLog(LOG_DEBUG, "Entered into info send %d", m_nTotalSentFrameSize);
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
-				long long llDelay, llDelayFraction, llCurrentFarendBufferSizeMax, llCurrentFarendBufferSizeMin, llStarupFarendBufferSize, llAverageTimeDiff;
+				long long llDelay, llDelayFraction, llCurrentFarendBufferSizeMax, llCurrentFarendBufferSizeMin, llStarupFarendBufferSize, llAverageTimeDiff, llIsCalling;
 				m_pAudioCallSession->GetDeviceInformation(llDelay, llDelayFraction, llStarupFarendBufferSize, llCurrentFarendBufferSizeMin, llCurrentFarendBufferSizeMax, llAverageTimeDiff);
 				m_pAudioCallSession->ResetDeviceInformation();
 
-				llDelay = 1;
-				llDelayFraction = 2;
-				llStarupFarendBufferSize = 3;
-				llCurrentFarendBufferSizeMax = 4;
-				llCurrentFarendBufferSizeMin = 5;
-				llAverageTimeDiff = 6;
+				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER) llIsCalling = 1;
+				else llIsCalling = 0;
 
 				m_pAudioDeviceInformation->Reset();
 				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY, llDelay);
@@ -87,6 +82,7 @@ namespace MediaSDK
 				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MAX, llCurrentFarendBufferSizeMax);
 				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN, llCurrentFarendBufferSizeMin);
 				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF, llAverageTimeDiff);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeIsCalling, DEVICE_INFORMATION_IS_CALLING, llIsCalling);
 
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
