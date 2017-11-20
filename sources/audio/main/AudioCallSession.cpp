@@ -112,6 +112,7 @@ namespace MediaSDK
 		}
 
 		m_pTrace = new CTrace();
+		m_pKichCutter = nullptr;
 
 		m_iSpeakerType = nAudioSpeakerType;
 		
@@ -330,6 +331,16 @@ namespace MediaSDK
 		m_pNoiseReducer = NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer);
 	}
 
+	void CAudioCallSession::ResetKichCutter()
+	{
+		if (m_pKichCutter != nullptr)
+		{
+			delete m_pKichCutter;
+		}
+
+		m_pKichCutter = new CKichCutter();
+	}
+
 	bool CAudioCallSession::IsEchoCancellerEnabled()
 	{
 #ifdef USE_AECM
@@ -346,6 +357,29 @@ namespace MediaSDK
 #else
 		return false;
 #endif
+	}
+
+	bool CAudioCallSession::IsKichCutterEnabled()
+	{
+		if (IsEchoCancellerEnabled() && !m_bLiveAudioStreamRunning)
+		{
+			if (IsTraceSendingEnabled() && m_bTraceRecieved)
+			{
+				return true;
+			}
+			else if (!IsTraceSendingEnabled())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	bool CAudioCallSession::IsTraceSendingEnabled()
@@ -712,6 +746,7 @@ namespace MediaSDK
 				ResetAEC();
 				ResetTrace();
 				ResetNS();
+				ResetKichCutter();
 				m_bNeedToResetTrace = false;
 			}
 			//Sleep to maintain 100 ms recording time diff
@@ -770,11 +805,13 @@ namespace MediaSDK
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength);
 
-					if (m_bTraceRecieved)
+					if (IsKichCutterEnabled())
 					{
-						short sDenoisedData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-						m_pNoiseReducer->Denoise(psaEncodingAudioData, unLength, sDenoisedData, getIsAudioLiveStreamRunning());
-						nEchoStateFlags = m_pEcho->CancelEcho(sDenoisedData, unLength, m_llDelayFraction + 10, psaEncodingAudioData);
+						short sNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+						memcpy(sNoisyData, psaEncodingAudioData, unLength * sizeof(short));
+						m_pNoiseReducer->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, getIsAudioLiveStreamRunning());
+						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, sNoisyData);
+						m_pKichCutter->Despike(psaEncodingAudioData);
 					}
 					else
 					{

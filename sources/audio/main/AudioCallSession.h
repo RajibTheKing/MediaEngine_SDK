@@ -93,11 +93,13 @@ namespace MediaSDK
 		void ResetTrace();
 		void ResetAEC();
 		void ResetNS();
+		void ResetKichCutter();
 		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
 		bool IsEchoCancellerEnabled();
 		bool IsTraceSendingEnabled();
+		bool IsKichCutterEnabled();
 		
 		void SetSendFunction(SendFunctionPointerType cbClientSendFunc) { m_cbClientSendFunction = cbClientSendFunc; }
 		void SetEventNotifier(CEventNotifier *pEventNotifier)          { m_pEventNotifier = pEventNotifier; }
