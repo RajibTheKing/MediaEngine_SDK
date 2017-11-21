@@ -425,6 +425,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\audio\main\AudioDeviceInformation.cpp">
       <Filter>audio\main</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp">
       <Filter>utility</Filter>
     </ClCompile>
@@ -864,6 +865,7 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\main\AudioDeviceInformation.h">
       <Filter>audio\main</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
       <Filter>utility</Filter>
     </ClInclude>

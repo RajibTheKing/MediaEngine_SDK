@@ -79,9 +79,9 @@ namespace MediaSDK
 		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
 
-		void ResetDeviceInformation();
-		void GetDeviceInformation(long long &llDelay, long long &llDelayFraction, long long &llStartupFarendBufferSize, long long &llCurrentFarendBufferSizeMin, long long &llCurrentFarendBufferSizeMax, long long &llAverageTimeDiff);
-
+		void ResetDeviceInformation(int end = 2);
+		void GetDeviceInformation(DeviceInformation &sDeviceInformation);
+		void SetDeviceInformationOfAnotherRole(std::vector< std::pair <int, long long > > &v);
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
 		Server considers strength as STRONG(3) when packet loss is 0%-3%, MEDIUM(2) when loss is 4%-12% and WEAK(1) when loss is 13%-25%
@@ -207,13 +207,8 @@ namespace MediaSDK
 		long long m_llLastPlayTime;
 		long long m_FriendID;
 
-		long long m_llDeviceInformationDelay;
-		long long m_llDeviceInformationDelayFraction;
-		long long m_llDeviceInformationStartupFarendBufferSize;
-		long long m_llDeviceInformationCurrentFarendBufferSizeMin;
-		long long m_llDeviceInformationCurrentFarendBufferSizeMax;
-		long long m_llDeviceInformationAverageTimeRecorderTimeDiff;
-		long long m_llDeviceInformationLastTime;
+		DeviceInformation m_DeviceInforamtion;
+		int m_id;
 
 		CEventNotifier* m_pEventNotifier;
 		AudioNearEndProcessorThread *m_cNearEndProcessorThread;

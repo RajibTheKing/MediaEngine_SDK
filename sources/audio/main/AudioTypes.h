@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cstddef>
+#include <climits>
 
 
 namespace MediaSDK
@@ -116,6 +117,29 @@ namespace MediaSDK
 		HEADER_CHANNEL,
 		HEADER_CALL,
 		HEADER_LIVE
+	};
+
+	struct DeviceInformation
+	{
+		// For Publisher Device Information = 0 index
+		// For Callee Device Information = 0 index
+		long long llDelay[2], llDelayFraction[2], llStartUpFarEndBufferSize[2], llCurrentFarEndBufferSizeMax[2], llCurrentFarEndBufferSizeMin[2], llAverageTimeDiff[2];
+		long long llCallCount, llIsCallInLive;
+
+		long long llLastTime;
+		void Reset(int end=2)
+		{
+			for (int i = 0; i < end; ++i)
+			{
+				llDelay[i] = SHRT_MAX;
+				llDelayFraction[i] = 255;
+				llStartUpFarEndBufferSize[i] = SHRT_MIN;
+				llCurrentFarEndBufferSizeMax[i] = SHRT_MIN;
+				llCurrentFarEndBufferSizeMin[i] = SHRT_MAX;
+				llAverageTimeDiff[i] = 0;
+			}
+			llLastTime = -1;
+		}
 	};
 
 } //namespace MediaSDK

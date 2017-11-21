@@ -73,7 +73,7 @@ namespace MediaSDK
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
-				m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector);
+				m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector, m_pAudioCallSession);
 			}
 			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 			{

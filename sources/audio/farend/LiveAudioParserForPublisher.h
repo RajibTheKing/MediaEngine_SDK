@@ -9,6 +9,7 @@ namespace MediaSDK
 {
 	class AudioPacketHeader;
 	class AudioDeviceInformation;
+	class CAudioCallSession;
 
 	class CLiveAudioParserForPublisher : public ILiveAudioParser
 	{
@@ -21,9 +22,10 @@ namespace MediaSDK
 		bool m_bIsRoleChanging;
 
 		AudioDeviceInformation *m_pAudioDeviceInformation;
+		CAudioCallSession *m_pAudioCallSession = nullptr;
 
 	public:
-		CLiveAudioParserForPublisher(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector);
+		CLiveAudioParserForPublisher(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector, CAudioCallSession *pAudioCallSession);
 		virtual ~CLiveAudioParserForPublisher();
 
 		virtual void ProcessLiveAudio(int iId, int nOffset, unsigned char* uchAudioData, int nDataLength, int *pAudioFramsStartingByte, int nNumberOfAudioFrames, std::vector< std::pair<int, int> > vMissingBlocks);

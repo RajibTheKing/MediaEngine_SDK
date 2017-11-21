@@ -193,6 +193,11 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!");
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
+
+		m_DeviceInforamtion.llCallCount = 0;
+		ResetDeviceInformation();
+		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_id = 0;
+		else m_id = 1;
 	}
 
 	CAudioCallSession::~CAudioCallSession()
@@ -284,24 +289,27 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
 
-	void CAudioCallSession::GetDeviceInformation(long long &llDelay, long long &llDelayFraction, long long &llStartupFarendBufferSize, long long &llCurrentFarendBufferSizeMax, long long &llCurrentFarendBufferSizeMin, long long &llAverageTimeDiff)
+	void CAudioCallSession::GetDeviceInformation(DeviceInformation &sDeviceInformation)
 	{
-		llDelay = m_llDeviceInformationDelay;
-		llDelayFraction = m_llDeviceInformationDelayFraction;
-		llStartupFarendBufferSize = m_llDeviceInformationStartupFarendBufferSize;
-		llCurrentFarendBufferSizeMax = m_llDeviceInformationCurrentFarendBufferSizeMax;
-		llCurrentFarendBufferSizeMin = m_llDeviceInformationCurrentFarendBufferSizeMin;
-		llAverageTimeDiff = (long long)(m_llDeviceInformationAverageTimeRecorderTimeDiff / 150LL);
+		sDeviceInformation = m_DeviceInforamtion;
 	}
 
-	void CAudioCallSession::ResetDeviceInformation()
+	void CAudioCallSession::SetDeviceInformationOfAnotherRole(std::vector< std::pair <int, long long > > &v)
 	{
-		m_llDeviceInformationDelay = SHRT_MAX;
-		m_llDeviceInformationDelayFraction = 255;
-		m_llDeviceInformationCurrentFarendBufferSizeMax = LONG_MIN;
-		m_llDeviceInformationCurrentFarendBufferSizeMin = LONG_MAX;
-		m_llDeviceInformationAverageTimeRecorderTimeDiff = 0;
-		m_llDeviceInformationLastTime = -1;
+		int index = m_id;
+		index ^= 1;
+
+		m_DeviceInforamtion.llDelay[index] = v[0].second;
+		m_DeviceInforamtion.llDelayFraction[index] = v[1].second;
+		m_DeviceInforamtion.llStartUpFarEndBufferSize[index] = v[2].second;
+		m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[index] = v[3].second;
+		m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[index] = v[4].second;
+		m_DeviceInforamtion.llAverageTimeDiff[index] = v[5].second;
+	}
+
+	void CAudioCallSession::ResetDeviceInformation(int end)
+	{
+		m_DeviceInforamtion.Reset(end);
 	}
 
 	void CAudioCallSession::ResetTrace()
@@ -540,6 +548,9 @@ namespace MediaSDK
 #endif
 		m_bNeedToResetTrace = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
+
+		if(m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_DeviceInforamtion.llCallCount++;
+
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");
 	}
 
@@ -597,9 +608,6 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_llDecodingTimeStampOffset = -1;
 		m_pFarEndProcessor->m_pAudioDePacketizer->ResetDepacketizer();
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
-
-		m_llDeviceInformationDelay = SHRT_MAX;
-		m_llDeviceInformationDelayFraction = 255;
 
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  EndCallInLive !!!!!!!!!\n\n");
 	}
@@ -664,8 +672,8 @@ namespace MediaSDK
 					m_iDelayFractionOrig = m_llDelayFraction;
 					m_llDelayFraction /= 8;
 
-					m_llDeviceInformationDelay = m_llDelay;
-					m_llDeviceInformationDelayFraction = m_llDelayFraction;
+					m_DeviceInforamtion.llDelay[m_id] = m_llDelay;
+					m_DeviceInforamtion.llDelayFraction[m_id] = m_llDelayFraction;
 
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 					m_bTraceRecieved = true;								
@@ -700,14 +708,14 @@ namespace MediaSDK
 
 		long long llCurrentTime = Tools::CurrentTimestamp();
 
-		if (m_llDeviceInformationLastTime == -1)
+		if (m_DeviceInforamtion.llLastTime == -1)
 		{
-			m_llDeviceInformationLastTime = llCurrentTime;
+			m_DeviceInforamtion.llLastTime = llCurrentTime;
 		}
 
-		long long llTimeDiff = llCurrentTime - m_llDeviceInformationLastTime;
-		m_llDeviceInformationAverageTimeRecorderTimeDiff += llTimeDiff;
-		m_llDeviceInformationLastTime = llCurrentTime;
+		long long llTimeDiff = llCurrentTime - m_DeviceInforamtion.llLastTime;
+		m_DeviceInforamtion.llAverageTimeDiff[m_id] += llTimeDiff;
+		m_DeviceInforamtion.llLastTime = llCurrentTime;
 		
 		int nEchoStateFlags = 0;
 		bool bIsNsWorking = false;
@@ -764,7 +772,7 @@ namespace MediaSDK
 				{					
 					m_iStartingBufferSize = m_FarendBuffer->GetQueueSize();
 					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] First Time Updated m_iStartingBufferSize = %d", m_iStartingBufferSize);
-					m_llDeviceInformationStartupFarendBufferSize = m_iStartingBufferSize;
+					m_DeviceInforamtion.llStartUpFarEndBufferSize[m_id] = m_iStartingBufferSize;
 				}											
 
 				if (bIsGainWorking)
@@ -793,8 +801,8 @@ namespace MediaSDK
 						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
-					m_llDeviceInformationCurrentFarendBufferSizeMax = max(m_llDeviceInformationCurrentFarendBufferSizeMax, (long long) m_FarendBuffer->GetQueueSize());
-					m_llDeviceInformationCurrentFarendBufferSizeMin = max(m_llDeviceInformationCurrentFarendBufferSizeMin, (long long) m_FarendBuffer->GetQueueSize());
+					m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[m_id] = max(m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[m_id], (long long)m_FarendBuffer->GetQueueSize());
+					m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id] = max(m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id], (long long)m_FarendBuffer->GetQueueSize());
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
