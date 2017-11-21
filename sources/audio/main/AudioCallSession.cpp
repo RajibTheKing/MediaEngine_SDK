@@ -741,7 +741,7 @@ namespace MediaSDK
 		int nEchoStateFlags = 0;
 		bool bIsNsWorking = false;
 
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
 		{
 			if (GetNoiseReducer().get())
 			{
