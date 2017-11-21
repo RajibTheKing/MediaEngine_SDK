@@ -169,7 +169,10 @@ namespace MediaSDK
 		SharedPointer<CAudioByteBuffer> m_FarEndBufferOpus;
 
 		AudioLinearBuffer* m_recordBuffer = nullptr;
-		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr, *m_pPlayedCalleeFE = nullptr;
+		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr,
+			*m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr,
+			*m_pPlayedCalleeFE = nullptr, *m_pGainedNE = nullptr,
+			*m_pNoiseReducedNE = nullptr, *m_pCancelledNE = nullptr, *m_pKichCutNE = nullptr;
 		CTrace *m_pTrace;
 		CKichCutter *m_pKichCutter;
 

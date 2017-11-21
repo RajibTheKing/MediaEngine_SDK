@@ -167,13 +167,18 @@ namespace MediaSDK
 		m_clientSocket->SetAudioCallSession(this);
 #endif
 
-		m_pRecordedNE = new CAudioDumper("recorded.pcm", true);
+		m_pRecordedNE = new CAudioDumper("Recorded.pcm", true);
 		m_pProcessedNE = new CAudioDumper("processed.pcm", true);
 		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", true);
 		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", false);
-		m_pPlayedFE = new CAudioDumper("played.pcm", true);
-		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", true);
-		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", true);
+		m_pPlayedFE = new CAudioDumper("Played.pcm", true);
+		m_pPlayedPublisherFE = new CAudioDumper("PlayedPublisher.pcm", true);
+		m_pPlayedCalleeFE = new CAudioDumper("PlayedCallee.pcm", true);
+
+		m_pGainedNE = new CAudioDumper("Gained.pcm", true);
+		m_pNoiseReducedNE = new CAudioDumper("NR.pcm", true);
+		m_pCancelledNE = new CAudioDumper("AEC.pcm", true);
+		m_pKichCutNE = new CAudioDumper("KC.pcm", true);
 
 
 		InitNearEndDataProcessing();
@@ -242,41 +247,56 @@ namespace MediaSDK
 		fclose(FileInputPreGain);
 #endif
 
-		if (m_pRecordedNE)
+		if (m_pRecordedNE != nullptr)
 		{
 			delete m_pRecordedNE;
-			m_pRecordedNE = NULL;
+			m_pRecordedNE = nullptr;
 		}
-		if (m_pProcessedNE)
+		if (m_pProcessedNE != nullptr)
 		{
 			delete m_pProcessedNE;
-			m_pProcessedNE = NULL;
+			m_pProcessedNE = nullptr;
 		}
-		if (m_pProcessed2NE)
+		if (m_pProcessed2NE != nullptr)
 		{
 			delete m_pProcessed2NE;
-			m_pProcessed2NE = NULL;
+			m_pProcessed2NE = nullptr;
 		}
-		if (m_pChunckedNE)
+		if (m_pChunckedNE != nullptr)
 		{
 			delete m_pChunckedNE;
-			m_pChunckedNE = NULL;
+			m_pChunckedNE = nullptr;
 		}
-		if (m_pPlayedFE)
+		if (m_pPlayedFE != nullptr)
 		{
 			delete m_pPlayedFE;
-			m_pPlayedFE = NULL;
+			m_pPlayedFE = nullptr;
 		}
-		if (m_pPlayedPublisherFE)
+		if (m_pPlayedPublisherFE != nullptr)
 		{
 			delete m_pPlayedPublisherFE;
-			m_pPlayedPublisherFE = NULL;
+			m_pPlayedPublisherFE = nullptr;
 		}
-		if (m_pPlayedCalleeFE)
+		if (m_pGainedNE != nullptr)
 		{
-			delete m_pPlayedCalleeFE;
-			m_pPlayedCalleeFE = NULL;
-	}
+			delete m_pGainedNE;
+			m_pGainedNE = nullptr;
+		}
+		if (m_pNoiseReducedNE != nullptr)
+		{
+			delete m_pNoiseReducedNE;
+			m_pNoiseReducedNE = nullptr;
+		}
+		if (m_pCancelledNE != nullptr)
+		{
+			delete m_pCancelledNE;
+			m_pCancelledNE = nullptr;
+		}
+		if (m_pKichCutNE != nullptr)
+		{
+			delete m_pKichCutNE;
+			m_pKichCutNE = nullptr;
+		}
 
 		if (m_recordBuffer)
 		{
@@ -777,11 +797,6 @@ namespace MediaSDK
 					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] First Time Updated m_iStartingBufferSize = %d", m_iStartingBufferSize);
 				}											
 
-				if (bIsGainWorking)
-                {                    
-                    GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
-                }
-
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 				int nFarEndBufferSize = m_FarendBuffer->GetQueueSize();
 												
@@ -793,6 +808,8 @@ namespace MediaSDK
 					if (bIsGainWorking)
 					{						
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
+						GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
+						m_pGainedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
@@ -810,12 +827,16 @@ namespace MediaSDK
 						short sNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 						memcpy(sNoisyData, psaEncodingAudioData, unLength * sizeof(short));
 						m_pNoiseReducer->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, getIsAudioLiveStreamRunning());
+						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, sNoisyData);
+						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						m_pKichCutter->Despike(psaEncodingAudioData);
+						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					else
 					{
 						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
