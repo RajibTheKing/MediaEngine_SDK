@@ -603,7 +603,12 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 
 	if (m_bAudioOnlyLive == true)
 	{
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::InitializeVideoSession SetBitrate");
+		
 		m_pVideoEncoder->SetBitrate(BITRATE_FOR_INSET_STREAM);
+		
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::InitializeVideoSession SetMaxBitrate");
+		
 		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_INSET_STREAM);
 	}
 
@@ -1689,7 +1694,12 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 	{
 		m_bFrameReduce = false;
 
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::SetVideoQualityForLive SetBitrate");
+		
 		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_STREAM, m_nServiceType);
+		
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::SetVideoQualityForLive SetMaxBitrate");
+		
 		m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN_FOR_STREAM, m_nServiceType);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_HIGH;
@@ -1710,7 +1720,12 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 			m_VideoFpsCalculator->SetDeviceFPS(nDeviceFPS);
 		}
 
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::SetVideoQualityForLive 2 SetBitrate");
+		
 		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MEDIUM_STREAM, m_nServiceType);
+		
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::SetVideoQualityForLive 2 SetMaxBitrate");
+		
 		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_MEDIUM_STREAM, m_nServiceType);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_MEDIUM;
@@ -1741,7 +1756,12 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 			m_VideoFpsCalculator->SetDeviceFPS(nDeviceFPS);
 		}
 
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::SetVideoQualityForLive 3 SetBitrate");
+		
 		m_pVideoEncoder->SetBitrate(BITRATE_FOR_LOW_STREAM, m_nServiceType);
+		
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::SetVideoQualityForLive 3 SetMaxBitrate");
+		
 		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_LOW_STREAM, m_nServiceType);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_LOW;
@@ -2004,7 +2024,12 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID)
 			m_pSendingThreadOfLive->ResetForViewerCallerCallEnd();
 #endif
 
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::StartCallInLive SetBitrate");
+			
 			m_pVideoEncoder->SetBitrate(BITRATE_FOR_INSET_STREAM);
+			
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoCallSession::StartCallInLive SetMaxBitrate");
+			
 			m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_INSET_STREAM);
 
 			m_llFirstFrameCapturingTimeStamp = -1;
