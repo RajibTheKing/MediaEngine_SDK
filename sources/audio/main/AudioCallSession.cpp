@@ -815,7 +815,6 @@ namespace MediaSDK
 					}
 					else
 					{
-						m_pEcho->AddFarEndData(m_saFarendData, unLength);
 						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
 					}
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
