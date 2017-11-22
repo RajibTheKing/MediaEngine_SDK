@@ -10,7 +10,7 @@
 
 #define ANS_SAMPLES_IN_FRAME 80
 
-#define NOISE_DUMP
+//#define NOISE_DUMP
 
 //TODO: Use neon version for android.
 
