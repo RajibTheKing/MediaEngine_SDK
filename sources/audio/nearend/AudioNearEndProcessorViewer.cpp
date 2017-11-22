@@ -51,7 +51,7 @@ namespace MediaSDK
 			}
 
 			m_nTotalSentFrameSize += m_iPacketNumber + 1;
-			if (m_nTotalSentFrameSize % 200 == 0)
+			if (m_nTotalSentFrameSize % DEVICE_INFORMATION_PACKET_INTERVAL == 0)
 			{
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
@@ -64,14 +64,14 @@ namespace MediaSDK
 
 				m_pAudioDeviceInformation->Reset();
 
-				nowDeviceInformation.llDelay[1] = 47;
-
 				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY_CALLEE, nowDeviceInformation.llDelay[1]);
 				m_pAudioDeviceInformation->SetInformation(ByteSizeDelayFraction, DEVICE_INFORMATION_DELAY_FRACTION_CALLEE, nowDeviceInformation.llDelayFraction[1]);
 				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_STARTUP_FAREND_BUFFER_SIZE_CALLEE, nowDeviceInformation.llStartUpFarEndBufferSize[1]);
 				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MAX_CALLEE, nowDeviceInformation.llCurrentFarEndBufferSizeMax[1]);
 				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN_CALLEE, nowDeviceInformation.llCurrentFarEndBufferSizeMin[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF_CALLEE, nowDeviceInformation.llAverageTimeDiff[1]);
+				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF_CALLEE, nowDeviceInformation.llAverageTimeDiff[1]/150);
+
+				MediaLog(LOG_DEBUG, "[ANEPV][V] %lld %lld %lld %lld %lld %lld", nowDeviceInformation.llDelay[1], nowDeviceInformation.llDelayFraction[1], nowDeviceInformation.llStartUpFarEndBufferSize[1], nowDeviceInformation.llCurrentFarEndBufferSizeMax[1], nowDeviceInformation.llCurrentFarEndBufferSizeMin[1], nowDeviceInformation.llAverageTimeDiff[1]);
 
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;

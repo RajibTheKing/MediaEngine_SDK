@@ -195,7 +195,7 @@ namespace MediaSDK
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
 		m_DeviceInforamtion.llCallCount = 0;
-		ResetDeviceInformation();
+		m_DeviceInforamtion.Reset();
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_id = 0;
 		else m_id = 1;
 	}
@@ -309,7 +309,7 @@ namespace MediaSDK
 
 	void CAudioCallSession::ResetDeviceInformation(int end)
 	{
-		m_DeviceInforamtion.Reset(end);
+		m_DeviceInforamtion.ResetAfter(end);
 	}
 
 	void CAudioCallSession::ResetTrace()
@@ -802,7 +802,7 @@ namespace MediaSDK
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
 					m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[m_id] = max(m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[m_id], (long long)m_FarendBuffer->GetQueueSize());
-					m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id] = max(m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id], (long long)m_FarendBuffer->GetQueueSize());
+					m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id] = min(m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id], (long long)m_FarendBuffer->GetQueueSize());
 
 					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
 					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);

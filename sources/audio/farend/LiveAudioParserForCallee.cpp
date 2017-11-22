@@ -192,10 +192,37 @@ namespace MediaSDK
 				MediaLog(LOG_DEBUG, "[LAPE][007] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, iMediaByteHeaderSize, n_HeaderSize);
 				std::vector < std::pair<int, long long> > v = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize - n_HeaderSize + 1);
 			
+				/*
+				string sLogPrint = "";
 				for (int i = 0; i < v.size(); i++)
 				{
-					MediaLog(LOG_DEBUG, "[LAPC][007] Type: %d, Value: %lld", v[i].first, v[i].second);
+					int type = v[i].first;
+					long long value = v[i].second;
+					if (type % 2 == 1)
+					{
+						if (type < m_pAudioDeviceInformation->iSzOfm_sDeviceInformationNameForLog)
+							sLogPrint = sLogPrint + " " + m_pAudioDeviceInformation->m_sDeviceInformationNameForLog[type] + " " + std::to_string(value);
+						else
+							sLogPrint = sLogPrint + " " + std::to_string(type) + ": " + std::to_string(value);
+					}
 				}
+				if (sLogPrint.size() > 0) (LOG_DEBUG, "Publisher Info -%s", sLogPrint);
+
+				sLogPrint = "";
+				for (int i = 0; i < v.size(); i++)
+				{
+					int type = v[i].first;
+					long long value = v[i].second;
+					if (type % 2 == 0)
+					{
+						if (type < m_pAudioDeviceInformation->iSzOfm_sDeviceInformationNameForLog)
+							sLogPrint = sLogPrint + " " + m_pAudioDeviceInformation->m_sDeviceInformationNameForLog[type] + " " + std::to_string(value);
+						else
+							sLogPrint = sLogPrint + " " + std::to_string(type) + ": " + std::to_string(value);
+					}
+				}
+				if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "Viewer Info -%s", sLogPrint);
+				*/
 			}
 
 			/* Discarding broken Opus frame */

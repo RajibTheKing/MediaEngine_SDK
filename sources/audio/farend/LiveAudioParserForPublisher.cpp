@@ -175,10 +175,37 @@ namespace MediaSDK
 				
 				m_pAudioCallSession->SetDeviceInformationOfAnotherRole(v);
 
+				/*
+				string sLogPrint = "";
 				for (int i = 0; i < v.size(); i++)
 				{
-					MediaLog(LOG_DEBUG, "[LAPP] [007] type: %d, val: %lld", v[i].first, v[i].second);
+					int type = v[i].first;
+					long long value = v[i].second;
+					if (type % 2 == 1)
+					{
+						if (type < m_pAudioDeviceInformation->iSzOfm_sDeviceInformationNameForLog) 
+							sLogPrint = sLogPrint + " " + m_pAudioDeviceInformation->m_sDeviceInformationNameForLog[type] + " " + std::to_string(value);
+						else 
+							sLogPrint = sLogPrint + " " + std::to_string(type) + ": " + std::to_string(value);
+					}
 				}
+				if(sLogPrint.size() > 0 ) (LOG_DEBUG, "Publisher Info -%s", sLogPrint);
+
+				sLogPrint = "";
+				for (int i = 0; i < v.size(); i++)
+				{
+					int type = v[i].first;
+					long long value = v[i].second;
+					if (type % 2 == 0)
+					{
+						if (type < m_pAudioDeviceInformation->iSzOfm_sDeviceInformationNameForLog) 
+							sLogPrint = sLogPrint + " " + m_pAudioDeviceInformation->m_sDeviceInformationNameForLog[type] + " " + std::to_string(value);
+						else 
+							sLogPrint = sLogPrint + " " + std::to_string(type) + ": " + std::to_string(value);
+					}
+				}
+				if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "Viewer Info -%s", sLogPrint);
+				*/
 			}
 
 			/* Discarding broken Opus frame */

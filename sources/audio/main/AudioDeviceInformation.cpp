@@ -1,10 +1,12 @@
 #include "AudioDeviceInformation.h"
+#include "Tools.h"
 
 namespace MediaSDK
 {
 	AudioDeviceInformation::AudioDeviceInformation()
 	{
 		m_nBufferSize = 0;
+		m_pAudioDeviceInformationLocker.reset(new CLockHandler);
 	}
 
 
@@ -19,6 +21,8 @@ namespace MediaSDK
 
 	void AudioDeviceInformation::SetInformation(int nInfoSize, int nInfoType, unsigned long long ullInfo)
 	{
+		BaseMediaLocker lock(*m_pAudioDeviceInformationLocker);
+
 		m_ucaBuffer[m_nBufferSize] = nInfoSize;
 		m_nBufferSize++;
 
@@ -34,6 +38,8 @@ namespace MediaSDK
 
 	int AudioDeviceInformation::GetInformation(unsigned char* ucaInfo)
 	{
+		BaseMediaLocker lock(*m_pAudioDeviceInformationLocker);
+
 		for (int i = 0; i < m_nBufferSize; ++i)
 		{
 			ucaInfo[i] = m_ucaBuffer[i];
@@ -60,6 +66,38 @@ namespace MediaSDK
 
 			v.push_back(std::make_pair(nInfoType, val));
 		}
+
+		// For printing the Information Purpose
+		std::string sLogPrint = "";
+		for (int i = 0; i < v.size(); i++)
+		{
+			int type = v[i].first;
+			long long value = v[i].second;
+			if (type % 2 == 1)
+			{
+				if (type < iSzOfm_sDeviceInformationNameForLog)
+					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + " " + Tools::LongLongToString(value);
+				else
+					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value); +": " + Tools::LongLongToString(value);
+			}
+		}
+		if (sLogPrint.size() > 0) (LOG_DEBUG, "Publisher Info -%s", sLogPrint);
+
+		sLogPrint = "";
+		for (int i = 0; i < v.size(); i++)
+		{
+			int type = v[i].first;
+			long long value = v[i].second;
+			if (type % 2 == 0)
+			{
+				if (type < iSzOfm_sDeviceInformationNameForLog)
+					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + " " + Tools::LongLongToString(value);
+				else
+					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value); +": " + Tools::LongLongToString(value);
+			}
+		}
+		if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "Viewer Info -%s", sLogPrint.c_str());
+
 		return v;
 	}
 };

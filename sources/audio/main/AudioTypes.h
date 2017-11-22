@@ -127,9 +127,10 @@ namespace MediaSDK
 		long long llCallCount, llIsCallInLive;
 
 		long long llLastTime;
-		void Reset(int end=2)
+		
+		void Reset()
 		{
-			for (int i = 0; i < end; ++i)
+			for (int i = 0; i < 2; ++i)
 			{
 				llDelay[i] = SHRT_MAX;
 				llDelayFraction[i] = 255;
@@ -139,6 +140,16 @@ namespace MediaSDK
 				llAverageTimeDiff[i] = 0;
 			}
 			llLastTime = -1;
+		}
+
+		void ResetAfter(int end = 2)
+		{
+			for (int i = 0; i < end; ++i)
+			{
+				llCurrentFarEndBufferSizeMax[i] = SHRT_MIN;
+				llCurrentFarEndBufferSizeMin[i] = SHRT_MAX;
+				llAverageTimeDiff[i] = 0;
+			}
 		}
 	};
 
