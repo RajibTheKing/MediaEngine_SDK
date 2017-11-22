@@ -20,6 +20,7 @@ namespace MediaSDK
 CVideoCallSession::CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
 
 m_pCommonElementsBucket(sharedObject),
+m_nQualityCounter(0),
 m_ClientFPS(DEVICE_FPS_MAXIMUM),
 m_ClientFPSDiffSum(0),
 m_ClientFrameCounter(0),
@@ -902,10 +903,34 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM) && m_nEntityType == ENTITY_TYPE_PUBLISHER && m_pFrameRateController->GetFrameStatus() == 0)
 	{
-		return 1;
+		//return 1;
 	}
 
 	m_nCapturedFrameCounter++;
+
+	if (m_nCapturedFrameCounter % 500 == 0)
+	{
+		m_nQualityCounter++;
+
+		if (m_nQualityCounter == 1)
+			SetVideoQualityForLive(VIDEO_QUALITY_HIGH);
+		else if (m_nQualityCounter == 2)
+			SetVideoQualityForLive(VIDEO_QUALITY_MEDIUM);
+		else if (m_nQualityCounter == 3)
+			SetVideoQualityForLive(VIDEO_QUALITY_LOW);
+		else if (m_nQualityCounter == 4)
+			SetVideoQualityForLive(VIDEO_QUALITY_MUCH_LOW);
+		else if (m_nQualityCounter == 5)
+			SetVideoQualityForLive(VIDEO_QUALITY_LOW);
+		else if (m_nQualityCounter == 6)
+			SetVideoQualityForLive(VIDEO_QUALITY_MEDIUM);
+		else if (m_nQualityCounter == 7)
+		{
+			SetVideoQualityForLive(VIDEO_QUALITY_HIGH);
+
+			m_nQualityCounter = 0;
+		}
+	}
 
 	/*
 	if (m_bDoubleUpdate)
@@ -1695,7 +1720,7 @@ void CVideoCallSession::SetBeautification(bool bIsEnable)
 
 void CVideoCallSession::SetVideoQualityForLive(int quality)
 {
-	CLogPrinter_LOG(LIVE_QUALITY_LOG, "CVideoCallSession::SetVideoQualityForLive m_bLiveVideoQuality %d quality %d", m_bLiveVideoQuality, quality);
+	CLogPrinter_LOG(LIVE_QUALITY_LOG, "CVideoCallSession::SetVideoQualityForLive dfps m_bLiveVideoQuality %d quality %d", m_bLiveVideoQuality, quality);
 
 	if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
 		return;
@@ -1704,11 +1729,17 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 	{
 		m_pFrameRateController->SetFPS(LIVE_HIGH_FRAME_RATE);
 
+		m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_STREAM, m_nServiceType);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN_FOR_STREAM, m_nServiceType);
+
 		m_bLiveVideoQuality = VIDEO_QUALITY_HIGH;
 	}
 	else if (quality == VIDEO_QUALITY_MEDIUM && m_bLiveVideoQuality != VIDEO_QUALITY_MEDIUM)
 	{
 		m_pFrameRateController->SetFPS(LIVE_MEDIUM_FRAME_RATE);
+
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MEDIUM_STREAM, m_nServiceType);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_MEDIUM_STREAM, m_nServiceType);
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_MEDIUM;
 	}

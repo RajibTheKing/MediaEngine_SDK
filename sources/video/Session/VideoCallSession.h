@@ -212,6 +212,8 @@ private:
 	CVideoRenderingThread *m_pVideoRenderingThread;
 	CVideoDecodingThread *m_pVideoDecodingThread;
 
+	int m_nQualityCounter;
+
 	//CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForSecondInset;
 	//CVideoDecodingThreadOfLive *m_pVideoDecodingThreadForThirdInset;
 
