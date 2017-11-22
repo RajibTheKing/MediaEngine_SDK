@@ -179,6 +179,7 @@ m_nPublisherInsetNumber(0)
 	}
 
 	m_pFPSController = new CFPSController(nFPS);
+	m_pFrameRateController = new CFrameRateController(LIVE_HIGH_FRAME_RATE);
 
 	CLogPrinter_Write(CLogPrinter::INFO, "CVideoCallSession::CVideoCallSession");
 	m_pVideoCallSessionMutex.reset(new CLockHandler);
@@ -470,6 +471,12 @@ CVideoCallSession::~CVideoCallSession()
 	{
 		delete m_pFPSController;
 		m_pFPSController = NULL;
+	}
+
+	if (NULL != m_pFrameRateController)
+	{
+		delete m_pFrameRateController;
+		m_pFrameRateController = NULL;
 	}
 
 	m_lfriendID = -1;
@@ -893,9 +900,14 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER)
 		return 1;
 
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM) && m_nEntityType == ENTITY_TYPE_PUBLISHER && m_pFrameRateController->GetFrameStatus() == 0)
+	{
+		return 1;
+	}
+
 	m_nCapturedFrameCounter++;
 
-
+	/*
 	if (m_bDoubleUpdate)
 	{
 		m_nDUCounter++;
@@ -908,9 +920,10 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 			SetVideoQualityForLive(VIDEO_QUALITY_HIGH);
 		}
 	}
+	*/
 
-	if (m_bFrameReduce == true && m_nCapturedFrameCounter % m_nReduceCheckNumber == 0)
-		return 1;
+	//if (m_bFrameReduce == true && m_nCapturedFrameCounter % m_nReduceCheckNumber == 0)
+	//	return 1;
 
 	m_VideoFpsCalculator->CalculateFPS("PushIntoBufferForEncoding, VideoFPS--> ");
 
@@ -1687,6 +1700,38 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 	if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
 		return;
 
+	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality != VIDEO_QUALITY_HIGH)
+	{
+		m_pFrameRateController->SetFPS(LIVE_HIGH_FRAME_RATE);
+
+		m_bLiveVideoQuality = VIDEO_QUALITY_HIGH;
+	}
+	else if (quality == VIDEO_QUALITY_MEDIUM && m_bLiveVideoQuality != VIDEO_QUALITY_MEDIUM)
+	{
+		m_pFrameRateController->SetFPS(LIVE_MEDIUM_FRAME_RATE);
+
+		m_bLiveVideoQuality = VIDEO_QUALITY_MEDIUM;
+	}
+	else if (quality == VIDEO_QUALITY_LOW && m_bLiveVideoQuality != VIDEO_QUALITY_LOW)
+	{
+		m_pFrameRateController->SetFPS(LIVE_LOW_FRAME_RATE);
+
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_LOW_STREAM, m_nServiceType);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_LOW_STREAM, m_nServiceType);
+
+		m_bLiveVideoQuality = VIDEO_QUALITY_LOW;
+	}
+	else if (quality == VIDEO_QUALITY_MUCH_LOW && m_bLiveVideoQuality != VIDEO_QUALITY_MUCH_LOW)
+	{
+		m_pFrameRateController->SetFPS(LIVE_MUCH_LOW_FRAME_RATE);
+
+		m_pVideoEncoder->SetBitrate(BITRATE_FOR_MUCH_LOW_STREAM, m_nServiceType);
+		m_pVideoEncoder->SetMaxBitrate(BITRATE_FOR_MUCH_LOW_STREAM, m_nServiceType);
+
+		m_bLiveVideoQuality = VIDEO_QUALITY_MUCH_LOW;
+	}
+
+	/*
 	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality == VIDEO_QUALITY_LOW)
 	{
 		quality = VIDEO_QUALITY_MEDIUM;
@@ -1769,6 +1814,7 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 
 		m_bLiveVideoQuality = VIDEO_QUALITY_LOW;
 	}
+	*/
 }
     
 int CVideoCallSession::SetVideoEffect(int nEffectStatus)
