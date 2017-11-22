@@ -45,10 +45,10 @@ namespace MediaSDK
 
 		// Name of the Informations:
 		const int iSzOfm_sDeviceInformationNameForLog = 16;
-		std::string m_sDeviceInformationNameForLog[16] = { "", "[DI] [P] Delay", "[DI] [V] Delay", "[DI] [P] Delay Fraction", "[DI] [V] Delay Fraction", "[DI] [P] Start Up Farend Buffer Size",
-			"[DI] [V] Start Up Farend Buffer Size", "[DI] [P] Current Farend Buffer Size Max", "[DI] [V] Current Farend Buffer Size Max", "[DI] [P]  Current Farend Buffer Size Min",
-			"[DI] [V]  Current Farend Buffer Size Min", "[DI] [P] Average Recorder Time Difference", "[DI] [V] Average Recorder Time Difference", "[DI] [P] Is Call in Live", "",
-			"[DI] [P] Call Counter" };
+		std::string m_sDeviceInformationNameForLog[16] = { "", "Delay", "Delay", "Delay Fraction", "Delay Fraction", "Start Up Farend Buffer Size",
+			"Start Up Farend Buffer Size", "Current Max", "Current Max", "Min",
+			"Min", "Average Time Difference", "Average Time Difference", "Call in Live", "",
+			"Call Count" };
 
 	private:
 		unsigned char m_ucaBuffer[400];

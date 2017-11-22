@@ -76,12 +76,13 @@ namespace MediaSDK
 			if (type % 2 == 1)
 			{
 				if (type < iSzOfm_sDeviceInformationNameForLog)
-					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + " " + Tools::LongLongToString(value);
+					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + ": " + Tools::LongLongToString(value);
 				else
-					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value); +": " + Tools::LongLongToString(value);
+					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value) +": " + Tools::LongLongToString(value);
 			}
 		}
-		if (sLogPrint.size() > 0) (LOG_DEBUG, "Publisher Info -%s", sLogPrint);
+		MediaLog(LOG_DEBUG, "[ADE] Publisher Info Size: %d", (int)sLogPrint.size())
+		if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "[ADE] Publisher Info -%s", sLogPrint.c_str());
 
 		sLogPrint = "";
 		for (int i = 0; i < v.size(); i++)
@@ -91,12 +92,13 @@ namespace MediaSDK
 			if (type % 2 == 0)
 			{
 				if (type < iSzOfm_sDeviceInformationNameForLog)
-					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + " " + Tools::LongLongToString(value);
+					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + ": " + Tools::LongLongToString(value);
 				else
-					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value); +": " + Tools::LongLongToString(value);
+					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value) +": " + Tools::LongLongToString(value);
 			}
 		}
-		if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "Viewer Info -%s", sLogPrint.c_str());
+		MediaLog(LOG_DEBUG, "[ADE] Viewer Info Size: %d", (int)sLogPrint.size())
+		if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "[ADE] Callee Info -%s", sLogPrint.c_str());
 
 		return v;
 	}
