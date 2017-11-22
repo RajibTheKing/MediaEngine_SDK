@@ -31,6 +31,7 @@
 #include "VersionController.h"
 #include "DeviceCapabilityCheckBuffer.h"
 #include "FPSController.h"
+#include "FrameRateController.h"
 #include "LiveReceiver.h"
 #include "LiveVideoDecodingQueue.h"
 #include "IDRFrameIntervalController.h"
@@ -218,6 +219,7 @@ private:
 	//CVideoDecoder *m_pVideoDecoderForThirdInset;
 
 	CFPSController *m_pFPSController;
+	CFrameRateController *m_pFrameRateController;
 	long long m_LastTimeStampClientFPS;
 	double m_ClientFPSDiffSum;
 	int m_ClientFrameCounter;

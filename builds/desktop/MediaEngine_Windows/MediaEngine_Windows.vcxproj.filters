@@ -426,6 +426,9 @@
     <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp">
       <Filter>utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\FPS\FrameRateController.cpp">
+      <Filter>video\fps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.h">
@@ -862,6 +865,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
       <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\FPS\FrameRateController.h">
+      <Filter>video\fps</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
