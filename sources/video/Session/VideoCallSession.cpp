@@ -1684,6 +1684,9 @@ void CVideoCallSession::SetVideoQualityForLive(int quality)
 {
 	CLogPrinter_LOG(LIVE_QUALITY_LOG, "CVideoCallSession::SetVideoQualityForLive m_bLiveVideoQuality %d quality %d", m_bLiveVideoQuality, quality);
 
+	if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
+		return;
+
 	if (quality == VIDEO_QUALITY_HIGH && m_bLiveVideoQuality == VIDEO_QUALITY_LOW)
 	{
 		quality = VIDEO_QUALITY_MEDIUM;
