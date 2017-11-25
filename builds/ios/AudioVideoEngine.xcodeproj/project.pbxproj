@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6A04F6151FBAAE24009DAC6B /* AudioDumper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A04F6131FBAAE24009DAC6B /* AudioDumper.cpp */; };
+		6AB764EE1FC94338009173C6 /* KichCutter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AB764ED1FC94338009173C6 /* KichCutter.cpp */; };
 		D1E73A641F6575B900ACDE35 /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739521F6575B900ACDE35 /* AudioDecoderBuffer.cpp */; };
 		D1E73A651F6575B900ACDE35 /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739541F6575B900ACDE35 /* AudioEncoderBuffer.cpp */; };
 		D1E73A661F6575B900ACDE35 /* AudioLinearBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739561F6575B900ACDE35 /* AudioLinearBuffer.cpp */; };
@@ -154,6 +155,8 @@
 		1852B3471BCE1D3A000FF5C4 /* libAudioVideoEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAudioVideoEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A04F6131FBAAE24009DAC6B /* AudioDumper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDumper.cpp; sourceTree = "<group>"; };
 		6A04F6141FBAAE24009DAC6B /* AudioDumper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDumper.h; sourceTree = "<group>"; };
+		6AB764EC1FC94338009173C6 /* KichCutter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KichCutter.h; sourceTree = "<group>"; };
+		6AB764ED1FC94338009173C6 /* KichCutter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KichCutter.cpp; sourceTree = "<group>"; };
 		D1E739521F6575B900ACDE35 /* AudioDecoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDecoderBuffer.cpp; sourceTree = "<group>"; };
 		D1E739531F6575B900ACDE35 /* AudioDecoderBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoderBuffer.h; sourceTree = "<group>"; };
 		D1E739541F6575B900ACDE35 /* AudioEncoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoderBuffer.cpp; sourceTree = "<group>"; };
@@ -573,6 +576,8 @@
 				D1E7397D1F6575B900ACDE35 /* EchoCancellerInterface.h */,
 				D1E7397E1F6575B900ACDE35 /* EchoCancellerProvider.cpp */,
 				D1E7397F1F6575B900ACDE35 /* EchoCancellerProvider.h */,
+				6AB764ED1FC94338009173C6 /* KichCutter.cpp */,
+				6AB764EC1FC94338009173C6 /* KichCutter.h */,
 				D1E739801F6575B900ACDE35 /* Filt.cpp */,
 				D1E739811F6575B900ACDE35 /* Filt.h */,
 				D1E739821F6575B900ACDE35 /* GomGomGain.cpp */,
@@ -1136,6 +1141,7 @@
 				DA61CBF01F9760A300640ACB /* VideoFrameBuffer.cpp in Sources */,
 				D1E73AB41F6575B900ACDE35 /* VideoBeautificationer.cpp in Sources */,
 				D1E73AA11F6575B900ACDE35 /* BandwidthController.cpp in Sources */,
+				6AB764EE1FC94338009173C6 /* KichCutter.cpp in Sources */,
 				D1E73AD01F6575B900ACDE35 /* VideoEncodingThreadOfLive.cpp in Sources */,
 				D1E73AD11F6575B900ACDE35 /* AverageCalculator.cpp in Sources */,
 				D1E73AAD1F6575B900ACDE35 /* VideoPacketQueue.cpp in Sources */,
