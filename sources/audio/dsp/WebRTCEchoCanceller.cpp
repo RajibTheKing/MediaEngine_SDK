@@ -9,11 +9,6 @@ extern int gEchoType;
 int gEchoType = -1;
 #endif
 
-
-//It is strongly recommended you don't remove this commented out code
-//#include "Filt.h"
-//#define USE_LOW_PASS
-
 //#define ECHO_ANALYSIS
 
 #ifdef ECHO_ANALYSIS
@@ -102,7 +97,7 @@ namespace MediaSDK
 	}
 
 
-	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int nBufferSize, long long llDelay)
+	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int nBufferSize, long long llDelay, short *NearEndNoisyData)
 	{
 		int nEchoStateFlags = ECHO_TYPE_NO_ECHO; //int containing 10 flags telling whether the 10 80 sized flags contain echo
 #ifdef USE_AECM
@@ -124,7 +119,16 @@ namespace MediaSDK
 			fwrite(sInBuf + i, sizeof(short), AECM_SAMPLES_IN_FRAME, EchoFile);
 #endif
 			bool bFailed = false, bZeroed = false;
-			if (0 != WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay))
+			int iAecmResult = 0;
+			if (NearEndNoisyData == nullptr)
+			{
+				iAecmResult = WebRtcAecm_Process(AECM_instance, sInBuf + i, NULL, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay);
+			}
+			else
+			{
+				iAecmResult = WebRtcAecm_Process(AECM_instance, NearEndNoisyData + i, sInBuf + i, sInBuf + i, AECM_SAMPLES_IN_FRAME, llDelay);
+			}
+			if (0 != iAecmResult)
 			{
 				ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)llDelay)
 					+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
@@ -132,17 +136,12 @@ namespace MediaSDK
 					+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
 				bFailed = true;
 			}
-			else
-			{
-				/*ALOG("WebRtcAec_Process successful Delay = " + m_Tools.IntegertoStringConvert((int)delay) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
-				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
-			}
+	
 			m_bNearEndingOrFarEnding = false;
-			if (gEchoType == ECHO_TYPE_JUST_ECHO)
+			/*if (gEchoType == ECHO_TYPE_JUST_ECHO)
 			{
 				memset(sInBuf + i, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
-			}
+			}*/
 			if (gEchoType == ECHO_TYPE_JUST_ECHO || gEchoType == ECHO_TYPE_DOUBLE_TALK)
 			{
 				nEchoStateFlags |= 1;
@@ -153,34 +152,13 @@ namespace MediaSDK
 
 		nEchoStateFlags >>= 1;
 
-#ifdef USE_LOW_PASS
-		if (isLoudspeaker)
-		{
-			LowPass(sInBuf, sBufferSize);
-			//DeAmplitude(sInBuf, sBufferSize);
-			/ *for (int i = 0; i < sBufferSize; i++)
-			{
-				if (sInBuf[i] > 10922)
-				{
-					LOGE("###CE### %d", (int)sInBuf[i]);
-				}
-				sInBuf[i] *= 2;
-			}*/
-		}
-#endif
 #endif
 		return nEchoStateFlags;
 	}
 
-	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize, bool isLiveStreamRunning)
+	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize)
 	{
 #ifdef USE_AECM
-
-		if (sBufferSize != CURRENT_AUDIO_FRAME_SAMPLE_SIZE(isLiveStreamRunning))
-		{
-			ALOG("aec farend Invalid size");
-			return false;
-		}
 
 		LOG18("Farending2");
 
@@ -220,39 +198,5 @@ namespace MediaSDK
 
 		return true;
 	}
-
-	//It is strongly recommended you don't remove this commented out code
-	/*
-	int CEcho::DeAmplitude(short *sInBuf, int sBufferSize)
-	{
-	int iAmplitudeThreshold = 50;
-	int iAmplitudeSum = 0;
-
-	for (int i = 0; i < sBufferSize; i++)
-	{
-	iAmplitudeSum += abs(sInBuf[i]);
-	}
-	short iAvgAmplitude = iAmplitudeSum / sBufferSize;
-
-	if (iAvgAmplitude <= iAmplitudeThreshold)
-	{
-	for (int i = 0; i < sBufferSize; i++)
-	{
-	sInBuf[i] = 0;
-	}
-	}
-	return true;
-	}
-	int CEcho::LowPass(short *sInBuf, int sBufferSize)
-	{
-	Filter *my_filter = new Filter(LPF, 51, 8, 2.0);
-	for (int i = 0; i < sBufferSize; i++)
-	{
-	sInBuf[i] = (short)(my_filter->do_sample((double)sInBuf[i]));
-	}
-	return true;
-	}
-	*/
-
 } //namespace MediaSDK
 

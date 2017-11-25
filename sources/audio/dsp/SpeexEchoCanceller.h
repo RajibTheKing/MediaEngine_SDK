@@ -31,9 +31,9 @@ namespace MediaSDK
 
 		~SpeexEchoCanceller();
 
-		int AddFarEndData(short *farEndData, int dataLen, bool isLiveStreamRunning);
+		int AddFarEndData(short *farEndData, int dataLen);
 	
-		int CancelEcho(short *nearEndData, int dataLen, long long llDelay);
+		int CancelEcho(short *nearEndData, int dataLen, long long llDelay, short *NearEndNoisyData = nullptr);
 
 	};
 

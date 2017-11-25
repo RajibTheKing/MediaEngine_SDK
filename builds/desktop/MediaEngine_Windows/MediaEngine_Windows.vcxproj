@@ -48,6 +48,7 @@
     <ClInclude Include="..\..\..\sources\audio\dsp\EchoCancellerProvider.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\Filt.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\GomGomGain.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\KichCutter.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\NaiveGain.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerInterface.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="..\..\..\sources\audio\dsp\EchoCancellerProvider.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\Filt.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\GomGomGain.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\KichCutter.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\NaiveGain.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.cpp" />
@@ -284,7 +286,6 @@
     <ClCompile Include="..\..\..\sources\video\Tools\HashGenerator.cpp" />
     <ClCompile Include="..\..\..\sources\video\Tools\VersionController.cpp" />
   </ItemGroup>
-
   <PropertyGroup Label="Globals">
     <ProjectGuid>{99D73CE9-BE72-460B-A0F3-E688C0E4FB99}</ProjectGuid>
     <RootNamespace>MediaEngine_Windows</RootNamespace>
