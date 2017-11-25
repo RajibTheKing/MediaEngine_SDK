@@ -369,6 +369,16 @@ namespace MediaSDK
 		m_pNoiseReducer = NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer);
 	}
 
+	void CAudioCallSession::ResetRecorderGain()
+	{
+		if (m_pRecorderGain.get())
+		{
+			m_pRecorderGain.reset();
+		}
+
+		m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+	}
+
 	void CAudioCallSession::ResetKichCutter()
 	{
 		if (m_pKichCutter != nullptr)
