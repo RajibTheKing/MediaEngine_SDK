@@ -55,6 +55,12 @@ namespace MediaSDK
 		virtual void SendDepackatizedData(unsigned char*, int) = 0;
 	};
 
+	class DeviceInformationInterface
+	{
+	public:
+		virtual void SetDeviceInformationOfAnotherRole(std::vector< std::pair <int, long long > > &v) = 0;
+	};
+
 	enum AudioEntityRoleType
 	{
 		EntityInCall,

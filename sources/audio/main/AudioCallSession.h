@@ -53,7 +53,8 @@ namespace MediaSDK
 		public PacketEventListener,
 		public DataEventListener,
 		public NetworkChangeListener,
-		public AudioAlarmListener
+		public AudioAlarmListener,
+		public DeviceInformationInterface
 	{
 
 	public:

@@ -12,7 +12,7 @@
 namespace MediaSDK
 {
 
-	CLiveAudioParserForPublisher::CLiveAudioParserForPublisher(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector, CAudioCallSession *pAudioCallSession){
+	CLiveAudioParserForPublisher::CLiveAudioParserForPublisher(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector, DeviceInformationInterface *pDeviceInfoInterface){
 		m_vAudioFarEndBufferVector = vAudioFarEndBufferVector;
 		m_pLiveReceiverMutex.reset(new CLockHandler);
 		m_bIsCurrentlyParsingAudioData = false;
@@ -20,7 +20,7 @@ namespace MediaSDK
 
 		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
 		m_pAudioDeviceInformation = new AudioDeviceInformation();
-		m_pAudioCallSession = pAudioCallSession;
+		m_pDeviceInfoInterface = pDeviceInfoInterface;
 	}
 
 	CLiveAudioParserForPublisher::~CLiveAudioParserForPublisher(){
@@ -172,7 +172,7 @@ namespace MediaSDK
 				MediaLog(LOG_DEBUG, "[LAPE][007] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, mediaByteSize, n_HeaderSize);
 				std::vector < std::pair<int, long long> > v = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + mediaByteSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - mediaByteSize - n_HeaderSize + 1);
 				
-				m_pAudioCallSession->SetDeviceInformationOfAnotherRole(v);
+				m_pDeviceInfoInterface->SetDeviceInformationOfAnotherRole(v);
 
 				/*
 				string sLogPrint = "";
