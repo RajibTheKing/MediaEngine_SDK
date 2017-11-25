@@ -165,6 +165,7 @@
     <ClInclude Include="..\..\..\sources\audio\dsp\EchoCancellerProvider.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\Filt.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\GomGomGain.h" />
+    <ClInclude Include="..\..\..\sources\audio\dsp\KichCutter.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\NaiveGain.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerInterface.h" />
     <ClInclude Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.h" />
@@ -302,6 +303,7 @@
     <ClCompile Include="..\..\..\sources\audio\dsp\EchoCancellerProvider.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\Filt.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\GomGomGain.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\dsp\KichCutter.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\NaiveGain.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\NoiseReducerProvider.cpp" />
     <ClCompile Include="..\..\..\sources\audio\dsp\SpeexEchoCanceller.cpp" />
