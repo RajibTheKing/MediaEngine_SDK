@@ -150,9 +150,8 @@ namespace MediaSDK
 			if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 			{
 				//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
-				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
-				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
-				m_nBitRate = BITRATE_BEGIN_FOR_STREAM;
+				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = m_nBitRate;
+				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = m_nMaxBitRate;
 			}
 			else
 			{
@@ -160,6 +159,7 @@ namespace MediaSDK
 				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
 				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
 				m_nBitRate = BITRATE_BEGIN;
+				m_nMaxBitRate = BITRATE_BEGIN;
 			}
 		}
 		else
@@ -167,6 +167,8 @@ namespace MediaSDK
 			//LOGEF("fahad -->> VideoEncoder::SetHeightWidth -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+			m_nBitRate = BITRATE_CHECK_CAPABILITY;
+			m_nMaxBitRate = BITRATE_CHECK_CAPABILITY;
 		}
 
 
@@ -294,8 +296,9 @@ namespace MediaSDK
 			{
 				//LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- SERVICE_TYPE_LIVE_STREAM -- %d", SERVICE_TYPE_LIVE_STREAM);
 				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
-				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN_FOR_STREAM;
+				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_MAX;
 				m_nBitRate = BITRATE_BEGIN_FOR_STREAM;
+				m_nMaxBitRate = BITRATE_MAX;
 			}
 			else
 			{
@@ -303,6 +306,7 @@ namespace MediaSDK
 				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_BEGIN;
 				encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_BEGIN;
 				m_nBitRate = BITRATE_BEGIN;
+				m_nMaxBitRate = BITRATE_BEGIN;
 			}
 		}
 		else
@@ -310,6 +314,8 @@ namespace MediaSDK
 			LOGEF("fahad -->> VideoEncoder::CreateVideoEncoder -- BITRATE_CHECK_CAPABILITY -- %d", BITRATE_CHECK_CAPABILITY);
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iSpatialBitrate = BITRATE_CHECK_CAPABILITY;
 			encoderParemeters.iTargetBitrate = spartialLayerConfiguration->iMaxSpatialBitrate = BITRATE_CHECK_CAPABILITY;
+			m_nBitRate = BITRATE_CHECK_CAPABILITY;
+			m_nMaxBitRate = BITRATE_CHECK_CAPABILITY;
 		}
 
 		spartialLayerConfiguration->iDLayerQp = 24;
@@ -349,8 +355,8 @@ namespace MediaSDK
 				if (m_nNetworkType == NETWORK_TYPE_2G && nTargetBitRate<BITRATE_MIN_FOR_2G)
 				nTargetBitRate = BITRATE_MIN_FOR_2G;*/
 
-		if (nTargetBitRate < BITRATE_MIN)
-			nTargetBitRate = BITRATE_MIN;
+		if (nTargetBitRate < BITRATE_MINEST)
+			nTargetBitRate = BITRATE_MINEST;
 
 		if (nTargetBitRate > BITRATE_MAX)
 			nTargetBitRate = BITRATE_MAX;
@@ -366,6 +372,8 @@ namespace MediaSDK
 		targetEncoderBitrateInfo.iLayer = SPATIAL_LAYER_0;
 		targetEncoderBitrateInfo.iBitrate = nTargetBitRate;
 
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::SetBitrate %d", nTargetBitRate);
+
 		LOGEF("fahad -->> VideoEncoder::SetBitrate -- nTargetBitRate = %d", nTargetBitRate);
 		int nReturnedValueFromEncoder;
 
@@ -375,6 +383,8 @@ namespace MediaSDK
 
 			if (nReturnedValueFromEncoder != 0)
 			{
+				CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::SetBitrate failed");
+				
 				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "BR~ CVideoEncoder::CreateVideoEncoder unable to set bitrate " + Tools::IntegertoStringConvert(nTargetBitRate));
 			}
 			else
@@ -386,8 +396,12 @@ namespace MediaSDK
 		}
 		else
 		{
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::SetBitrate failed 2");
+			
 			CLogPrinter_Write("OpenH264 encoder NULL!");
 		}
+
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::m_nBitRate %d", m_nBitRate);
 
 		return nReturnedValueFromEncoder;
 	}
@@ -416,8 +430,8 @@ namespace MediaSDK
 			nTargetBitRate = nBitRate - (nBitRate % 25000);
 		}
 
-		if (nTargetBitRate<BITRATE_MIN)
-			nTargetBitRate = BITRATE_MIN;
+		if (nTargetBitRate<BITRATE_MINEST)
+			nTargetBitRate = BITRATE_MINEST;
 
 		if (nTargetBitRate>BITRATE_MAX + MAX_BITRATE_TOLERANCE)
 			nTargetBitRate = BITRATE_MAX + MAX_BITRATE_TOLERANCE;
@@ -433,6 +447,8 @@ namespace MediaSDK
 		maxEncoderBitRateInfo.iLayer = SPATIAL_LAYER_0;
 		maxEncoderBitRateInfo.iBitrate = nTargetBitRate;
 
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::SetMaxBitrate %d", nTargetBitRate);
+
 		LOGEF("fahad -->> VideoEncoder::SetMaxBitrate -- nTargetBitRate = %d", nTargetBitRate);
 		int nReturnedValueFromEncoder;
 
@@ -442,6 +458,8 @@ namespace MediaSDK
 
 			if (nReturnedValueFromEncoder != 0)
 			{
+				CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::SetMaxBitrate failed");
+				
 				CLogPrinter_WriteSpecific4(CLogPrinter::INFO, "$$*(BR~ CVideoEncoder::CreateVideoEncoder unable to set max bitrate " + Tools::IntegertoStringConvert(nTargetBitRate));
 			}
 			else
@@ -450,12 +468,16 @@ namespace MediaSDK
 
 				m_nMaxBitRate = nTargetBitRate;
 			}
-
 		}
 		else
 		{
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::SetMaxBitrate failed 2");
+			
 			CLogPrinter_Write("OpenH264 encoder NULL!");
 		}
+		
+
+		CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK CVideoEncoder::m_nMaxBitRate %d", m_nMaxBitRate);
 
 		return nReturnedValueFromEncoder;
 	}

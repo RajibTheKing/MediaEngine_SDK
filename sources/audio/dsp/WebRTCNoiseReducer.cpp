@@ -85,7 +85,7 @@ namespace MediaSDK
 	int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning)
 	{
 #ifdef USE_ANS
-
+		memset(m_tmpbuffer, 0, sBufferSize * sizeof(short));
 #ifdef NOISE_DUMP
 		fwrite(sOutBuf, 2, sBufferSize, noiseIn);
 #endif

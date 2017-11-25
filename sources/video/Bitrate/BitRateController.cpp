@@ -258,17 +258,29 @@ namespace MediaSDK
 
 			if (nCurrentBitRate < m_pVideoEncoder->GetBitrate())
 			{
+				CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::UpdateBitrate SetBitrate");
+				
 				nRet = m_pVideoEncoder->SetBitrate(nCurrentBitRate);
 
 				if (nRet == 0) //First Initialization Successful
+				{
+					CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::UpdateBitrate SetMaxBitrate");
+					
 					nRet2 = m_pVideoEncoder->SetMaxBitrate(m_pVideoEncoder->GetBitrate());
+				}
 			}
 			else
 			{
+				CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::UpdateBitrate 2 SetMaxBitrate");
+				
 				nRet = m_pVideoEncoder->SetMaxBitrate(nCurrentBitRate);
 
 				if (nRet == 0) //First Initialization Successful
+				{
+					CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::UpdateBitrate 2 SetBitrate");
+					
 					nRet2 = m_pVideoEncoder->SetBitrate(nCurrentBitRate);
+				}
 			}
 
 			if (nRet == 0 && nRet2 == 0) //We are intentionally skipping status of setbitrate operation success
@@ -326,12 +338,22 @@ namespace MediaSDK
 			//m_pVideoEncoder->SetBitrate(BITRATE_BEGIN_FOR_2G);
 			//m_pVideoEncoder->SetMaxBitrate(BITRATE_MAX_FOR_2G);
 
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::SetInitialBitrate SetBitrate");
+			
 			m_pVideoEncoder->SetBitrate(BITRATE_BEGIN);
+			
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::SetInitialBitrate SetMaxBitrate");
+			
 			m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN);
 		}
 		else
 		{
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::SetInitialBitrate 2 SetBitrate");
+			
 			m_pVideoEncoder->SetBitrate(BITRATE_BEGIN);
+			
+			CLogPrinter_LOG(INSTENT_TEST_LOG_3, "CHECK BitRateController::SetInitialBitrate 2 SetMaxBitrate");
+			
 			m_pVideoEncoder->SetMaxBitrate(BITRATE_BEGIN);
 
 		}

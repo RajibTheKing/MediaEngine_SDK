@@ -37,6 +37,7 @@
 #include "AudioDecoderBuffer.h"
 #include "Trace.h"
 #include "AudioLinearBuffer.h"
+#include "KichCutter.h"
 
 
 
@@ -111,6 +112,7 @@ namespace MediaSDK
 		}
 
 		m_pTrace = new CTrace();
+		m_pKichCutter = nullptr;
 
 		m_iSpeakerType = nAudioSpeakerType;
 		
@@ -165,13 +167,18 @@ namespace MediaSDK
 		m_clientSocket->SetAudioCallSession(this);
 #endif
 
-		m_pRecordedNE = new CAudioDumper("recorded.pcm", true);
+		m_pRecordedNE = new CAudioDumper("Recorded.pcm", true);
 		m_pProcessedNE = new CAudioDumper("processed.pcm", true);
 		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", true);
 		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", false);
-		m_pPlayedFE = new CAudioDumper("played.pcm", true);
-		m_pPlayedPublisherFE = new CAudioDumper("playedPublisher.pcm", true);
-		m_pPlayedCalleeFE = new CAudioDumper("playedCallee.pcm", true);
+		m_pPlayedFE = new CAudioDumper("Played.pcm", true);
+		m_pPlayedPublisherFE = new CAudioDumper("PlayedPublisher.pcm", true);
+		m_pPlayedCalleeFE = new CAudioDumper("PlayedCallee.pcm", true);
+
+		m_pGainedNE = new CAudioDumper("Gained.pcm", true);
+		m_pNoiseReducedNE = new CAudioDumper("NR.pcm", true);
+		m_pCancelledNE = new CAudioDumper("AEC.pcm", true);
+		m_pKichCutNE = new CAudioDumper("KC.pcm", true);
 
 
 		InitNearEndDataProcessing();
@@ -245,46 +252,79 @@ namespace MediaSDK
 		fclose(FileInputPreGain);
 #endif
 
-		if (m_pRecordedNE)
+		if (m_pRecordedNE != nullptr)
 		{
 			delete m_pRecordedNE;
-			m_pRecordedNE = NULL;
+			m_pRecordedNE = nullptr;
 		}
-		if (m_pProcessedNE)
+		if (m_pProcessedNE != nullptr)
 		{
 			delete m_pProcessedNE;
-			m_pProcessedNE = NULL;
+			m_pProcessedNE = nullptr;
 		}
-		if (m_pProcessed2NE)
+		if (m_pProcessed2NE != nullptr)
 		{
 			delete m_pProcessed2NE;
-			m_pProcessed2NE = NULL;
+			m_pProcessed2NE = nullptr;
 		}
-		if (m_pChunckedNE)
+		if (m_pChunckedNE != nullptr)
 		{
 			delete m_pChunckedNE;
-			m_pChunckedNE = NULL;
+			m_pChunckedNE = nullptr;
 		}
-		if (m_pPlayedFE)
+		if (m_pPlayedFE != nullptr)
 		{
 			delete m_pPlayedFE;
-			m_pPlayedFE = NULL;
+			m_pPlayedFE = nullptr;
 		}
-		if (m_pPlayedPublisherFE)
+
+		if (m_pPlayedPublisherFE != nullptr)
 		{
 			delete m_pPlayedPublisherFE;
-			m_pPlayedPublisherFE = NULL;
+			m_pPlayedPublisherFE = nullptr;
 		}
-		if (m_pPlayedCalleeFE)
+
+		if (m_pPlayedCalleeFE != nullptr)
 		{
 			delete m_pPlayedCalleeFE;
-			m_pPlayedCalleeFE = NULL;
-	}
+			m_pPlayedCalleeFE = nullptr;
+		}
+
+		if (m_pGainedNE != nullptr)
+		{
+			delete m_pGainedNE;
+			m_pGainedNE = nullptr;
+		}
+
+		if (m_pNoiseReducedNE != nullptr)
+		{
+			delete m_pNoiseReducedNE;
+			m_pNoiseReducedNE = nullptr;
+		}
+
+		if (m_pCancelledNE != nullptr)
+		{
+			delete m_pCancelledNE;
+			m_pCancelledNE = nullptr;
+		}
+
+		if (m_pKichCutNE != nullptr)
+		{
+			delete m_pKichCutNE;
+			m_pKichCutNE = nullptr;
+		}
+
+		if (nullptr != m_pKichCutter)
+		{
+			delete m_pKichCutter;
+			m_pKichCutter = nullptr;
+		}
 
 		if (m_recordBuffer)
 		{
 			delete m_recordBuffer;
 		}
+
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
@@ -347,6 +387,26 @@ namespace MediaSDK
 		m_pEcho = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, m_bLiveAudioStreamRunning);
 	}
 
+	void CAudioCallSession::ResetNS()
+	{
+		if (m_pNoiseReducer.get())
+		{
+			m_pNoiseReducer.reset();
+		}
+
+		m_pNoiseReducer = NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer);
+	}
+
+	void CAudioCallSession::ResetKichCutter()
+	{
+		if (m_pKichCutter != nullptr)
+		{
+			delete m_pKichCutter;
+		}
+
+		m_pKichCutter = new CKichCutter();
+	}
+
 	bool CAudioCallSession::IsEchoCancellerEnabled()
 	{
 #ifdef USE_AECM
@@ -363,6 +423,29 @@ namespace MediaSDK
 #else
 		return false;
 #endif
+	}
+
+	bool CAudioCallSession::IsKichCutterEnabled()
+	{
+		if (IsEchoCancellerEnabled() && !m_bLiveAudioStreamRunning)
+		{
+			if (IsTraceSendingEnabled() && m_bTraceRecieved)
+			{
+				return true;
+			}
+			else if (!IsTraceSendingEnabled())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	bool CAudioCallSession::IsTraceSendingEnabled()
@@ -720,7 +803,7 @@ namespace MediaSDK
 		int nEchoStateFlags = 0;
 		bool bIsNsWorking = false;
 
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
 		{
 			if (GetNoiseReducer().get())
 			{
@@ -744,6 +827,8 @@ namespace MediaSDK
 				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting Trace.");
 				ResetAEC();
 				ResetTrace();
+				ResetNS();
+				ResetKichCutter();
 				m_bNeedToResetTrace = false;
 			}
 			//Sleep to maintain 100 ms recording time diff
@@ -775,11 +860,6 @@ namespace MediaSDK
 					m_DeviceInforamtion.llStartUpFarEndBufferSize[m_id] = m_iStartingBufferSize;
 				}											
 
-				if (bIsGainWorking)
-                {                    
-                    GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
-                }
-
 				int iFarendDataLength = m_FarendBuffer->DeQueue(m_saFarendData, llTS);
 				int nFarEndBufferSize = m_FarendBuffer->GetQueueSize();
 												
@@ -791,6 +871,8 @@ namespace MediaSDK
 					if (bIsGainWorking)
 					{						
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
+						GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
+						m_pGainedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
@@ -804,8 +886,24 @@ namespace MediaSDK
 					m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[m_id] = max(m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[m_id], (long long)m_FarendBuffer->GetQueueSize());
 					m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id] = min(m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[m_id], (long long)m_FarendBuffer->GetQueueSize());
 
-					m_pEcho->AddFarEndData(m_saFarendData, unLength, getIsAudioLiveStreamRunning());
-					nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+					m_pEcho->AddFarEndData(m_saFarendData, unLength);
+					
+					if (IsKichCutterEnabled())
+					{
+						short sNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+						memcpy(sNoisyData, psaEncodingAudioData, unLength * sizeof(short));
+						m_pNoiseReducer->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, getIsAudioLiveStreamRunning());
+						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, sNoisyData);
+						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						m_pKichCutter->Despike(psaEncodingAudioData);
+						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
+					}
+					else
+					{
+						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
+					}
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 					
 					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
@@ -866,22 +964,6 @@ namespace MediaSDK
 
 	int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
 	{
-		/*LOG_50MS("_+_+ FarEnd Time= %lld", Tools::CurrentTimestamp());
-
-		if (m_bEchoCancellerEnabled &&
-		(!m_bLiveAudioStreamRunning ||
-		(m_bLiveAudioStreamRunning && (ENTITY_TYPE_PUBLISHER_CALLER == m_iRole || ENTITY_TYPE_VIEWER_CALLEE == m_iRole))))
-		{
-		m_bIsAECMFarEndThreadBusy = true;
-
-		if (m_pEcho.get())
-		{
-		m_pEcho->AddFarEndData(psaPlayingAudioData, unLength, getIsAudioLiveStreamRunning());
-		}
-
-		m_bIsAECMFarEndThreadBusy = false;
-		}*/
-
 		return true;
 	}
 

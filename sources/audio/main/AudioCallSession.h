@@ -43,6 +43,7 @@ namespace MediaSDK
 	class AudioShortBufferForPublisherFarEnd;
 	class CAudioShortBuffer;
 	class CTrace;
+	class CKichCutter;
 	class AudioLinearBuffer;
 	class CAudioByteBuffer;
 
@@ -94,11 +95,14 @@ namespace MediaSDK
 
 		void ResetTrace();
 		void ResetAEC();
+		void ResetNS();
+		void ResetKichCutter();
 		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
 		bool IsEchoCancellerEnabled();
 		bool IsTraceSendingEnabled();
+		bool IsKichCutterEnabled();
 		
 		void SetSendFunction(SendFunctionPointerType cbClientSendFunc) { m_cbClientSendFunction = cbClientSendFunc; }
 		void SetEventNotifier(CEventNotifier *pEventNotifier)          { m_pEventNotifier = pEventNotifier; }
@@ -167,10 +171,14 @@ namespace MediaSDK
 		SharedPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
 		SharedPointer<CAudioByteBuffer> m_FarEndBufferOpus;
 
-		CTrace *m_pTrace;
 		AudioLinearBuffer* m_recordBuffer = nullptr;
-		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr, *m_pPlayedCalleeFE = nullptr;
-		
+		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr,
+			*m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr,
+			*m_pPlayedCalleeFE = nullptr, *m_pGainedNE = nullptr,
+			*m_pNoiseReducedNE = nullptr, *m_pCancelledNE = nullptr, *m_pKichCutNE = nullptr;
+		CTrace *m_pTrace;
+		CKichCutter *m_pKichCutter;
+
 	#ifdef DUMP_FILE
 		FILE *FileInput;
 		FILE *FileOutput;
@@ -224,6 +232,8 @@ namespace MediaSDK
 		SharedPointer<NoiseReducerInterface> m_pNoiseReducer;
 		SharedPointer<AudioGainInterface> m_pRecorderGain;
 		SharedPointer<AudioGainInterface> m_pPlayerGain;
+
+		
 		
 	#ifdef USE_VAD
 		CVoice *m_pVoice;
