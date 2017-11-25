@@ -9,7 +9,7 @@ extern int gEchoType;
 int gEchoType = -1;
 #endif
 
-//#define ECHO_ANALYSIS
+#define ECHO_ANALYSIS
 
 #ifdef ECHO_ANALYSIS
 FILE *EchoFile = nullptr;
