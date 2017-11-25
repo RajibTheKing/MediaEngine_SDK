@@ -197,7 +197,7 @@ namespace MediaSDK
 			m_cFarEndProcessorThread->StartFarEndThread();
 		}
 
-		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!");
+		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d\n", nAudioSpeakerType);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 	}
