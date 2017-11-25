@@ -733,7 +733,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 
 #else
-			CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
+			CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() dfps bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
 
 				long long timeStampForEncoding = m_Tools.CurrentTimestamp();
 
