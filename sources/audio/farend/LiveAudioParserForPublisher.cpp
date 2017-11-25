@@ -26,7 +26,6 @@ namespace MediaSDK
 	CLiveAudioParserForPublisher::~CLiveAudioParserForPublisher(){
 		SHARED_PTR_DELETE(m_pLiveReceiverMutex);		
 		delete m_pAudioDeviceInformation;
-		delete m_pAudioCallSession;
 	}
 
 	void CLiveAudioParserForPublisher::SetRoleChanging(bool bFlah){
