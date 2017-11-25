@@ -272,36 +272,54 @@ namespace MediaSDK
 			delete m_pPlayedFE;
 			m_pPlayedFE = nullptr;
 		}
+
 		if (m_pPlayedPublisherFE != nullptr)
 		{
 			delete m_pPlayedPublisherFE;
 			m_pPlayedPublisherFE = nullptr;
 		}
+
+		if (m_pPlayedCalleeFE != nullptr)
+		{
+			delete m_pPlayedCalleeFE;
+			m_pPlayedCalleeFE = nullptr;
+		}
+
 		if (m_pGainedNE != nullptr)
 		{
 			delete m_pGainedNE;
 			m_pGainedNE = nullptr;
 		}
+
 		if (m_pNoiseReducedNE != nullptr)
 		{
 			delete m_pNoiseReducedNE;
 			m_pNoiseReducedNE = nullptr;
 		}
+
 		if (m_pCancelledNE != nullptr)
 		{
 			delete m_pCancelledNE;
 			m_pCancelledNE = nullptr;
 		}
+
 		if (m_pKichCutNE != nullptr)
 		{
 			delete m_pKichCutNE;
 			m_pKichCutNE = nullptr;
 		}
 
+		if (nullptr != m_pKichCutter)
+		{
+			delete m_pKichCutter;
+			m_pKichCutter = nullptr;
+		}
+
 		if (m_recordBuffer)
 		{
 			delete m_recordBuffer;
 		}
+
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
