@@ -419,7 +419,9 @@ namespace MediaSDK
 
 	bool CAudioCallSession::IsKichCutterEnabled()
 	{
-		if (IsEchoCancellerEnabled() && !m_bLiveAudioStreamRunning)
+		if (IsEchoCancellerEnabled() && 
+			(!m_bLiveAudioStreamRunning || 
+			(m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE))))
 		{
 			if (IsTraceSendingEnabled() && m_bTraceRecieved)
 			{
