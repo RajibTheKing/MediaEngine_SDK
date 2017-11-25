@@ -3,6 +3,13 @@
 
 namespace MediaSDK
 {
+	// Name of the Informations:
+	const int iSzOfm_sDeviceInformationNameForLog = 16;
+	std::string m_sDeviceInformationNameForLog[16] = { "", "Delay", "Delay", "Delay Fraction", "Delay Fraction", "Start Up Farend Buffer Size",
+		"Start Up Farend Buffer Size", "Current Max", "Current Max", "Min",
+		"Min", "Average Time Difference", "Average Time Difference", "Call in Live", "",
+		"Call Count" };
+
 	AudioDeviceInformation::AudioDeviceInformation()
 	{
 		m_nBufferSize = 0;

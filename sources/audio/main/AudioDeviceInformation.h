@@ -30,13 +30,6 @@ namespace MediaSDK
 	#define DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN_CALLEE 10
 	#define DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF_CALLEE 12
 
-	// Name of the Informations:
-	const int iSzOfm_sDeviceInformationNameForLog = 16;
-	std::string m_sDeviceInformationNameForLog[16] = { "", "Delay", "Delay", "Delay Fraction", "Delay Fraction", "Start Up Farend Buffer Size",
-		"Start Up Farend Buffer Size", "Current Max", "Current Max", "Min",
-		"Min", "Average Time Difference", "Average Time Difference", "Call in Live", "",
-		"Call Count" };
-
 	class AudioDeviceInformation
 	{
 
