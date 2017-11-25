@@ -903,12 +903,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM) && m_nEntityType == ENTITY_TYPE_PUBLISHER && m_pFrameRateController->GetFrameStatus() == 0)
 	{
-		//return 1;
+		return 1;
 	}
 
 	m_nCapturedFrameCounter++;
-
-	if (m_nCapturedFrameCounter % 500 == 0)
+	/*
+	if (m_nCapturedFrameCounter % 300 == 0)
 	{
 		m_nQualityCounter++;
 
@@ -931,7 +931,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 			m_nQualityCounter = 0;
 		}
 	}
-
+	*/
 	/*
 	if (m_bDoubleUpdate)
 	{
