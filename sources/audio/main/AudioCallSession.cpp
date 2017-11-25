@@ -69,7 +69,7 @@ namespace MediaSDK
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr),
-		m_bNeedToResetTrace(true),
+		m_bNeedToResetAudioEffects(true),
 		m_bIsOpusCodec(bOpusCodec)
 	{
 		m_bRecordingStarted = false;
@@ -611,7 +611,7 @@ namespace MediaSDK
 			FileInputMuxed = fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
 		}
 #endif
-		m_bNeedToResetTrace = true;
+		m_bNeedToResetAudioEffects = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");
 	}
@@ -626,7 +626,7 @@ namespace MediaSDK
 			return;
 		}
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
-		m_bNeedToResetTrace = true;
+		m_bNeedToResetAudioEffects = true;
 		m_bRecordingStarted = false;
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
@@ -788,7 +788,7 @@ namespace MediaSDK
 		{
 			MediaLog(LOG_CODE_TRACE, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
 
-			if (m_bNeedToResetTrace)
+			if (m_bNeedToResetAudioEffects)
 			{
 				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting Trace.");
 				ResetAEC();				
@@ -797,7 +797,7 @@ namespace MediaSDK
 				ResetRecorderGain();
 
 				ResetTrace();
-				m_bNeedToResetTrace = false;
+				m_bNeedToResetAudioEffects = false;
 			}
 			//Sleep to maintain 100 ms recording time diff
 			long long llb4Time = Tools::CurrentTimestamp();
@@ -944,7 +944,7 @@ namespace MediaSDK
 		m_bRecordingStarted = false;
 		//if (m_iSpeakerType != iSpeakerType)
 		{
-			m_bNeedToResetTrace = true;
+			m_bNeedToResetAudioEffects = true;
 		}
 		m_iSpeakerType = iSpeakerType;
 	}

@@ -193,7 +193,7 @@ namespace MediaSDK
 		SendFunctionPointerType m_cbClientSendFunction;
 		
 		bool m_bIsOpusCodec;
-		bool m_bNeedToResetTrace;
+		bool m_bNeedToResetAudioEffects;
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;
