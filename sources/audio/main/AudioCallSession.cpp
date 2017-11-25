@@ -389,6 +389,16 @@ namespace MediaSDK
 		m_pKichCutter = new CKichCutter();
 	}
 
+	void CAudioCallSession::ResetAudioEffects()
+	{
+		ResetAEC();
+		ResetNS();
+		ResetKichCutter();
+		ResetRecorderGain();
+
+		ResetTrace(); //Trace related variables should be reset last to avoid certain race conditions
+	}
+
 	bool CAudioCallSession::IsEchoCancellerEnabled()
 	{
 #ifdef USE_AECM
@@ -790,13 +800,8 @@ namespace MediaSDK
 
 			if (m_bNeedToResetAudioEffects)
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting Trace.");
-				ResetAEC();				
-				ResetNS();
-				ResetKichCutter();
-				ResetRecorderGain();
-
-				ResetTrace();
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting AudioEffects.");
+				ResetAudioEffects();
 				m_bNeedToResetAudioEffects = false;
 			}
 			//Sleep to maintain 100 ms recording time diff

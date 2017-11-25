@@ -95,6 +95,7 @@ namespace MediaSDK
 		void ResetNS();
 		void ResetRecorderGain();
 		void ResetKichCutter();
+		void ResetAudioEffects();
 		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
 		void DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
