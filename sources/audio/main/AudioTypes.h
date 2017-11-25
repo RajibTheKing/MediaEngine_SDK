@@ -129,7 +129,7 @@ namespace MediaSDK
 	{
 		// For Publisher Device Information = 0 index
 		// For Callee Device Information = 0 index
-		long long llDelay[2], llDelayFraction[2], llStartUpFarEndBufferSize[2], llCurrentFarEndBufferSizeMax[2], llCurrentFarEndBufferSizeMin[2], llAverageTimeDiff[2];
+		long long llDelay[2], llDelayFraction[2], llStartUpFarEndBufferSize[2], llCurrentFarEndBufferSizeMax[2], llCurrentFarEndBufferSizeMin[2], llAverageTimeDiff[2], llTotalDataSize[2];
 		long long llCallCount, llIsCallInLive;
 
 		long long llLastTime;
@@ -144,6 +144,7 @@ namespace MediaSDK
 				llCurrentFarEndBufferSizeMax[i] = SHRT_MIN;
 				llCurrentFarEndBufferSizeMin[i] = SHRT_MAX;
 				llAverageTimeDiff[i] = 0;
+				llTotalDataSize[i] = 0;
 			}
 			llLastTime = -1;
 		}
@@ -155,6 +156,7 @@ namespace MediaSDK
 				llCurrentFarEndBufferSizeMax[i] = SHRT_MIN;
 				llCurrentFarEndBufferSizeMin[i] = SHRT_MAX;
 				llAverageTimeDiff[i] = 0;
+				llTotalDataSize[i] = 0;
 			}
 		}
 	};

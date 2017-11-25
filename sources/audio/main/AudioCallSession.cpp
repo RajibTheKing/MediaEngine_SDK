@@ -345,6 +345,7 @@ namespace MediaSDK
 		m_DeviceInforamtion.llCurrentFarEndBufferSizeMax[index] = v[3].second;
 		m_DeviceInforamtion.llCurrentFarEndBufferSizeMin[index] = v[4].second;
 		m_DeviceInforamtion.llAverageTimeDiff[index] = v[5].second;
+		m_DeviceInforamtion.llTotalDataSize[index] = v[6].second;
 	}
 
 	void CAudioCallSession::ResetDeviceInformation(int end)
@@ -790,15 +791,6 @@ namespace MediaSDK
 		m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 
 		long long llCurrentTime = Tools::CurrentTimestamp();
-
-		if (m_DeviceInforamtion.llLastTime == -1)
-		{
-			m_DeviceInforamtion.llLastTime = llCurrentTime;
-		}
-
-		long long llTimeDiff = llCurrentTime - m_DeviceInforamtion.llLastTime;
-		m_DeviceInforamtion.llAverageTimeDiff[m_id] += llTimeDiff;
-		m_DeviceInforamtion.llLastTime = llCurrentTime;
 		
 		int nEchoStateFlags = 0;
 		bool bIsNsWorking = false;
@@ -956,8 +948,21 @@ namespace MediaSDK
 		//LOGT("##TT encodeaudiodata");
 		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, Tools::CurrentTimestamp());
 
-		MediaLog(CODE_TRACE, "[NE][ACS] PushAudioData# Recorded Data Length = %u", unLength);
+		MediaLog(LOG_DEBUG, "[NE][ACS] PushAudioData# Recorded Data Length = %u, Total Data Size: %lld", unLength, m_DeviceInforamtion.llTotalDataSize[m_id]);
 		m_recordBuffer->PushData(psaEncodingAudioData, unLength);
+
+		long long llCurrentTime = Tools::CurrentTimestamp();
+
+		if (m_DeviceInforamtion.llLastTime == -1)
+		{
+			m_DeviceInforamtion.llLastTime = llCurrentTime;
+		}
+
+		long long llTimeDiff = llCurrentTime - m_DeviceInforamtion.llLastTime;
+		m_DeviceInforamtion.llAverageTimeDiff[m_id] += llTimeDiff;
+		m_DeviceInforamtion.llTotalDataSize[m_id] += unLength;
+		MediaLog(LOG_DEBUG, "[NE][ACS] Total Data Size: %lld", m_DeviceInforamtion.llTotalDataSize[m_id]);
+		m_DeviceInforamtion.llLastTime = llCurrentTime;
 
 		return 0;
 	}

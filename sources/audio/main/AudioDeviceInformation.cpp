@@ -4,11 +4,27 @@
 namespace MediaSDK
 {
 	// Name of the Informations:
-	const int iSzOfm_sDeviceInformationNameForLog = 16;
-	std::string m_sDeviceInformationNameForLog[16] = { "", "Delay", "Delay", "Delay Fraction", "Delay Fraction", "Start Up Farend Buffer Size",
-		"Start Up Farend Buffer Size", "Current Max", "Current Max", "Min",
-		"Min", "Average Time Difference", "Average Time Difference", "Call in Live", "",
-		"Call Count" };
+	const int iSzOfm_sDeviceInformationNameForLog = 18;
+	std::string m_sDeviceInformationNameForLog[iSzOfm_sDeviceInformationNameForLog] = { 
+		"",											//0
+		"Delay",									//1
+		"Delay",									//2
+		"Delay Fraction",							//3
+		"Delay Fraction",							//4
+		"Start Up Farend Buffer Size",				//5
+		"Start Up Farend Buffer Size",				//6
+		"Current Max",								//7	
+		"Current Max",								//8
+		"Min",										//9
+		"Min",										//10
+		"Average Time Difference",					//11
+		"Average Time Difference",					//12
+		"Call in Live",								//13
+		"Total Data Size",							//14
+		"Call Count",								//15
+		"",											//16						
+		"Total Data Size"							//17
+	};
 
 	AudioDeviceInformation::AudioDeviceInformation()
 	{
@@ -85,7 +101,7 @@ namespace MediaSDK
 				if (type < iSzOfm_sDeviceInformationNameForLog)
 					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + ": " + Tools::LongLongToString(value);
 				else
-					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value) +": " + Tools::LongLongToString(value);
+					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) type) +": " + Tools::LongLongToString(value);
 			}
 		}
 		MediaLog(LOG_DEBUG, "[ADE] Publisher Info Size: %d", (int)sLogPrint.size())
@@ -101,7 +117,7 @@ namespace MediaSDK
 				if (type < iSzOfm_sDeviceInformationNameForLog)
 					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + ": " + Tools::LongLongToString(value);
 				else
-					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) value) +": " + Tools::LongLongToString(value);
+					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long) type) +": " + Tools::LongLongToString(value);
 			}
 		}
 		MediaLog(LOG_DEBUG, "[ADE] Viewer Info Size: %d", (int)sLogPrint.size())
