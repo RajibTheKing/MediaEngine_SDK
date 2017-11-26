@@ -10,6 +10,7 @@
 		6A04F6151FBAAE24009DAC6B /* AudioDumper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A04F6131FBAAE24009DAC6B /* AudioDumper.cpp */; };
 		6AB764EE1FC94338009173C6 /* KichCutter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AB764ED1FC94338009173C6 /* KichCutter.cpp */; };
 		6AC9ED131FC9516C00A2ED40 /* AudioDeviceInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6AC9ED121FC9516C00A2ED40 /* AudioDeviceInformation.cpp */; };
+		D1B4DEEC1FCA902800B7D890 /* FrameRateController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1B4DEEA1FCA902700B7D890 /* FrameRateController.cpp */; };
 		D1E73A641F6575B900ACDE35 /* AudioDecoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739521F6575B900ACDE35 /* AudioDecoderBuffer.cpp */; };
 		D1E73A651F6575B900ACDE35 /* AudioEncoderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739541F6575B900ACDE35 /* AudioEncoderBuffer.cpp */; };
 		D1E73A661F6575B900ACDE35 /* AudioLinearBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1E739561F6575B900ACDE35 /* AudioLinearBuffer.cpp */; };
@@ -160,6 +161,8 @@
 		6AB764ED1FC94338009173C6 /* KichCutter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KichCutter.cpp; sourceTree = "<group>"; };
 		6AC9ED121FC9516C00A2ED40 /* AudioDeviceInformation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDeviceInformation.cpp; sourceTree = "<group>"; };
 		6AC9ED141FC9517700A2ED40 /* AudioDeviceInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDeviceInformation.h; sourceTree = "<group>"; };
+		D1B4DEEA1FCA902700B7D890 /* FrameRateController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameRateController.cpp; sourceTree = "<group>"; };
+		D1B4DEEB1FCA902700B7D890 /* FrameRateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameRateController.h; sourceTree = "<group>"; };
 		D1E739521F6575B900ACDE35 /* AudioDecoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDecoderBuffer.cpp; sourceTree = "<group>"; };
 		D1E739531F6575B900ACDE35 /* AudioDecoderBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoderBuffer.h; sourceTree = "<group>"; };
 		D1E739541F6575B900ACDE35 /* AudioEncoderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEncoderBuffer.cpp; sourceTree = "<group>"; };
@@ -841,6 +844,8 @@
 		D1E73A1E1F6575B900ACDE35 /* FPS */ = {
 			isa = PBXGroup;
 			children = (
+				D1B4DEEA1FCA902700B7D890 /* FrameRateController.cpp */,
+				D1B4DEEB1FCA902700B7D890 /* FrameRateController.h */,
 				D1E73A1F1F6575B900ACDE35 /* FPSController.cpp */,
 				D1E73A201F6575B900ACDE35 /* FPSController.h */,
 			);
@@ -1177,6 +1182,7 @@
 				D1E73A801F6575B900ACDE35 /* AudioFarEndDataProcessor.cpp in Sources */,
 				D1E73A821F6575B900ACDE35 /* AudioFarEndProcessorChannel.cpp in Sources */,
 				D1E73AB91F6575B900ACDE35 /* VideoMuxingAndEncodeSession.cpp in Sources */,
+				D1B4DEEC1FCA902800B7D890 /* FrameRateController.cpp in Sources */,
 				D1E73AC31F6575B900ACDE35 /* RenderingThread.cpp in Sources */,
 				D1E73AB71F6575B900ACDE35 /* MuxHeader.cpp in Sources */,
 				D1E73ABC1F6575B900ACDE35 /* EncodedFramePacketizer.cpp in Sources */,
