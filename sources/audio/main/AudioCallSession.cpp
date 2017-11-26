@@ -732,6 +732,7 @@ namespace MediaSDK
 			{
 				MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
 				m_FarendBuffer->ResetBuffer();
+				m_llDelay = 0;
 				m_bTraceWillNotBeReceived = true; // 8-(
 			}
 			else
