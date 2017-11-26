@@ -681,7 +681,7 @@ namespace MediaSDK
                         //do nothing
                     }
 
-					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient before rotation m_decodingHeight %d, m_decodingWidth %d, rotatedHeight %d, rotatedWidth %d, nOrientationForRotation %d", m_decodingHeight, m_decodingWidth, rotatedHeight, rotatedWidth, nOrientationForRotation);
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient before rotation m_decodingHeight %d, m_decodingWidth %d, nOrientationForRotation %d", m_decodingHeight, m_decodingWidth, nOrientationForRotation);
                     
 					int iLen = this->m_pColorConverter->RotateI420(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_RotatedFrame, rotatedHeight, rotatedWidth, nOrientationForRotation);
                     

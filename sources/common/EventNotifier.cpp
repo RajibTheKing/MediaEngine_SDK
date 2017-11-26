@@ -52,7 +52,7 @@ namespace MediaSDK
 
 	void CEventNotifier::fireVideoNotificationEvent(long long callID, int eventType)
 	{
-		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::firePacketEvent eventType = " + Tools::IntegertoStringConvert(eventType));
+		CLogPrinter_LOG(CHECK_RESULT_LOG, "CEventNotifier::fireVideoNotificationEvent eventType %d", eventType);
 
 		notifyClientWithVideoNotificationCallback(callID, eventType);
 

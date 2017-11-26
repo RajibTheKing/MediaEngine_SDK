@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\..\sources\video\Enhancement\VideoBeautificationer.h" />
     <ClInclude Include="..\..\..\sources\video\Enhancement\VideoEffects.h" />
     <ClInclude Include="..\..\..\sources\video\FPS\FPSController.h" />
+    <ClInclude Include="..\..\..\sources\video\FPS\FrameRateController.h" />
     <ClInclude Include="..\..\..\sources\video\Macro\Size.h" />
     <ClInclude Include="..\..\..\sources\video\Merging\MuxHeader.h" />
     <ClInclude Include="..\..\..\sources\video\Merging\MuxingVideoData.h" />
@@ -256,6 +257,7 @@
     <ClCompile Include="..\..\..\sources\video\Enhancement\VideoBeautificationer.cpp" />
     <ClCompile Include="..\..\..\sources\video\Enhancement\VideoEffects.cpp" />
     <ClCompile Include="..\..\..\sources\video\FPS\FPSController.cpp" />
+    <ClCompile Include="..\..\..\sources\video\FPS\FrameRateController.cpp" />
     <ClCompile Include="..\..\..\sources\video\Merging\MuxHeader.cpp" />
     <ClCompile Include="..\..\..\sources\video\Merging\MuxingVideoData.cpp" />
     <ClCompile Include="..\..\..\sources\video\Merging\VideoMuxingAndEncodeSession.cpp" />

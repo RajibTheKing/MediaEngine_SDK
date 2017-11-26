@@ -1,3 +1,12 @@
+Release 12.17 (Date: 25-11-2017)
+---------------------------------
+- WebRTC AECM echo detection range increased (400, 800) [Issue#5061]
+- Added Kich Cutter in regular call [Issue#5261].
+- Using NS in regular call[Issue#5261].
+- Bitrate logic modified for video live
+- Bitrate logic modified for video call
+
+
 Release 12.16 (Date: 19-11-2017)
 ---------------------------------
 - Boarder removed for live call inset
