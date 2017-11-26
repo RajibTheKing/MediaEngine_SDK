@@ -333,11 +333,11 @@ namespace MediaSDK
 		m_b1stRecordedDataSinceCallStarted = true;
 		m_llDelayFraction = 0;
 		m_llDelay = 0;
-		m_iDeleteCount = 10;
 		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
+		m_iDeleteCount = (m_pTrace->m_iTracePatternLength / MAX_AUDIO_FRAME_SAMPLE_SIZE) + 1;
 		m_FarendBuffer->ResetBuffer();
 		m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
