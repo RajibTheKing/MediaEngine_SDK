@@ -73,38 +73,39 @@ namespace MediaSDK
 			{
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
+				// Get the information of at present Device
 				DeviceInformation nowDeviceInformation;
-				m_pAudioCallSession->GetDeviceInformation(nowDeviceInformation);
+				nowDeviceInformation = m_pAudioCallSession->GetDeviceInformation();
 				m_pAudioCallSession->ResetDeviceInformation(1);
 
-				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE) nowDeviceInformation.llIsCallInLive = 1;
-				else nowDeviceInformation.llIsCallInLive = 0;
+				// Call is running on live or not
+				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
+					nowDeviceInformation.mDeviceInfo[0][iaDeviceInformationIsCalling] = 1;
+				else
+					nowDeviceInformation.mDeviceInfo[0][iaDeviceInformationIsCalling];
 
+				// Reset the buffer to set more information
 				m_pAudioDeviceInformation->Reset();
-				
-				// Inforamation of Publisher End
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY_PUBLISHER, nowDeviceInformation.llDelay[0]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelayFraction, DEVICE_INFORMATION_DELAY_FRACTION_PUBLISHER, nowDeviceInformation.llDelayFraction[0]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_STARTUP_FAREND_BUFFER_SIZE_PUBLISHER, nowDeviceInformation.llStartUpFarEndBufferSize[0]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MAX_PUBLISHER, nowDeviceInformation.llCurrentFarEndBufferSizeMax[0]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN_PUBLISHER, nowDeviceInformation.llCurrentFarEndBufferSizeMin[0]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeAverageTimeDiff, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF_PUBLISHER, nowDeviceInformation.llAverageTimeDiff[0] / DEVICE_INFORMATION_PACKET_INTERVAL);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeIsCalling, DEVICE_INFORMATION_IS_CALLING_PUBLISHER, nowDeviceInformation.llIsCallInLive);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeCountCall, DEVICE_INFORMATION_COUNT_CALL_PUBLISHER, nowDeviceInformation.llCallCount);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeTotalDataSize, DEVICE_INFORMATION_TOTAL_DATA_SZ, nowDeviceInformation.llTotalDataSize[0]);
 
-				// Information of Callee End
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY_CALLEE, nowDeviceInformation.llDelay[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelayFraction, DEVICE_INFORMATION_DELAY_FRACTION_CALLEE, nowDeviceInformation.llDelayFraction[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_STARTUP_FAREND_BUFFER_SIZE_CALLEE, nowDeviceInformation.llStartUpFarEndBufferSize[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MAX_CALLEE, nowDeviceInformation.llCurrentFarEndBufferSizeMax[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN_CALLEE, nowDeviceInformation.llCurrentFarEndBufferSizeMin[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeAverageTimeDiff, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF_CALLEE, nowDeviceInformation.llAverageTimeDiff[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeTotalDataSize, DEVICE_INFORMATION_TOTAL_DATA_SZ_CALLEE, nowDeviceInformation.llTotalDataSize[1]);
+				// Set Publisher Data
+				for (int i = 0; i < iSzOfm_sDeviceInformationNameForLog; i++)
+				{
+					if (i % 2 == 0) continue;
+					if (iaDeviceInformationByteSize[i] == -1) continue;
+					if (nowDeviceInformation.mDeviceInfo[0].find(i) == nowDeviceInformation.mDeviceInfo[0].end()) continue;
+					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[0][i]);
+				}
 
-				MediaLog(LOG_DEBUG, "[ANEPP][P] %lld %lld %lld %lld %lld %lld %lld %lld %lld", nowDeviceInformation.llDelay[0], nowDeviceInformation.llDelayFraction[0], nowDeviceInformation.llStartUpFarEndBufferSize[0], nowDeviceInformation.llCurrentFarEndBufferSizeMax[0], nowDeviceInformation.llCurrentFarEndBufferSizeMin[0], nowDeviceInformation.llAverageTimeDiff[0], nowDeviceInformation.llIsCallInLive, nowDeviceInformation.llCallCount, nowDeviceInformation.llTotalDataSize[0]);
-				MediaLog(LOG_DEBUG, "[ANEPP][P] %lld %lld %lld %lld %lld %lld %lld", nowDeviceInformation.llDelay[1], nowDeviceInformation.llDelayFraction[1], nowDeviceInformation.llStartUpFarEndBufferSize[1], nowDeviceInformation.llCurrentFarEndBufferSizeMax[1], nowDeviceInformation.llCurrentFarEndBufferSizeMin[1], nowDeviceInformation.llAverageTimeDiff[1], nowDeviceInformation.llTotalDataSize[1]);
+				// Set Callee Data
+				for (int i = 0; i < iSzOfm_sDeviceInformationNameForLog; i++)
+				{
+					if (i % 2 == 1) continue;
+					if (iaDeviceInformationByteSize[i] == -1) continue;
+					if (nowDeviceInformation.mDeviceInfo[1].find(i) == nowDeviceInformation.mDeviceInfo[1].end()) continue;
+					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[1][i]);
+				}
 
+				// Make Chunk for Device Information
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
 
@@ -113,7 +114,7 @@ namespace MediaSDK
 				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation( &(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]) );
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
-				StoreDataForChunkDeviceInformation(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
+				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
 
 				llCapturedTime = Tools::CurrentTimestamp();
 			}

@@ -55,35 +55,32 @@ namespace MediaSDK
 			{
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
+				// Get the information of at present Device
 				DeviceInformation nowDeviceInformation;
-				m_pAudioCallSession->GetDeviceInformation(nowDeviceInformation);
+				nowDeviceInformation = m_pAudioCallSession->GetDeviceInformation();
 				m_pAudioCallSession->ResetDeviceInformation();
-
-				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE) nowDeviceInformation.llIsCallInLive = 1;
-				else nowDeviceInformation.llIsCallInLive = 0;
 
 				m_pAudioDeviceInformation->Reset();
 
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_DELAY_CALLEE, nowDeviceInformation.llDelay[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelayFraction, DEVICE_INFORMATION_DELAY_FRACTION_CALLEE, nowDeviceInformation.llDelayFraction[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_STARTUP_FAREND_BUFFER_SIZE_CALLEE, nowDeviceInformation.llStartUpFarEndBufferSize[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MAX_CALLEE, nowDeviceInformation.llCurrentFarEndBufferSizeMax[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeFarendSize, DEVICE_INFORMATION_CURRENT_FAREND_BUFFER_SIZE_MIN_CALLEE, nowDeviceInformation.llCurrentFarEndBufferSizeMin[1]);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeDelay, DEVICE_INFORMATION_AVERAGE_RECORDER_TIME_DIFF_CALLEE, nowDeviceInformation.llAverageTimeDiff[1] / DEVICE_INFORMATION_PACKET_INTERVAL);
-				m_pAudioDeviceInformation->SetInformation(ByteSizeTotalDataSize, DEVICE_INFORMATION_TOTAL_DATA_SZ_CALLEE, nowDeviceInformation.llTotalDataSize[1]);
+				// Set Callee Data
+				for (int i = 0; i < iSzOfm_sDeviceInformationNameForLog; i++)
+				{
+					if (i % 2 == 1) continue;
+					if (iaDeviceInformationByteSize[i] == -1) continue;
+					if (nowDeviceInformation.mDeviceInfo[1].find(i) == nowDeviceInformation.mDeviceInfo[1].end()) continue;
+					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[1][i]);
+				}
 
-				MediaLog(LOG_DEBUG, "[ANEPV][V] %lld %lld %lld %lld %lld %lld %lld", nowDeviceInformation.llDelay[1], nowDeviceInformation.llDelayFraction[1], nowDeviceInformation.llStartUpFarEndBufferSize[1], nowDeviceInformation.llCurrentFarEndBufferSizeMax[1], nowDeviceInformation.llCurrentFarEndBufferSizeMin[1], nowDeviceInformation.llAverageTimeDiff[1]/150, nowDeviceInformation.llTotalDataSize[1]);
-
+				// Make Chunk for Device Information
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
 
 				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
 				BuildHeaderForLive(0, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
-
 				
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
-				StoreDataForChunkDeviceInformation(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
+				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
 
 				llCapturedTime = Tools::CurrentTimestamp();
 			}

@@ -297,7 +297,7 @@ namespace MediaSDK
 				{
 					uNumerOfFrames = audioSession->GetNumberOfFrameForChunk();
 				}
-				MediaLog(LOG_DEBUG, "[ST] [007] Audio Exist: %d, Frame Size: %u", bCallExist, uNumerOfFrames);
+				MediaLog(LOG_DEBUG, "[ST] Audio Exist: %d, Frame Size: %u", bCallExist, uNumerOfFrames);
 			}
             
             if (m_SendingBuffer->GetQueueSize() == 0 && m_bPassOnlyAudio == false)

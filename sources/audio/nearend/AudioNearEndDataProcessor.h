@@ -48,7 +48,6 @@ namespace MediaSDK
 			long long llRelativeTime, int nEchoStateFlags, unsigned char* ucpHeader);
 		void StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte);
 		void StoreDataForChunk(unsigned char *uchNearData, int nNearFrameLengthInByte, unsigned char *uchFarData, int nFarFrameLengthInByte, long long llRelativeTime);
-		void StoreDataForChunkDeviceInformation(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte);
 
 	public:
 		

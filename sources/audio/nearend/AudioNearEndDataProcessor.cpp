@@ -79,27 +79,6 @@ namespace MediaSDK
 
 	}
 
-	void AudioNearEndDataProcessor::StoreDataForChunkDeviceInformation(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte)
-	{
-		NearEndLockerStoreDataForChunk lock(*m_pAudioEncodingMutex);
-
-
-		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
-		{
-			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
-			m_llLastChunkLastFrameRT = max(0LL, llRelativeTime - 100);
-		}
-
-		m_llLastFrameRT = llRelativeTime;
-
-		if ((m_nStoredDataLengthNear + nFrameLengthInByte) < MAX_AUDIO_DATA_TO_SEND_SIZE)
-		{
-			memcpy(m_ucaRawDataToSendNear + m_nStoredDataLengthNear, uchDataToChunk, nFrameLengthInByte);
-			m_nStoredDataLengthNear += (nFrameLengthInByte);
-			m_vRawFrameLengthNear.push_back(nFrameLengthInByte);
-		}
-	}
-
 	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte)
 	{
 		NearEndLockerStoreDataForChunk lock(*m_pAudioEncodingMutex);
@@ -251,7 +230,7 @@ namespace MediaSDK
 
 		llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
 
-		MediaLog(LOG_DEBUG, "[ANEDP] [007] Audio Chunk Duration: %lld", llAudioChunkDuration);
+		MediaLog(LOG_DEBUG, "[ANEDP] Audio Chunk Duration: %lld", llAudioChunkDuration);
 
 		if (0 == llAudioChunkDuration)
 		{

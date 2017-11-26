@@ -82,7 +82,7 @@ namespace MediaSDK
 		void SetEchoCanceller(bool bOn);
 
 		void ResetDeviceInformation(int end = 2);
-		void GetDeviceInformation(DeviceInformation &sDeviceInformation);
+		DeviceInformation GetDeviceInformation();
 		void SetDeviceInformationOfAnotherRole(std::vector< std::pair <int, long long > > &v);
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
@@ -216,7 +216,7 @@ namespace MediaSDK
 		long long m_llLastPlayTime;
 		long long m_FriendID;
 
-		DeviceInformation m_DeviceInforamtion;
+		DeviceInformation m_DeviceInforamtion, m_LocalDeviceInformation;
 		int m_id;
 
 		CEventNotifier* m_pEventNotifier;
@@ -234,6 +234,7 @@ namespace MediaSDK
 		SharedPointer<AudioGainInterface> m_pRecorderGain;
 		SharedPointer<AudioGainInterface> m_pPlayerGain;
 
+		SharedPointer<CLockHandler> m_pAudioDeviceInfoMutex;
 		
 		
 	#ifdef USE_VAD

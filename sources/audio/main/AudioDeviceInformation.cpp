@@ -1,35 +1,12 @@
 #include "AudioDeviceInformation.h"
 #include "Tools.h"
+#include "AudioTypes.h"
 
 namespace MediaSDK
 {
-	// Name of the Informations:
-	const int iSzOfm_sDeviceInformationNameForLog = 18;
-	std::string m_sDeviceInformationNameForLog[iSzOfm_sDeviceInformationNameForLog] = { 
-		"",											//0
-		"Delay",									//1
-		"Delay",									//2
-		"Delay Fraction",							//3
-		"Delay Fraction",							//4
-		"Start Up Farend Buffer Size",				//5
-		"Start Up Farend Buffer Size",				//6
-		"Current Max",								//7	
-		"Current Max",								//8
-		"Min",										//9
-		"Min",										//10
-		"Average Time Difference",					//11
-		"Average Time Difference",					//12
-		"Call in Live",								//13
-		"Total Data Size",							//14
-		"Call Count",								//15
-		"",											//16						
-		"Total Data Size"							//17
-	};
-
 	AudioDeviceInformation::AudioDeviceInformation()
 	{
 		m_nBufferSize = 0;
-		m_pAudioDeviceInformationLocker.reset(new CLockHandler);
 	}
 
 
@@ -44,8 +21,6 @@ namespace MediaSDK
 
 	void AudioDeviceInformation::SetInformation(int nInfoSize, int nInfoType, unsigned long long ullInfo)
 	{
-		BaseMediaLocker lock(*m_pAudioDeviceInformationLocker);
-
 		m_ucaBuffer[m_nBufferSize] = nInfoSize;
 		m_nBufferSize++;
 
@@ -61,8 +36,6 @@ namespace MediaSDK
 
 	int AudioDeviceInformation::GetInformation(unsigned char* ucaInfo)
 	{
-		BaseMediaLocker lock(*m_pAudioDeviceInformationLocker);
-
 		for (int i = 0; i < m_nBufferSize; ++i)
 		{
 			ucaInfo[i] = m_ucaBuffer[i];
