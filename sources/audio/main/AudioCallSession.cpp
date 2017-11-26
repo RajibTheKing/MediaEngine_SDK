@@ -755,10 +755,11 @@ namespace MediaSDK
 
 	void CAudioCallSession::DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
+		if (m_iDeleteCount > 0)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved");
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+			memset(m_saFarendData, 0, sizeof(short) * unLength);
 			m_iDeleteCount--;
 		}
 	}
@@ -813,8 +814,6 @@ namespace MediaSDK
 				SyncRecordingTime();
 			}
 
-			//If trace is received, current and next frames are deleted
-			DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
 			//Handle Trace
 			HandleTrace(psaEncodingAudioData, unLength);
 			//Some frames are deleted after detectiing trace, whether or not detection succeeds
@@ -841,7 +840,9 @@ namespace MediaSDK
 										
 
 				if (iFarendDataLength > 0)
-				{								
+				{
+					//If trace is received, current and next frames are deleted
+					DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
 					if (bIsGainWorking)
 					{						
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
