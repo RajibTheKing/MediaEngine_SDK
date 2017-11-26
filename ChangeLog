@@ -1,3 +1,8 @@
+Release 12.17.1 (Date: 26-11-2017)
+---------------------------------
+- iOS library linking error solved
+
+
 Release 12.17 (Date: 25-11-2017)
 ---------------------------------
 - WebRTC AECM echo detection range increased (400, 800) [Issue#5061]
