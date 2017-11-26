@@ -753,21 +753,21 @@ namespace MediaSDK
 		}
 	}
 
-	void CAudioCallSession::DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength)
+	void CAudioCallSession::DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteBeforeHandlingTrace->IsEchoCancellerEnabled->Trace Recieved");
+			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved");
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			m_iDeleteCount--;
 		}
 	}
 
-	void CAudioCallSession::DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength)
+	void CAudioCallSession::DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteAfterHandlingTrace->m_bTraceRecieved");
+			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 	}
@@ -814,11 +814,11 @@ namespace MediaSDK
 			}
 
 			//If trace is received, current and next frames are deleted
-			DeleteBeforeHandlingTrace(psaEncodingAudioData, unLength);
+			DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
 			//Handle Trace
 			HandleTrace(psaEncodingAudioData, unLength);
 			//Some frames are deleted after detectiing trace, whether or not detection succeeds
-			DeleteAfterHandlingTrace(psaEncodingAudioData, unLength);
+			DeleteDataB4TraceIsReceived(psaEncodingAudioData, unLength);
 
 
 #ifdef DUMP_FILE

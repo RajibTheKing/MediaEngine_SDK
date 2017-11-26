@@ -97,8 +97,8 @@ namespace MediaSDK
 		void ResetKichCutter();
 		void ResetAudioEffects();
 		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
-		void DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
-		void DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
+		void DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
+		void DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
 		bool IsEchoCancellerEnabled();
 		bool IsTraceSendingEnabled();
 		bool IsKichCutterEnabled();
