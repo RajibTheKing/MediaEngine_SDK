@@ -377,6 +377,13 @@ namespace MediaSDK
 		}
 
 		m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+		m_pRecorderGain->Init(m_nServiceType);
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+		{
+			//Gain level is incremented to recover losses due to noise.
+			//And noise is only applied to publisher NOT in call.
+			GetRecorderGain()->SetGain(DEFAULT_GAIN + 1);
+		}
 	}
 
 	void CAudioCallSession::ResetKichCutter()
