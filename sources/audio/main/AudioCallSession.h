@@ -83,7 +83,7 @@ namespace MediaSDK
 
 		void ResetDeviceInformation(int end = 2);
 		int GetDeviceInformation(unsigned char *ucaInfo);
-		DeviceInformation GetDeviceInformation();
+		std::unordered_map<int, long long> GetDeviceInformation();
 		void SetDeviceInformationOfAnotherRole(unsigned char *ucaInfo, int len);
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
@@ -217,9 +217,10 @@ namespace MediaSDK
 		long long m_llLastPlayTime;
 		long long m_FriendID;
 
-		DeviceInformation m_DeviceInforamtion, m_LocalDeviceInformation;
+		DeviceInformation m_DeviceInforamtion;
+		std::unordered_map < int, long long >  m_LocalDeviceInformation;
 		unsigned char m_ucaLocalInfoCallee[DEVICE_INFORMATION_MAX_SIZE];
-		long long m_llLocalInfoLen;
+		long long m_llLocalInfoLen, m_llLocalInfoTimeDiff, m_llLocalInfoTotalDataSz, m_llLocalInfoCallCount;
 		int m_id;
 
 		CEventNotifier* m_pEventNotifier;

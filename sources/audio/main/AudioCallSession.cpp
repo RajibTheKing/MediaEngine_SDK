@@ -206,6 +206,9 @@ namespace MediaSDK
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_id = 0;
 		else m_id = 1;
 		m_pAudioDeviceInfoMutex.reset(new CLockHandler);
+		m_llLocalInfoTimeDiff = 0;
+		m_llLocalInfoTotalDataSz = 0;
+		m_llLocalInfoCallCount = 0;
 	}
 
 	CAudioCallSession::~CAudioCallSession()
@@ -330,9 +333,9 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
 
-	DeviceInformation CAudioCallSession::GetDeviceInformation()
+	std::unordered_map<int, long long> CAudioCallSession::GetDeviceInformation()
 	{
-		m_LocalDeviceInformation = m_DeviceInforamtion;
+		m_LocalDeviceInformation = m_DeviceInforamtion.mDeviceInfo;
 		return m_LocalDeviceInformation;
 	}
 
@@ -353,6 +356,8 @@ namespace MediaSDK
 	void CAudioCallSession::ResetDeviceInformation(int end)
 	{
 		m_DeviceInforamtion.ResetAfter(end);
+		m_llLocalInfoTimeDiff = 0;
+		m_llLocalInfoTotalDataSz = 0;
 	}
 
 	void CAudioCallSession::ResetTrace()
@@ -635,7 +640,7 @@ namespace MediaSDK
 		m_bNeedToResetTrace = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 
-		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCountCall]++;
+		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_llLocalInfoCallCount++;
 
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");
 	}
@@ -745,9 +750,7 @@ namespace MediaSDK
 				MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
 				m_FarendBuffer->ResetBuffer();
 				m_bTraceWillNotBeReceived = true; // 8-(
-
-				m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelay[m_id]] = 0;
-				m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelayFraction[m_id]] = 0;
+				
 			}
 			else
 			{
@@ -761,8 +764,7 @@ namespace MediaSDK
 					m_iDelayFractionOrig = m_llDelayFraction;
 					m_llDelayFraction /= 8;
 
-					m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelay[m_id]] = m_llDelay;
-					m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelayFraction[m_id]] = m_llDelayFraction;
+					
 
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 					m_bTraceRecieved = true;								
@@ -793,6 +795,12 @@ namespace MediaSDK
 
 	int CAudioCallSession::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCountCall] = m_llLocalInfoCallCount;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelay[m_id]] = m_llDelay;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelayFraction[m_id]] = m_llDelayFraction;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationAverageRecorderTimeDiff[m_id]] = m_llLocalInfoTimeDiff;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationTotalDataSz[m_id]] = m_llLocalInfoTotalDataSz;
+
 		m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 
 		long long llCurrentTime = Tools::CurrentTimestamp();
@@ -953,7 +961,6 @@ namespace MediaSDK
 		//LOGT("##TT encodeaudiodata");
 		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, Tools::CurrentTimestamp());
 
-		MediaLog(LOG_DEBUG, "[NE][ACS] PushAudioData# Recorded Data Length = %u, Total Data Size: %lld", unLength, m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationTotalDataSz[m_id]]);
 		m_recordBuffer->PushData(psaEncodingAudioData, unLength);
 
 		long long llCurrentTime = Tools::CurrentTimestamp();
@@ -965,10 +972,9 @@ namespace MediaSDK
 
 		long long llTimeDiff = llCurrentTime - m_DeviceInforamtion.llLastTime;
 
-		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationAverageRecorderTimeDiff[m_id]] += llTimeDiff;
-		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationTotalDataSz[m_id]] += unLength;
+		m_llLocalInfoTimeDiff += llTimeDiff;
+		m_llLocalInfoTotalDataSz += unLength;
 
-		MediaLog(LOG_DEBUG, "[NE][ACS] Total Data Size: %lld", m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationTotalDataSz[m_id]]);
 		m_DeviceInforamtion.llLastTime = llCurrentTime;
 
 		return 0;

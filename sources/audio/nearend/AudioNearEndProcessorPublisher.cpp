@@ -74,15 +74,15 @@ namespace MediaSDK
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
 				// Get the information of at present Device
-				DeviceInformation nowDeviceInformation;
+				std::unordered_map<int, long long> nowDeviceInformation;
 				nowDeviceInformation = m_pAudioCallSession->GetDeviceInformation();
 				m_pAudioCallSession->ResetDeviceInformation(1);
 
 				// Call is running on live or not
 				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
-					nowDeviceInformation.mDeviceInfo[iaDeviceInformationIsCalling] = 1;
+					nowDeviceInformation[iaDeviceInformationIsCalling] = 1;
 				else
-					nowDeviceInformation.mDeviceInfo[iaDeviceInformationIsCalling] = 0;
+					nowDeviceInformation[iaDeviceInformationIsCalling] = 0;
 
 				// Reset the buffer to set more information
 				m_pAudioDeviceInformation->Reset();
@@ -92,8 +92,8 @@ namespace MediaSDK
 				{
 					if (i % 2 == 0) continue;
 					if (iaDeviceInformationByteSize[i] == -1) continue;
-					if (nowDeviceInformation.mDeviceInfo.find(i) == nowDeviceInformation.mDeviceInfo.end()) continue;
-					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[i]);
+					if (nowDeviceInformation.find(i) == nowDeviceInformation.end()) continue;
+					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation[i]);
 				}
 
 				// Make Chunk for Device Information

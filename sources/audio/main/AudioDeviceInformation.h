@@ -1,6 +1,7 @@
 
 #include "MediaLogger.h"
 #include <vector>
+#include "AudioMacros.h"
 
 namespace MediaSDK
 {
