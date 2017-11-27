@@ -82,8 +82,9 @@ namespace MediaSDK
 		void SetEchoCanceller(bool bOn);
 
 		void ResetDeviceInformation(int end = 2);
+		int GetDeviceInformation(unsigned char *ucaInfo);
 		DeviceInformation GetDeviceInformation();
-		void SetDeviceInformationOfAnotherRole(std::vector< std::pair <int, long long > > &v);
+		void SetDeviceInformationOfAnotherRole(unsigned char *ucaInfo, int len);
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
 		Server considers strength as STRONG(3) when packet loss is 0%-3%, MEDIUM(2) when loss is 4%-12% and WEAK(1) when loss is 13%-25%
@@ -217,6 +218,8 @@ namespace MediaSDK
 		long long m_FriendID;
 
 		DeviceInformation m_DeviceInforamtion, m_LocalDeviceInformation;
+		unsigned char m_ucaLocalInfoCallee[DEVICE_INFORMATION_MAX_SIZE];
+		long long m_llLocalInfoLen;
 		int m_id;
 
 		CEventNotifier* m_pEventNotifier;

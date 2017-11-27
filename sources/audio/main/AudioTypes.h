@@ -58,7 +58,7 @@ namespace MediaSDK
 	class DeviceInformationInterface
 	{
 	public:
-		virtual void SetDeviceInformationOfAnotherRole(std::vector< std::pair <int, long long > > &v) = 0;
+		virtual void SetDeviceInformationOfAnotherRole(unsigned char *ucaInfo, int len) = 0;
 	};
 
 	enum AudioEntityRoleType
@@ -189,7 +189,7 @@ namespace MediaSDK
 	{
 		// For Publisher Device Information = 0 index
 		// For Callee Device Information = 0 index
-		std::unordered_map <int, long long> mDeviceInfo[2];
+		std::unordered_map <int, long long> mDeviceInfo;
 
 		long long llLastTime;
 		
@@ -197,13 +197,13 @@ namespace MediaSDK
 		{
 			for (int i = 0; i < 2; i++)
 			{
-				mDeviceInfo[i].clear();
-				mDeviceInfo[i][iaDeviceInformationDelay[i]] = SHRT_MAX;
-				mDeviceInfo[i][iaDeviceInformationDelayFraction[i]] = 255;
-				mDeviceInfo[i][iaDeviceInformationCurrentFarendBufferSizeMax[i]] = SHRT_MIN;
-				mDeviceInfo[i][iaDeviceInformationCurrentFarendBufferSizeMin[i]] = SHRT_MAX;
-				mDeviceInfo[i][iaDeviceInformationAverageRecorderTimeDiff[i]] = 0;
-				mDeviceInfo[i][iaDeviceInformationTotalDataSz[i]] = 0;
+				mDeviceInfo.clear();
+				mDeviceInfo[iaDeviceInformationDelay[i]] = SHRT_MAX;
+				mDeviceInfo[iaDeviceInformationDelayFraction[i]] = 255;
+				mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMax[i]] = SHRT_MIN;
+				mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMin[i]] = SHRT_MAX;
+				mDeviceInfo[iaDeviceInformationAverageRecorderTimeDiff[i]] = 0;
+				mDeviceInfo[iaDeviceInformationTotalDataSz[i]] = 0;
 			}
 			llLastTime = -1;
 		}
@@ -212,10 +212,10 @@ namespace MediaSDK
 		{
 			for (int i = 0; i < end; i++)
 			{
-				mDeviceInfo[i][iaDeviceInformationCurrentFarendBufferSizeMax[i]] = SHRT_MIN;
-				mDeviceInfo[i][iaDeviceInformationCurrentFarendBufferSizeMin[i]] = SHRT_MAX;
-				mDeviceInfo[i][iaDeviceInformationAverageRecorderTimeDiff[i]] = 0;
-				mDeviceInfo[i][iaDeviceInformationTotalDataSz[i]] = 0;
+				mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMax[i]] = SHRT_MIN;
+				mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMin[i]] = SHRT_MAX;
+				mDeviceInfo[iaDeviceInformationAverageRecorderTimeDiff[i]] = 0;
+				mDeviceInfo[iaDeviceInformationTotalDataSz[i]] = 0;
 			}
 		}
 	};

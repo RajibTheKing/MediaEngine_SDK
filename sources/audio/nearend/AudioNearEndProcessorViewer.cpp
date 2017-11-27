@@ -67,8 +67,8 @@ namespace MediaSDK
 				{
 					if (i % 2 == 1) continue;
 					if (iaDeviceInformationByteSize[i] == -1) continue;
-					if (nowDeviceInformation.mDeviceInfo[1].find(i) == nowDeviceInformation.mDeviceInfo[1].end()) continue;
-					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[1][i]);
+					if (nowDeviceInformation.mDeviceInfo.find(i) == nowDeviceInformation.mDeviceInfo.end()) continue;
+					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[i]);
 				}
 
 				// Make Chunk for Device Information

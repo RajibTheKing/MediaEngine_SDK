@@ -80,9 +80,9 @@ namespace MediaSDK
 
 				// Call is running on live or not
 				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
-					nowDeviceInformation.mDeviceInfo[0][iaDeviceInformationIsCalling] = 1;
+					nowDeviceInformation.mDeviceInfo[iaDeviceInformationIsCalling] = 1;
 				else
-					nowDeviceInformation.mDeviceInfo[0][iaDeviceInformationIsCalling];
+					nowDeviceInformation.mDeviceInfo[iaDeviceInformationIsCalling] = 0;
 
 				// Reset the buffer to set more information
 				m_pAudioDeviceInformation->Reset();
@@ -92,17 +92,8 @@ namespace MediaSDK
 				{
 					if (i % 2 == 0) continue;
 					if (iaDeviceInformationByteSize[i] == -1) continue;
-					if (nowDeviceInformation.mDeviceInfo[0].find(i) == nowDeviceInformation.mDeviceInfo[0].end()) continue;
-					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[0][i]);
-				}
-
-				// Set Callee Data
-				for (int i = 0; i < iSzOfm_sDeviceInformationNameForLog; i++)
-				{
-					if (i % 2 == 1) continue;
-					if (iaDeviceInformationByteSize[i] == -1) continue;
-					if (nowDeviceInformation.mDeviceInfo[1].find(i) == nowDeviceInformation.mDeviceInfo[1].end()) continue;
-					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[1][i]);
+					if (nowDeviceInformation.mDeviceInfo.find(i) == nowDeviceInformation.mDeviceInfo.end()) continue;
+					m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation.mDeviceInfo[i]);
 				}
 
 				// Make Chunk for Device Information
@@ -113,6 +104,10 @@ namespace MediaSDK
 
 				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation( &(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]) );
 				nNowSendingDataSizeInByte += nSizeOfInformation;
+
+				// Set Callee Data in the chunk
+				int calleeLen = m_pAudioCallSession->GetDeviceInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
+				nNowSendingDataSizeInByte += calleeLen;
 
 				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
 

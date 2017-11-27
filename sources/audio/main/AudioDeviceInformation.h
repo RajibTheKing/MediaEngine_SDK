@@ -18,7 +18,7 @@ namespace MediaSDK
 		
 
 	private:
-		unsigned char m_ucaBuffer[400];
+		unsigned char m_ucaBuffer[DEVICE_INFORMATION_MAX_SIZE];
 		int m_nBufferSize;
 	};
 
