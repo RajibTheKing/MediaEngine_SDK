@@ -869,7 +869,7 @@ namespace MediaSDK
 						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, sNoisyData);
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
-						m_pKichCutter->Despike(psaEncodingAudioData);
+						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
 						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					else
