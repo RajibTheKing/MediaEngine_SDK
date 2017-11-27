@@ -116,6 +116,17 @@ namespace MediaSDK
 
 		m_iSpeakerType = nAudioSpeakerType;
 		
+		/* Device information. */
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCountCall] = 0;
+		m_DeviceInforamtion.Reset();
+		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_id = 0;
+		else m_id = 1;
+		m_pAudioDeviceInfoMutex.reset(new CLockHandler);
+		m_llLocalInfoTimeDiff = 0;
+		m_llLocalInfoTotalDataSz = 0;
+		m_llLocalInfoCallCount = 0;
+
+
 
 		SetSendFunction(pSharedObject->GetSendFunctionPointer());
 		SetEventNotifier(pSharedObject->m_pEventNotifier);
@@ -200,15 +211,6 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!");
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
-
-		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCountCall] = 0;
-		m_DeviceInforamtion.Reset();
-		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_id = 0;
-		else m_id = 1;
-		m_pAudioDeviceInfoMutex.reset(new CLockHandler);
-		m_llLocalInfoTimeDiff = 0;
-		m_llLocalInfoTotalDataSz = 0;
-		m_llLocalInfoCallCount = 0;
 	}
 
 	CAudioCallSession::~CAudioCallSession()
