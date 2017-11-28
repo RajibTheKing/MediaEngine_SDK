@@ -190,7 +190,7 @@ namespace MediaSDK
 			{
 				int n_HeaderSize = m_pAudioPacketHeader->GetHeaderSize();
 				MediaLog(LOG_DEBUG, "[FE][LAPE] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, iMediaByteHeaderSize, n_HeaderSize);
-				info = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize - n_HeaderSize + 1);
+				info = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize - n_HeaderSize + 1);			
 			}
 
 			/* Discarding broken Opus frame */

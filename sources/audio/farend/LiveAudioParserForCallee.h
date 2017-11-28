@@ -23,7 +23,7 @@ namespace MediaSDK
 		long long m_llLastProcessedFrameNo;
 
 		AudioDeviceInformation *m_pAudioDeviceInformation;
-		std::vector < std::pair<int, long long> > info
+		std::vector < std::pair<int, long long> > info;
 
 	public:
 
