@@ -27,6 +27,7 @@ namespace MediaSDK
 		AudioDeviceInformation *m_pAudioDeviceInformation;
 
 		int m_nTotalSentFrameSize;
+		std::unordered_map<int, long long> nowDeviceInformation;
 	};
 
 }  //namespace MediaSDK

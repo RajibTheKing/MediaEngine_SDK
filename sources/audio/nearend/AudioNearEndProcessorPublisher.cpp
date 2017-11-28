@@ -74,7 +74,6 @@ namespace MediaSDK
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
 				// Get the information of at present Device
-				std::unordered_map<int, long long> nowDeviceInformation;
 				nowDeviceInformation = m_pAudioCallSession->GetDeviceInformation();
 				m_pAudioCallSession->ResetDeviceInformation(1);
 

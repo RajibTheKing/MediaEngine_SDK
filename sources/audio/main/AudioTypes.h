@@ -210,6 +210,7 @@ namespace MediaSDK
 
 		void ResetAfter(int end = 2)
 		{
+			if (end > 2) end = 2;
 			for (int i = 0; i < end; i++)
 			{
 				mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMax[i]] = SHRT_MIN;
