@@ -1,3 +1,9 @@
+Release 12.18 (Date: 29-11-2017)
+---------------------------------
+- Device information sending option. [Issue#5247]
+- Kitch cutter WebRTC NS in live(call). [Issue#5261]
+
+
 Release 12.17.1 (Date: 26-11-2017)
 ---------------------------------
 - iOS library linking error solved
