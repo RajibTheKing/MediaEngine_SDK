@@ -76,7 +76,7 @@ namespace MediaSDK
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
 
 				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
-				BuildHeaderForLive(0, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
+				BuildHeaderForLive(SESSION_STATISTICS_PACKET_TYPE, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
 				
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
