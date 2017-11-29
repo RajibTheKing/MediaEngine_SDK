@@ -7,7 +7,7 @@ namespace MediaSDK
 	public:
 		CKichCutter();
 		~CKichCutter();
-		void Despike(short *sBuffer);
+		int Despike(short *sBuffer, int nFlags);
 
 	private:
 		short m_sZeroSampleCount;
@@ -15,6 +15,7 @@ namespace MediaSDK
 		short m_sThreshold;
 		short m_sTotalSpikeSampleCount;
 		bool m_bRemoveContinentalShelves;
+		int m_nFramesInBuffer;
 		int m_nDataBufSize;
 		int m_nDataBufIOSize;
 		int m_nDataBufCopySize;
@@ -24,6 +25,7 @@ namespace MediaSDK
 		short *m_sSilentFillBuf;
 		short *m_sTempBuf;
 		short *m_sDataBuf;
+		int *m_nFlagBuf;
 	};
 }
 

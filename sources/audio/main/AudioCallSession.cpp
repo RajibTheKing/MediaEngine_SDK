@@ -69,7 +69,7 @@ namespace MediaSDK
 		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr),
-		m_bNeedToResetTrace(true),
+		m_bNeedToResetAudioEffects(true),
 		m_bIsOpusCodec(bOpusCodec)
 	{
 		m_bRecordingStarted = false;
@@ -208,7 +208,7 @@ namespace MediaSDK
 			m_cFarEndProcessorThread->StartFarEndThread();
 		}
 
-		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!");
+		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d\n", nAudioSpeakerType);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 	}
@@ -371,11 +371,11 @@ namespace MediaSDK
 		m_b1stRecordedDataSinceCallStarted = true;
 		m_llDelayFraction = 0;
 		m_llDelay = 0;
-		m_iDeleteCount = 10;
 		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
+		m_iDeleteCount = (m_pTrace->m_iTracePatternLength / MAX_AUDIO_FRAME_SAMPLE_SIZE) + 1;
 		m_FarendBuffer->ResetBuffer();
 		m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
 		m_pFarEndProcessor->m_llNextPlayingTime = -1;
@@ -407,6 +407,23 @@ namespace MediaSDK
 		m_pNoiseReducer = NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer);
 	}
 
+	void CAudioCallSession::ResetRecorderGain()
+	{
+		if (m_pRecorderGain.get())
+		{
+			m_pRecorderGain.reset();
+		}
+
+		m_pRecorderGain = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+		m_pRecorderGain->Init(m_nServiceType);
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+		{
+			//Gain level is incremented to recover losses due to noise.
+			//And noise is only applied to publisher NOT in call.
+			GetRecorderGain()->SetGain(DEFAULT_GAIN + 1);
+		}
+	}
+
 	void CAudioCallSession::ResetKichCutter()
 	{
 		if (m_pKichCutter != nullptr)
@@ -415,6 +432,16 @@ namespace MediaSDK
 		}
 
 		m_pKichCutter = new CKichCutter();
+	}
+
+	void CAudioCallSession::ResetAudioEffects()
+	{
+		ResetAEC();
+		ResetNS();
+		ResetKichCutter();
+		ResetRecorderGain();
+
+		ResetTrace(); //Trace related variables should be reset last to avoid certain race conditions
 	}
 
 	bool CAudioCallSession::IsEchoCancellerEnabled()
@@ -437,7 +464,9 @@ namespace MediaSDK
 
 	bool CAudioCallSession::IsKichCutterEnabled()
 	{
-		if (IsEchoCancellerEnabled() && !m_bLiveAudioStreamRunning)
+		if (IsEchoCancellerEnabled() && 
+			(!m_bLiveAudioStreamRunning || 
+			(m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE))))
 		{
 			if (IsTraceSendingEnabled() && m_bTraceRecieved)
 			{
@@ -639,7 +668,7 @@ namespace MediaSDK
 			FileInputMuxed = fopen("/sdcard/InputPCMN_MUXED.pcm", "wb");
 		}
 #endif
-		m_bNeedToResetTrace = true;
+		m_bNeedToResetAudioEffects = true;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 
 		if (m_iRole == ENTITY_TYPE_PUBLISHER_CALLER || m_iRole == ENTITY_TYPE_PUBLISHER) m_llLocalInfoCallCount++;
@@ -657,7 +686,7 @@ namespace MediaSDK
 			return;
 		}
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
-		m_bNeedToResetTrace = true;
+		m_bNeedToResetAudioEffects = true;
 		m_bRecordingStarted = false;
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
@@ -751,6 +780,7 @@ namespace MediaSDK
 			{
 				MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
 				m_FarendBuffer->ResetBuffer();
+				m_llDelay = 0;
 				m_bTraceWillNotBeReceived = true; // 8-(
 				
 			}
@@ -776,21 +806,22 @@ namespace MediaSDK
 		}
 	}
 
-	void CAudioCallSession::DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength)
+	void CAudioCallSession::DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		if ((m_bTraceRecieved || m_bTraceWillNotBeReceived) && m_iDeleteCount > 0)
+		if (m_iDeleteCount > 0)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteBeforeHandlingTrace->IsEchoCancellerEnabled->Trace Recieved");
+			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved");
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+			memset(m_saFarendData, 0, sizeof(short) * unLength);
 			m_iDeleteCount--;
 		}
 	}
 
-	void CAudioCallSession::DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength)
+	void CAudioCallSession::DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteAfterHandlingTrace->m_bTraceRecieved");
+			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 	}
@@ -829,14 +860,11 @@ namespace MediaSDK
 		{
 			MediaLog(LOG_CODE_TRACE, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
 
-			if (m_bNeedToResetTrace)
+			if (m_bNeedToResetAudioEffects)
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting Trace.");
-				ResetAEC();
-				ResetTrace();
-				ResetNS();
-				ResetKichCutter();
-				m_bNeedToResetTrace = false;
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting AudioEffects.");
+				ResetAudioEffects();
+				m_bNeedToResetAudioEffects = false;
 			}
 			//Sleep to maintain 100 ms recording time diff
 			long long llb4Time = Tools::CurrentTimestamp();
@@ -845,12 +873,10 @@ namespace MediaSDK
 				SyncRecordingTime();
 			}
 
-			//If trace is received, current and next frames are deleted
-			DeleteBeforeHandlingTrace(psaEncodingAudioData, unLength);
 			//Handle Trace
 			HandleTrace(psaEncodingAudioData, unLength);
 			//Some frames are deleted after detectiing trace, whether or not detection succeeds
-			DeleteAfterHandlingTrace(psaEncodingAudioData, unLength);
+			DeleteDataB4TraceIsReceived(psaEncodingAudioData, unLength);
 
 
 #ifdef DUMP_FILE
@@ -874,7 +900,9 @@ namespace MediaSDK
 										
 
 				if (iFarendDataLength > 0)
-				{								
+				{
+					//If trace is received, current and next frames are deleted
+					DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
 					if (bIsGainWorking)
 					{						
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
@@ -903,7 +931,7 @@ namespace MediaSDK
 						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, sNoisyData);
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
-						m_pKichCutter->Despike(psaEncodingAudioData);
+						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
 						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					else
@@ -1000,7 +1028,7 @@ namespace MediaSDK
 		m_bRecordingStarted = false;
 		//if (m_iSpeakerType != iSpeakerType)
 		{
-			m_bNeedToResetTrace = true;
+			m_bNeedToResetAudioEffects = true;
 		}
 		m_iSpeakerType = iSpeakerType;
 	}

@@ -98,10 +98,12 @@ namespace MediaSDK
 		void ResetTrace();
 		void ResetAEC();
 		void ResetNS();
+		void ResetRecorderGain();
 		void ResetKichCutter();
+		void ResetAudioEffects();
 		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
-		void DeleteBeforeHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
-		void DeleteAfterHandlingTrace(short *psaEncodingAudioData, unsigned int unLength);
+		void DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
+		void DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
 		bool IsEchoCancellerEnabled();
 		bool IsTraceSendingEnabled();
 		bool IsKichCutterEnabled();
@@ -197,7 +199,7 @@ namespace MediaSDK
 		SendFunctionPointerType m_cbClientSendFunction;
 		
 		bool m_bIsOpusCodec;
-		bool m_bNeedToResetTrace;
+		bool m_bNeedToResetAudioEffects;
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;

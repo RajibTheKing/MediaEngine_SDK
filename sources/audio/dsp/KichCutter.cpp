@@ -11,7 +11,8 @@ namespace MediaSDK
 		m_sSpikeSampleCount = MAX_AUDIO_FRAME_SAMPLE_SIZE * 9 / 8; //900
 		m_sThreshold = 200;
 		m_bRemoveContinentalShelves = false;
-		m_nDataBufSize = MAX_AUDIO_FRAME_SAMPLE_SIZE * 3; //2400
+		m_nFramesInBuffer = 3;
+		m_nDataBufSize = MAX_AUDIO_FRAME_SAMPLE_SIZE * m_nFramesInBuffer; //2400
 		m_nDataBufIOSize = MAX_AUDIO_FRAME_SAMPLE_SIZE; //800
 		m_sTotalSpikeSampleCount = m_sSpikeSampleCount + 2 * m_sZeroSampleCount; //1100
 		m_nDataBufCopySize = m_nDataBufSize - m_nDataBufIOSize; //1600
@@ -20,7 +21,7 @@ namespace MediaSDK
 		m_sSilentFillBuf = new short[m_sTotalSpikeSampleCount]();
 		m_sTempBuf = new short[m_sTotalSpikeSampleCount]();
 		m_sDataBuf = new short[m_nDataBufSize]();
-
+		m_nFlagBuf = new int[m_nFramesInBuffer]();
 	}
 
 	CKichCutter::~CKichCutter()
@@ -29,12 +30,16 @@ namespace MediaSDK
 		if (m_sSilentFillBuf) delete[] m_sSilentFillBuf;
 		if (m_sTempBuf) delete[] m_sTempBuf;
 		if (m_sDataBuf) delete[] m_sDataBuf;
+		if (m_nFlagBuf) delete[] m_nFlagBuf;
 	}
 
-	void CKichCutter::Despike(short *sBuffer)
+	int CKichCutter::Despike(short *sBuffer, int nFlags)
 	{
-		memcpy(m_sDataBuf, m_sDataBuf + m_nDataBufIOSize, m_nDataBufCopySize * sizeof(short));
+		memcpy(m_sDataBuf, m_sDataBuf + m_nDataBufIOSize, m_nDataBufCopySize * sizeof(short));//enqueue sBuffer
 		memcpy(m_sDataBuf + m_nDataBufCopySize, sBuffer, m_nDataBufIOSize * sizeof(short));
+
+		memcpy(m_nFlagBuf, m_nFlagBuf + 1, (m_nFramesInBuffer - 1) * sizeof(int));//enqueue nFlags
+		m_nFlagBuf[m_nFramesInBuffer - 1] = nFlags;
 
 		for (int i = 0; i < m_nDataBufSize - m_sTotalSpikeSampleCount; i++)
 		{
@@ -79,5 +84,6 @@ namespace MediaSDK
 		}
 
 		memcpy(sBuffer, m_sDataBuf, m_nDataBufIOSize * sizeof(short));
+		return m_nFlagBuf[0];
 	}
 }
