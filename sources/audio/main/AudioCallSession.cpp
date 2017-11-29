@@ -925,11 +925,11 @@ namespace MediaSDK
 					
 					if (IsKichCutterEnabled())
 					{
-						short sNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-						memcpy(sNoisyData, psaEncodingAudioData, unLength * sizeof(short));
+						
+						memcpy(m_saNoisyData, psaEncodingAudioData, unLength * sizeof(short));
 						m_pNoiseReducer->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, getIsAudioLiveStreamRunning());
 						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
-						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, sNoisyData);
+						nEchoStateFlags = m_pEcho->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
 						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);

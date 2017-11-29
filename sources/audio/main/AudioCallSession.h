@@ -162,6 +162,7 @@ namespace MediaSDK
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
 		short m_saFarendData[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
+		short m_saNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		
 		int m_iNextPacketType;
 		int m_iPrevRecvdSlotID;
