@@ -186,7 +186,7 @@ namespace MediaSDK
 			nPacketType = uchAudioData[nFrameLeftRange + iMediaByteHeaderSize];
 			MediaLog(LOG_DEBUG, "[FE][LAPC][PLA]  FrameCounter:%d PacketType = %d  Range[L:%d, R:%d]", iFrameNumber-1, nPacketType, nFrameLeftRange, nFrameRightRange);
 
-			if (nPacketType == 0)
+			if (nPacketType == SESSION_STATISTICS_PACKET_TYPE)
 			{
 				int n_HeaderSize = m_pAudioPacketHeader->GetHeaderSize();
 				MediaLog(LOG_DEBUG, "[FE][LAPE] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, iMediaByteHeaderSize, n_HeaderSize);
