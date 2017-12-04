@@ -25,6 +25,7 @@
 #include "AudioMacros.h"
 #include "AudioHeaderCall.h"
 #include "AudioHeaderLive.h"
+#include "AudioNearEndDataProcessor.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -73,7 +74,7 @@ namespace MediaSDK
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
-				m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector, m_pAudioCallSession);
+				m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetDeviceInformationListener());
 			}
 			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 			{
@@ -677,17 +678,17 @@ namespace MediaSDK
 #ifdef USE_AECM
 		if (m_pAudioCallSession->m_bRecordingStarted)
 		{
-			if (m_pAudioCallSession->IsTraceSendingEnabled() && m_pAudioCallSession->m_bTraceTailRemains)
+			if (m_pAudioCallSession->m_pNearEndProcessor->IsTraceSendingEnabled() && m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains)
 			{				
-				m_pAudioCallSession->m_bTraceTailRemains = m_pAudioCallSession -> m_pTrace -> GenerateTrace(m_saPlayingData, 800);
+				m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains = m_pAudioCallSession->m_pNearEndProcessor->m_pTrace->GenerateTrace(m_saPlayingData, 800);
 				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] Buffer Size = %d, TraceTailRemains = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_bTraceTailRemains);
 			}
 			
-			if (!m_pAudioCallSession->m_bTraceSent)
+			if (!m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent)
 			{				
 				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
-				m_pAudioCallSession->m_llTraceSendingTime = Tools::CurrentTimestamp();
-				m_pAudioCallSession->m_bTraceSent = true;
+				m_pAudioCallSession->m_pNearEndProcessor->m_llTraceSendingTime = Tools::CurrentTimestamp();
+				m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent = true;
 				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] TraceSent!!!!# Buffer Size=%d, TraceSendingTime=%d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_llTraceSendingTime);
 			}
 

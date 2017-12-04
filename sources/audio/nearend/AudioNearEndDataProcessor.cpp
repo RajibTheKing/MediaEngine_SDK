@@ -21,10 +21,21 @@
 #include "AudioHeaderCall.h"
 #include "AudioLinearBuffer.h"
 
+#include "EchoCancellerProvider.h"
+#include "EchoCancellerInterface.h"
+#include "KichCutter.h"
+#include "Trace.h"
+#include "NoiseReducerProvider.h"
+#include "AudioGainInstanceProvider.h"
+#include "AudioFarEndDataProcessor.h"
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
 #endif
+
+#define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
+#define TRACE_DETECTION_DURATION_IN_SAMPLES 60
 
 namespace MediaSDK
 {
@@ -71,6 +82,29 @@ namespace MediaSDK
 		m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");
 #endif	
 
+		m_pRecordedNE = new CAudioDumper("Recorded.pcm", true);
+		m_pGainedNE = new CAudioDumper("Gained.pcm", true);
+		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", true);
+		m_pNoiseReducedNE = new CAudioDumper("NR.pcm", true);
+		m_pCancelledNE = new CAudioDumper("AEC.pcm", true);
+		m_pKichCutNE = new CAudioDumper("KC.pcm", true);
+		m_pProcessedNE = new CAudioDumper("processed.pcm", true);
+
+		m_pTrace = new CTrace();
+		m_pKichCutter = nullptr;
+
+		/* Device information. */
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCountCall] = 0;
+		m_DeviceInforamtion.Reset();
+		m_llLocalInfoTimeDiff = 0;
+		m_llLocalInfoTotalDataSz = 0;
+
+		if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER)
+			m_id = 0;
+		else m_id = 1;
+		m_llLocalInfoCallCount = 0;
+
+		m_pAudioDeviceInfoMutex.reset(new CLockHandler);
 	}
 
 	AudioNearEndDataProcessor::~AudioNearEndDataProcessor()
@@ -84,6 +118,454 @@ namespace MediaSDK
 		{
 			delete m_recordBuffer;
 		}
+
+		if (m_pRecordedNE != nullptr)
+		{
+			delete m_pRecordedNE;
+			m_pRecordedNE = nullptr;
+		}
+
+		if (m_pGainedNE != nullptr)
+		{
+			delete m_pGainedNE;
+			m_pGainedNE = nullptr;
+		}
+
+		if (m_pProcessed2NE != nullptr)
+		{
+			delete m_pProcessed2NE;
+			m_pProcessed2NE = nullptr;
+		}
+
+		if (m_pNoiseReducedNE != nullptr)
+		{
+			delete m_pNoiseReducedNE;
+			m_pNoiseReducedNE = nullptr;
+		}
+
+		if (m_pCancelledNE != nullptr)
+		{
+			delete m_pCancelledNE;
+			m_pCancelledNE = nullptr;
+		}
+
+		if (m_pKichCutNE != nullptr)
+		{
+			delete m_pKichCutNE;
+			m_pKichCutNE = nullptr;
+		}
+
+		if (m_pProcessedNE != nullptr)
+		{
+			delete m_pProcessedNE;
+			m_pProcessedNE = nullptr;
+		}
+
+		if (m_pTrace)
+		{
+			delete m_pTrace;
+			m_pTrace = NULL;
+		}
+
+		if (nullptr != m_pKichCutter)
+		{
+			delete m_pKichCutter;
+			m_pKichCutter = nullptr;
+		}
+	}
+
+	void AudioNearEndDataProcessor::SetNeedToResetAudioEffects(bool flag)
+	{
+		m_bNeedToResetAudioEffects = flag;
+	}
+	
+	void AudioNearEndDataProcessor::SetEnableRecorderTimeSyncDuringEchoCancellation(bool flag)
+	{
+		m_bEnableRecorderTimeSyncDuringEchoCancellation = flag;
+	}
+
+	void AudioNearEndDataProcessor::ResetTrace()
+	{
+		MediaLog(LOG_CODE_TRACE, "Reset Trace Starting")
+			//Trace and Delay Related		
+			m_llTraceSendingTime = 0;
+		m_llTraceReceivingTime = 0;
+		m_b1stRecordedDataSinceCallStarted = true;
+		m_llDelayFraction = 0;
+		m_llDelay = 0;
+		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
+		m_nFramesRecvdSinceTraceSent = 0;
+		m_bTraceTailRemains = true;
+		m_pTrace->Reset();
+		m_iDeleteCount = (m_pTrace->m_iTracePatternLength / MAX_AUDIO_FRAME_SAMPLE_SIZE) + 1;
+		m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
+		m_pAudioCallSession->m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
+		m_pAudioCallSession->m_pFarEndProcessor->m_llNextPlayingTime = -1;
+		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
+
+
+		m_pAudioCallSession->SetRecordingStarted(true);
+
+		MediaLog(LOG_CODE_TRACE, "Reset Trace Ending")
+	}
+
+	void AudioNearEndDataProcessor::HandleTrace(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+		{
+			MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled");
+			m_nFramesRecvdSinceTraceSent++;
+			if (m_nFramesRecvdSinceTraceSent == MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+			{
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_nFramesRecvdSinceTraceSent");
+				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
+				m_llDelay = 0;
+				m_bTraceWillNotBeReceived = true; // 8-(
+
+			}
+			else
+			{
+				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES);
+				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
+				if (m_llDelayFraction != -1)
+				{
+					m_llTraceReceivingTime = Tools::CurrentTimestamp();
+					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+					//m_llDelayFraction = m_llDelay % 100;
+					m_iDelayFractionOrig = m_llDelayFraction;
+					m_llDelayFraction /= 8;
+
+
+
+					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+					m_bTraceRecieved = true;
+					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra = %lld[Sample:%d]", m_llDelay, m_llDelayFraction, m_iDelayFractionOrig);
+				}
+			}
+		}
+	}
+
+	void AudioNearEndDataProcessor::DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
+		{
+			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+		}
+	}
+
+	void AudioNearEndDataProcessor::DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		if (m_iDeleteCount > 0)
+		{
+			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved");
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+			memset(m_saFarendData, 0, sizeof(short) * unLength);
+			m_iDeleteCount--;
+		}
+	}
+
+	bool AudioNearEndDataProcessor::IsTraceSendingEnabled()
+	{
+#ifdef USE_AECM
+#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+		if (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+#elif defined (DESKTOP_C_SHARP)
+		return false;
+#endif
+#else
+		return false;
+#endif
+	}
+
+	bool AudioNearEndDataProcessor::IsKichCutterEnabled()
+	{
+		if (IsEchoCancellerEnabled() &&
+			(!m_pAudioCallSession->getIsAudioLiveStreamRunning() ||
+			(m_pAudioCallSession->getIsAudioLiveStreamRunning() && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE))))
+		{
+			if (IsTraceSendingEnabled() && m_bTraceRecieved)
+			{
+				return true;
+			}
+			else if (!IsTraceSendingEnabled())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool AudioNearEndDataProcessor::IsEchoCancellerEnabled()
+	{
+#ifdef USE_AECM
+#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (DESKTOP_C_SHARP)
+		if (!m_pAudioCallSession->getIsAudioLiveStreamRunning() || (m_pAudioCallSession->getIsAudioLiveStreamRunning() && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+#endif
+#else
+		return false;
+#endif
+	}
+
+	void AudioNearEndDataProcessor::ResetKichCutter()
+	{
+		if (m_pKichCutter != nullptr)
+		{
+			delete m_pKichCutter;
+		}
+
+		m_pKichCutter = new CKichCutter();
+	}
+
+	void AudioNearEndDataProcessor::ResetAEC()
+	{
+		if (m_pAudioCallSession->GetEchoCanceler().get())
+		{
+			m_pAudioCallSession->GetEchoCanceler().reset();
+		}
+
+		m_pAudioCallSession->GetEchoCanceler() = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, m_pAudioCallSession->getIsAudioLiveStreamRunning());
+	}
+
+	void AudioNearEndDataProcessor::ResetNS()
+	{
+		if (m_pAudioCallSession->GetNoiseReducer().get())
+		{
+			m_pAudioCallSession->GetNoiseReducer().reset();
+		}
+
+		m_pAudioCallSession->GetNoiseReducer() = NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer);
+	}
+
+	void AudioNearEndDataProcessor::ResetRecorderGain()
+	{
+		if (m_pAudioCallSession->GetRecorderGain().get())
+		{
+			m_pAudioCallSession->GetRecorderGain().reset();
+		}
+
+		m_pAudioCallSession->GetRecorderGain() = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+		m_pAudioCallSession->GetRecorderGain()->Init(m_nServiceType);
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+		{
+			//Gain level is incremented to recover losses due to noise.
+			//And noise is only applied to publisher NOT in call.
+			m_pAudioCallSession->GetRecorderGain()->SetGain(DEFAULT_GAIN + 1);
+		}
+	}
+
+	void AudioNearEndDataProcessor::ResetAudioEffects()
+	{
+		ResetAEC();
+		ResetNS();
+		ResetKichCutter();
+		ResetRecorderGain();
+		ResetTrace(); //Trace related variables should be reset last to avoid certain race conditions
+	}
+
+	void AudioNearEndDataProcessor::SyncRecordingTime()
+	{
+		if (m_b1stRecordedDataSinceCallStarted)
+		{
+			Tools::SOSleep(RECORDER_STARTING_SLEEP_IN_MS);
+			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
+			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
+			m_b1stRecordedDataSinceCallStarted = false;
+			MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , 1st time,  ts = %lld", m_ll1stRecordedDataTime);
+		}
+		else
+		{
+			long long llNOw = Tools::CurrentTimestamp();
+			if (llNOw + 20 < m_llnextRecordedDataTime)
+			{
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = %lld", llNOw, m_llnextRecordedDataTime - llNOw - 20);
+				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
+			}
+			else
+			{
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = 0", llNOw);
+			}
+			m_llnextRecordedDataTime += 100;
+		}
+	}
+
+	int AudioNearEndDataProcessor::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
+	{
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCountCall] = m_llLocalInfoCallCount;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelay[m_id]] = m_llDelay;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationDelayFraction[m_id]] = m_llDelayFraction;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationAverageRecorderTimeDiff[m_id]] = m_llLocalInfoTimeDiff;
+		m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationTotalDataSz[m_id]] = m_llLocalInfoTotalDataSz;
+
+		m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+
+		long long llCurrentTime = Tools::CurrentTimestamp();
+
+		int nEchoStateFlags = 0;
+		bool bIsNsWorking = false;
+
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+		{
+			if (m_pAudioCallSession->GetNoiseReducer().get())
+			{
+				bIsNsWorking = true;
+				m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, 0);
+			}
+		}
+
+#ifdef USE_AECM
+
+		bool bIsGainWorking = (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER && m_pAudioCallSession->GetRecorderGain().get());
+
+		MediaLog(LOG_DEBUG, "[NE][ACS][GAIN][NS] PreprocessAudioData# CurrentTime=%lld, IsGainWorking=%d, IsNS=%d", llCurrentTime, bIsGainWorking, bIsNsWorking);
+
+		if (IsEchoCancellerEnabled())
+		{
+			MediaLog(LOG_CODE_TRACE, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
+
+			if (m_bNeedToResetAudioEffects)
+			{
+				MediaLog(LOG_DEBUG, "[NE][ACS][TS] Resetting AudioEffects.");
+				ResetAudioEffects();
+				m_bNeedToResetAudioEffects = false;
+			}
+			//Sleep to maintain 100 ms recording time diff
+			long long llb4Time = Tools::CurrentTimestamp();
+			if (m_bEnableRecorderTimeSyncDuringEchoCancellation)
+			{
+				SyncRecordingTime();
+			}
+
+			//Handle Trace
+			HandleTrace(psaEncodingAudioData, unLength);
+			//Some frames are deleted after detectiing trace, whether or not detection succeeds
+			DeleteDataB4TraceIsReceived(psaEncodingAudioData, unLength);
+
+
+#ifdef DUMP_FILE
+			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
+#endif //DUMP_FILE
+
+			if (m_pAudioCallSession->GetEchoCanceler().get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
+			{
+				long long llTS;
+				if (m_iStartingBufferSize == -1)
+				{
+					m_iStartingBufferSize = m_pAudioCallSession->m_FarendBuffer->GetQueueSize();
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] First Time Updated m_iStartingBufferSize = %d", m_iStartingBufferSize);
+					m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationStartUpFarendBufferSize[m_id]] = m_iStartingBufferSize;
+				}
+
+				int iFarendDataLength = m_pAudioCallSession->m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+				int nFarEndBufferSize = m_pAudioCallSession->m_FarendBuffer->GetQueueSize();
+
+				MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] DataLength=%dS, FarBufSize=%d[%d], IsGainWorking=%d", iFarendDataLength, nFarEndBufferSize, m_iStartingBufferSize, bIsGainWorking);
+
+
+				if (iFarendDataLength > 0)
+				{
+					//If trace is received, current and next frames are deleted
+					DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
+					if (bIsGainWorking)
+					{
+						m_pAudioCallSession->GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
+						m_pAudioCallSession->GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
+						m_pGainedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+					}
+
+					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
+					m_llLastEchoLogTime = llCurrentTimeStamp;
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] FarendBufferSize = %d, m_iStartingBufferSize = %d,"
+						"m_llDelay = %lld, m_bTraceRecieved = %d llEchoLogTimeDiff = %lld, Time Taken = %lld, iFarendDataLength = %d FarBuffSize = %d",
+						m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
+						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
+
+					m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMax[m_id]] = max(m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMax[m_id]], (long long)m_pAudioCallSession->m_FarendBuffer->GetQueueSize());
+					m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMin[m_id]] = min(m_DeviceInforamtion.mDeviceInfo[iaDeviceInformationCurrentFarendBufferSizeMin[m_id]], (long long)m_pAudioCallSession->m_FarendBuffer->GetQueueSize());
+
+					m_pAudioCallSession->GetEchoCanceler()->AddFarEndData(m_saFarendData, unLength);
+
+					if (IsKichCutterEnabled())
+					{
+						memcpy(m_saNoisyData, psaEncodingAudioData, unLength * sizeof(short));
+						m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, m_pAudioCallSession->getIsAudioLiveStreamRunning());
+						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
+						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
+						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
+					}
+					else
+					{
+						nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
+					}
+					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
+
+					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+
+				}
+				else
+				{
+					MediaLog(LOG_WARNING, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
+				}
+
+
+
+#ifdef DUMP_FILE
+				fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_pAudioCallSession->getIsAudioLiveStreamRunning()), FileInputPreGain);
+#endif
+
+			}
+
+			m_pProcessed2NE->WriteDump(psaEncodingAudioData, 2, unLength);
+		}
+		else
+		{
+			if (bIsGainWorking)
+			{
+				MediaLog(LOG_CODE_TRACE, "[NE][ACS][GAIN] Recorder Gain Added.");
+				m_pAudioCallSession->GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
+			}
+		}
+
+#elif defined(DESKTOP_C_SHARP)
+		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
+		{
+			GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
+		}
+		else LOGT("##TT encodeaudiodata no gain\n");
+#endif
+		return nEchoStateFlags;
+	}
+
+	void AudioNearEndDataProcessor::ResetDeviceInformation(int end)
+	{
+		m_DeviceInforamtion.ResetAfter(end);
+		m_llLocalInfoTimeDiff = 0;
+		m_llLocalInfoTotalDataSz = 0;
 	}
 
 	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte)
@@ -137,7 +619,6 @@ namespace MediaSDK
 		}
 	}
 
-
 	void AudioNearEndDataProcessor::BuildAndGetHeaderInArray(int packetType, int nHeaderLength, int networkType, int packetNumber, int packetLength,
 		int channel, int version, long long timestamp, int echoStateFlags, unsigned char* header)
 	{
@@ -164,8 +645,6 @@ namespace MediaSDK
 
 		m_pAudioNearEndPacketHeader->GetHeaderInByteArray(header);
 	}
-
-
 
 	void AudioNearEndDataProcessor::BuildHeaderForLive(int nPacketType, int nHeaderLength, int nVersion, int nPacketNumber, int nPacketLength,
 		long long llRelativeTime, int nEchoStateFlags, unsigned char* ucpHeader)
@@ -224,6 +703,34 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::PushDataInRecordBuffer(short *data, int dataLen)
 	{
 		m_recordBuffer->PushData(data, dataLen);
+
+		long long llCurrentTime = Tools::CurrentTimestamp();
+
+		if (m_DeviceInforamtion.llLastTime == -1)
+		{
+			m_DeviceInforamtion.llLastTime = llCurrentTime;
+		}
+
+		long long llTimeDiff = llCurrentTime - m_DeviceInforamtion.llLastTime;
+
+		m_llLocalInfoTimeDiff += llTimeDiff;
+		m_llLocalInfoTotalDataSz += dataLen;
+
+		m_DeviceInforamtion.llLastTime = llCurrentTime;
+	}
+
+	int AudioNearEndDataProcessor::GetDeviceInformation(unsigned char *ucaInfo)
+	{
+		BaseMediaLocker lock(*m_pAudioDeviceInfoMutex);
+		memcpy(ucaInfo, m_ucaLocalInfoCallee, m_llLocalInfoLen);
+		return m_llLocalInfoLen;
+	}
+
+	void AudioNearEndDataProcessor::SetDeviceInformationOfAnotherRole(unsigned char *ucaInfo, int len)
+	{
+		BaseMediaLocker lock(*m_pAudioDeviceInfoMutex);
+		memcpy(m_ucaLocalInfoCallee, ucaInfo, len);
+		m_llLocalInfoLen = len;
 	}
 
 	void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
@@ -298,7 +805,6 @@ namespace MediaSDK
 #endif
 	}
 
-
 	void AudioNearEndDataProcessor::StartCallInLive(int nEntityType)
 	{
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
@@ -311,8 +817,9 @@ namespace MediaSDK
 			m_vRawFrameLengthFar.clear();
 		}
 		m_nEntityType = nEntityType;
-	}
 
+		if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER) m_llLocalInfoCallCount++;
+	}
 
 	void AudioNearEndDataProcessor::StopCallInLive(int nEntityType)
 	{

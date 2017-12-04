@@ -56,7 +56,7 @@ namespace MediaSDK
 			LOGT("##TT#18#NE#Publisher...");
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 			llCapturedTime = Tools::CurrentTimestamp();
-			int nEchoStateFlags = m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			int nEchoStateFlags = PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			DumpEncodingFrame();
 
 			int nSendingDataSizeInByte = PCM_FRAME_SIZE_IN_BYTE;	//Or contain 18 bit data with mixed header.
@@ -74,8 +74,8 @@ namespace MediaSDK
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
 				// Get the information of at present Device
-				nowDeviceInformation = m_pAudioCallSession->GetDeviceInformation();
-				m_pAudioCallSession->ResetDeviceInformation(1);
+				nowDeviceInformation = m_DeviceInforamtion.mDeviceInfo;
+				ResetDeviceInformation(1);
 
 				// Call is running on live or not
 				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
@@ -106,7 +106,7 @@ namespace MediaSDK
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
 				// Set Callee Data in the chunk
-				int calleeLen = m_pAudioCallSession->GetDeviceInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
+				int calleeLen = GetDeviceInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
 				nNowSendingDataSizeInByte += calleeLen;
 
 				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
@@ -173,7 +173,6 @@ namespace MediaSDK
 		}
 	}
 
-
 	bool AudioNearEndProcessorPublisher::MuxIfNeeded(short* shPublisherData, short *shMuxedData, int &nDataSizeInByte, int nPacketNumber)
 	{
 		long long nFrameNumber;
@@ -238,6 +237,5 @@ namespace MediaSDK
 #endif
 		return bIsMuxed;
 	}
-
 
 } //namespace MediaSDK

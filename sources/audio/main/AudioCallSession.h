@@ -42,8 +42,6 @@ namespace MediaSDK
 	class AudioResources;
 	class AudioShortBufferForPublisherFarEnd;
 	class CAudioShortBuffer;
-	class CTrace;
-	class CKichCutter;
 	class CAudioByteBuffer;
 
 
@@ -52,8 +50,7 @@ namespace MediaSDK
 		public PacketEventListener,
 		public DataEventListener,
 		public NetworkChangeListener,
-		public AudioAlarmListener,
-		public DeviceInformationInterface
+		public AudioAlarmListener
 	{
 
 	public:
@@ -80,10 +77,6 @@ namespace MediaSDK
 		void SetSpeakerType(int iSpeakerType);
 		void SetEchoCanceller(bool bOn);
 
-		void ResetDeviceInformation(int end = 2);
-		int GetDeviceInformation(unsigned char *ucaInfo);
-		std::unordered_map<int, long long> GetDeviceInformation();
-		void SetDeviceInformationOfAnotherRole(unsigned char *ucaInfo, int len);
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
 		Server considers strength as STRONG(3) when packet loss is 0%-3%, MEDIUM(2) when loss is 4%-12% and WEAK(1) when loss is 13%-25%
@@ -94,27 +87,16 @@ namespace MediaSDK
 		*/
 		bool SetAudioQuality(int level);
 
-		void ResetTrace();
-		void ResetAEC();
-		void ResetNS();
-		void ResetRecorderGain();
-		void ResetKichCutter();
-		void ResetAudioEffects();
-		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
-		void DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
-		void DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
-		bool IsEchoCancellerEnabled();
-		bool IsTraceSendingEnabled();
-		bool IsKichCutterEnabled();
-		
 		void SetSendFunction(SendFunctionPointerType cbClientSendFunc) { m_cbClientSendFunction = cbClientSendFunc; }
 		void SetEventNotifier(CEventNotifier *pEventNotifier)          { m_pEventNotifier = pEventNotifier; }
 
 		int GetRole()        { return m_iRole; }
 		int GetServiceType() { return m_nServiceType; }
 		int GetEntityType()  { return m_nEntityType; }
+		int GetSpeakerType() { return m_iSpeakerType;  }
 		bool getIsAudioLiveStreamRunning() { return m_bLiveAudioStreamRunning; }
 		bool GetIsVideoCallRunning() { return m_bIsVideoCallRunning; }
+		void SetRecordingStarted(bool flag) { m_bRecordingStarted = flag; }
 
 		bool IsOpusEnable()	{ return m_bIsOpusCodec; }
 		
@@ -127,6 +109,7 @@ namespace MediaSDK
 		SharedPointer<NoiseReducerInterface> GetNoiseReducer()         { return m_pNoiseReducer; }
 		SharedPointer<AudioGainInterface> GetRecorderGain()            { return m_pRecorderGain; }
 		SharedPointer<AudioGainInterface> GetPlayerGain()              { return m_pPlayerGain; }
+		DeviceInformationInterface *GetDeviceInformationListener()	   { return m_pNearEndProcessor; }
 
 
 	private:
@@ -140,7 +123,6 @@ namespace MediaSDK
 		void SetResources(AudioResources &audioResources);
 		void InitNearEndDataProcessing();
 		void InitFarEndDataProcessing();
-		void SyncRecordingTime();
 
 
 	public:
@@ -148,20 +130,6 @@ namespace MediaSDK
 		bool m_bIsPublisher;
 		bool m_bRecordingStarted;
 		bool m_bEnablePlayerTimeSyncDuringEchoCancellation;
-		bool m_bEnableRecorderTimeSyncDuringEchoCancellation;
-
-		long long m_llTraceSendingTime;
-		long long m_llTraceReceivingTime;
-		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
-		bool m_bTraceTailRemains;
-		long long m_llDelay, m_llDelayFraction, m_llLastEchoLogTime = 0;
-		int  m_iDeleteCount;
-		int m_nFramesRecvdSinceTraceSent;
-		bool m_b1stRecordedDataSinceCallStarted;
-		long long m_ll1stRecordedDataTime;
-		long long m_llnextRecordedDataTime;
-		short m_saFarendData[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
-		short m_saNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		
 		int m_iNextPacketType;
 		int m_iPrevRecvdSlotID;
@@ -175,12 +143,10 @@ namespace MediaSDK
 		SharedPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
 		SharedPointer<CAudioByteBuffer> m_FarEndBufferOpus;
 
-		CAudioDumper *m_pRecordedNE = nullptr, *m_pProcessedNE = nullptr, *m_pProcessed2NE = nullptr,
-			*m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr,
-			*m_pPlayedCalleeFE = nullptr, *m_pGainedNE = nullptr,
-			*m_pNoiseReducedNE = nullptr, *m_pCancelledNE = nullptr, *m_pKichCutNE = nullptr;
-		CTrace *m_pTrace;
-		CKichCutter *m_pKichCutter;
+		CAudioDumper *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr,
+			*m_pPlayedCalleeFE = nullptr;
+		
+		
 
 	#ifdef DUMP_FILE
 		FILE *FileInput;
@@ -198,7 +164,6 @@ namespace MediaSDK
 		SendFunctionPointerType m_cbClientSendFunction;
 		
 		bool m_bIsOpusCodec;
-		bool m_bNeedToResetAudioEffects;
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;
@@ -212,17 +177,12 @@ namespace MediaSDK
 		int m_iAudioVersionFriend;
 		int m_iAudioVersionSelf;
 		int m_nCallInLiveType;
-		int m_iStartingBufferSize;
-		int m_iDelayFractionOrig;
 
 		long long m_llLastPlayTime;
 		long long m_FriendID;
 
-		DeviceInformation m_DeviceInforamtion;
 		std::unordered_map < int, long long >  m_LocalDeviceInformation;
-		unsigned char m_ucaLocalInfoCallee[DEVICE_INFORMATION_MAX_SIZE];
-		long long m_llLocalInfoLen, m_llLocalInfoTimeDiff, m_llLocalInfoTotalDataSz, m_llLocalInfoCallCount;
-		int m_id;
+		
 
 		CEventNotifier* m_pEventNotifier;
 		AudioNearEndProcessorThread *m_cNearEndProcessorThread;
@@ -238,8 +198,6 @@ namespace MediaSDK
 		SharedPointer<NoiseReducerInterface> m_pNoiseReducer;
 		SharedPointer<AudioGainInterface> m_pRecorderGain;
 		SharedPointer<AudioGainInterface> m_pPlayerGain;
-
-		SharedPointer<CLockHandler> m_pAudioDeviceInfoMutex;
 		
 		
 	#ifdef USE_VAD

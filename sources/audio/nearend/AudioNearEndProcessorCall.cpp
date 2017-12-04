@@ -25,7 +25,6 @@ namespace MediaSDK
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorCall::AudioNearEndProcessorCall()");
 	}
 
-
 	void AudioNearEndProcessorCall::ProcessNearEndData()
 	{
 		//	MR_DEBUG("#nearEnd# AudioNearEndProcessorCall::ProcessNearEndData()");
@@ -40,7 +39,7 @@ namespace MediaSDK
 		{
 			//LOGT("##TT dequed #18#NE#AudioCall...");
 			llCapturedTime = Tools::CurrentTimestamp();
-			int nEchoStateFlags = m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			int nEchoStateFlags = PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
 
 			DumpEncodingFrame();
@@ -79,7 +78,6 @@ namespace MediaSDK
 			Tools::SOSleep(0);
 		}
 	}
-
 
 	void AudioNearEndProcessorCall::SentToNetwork(long long llRelativeTime)
 	{
@@ -128,7 +126,6 @@ namespace MediaSDK
 		}
 #endif
 	}
-
 
 	void AudioNearEndProcessorCall::DecideToChangeComplexity(int iEncodingTime)
 	{

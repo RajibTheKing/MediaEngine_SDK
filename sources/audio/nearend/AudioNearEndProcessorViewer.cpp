@@ -40,7 +40,7 @@ namespace MediaSDK
 		}
 		else
 		{
-			int nEchoStateFlags = m_pAudioCallSession->PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
+			int nEchoStateFlags = PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			llCapturedTime = Tools::CurrentTimestamp();
 
 			int nDataLenthInShort = AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING;
@@ -56,8 +56,8 @@ namespace MediaSDK
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
 
 				// Get the information of at present Device
-				nowDeviceInformation = m_pAudioCallSession->GetDeviceInformation();
-				m_pAudioCallSession->ResetDeviceInformation();
+				nowDeviceInformation = m_DeviceInforamtion.mDeviceInfo;
+				ResetDeviceInformation();
 
 				m_pAudioDeviceInformation->Reset();
 

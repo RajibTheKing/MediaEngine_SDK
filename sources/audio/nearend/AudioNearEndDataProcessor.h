@@ -5,6 +5,8 @@
 #include "CommonTypes.h"
 #include "AudioTypes.h"
 #include "SmartPointer.h"
+#include "AudioMacros.h"
+#include "AudioDumper.h"
 #include <vector>
 
 namespace MediaSDK
@@ -17,9 +19,12 @@ namespace MediaSDK
 	class CAudioShortBuffer;
 	class AudioPacketHeader;
 	class AudioLinearBuffer;
+	class CTrace;
+	class CKichCutter;
+	class DeviceInformationInterface;
 
 
-	class AudioNearEndDataProcessor
+	class AudioNearEndDataProcessor : public DeviceInformationInterface
 	{
 
 	public:
@@ -39,8 +44,30 @@ namespace MediaSDK
 		unsigned int GetNumberOfFrameForChunk();
 		void ClearRecordBuffer();
 		void PushDataInRecordBuffer(short *data, int dataLen);
-		
+		void SetNeedToResetAudioEffects(bool flag);
+		void SetEnableRecorderTimeSyncDuringEchoCancellation(bool flag);
+		void ResetTrace();
+		void DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
+		void DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength);
+		void HandleTrace(short *psaEncodingAudioData, unsigned int unLength);
+		bool IsKichCutterEnabled();
+		bool IsEchoCancellerEnabled();
+		bool IsTraceSendingEnabled();
+		void ResetKichCutter(); 
+		void ResetAEC();
+		void ResetNS();
+		void ResetRecorderGain();
+		void ResetAudioEffects();
+		void SyncRecordingTime();
+
 	protected:
+
+		int PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
+		int GetDeviceInformation(unsigned char *ucaInfo);
+		void ResetDeviceInformation(int end = 2);
+
+		// Interface for getting device information
+		void SetDeviceInformationOfAnotherRole(unsigned char *ucaInfo, int len);
 
 		void DumpEncodingFrame();
 		void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
@@ -54,11 +81,25 @@ namespace MediaSDK
 	public:
 		
 		CAudioCallSession *m_pAudioCallSession = nullptr;
-
+		short m_saNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
+		int  m_iDeleteCount;
+		CTrace *m_pTrace;
+		long long m_llTraceSendingTime;
+		long long m_llTraceReceivingTime;
+		int m_nFramesRecvdSinceTraceSent;
+		bool m_bTraceTailRemains;
+		short m_saFarendData[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
+		CKichCutter *m_pKichCutter;
+		bool m_b1stRecordedDataSinceCallStarted;
+		long long m_ll1stRecordedDataTime;
+		long long m_llnextRecordedDataTime;
 
 	protected:
 
 		AudioLinearBuffer* m_recordBuffer = nullptr;
+		DeviceInformation m_DeviceInforamtion;
+
 		DataReadyListenerInterface* m_pDataReadyListener;
 
 		bool m_bIsLiveStreamingRunning;
@@ -106,6 +147,19 @@ namespace MediaSDK
 		SharedPointer<AudioPacketHeader> m_pAudioNearEndPacketHeader = nullptr;
 		SharedPointer<CLockHandler> m_pAudioEncodingMutex;
 
+
+		bool m_bNeedToResetAudioEffects;
+		bool m_bEnableRecorderTimeSyncDuringEchoCancellation;
+		int m_iStartingBufferSize;
+		int m_iDelayFractionOrig;
+
+		long long m_llLocalInfoLen, m_llLocalInfoTimeDiff, m_llLocalInfoTotalDataSz, m_llLocalInfoCallCount;
+		int m_id;
+		unsigned char m_ucaLocalInfoCallee[DEVICE_INFORMATION_MAX_SIZE];
+		long long m_llDelay, m_llDelayFraction, m_llLastEchoLogTime = 0;
+		CAudioDumper *m_pRecordedNE = nullptr, *m_pGainedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pNoiseReducedNE = nullptr, 
+			*m_pCancelledNE = nullptr, *m_pKichCutNE = nullptr, *m_pProcessedNE = nullptr;
+		SharedPointer<CLockHandler> m_pAudioDeviceInfoMutex;
 	};
 
 } //namespace MediaSDK
