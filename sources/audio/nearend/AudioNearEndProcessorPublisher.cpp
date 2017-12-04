@@ -45,7 +45,7 @@ namespace MediaSDK
 		long long llCapturedTime = 0, llRelativeTime = 0, llLasstTime = -1;
 		
 
-		if (m_pAudioCallSession->m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
+		if (m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
 		//if (m_pAudioNearEndBuffer->GetQueueSize() == 0)
 		{
 			Tools::SOSleep(10);

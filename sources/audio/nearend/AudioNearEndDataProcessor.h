@@ -16,6 +16,7 @@ namespace MediaSDK
 	class CAudioCallSession;
 	class CAudioShortBuffer;
 	class AudioPacketHeader;
+	class AudioLinearBuffer;
 
 
 	class AudioNearEndDataProcessor
@@ -36,7 +37,8 @@ namespace MediaSDK
 		void SetDataReadyCallback(DataReadyListenerInterface* pDataReady) { m_pDataReadyListener = pDataReady; }
 		void SetEventCallback(PacketEventListener* pEventListener) { m_pPacketEventListener = pEventListener; }
 		unsigned int GetNumberOfFrameForChunk();
-
+		void ClearRecordBuffer();
+		void PushDataInRecordBuffer(short *data, int dataLen);
 		
 	protected:
 
@@ -56,6 +58,7 @@ namespace MediaSDK
 
 	protected:
 
+		AudioLinearBuffer* m_recordBuffer = nullptr;
 		DataReadyListenerInterface* m_pDataReadyListener;
 
 		bool m_bIsLiveStreamingRunning;

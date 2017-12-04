@@ -37,7 +37,7 @@ namespace MediaSDK
 		m_bAudioNearEndThreadRunning = true;
 		m_bAudioNearEndThreadClosed = false;
 
-		m_pNearEndDataProcessor->m_pAudioCallSession->m_recordBuffer->Clear();
+		m_pNearEndDataProcessor->ClearRecordBuffer();
 
 		while (m_bAudioNearEndThreadRunning)
 		{

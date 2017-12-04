@@ -75,8 +75,6 @@ namespace MediaSDK
 		m_bRecordingStarted = false;
 		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. ServiceType=%d, EntityType=%d, Opus[%d]----------\n", nServiceType, nEntityType, (int)m_bIsOpusCodec);
 
-		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
-
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
 
 		if (IsOpusEnable())
@@ -324,11 +322,6 @@ namespace MediaSDK
 		{
 			delete m_pKichCutter;
 			m_pKichCutter = nullptr;
-		}
-
-		if (m_recordBuffer)
-		{
-			delete m_recordBuffer;
 		}
 
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
@@ -651,8 +644,7 @@ namespace MediaSDK
 #endif
 		}
 
-		m_recordBuffer->Clear();
-
+		m_pNearEndProcessor->ClearRecordBuffer();
 		m_ViewerInCallSentDataQueue->ResetBuffer();
 		m_pNearEndProcessor->StartCallInLive(m_nEntityType);
 		m_pFarEndProcessor->StartCallInLive(m_nEntityType);
@@ -720,7 +712,7 @@ namespace MediaSDK
 			m_nEntityType = ENTITY_TYPE_VIEWER;
 		}
 
-		m_recordBuffer->Clear();
+		m_pNearEndProcessor->ClearRecordBuffer();
 
 		m_iRole = m_nEntityType;
 
@@ -991,7 +983,7 @@ namespace MediaSDK
 		//LOGT("##TT encodeaudiodata");
 		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, Tools::CurrentTimestamp());
 
-		m_recordBuffer->PushData(psaEncodingAudioData, unLength);
+		m_pNearEndProcessor->PushDataInRecordBuffer(psaEncodingAudioData, unLength);
 
 		long long llCurrentTime = Tools::CurrentTimestamp();
 

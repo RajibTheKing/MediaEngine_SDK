@@ -34,7 +34,7 @@ namespace MediaSDK
 		int nPacketType = 0;
 		int nEncodedFrameSizeB;
 
-		if (m_pAudioCallSession->m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
+		if (m_recordBuffer->PopData(m_saAudioRecorderFrame) == 0)
 		{
 			Tools::SOSleep(10);
 		}

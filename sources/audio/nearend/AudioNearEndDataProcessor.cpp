@@ -19,6 +19,7 @@
 #include "NoiseReducerInterface.h"
 #include "AudioGainInterface.h"
 #include "AudioHeaderCall.h"
+#include "AudioLinearBuffer.h"
 
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -45,6 +46,8 @@ namespace MediaSDK
 		m_pDataReadyListener(nullptr),
 		m_pPacketEventListener(nullptr)
 	{
+		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
+
 		m_pAudioEncodingMutex.reset(new CLockHandler);
 		m_pAudioEncoder = pAudioCallSession->GetAudioEncoder();
 
@@ -77,6 +80,10 @@ namespace MediaSDK
 			//delete m_pAudioPacketHeader;
 		}
 
+		if (m_recordBuffer)
+		{
+			delete m_recordBuffer;
+		}
 	}
 
 	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte)
@@ -209,6 +216,16 @@ namespace MediaSDK
 		return m_vRawFrameLengthNear.size();
 	}
 
+	void AudioNearEndDataProcessor::ClearRecordBuffer()
+	{
+		m_recordBuffer->Clear();
+	}
+
+	void AudioNearEndDataProcessor::PushDataInRecordBuffer(short *data, int dataLen)
+	{
+		m_recordBuffer->PushData(data, dataLen);
+	}
+
 	void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
 		int &nDataLengthNear, int &nDataLengthFar, long long &llAudioChunkDuration, long long &llAudioChunkRelativeTime)
 	{
@@ -273,7 +290,6 @@ namespace MediaSDK
 		llLasstTime = llCapturedTime;
 		llRelativeTime = llCapturedTime - m_llEncodingTimeStampOffset;
 	}
-
 
 	void AudioNearEndDataProcessor::DumpEncodingFrame()
 	{
