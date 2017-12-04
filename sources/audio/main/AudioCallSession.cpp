@@ -464,6 +464,9 @@ namespace MediaSDK
 
 	bool CAudioCallSession::IsKichCutterEnabled()
 	{
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+		return false;
+#else
 		if (IsEchoCancellerEnabled() && 
 			(!m_bLiveAudioStreamRunning || 
 			(m_bLiveAudioStreamRunning && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE))))
@@ -485,6 +488,7 @@ namespace MediaSDK
 		{
 			return false;
 		}
+#endif
 	}
 
 	bool CAudioCallSession::IsTraceSendingEnabled()
@@ -903,12 +907,14 @@ namespace MediaSDK
 				{
 					//If trace is received, current and next frames are deleted
 					DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
+#if !defined(TARGET_OS_IPHONE) && !defined(TARGET_IPHONE_SIMULATOR)
 					if (bIsGainWorking)
 					{						
 						GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
 						GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
 						m_pGainedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
+#endif
 
 					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
