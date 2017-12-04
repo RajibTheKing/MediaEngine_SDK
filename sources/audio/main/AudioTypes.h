@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <climits>
 #include <unordered_map>
+#include <string>
 
 namespace MediaSDK
 {
