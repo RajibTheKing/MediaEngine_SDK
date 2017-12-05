@@ -49,7 +49,7 @@ m_lfriendID(lfriendID)
 	int nNewHeight;
 	int nNewWidth;
 
-	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
+	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, DEVICE_SCREEN_HEIGHT, DEVICE_SCREEN_WIDTH, nNewHeight, nNewWidth);
 
 	//m_VideoBeautificationer = new CVideoBeautificationer(nNewHeight, nNewWidth);
 
@@ -68,7 +68,7 @@ m_lfriendID(lfriendID)
 
 	//LOGE("fahad -->> CColorConverter::ConvertRGB32ToRGB24  inside constructor");
     
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
 
     m_pNeonAssemblyWrapper = new NeonAssemblyWrapper();
 
@@ -106,7 +106,7 @@ void CColorConverter::SetHeightWidth(int iVideoHeight, int iVideoWidth)
 	int nNewHeight;
 	int nNewWidth;
 
-	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, 1920, 1130, nNewHeight, nNewWidth);
+	CalculateAspectRatioWithScreenAndModifyHeightWidth(iVideoHeight, iVideoWidth, DEVICE_SCREEN_HEIGHT, DEVICE_SCREEN_WIDTH, nNewHeight, nNewWidth);
 
 	//m_VideoBeautificationer->SetHeightWidth(nNewHeight, nNewWidth);
     
@@ -125,8 +125,8 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 
-    m_iDeviceHeight = 1920; //iVideoHeight;
-    m_iDeviceWidth = 1130; //iVideoWidth;
+    m_iDeviceHeight = DEVICE_SCREEN_HEIGHT; //iVideoHeight;
+    m_iDeviceWidth = DEVICE_SCREEN_WIDTH; //iVideoWidth;
 
 	//m_VideoBeautificationer->SetDeviceHeightWidth(iVideoHeight, iVideoWidth);
 }
@@ -217,10 +217,18 @@ int CColorConverter::ConvertYUY2ToI420(unsigned char * input, unsigned char * ou
 	return pixels* 3 / 2;
 }
 
+    
 int CColorConverter::ConvertI420ToNV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
+    
 	ColorConverterLocker lock(*m_pColorConverterMutex);
-
+    
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    //Total TimeDiff = 114, frame = 1000
+    m_pNeonAssemblyWrapper->convert_i420_to_nv12_assembly(convertingData, iVideoHeight, iVideoWidth);
+    return iVideoHeight * iVideoWidth * 3 / 2;
+#else
+    //Total TimeDiff = 129, frame = 1000
 	int i, j, k;
 
 	int YPlaneLength = iVideoHeight*iVideoWidth;
@@ -235,8 +243,9 @@ int CColorConverter::ConvertI420ToNV12(unsigned char *convertingData, int iVideo
 		convertingData[i] = m_pUPlane[j];
 		convertingData[i + 1] = convertingData[k];
 	}
-
 	return UVPlaneEnd;
+#endif
+    
 }
 
 int CColorConverter::ConvertI420ToYV12(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
@@ -680,7 +689,9 @@ int CColorConverter::ConverterYUV420ToRGB24(unsigned char * pYUVs, unsigned char
 void CColorConverter::mirrorYUVI420(unsigned char *pFrame, unsigned char *pData, int iHeight, int iWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
-
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+    m_pNeonAssemblyWrapper->Mirror_YUV420_Assembly(pFrame, pData, iHeight, iWidth);
+#else
 	int yLen = m_Multiplication[iHeight][iWidth];;
 	int uvLen = yLen >> 2;
 	int vStartIndex = yLen + uvLen;
@@ -723,6 +734,8 @@ void CColorConverter::mirrorYUVI420(unsigned char *pFrame, unsigned char *pData,
 		}
 
 	}
+#endif
+    
 }
 
 
@@ -1767,57 +1780,118 @@ int CColorConverter::DownScaleYUV420_Dynamic_Version222(unsigned char* pData, in
 
 int CColorConverter::DownScaleYUVNV12_YUVNV21_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
 {
-	int idx = 0;
-	for (int i = 0; i < iHeight; i += 4)
-	{
-		for (int j = 0; j < iWidth; j += 4)
-		{
-            int tmp = 0;
-            for(int k = i; k < i + 4; k++)
+    if(iHeight % 4 == 0 && iWidth % 16 == 0)
+    {
+#if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
+        //LOGE_MAIN("TheKing--> Here Inside DownScaleOneFourthAssembly = ");
+        m_pNeonAssemblyWrapper->DownScaleOneFourthAssembly(pData, iHeight, iWidth, outputData);
+#else
+        
+        
+        int idx = 0;
+        for (int i = 0; i < iHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 4)
             {
-                int kw = k*iWidth;
-                for(int l = j; l < j + 4; l++)
+                int tmp = 0;
+                for(int k = i; k < i + 4; k++)
                 {
-                    tmp += pData[kw + l];
-                }
-            }
-            outputData[idx++] = tmp >> 4;
-		}
-	}
-
-	int halfHeight = iHeight >> 1;
-	int offset = iHeight*iWidth;
-
-	for (int i = 0; i < halfHeight; i += 4)
-	{
-		for (int j = 0; j < iWidth; j += 8)
-		{
-            int tmpU = 0;
-            int tmpV = 0;
-            for(int k = i; k < i + 4; k++)
-            {
-                int kw = offset + k*iWidth;
-                for(int l = j; l < j + 8; l++)
-                {
-                    if (l % 2 == 0)
+                    int kw = k*iWidth;
+                    for(int l = j; l < j + 4; l++)
                     {
-                        tmpU += pData[kw + l];
-                    }
-                    else
-                    {
-                        tmpV += pData[kw + l];
+                        tmp += pData[kw + l];
                     }
                 }
+                outputData[idx++] = tmp >> 4;
             }
-            outputData[idx++] = tmpU >> 4;
-            outputData[idx++] = tmpV >> 4;
-		}
-	}
+        }
+        
+        int halfHeight = iHeight >> 1;
+        int offset = iHeight*iWidth;
+        
+        for (int i = 0; i < halfHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 8)
+            {
+                int tmpU = 0;
+                int tmpV = 0;
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        if (l % 2 == 0)
+                        {
+                            tmpU += pData[kw + l];
+                        }
+                        else
+                        {
+                            tmpV += pData[kw + l];
+                        }
+                    }
+                }
+                outputData[idx++] = tmpU >> 4;
+                outputData[idx++] = tmpV >> 4;
+            }
+        }
+#endif
+    }
+    else
+    {
+        int idx = 0;
+        for (int i = 0; i < iHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 4)
+            {
+                int tmp = 0;
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = k*iWidth;
+                    for(int l = j; l < j + 4; l++)
+                    {
+                        tmp += pData[kw + l];
+                    }
+                }
+                outputData[idx++] = tmp >> 4;
+            }
+        }
+        
+        int halfHeight = iHeight >> 1;
+        int offset = iHeight*iWidth;
+        
+        for (int i = 0; i < halfHeight; i += 4)
+        {
+            for (int j = 0; j < iWidth; j += 8)
+            {
+                int tmpU = 0;
+                int tmpV = 0;
+                for(int k = i; k < i + 4; k++)
+                {
+                    int kw = offset + k*iWidth;
+                    for(int l = j; l < j + 8; l++)
+                    {
+                        if (l % 2 == 0)
+                        {
+                            tmpU += pData[kw + l];
+                        }
+                        else
+                        {
+                            tmpV += pData[kw + l];
+                        }
+                    }
+                }
+                outputData[idx++] = tmpU >> 4;
+                outputData[idx++] = tmpV >> 4;
+            }
+        }
+    }
 
-	int outHeight = iHeight >> 2;
-	int outWidth = iWidth >> 2;
-
-	return (outHeight * outWidth * 3) >> 1;
+    
+    int outHeight = iHeight >> 2;
+    int outWidth = iWidth >> 2;
+    
+    return (outHeight * outWidth * 3) >> 1;
+    
 }
 
 int CColorConverter::DownScaleYUV420_OneFourth(unsigned char* pData, int &iHeight, int &iWidth, unsigned char* outputData)
@@ -2224,7 +2298,7 @@ int CColorConverter::CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(unsigned char* pD
     int newHeight, newWidth, diff_width, diff_height;
     
     CalculateAspectRatioWithScreenAndModifyHeightWidth(inHeight, inWidth, screenHeight, screenWidth, newHeight, newWidth);
-    
+    //LOGE_MAIN("TheKing--> fahad -->> CropWithAspectRatio_YUVNV12_YUVNV21_RGB24 : inHeight = %d, newHeight = %d, inWidth = %d, newWidth = %d",inHeight, newHeight, inWidth, newWidth);
     if(inHeight == newHeight && inWidth == newWidth)
     {
         //Do Nothing
@@ -2287,9 +2361,9 @@ int CColorConverter::Crop_RGB24(unsigned char* pData, int inHeight, int inWidth,
 int CColorConverter::Crop_YUV420(unsigned char* pData, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* outputData, int &outHeight, int &outWidth)
 {
    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
 #if defined(HAVE_NEON) || defined(HAVE_NEON_AARCH64)
-    //printf("TheKing--> Here Inside Crop_yuv420_assembly\n");
+    //LOGE_MAIN("TheKing--> Here Inside Crop_yuv420_assembly = inHeight = %d, inWidth= %d, startXDiff = %d, endXDiff = %d", inHeight, inWidth, startXDiff, endXDiff);
     m_pNeonAssemblyWrapper->Crop_yuv420_assembly(pData, inHeight, inWidth, startXDiff, endXDiff, startYDiff, endYDiff, outputData, outHeight, outWidth);
     return outHeight * outWidth * 3 / 2;
 #else

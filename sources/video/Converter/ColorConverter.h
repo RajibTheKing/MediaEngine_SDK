@@ -6,7 +6,7 @@
 #include "CommonTypes.h"
 #include "Size.h"
 #include "VideoBeautificationer.h"
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
 #include "NeonAssemblyWrapper.h"
 #endif
 
@@ -162,7 +162,7 @@ namespace MediaSDK
 
 		//CVideoBeautificationer *m_VideoBeautificationer;
         
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
 
         NeonAssemblyWrapper *m_pNeonAssemblyWrapper;
 
