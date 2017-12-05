@@ -7,12 +7,8 @@
 
 namespace MediaSDK
 {
-
-	// Max Size of the Informations
-	const int iSzOfm_sDeviceInformationNameForLog = 19;
-
 	// Name of the Informations:
-	const std::string m_sDeviceInformationNameForLog[iSzOfm_sDeviceInformationNameForLog] = {
+	const std::string AudioDeviceInformation::m_sDeviceInformationNameForLog[SIZE_OF_DEVICE_INFORMATION_NAME] = {
 		"",											//0
 		"Delay",									//1
 		"Delay",									//2
@@ -35,7 +31,7 @@ namespace MediaSDK
 	};
 
 	// Byte Size of the Informations
-	const int iaDeviceInformationByteSize[iSzOfm_sDeviceInformationNameForLog] = {
+	const int AudioDeviceInformation::iaDeviceInformationByteSize[SIZE_OF_DEVICE_INFORMATION_NAME] = {
 		-1,											//0
 		2,											//1
 		2,											//2
@@ -58,16 +54,15 @@ namespace MediaSDK
 	};
 
 	// Index of the Publisher[0] and VieweInCall[1] Informations
-	const int iaDeviceInformationDelay[2] = { 1, 2 };
-	const int iaDeviceInformationDelayFraction[2] = { 3, 4 };
-	const int iaDeviceInformationStartUpFarendBufferSize[2] = { 5, 6 };
-	const int iaDeviceInformationCurrentFarendBufferSizeMax[2] = { 7, 8 };
-	const int iaDeviceInformationCurrentFarendBufferSizeMin[2] = { 9, 10 };
-	const int iaDeviceInformationAverageRecorderTimeDiff[2] = { 11, 12 };
-	const int iaDeviceInformationIsCalling = 13;
-	const int iaDeviceInformationCountCall = 15;
-	const int iaDeviceInformationTotalDataSz[2] = { 17, 18 };
-
+	const int AudioDeviceInformation::iaDeviceInformationDelay[2] = { 1, 2 };
+	const int AudioDeviceInformation::iaDeviceInformationDelayFraction[2] = { 3, 4 };
+	const int AudioDeviceInformation::iaDeviceInformationStartUpFarendBufferSize[2] = { 5, 6 };
+	const int AudioDeviceInformation::iaDeviceInformationCurrentFarendBufferSizeMax[2] = { 7, 8 };
+	const int AudioDeviceInformation::iaDeviceInformationCurrentFarendBufferSizeMin[2] = { 9, 10 };
+	const int AudioDeviceInformation::iaDeviceInformationAverageRecorderTimeDiff[2] = { 11, 12 };
+	const int AudioDeviceInformation::iaDeviceInformationIsCalling = 13;
+	const int AudioDeviceInformation::iaDeviceInformationCountCall = 15;
+	const int AudioDeviceInformation::iaDeviceInformationTotalDataSz[2] = { 17, 18 };
 
 	AudioDeviceInformation::AudioDeviceInformation(int EntityType)
 	{
@@ -142,7 +137,7 @@ namespace MediaSDK
 		m_umDeviceInfo[iaDeviceInformationTotalDataSz[m_id]] = m_llTotalDataSz;
 
 		int lenTillNow = 0;
-		for (int i = 0; i < iSzOfm_sDeviceInformationNameForLog; i++)
+		for (int i = 0; i < SIZE_OF_DEVICE_INFORMATION_NAME; i++)
 		{
 			if (i % 2 == m_id) continue;
 			if (iaDeviceInformationByteSize[i] == -1) continue;
@@ -202,14 +197,16 @@ namespace MediaSDK
 			long long value = v[i].second;
 			if (type % 2 == 1)
 			{
-				if (type < iSzOfm_sDeviceInformationNameForLog)
+				if (type < SIZE_OF_DEVICE_INFORMATION_NAME)
 					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + ": " + Tools::LongLongToString(value);
 				else
 					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long)type) + ": " + Tools::LongLongToString(value);
 			}
 		}
-		MediaLog(LOG_DEBUG, "[ADE] Publisher Info Size: %d", (int)sLogPrint.size())
-			if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "[ADE] Publisher Info -%s", sLogPrint.c_str());
+
+		MediaLog(LOG_DEBUG, "[ADE] Publisher Info Size: %d", (int)sLogPrint.size());
+
+		if (sLogPrint.size() > 0) MediaLog(LOG_DEBUG, "[ADE] Publisher Info -%s", sLogPrint.c_str());
 
 		sLogPrint = "";
 		for (int i = 0; i < (int)v.size(); i++)
@@ -218,7 +215,7 @@ namespace MediaSDK
 			long long value = v[i].second;
 			if (type % 2 == 0)
 			{
-				if (type < iSzOfm_sDeviceInformationNameForLog)
+				if (type < SIZE_OF_DEVICE_INFORMATION_NAME)
 					sLogPrint = sLogPrint + " " + m_sDeviceInformationNameForLog[type] + ": " + Tools::LongLongToString(value);
 				else
 					sLogPrint = sLogPrint + " " + Tools::LongLongToString((long long)type) + ": " + Tools::LongLongToString(value);
