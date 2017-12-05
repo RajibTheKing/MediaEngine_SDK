@@ -6,7 +6,6 @@
 #include "AudioLinearBuffer.h"
 #include "Tools.h"
 #include "AudioEncoderInterface.h"
-#include "AudioDeviceInformation.h"
 
 
 namespace MediaSDK
@@ -16,12 +15,10 @@ namespace MediaSDK
 		AudioNearEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, pAudioEncodingBuffer, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#nearEnd# AudioNearEndProcessorViewerInCall::AudioNearEndProcessorViewerInCall()");
-		m_pAudioDeviceInformation = new AudioDeviceInformation();
 	}
 
 	AudioNearEndProcessorViewer::~AudioNearEndProcessorViewer()
 	{
-		delete m_pAudioDeviceInformation;
 	}
 
 
@@ -54,34 +51,18 @@ namespace MediaSDK
 			if (m_nTotalSentFrameSize % DEVICE_INFORMATION_PACKET_INTERVAL == 0)
 			{
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
-
-				// Get the information of at present Device
-				nowDeviceInformation = m_DeviceInforamtion.mDeviceInfo;
-				ResetDeviceInformation();
-
-				m_pAudioDeviceInformation->Reset();
-
-				// Set Callee Data
-				for (int i = 0; i < iSzOfm_sDeviceInformationNameForLog; i++)
-				{
-					if (i % 2 == 1) continue;
-					if (iaDeviceInformationByteSize[i] == -1) continue;
-					if (nowDeviceInformation.find(i) == nowDeviceInformation.end()) continue;
-					if (i == 11 || i == 12) m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation[i] / DEVICE_INFORMATION_PACKET_INTERVAL);
-					else m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation[i]);
-				}
-
 				// Make Chunk for Device Information
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
 
-				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
+				int nSizeOfInformation = m_pAudioDeviceInformation->GetChunk(&m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]);
 				BuildHeaderForLive(SESSION_STATISTICS_PACKET_TYPE, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
 				
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
-				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
+				m_pAudioDeviceInformation->ResetVaryingData();
 
+				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
 				llCapturedTime = Tools::CurrentTimestamp();
 			}
 

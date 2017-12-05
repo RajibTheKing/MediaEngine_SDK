@@ -10,7 +10,6 @@
 #include "AudioEncoderInterface.h"
 #include "Tools.h"
 #include "AudioDecoderBuffer.h"
-#include "AudioDeviceInformation.h"
 
 
 
@@ -25,13 +24,10 @@ namespace MediaSDK
 		m_pAudioMixer.reset(new AudioMixer(BITS_USED_FOR_AUDIO_MIXING, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING));
 
 		m_nTotalSentFrameSize = 0;
-
-		m_pAudioDeviceInformation = new AudioDeviceInformation();
 	}
 
 	AudioNearEndProcessorPublisher::~AudioNearEndProcessorPublisher()
 	{
-		delete m_pAudioDeviceInformation;
 	}
 
 	//FILE* fp = fopen("/sdcard/out.pcm", "wb");
@@ -72,42 +68,15 @@ namespace MediaSDK
 			if (m_nTotalSentFrameSize % DEVICE_INFORMATION_PACKET_INTERVAL == 0)
 			{
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
-
-				// Get the information of at present Device
-				nowDeviceInformation = m_DeviceInforamtion.mDeviceInfo;
-				ResetDeviceInformation(1);
-
-				// Call is running on live or not
-				if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
-					nowDeviceInformation[iaDeviceInformationIsCalling] = 1;
-				else
-					nowDeviceInformation[iaDeviceInformationIsCalling] = 0;
-
-				// Reset the buffer to set more information
-				m_pAudioDeviceInformation->Reset();
-
-				// Set Publisher Data
-				for (int i = 0; i < iSzOfm_sDeviceInformationNameForLog; i++)
-				{
-					if (i % 2 == 0) continue;
-					if (iaDeviceInformationByteSize[i] == -1) continue;
-					if (nowDeviceInformation.find(i) == nowDeviceInformation.end()) continue;
-					if(i==11 || i==12) m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation[i]/DEVICE_INFORMATION_PACKET_INTERVAL);
-					else m_pAudioDeviceInformation->SetInformation(iaDeviceInformationByteSize[i], i, nowDeviceInformation[i]);
-				}
-
 				// Make Chunk for Device Information
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
-
-				BuildHeaderForLive(SESSION_STATISTICS_PACKET_TYPE, m_MyAudioHeadersize, version, m_iPacketNumber, nSendingDataSizeInByte, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
-
-				int nSizeOfInformation = m_pAudioDeviceInformation->GetInformation( &(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]) );
+				int nSizeOfInformation = m_pAudioDeviceInformation->GetChunk(&m_ucaRawFrameForInformation[nNowSendingDataSizeInByte], m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE);
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
-				// Set Callee Data in the chunk
-				int calleeLen = GetDeviceInformation(&(m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]));
-				nNowSendingDataSizeInByte += calleeLen;
+				BuildHeaderForLive(SESSION_STATISTICS_PACKET_TYPE, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
+
+				m_pAudioDeviceInformation->ResetVaryingData(1);
 
 				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
 

@@ -39,9 +39,6 @@ namespace MediaSDK
 		SharedPointer<AudioMixer> m_pAudioMixer;
 		SharedPointer<AudioPacketHeader>m_pHeader;
 
-		AudioDeviceInformation *m_pAudioDeviceInformation;
-		std::unordered_map<int, long long> nowDeviceInformation;
-
 		int m_nTotalSentFrameSize;
 	};
 

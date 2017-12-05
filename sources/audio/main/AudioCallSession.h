@@ -43,6 +43,7 @@ namespace MediaSDK
 	class AudioShortBufferForPublisherFarEnd;
 	class CAudioShortBuffer;
 	class CAudioByteBuffer;
+	class DeviceInformationInterface;
 
 
 	class CAudioCallSession : 
@@ -61,7 +62,6 @@ namespace MediaSDK
 		void StartCallInLive(int iRole, int nCallInLiveType);
 		void EndCallInLive();
 
-		int PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
@@ -109,8 +109,7 @@ namespace MediaSDK
 		SharedPointer<NoiseReducerInterface> GetNoiseReducer()         { return m_pNoiseReducer; }
 		SharedPointer<AudioGainInterface> GetRecorderGain()            { return m_pRecorderGain; }
 		SharedPointer<AudioGainInterface> GetPlayerGain()              { return m_pPlayerGain; }
-		DeviceInformationInterface *GetDeviceInformationListener()	   { return m_pNearEndProcessor; }
-
+		DeviceInformationInterface *GetDeviceInformationListener();
 
 	private:
 

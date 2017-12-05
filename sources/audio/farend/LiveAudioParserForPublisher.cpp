@@ -6,7 +6,6 @@
 #include "CommonTypes.h"
 #include "MediaLogger.h"
 #include "AudioHeaderLive.h"
-#include "AudioDeviceInformation.h"
 #include "AudioCallSession.h"
 
 namespace MediaSDK
@@ -19,13 +18,11 @@ namespace MediaSDK
 		m_bIsRoleChanging = false;
 
 		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
-		m_pAudioDeviceInformation = new AudioDeviceInformation();
 		m_pDeviceInfoInterface = pDeviceInfoInterface;
 	}
 
 	CLiveAudioParserForPublisher::~CLiveAudioParserForPublisher(){
-		SHARED_PTR_DELETE(m_pLiveReceiverMutex);		
-		delete m_pAudioDeviceInformation;
+		SHARED_PTR_DELETE(m_pLiveReceiverMutex);
 	}
 
 	void CLiveAudioParserForPublisher::SetRoleChanging(bool bFlah){
@@ -170,9 +167,9 @@ namespace MediaSDK
 			{
 				int n_HeaderSize = m_pAudioPacketHeader->GetHeaderSize();
 				MediaLog(LOG_DEBUG, "[FE][LAPE] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, mediaByteSize, n_HeaderSize);
-				//std::vector < std::pair<int, long long> > info = m_pAudioDeviceInformation->ParseInformation(uchAudioData + nFrameLeftRange + mediaByteSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - mediaByteSize - n_HeaderSize + 1);
+				//m_pDeviceInfoInterface->GenerateReport(uchAudioData + nFrameLeftRange + mediaByteSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - mediaByteSize - n_HeaderSize + 1);
 				
-				m_pDeviceInfoInterface->SetDeviceInformationOfAnotherRole(uchAudioData + nFrameLeftRange + mediaByteSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - mediaByteSize - n_HeaderSize + 1);
+				m_pDeviceInfoInterface->SetDeviceInformationOfViewerInCall(uchAudioData + nFrameLeftRange + mediaByteSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - mediaByteSize - n_HeaderSize + 1);
 			}
 
 			/* Discarding broken Opus frame */

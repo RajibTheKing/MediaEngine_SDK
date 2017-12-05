@@ -24,7 +24,6 @@ namespace MediaSDK
 		void ProcessNearEndData();	
 
 	private:
-		AudioDeviceInformation *m_pAudioDeviceInformation;
 
 		int m_nTotalSentFrameSize;
 		std::unordered_map<int, long long> nowDeviceInformation;

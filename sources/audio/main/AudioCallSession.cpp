@@ -250,12 +250,6 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
 
-	/*std::unordered_map<int, long long> CAudioCallSession::GetDeviceInformation()
-	{
-		m_LocalDeviceInformation = m_DeviceInforamtion.mDeviceInfo;
-		return m_LocalDeviceInformation;
-	}*/
-
 	void CAudioCallSession::SetResources(AudioResources &audioResources)
 	{
 		MR_DEBUG("#resource# CAudioCallSession::SetResources()");
@@ -476,6 +470,11 @@ namespace MediaSDK
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  EndCallInLive !!!!!!!!!\n\n");
+	}
+
+	DeviceInformationInterface *CAudioCallSession::GetDeviceInformationListener()
+	{
+		return m_pNearEndProcessor->GetDeviceInfoListener();
 	}
 
 	void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)

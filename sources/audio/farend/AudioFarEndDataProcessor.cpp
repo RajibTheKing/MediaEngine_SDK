@@ -78,7 +78,7 @@ namespace MediaSDK
 			}
 			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 			{
-				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector);
+				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetDeviceInformationListener());
 			}
 		}
 		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
@@ -681,7 +681,7 @@ namespace MediaSDK
 			if (m_pAudioCallSession->m_pNearEndProcessor->IsTraceSendingEnabled() && m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains)
 			{				
 				m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains = m_pAudioCallSession->m_pNearEndProcessor->m_pTrace->GenerateTrace(m_saPlayingData, 800);
-				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] Buffer Size = %d, TraceTailRemains = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_bTraceTailRemains);
+				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] Buffer Size = %d, TraceTailRemains = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains);
 			}
 			
 			if (!m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent)
@@ -689,7 +689,7 @@ namespace MediaSDK
 				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
 				m_pAudioCallSession->m_pNearEndProcessor->m_llTraceSendingTime = Tools::CurrentTimestamp();
 				m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent = true;
-				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] TraceSent!!!!# Buffer Size=%d, TraceSendingTime=%d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_llTraceSendingTime);
+				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] TraceSent!!!!# Buffer Size=%d, TraceSendingTime=%d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_pNearEndProcessor->m_llTraceSendingTime);
 			}
 
 			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)

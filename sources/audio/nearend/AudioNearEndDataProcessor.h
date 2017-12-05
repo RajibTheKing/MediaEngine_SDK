@@ -8,6 +8,7 @@
 #include "AudioMacros.h"
 #include "AudioDumper.h"
 #include <vector>
+#include "AudioDeviceInformation.h"
 
 namespace MediaSDK
 {
@@ -21,10 +22,11 @@ namespace MediaSDK
 	class AudioLinearBuffer;
 	class CTrace;
 	class CKichCutter;
+	class AudioDeviceInformation;
 	class DeviceInformationInterface;
 
 
-	class AudioNearEndDataProcessor : public DeviceInformationInterface
+	class AudioNearEndDataProcessor
 	{
 
 	public:
@@ -66,9 +68,6 @@ namespace MediaSDK
 		int GetDeviceInformation(unsigned char *ucaInfo);
 		void ResetDeviceInformation(int end = 2);
 
-		// Interface for getting device information
-		void SetDeviceInformationOfAnotherRole(unsigned char *ucaInfo, int len);
-
 		void DumpEncodingFrame();
 		void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
 		bool PreProcessAudioBeforeEncoding();
@@ -95,10 +94,11 @@ namespace MediaSDK
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
 
+		DeviceInformationInterface *GetDeviceInfoListener() { return m_pAudioDeviceInformation; }
+
 	protected:
 
 		AudioLinearBuffer* m_recordBuffer = nullptr;
-		DeviceInformation m_DeviceInforamtion;
 
 		DataReadyListenerInterface* m_pDataReadyListener;
 
@@ -116,6 +116,7 @@ namespace MediaSDK
 		SharedPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
 		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;
 
+		AudioDeviceInformation *m_pAudioDeviceInformation;
 
 	private:
 
@@ -153,13 +154,9 @@ namespace MediaSDK
 		int m_iStartingBufferSize;
 		int m_iDelayFractionOrig;
 
-		long long m_llLocalInfoLen, m_llLocalInfoTimeDiff, m_llLocalInfoTotalDataSz, m_llLocalInfoCallCount;
-		int m_id;
-		unsigned char m_ucaLocalInfoCallee[DEVICE_INFORMATION_MAX_SIZE];
 		long long m_llDelay, m_llDelayFraction, m_llLastEchoLogTime = 0;
 		CAudioDumper *m_pRecordedNE = nullptr, *m_pGainedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pNoiseReducedNE = nullptr, 
 			*m_pCancelledNE = nullptr, *m_pKichCutNE = nullptr, *m_pProcessedNE = nullptr;
-		SharedPointer<CLockHandler> m_pAudioDeviceInfoMutex;
 	};
 
 } //namespace MediaSDK

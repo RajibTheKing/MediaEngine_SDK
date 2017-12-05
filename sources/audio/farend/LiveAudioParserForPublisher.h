@@ -22,7 +22,6 @@ namespace MediaSDK
 		bool m_bIsCurrentlyParsingAudioData;
 		bool m_bIsRoleChanging;
 
-		AudioDeviceInformation *m_pAudioDeviceInformation;
 		DeviceInformationInterface *m_pDeviceInfoInterface = nullptr;
 
 	public:
