@@ -9,7 +9,7 @@
 namespace MediaSDK
 {
 
-	CLiveAudioParserForCallee::CLiveAudioParserForCallee(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector, DeviceInformationInterface *pDeviceInfoInterface){
+	CLiveAudioParserForCallee::CLiveAudioParserForCallee(std::vector<LiveAudioDecodingQueue*> vAudioFarEndBufferVector, SessionStatisticsInterface *pSessionStatInterface){
 		m_vAudioFarEndBufferVector = vAudioFarEndBufferVector;
 		m_pLiveReceiverMutex.reset(new CLockHandler);
 		m_bIsCurrentlyParsingAudioData = false;
@@ -18,7 +18,7 @@ namespace MediaSDK
 		m_llLastProcessedFrameNo = -1;
 
 		m_pAudioPacketHeader = AudioPacketHeader::GetInstance(HEADER_LIVE);
-		m_pDeviceInfoInterface = pDeviceInfoInterface;
+		m_pSessionStatInterface = pSessionStatInterface;
 	}
 
 	CLiveAudioParserForCallee::~CLiveAudioParserForCallee(){
@@ -188,7 +188,7 @@ namespace MediaSDK
 			{
 				int n_HeaderSize = m_pAudioPacketHeader->GetHeaderSize();
 				MediaLog(LOG_DEBUG, "[FE][LAPE] Left: %d, Right: %d, Media Byte: %d, Header Len: %d", nFrameLeftRange, nFrameRightRange, iMediaByteHeaderSize, n_HeaderSize);
-				m_pDeviceInfoInterface->GenerateReport(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize - n_HeaderSize + 1);
+				m_pSessionStatInterface->GenerateReport(uchAudioData + nFrameLeftRange + iMediaByteHeaderSize + n_HeaderSize, nFrameRightRange - nFrameLeftRange - iMediaByteHeaderSize - n_HeaderSize + 1);
 			}
 
 			/* Discarding broken Opus frame */

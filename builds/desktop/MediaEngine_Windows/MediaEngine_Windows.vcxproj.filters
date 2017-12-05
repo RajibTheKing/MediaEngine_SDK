@@ -423,9 +423,6 @@
     <ClCompile Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.cpp">
       <Filter>video\assembly</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\audio\main\AudioDeviceInformation.cpp">
-      <Filter>audio\main</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp">
       <Filter>utility</Filter>
     </ClCompile>
@@ -434,6 +431,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\video\FPS\FrameRateController.cpp">
       <Filter>video\fps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\audio\main\AudioSessionStatistics.cpp">
+      <Filter>audio\main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -869,17 +869,17 @@
     <ClInclude Include="..\..\..\sources\video\assembly\NeonAssemblyWrapper.h">
       <Filter>video\assembly</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sources\audio\main\AudioDeviceInformation.h">
-      <Filter>audio\main</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
       <Filter>utility</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\dsp\KichCutter.h">
       <Filter>audio\dsp</Filter>
     </ClInclude>
-	<ClInclude Include="..\..\..\sources\video\FPS\FrameRateController.h">
+    <ClInclude Include="..\..\..\sources\video\FPS\FrameRateController.h">
       <Filter>video\fps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\audio\main\AudioSessionStatistics.h">
+      <Filter>audio\main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

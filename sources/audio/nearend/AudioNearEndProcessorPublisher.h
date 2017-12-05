@@ -11,7 +11,7 @@ namespace MediaSDK
 	class CAudioShortBuffer;
 	class AudioMixer;
 	class AudioPacketHeader;
-	class AudioDeviceInformation;
+	class AudioSessionStatistics;
 
 
 	class AudioNearEndProcessorPublisher : public AudioNearEndDataProcessor

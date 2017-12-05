@@ -8,7 +8,7 @@
 #include "AudioMacros.h"
 #include "AudioDumper.h"
 #include <vector>
-#include "AudioDeviceInformation.h"
+#include "AudioSessionStatistics.h"
 
 namespace MediaSDK
 {
@@ -22,8 +22,8 @@ namespace MediaSDK
 	class AudioLinearBuffer;
 	class CTrace;
 	class CKichCutter;
-	class AudioDeviceInformation;
-	class DeviceInformationInterface;
+	class AudioSessionStatistics;
+	class SessionStatisticsInterface;
 
 
 	class AudioNearEndDataProcessor
@@ -65,8 +65,6 @@ namespace MediaSDK
 	protected:
 
 		int PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
-		int GetDeviceInformation(unsigned char *ucaInfo);
-		void ResetDeviceInformation(int end = 2);
 
 		void DumpEncodingFrame();
 		void UpdateRelativeTimeAndFrame(long long &llLasstTime, long long & llRelativeTime, long long & llCapturedTime);
@@ -94,7 +92,7 @@ namespace MediaSDK
 		long long m_ll1stRecordedDataTime;
 		long long m_llnextRecordedDataTime;
 
-		DeviceInformationInterface *GetDeviceInfoListener() { return m_pAudioDeviceInformation; }
+		SessionStatisticsInterface *GetSessionStatListener() { return m_pAudioSessionStatistics; }
 
 	protected:
 
@@ -116,7 +114,7 @@ namespace MediaSDK
 		SharedPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
 		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;
 
-		AudioDeviceInformation *m_pAudioDeviceInformation;
+		AudioSessionStatistics *m_pAudioSessionStatistics;
 
 	private:
 

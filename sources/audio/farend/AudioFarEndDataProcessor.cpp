@@ -74,11 +74,11 @@ namespace MediaSDK
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
-				m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetDeviceInformationListener());
+				m_pLiveAudioParser = new CLiveAudioParserForPublisher(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetSessionStatListener());
 			}
 			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 			{
-				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetDeviceInformationListener());
+				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetSessionStatListener());
 			}
 		}
 		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)

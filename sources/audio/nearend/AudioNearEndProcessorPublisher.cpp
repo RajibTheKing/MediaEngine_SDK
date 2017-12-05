@@ -65,18 +65,18 @@ namespace MediaSDK
 			
 
 			m_nTotalSentFrameSize = m_iPacketNumber + 1;
-			if (m_nTotalSentFrameSize % DEVICE_INFORMATION_PACKET_INTERVAL == 0)
+			if (m_nTotalSentFrameSize % SESSION_STATISTICS_PACKET_INTERVAL == 0)
 			{
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
-				// Make Chunk for Device Information
+				// Make Chunk for Session Statistics
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
-				int nSizeOfInformation = m_pAudioDeviceInformation->GetChunk(&m_ucaRawFrameForInformation[nNowSendingDataSizeInByte], m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE);
+				int nSizeOfInformation = m_pAudioSessionStatistics->GetChunk(&m_ucaRawFrameForInformation[nNowSendingDataSizeInByte], m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE);
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
 				BuildHeaderForLive(SESSION_STATISTICS_PACKET_TYPE, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
 
-				m_pAudioDeviceInformation->ResetVaryingData(1);
+				m_pAudioSessionStatistics->ResetVaryingData(1);
 
 				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
 

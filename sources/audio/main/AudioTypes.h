@@ -56,10 +56,10 @@ namespace MediaSDK
 		virtual void SendDepackatizedData(unsigned char*, int) = 0;
 	};
 
-	class DeviceInformationInterface
+	class SessionStatisticsInterface
 	{
 	public:
-		virtual void SetDeviceInformationOfViewerInCall(unsigned char *ucaInfo, int len) = 0;
+		virtual void SetSessionStatisticsOfViewerInCall(unsigned char *ucaInfo, int len) = 0;
 		virtual void GenerateReport(unsigned char *ucaInfo, int len) = 0;
 	};
 

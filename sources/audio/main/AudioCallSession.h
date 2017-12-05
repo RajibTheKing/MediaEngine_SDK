@@ -43,7 +43,7 @@ namespace MediaSDK
 	class AudioShortBufferForPublisherFarEnd;
 	class CAudioShortBuffer;
 	class CAudioByteBuffer;
-	class DeviceInformationInterface;
+	class SessionStatisticsInterface;
 
 
 	class CAudioCallSession : 
@@ -109,7 +109,7 @@ namespace MediaSDK
 		SharedPointer<NoiseReducerInterface> GetNoiseReducer()         { return m_pNoiseReducer; }
 		SharedPointer<AudioGainInterface> GetRecorderGain()            { return m_pRecorderGain; }
 		SharedPointer<AudioGainInterface> GetPlayerGain()              { return m_pPlayerGain; }
-		DeviceInformationInterface *GetDeviceInformationListener();
+		SessionStatisticsInterface *GetSessionStatListener();
 
 	private:
 
@@ -179,10 +179,7 @@ namespace MediaSDK
 
 		long long m_llLastPlayTime;
 		long long m_FriendID;
-
-		std::unordered_map < int, long long >  m_LocalDeviceInformation;
 		
-
 		CEventNotifier* m_pEventNotifier;
 		AudioNearEndProcessorThread *m_cNearEndProcessorThread;
 		AudioFarEndProcessorThread *m_cFarEndProcessorThread;

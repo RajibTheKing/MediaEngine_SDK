@@ -472,9 +472,9 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  EndCallInLive !!!!!!!!!\n\n");
 	}
 
-	DeviceInformationInterface *CAudioCallSession::GetDeviceInformationListener()
+	SessionStatisticsInterface *CAudioCallSession::GetSessionStatListener()
 	{
-		return m_pNearEndProcessor->GetDeviceInfoListener();
+		return m_pNearEndProcessor->GetSessionStatListener();
 	}
 
 	void CAudioCallSession::SetCallInLiveType(int nCallInLiveType)

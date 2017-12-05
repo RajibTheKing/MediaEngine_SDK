@@ -10,7 +10,7 @@ namespace MediaSDK
 
 	class CAudioCallSession;
 	class CAudioShortBuffer;
-	class AudioDeviceInformation;
+	class AudioSessionStatistics;
 
 
 	class AudioNearEndProcessorViewer : public AudioNearEndDataProcessor
@@ -26,7 +26,6 @@ namespace MediaSDK
 	private:
 
 		int m_nTotalSentFrameSize;
-		std::unordered_map<int, long long> nowDeviceInformation;
 	};
 
 }  //namespace MediaSDK

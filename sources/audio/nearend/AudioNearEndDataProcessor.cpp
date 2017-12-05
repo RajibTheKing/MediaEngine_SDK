@@ -93,7 +93,7 @@ namespace MediaSDK
 		m_pTrace = new CTrace();
 		m_pKichCutter = nullptr;
 
-		m_pAudioDeviceInformation = new AudioDeviceInformation(m_pAudioCallSession->GetEntityType());
+		m_pAudioSessionStatistics = new AudioSessionStatistics(m_pAudioCallSession->GetEntityType());
 		
 	}
 
@@ -163,9 +163,9 @@ namespace MediaSDK
 			m_pKichCutter = nullptr;
 		}
 
-		if (m_pAudioDeviceInformation)
+		if (m_pAudioSessionStatistics)
 		{
-			delete m_pAudioDeviceInformation;
+			delete m_pAudioSessionStatistics;
 		}
 	}
 
@@ -411,7 +411,7 @@ namespace MediaSDK
 
 	int AudioNearEndDataProcessor::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		m_pAudioDeviceInformation->UpdateEchoDelay(m_llDelay, m_llDelayFraction);
+		m_pAudioSessionStatistics->UpdateEchoDelay(m_llDelay, m_llDelayFraction);
 
 		m_pRecordedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 
@@ -469,7 +469,7 @@ namespace MediaSDK
 				{
 					m_iStartingBufferSize = m_pAudioCallSession->m_FarendBuffer->GetQueueSize();
 					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] First Time Updated m_iStartingBufferSize = %d", m_iStartingBufferSize);
-					m_pAudioDeviceInformation->UpdateStartingBufferSize(m_iStartingBufferSize);
+					m_pAudioSessionStatistics->UpdateStartingBufferSize(m_iStartingBufferSize);
 				}
 
 				int iFarendDataLength = m_pAudioCallSession->m_FarendBuffer->DeQueue(m_saFarendData, llTS);
@@ -498,7 +498,7 @@ namespace MediaSDK
 						m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
 						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
 
-					m_pAudioDeviceInformation->UpdateCurrentBufferSize(m_pAudioCallSession->m_FarendBuffer->GetQueueSize());
+					m_pAudioSessionStatistics->UpdateCurrentBufferSize(m_pAudioCallSession->m_FarendBuffer->GetQueueSize());
 
 					m_pAudioCallSession->GetEchoCanceler()->AddFarEndData(m_saFarendData, unLength);
 
@@ -691,7 +691,7 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::PushDataInRecordBuffer(short *data, int dataLen)
 	{
 		m_recordBuffer->PushData(data, dataLen);
-		m_pAudioDeviceInformation->UpdateOnDataArrive(dataLen);
+		m_pAudioSessionStatistics->UpdateOnDataArrive(dataLen);
 	}
 
 	void AudioNearEndDataProcessor::GetAudioDataToSend(unsigned char * pAudioCombinedDataToSend, int &CombinedLength, std::vector<int> &vCombinedDataLengthVector,
@@ -780,7 +780,7 @@ namespace MediaSDK
 		m_nEntityType = nEntityType;
 
 		if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER || m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER)
-			m_pAudioDeviceInformation->CallStarted();
+			m_pAudioSessionStatistics->CallStarted();
 	}
 
 	void AudioNearEndDataProcessor::StopCallInLive(int nEntityType)

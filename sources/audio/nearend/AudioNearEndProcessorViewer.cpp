@@ -48,19 +48,19 @@ namespace MediaSDK
 			}
 
 			m_nTotalSentFrameSize = m_iPacketNumber + 1;
-			if (m_nTotalSentFrameSize % DEVICE_INFORMATION_PACKET_INTERVAL == 0)
+			if (m_nTotalSentFrameSize % SESSION_STATISTICS_PACKET_INTERVAL == 0)
 			{
 				UpdateRelativeTimeAndFrame(llLasstTime, llRelativeTime, llCapturedTime);
-				// Make Chunk for Device Information
+				// Make Chunk for Session Statistics
 				m_ucaRawFrameForInformation[0] = 0;
 				int nNowSendingDataSizeInByte = 1 + m_MyAudioHeadersize;
 
-				int nSizeOfInformation = m_pAudioDeviceInformation->GetChunk(&m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]);
+				int nSizeOfInformation = m_pAudioSessionStatistics->GetChunk(&m_ucaRawFrameForInformation[nNowSendingDataSizeInByte]);
 				BuildHeaderForLive(SESSION_STATISTICS_PACKET_TYPE, m_MyAudioHeadersize, version, m_iPacketNumber, nSizeOfInformation, llRelativeTime, nEchoStateFlags, &m_ucaRawFrameForInformation[1]);
 				
 				nNowSendingDataSizeInByte += nSizeOfInformation;
 
-				m_pAudioDeviceInformation->ResetVaryingData();
+				m_pAudioSessionStatistics->ResetVaryingData();
 
 				StoreDataForChunk(m_ucaRawFrameForInformation, llRelativeTime, nNowSendingDataSizeInByte);
 				llCapturedTime = Tools::CurrentTimestamp();
