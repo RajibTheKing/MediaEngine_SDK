@@ -17,7 +17,7 @@
 namespace MediaSDK
 {
 
-CVideoCallSession::CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
+	CVideoCallSession::CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nChannelType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly) :
 
 m_pCommonElementsBucket(sharedObject),
 m_nQualityCounter(0),
@@ -53,6 +53,7 @@ m_nDeviceCheckFrameCounter(0),
 m_bLiveVideoQuality(VIDEO_QUALITY_HIGH),
 m_nCapturedFrameCounter(0),
 m_nServiceType(nServiceType),
+m_nChannelType(nChannelType),
 m_nEntityType(nEntityType),
 m_bFrameReduce(false),
 m_nReduceCheckNumber(30),
@@ -2267,6 +2268,11 @@ bool CVideoCallSession::GetAudioOnlyLiveStatus()
 int CVideoCallSession::GetCallInLiveType()
 {
 	return m_nCallInLiveType;
+}
+
+int CVideoCallSession::GetChannelType()
+{
+	return m_nChannelType;
 }
 
 bool CVideoCallSession::isDynamicIDR_Mechanism_Enable()

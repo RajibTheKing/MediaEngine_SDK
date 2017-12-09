@@ -28,6 +28,11 @@
 
 #define SERVICE_TYPE_CHANNEL 16
 
+#define CHANNEL_TYPE_AUDIO 1
+#define CHANNEL_TYPE_VIDEO 2
+#define CHANNEL_TYPE_TV 3
+#define CHANNEL_TYPE_NOT_CHANNEL 0
+
 #define VIDEO_QUALITY_HIGH 3
 #define VIDEO_QUALITY_MEDIUM 2
 #define VIDEO_QUALITY_LOW 1
@@ -85,7 +90,7 @@ namespace MediaSDK
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
 		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType);
-		bool StartChannelView(const IPVLongType llFriendID);
+		bool StartChannelView(const IPVLongType llFriendID, int nChannelType);
 
 		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive);
 		int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);

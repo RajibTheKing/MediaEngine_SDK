@@ -629,7 +629,7 @@ namespace MediaSDK
 		{
 			if (m_VideoBeautificationer == NULL)
 			{
-				m_VideoBeautificationer = new CVideoBeautificationer(m_decodingHeight, m_decodingWidth);
+				m_VideoBeautificationer = new CVideoBeautificationer(m_decodingHeight, m_decodingWidth, m_pVideoCallSession->GetChannelType());
 			}
 
 			pair<int, int> resultPair = m_VideoBeautificationer->BeautificationFilterForChannel(m_DecodedFrame, m_decodedFrameSize, m_decodingHeight, m_decodingWidth, m_decodingHeight, m_decodingWidth, true);

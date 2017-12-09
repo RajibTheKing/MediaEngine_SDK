@@ -445,7 +445,7 @@ m_VideoBeautificationer(NULL)
 
             if(m_VideoBeautificationer == NULL)
             {
-                m_VideoBeautificationer = new CVideoBeautificationer(iGotHeight, iGotWidth);
+				m_VideoBeautificationer = new CVideoBeautificationer(iGotHeight, iGotWidth, CHANNEL_TYPE_NOT_CHANNEL);
             }
 
 				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
