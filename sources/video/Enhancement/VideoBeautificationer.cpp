@@ -19,11 +19,12 @@ namespace MediaSDK
 #define getMin(a,b) a<b?a:b
 #define getMax(a,b) a>b?a:b
 
-CVideoBeautificationer::CVideoBeautificationer(int iVideoHeight, int iVideoWidth) :
+	CVideoBeautificationer::CVideoBeautificationer(int iVideoHeight, int iVideoWidth, int nChannelType) :
 
 m_nPreviousAddValueForBrightening(0),
 m_nBrightnessPrecision(0),
-m_EffectValue(10)
+m_EffectValue(10),
+m_nChannelType(nChannelType)
 {
 	m_Step0Sigma = 128;
 	m_Step1Sigma = 64;
@@ -36,6 +37,8 @@ m_EffectValue(10)
 	m_Step2SigmaDigit = 5;
 	m_Step3SigmaDigit = 4;
 	m_Step4SigmaDigit = 3;
+
+	m_nChannelSharpAmountDigit = 4;
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -1411,21 +1414,58 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterForChannel(unsigned c
 		shiftDigit = 4;
 	}
 
-	//for (int i = 0; i <= iHeight; i++)
-	//{
-	//	m_mean[i][0] = 0;
-	//}
 
-	//memset(m_mean, iWidth, 0);
-	/*
-	for (int i = 1, iw = 0; i <= iHeight; i++, iw += iWidth)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+	if(m_nChannelType == CHANNEL_TYPE_TV)
 	{
-	for (int j = startWidth; j <= endWidth; j++)
+		if (m_nIsGreaterThen5s > 0)
+		{
+			m_nChannelSharpAmountDigit = 4;
+		}
+		else
+		{
+			m_nChannelSharpAmountDigit = 3;
+		}
+	}
+	else
 	{
-	m_mean[i][j] = pBlurConvertingData[iw + j - 1];
+		if (m_nIsGreaterThen5s > 0)
+		{
+			m_nChannelSharpAmountDigit = 5;
+		}
+		else
+		{
+			m_nChannelSharpAmountDigit = 4;
+		}
 	}
+
+#elif defined(__ANDROID__)
+
+	if(m_nChannelType == CHANNEL_TYPE_TV)
+	{
+		m_nChannelSharpAmountDigit = 3;
 	}
-	*/
+	else
+	{
+		m_nChannelSharpAmountDigit = 4;
+	}
+
+#else
+
+	if (m_nChannelType == CHANNEL_TYPE_TV)
+	{
+		m_nChannelSharpAmountDigit = 4;
+	}
+	else
+	{
+		m_nChannelSharpAmountDigit = 5;
+	}
+
+#endif
+
+	CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoBeautificationer::BeautificationFilterForChannel m_nChannelType %d m_nChannelSharpAmountDigit %d", m_nChannelType, m_nChannelSharpAmountDigit);
+
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -1446,13 +1486,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterForChannel(unsigned c
 
 				if (i > 2 && j>1 && j<endWidth)
 				{
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
-#elif defined(__ANDROID__)
-					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
-#else
-					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> 3)));
-#endif
+					pBlurConvertingData[iw2 + j - 1] = min(255, max(0, pBlurConvertingData[iw2 + j - 1] + (((m_mean[i - 1][j] << 2) - m_mean[i - 2][j] - m_mean[i][j] - m_mean[i - 1][j - 1] - m_mean[i - 1][j + 1]) >> m_nChannelSharpAmountDigit)));
 				}
 			}
 		}

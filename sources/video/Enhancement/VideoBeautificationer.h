@@ -18,7 +18,7 @@ class CVideoBeautificationer
 
 public:
 
-	CVideoBeautificationer(int iVideoHeight, int iVideoWidth);
+	CVideoBeautificationer(int iVideoHeight, int iVideoWidth, int nChannelType);
 	~CVideoBeautificationer();
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
@@ -90,6 +90,8 @@ private:
 	int m_nThresholdValue;
 	int m_nIsGreaterThen5s;
 
+	int m_nChannelSharpAmountDigit;
+
 	int m_applyBeatification;
 	int brightness_shift;
 
@@ -99,6 +101,8 @@ private:
 	int m_rr;
 	double m_pixels;
 	int m_AvarageValue;
+
+	int m_nChannelType;
 
 	int m_Step0Sigma;
 	int m_Step1Sigma;
