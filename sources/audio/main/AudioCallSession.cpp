@@ -125,6 +125,7 @@ namespace MediaSDK
 		m_llLocalInfoTimeDiff = 0;
 		m_llLocalInfoTotalDataSz = 0;
 		m_llLocalInfoCallCount = 0;
+		m_llLocalInfoLen = 0;
 
 
 
