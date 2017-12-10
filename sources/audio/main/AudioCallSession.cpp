@@ -62,7 +62,6 @@ namespace MediaSDK
 		m_nServiceType(nServiceType),
 		m_llLastPlayTime(0),
 		m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
-		m_bIsPublisher(true),
 		m_cNearEndProcessorThread(nullptr),
 		m_cFarEndProcessorThread(nullptr),
 		m_bIsOpusCodec(bOpusCodec)
@@ -121,10 +120,8 @@ namespace MediaSDK
 			m_bLiveAudioStreamRunning = true;
 		}
 
-		m_iPrevRecvdSlotID = -1;
+		//m_iPrevRecvdSlotID = -1;
 		m_iReceivedPacketsInPrevSlot = AUDIO_SLOT_SIZE; //used by child
-		m_iNextPacketType = AUDIO_NORMAL_PACKET_TYPE;
-
 
 #ifdef USE_VAD
 		m_pVoice = new CVoice();

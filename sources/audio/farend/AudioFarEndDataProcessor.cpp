@@ -607,8 +607,6 @@ namespace MediaSDK
 						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO);
 					}
 
-					m_pAudioCallSession->m_iNextPacketType = AUDIO_NOVIDEO_PACKET_TYPE;
-
 					m_bAudioShouldStopNotified = true;
 					m_bAudioQualityHighNotified = false;
 					m_bAudioQualityLowNotified = false;

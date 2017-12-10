@@ -126,12 +126,10 @@ namespace MediaSDK
 
 	public:
 
-		bool m_bIsPublisher;
 		bool m_bRecordingStarted;
 		bool m_bEnablePlayerTimeSyncDuringEchoCancellation;
 		
-		int m_iNextPacketType;
-		int m_iPrevRecvdSlotID;
+		//int m_iPrevRecvdSlotID;
 		int m_iReceivedPacketsInPrevSlot;
 
 		AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
