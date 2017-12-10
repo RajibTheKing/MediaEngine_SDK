@@ -55,7 +55,8 @@ namespace MediaSDK
 		m_llLastChunkLastFrameRT(-1),
 		m_llLastFrameRT(0),
 		m_pDataReadyListener(nullptr),
-		m_pPacketEventListener(nullptr)
+		m_pPacketEventListener(nullptr),
+		m_bNeedToResetAudioEffects(true)
 	{
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
 
@@ -344,7 +345,7 @@ namespace MediaSDK
 			m_pAudioCallSession->GetEchoCanceler().reset();
 		}
 
-		m_pAudioCallSession->GetEchoCanceler() = EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, m_pAudioCallSession->getIsAudioLiveStreamRunning());
+		m_pAudioCallSession->SetEchoCanceller(EchoCancellerProvider::GetEchoCanceller(WebRTC_ECM, m_pAudioCallSession->getIsAudioLiveStreamRunning()));
 	}
 
 	void AudioNearEndDataProcessor::ResetNS()
@@ -354,7 +355,7 @@ namespace MediaSDK
 			m_pAudioCallSession->GetNoiseReducer().reset();
 		}
 
-		m_pAudioCallSession->GetNoiseReducer() = NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer);
+		m_pAudioCallSession->SetNoiseReducer(NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer));
 	}
 
 	void AudioNearEndDataProcessor::ResetRecorderGain()
@@ -364,7 +365,7 @@ namespace MediaSDK
 			m_pAudioCallSession->GetRecorderGain().reset();
 		}
 
-		m_pAudioCallSession->GetRecorderGain() = AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain);
+		m_pAudioCallSession->SetRecorderGain(AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain));
 		m_pAudioCallSession->GetRecorderGain()->Init(m_nServiceType);
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
 		{

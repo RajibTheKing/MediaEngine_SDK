@@ -110,6 +110,9 @@ namespace MediaSDK
 		SharedPointer<AudioGainInterface> GetRecorderGain()            { return m_pRecorderGain; }
 		SharedPointer<AudioGainInterface> GetPlayerGain()              { return m_pPlayerGain; }
 		SessionStatisticsInterface *GetSessionStatListener();
+		void SetNoiseReducer(SharedPointer<NoiseReducerInterface> Noise)   { m_pNoiseReducer = Noise; }
+		void SetEchoCanceller(SharedPointer<EchoCancellerInterface> Echo)  { m_pEcho = Echo; }
+		void SetRecorderGain(SharedPointer<AudioGainInterface> Gain)	   { m_pRecorderGain = Gain; }
 
 	private:
 

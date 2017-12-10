@@ -75,6 +75,7 @@ namespace MediaSDK
 		m_llTotalDataSz = 0;
 		m_umSessionStat[m_iaSessionStatCountCall] = 0;
 		ResetAll();
+		m_iStatInfoOfViewerInCallLen = 0;
 
 		m_pAudioSessionStatMutex.reset(new CLockHandler);
 	}
