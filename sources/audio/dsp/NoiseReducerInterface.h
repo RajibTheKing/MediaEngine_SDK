@@ -8,6 +8,10 @@ namespace MediaSDK
 	{
 	public:
 
+		virtual void Init() = 0;
+		virtual void Release() = 0;
+		virtual void Reset() = 0;
+
 		virtual int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning) = 0;
 
 		virtual	~NoiseReducerInterface() { }

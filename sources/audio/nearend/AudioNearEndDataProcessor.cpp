@@ -352,10 +352,8 @@ namespace MediaSDK
 	{
 		if (m_pAudioCallSession->GetNoiseReducer().get())
 		{
-			m_pAudioCallSession->GetNoiseReducer().reset();
+			m_pAudioCallSession->GetNoiseReducer()->Reset();
 		}
-
-		m_pAudioCallSession->SetNoiseReducer(NoiseReducerProvider::GetNoiseReducer(WebRTC_NoiseReducer));
 	}
 
 	void AudioNearEndDataProcessor::ResetRecorderGain()

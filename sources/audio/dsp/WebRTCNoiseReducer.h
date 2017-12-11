@@ -23,6 +23,10 @@ namespace MediaSDK
 		WebRTCNoiseReducer();
 		~WebRTCNoiseReducer();
 
+		void Init();
+		void Release();
+		void Reset();
+
 		int Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning);
 	};
 

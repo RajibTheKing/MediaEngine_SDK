@@ -40,6 +40,21 @@ namespace MediaSDK
 		noiseOut = fopen(b.c_str(), "wb");*/
 #endif
 
+		this->Init();
+	}
+
+	WebRTCNoiseReducer::~WebRTCNoiseReducer()
+	{
+		Release();
+
+#ifdef NOISE_DUMP
+		if(noiseIn) fclose(noiseIn);
+		if(noiseOut) fclose(noiseOut);
+#endif
+	}
+
+	void WebRTCNoiseReducer::Init()
+	{
 #ifdef USE_ANS
 		int ansret = -1;
 		NS_instance = WebRtcNsx_Create();
@@ -60,25 +75,25 @@ namespace MediaSDK
 		{
 			ALOG("WebRtcNs_set_policy successful");
 		}
-			
+
 #endif
 	}
 
-
-	WebRTCNoiseReducer::~WebRTCNoiseReducer()
+	void WebRTCNoiseReducer::Release()
 	{
 #ifdef USE_ANS
 		if (NS_instance)
 		{
 			WebRtcNsx_Free(NS_instance);
-			NS_instance = 0;
+			NS_instance = nullptr;
 		}
 #endif
+	}
 
-#ifdef NOISE_DUMP
-		if(noiseIn) fclose(noiseIn);
-		if(noiseOut) fclose(noiseOut);
-#endif
+	void WebRTCNoiseReducer::Reset()
+	{
+		Release();
+		Init();
 	}
 
 
