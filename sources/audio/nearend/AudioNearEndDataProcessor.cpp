@@ -183,8 +183,8 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::ResetTrace()
 	{
 		MediaLog(LOG_CODE_TRACE, "Reset Trace Starting")
-			//Trace and Delay Related		
-			m_llTraceSendingTime = 0;
+		//Trace and Delay Related		
+		m_llTraceSendingTime = 0;
 		m_llTraceReceivingTime = 0;
 		m_b1stRecordedDataSinceCallStarted = true;
 		m_llDelayFraction = 0;
