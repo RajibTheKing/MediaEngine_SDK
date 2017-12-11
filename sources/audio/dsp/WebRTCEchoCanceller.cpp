@@ -99,6 +99,7 @@ namespace MediaSDK
 
 	int WebRTCEchoCanceller::CancelEcho(short *sInBuf, int nBufferSize, long long llDelay, short *NearEndNoisyData)
 	{
+		MediaLog(LOG_DEBUG, "[WebRTCE] Cancelling Echo buffer size: %d, Delay: %lld", nBufferSize, llDelay);
 		int nEchoStateFlags = ECHO_TYPE_NO_ECHO; //int containing 10 flags telling whether the 10 80 sized flags contain echo
 #ifdef USE_AECM
 		iCounter++;
@@ -158,6 +159,7 @@ namespace MediaSDK
 
 	int WebRTCEchoCanceller::AddFarEndData(short *sBuffer, int sBufferSize)
 	{
+		MediaLog(LOG_DEBUG, "[WebRTCE] Add Far end Data: %d", sBufferSize);
 #ifdef USE_AECM
 
 		LOG18("Farending2");

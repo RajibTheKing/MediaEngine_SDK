@@ -4,6 +4,7 @@
 #include "InterfaceOfAudioVideoEngine.h"
 #include <string>
 #include <algorithm>
+#include "MediaLogger.h"
 
 namespace MediaSDK
 {
@@ -233,11 +234,13 @@ namespace MediaSDK
 
 	void AudioSessionStatistics::UpdateStartingBufferSize(long long Sz)
 	{
+		MediaLog(LOG_DEBUG, "[ASS] Updatint starting buffer size: %lld", Sz);
 		m_umSessionStat[m_iaSessionStatStartUpFarendBufferSize[m_id]] = Sz;
 	}
 
 	void AudioSessionStatistics::UpdateCurrentBufferSize(long long Sz)
 	{
+		MediaLog(LOG_DEBUG, "[ASS] Updating current buffer size: %lld", Sz);
 		long long mx = (std::max)(m_umSessionStat[m_iaSessionStatCurrentFarendBufferSizeMax[m_id]], Sz);
 		long long mn = (std::min)(m_umSessionStat[m_iaSessionStatCurrentFarendBufferSizeMin[m_id]], Sz);
 		m_umSessionStat[m_iaSessionStatCurrentFarendBufferSizeMax[m_id]] = mx;
@@ -263,6 +266,7 @@ namespace MediaSDK
 
 	void AudioSessionStatistics::UpdateEchoDelay(int delay, int delayFraction)
 	{
+		MediaLog(LOG_DEBUG, "[ASS] Updating Echo Delay");
 		m_umSessionStat[m_iaSessionStatDelay[m_id]] = delay;
 		m_umSessionStat[m_iaSessionStatDelayFraction[m_id]] = delayFraction;
 	}

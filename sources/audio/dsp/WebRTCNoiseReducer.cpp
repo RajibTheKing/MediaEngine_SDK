@@ -3,6 +3,7 @@
 #include "AudioMacros.h"
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "MediaLogger.h"
 
 #ifndef ALOG
 #define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
@@ -99,6 +100,7 @@ namespace MediaSDK
 
 	int WebRTCNoiseReducer::Denoise(short *sInBuf, int sBufferSize, short * sOutBuf, bool isLiveStreamRunning)
 	{
+		MediaLog(LOG_DEBUG, "[NR] Denoise Buffer Size: %d, Live stringming: %d",sBufferSize, isLiveStreamRunning);
 #ifdef USE_ANS
 		memset(m_tmpbuffer, 0, sBufferSize * sizeof(short));
 #ifdef NOISE_DUMP

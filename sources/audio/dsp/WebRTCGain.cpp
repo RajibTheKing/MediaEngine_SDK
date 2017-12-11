@@ -2,6 +2,7 @@
 
 #include "LogPrinter.h"
 #include "Tools.h"
+#include "MediaLogger.h"
 
 #ifdef USE_AGC
 
@@ -154,6 +155,7 @@ namespace MediaSDK
 
 	bool WebRTCGain::AddFarEnd(short *sInBuf, int nBufferSize)
 	{
+		MediaLog(LOG_DEBUG, "[WebRTCG] Add far end data size: %d", nBufferSize);
 #ifdef USE_AGC
 
 
@@ -182,6 +184,7 @@ namespace MediaSDK
 
 	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags)
 	{
+		MediaLog(LOG_DEBUG, "[WebRTCG] Add Gain buffer size: %d, player side: %d, echo state flag: %d", nBufferSize, bPlayerSide, nEchoStateFlags);
 		//if not in call (normal or live), set nEchoStateFlags to 0
 		//TODO: handle addgain parameter's for channel
 #ifdef USE_AGC

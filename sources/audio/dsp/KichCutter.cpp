@@ -3,6 +3,7 @@
 #include "AudioMacros.h"
 #include "string.h"
 #include "stdlib.h"
+#include "MediaLogger.h"
 namespace MediaSDK
 {
 	CKichCutter::CKichCutter()
@@ -35,6 +36,7 @@ namespace MediaSDK
 
 	int CKichCutter::Despike(short *sBuffer, int nFlags)
 	{
+		MediaLog(LOG_DEBUG, "[KC] Kich Cutter despike, flag: %d", nFlags);
 		memcpy(m_sDataBuf, m_sDataBuf + m_nDataBufIOSize, m_nDataBufCopySize * sizeof(short));//enqueue sBuffer
 		memcpy(m_sDataBuf + m_nDataBufCopySize, sBuffer, m_nDataBufIOSize * sizeof(short));
 

@@ -78,7 +78,7 @@ namespace MediaSDK
 #ifdef DUMP_FILE
 		m_pAudioCallSession->FileInput = fopen("/sdcard/InputPCMN.pcm", "wb");
 		m_pAudioCallSession->FileInputWithEcho = fopen("/sdcard/InputPCMN_WITH_ECHO.pcm", "wb");
-		m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");	
+		m_pAudioCallSession->FileInputPreGain = fopen("/sdcard/InputPCMNPreGain.pcm", "wb");
 		m_pAudioCallSession->File18BitType = fopen("/sdcard/File18BitType.pcm", "wb");
 		m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");
 #endif	
@@ -95,7 +95,7 @@ namespace MediaSDK
 		m_pKichCutter = nullptr;
 
 		m_pAudioSessionStatistics = new AudioSessionStatistics(m_pAudioCallSession->GetEntityType());
-		
+
 	}
 
 	AudioNearEndDataProcessor::~AudioNearEndDataProcessor()
@@ -174,7 +174,7 @@ namespace MediaSDK
 	{
 		m_bNeedToResetAudioEffects = flag;
 	}
-	
+
 	void AudioNearEndDataProcessor::SetEnableRecorderTimeSyncDuringEchoCancellation(bool flag)
 	{
 		m_bEnableRecorderTimeSyncDuringEchoCancellation = flag;
@@ -207,6 +207,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::HandleTrace(short *psaEncodingAudioData, unsigned int unLength)
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP][HT] length: %d", unLength);
 		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled");
@@ -243,6 +244,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Delete Data Before Trace Received, length: %d",unLength);
 		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
@@ -252,6 +254,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Delete Data After Trace Received, length: %d", unLength);
 		if (m_iDeleteCount > 0)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved");
@@ -263,6 +266,7 @@ namespace MediaSDK
 
 	bool AudioNearEndDataProcessor::IsTraceSendingEnabled()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Entered Trace Sending Enabled");
 #ifdef USE_AECM
 #if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		if (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER)
@@ -283,6 +287,7 @@ namespace MediaSDK
 
 	bool AudioNearEndDataProcessor::IsKichCutterEnabled()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Entered Kich Cutter Enabled");
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		return false;
 #else
@@ -312,6 +317,7 @@ namespace MediaSDK
 
 	bool AudioNearEndDataProcessor::IsEchoCancellerEnabled()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Entered Echo Canceller Enabled")
 #ifdef USE_AECM
 #if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (DESKTOP_C_SHARP)
 		if (!m_pAudioCallSession->getIsAudioLiveStreamRunning() || (m_pAudioCallSession->getIsAudioLiveStreamRunning() && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
@@ -330,6 +336,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::ResetKichCutter()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Resetting Kich Cutter");
 		if (m_pKichCutter != nullptr)
 		{
 			delete m_pKichCutter;
@@ -340,6 +347,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::ResetAEC()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Resetting AEC");
 		if (m_pAudioCallSession->GetEchoCanceler().get())
 		{
 			m_pAudioCallSession->GetEchoCanceler().reset();
@@ -350,6 +358,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::ResetNS()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Resetting NS");
 		if (m_pAudioCallSession->GetNoiseReducer().get())
 		{
 			m_pAudioCallSession->GetNoiseReducer()->Reset();
@@ -358,6 +367,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::ResetRecorderGain()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Resetting Recorder Gain");
 		if (m_pAudioCallSession->GetRecorderGain().get())
 		{
 			m_pAudioCallSession->GetRecorderGain().reset();
@@ -375,6 +385,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::ResetAudioEffects()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Resetting Audio Effects");
 		ResetAEC();
 		ResetNS();
 		ResetKichCutter();
@@ -384,6 +395,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::SyncRecordingTime()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Recording time sync started");
 		if (m_b1stRecordedDataSinceCallStarted)
 		{
 			Tools::SOSleep(RECORDER_STARTING_SLEEP_IN_MS);
@@ -558,12 +570,12 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchDataToChunk, long long llRelativeTime, int nFrameLengthInByte)
 	{
 		NearEndLockerStoreDataForChunk lock(*m_pAudioEncodingMutex);
-
+		MediaLog(LOG_DEBUG, "[ANEDP][SDC] Relative time: %lld, Frame length: %d", llRelativeTime, nFrameLengthInByte);
 
 		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
 		{
 			HITLER("#RT# update lastChunkLastFrame time %lld", llRelativeTime);
-			m_llLastChunkLastFrameRT = max(0LL, llRelativeTime-100);
+			m_llLastChunkLastFrameRT = max(0LL, llRelativeTime - 100);
 		}
 
 		m_llLastFrameRT = llRelativeTime;
@@ -576,10 +588,11 @@ namespace MediaSDK
 		}
 	}
 
-	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchNearData, int nNearFrameLengthInByte, 
+	void AudioNearEndDataProcessor::StoreDataForChunk(unsigned char *uchNearData, int nNearFrameLengthInByte,
 		unsigned char *uchFarData, int nFarFrameLengthInByte, long long llRelativeTime)
 	{
 		NearEndLockerStoreDataForChunk lock(*m_pAudioEncodingMutex);
+		MediaLog(LOG_DEBUG, "[ANEDP][SDC] Relative time: %lld, Far Frame length: %d, Near Frame Length: %d", llRelativeTime, nFarFrameLengthInByte, nNearFrameLengthInByte);
 
 		if (0 == m_nStoredDataLengthNear && -1 == m_llLastChunkLastFrameRT)
 		{
@@ -590,7 +603,7 @@ namespace MediaSDK
 		m_llLastFrameRT = llRelativeTime;
 
 		MediaLog(LOG_CODE_TRACE, "[ANEDP] m_nStoredDataLengthNear = %d[%d], m_nStoredDataLengthFar = %d[%d]", m_nStoredDataLengthNear, nNearFrameLengthInByte, m_nStoredDataLengthFar, nFarFrameLengthInByte);
-		
+
 		if ((m_nStoredDataLengthNear + nNearFrameLengthInByte) < MAX_AUDIO_DATA_TO_SEND_SIZE)
 		{
 			memcpy(m_ucaRawDataToSendNear + m_nStoredDataLengthNear, uchNearData, nNearFrameLengthInByte);
@@ -646,7 +659,7 @@ namespace MediaSDK
 		m_pAudioNearEndPacketHeader->SetInformation(nPacketLength, INF_LIVE_FRAME_LENGTH);
 		m_pAudioNearEndPacketHeader->SetInformation(llRelativeTime, INF_LIVE_TIMESTAMP);
 		m_pAudioNearEndPacketHeader->SetInformation(nEchoStateFlags, INF_LIVE_ECHO_STATE_FLAGS);
-					
+
 		MediaLog(LOG_DEBUG, "[ANEDP][ECHOFLAG] setting to header nEchoStateFlags = %d\n", nEchoStateFlags);
 
 		m_pAudioNearEndPacketHeader->ShowDetails("[ANEDP] BuildHeaderForLive");
@@ -684,11 +697,13 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::ClearRecordBuffer()
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Clearing Record Buffer");
 		m_recordBuffer->Clear();
 	}
 
 	void AudioNearEndDataProcessor::PushDataInRecordBuffer(short *data, int dataLen)
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Pushing data in record buffer, length: %d", dataLen);
 		m_recordBuffer->PushData(data, dataLen);
 		m_pAudioSessionStatistics->UpdateOnDataArrive(dataLen);
 	}
@@ -710,7 +725,7 @@ namespace MediaSDK
 			return;
 		}
 
-		MediaLog(LOG_CODE_TRACE,"[ANEDP] lastFrameRT: %lld, lastChunkLastFrameRT: %lld", m_llLastFrameRT, m_llLastChunkLastFrameRT);
+		MediaLog(LOG_CODE_TRACE, "[ANEDP] lastFrameRT: %lld, lastChunkLastFrameRT: %lld", m_llLastFrameRT, m_llLastChunkLastFrameRT);
 
 		llAudioChunkDuration = m_llLastFrameRT - m_llLastChunkLastFrameRT;
 
@@ -723,10 +738,10 @@ namespace MediaSDK
 
 		llAudioChunkRelativeTime = m_llLastChunkLastFrameRT;
 		m_llLastChunkLastFrameRT = m_llLastFrameRT;
-		
+
 		/*  COPY NEAR_END DATA */
 		vCombinedDataLengthVector = m_vRawFrameLengthNear;
-		memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendNear, m_nStoredDataLengthNear); 
+		memcpy(pAudioCombinedDataToSend, m_ucaRawDataToSendNear, m_nStoredDataLengthNear);
 		CombinedLength += m_nStoredDataLengthNear;
 		nDataLengthNear = m_nStoredDataLengthNear;
 
@@ -767,6 +782,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::StartCallInLive(int nEntityType)
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Starting call in live, Entity: %d", nEntityType);
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
 			NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
@@ -784,6 +800,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::StopCallInLive(int nEntityType)
 	{
+		MediaLog(LOG_DEBUG, "[ANEDP] Starting call in live, Entity: %d", nEntityType);
 		if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 		{
 			NearEndLockerGetAudioDataToSend lock(*m_pAudioEncodingMutex);
