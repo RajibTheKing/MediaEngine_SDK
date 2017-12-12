@@ -1,3 +1,13 @@
+Release 12.19.1 (Date: 09-12-2017)
+---------------------------------
+- Fixed crash of GetDeviceInformation [Issue# 5350]
+
+Release 12.19 (Date: 06-12-2017)
+---------------------------------
+- Some new assembly functions introduced
+- Disable KitchCutter, NS, AGC for all features of iOS [Issue# 5261]
+
+
 Release 12.18 (Date: 29-11-2017)
 ---------------------------------
 - Device information sending option. [Issue#5247]

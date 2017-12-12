@@ -100,11 +100,55 @@ pop { r4-r8, pc }
 
 NEON_ARM_FUNC_END
 
-#ifdef ASSEMBLY_IOS
-.section	__TEXT,__cstring,cstring_literals
-output:                               ; @.str
-.asciz	"Is this ok.. The Value FF is: %d Yes I am done\n"
-#endif
+NEON_ARM_FUNC_BEGIN convert_i420_to_nv12_arm_neon
+# r0: Ptr to source data
+# r1: Ptr to destination data
+# r2: height
+# r3: width
+push {r4-r8,lr}
+mul r4, r2, r3
+mov r5, r4
+
+### Y-Values
+ands r8, r4, #7
+beq .convert_i420_to_nv12_arm_neon_loop_Y
+vld1.u8 {d0}, [r0], r8
+vst1.u8 {d0}, [r1], r8
+subs r4, r4, r8
+
+.convert_i420_to_nv12_arm_neon_loop_Y:
+vld1.u8  {d0}, [r0]!
+vst1.u8  {d0}, [r1]!
+subs    r4, r4, #8
+bne  .convert_i420_to_nv12_arm_neon_loop_Y
+
+mov r6, r0
+mov r7, r0
+
+add r7, r7, r5, lsr #2
+
+### UV Values
+lsrs r4, r5, #2
+ands r8, r4, #7
+lsr r4, r5, #1
+
+beq .convert_i420_to_nv12_arm_neon_loop_UV
+vld1.u8 {d0}, [r6], r8
+vld1.u8 {d1}, [r7], r8
+lsls r8, r8, #1
+vst2.u8 {d0, d1}, [r1], r8
+sub r4, r4, r8
+
+.convert_i420_to_nv12_arm_neon_loop_UV:
+vld1.u8 {d0}, [r6]!
+vld1.u8 {d1}, [r7]!
+vst2.u8 {d0, d1}, [r1]!
+subs r4, r4, #16
+bne  .convert_i420_to_nv12_arm_neon_loop_UV
+
+pop { r4-r8, pc }
+NEON_ARM_FUNC_END
+
 
 NEON_ARM_FUNC_BEGIN crop_yuv420_arm_neon
 #r0 src data
@@ -228,6 +272,19 @@ bne .crop_yuv420_arm_neon_UV_Process
 pop { r3-r11, pc }
 NEON_ARM_FUNC_END
 
+#ifdef ASSEMBLY_IOS
+.section	__TEXT,__cstring,cstring_literals
+HWCheck: .asciz	"[TheKing-AssemblyLog]--> H:W  : %d:%d\n"
+output1: .asciz	"[TheKing-AssemblyLog]--> The Value is: %d\n"
+output2: .asciz	"[TheKing-AssemblyLog]--> The Length = %d\n"
+#endif
+
+#
+#Printf Calling Procedure
+#mov r1, r6         ;keeping Height in 2nd param
+#mov r2, r7         ;keeping width in 3rd param
+#ldr r0,=HWCheck    ;keeping log format in 1st param
+#bl	_printf
 
 #endif
 

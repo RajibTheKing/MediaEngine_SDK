@@ -425,11 +425,11 @@ m_VideoBeautificationer(NULL)
 				{
 					int iChangedGotHeight, iChangedGotWidth;
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-					nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
+					nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaEncodingFrame, iGotHeight, iGotWidth, DEVICE_SCREEN_HEIGHT, DEVICE_SCREEN_WIDTH, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
 					memcpy(m_ucaEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
 #else
 
-					nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, 1920, 1130, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
+					nEncodingFrameSize = m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaConvertedEncodingFrame, iGotHeight, iGotWidth, DEVICE_SCREEN_HEIGHT, DEVICE_SCREEN_WIDTH, m_ucaCropedFrame, iChangedGotHeight, iChangedGotWidth, YUVYV12);
 					memcpy(m_ucaConvertedEncodingFrame, m_ucaCropedFrame, nEncodingFrameSize);
 #endif
 					iGotHeight = iChangedGotHeight;
@@ -478,7 +478,7 @@ m_VideoBeautificationer(NULL)
 					int newHeight;
 					int newWidth;
 
-					m_pColorConverter->CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, 1920, 1130, newHeight, newWidth);
+					m_pColorConverter->CalculateAspectRatioWithScreenAndModifyHeightWidth(iHeight, iWidth, DEVICE_SCREEN_HEIGHT, DEVICE_SCREEN_WIDTH, newHeight, newWidth);
 
 					if (m_bVideoEffectEnabled == true && !(m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true))
 					{

@@ -97,7 +97,50 @@ BNE  .convert_nv12_to_i420_arm_neon_loop_V
 
 NEON_ARM_AACH64_FUNC_END
 
+NEON_ARM_AACH64_FUNC_BEGIN convert_i420_to_nv12_arm_neon_aarch64
+# r0: Ptr to source data
+# r1: Ptr to destination data
+# r2: height
+# r3: width
+MUL X4, X2, X3
+MOV X5, X4
 
+#Y-Values
+ANDS X8, X4, #15
+beq .convert_i420_to_nv12_arm_neon_aarch64_loop_Y
+LD1 {V0.16B}, [X0], X8
+ST1 {V0.16B}, [X1], X8
+SUBS X4, X4, X8
+
+.convert_i420_to_nv12_arm_neon_aarch64_loop_Y:
+LD1  {V0.16B}, [X0], #16
+ST1  {V0.16B}, [X1], #16
+SUBS  X4, X4, #16
+bne  .convert_i420_to_nv12_arm_neon_aarch64_loop_Y
+MOV X6, X0
+MOV X7, X0
+
+ADD X7, X7, X5, lsr #2
+### UV Values
+LSR X4, X5, #2
+ANDS X8, X4, #7
+LSR X4, X5, #1
+
+beq .convert_i420_to_nv12_arm_neon_aarch64_loop_UV
+LD1 {V0.8B}, [X6], X8
+LD1 {V1.8B}, [X7], X8
+LSL X8, X8, #1
+ST2 {V0.8B, V1.8B}, [X1], X8
+SUB X4, X4, X8
+
+.convert_i420_to_nv12_arm_neon_aarch64_loop_UV:
+LD1 {V0.8B}, [X6], #8
+LD1 {V1.8B}, [X7], #8
+ST2 {V0.8B, V1.8B}, [X1], #16
+SUBS X4, X4, #16
+bne  .convert_i420_to_nv12_arm_neon_aarch64_loop_UV
+
+NEON_ARM_AACH64_FUNC_END
 
 NEON_ARM_AACH64_FUNC_BEGIN crop_yuv420_arm_neon_aarch64
 #X0 src data

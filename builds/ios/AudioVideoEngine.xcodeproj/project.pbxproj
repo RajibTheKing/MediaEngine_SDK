@@ -133,6 +133,10 @@
 		D1E73AE61F65783700ACDE35 /* libwebrtc-agc-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E73AE41F65783700ACDE35 /* libwebrtc-agc-ios.a */; };
 		DA143E7B1F70F48B00BBB746 /* AudioHeaderCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E771F70F48B00BBB746 /* AudioHeaderCall.cpp */; };
 		DA143E7C1F70F48B00BBB746 /* AudioHeaderLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */; };
+		DA1B4EC91FBC3B4100960CA4 /* mirror_YUV420_Assembly_arm64.S in Sources */ = {isa = PBXBuildFile; fileRef = DA1B4EC71FBC3B4100960CA4 /* mirror_YUV420_Assembly_arm64.S */; };
+		DA1B4ECA1FBC3B4100960CA4 /* DownScaleOneFourthAssembly_arm64.S in Sources */ = {isa = PBXBuildFile; fileRef = DA1B4EC81FBC3B4100960CA4 /* DownScaleOneFourthAssembly_arm64.S */; };
+		DA1B4ECD1FBC3B4900960CA4 /* DownScaleOneFourthAssembly_aarch32.S in Sources */ = {isa = PBXBuildFile; fileRef = DA1B4ECB1FBC3B4900960CA4 /* DownScaleOneFourthAssembly_aarch32.S */; };
+		DA1B4ECE1FBC3B4900960CA4 /* mirror_YUV420_Assembly_aarch32.S in Sources */ = {isa = PBXBuildFile; fileRef = DA1B4ECC1FBC3B4900960CA4 /* mirror_YUV420_Assembly_aarch32.S */; };
 		DA61CBEA1F97608B00640ACB /* MultiResolutionThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA61CBE81F97608A00640ACB /* MultiResolutionThread.cpp */; };
 		DA61CBED1F97609800640ACB /* MultiResolutionSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA61CBEB1F97609800640ACB /* MultiResolutionSession.cpp */; };
 		DA61CBF01F9760A300640ACB /* VideoFrameBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA61CBEE1F9760A200640ACB /* VideoFrameBuffer.cpp */; };
@@ -427,6 +431,10 @@
 		DA143E781F70F48B00BBB746 /* AudioHeaderCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderCall.h; sourceTree = "<group>"; };
 		DA143E791F70F48B00BBB746 /* AudioHeaderLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioHeaderLive.cpp; sourceTree = "<group>"; };
 		DA143E7A1F70F48B00BBB746 /* AudioHeaderLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHeaderLive.h; sourceTree = "<group>"; };
+		DA1B4EC71FBC3B4100960CA4 /* mirror_YUV420_Assembly_arm64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = mirror_YUV420_Assembly_arm64.S; path = assembly/arm64/mirror_YUV420_Assembly_arm64.S; sourceTree = "<group>"; };
+		DA1B4EC81FBC3B4100960CA4 /* DownScaleOneFourthAssembly_arm64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = DownScaleOneFourthAssembly_arm64.S; path = assembly/arm64/DownScaleOneFourthAssembly_arm64.S; sourceTree = "<group>"; };
+		DA1B4ECB1FBC3B4900960CA4 /* DownScaleOneFourthAssembly_aarch32.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = DownScaleOneFourthAssembly_aarch32.S; path = assembly/arm/DownScaleOneFourthAssembly_aarch32.S; sourceTree = "<group>"; };
+		DA1B4ECC1FBC3B4900960CA4 /* mirror_YUV420_Assembly_aarch32.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = mirror_YUV420_Assembly_aarch32.S; path = assembly/arm/mirror_YUV420_Assembly_aarch32.S; sourceTree = "<group>"; };
 		DA61CBE81F97608A00640ACB /* MultiResolutionThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiResolutionThread.cpp; sourceTree = "<group>"; };
 		DA61CBE91F97608B00640ACB /* MultiResolutionThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiResolutionThread.h; sourceTree = "<group>"; };
 		DA61CBEB1F97609800640ACB /* MultiResolutionSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiResolutionSession.cpp; sourceTree = "<group>"; };
@@ -982,6 +990,8 @@
 		DAAD0E121F78CE0800606887 /* arm */ = {
 			isa = PBXGroup;
 			children = (
+				DA1B4ECB1FBC3B4900960CA4 /* DownScaleOneFourthAssembly_aarch32.S */,
+				DA1B4ECC1FBC3B4900960CA4 /* mirror_YUV420_Assembly_aarch32.S */,
 				DAAD0E161F78CE2C00606887 /* color_converter_arm_neon_aarch32.S */,
 			);
 			name = arm;
@@ -990,6 +1000,8 @@
 		DAAD0E241F78FCA800606887 /* arm64 */ = {
 			isa = PBXGroup;
 			children = (
+				DA1B4EC81FBC3B4100960CA4 /* DownScaleOneFourthAssembly_arm64.S */,
+				DA1B4EC71FBC3B4100960CA4 /* mirror_YUV420_Assembly_arm64.S */,
 				DAAD0E251F78FCCF00606887 /* color_converter_arm_neon_aarch64.S */,
 			);
 			name = arm64;
@@ -1094,8 +1106,10 @@
 				D1E73AB21F6575B900ACDE35 /* VideoEncoderListHandler.cpp in Sources */,
 				D1E73A741F6575B900ACDE35 /* EchoCancellerProvider.cpp in Sources */,
 				D1E73A981F6575B900ACDE35 /* EventNotifier.cpp in Sources */,
+				DA1B4ECD1FBC3B4900960CA4 /* DownScaleOneFourthAssembly_aarch32.S in Sources */,
 				D1E73A781F6575B900ACDE35 /* NoiseReducerProvider.cpp in Sources */,
 				D1E73A881F6575B900ACDE35 /* LiveAudioParserForChannel.cpp in Sources */,
+				DA1B4ECA1FBC3B4100960CA4 /* DownScaleOneFourthAssembly_arm64.S in Sources */,
 				D1E73AA01F6575B900ACDE35 /* Tools.cpp in Sources */,
 				D1E73AC81F6575B900ACDE35 /* SendingThreadOfCall.cpp in Sources */,
 				D1E73A951F6575B900ACDE35 /* AudioPacketizer.cpp in Sources */,
@@ -1137,6 +1151,7 @@
 				D1E73A811F6575B900ACDE35 /* AudioFarEndProcessorCall.cpp in Sources */,
 				D1E73A9C1F6575B900ACDE35 /* LogPrinter.cpp in Sources */,
 				DAAD0E151F78CE1F00606887 /* NeonAssemblyWrapper.cpp in Sources */,
+				DA1B4ECE1FBC3B4900960CA4 /* mirror_YUV420_Assembly_aarch32.S in Sources */,
 				DA61CBED1F97609800640ACB /* MultiResolutionSession.cpp in Sources */,
 				D1E73A691F6575B900ACDE35 /* AudioDecoderProvider.cpp in Sources */,
 				D1E73AC41F6575B900ACDE35 /* RenderingThreadOfCall.cpp in Sources */,
@@ -1147,6 +1162,7 @@
 				D1E73AA81F6575B900ACDE35 /* RenderingBuffer.cpp in Sources */,
 				D1E73AC21F6575B900ACDE35 /* DeviceCapabilityCheckThread.cpp in Sources */,
 				D1E73A7A1F6575B900ACDE35 /* Trace.cpp in Sources */,
+				DA1B4EC91FBC3B4100960CA4 /* mirror_YUV420_Assembly_arm64.S in Sources */,
 				D1E73A901F6575B900ACDE35 /* AudioNearEndDataProcessor.cpp in Sources */,
 				D1E73AC01F6575B900ACDE35 /* VideoCallSessionListHandler.cpp in Sources */,
 				DA61CBF01F9760A300640ACB /* VideoFrameBuffer.cpp in Sources */,
