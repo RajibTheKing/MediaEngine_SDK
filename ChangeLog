@@ -1,3 +1,7 @@
+Release 12.20 (Date: 12-12-2017)
+---------------------------------
+- Refactored Audio module [Issue# 2098]
+
 Release 12.19.1 (Date: 09-12-2017)
 ---------------------------------
 - Fixed crash of GetDeviceInformation [Issue# 5350]
