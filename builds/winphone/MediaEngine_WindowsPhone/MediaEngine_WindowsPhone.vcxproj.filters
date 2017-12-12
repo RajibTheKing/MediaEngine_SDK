@@ -427,11 +427,11 @@
     <ClCompile Include="..\..\..\sources\utility\AudioDumper.cpp">
       <Filter>utility</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\audio\main\AudioDeviceInformation.cpp">
-      <Filter>audio\main</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\audio\dsp\KichCutter.cpp">
       <Filter>audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\audio\main\AudioSessionStatistics.cpp">
+      <Filter>audio\main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -865,11 +865,11 @@
     <ClInclude Include="..\..\..\sources\utility\AudioDumper.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sources\audio\main\AudioDeviceInformation.h">
-      <Filter>audio\main</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\dsp\KichCutter.h">
       <Filter>audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\audio\main\AudioSessionStatistics.h">
+      <Filter>audio\main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
