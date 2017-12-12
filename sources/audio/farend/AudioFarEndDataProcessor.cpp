@@ -109,20 +109,16 @@ namespace MediaSDK
 			}
 		}
 
-		if (m_pAudioDePacketizer)
+		if (nullptr != m_pAudioDePacketizer)
 		{
 			delete m_pAudioDePacketizer;
 			m_pAudioDePacketizer = nullptr;
 		}
-		//if (m_ReceivingHeader)
-		//{
-		//delete m_ReceivingHeader;
-		//m_ReceivingHeader = nullptr;
-		//}
-		if (m_pLiveAudioParser)
+
+		if (nullptr != m_pLiveAudioParser)
 		{
 			delete m_pLiveAudioParser;
-			m_pLiveAudioParser = NULL;
+			m_pLiveAudioParser = nullptr;
 		}
 	}
 

@@ -7,8 +7,7 @@
 
 namespace MediaSDK
 {
-	class AudioPacketHeader;
-	class AudioSessionStatistics;
+	class AudioPacketHeader;	
 	class CAudioCallSession;
 	class SessionStatisticsInterface;
 

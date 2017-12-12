@@ -81,7 +81,7 @@ namespace MediaSDK
 		short m_saNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
 		int  m_iDeleteCount;
-		CTrace *m_pTrace;
+		CTrace *m_pTrace = nullptr;
 		long long m_llTraceSendingTime;
 		long long m_llTraceReceivingTime;
 		int m_nFramesRecvdSinceTraceSent;
@@ -114,7 +114,7 @@ namespace MediaSDK
 		SharedPointer<CAudioShortBuffer> m_pAudioNearEndBuffer;
 		SharedPointer<AudioEncoderInterface> m_pAudioEncoder;
 
-		AudioSessionStatistics *m_pAudioSessionStatistics;
+		AudioSessionStatistics *m_pAudioSessionStatistics = nullptr;
 
 	private:
 

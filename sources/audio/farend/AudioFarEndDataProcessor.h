@@ -73,7 +73,7 @@ namespace MediaSDK
 		short m_saPlayingData[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 
 		//LiveReceiver *m_pLiveReceiverAudio = nullptr;
-		ILiveAudioParser* m_pLiveAudioParser;
+		ILiveAudioParser* m_pLiveAudioParser = nullptr;
 		AudioDePacketizer* m_pAudioDePacketizer = nullptr;
 		SharedPointer<CAudioByteBuffer> m_AudioReceivedBuffer;		
 	protected:

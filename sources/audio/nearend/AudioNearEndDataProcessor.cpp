@@ -105,9 +105,10 @@ namespace MediaSDK
 			//delete m_pAudioPacketHeader;
 		}
 
-		if (m_recordBuffer)
+		if (m_recordBuffer != nullptr)
 		{
 			delete m_recordBuffer;
+			m_recordBuffer = nullptr;
 		}
 
 		if (m_pRecordedNE != nullptr)
@@ -152,10 +153,10 @@ namespace MediaSDK
 			m_pProcessedNE = nullptr;
 		}
 
-		if (m_pTrace)
+		if (m_pTrace != nullptr)
 		{
 			delete m_pTrace;
-			m_pTrace = NULL;
+			m_pTrace = nullptr;
 		}
 
 		if (nullptr != m_pKichCutter)
@@ -164,9 +165,10 @@ namespace MediaSDK
 			m_pKichCutter = nullptr;
 		}
 
-		if (m_pAudioSessionStatistics)
+		if (nullptr != m_pAudioSessionStatistics)
 		{
 			delete m_pAudioSessionStatistics;
+			m_pAudioSessionStatistics = nullptr;
 		}
 	}
 
