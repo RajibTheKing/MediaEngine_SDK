@@ -1,7 +1,7 @@
 #include "WebRTCEchoCanceller.h"
 
 #include "Tools.h"
-#include "LogPrinter.h"
+#include "MediaLogger.h"
 
 #ifdef USE_AECM
 extern int gEchoType;
@@ -19,9 +19,6 @@ FILE *EchoFile = nullptr;
 #define NEAREND 3
 #endif
 
-#ifndef ALOG
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
-#endif
 
 namespace MediaSDK
 {
@@ -34,7 +31,7 @@ namespace MediaSDK
 
 	WebRTCEchoCanceller::WebRTCEchoCanceller(bool isLiveRunning) : m_bAecmCreated(false), m_bAecmInited(false)
 	{
-		LOGFARQUAD("WebRTCEchoCanceller constructor");
+		//MediaLog(LOG_DEBUG, "WebRTCEchoCanceller constructor");
 
 #ifdef USE_AECM
 #ifdef ECHO_ANALYSIS
@@ -50,25 +47,25 @@ namespace MediaSDK
 		iAECERR = WebRtcAecm_Init(AECM_instance, AUDIO_SAMPLE_RATE);
 		if (iAECERR)
 		{
-			ALOG("WebRtcAecm_Init failed");
+			//MediaLog(LOG_DEBUG, "WebRtcAecm_Init failed");
 		}
 		else
 		{
-			ALOG("WebRtcAecm_Init successful");
+			//MediaLog(LOG_DEBUG, "WebRtcAecm_Init successful");
 			m_bAecmInited = true;
 		}
 
 		AecmConfig aecConfig;
 		aecConfig.cngMode = AecmFalse;
 		aecConfig.echoMode = 4;
-		LOG18("##TT echo level %d", (int)aecConfig.echoMode);
+		//MediaLog(CODE_TRACE, "##TT echo level %d", (int)aecConfig.echoMode);
 		if (WebRtcAecm_set_config(AECM_instance, aecConfig) == -1)
 		{
-			ALOG("WebRtcAecm_set_config unsuccessful");
+			//MediaLog(CODE_TRACE, "WebRtcAecm_set_config unsuccessful");
 		}
 		else
 		{
-			ALOG("WebRtcAecm_set_config successful");
+			//MediaLog(CODE_TRACE, "WebRtcAecm_set_config successful");
 		}
 		memset(m_sZeroBuf, 0, AECM_SAMPLES_IN_FRAME * sizeof(short));
 
@@ -82,7 +79,7 @@ namespace MediaSDK
 	WebRTCEchoCanceller::~WebRTCEchoCanceller()
 	{
 #ifdef USE_AECM
-		ALOG("WebRtcAec_destructor called");
+		//MediaLog(CODE_TRACE, "WebRtcAec_destructor called");
 		WebRtcAecm_Free(AECM_instance);
 #endif
 
@@ -131,10 +128,9 @@ namespace MediaSDK
 			}
 			if (0 != iAecmResult)
 			{
-				ALOG("WebRtcAec_Process failed bAecmCreated = " + m_Tools.IntegertoStringConvert((int)bAecmCreated) + " delay = " + m_Tools.IntegertoStringConvert((int)llDelay)
-					+ " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance)) + " id = " + m_Tools.IntegertoStringConvert(m_ID)
-					+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-					+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
+				/*MediaLog(CODE_TRACE, "WebRtcAec_Process failed bAecmCreated = %d delay = %d err = %d id = %d iCounter = %d iCounter2 = %d",
+					(int)bAecmCreated, (int)llDelay, (int)WebRtcAecm_get_error_code(AECM_instance), (int)m_ID, iCounter, iCounter2);*/
+					
 				bFailed = true;
 			}
 	
@@ -162,7 +158,7 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[WebRTCE] Add Far end Data: %d", sBufferSize);
 #ifdef USE_AECM
 
-		LOG18("Farending2");
+		//MediaLog(CODE_TRACE, "Farending2");
 
 		for (int i = 0; i < sBufferSize; i += AECM_SAMPLES_IN_FRAME)
 		{
@@ -183,16 +179,17 @@ namespace MediaSDK
 #endif
 			if (0 != WebRtcAecm_BufferFarend(AECM_instance, sBuffer + i, AECM_SAMPLES_IN_FRAME))
 			{
-				ALOG("WebRtcAec_BufferFarend failed id = " + m_Tools.IntegertoStringConvert(m_ID) + " err = " + m_Tools.IntegertoStringConvert(WebRtcAecm_get_error_code(AECM_instance))
-					+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-					+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));
+				/*MediaLog(CODE_TRACE, "WebRtcAec_BufferFarend failed id = %lld err =  iCounter = %d iCounter2 = %d"
+				, m_ID, (int)WebRtcAecm_get_error_code(AECM_instance), iCounter, iCounter2);
+				*/
+					
 			}
 			else
 			{
-				m_llLastFarendTime = Tools::CurrentTimestamp();
-				/*ALOG("WebRtcAec_BufferFarend successful id = " + m_Tools.IntegertoStringConvert(m_ID)
-				+ " iCounter = " + m_Tools.IntegertoStringConvert(iCounter)
-				+ " iCounter2 = " + m_Tools.IntegertoStringConvert(iCounter2));*/
+				m_llLastFarendTime = Tools::CurrentTimestamp();				
+
+				/*MediaLog(CODE_TRACE, "WebRtcAec_BufferFarend successful id = %lld err =  iCounter = %d iCounter2 = %d"
+				, m_ID, (int)WebRtcAecm_get_error_code(AECM_instance), iCounter, iCounter2);				*/
 			}
 			m_bNearEndingOrFarEnding = false;
 		}

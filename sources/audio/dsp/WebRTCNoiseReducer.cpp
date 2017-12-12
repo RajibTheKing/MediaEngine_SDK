@@ -1,13 +1,10 @@
 #include "WebRTCNoiseReducer.h"
 
 #include "AudioMacros.h"
-#include "LogPrinter.h"
 #include "Tools.h"
 #include "MediaLogger.h"
 
-#ifndef ALOG
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
-#endif
+
 
 #define ANS_SAMPLES_IN_FRAME 80
 
@@ -61,20 +58,20 @@ namespace MediaSDK
 		NS_instance = WebRtcNsx_Create();
 		if ((ansret = WebRtcNsx_Init(NS_instance, AUDIO_SAMPLE_RATE)))
 		{
-			ALOG("WebRtcNs_Init failed with error code= " + Tools::IntegertoStringConvert(ansret));
+			//MediaLog(CODE_TRACE, "WebRtcNs_Init failed with error code= %d",ansret);
 		}
 		else
 		{
-			ALOG("WebRtcNs_Init successful");
+			//MediaLog(CODE_TRACE, "WebRtcNs_Init successful");
 		}
 
 		if ((ansret = WebRtcNsx_set_policy(NS_instance, Undocumented)))
 		{
-			ALOG("WebRtcNs_set_policy failed with error code = " + Tools::IntegertoStringConvert(ansret));
+			//MediaLog(CODE_TRACE, "WebRtcNs_set_policy failed with error code = %d", ansret);
 		}
 		else
 		{
-			ALOG("WebRtcNs_set_policy successful");
+			//MediaLog(CODE_TRACE, "WebRtcNs_set_policy successful");
 		}
 
 #endif

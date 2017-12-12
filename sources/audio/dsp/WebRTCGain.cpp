@@ -12,9 +12,6 @@
 
 #include "AudioMacros.h"
 
-#ifndef ALOG
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
-#endif
 //#define GAIN_DUMP
 
 namespace MediaSDK
@@ -39,7 +36,7 @@ namespace MediaSDK
 		m_iSkipFrames = 20; //don't add gain for first 20 frames.
 
 #ifdef USE_AGC
-		LOGT("###GN##55 #gain# WebRTCGain::WebRTCGain()");
+		//MediaLog(CODE_TRACE, "###GN##55 #gain# WebRTCGain::WebRTCGain()");
 
 		m_iVolume = DEFAULT_GAIN;
 		//m_sTempBuf = new short[3000]; //For channel max buffer size required is 2048 otherwise 800
@@ -65,11 +62,11 @@ namespace MediaSDK
 		
 		if (WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, WEBRTC_AGC_MAX_LEVEL, MODE_ADAPTIVE_DIGITAL, serviceType == SERVICE_TYPE_CHANNEL ? 48000 : AUDIO_SAMPLE_RATE)) //Channel's audio sample rate is 44100 but webrtc fails on 44100
 		{
-			LOGT("###GN## WebRtcAgc_Init failed");
+			//MediaLog(CODE_TRACE, "###GN## WebRtcAgc_Init failed");
 		}
 		else
 		{
-			LOGT("###GN## WebRtcAgc_Init successful servicetype:%d", serviceType);
+			//MediaLog(CODE_TRACE, "###GN## WebRtcAgc_Init successful servicetype:%d", serviceType);
 		}
 
 		SetGain(m_iVolume);
@@ -80,14 +77,10 @@ namespace MediaSDK
 	WebRTCGain::~WebRTCGain()
 	{
 #ifdef USE_AGC
-		LOGT("###GN## #gain# WebRTCGain::~WebRTCGain()");
+		//MediaLog(CODE_TRACE, "###GN## #gain# WebRTCGain::~WebRTCGain()");
 
 		WebRtcAgc_Free(AGC_instance);
-/*
-		if (m_sTempBuf)
-		{
-			delete m_sTempBuf;
-		}*/
+
 #endif
 		m_iSkipFrames = 0;
 #ifdef GAIN_DUMP
@@ -137,15 +130,15 @@ namespace MediaSDK
 
 		if (WebRtcAgc_set_config(AGC_instance, gain_config))
 		{
-			LOGT("###GN## WebRtcAgc_set_config failed  ");
+			//MediaLog(CODE_TRACE, "###GN## WebRtcAgc_set_config failed  ");
 			return false;
 		}
 		else
 		{
-			LOGT("###GN## WebRtcAgc_set_config successful");
+			//MediaLog(CODE_TRACE, "###GN## WebRtcAgc_set_config successful");
 		}
 
-		//LOGT("###GN## setgain called with %d", iGain);
+		//MediaLog(CODE_TRACE, "###GN## setgain called with %d", iGain);
 
 #endif
 
@@ -155,7 +148,7 @@ namespace MediaSDK
 
 	bool WebRTCGain::AddFarEnd(short *sInBuf, int nBufferSize)
 	{
-		MediaLog(LOG_DEBUG, "[WebRTCG] Add far end data size: %d", nBufferSize);
+		MediaLog(CODE_TRACE, "[WebRTCG] Add far end data size: %d", nBufferSize);
 #ifdef USE_AGC
 
 
@@ -168,7 +161,7 @@ namespace MediaSDK
 			return true;
 		}
 
-		LOGT("###GN## #gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
+		MediaLog(CODE_TRACE, "###GN## #gain# WebRTCGain::AddFarEnd(), %d", nBufferSize);
 
 		for (int i = 0; i < nBufferSize; i += m_iSampleSize)
 		{
@@ -184,7 +177,7 @@ namespace MediaSDK
 
 	bool WebRTCGain::AddGain(short *sInBuf, int nBufferSize, bool bPlayerSide, int nEchoStateFlags)
 	{
-		MediaLog(LOG_DEBUG, "[WebRTCG] Add Gain buffer size: %d, player side: %d, echo state flag: %d", nBufferSize, bPlayerSide, nEchoStateFlags);
+		MediaLog(CODE_TRACE, "[WebRTCG] Add Gain buffer size: %d, player side: %d, echo state flag: %d", nBufferSize, bPlayerSide, nEchoStateFlags);
 		//if not in call (normal or live), set nEchoStateFlags to 0
 		//TODO: handle addgain parameter's for channel
 #ifdef USE_AGC
@@ -222,7 +215,7 @@ namespace MediaSDK
 				//int16_t* out_buf_temp = sInBuf + i;
 				if (0 != WebRtcAgc_VirtualMic(AGC_instance, (int16_t* const*)&in_buf_temp, 1, m_iSampleSize, inMicLevel, &outMicLevel))
 				{
-					LOGT("###GN## WebRtcAgc_VirtualMic failed");
+					MediaLog(CODE_TRACE, "###GN## WebRtcAgc_VirtualMic failed");
 					bSucceeded = false;
 				}
 
@@ -230,22 +223,18 @@ namespace MediaSDK
 				if (0 != WebRtcAgc_Process(AGC_instance, (const int16_t* const*)&in_buf_temp, 1, m_iSampleSize,
 					(int16_t* const*)&in_buf_temp, outMicLevel, &inMicLevel, 1, &saturationWarning))
 				{
-					LOGT("###GN## WebRtcAgc_Process failed");
+					MediaLog(CODE_TRACE, "###GN## WebRtcAgc_Process failed");
 					bSucceeded = false;
 				}
 			}
 			//total -= m_iSampleSize;
-			//LOGT("##TTGN i:%d bufsize:%d total:%d", i, nBufferSize, total);
+			
 		}
 
 #ifdef GAIN_DUMP
 		fwrite(sInBuf, 2, nBufferSize, gainOut);
 #endif
 
-		//LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d unprocessed:%d samplesize:%d", nBufferSize, m_iVolume, total, m_iSampleSize);
-		LOGT("###GN## #gain# WebRTCGain::AddGain(), size:%d gainLevel:%d samplesize:%d", nBufferSize, m_iVolume, m_iSampleSize);
-
-		//LOGT("###GN## addgain done with : %d volumeaverage:%d", bSucceeded, (int)(total/counter));
 		return bSucceeded;
 #else
 		return true;

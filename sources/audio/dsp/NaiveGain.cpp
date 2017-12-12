@@ -1,11 +1,8 @@
 #include "NaiveGain.h"
 
 #include "AudioMacros.h"
-#include "LogPrinter.h"
+#include "MediaLogger.h"
 
-#ifndef ALOG
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
-#endif
 
 namespace MediaSDK
 {
@@ -37,7 +34,7 @@ namespace MediaSDK
 		if (iGain >= 0 && iGain <= MAX_GAIN)
 		{
 			m_iVolume = iGain;
-			ALOG("SetVolume called with: " + Tools::IntegertoStringConvert(iVolume));
+			//MediaLog(LOG_DEBUG, "SetVolume called with: %d",iVolume);
 		}
 		else
 		{

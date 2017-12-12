@@ -111,7 +111,7 @@ namespace MediaSDK
 			nbBytes = max(nbBytes, 0); //If opus return -1. Not sure about that.
 			if (nbBytes == 0)
 			{
-				//			ALOG( "#EXP#**************************** Encode Failed");
+				//MediaLog(LOG_DEBUG, "**************************** Encode Failed");
 			}
 			out_buffer[nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter] = (nbBytes & 0x000000FF);
 			out_buffer[nEncodedSize + BYTES_TO_STORE_AUDIO_EFRAME_LEN * iFrameCounter + 1] = (nbBytes >> 8);
@@ -130,7 +130,7 @@ namespace MediaSDK
 
 		if (nProcessedDataSize != in_size)
 		{
-			//		ALOG( "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
+			//MediaLog(LOG_DEBUG, "#EXP# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Unused Data");
 		}
 
 		return nEncodedPacketLength;
@@ -139,8 +139,6 @@ namespace MediaSDK
 
 	bool EncoderOpus::SetBitrate(int nBitrate)
 	{
-		MR_DEBUG("#resorce#encoder#opus# EncoderOpus::SetBitrate()");
-
 		int ret = opus_encoder_ctl(encoder, OPUS_SET_BITRATE(nBitrate));
 		m_iCurrentBitRate = nBitrate;
 
@@ -150,8 +148,6 @@ namespace MediaSDK
 
 	bool EncoderOpus::SetComplexity(int nComplexity)
 	{
-		MR_DEBUG("#resorce#encoder#opus# EncoderOpus::SetComplexity()");
-
 		int ret = opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(nComplexity));
 		m_iComplexity = nComplexity;
 

@@ -486,16 +486,8 @@ namespace MediaSDK
 
 	int CAudioCallSession::PushAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
-		//	HITLER("#@#@26022017## ENCODE DATA SMAPLE LENGTH %u", unLength);
-		/*if (CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bLiveAudioStreamRunning) != unLength)
-		{
-		ALOG("Invalid Audio Frame Length");
-		return -1;
-		}*/
-		//	CLogPrinter_Write(CLogPrinter::INFO, "CAudioCallSession::EncodeAudioData");
-		//m_bRecordingStarted = true;
-		//LOGT("##TT encodeaudiodata");
-		//int returnedValue = m_AudioNearEndBuffer.EnQueue(psaEncodingAudioData, unLength, Tools::CurrentTimestamp());
+		
+		MediaLog(LOG_DEBUG, "[CL][NE] DataToMedia Size: %u", unLength);
 
 		m_pNearEndProcessor->PushDataInRecordBuffer(psaEncodingAudioData, unLength);
 

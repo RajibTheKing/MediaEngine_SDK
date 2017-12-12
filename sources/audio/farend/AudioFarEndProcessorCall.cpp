@@ -22,8 +22,6 @@ namespace MediaSDK
 
 	void FarEndProcessorCall::ProcessFarEndData()
 	{
-		//	MR_DEBUG("#farEnd# FarEndProcessorCall::ProcessFarEndData()");
-
 		int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
 		long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
 		double dbTotalTime = 0; //MeaningLess
@@ -35,10 +33,10 @@ namespace MediaSDK
 		{
 			m_bProcessFarendDataStarted = true;
 			DequeueData(m_nDecodingFrameSize);
-			LOG18("#18#FE#AudioCall...");
+			
 			if (m_nDecodingFrameSize < 1)
 			{
-				//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
+				MediaLog(CODE_TRACE, "[FE] Too small data");
 				return;
 			}
 
@@ -52,46 +50,46 @@ namespace MediaSDK
 
 			MediaLog(LOG_DEBUG, "[ECHOFLAG] playerside nEchoStateFlags = %d\n", nEchoStateFlags);
 
-			HITLER("XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
+			MediaLog(CODE_TRACE, "XXP@#@#MARUF FOUND DATA OF LENGTH -> [%d %d] %d frm len = %d", iPacketNumber, iBlockNumber, nPacketDataLength, nFrameLength);
 
 			if (!IsPacketTypeSupported(nCurrentAudioPacketType))
 			{
-				HITLER("XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
+				MediaLog(CODE_TRACE, "XXP@#@#MARUF REMOVED PACKET TYPE SUPPORTED");
 				return;
 			}
 
 			if (!IsPacketProcessableInNormalCall(nCurrentAudioPacketType, nVersion))
 			{
-				HITLER("XXP@#@#MARUF REMOVED PACKET PROCESSABLE IN NORMAL CALL");
+				MediaLog(CODE_TRACE, "XXP@#@#MARUF REMOVED PACKET PROCESSABLE IN NORMAL CALL");
 				return;
 			}
 
 			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
 			llNow = Tools::CurrentTimestamp();
 			bIsCompleteFrame = m_pAudioDePacketizer->dePacketize(m_ucaDecodingFrame + nCurrentPacketHeaderLength, iBlockNumber, nNumberOfBlocks, nPacketDataLength, iOffsetOfBlock, iPacketNumber, nFrameLength, llNow, m_llLastTime);
-			HITLER("XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
+			MediaLog(CODE_TRACE, "XXP@#@#MARUF [%d %d]", iPacketNumber, iBlockNumber);
 			if (bIsCompleteFrame){
 				//m_ucaDecodingFrame
-				HITLER("XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
+				MediaLog(CODE_TRACE, "XXP@#@#MARUF Complete[%d %d]", iPacketNumber, iBlockNumber);
 
 				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
 			}
 			llNow = Tools::CurrentTimestamp();
 
 			if (bIsCompleteFrame){
-				HITLER("XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
+				MediaLog(CODE_TRACE, "XXP@#@#MARUF WORKING ON COMPLETE FRAME . ");
 				m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-				HITLER("XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
+				MediaLog(CODE_TRACE, "XXP@#@#MARUF  -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
 				DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
 				DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
 				PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
-				HITLER("XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
+				MediaLog(CODE_TRACE, "XXP@#@#MARUF AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
 				if (m_nDecodedFrameSize < 1)
 				{
-					HITLER("XXP@#@#MARUF REMOVED FOR LOW SIZE.");
+					MediaLog(CODE_TRACE, "XXP@#@#MARUF REMOVED FOR LOW SIZE.");
 					return;
 				}
-				LOG18("#18#FE#AudioCall SendToPlayer");
+				MediaLog(CODE_TRACE, "FE#AudioCall SendToPlayer");
 
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
 #ifndef USE_AECM
@@ -147,8 +145,7 @@ namespace MediaSDK
 		if (false == m_bIsLiveStreamingRunning)
 		{
 			if (AUDIO_SKIP_PACKET_TYPE == nCurrentAudioPacketType)
-			{
-				//ALOG("#V#TYPE# ############################################### SKIPPET");
+			{				
 				Tools::SOSleep(0);
 				return false;
 			}

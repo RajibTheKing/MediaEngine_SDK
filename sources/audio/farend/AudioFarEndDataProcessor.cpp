@@ -2,7 +2,6 @@
 #include "AudioCallSession.h"
 #include "AudioDecoderBuffer.h"
 #include "AudioDePacketizer.h"
-#include "LogPrinter.h"
 #include "CommonElementsBucket.h"
 #include "LiveAudioParser.h"
 #include "LiveAudioParserForCallee.h"
@@ -26,6 +25,8 @@
 #include "AudioHeaderCall.h"
 #include "AudioHeaderLive.h"
 #include "AudioNearEndDataProcessor.h"
+
+#include <string.h>
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include <dispatch/dispatch.h>
@@ -166,8 +167,8 @@ namespace MediaSDK
 		if (!m_bIsLiveStreamingRunning)
 		{
 			m_nDecodedFrameSize = m_pAudioCallSession->GetAudioDecoder()->DecodeAudio(m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize, m_saDecodedFrame);
-//			ALOG("#A#DE#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(iPacketNumber));
-			LOGEF("Role %d, done decode", m_iRole);
+			//MediaLog(CODE_TRACE, "#A#DE#--->> Self#  PacketNumber = %d  Role= %d",iPacketNumber, m_iRole);
+			
 		}
 		else
 		{
@@ -179,14 +180,14 @@ namespace MediaSDK
 					//				LOG_AAC("#aac# AAC_DecodingFrameSize: %d, DecodedFrameSize: %d", m_nDecodingFrameSize, m_nDecodedFrameSize);
 				}
 				else{
-					LOG_AAC("#aac# AAC decoder not exist.");
+					//MediaLog(CODE_TRACE, "#aac# AAC decoder not exist.");
 				}
 			}
 			else
 			{
 				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
 				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
-				LOGEF("Role %d, no viewers in call", m_iRole);
+				//MediaLog(CODE_TRACE, "Role %d, no viewers in call", m_iRole);
 			}
 		}
 	}
@@ -250,8 +251,7 @@ namespace MediaSDK
 
 #ifdef USE_AECM
 			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
-			{
-				LOG18("Pushing to q");
+			{				
 				memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
 			}
 			else
@@ -273,8 +273,7 @@ namespace MediaSDK
 
 		}
 		else
-		{
-			LOG18("Pushing to q");
+		{			
 #ifdef __ANDROID__
 			if (m_pAudioCallSession->GetPlayerGain().get())
 			{
@@ -354,7 +353,7 @@ namespace MediaSDK
 
 	bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 	{
-		LOGENEW("m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
+		MediaLog(CODE_TRACE, "m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
 
 		if (SERVICE_TYPE_CHANNEL == m_nServiceType)	//Channel
 		{
@@ -418,8 +417,7 @@ namespace MediaSDK
 			if (-1 == m_llDecodingTimeStampOffset)
 			{
 				Tools::SOSleep(LIVE_FIRST_FRAME_SLEEP_TIME_AUDIO);
-				m_llDecodingTimeStampOffset = Tools::CurrentTimestamp() - llCurrentFrameRelativeTime;
-				LOGENEW("iPacketNumber resyncing");
+				m_llDecodingTimeStampOffset = Tools::CurrentTimestamp() - llCurrentFrameRelativeTime;				
 				m_nExpectedNextPacketNumber = iPacketNumber++;
 			}
 			else
@@ -431,27 +429,24 @@ namespace MediaSDK
 				if (m_nExpectedNextPacketNumber < iPacketNumber)
 				{
 					m_nPacketsLost += iPacketNumber - m_nExpectedNextPacketNumber;
-					LOGDISCARD("Discarding because of loss, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+					/*MediaLog(CODE_TRACE, "Discarding because of loss, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
 						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
 						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
+						*/
 				}
 				m_nExpectedNextPacketNumber = iPacketNumber + 1;
 
-				LOGENEW("@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d", llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
+				//MediaLog(CODE_TRACE, "@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d", llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
 
 				
 				
 				if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
-				{
-					CLogPrinter_WriteFileLog(CLogPrinter::INFO, WRITE_TO_LOG_FILE, "CAudioCallSession::IsPacketProcessableBasedOnRelativeTime relativeTime = "
-						+ Tools::getText(llCurrentFrameRelativeTime) + " DELAY = " + Tools::getText(llWaitingTime) + " currentTime = " + Tools::getText(llNow)
-						+ " iPacketNumber = " + Tools::getText(iPacketNumber));
-					
+				{										
 					m_nPacketsRecvdNotTimely++;
-					LOGDISCARD("Discarding because of delay, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+					/*MediaLog(CODE_TRACE, "Discarding because of delay, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
 						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
 						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
-
+					*/
 					if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
 					{
 						return true; //Use delay frame for viewer.
@@ -462,10 +457,10 @@ namespace MediaSDK
 				else if (llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp > MAX_WAITING_TIME_FOR_CHANNEL)
 				{
 					m_nPacketsRecvdNotTimely++;
-					LOGDISCARD("Discarding because of delay 2nd case, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+					/*MediaLog(CODE_TRACE, "Discarding because of delay 2nd case, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
 						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
 						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
-
+					*/
 					return false;
 				}
 				
@@ -478,9 +473,11 @@ namespace MediaSDK
 					
 				}
 				m_nPacketsRecvdTimely++;
-				LOGDISCARD("Discarding sttistics, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
+				/*
+				MediaLog(CODE_TRACE, "Discarding sttistics, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
 					m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
 					m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
+				*/
 			}
 			return true;
 		}
@@ -527,11 +524,9 @@ namespace MediaSDK
 	{
 		if (!m_bIsLiveStreamingRunning)
 		{
-			llNow = Tools::CurrentTimestamp();
-			//            ALOG("#DS Size: "+m_Tools.IntegertoStringConvert(m_nDecodedFrameSize));
+			llNow = Tools::CurrentTimestamp();			
 			if (llNow - llTimeStamp >= 1000)
-			{
-				//                CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "Num AudioDataDecoded = " + m_Tools.IntegertoStringConvert(iDataSentInCurrentSec));
+			{				
 				iDataSentInCurrentSec = 0;
 				llTimeStamp = llNow;
 			}
@@ -547,9 +542,7 @@ namespace MediaSDK
 	void AudioFarEndDataProcessor::DecideToChangeBitrate(int iNumPacketRecvd)
 	{
 #ifndef AUDIO_FIXED_BITRATE
-
-		//	ALOG("#BR# DecideToChangeBitrate: "+m_Tools.IntegertoStringConvert(iNumPacketRecvd));
-
+		
 		int nCurrentBitRate = m_pAudioEncoder->GetCurrentBitrate();
 
 		if (iNumPacketRecvd == AUDIO_SLOT_SIZE)
@@ -562,7 +555,7 @@ namespace MediaSDK
 			m_inoLossSlot = 0;
 
 			int nChangedBitRate = (iNumPacketRecvd * nCurrentBitRate) / AUDIO_SLOT_SIZE;
-			//		ALOG("now br trying to set : "+Tools::IntegertoStringConvert(nChangedBitRate));
+			
 			MediaLog(LOG_INFO, "[AFEDP] @@@@------------------------>Bitrate: %d\n", nChangedBitRate);
 			if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
 			{
@@ -641,7 +634,6 @@ namespace MediaSDK
 			}
 			m_inoLossSlot = 0;
 		}
-		//	ALOG("#V# E: DecideToChangeBitrate: Done");
 #endif
 	}
 

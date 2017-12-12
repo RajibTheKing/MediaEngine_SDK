@@ -1,7 +1,7 @@
 #include "Voice.h"
 #include "AudioCallSession.h"
-#include "LogPrinter.h"
 #include "AudioMacros.h"
+#include "MediaLogger.h"
 
 
 namespace MediaSDK
@@ -15,20 +15,20 @@ namespace MediaSDK
 		int vadret = -1;
 		if ((vadret = WebRtcVad_Create(&VAD_instance)))
 		{
-			ALOG("WebRtcVad_Create failed with error code = " + m_Tools.IntegertoStringConvert(vadret));
+			//MediaLog(CODE_TRACE, "WebRtcVad_Create failed with error code = %d",vadret);
 		}
 		else
 		{
-			ALOG("WebRtcVad_Create successful");
+			//MediaLog(CODE_TRACE, "WebRtcVad_Create successful");
 		}
 
 		if ((vadret = WebRtcVad_Init(VAD_instance)))
 		{
-			ALOG("WebRtcVad_Init failed with error code= " + m_Tools.IntegertoStringConvert(vadret));
+			//MediaLog(CODE_TRACE, "WebRtcVad_Init failed with error code= %d",vadret);
 		}
 		else
 		{
-			ALOG("WebRtcVad_Init successful");
+			//MediaLog(CODE_TRACE, "WebRtcVad_Init successful");
 		}
 
 		nNextFrameMayHaveVoice = 0;
@@ -52,12 +52,12 @@ namespace MediaSDK
 				int iVadRet = WebRtcVad_Process(VAD_instance, AUDIO_SAMPLE_RATE, sInBuf + i, VAD_ANALYSIS_SAMPLES_IN_FRAME);
 				if (iVadRet != 1)
 				{
-					ALOG("No voice found " + Tools::IntegertoStringConvert(iVadRet));
+					//MediaLog(CODE_TRACE, "No voice found %d",iVadRet);
 					//memset(m_saAudioRecorderFrame + i, 0, VAD_ANALYSIS_SAMPLES_IN_FRAME * sizeof(short));						
 				}
 				else
 				{
-					ALOG("voice found " + Tools::IntegertoStringConvert(iVadRet));
+					//MediaLog(CODE_TRACE, "voice found %d",iVadRet);
 					nhasVoice = 1;
 					nNextFrameMayHaveVoice = NEXT_N_FRAMES_MAYE_VOICE;
 				}
@@ -69,22 +69,22 @@ namespace MediaSDK
 					nNextFrameMayHaveVoice--;
 				}
 			}
-			ALOG(" vad time = " + m_Tools.LongLongtoStringConvert(m_Tools.CurrentTimestamp() - vadtimeStamp));
+			//MediaLog(CODE_TRACE, "vad time = %lld",(m_Tools.CurrentTimestamp() - vadtimeStamp));
 			if (!nhasVoice && !nNextFrameMayHaveVoice)
 			{
-				ALOG("not sending audio");
+				//MediaLog(CODE_TRACE, "not sending audio");
 				m_Tools.SOSleep(70);
 				return false;
 			}
 			else
 			{
-				ALOG("sending audio");
+				//MediaLog(CODE_TRACE, "sending audio");
 				return true;
 			}
 		}
 		else
 		{
-			ALOG("Invalid combo");
+			//MediaLog(CODE_TRACE, "Invalid combo");
 			return true;
 		}
 	}

@@ -36,8 +36,7 @@ namespace MediaSDK
 			Tools::SOSleep(10);
 		}
 		else
-		{
-			//LOGT("##TT dequed #18#NE#AudioCall...");
+		{			
 			llCapturedTime = Tools::CurrentTimestamp();
 			int nEchoStateFlags = PreprocessAudioData(m_saAudioRecorderFrame, CHUNK_SIZE);
 			//m_pAudioNearEndBuffer->DeQueue(m_saAudioRecorderFrame, llCapturedTime);
@@ -53,7 +52,6 @@ namespace MediaSDK
 			long long llEncodingTime, llTimeBeforeEncoding = Tools::CurrentTimestamp();
 			m_nEncodedFrameSize = m_pAudioEncoder->EncodeAudio(m_saAudioRecorderFrame, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_bIsLiveStreamingRunning), &m_ucaEncodedFrame[1 + m_MyAudioHeadersize]);
 
-			//ALOG("#A#EN#--->> nEncodingFrameSize = " + m_Tools.IntegertoStringConvert(nEncodingFrameSize) + " PacketNumber = " + m_Tools.IntegertoStringConvert(m_iPacketNumber));
 			llEncodingTime = Tools::CurrentTimestamp() - llTimeBeforeEncoding;
 			this->DecideToChangeComplexity(llEncodingTime);
 
@@ -84,15 +82,14 @@ namespace MediaSDK
 #ifdef  AUDIO_SELF_CALL //Todo: build while this is enable
 		//Todo: m_AudioReceivedBuffer fix. not member of this class
 		if (m_bIsLiveStreamingRunning == false)
-		{
-			ALOG("#A#EN#--->> Self#  PacketNumber = " + Tools::IntegertoStringConvert(m_iPacketNumber));
+		{			
 			m_pAudioCallSession->m_pFarEndProcessor->m_AudioReceivedBuffer->EnQueue(m_ucaEncodedFrame + 1, m_nEncodedFrameSize + m_MyAudioHeadersize);
 			return;
 		}
 #endif
 
 #ifndef NO_CONNECTIVITY
-		//	MR_DEBUG("#ptt# SentToNetwork, %x", *m_cbOnDataReady);
+		
 		//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
 		if (m_pDataReadyListener != nullptr)
 		{

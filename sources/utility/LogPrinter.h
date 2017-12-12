@@ -151,9 +151,6 @@
 
 #define LOGS(a)     CLogPrinter_WriteSpecific6(CLogPrinter::INFO,a);
 
-static std::string colon = "ALOG:";
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, colon + a);
-
 
 namespace MediaSDK
 {

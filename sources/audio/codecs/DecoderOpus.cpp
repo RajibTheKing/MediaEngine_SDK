@@ -1,5 +1,5 @@
 #include "DecoderOpus.h"
-#include "LogPrinter.h"
+#include "MediaLogger.h"
 #include "AudioMacros.h"
 #include "opus.h"
 
@@ -17,8 +17,8 @@ namespace MediaSDK
 		decoder = opus_decoder_create(AUDIO_SAMPLE_RATE, AUDIO_CHANNELS, &err);
 
 		if (err < 0)
-		{
-	//		ALOG("#BR# opus_decoder_create failed: " + m_Tools.IntegertoStringConvert(err));
+		{			
+			//MediaLog(LOG_DEBUG, "[FE] opus_decoder_create failed: %d", err);	
 		}
 	}
 

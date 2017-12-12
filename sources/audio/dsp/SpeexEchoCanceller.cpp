@@ -1,8 +1,5 @@
 #include "SpeexEchoCanceller.h"
-#include "LogPrinter.h"
 #include "Tools.h"
-
-#define ALOG(a) CLogPrinter_WriteSpecific6(CLogPrinter::INFO, "ALOG:" + a);
 
 
 namespace MediaSDK
