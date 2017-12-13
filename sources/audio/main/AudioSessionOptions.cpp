@@ -122,7 +122,7 @@ namespace MediaSDK
 		encoderType = Opus_Encoder;
 		decoderType = Opus_Decoder;
 
-		noiseReducerType = No_NoiseReducer;
+		noiseReducerType = WebRTC_NoiseReducer;
 		echoCancelerType = WebRTC_ECM;
 		gainType = WebRTC_Gain;
 
