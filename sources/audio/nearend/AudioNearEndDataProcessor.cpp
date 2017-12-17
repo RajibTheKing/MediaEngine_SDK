@@ -210,6 +210,7 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::HandleTrace(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		MediaLog(LOG_DEBUG, "[ANEDP][HT] length: %d", unLength);
+		int iTraceInFrame = 1;
 		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled");
@@ -224,7 +225,7 @@ namespace MediaSDK
 			}
 			else
 			{
-				int iTraceInFrame = 1;
+				
 				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES, iTraceInFrame, true);
 				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)

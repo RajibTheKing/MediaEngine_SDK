@@ -724,7 +724,7 @@ namespace MediaSDK
 						{
 							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
 							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d, iTraceStartPos = %d\n", iTraceStartPos, iPrevMatchCount, iTraceStartPos);
-							m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, iPrevMatchCount);
+							m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, iTraceStartPos);
 							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 							{
 								iTraceInFrame = -1;
