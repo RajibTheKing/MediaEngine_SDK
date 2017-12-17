@@ -1415,54 +1415,14 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterForChannel(unsigned c
 	}
 
 
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-
-	if(m_nChannelType == CHANNEL_TYPE_TV)
+	if (m_nChannelType == CHANNEL_TYPE_TV)
 	{
-		if (m_nIsGreaterThen5s > 0)
-		{
-			m_nChannelSharpAmountDigit = 4;
-		}
-		else
-		{
-			m_nChannelSharpAmountDigit = 3;
-		}
+		m_nChannelSharpAmountDigit = 2;
 	}
 	else
-	{
-		if (m_nIsGreaterThen5s > 0)
-		{
-			m_nChannelSharpAmountDigit = 5;
-		}
-		else
-		{
-			m_nChannelSharpAmountDigit = 4;
-		}
-	}
-
-#elif defined(__ANDROID__)
-
-	if(m_nChannelType == CHANNEL_TYPE_TV)
 	{
 		m_nChannelSharpAmountDigit = 3;
 	}
-	else
-	{
-		m_nChannelSharpAmountDigit = 4;
-	}
-
-#else
-
-	if (m_nChannelType == CHANNEL_TYPE_TV)
-	{
-		m_nChannelSharpAmountDigit = 4;
-	}
-	else
-	{
-		m_nChannelSharpAmountDigit = 5;
-	}
-
-#endif
 
 	CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoBeautificationer::BeautificationFilterForChannel m_nChannelType %d m_nChannelSharpAmountDigit %d", m_nChannelType, m_nChannelSharpAmountDigit);
 
