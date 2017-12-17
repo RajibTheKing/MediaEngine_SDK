@@ -6,6 +6,7 @@
 #include <chrono>
 
 #define STRING(X) #X
+#define DIFF(x,y) abs(x - y)
 
 #if defined(__ANDROID__)
 #include <sys/prctl.h>

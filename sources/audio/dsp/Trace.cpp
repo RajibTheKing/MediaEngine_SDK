@@ -1,7 +1,10 @@
 #include "Trace.h"
 #include <string.h>
+#include <cmath>
 #include "LogPrinter.h"
 #include "AudioMacros.h"
+#include "Tools.h"
+#include "AudioDumper.h"
 
 namespace MediaSDK
 {
@@ -579,18 +582,51 @@ namespace MediaSDK
 		-386, -682, -838, -900, -796, -541, -241, 86, 421, 648, 756, 769, 632, 394, 120,
 		-158, -424, -582, -629, -591, -435, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851, -12851
 	};
-//#define USE_OLD_TRACE
+
+	short sWaveLengths[] =
+	{
+		20, 21, 20, 20, 20, 21, 20, 20, 21, 20, 20, 21,
+		20, 23, 19, 15, 14, 15, 17, 16, 13, 15, 17, 16,
+		13, 15, 17, 15, 13, 16, 17, 15, 13, 16, 16, 16,
+		13, 16, 16, 16, 14, 15, 17, 15, 13, 16, 16, 16,
+		13, 16, 16, 15, 14, 16, 16, 16, 13, 16, 16, 15,
+		14, 15, 17, 15, 14, 15, 17, 15, 14, 15, 17, 15,
+		13, 16, 17, 15, 14, 15, 17, 15, 13, 16, 16, 16,
+		13, 16, 16, 15, 14
+	};
 	CTrace::CTrace()
 	{
 		m_iTracePatternLength = sizeof(sTraceArray) / sizeof(short);
 		m_iSentLength = 0;
 		LOG18("m_iTracePatternLength = %d\n", m_iTracePatternLength);
 		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		int iTaceWaveCount = sizeof(sWaveLengths) / sizeof(short);
+		sSum[0] = sWaveLengths[0];
+		for (int i = 1; i < iTaceWaveCount; i++)
+		{
+			sSum[i] = sSum[i - 1] + sWaveLengths[i];
+		}
+		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", true);
+	}
+
+	CTrace::~CTrace()
+	{
+		if (m_pTraceDetectionDump != nullptr)
+		{
+			delete m_pTraceDetectionDump;
+			m_pTraceDetectionDump = nullptr;
+		}
 	}
 
 	void CTrace::Reset()
 	{
 		m_iSentLength = 0;
+		if (m_pTraceDetectionDump != nullptr)
+		{
+			delete m_pTraceDetectionDump;
+			m_pTraceDetectionDump = nullptr;
+		}
+		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", true);
 	}
 
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
@@ -659,6 +695,53 @@ namespace MediaSDK
 				}
 			}
 			return -1;
+		}
+		else
+		{
+			//ignores iTraceSearchLength and iTraceDetectionLength
+			memcpy(sTraceDetectionBuffer, sTraceDetectionBuffer + MAX_AUDIO_FRAME_SAMPLE_SIZE, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+			memcpy(sTraceDetectionBuffer + MAX_AUDIO_FRAME_SAMPLE_SIZE, sBuffer, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+
+			int iTV = 0;
+			int iDiffThreshold = 1;
+			int iMatchCountThreshold = 10;
+			int iMatchCount = 0;
+			int iPrevMatchCount = -1;
+
+			for (int i = 0; MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
+			{
+				if ((sTraceDetectionBuffer[i] <= 0 && sTraceDetectionBuffer[i + 1] > 0) || (sTraceDetectionBuffer[i] < 0 && sTraceDetectionBuffer[i + 1] >= 0)) //transition found
+				{
+					int iWaveLength = i - iTV;
+					if (DIFF(iWaveLength, sWaveLengths[iMatchCount]) <= iDiffThreshold)
+					{
+						iMatchCount++;
+					}
+					else
+					{
+						iMatchCount = 0;
+						if (iMatchCount != iPrevMatchCount && iPrevMatchCount >= iMatchCountThreshold)
+						{
+							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
+							m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, iPrevMatchCount);
+							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
+							{
+								iTraceInFrame = -1;
+							}
+							else
+							{
+								iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
+							}
+							return iTraceStartPos;
+						}
+					}
+					iPrevMatchCount = iMatchCount;
+					iTV = i;
+				}
+			}
+			m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, MAX_AUDIO_FRAME_SAMPLE_SIZE);
+			return -1;
+
 		}
 
 #endif
