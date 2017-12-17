@@ -707,6 +707,7 @@ namespace MediaSDK
 			int iMatchCountThreshold = 10;
 			int iMatchCount = 0;
 			int iPrevMatchCount = -1;
+			MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
 
 			for (int i = 0; MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
 			{
