@@ -598,7 +598,7 @@ namespace MediaSDK
 	{
 		m_iTracePatternLength = sizeof(sTraceArray) / sizeof(short);
 		m_iSentLength = 0;
-		LOG18("m_iTracePatternLength = %d\n", m_iTracePatternLength);
+		MediaLog(LOG_DEBUG, "[CTrace] m_iTracePatternLength = %d\n", m_iTracePatternLength);
 		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 		int iTaceWaveCount = sizeof(sWaveLengths) / sizeof(short);
 		sSum[0] = sWaveLengths[0];
@@ -646,7 +646,7 @@ namespace MediaSDK
 		}
 		return 0;
 #else
-		LOG18("iTraceLength = %d, m_iTracePatternLength = %d, m_iSentLength = %d\n", iTraceLength, m_iTracePatternLength, m_iSentLength);
+		MediaLog(LOG_DEBUG, "[CTrace] iTraceLength = %d, m_iTracePatternLength = %d, m_iSentLength = %d\n", iTraceLength, m_iTracePatternLength, m_iSentLength);
 		if (m_iSentLength + iTraceLength <= m_iTracePatternLength)
 		{
 			memcpy(sBuffer, sTraceArray + m_iSentLength, iTraceLength * sizeof(short));
@@ -723,6 +723,7 @@ namespace MediaSDK
 						if (iMatchCount != iPrevMatchCount && iPrevMatchCount >= iMatchCountThreshold)
 						{
 							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
+							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d, iTraceStartPos = %d\n", iTraceStartPos, iPrevMatchCount, iTraceStartPos);
 							m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, iPrevMatchCount);
 							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 							{
@@ -732,6 +733,7 @@ namespace MediaSDK
 							{
 								iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
 							}
+							
 							return iTraceStartPos;
 						}
 					}
