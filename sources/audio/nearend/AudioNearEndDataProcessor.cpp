@@ -220,12 +220,12 @@ namespace MediaSDK
 				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
 				m_llDelay = 0;
 				m_bTraceWillNotBeReceived = true; // 8-(
-
+				MediaLog(LOG_DEBUG, "[ACS][ECHO][TS]  Detection Failed TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d", m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame);
 			}
 			else
 			{
-				int iTraceInFrame;
-				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES, iTraceInFrame, false);
+				int iTraceInFrame = 1;
+				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES, iTraceInFrame, true);
 				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)
 				{
@@ -239,7 +239,16 @@ namespace MediaSDK
 
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 					m_bTraceRecieved = true;
-					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra = %lld[Sample:%d]", m_llDelay, m_llDelayFraction, m_iDelayFractionOrig);
+					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d", m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame);
+				}
+				if (iTraceInFrame < 0)
+				{
+					long long llTS;
+					for (int i = 0; i > iTraceInFrame; i--)
+					{
+						MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] discarding farend");
+						int iFarendDataLength = m_pAudioCallSession->m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+					}
 				}
 			}
 		}
