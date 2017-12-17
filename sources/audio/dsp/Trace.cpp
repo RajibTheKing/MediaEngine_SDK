@@ -585,6 +585,7 @@ namespace MediaSDK
 		m_iTracePatternLength = sizeof(sTraceArray) / sizeof(short);
 		m_iSentLength = 0;
 		LOG18("m_iTracePatternLength = %d\n", m_iTracePatternLength);
+		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 	}
 
 	void CTrace::Reset()
@@ -631,22 +632,22 @@ namespace MediaSDK
        
 	}
 
-	int CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength)
+	int CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength, int &iTraceInFrame, bool bUseWaveLength)
 	{
 #ifdef USE_AECM
-#ifdef USE_OLD_TRACE
-		for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
+		iTraceInFrame = 0;
+		if (bUseWaveLength == false)
 		{
-			if (sBuffer[i] > 0 && sBuffer[i + 1] > 0 && sBuffer[i + 2] > 0 && sBuffer[i + 3] > 0) //maybe trace started
+			for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
 			{
 				int j = 0;
 				for (; j < iTraceDetectionLength; j++)
 				{
-					if (j % 8 < 4 && sBuffer[i + j] <= 0)
+					if (j % 20 >= 3 && j % 20 <= 7 && sBuffer[i + j] <= 0)
 					{
 						break;
 					}
-					if (j % 8 >= 4 && sBuffer[i + j] >= 0)
+					if (j % 20 >= 12 && j % 20 <= 15 && sBuffer[i + j] >= 0)
 					{
 						break;
 					}
@@ -657,32 +658,9 @@ namespace MediaSDK
 					return i;
 				}
 			}
+			return -1;
 		}
-		return -1;
-#else
-		for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
-		{
-			int j = 0;
-			for (; j < iTraceDetectionLength; j ++)
-			{
-				if (j % 20 >= 3 && j % 20 <= 7 && sBuffer[i + j] <= 0)
-				{
-					break;
-				}
-				if (j % 20 >= 12 && j % 20 <= 15 && sBuffer[i + j] >= 0)
-				{
-					break;
-				}
 
-			}
-			if (j == iTraceDetectionLength)
-			{
-				return i;
-			}			
-		}
-		return -1;
-
-#endif
 #endif
         return 0;
 	}
