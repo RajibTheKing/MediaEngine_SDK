@@ -600,6 +600,7 @@ namespace MediaSDK
 		m_iSentLength = 0;
 		MediaLog(LOG_DEBUG, "[CTrace] m_iTracePatternLength = %d\n", m_iTracePatternLength);
 		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		memset(sSum, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 		int iTaceWaveCount = sizeof(sWaveLengths) / sizeof(short);
 		sSum[0] = sWaveLengths[0];
 		for (int i = 1; i < iTaceWaveCount; i++)
@@ -709,7 +710,7 @@ namespace MediaSDK
 			int iPrevMatchCount = -1;
 			MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
 
-			for (int i = 0; MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
+			for (int i = 0; i < MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
 			{
 				if ((sTraceDetectionBuffer[i] <= 0 && sTraceDetectionBuffer[i + 1] > 0) || (sTraceDetectionBuffer[i] < 0 && sTraceDetectionBuffer[i + 1] >= 0)) //transition found
 				{
@@ -724,7 +725,7 @@ namespace MediaSDK
 						if (iMatchCount != iPrevMatchCount && iPrevMatchCount >= iMatchCountThreshold)
 						{
 							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
-							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d, iTraceStartPos = %d\n", iTraceStartPos, iPrevMatchCount, iTraceStartPos);
+							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d = %d\n", iTraceStartPos, iPrevMatchCount);
 							m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, iTraceStartPos);
 							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 							{
