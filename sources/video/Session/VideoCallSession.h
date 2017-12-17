@@ -51,7 +51,7 @@ class CVideoCallSession
 
 public:
 
-	CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly);
+	CVideoCallSession(CController *pController, long long fname, CCommonElementsBucket* sharedObject, int nFPS, int *nrDeviceSupportedCallFPS, bool bIsCheckCall, CDeviceCapabilityCheckBuffer *deviceCheckCapabilityBuffer, int nOwnSupportedResolutionFPSLevel, int nServiceType, int nChannelType, int nEntityType, bool bAudioOnlyLive, bool bSelfViewOnly);
 	~CVideoCallSession();
 
 	long long GetFriendID();
@@ -188,6 +188,8 @@ public:
 	{
 		return m_nGivenFrameWidth;
 	}
+
+	int GetChannelType();
     
 	bool m_bVideoCallStarted;
     CController *m_pController;
@@ -289,6 +291,7 @@ private:
     bool m_bResolutionNegotiationDone;
     
     int m_nServiceType;
+	int m_nChannelType;
     
 	Tools m_Tools;
 	long long m_lfriendID;

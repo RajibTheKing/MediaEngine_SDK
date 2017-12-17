@@ -306,7 +306,7 @@ CVideoCallSession* CController::StartTestVideoCall(const long long& lFriendID, i
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session creating");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, ENTITY_TYPE_CALLER, false, false);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, CHANNEL_TYPE_NOT_CHANNEL, ENTITY_TYPE_CALLER, false, false);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType, false, VIDEO_CALL_TYPE_UNCHECKED);
 
@@ -326,7 +326,7 @@ CVideoCallSession* CController::StartTestVideoCall(const long long& lFriendID, i
 	}
 }
 
-bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly)
+bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nChannelType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly)
 {
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::StartVideoCall called 1 ID %lld nVideoHeight %d nVideoWidth %d", lFriendID, iVideoHeight, iVideoWidth);
 
@@ -425,7 +425,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
         
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CController::StartVideoCall Video Session starting");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel, nServiceType, nEntityType, bAudioOnlyLive, bSelfViewOnly);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, m_nDeviceSupportedCallFPS, &m_nDeviceSupportedCallFPS, LIVE_CALL_MOOD, NULL, m_nSupportedResolutionFPSLevel, nServiceType, nChannelType, nEntityType, bAudioOnlyLive, bSelfViewOnly);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, nServiceType, iNetworkType, bDownscaled, m_nSupportedResolutionFPSLevel);
 

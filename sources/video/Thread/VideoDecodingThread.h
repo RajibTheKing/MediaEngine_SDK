@@ -77,6 +77,8 @@ namespace MediaSDK
 
 		int m_decodingHeight;
 		int m_decodingWidth;
+		int m_nPreviousDecodingHeight;
+		int m_nPreviousDecodingWidth;
 		int m_decodedFrameSize;
 
 		int m_previousDecodedFrameSize;
@@ -124,7 +126,7 @@ namespace MediaSDK
 
 		Tools m_Tools;
 		CAverageCalculator *m_pCalculatorDecodeTime;
-		//CVideoBeautificationer *m_VideoBeautificationer;
+		CVideoBeautificationer *m_VideoBeautificationer;
 		SharedPointer<std::thread> pDecodingThread;
 
 

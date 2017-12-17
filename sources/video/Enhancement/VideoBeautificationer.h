@@ -18,7 +18,7 @@ class CVideoBeautificationer
 
 public:
 
-	CVideoBeautificationer(int iVideoHeight, int iVideoWidth);
+	CVideoBeautificationer(int iVideoHeight, int iVideoWidth, int nChannelType);
 	~CVideoBeautificationer();
 
 	void SetHeightWidth(int iVideoHeight, int iVideoWidth);
@@ -62,6 +62,7 @@ public:
 
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp);
 	pair<int, int> BeautificationFilterNew(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp);
+	pair<int, int> BeautificationFilterForChannel(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, int iNewHeight, int iNewWidth, bool doSharp);
 	pair<int, int> BeautificationFilter(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth, bool doSharp);
 	pair<int, int> BeautificationFilter2(unsigned char *pBlurConvertingData, int iLen, int iHeight, int iWidth);
 
@@ -89,6 +90,8 @@ private:
 	int m_nThresholdValue;
 	int m_nIsGreaterThen5s;
 
+	int m_nChannelSharpAmountDigit;
+
 	int m_applyBeatification;
 	int brightness_shift;
 
@@ -98,6 +101,8 @@ private:
 	int m_rr;
 	double m_pixels;
 	int m_AvarageValue;
+
+	int m_nChannelType;
 
 	int m_Step0Sigma;
 	int m_Step1Sigma;
