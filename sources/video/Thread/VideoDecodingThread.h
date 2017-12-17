@@ -77,6 +77,8 @@ namespace MediaSDK
 
 		int m_decodingHeight;
 		int m_decodingWidth;
+		int m_nPreviousDecodingHeight;
+		int m_nPreviousDecodingWidth;
 		int m_decodedFrameSize;
 
 		int m_previousDecodedFrameSize;
