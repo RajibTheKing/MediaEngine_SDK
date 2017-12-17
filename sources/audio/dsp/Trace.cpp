@@ -607,27 +607,17 @@ namespace MediaSDK
 		{
 			sSum[i] = sSum[i - 1] + sWaveLengths[i];
 		}
-		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", true);
+		
 	}
 
 	CTrace::~CTrace()
 	{
-		if (m_pTraceDetectionDump != nullptr)
-		{
-			delete m_pTraceDetectionDump;
-			m_pTraceDetectionDump = nullptr;
-		}
+		
 	}
 
 	void CTrace::Reset()
 	{
 		m_iSentLength = 0;
-		if (m_pTraceDetectionDump != nullptr)
-		{
-			delete m_pTraceDetectionDump;
-			m_pTraceDetectionDump = nullptr;
-		}
-		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", true);
 	}
 
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
@@ -726,7 +716,7 @@ namespace MediaSDK
 						{
 							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
 							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d = %d\n", iTraceStartPos, iPrevMatchCount);
-							m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, iTraceStartPos);
+							
 							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 							{
 								iTraceInFrame = -1;
@@ -743,7 +733,7 @@ namespace MediaSDK
 					iTV = i;
 				}
 			}
-			m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, MAX_AUDIO_FRAME_SAMPLE_SIZE);
+			
 			return -1;
 
 		}

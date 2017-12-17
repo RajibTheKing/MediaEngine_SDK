@@ -11,7 +11,7 @@ namespace MediaSDK
 		int m_iSentLength;
 		short sTraceDetectionBuffer[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		short sSum[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
-		CAudioDumper *m_pTraceDetectionDump;
+
 	public:
 		CTrace();
 		~CTrace();

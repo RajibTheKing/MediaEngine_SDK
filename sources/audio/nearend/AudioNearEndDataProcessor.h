@@ -154,7 +154,7 @@ namespace MediaSDK
 
 		long long m_llDelay, m_llDelayFraction, m_llLastEchoLogTime = 0;
 		CAudioDumper *m_pRecordedNE = nullptr, *m_pGainedNE = nullptr, *m_pProcessed2NE = nullptr, *m_pNoiseReducedNE = nullptr, 
-			*m_pCancelledNE = nullptr, *m_pKichCutNE = nullptr, *m_pProcessedNE = nullptr;
+			*m_pCancelledNE = nullptr, *m_pKichCutNE = nullptr, *m_pProcessedNE = nullptr, *m_pTraceDetectionDump = nullptr;
 	};
 
 } //namespace MediaSDK

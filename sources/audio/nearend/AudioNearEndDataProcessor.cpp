@@ -90,6 +90,7 @@ namespace MediaSDK
 		m_pCancelledNE = new CAudioDumper("AEC.pcm", true);
 		m_pKichCutNE = new CAudioDumper("KC.pcm", true);
 		m_pProcessedNE = new CAudioDumper("processed.pcm", true);
+		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", true);
 
 		m_pTrace = new CTrace();
 		m_pKichCutter = nullptr;
@@ -145,6 +146,12 @@ namespace MediaSDK
 		{
 			delete m_pKichCutNE;
 			m_pKichCutNE = nullptr;
+		}
+
+		if (m_pTraceDetectionDump != nullptr)
+		{
+			delete m_pTraceDetectionDump;
+			m_pTraceDetectionDump = nullptr;
 		}
 
 		if (m_pProcessedNE != nullptr)
@@ -506,6 +513,7 @@ namespace MediaSDK
 				{
 					//If trace is received, current and next frames are deleted
 					DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
+					m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, MAX_AUDIO_FRAME_SAMPLE_SIZE);
 #if !defined(TARGET_OS_IPHONE) && !defined(TARGET_IPHONE_SIMULATOR)
 					if (bIsGainWorking)
 					{
