@@ -513,7 +513,7 @@ namespace MediaSDK
 				{
 					//If trace is received, current and next frames are deleted
 					DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
-					m_pTraceDetectionDump->WriteDump(sTraceDetectionBuffer, 2, MAX_AUDIO_FRAME_SAMPLE_SIZE);
+					m_pTraceDetectionDump->WriteDump(psaEncodingAudioData, 2, MAX_AUDIO_FRAME_SAMPLE_SIZE);
 #if !defined(TARGET_OS_IPHONE) && !defined(TARGET_IPHONE_SIMULATOR)
 					if (bIsGainWorking)
 					{
