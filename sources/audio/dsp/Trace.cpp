@@ -617,6 +617,7 @@ namespace MediaSDK
 
 	void CTrace::Reset()
 	{
+		MediaLog(LOG_DEBUG, "[CTrace] Reset Called\n");
 		m_iSentLength = 0;
 		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 	}
@@ -716,7 +717,7 @@ namespace MediaSDK
 						if (iMatchCount != iPrevMatchCount && iPrevMatchCount >= iMatchCountThreshold)
 						{
 							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
-							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d\n", iTraceStartPos, iPrevMatchCount);
+							MediaLog(LOG_DEBUG, "[CTrace] Found iTraceStartPos = %d, iPrevMatchCount = %d\n", iTraceStartPos, iPrevMatchCount);
 							
 							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 							{
@@ -726,7 +727,7 @@ namespace MediaSDK
 							{
 								iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
 							}
-							
+							memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 							return iTraceStartPos;
 						}
 					}
@@ -734,7 +735,8 @@ namespace MediaSDK
 					iTV = i;
 				}
 			}
-			
+			//memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+			//MediaLog(LOG_DEBUG, "[CTrace] Not Found yet");
 			return -1;
 
 		}
