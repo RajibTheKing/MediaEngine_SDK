@@ -715,7 +715,7 @@ namespace MediaSDK
 						if (iMatchCount != iPrevMatchCount && iPrevMatchCount >= iMatchCountThreshold)
 						{
 							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
-							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d = %d\n", iTraceStartPos, iPrevMatchCount);
+							MediaLog(LOG_DEBUG, "[CTrace] iTraceStartPos = %d, iPrevMatchCount = %d\n", iTraceStartPos, iPrevMatchCount);
 							
 							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 							{
