@@ -631,7 +631,7 @@ namespace MediaSDK
 		{
 			if (m_VideoBeautificationer == NULL)
 			{
-				CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoDecodingThread::DecodeAndSendToClient starting decoder with m_decodingHeight %d, m_decodingWidth %d", m_decodingHeight, m_decodingWidth);
+				CLogPrinter_LOG(CHANNEL_ENHANCE_LOG, "CVideoDecodingThread::DecodeAndSendToClient starting decoder with m_decodingHeight %d, m_decodingWidth %d", m_decodingHeight, m_decodingWidth);
 
 				m_VideoBeautificationer = new CVideoBeautificationer(m_decodingHeight, m_decodingWidth, m_pVideoCallSession->GetChannelType());
 			}
@@ -643,7 +643,7 @@ namespace MediaSDK
 					m_VideoBeautificationer = NULL;
 				}
 
-				CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoDecodingThread::DecodeAndSendToClient Re Starting decoder with m_decodingHeight %d, m_decodingWidth %d m_nPreviousDecodingHeight %d m_nPreviousDecodingWidth %d", m_decodingHeight, m_decodingWidth, m_nPreviousDecodingHeight, m_nPreviousDecodingWidth);
+				CLogPrinter_LOG(CHANNEL_ENHANCE_LOG, "CVideoDecodingThread::DecodeAndSendToClient Re Starting decoder with m_decodingHeight %d, m_decodingWidth %d m_nPreviousDecodingHeight %d m_nPreviousDecodingWidth %d", m_decodingHeight, m_decodingWidth, m_nPreviousDecodingHeight, m_nPreviousDecodingWidth);
 
 				m_VideoBeautificationer = new CVideoBeautificationer(m_decodingHeight, m_decodingWidth, m_pVideoCallSession->GetChannelType());
 			}

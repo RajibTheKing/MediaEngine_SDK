@@ -1424,7 +1424,7 @@ pair<int, int> CVideoBeautificationer::BeautificationFilterForChannel(unsigned c
 		m_nChannelSharpAmountDigit = 3;
 	}
 
-	CLogPrinter_LOG(DECODING_FAIL_LOG, "CVideoBeautificationer::BeautificationFilterForChannel m_nChannelType %d m_nChannelSharpAmountDigit %d", m_nChannelType, m_nChannelSharpAmountDigit);
+	CLogPrinter_LOG(CHANNEL_ENHANCE_LOG, "CVideoBeautificationer::BeautificationFilterForChannel m_nChannelType %d m_nChannelSharpAmountDigit %d", m_nChannelType, m_nChannelSharpAmountDigit);
 
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
