@@ -698,7 +698,7 @@ namespace MediaSDK
 			memcpy(sTraceDetectionBuffer + MAX_AUDIO_FRAME_SAMPLE_SIZE, sBuffer, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 
 			int iTV = 0;
-			int iDiffThreshold = 1;
+			int iDiffThreshold = 2;
 			int iMatchCountThreshold = 10;
 			int iMatchCount = 0;
 			int iPrevMatchCount = -1;
@@ -744,19 +744,36 @@ namespace MediaSDK
 				}
 			}
 
+			string str = "sMyWL";
+			iTraceInFrame = 0;
+			MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d", iWLCount);
+
 			for (int i = 0; i < iWLCount; i++)
 			{
+				
+				if (sMyWL[i] < 10)
+				{
+					continue;
+				}
+				str += Tools::IntegertoStringConvert(i);
+				str += " : ";
+				str += Tools::IntegertoStringConvert(sMyWL[i]);
+				str += " , ";
+				if (i % 12 == 0)
+				{
+					str += "\n";
+				}
 				for (int j = 0; j < m_iTaceWaveCount - iMatchCountThreshold; j++)
 				{
 					int k = 0;
 					for (k = 0; k < iMatchCountThreshold; k++)
 					{
-						if (DIFF(sMyWL[i], sWaveLengths[j + k]) > iDiffThreshold)
+						if (DIFF(sMyWL[i + k], sWaveLengths[j + k]) > iDiffThreshold)
 						{
 							break;
 						}
 					}
-					if (k == m_iTaceWaveCount)
+					if (k == iMatchCountThreshold)
 					{
 						
 						int iTraceStartPos = sMyWL_I[i] - sSum[j];
@@ -771,9 +788,11 @@ namespace MediaSDK
 							iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
 						}
 						memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+						return iTraceStartPos;
 					}
 				}
 			}
+			//MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d, %s", iWLCount, str.c_str());
 
 			return -1;
 
