@@ -228,7 +228,7 @@ namespace MediaSDK
 				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
 				m_llDelay = 0;
 				m_bTraceWillNotBeReceived = true; // 8-(
-				MediaLog(LOG_DEBUG, "[ACS][ECHO][TS]  Detection Failed TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d", m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame);
+				MediaLog(LOG_DEBUG, "[ACS][ECHO][TS]  Detection Failed m_iSpeakerType = %d",  m_pAudioCallSession->m_iSpeakerType);
 			}
 			else
 			{
@@ -247,7 +247,8 @@ namespace MediaSDK
 
 					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 					m_bTraceRecieved = true;
-					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d", m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame);
+					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d",
+						m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType);
 				}
 				if (iTraceInFrame < 0)
 				{

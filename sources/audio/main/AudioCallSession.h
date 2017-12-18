@@ -145,6 +145,7 @@ namespace MediaSDK
 
 		CAudioDumper *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr,
 			*m_pPlayedCalleeFE = nullptr;
+		int m_iSpeakerType;
 		
 		
 
@@ -173,7 +174,7 @@ namespace MediaSDK
 		int m_iVolume;
 		int m_nServiceType;
 		int m_nEntityType;
-		int m_iSpeakerType;
+		
 		int m_iAudioVersionFriend;
 		int m_iAudioVersionSelf;
 		int m_nCallInLiveType;
