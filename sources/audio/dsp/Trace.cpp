@@ -618,6 +618,7 @@ namespace MediaSDK
 	void CTrace::Reset()
 	{
 		m_iSentLength = 0;
+		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 	}
 
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
