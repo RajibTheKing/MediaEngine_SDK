@@ -601,9 +601,10 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[CTrace] m_iTracePatternLength = %d\n", m_iTracePatternLength);
 		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 		memset(sSum, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-		int iTaceWaveCount = sizeof(sWaveLengths) / sizeof(short);
+		memset(sMyWL_I, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		m_iTaceWaveCount = sizeof(sWaveLengths) / sizeof(short);
 		sSum[0] = sWaveLengths[0];
-		for (int i = 1; i < iTaceWaveCount; i++)
+		for (int i = 1; i < m_iTaceWaveCount; i++)
 		{
 			sSum[i] = sSum[i - 1] + sWaveLengths[i];
 		}
@@ -620,6 +621,7 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[CTrace] Reset Called\n");
 		m_iSentLength = 0;
 		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		memset(sMyWL, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 	}
 
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
@@ -702,11 +704,17 @@ namespace MediaSDK
 			int iPrevMatchCount = -1;
 			MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
 
+			int iWLCount = 0;
+
 			for (int i = 0; i < MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
 			{
 				if ((sTraceDetectionBuffer[i] <= 0 && sTraceDetectionBuffer[i + 1] > 0) || (sTraceDetectionBuffer[i] < 0 && sTraceDetectionBuffer[i + 1] >= 0)) //transition found
 				{
 					int iWaveLength = i - iTV;
+					sMyWL[iWLCount] = iWaveLength;
+					sMyWL_I[iWLCount] = i;
+					iWLCount++;
+					/*
 					if (DIFF(iWaveLength, sWaveLengths[iMatchCount]) <= iDiffThreshold)
 					{
 						iMatchCount++;
@@ -731,12 +739,42 @@ namespace MediaSDK
 							return iTraceStartPos;
 						}
 					}
-					iPrevMatchCount = iMatchCount;
+					iPrevMatchCount = iMatchCount;*/
 					iTV = i;
 				}
 			}
-			//memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-			//MediaLog(LOG_DEBUG, "[CTrace] Not Found yet");
+
+			for (int i = 0; i < iWLCount; i++)
+			{
+				for (int j = 0; j < m_iTaceWaveCount - iMatchCountThreshold; j++)
+				{
+					int k = 0;
+					for (k = 0; k < iMatchCountThreshold; k++)
+					{
+						if (DIFF(sMyWL[i], sWaveLengths[j + k]) > iDiffThreshold)
+						{
+							break;
+						}
+					}
+					if (k == m_iTaceWaveCount)
+					{
+						
+						int iTraceStartPos = sMyWL_I[i] - sSum[j];
+						MediaLog(LOG_DEBUG, "[CTrace] Found, i = %d, j = %d, my position = %d, trace's position = %d", i, j, sMyWL_I[i], sSum[j], iTraceStartPos);
+
+						if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
+						{
+							iTraceInFrame = -1;
+						}
+						else
+						{
+							iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
+						}
+						memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+					}
+				}
+			}
+
 			return -1;
 
 		}

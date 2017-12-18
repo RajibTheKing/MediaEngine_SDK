@@ -11,6 +11,9 @@ namespace MediaSDK
 		int m_iSentLength;
 		short sTraceDetectionBuffer[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		short sSum[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short sMyWL[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short sMyWL_I[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		int m_iTaceWaveCount;
 
 	public:
 		CTrace();
