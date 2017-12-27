@@ -384,6 +384,9 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
         m_Quality[1].iHeight = iVideoHeight;
         m_Quality[1].iWidth = iVideoWidth;
+
+		m_Quality[0].iHeight = iVideoHeight / 2;
+		m_Quality[0].iWidth = iVideoWidth / 2;
     }
     else
     {
@@ -785,9 +788,11 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 		{
 			CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::SetEncoderHeightWidth m_Quality[1].iHeight a3 nVideoHeight %d nVideoWidth %d", height, width);
 
-
 			m_Quality[1].iHeight = height;
 			m_Quality[1].iWidth = width;
+
+			m_Quality[0].iHeight = height / 2;
+			m_Quality[0].iWidth = width / 2;
 		}
 		else
 		{
