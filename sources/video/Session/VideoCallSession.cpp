@@ -1546,6 +1546,8 @@ void CVideoCallSession::SetCurrentVideoCallQualityLevel(int nVideoCallQualityLev
     if(m_bIsCheckCall == true)
         return;
 
+	CLogPrinter_LOG(CALL_DIMENSION_LOG, "CVideoCallSession::SetCurrentVideoCallQualityLevel m_nCurrentVideoCallQualityLevel %d m_Quality[1].iHeight %d m_Quality[1].iWidth %d m_Quality[0].iHeight %d m_Quality[0].iWidth %d", m_nCurrentVideoCallQualityLevel, m_pController->m_Quality[1].iHeight, m_pController->m_Quality[1].iWidth, m_pController->m_Quality[0].iHeight, m_pController->m_Quality[0].iWidth);
+
 	if (m_nCurrentVideoCallQualityLevel == SUPPORTED_RESOLUTION_FPS_640_25)
 	{
 		m_nVideoCallHeight = m_pController->m_Quality[1].iHeight;

@@ -380,11 +380,15 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
     if(iVideoHeight * iVideoWidth > 352 * 288)
     {
+    	CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::StartVideoCall m_Quality[1].iHeight a1 nVideoHeight %d nVideoWidth %d", iVideoHeight, iVideoWidth);
+
         m_Quality[1].iHeight = iVideoHeight;
         m_Quality[1].iWidth = iVideoWidth;
     }
     else
     {
+		CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::StartVideoCall m_Quality[0].iHeight 1 nVideoHeight %d nVideoWidth %d", iVideoHeight, iVideoWidth);
+
         m_Quality[0].iHeight = iVideoHeight;
         m_Quality[0].iWidth = iVideoWidth;
     }
@@ -726,11 +730,15 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
     
 	if(height * width > 352 * 288)
 	{
+		CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::SetEncoderHeightWidth m_Quality[1].iHeight a2 nVideoHeight %d nVideoWidth %d", height, width);
+
 		m_Quality[1].iHeight = height;
 		m_Quality[1].iWidth = width;
 	}
 	else
 	{
+		CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::SetEncoderHeightWidth m_Quality[0].iHeight 2 nVideoHeight %d nVideoWidth %d", height, width);
+
 		m_Quality[0].iHeight = height;
 		m_Quality[0].iWidth = width;
 	}
@@ -775,11 +783,16 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 
 		if (height * width > 352 * 288)
 		{
+			CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::SetEncoderHeightWidth m_Quality[1].iHeight a3 nVideoHeight %d nVideoWidth %d", height, width);
+
+
 			m_Quality[1].iHeight = height;
 			m_Quality[1].iWidth = width;
 		}
 		else
 		{
+			CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::SetEncoderHeightWidth m_Quality[0].iHeight 3 nVideoHeight %d nVideoWidth %d", height, width);
+
 			m_Quality[0].iHeight = height;
 			m_Quality[0].iWidth = width;
 		}
@@ -948,6 +961,8 @@ int CController::CheckDeviceCapability(const long long& lFriendID, int iHeightHi
 
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::CheckDeviceCapability CheckDeviceCapability started --> ffiendID = " + m_Tools.getText(lFriendID));
 
+	CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::CheckDeviceCapability m_Quality[0].iHeight 4 iHeightLow %d iWidthLow %d iHeightHigh %d iWidthHigh %d", iHeightLow, iWidthLow, iHeightHigh, iWidthHigh);
+
     m_Quality[0].iHeight = iHeightLow;
     m_Quality[0].iWidth = iWidthLow;
     m_Quality[1].iHeight = iHeightHigh;
@@ -1012,6 +1027,8 @@ int CController::SetDeviceCapabilityResults(int iNotification, int iHeightHigh, 
 
 	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CController::SetDeviceCapabilityResults after reduction (Notification, HH, WH, HL, WL) = (%d, %d, %d, %d, %d)", iNotification, iHeightHigh, iWidthHigh, iHeightLow, iWidthLow);
     
+	CLogPrinter_LOG(CALL_DIMENSION_LOG, "CController::SetDeviceCapabilityResults m_Quality[0].iHeight 5 iHeightLow %d iWidthLow %d iHeightHigh %d iWidthHigh %d", iHeightLow, iWidthLow, iHeightHigh, iWidthHigh);
+
     m_Quality[0].iHeight = iHeightLow;
     m_Quality[0].iWidth = iWidthLow;
     m_Quality[1].iHeight = iHeightHigh;
