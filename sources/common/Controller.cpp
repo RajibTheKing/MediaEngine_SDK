@@ -385,8 +385,13 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
         m_Quality[1].iHeight = iVideoHeight;
         m_Quality[1].iWidth = iVideoWidth;
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
+
 		m_Quality[0].iHeight = iVideoHeight / 2;
 		m_Quality[0].iWidth = iVideoWidth / 2;
+
+#endif
+
     }
     else
     {
@@ -791,8 +796,12 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 			m_Quality[1].iHeight = height;
 			m_Quality[1].iWidth = width;
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(ANDROID)
+
 			m_Quality[0].iHeight = height / 2;
 			m_Quality[0].iWidth = width / 2;
+#endif
+
 		}
 		else
 		{
