@@ -8,8 +8,8 @@
 #include "CommonTypes.h"
 
 
-#define MAX_PACKET_SIZE 480
-#define MIN_PACKET_SIZE 380
+#define MAX_PACKET_SIZE 920
+#define MIN_PACKET_SIZE 820
 #define RANG_SIZE MAX_PACKET_SIZE - MIN_PACKET_SIZE
 
 #define DEFAULT_SEED 23232323
