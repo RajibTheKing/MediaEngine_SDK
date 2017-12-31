@@ -305,6 +305,8 @@ namespace MediaSDK
 					}
 					else
 					{
+						CLogPrinter_LOG(CALL_PACKET_SIZE_LOG, "CEncodedFramePacketizer::Packetize nPacketHeaderLenghtWithMediaType %d m_nPacketSize %d nPacketNumber %d", nPacketHeaderLenghtWithMediaType, m_nPacketSize, nPacketNumber);
+
 						m_pcSendingBuffer->Queue(llFriendID, m_ucaPacket, nPacketHeaderLenghtWithMediaType + m_nPacketSize, iFrameNumber, nPacketNumber);
 					}
 
