@@ -6,8 +6,8 @@
 namespace MediaSDK
 {
 
-#define MEDIA_ENGINE_VERSION "12.22"
-#define MEDIA_ENGINE_BUILD_NUMBER 1222003027
+#define MEDIA_ENGINE_VERSION "12.23"
+#define MEDIA_ENGINE_BUILD_NUMBER 1223003031
 
 	/********Enable to create log************/
 

@@ -1,4 +1,9 @@
-Release 12.22 (Date: 30-12-2017)
+Release 12.23 (Date: 31-12-2017)
+---------------------------------
+- Video call packet size made 820 to 920
+
+
+Release 12.22 (Date: 27-12-2017)
 ---------------------------------
 - First call green screen issue fixed
 
