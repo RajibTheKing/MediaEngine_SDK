@@ -64,7 +64,7 @@ namespace MediaSDK
         
 	private:
 
-		FILE *pFile;
+		//FILE *pFile;
 
 		CVideoCallSession *m_pVideoCallSession;
 

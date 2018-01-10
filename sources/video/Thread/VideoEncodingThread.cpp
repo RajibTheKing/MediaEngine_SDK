@@ -71,7 +71,7 @@ m_bNewSessionStarted(true)
 	m_filterToApply = 0;
     m_iNumberOfEncodeFailPerFPS = 0;
 
-	pFile = fopen("/sdcard/encodingThreadEncodedFile.h264", "w");
+	//pFile = fopen("/sdcard/encodingThreadEncodedFile.h264", "w");
 }
 
 CVideoEncodingThread::~CVideoEncodingThread()
@@ -100,7 +100,7 @@ CVideoEncodingThread::~CVideoEncodingThread()
 		m_VideoEffects = NULL;
 	}
 
-	fclose(pFile);
+	//fclose(pFile);
 }
 
 void CVideoEncodingThread::SetCallFPS(int nFPS)
@@ -761,12 +761,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
 				}	
 
+				/*
 				if (!m_bIsCheckCall)
 				{
 					fwrite(m_ucaEncodedFrame, sizeof(char), nENCODEDFrameSize, pFile);
 					fflush(pFile);
 				}
-
+				*/
 
 				//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 
