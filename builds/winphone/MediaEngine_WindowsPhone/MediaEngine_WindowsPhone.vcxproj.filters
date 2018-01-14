@@ -433,6 +433,9 @@
     <ClCompile Include="..\..\..\sources\audio\main\AudioSessionStatistics.cpp">
       <Filter>audio\main</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\video\FPS\FrameRateController.cpp">
+      <Filter>video\fps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h" />
@@ -870,6 +873,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\main\AudioSessionStatistics.h">
       <Filter>audio\main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\video\FPS\FrameRateController.h">
+      <Filter>video\fps</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
