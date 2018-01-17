@@ -763,7 +763,7 @@ namespace MediaSDK
 				{
 					str += "\n";
 				}
-				for (int j = 0; j < m_iTaceWaveCount - iMatchCountThreshold; j++)
+				for (int j = 0; j < 2; j++)
 				{
 					int k = 0;
 					for (k = 0; k < iMatchCountThreshold; k++)
