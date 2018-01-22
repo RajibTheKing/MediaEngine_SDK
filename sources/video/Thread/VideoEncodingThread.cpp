@@ -70,6 +70,8 @@ m_bNewSessionStarted(true)
 
 	m_filterToApply = 0;
     m_iNumberOfEncodeFailPerFPS = 0;
+
+	//pFile = fopen("/sdcard/encodingThreadEncodedFile.h264", "w");
 }
 
 CVideoEncodingThread::~CVideoEncodingThread()
@@ -97,6 +99,8 @@ CVideoEncodingThread::~CVideoEncodingThread()
 		delete m_VideoEffects;
 		m_VideoEffects = NULL;
 	}
+
+	//fclose(pFile);
 }
 
 void CVideoEncodingThread::SetCallFPS(int nFPS)
@@ -483,7 +487,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             
 			if (m_VideoBeautificationer == NULL)
 			{
-				m_VideoBeautificationer = new CVideoBeautificationer(iGotHeight, iGotWidth);
+				m_VideoBeautificationer = new CVideoBeautificationer(iGotHeight, iGotWidth, CHANNEL_TYPE_NOT_CHANNEL);
 			}
             
             if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pVideoCallSession->GetAudioOnlyLiveStatus() == true && (m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_VIDEO || m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_VIDEO_ONLY))
@@ -755,7 +759,15 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaDummmyFrame[m_iFrameNumber % 3], nEncodingFrameSize, m_ucaEncodedFrame, false);
 					else
 						nENCODEDFrameSize = m_pVideoEncoder->EncodeVideoFrame(m_ucaConvertedEncodingFrame, nEncodingFrameSize, m_ucaEncodedFrame, bNeedIDR);
-				}		
+				}	
+
+				/*
+				if (!m_bIsCheckCall)
+				{
+					fwrite(m_ucaEncodedFrame, sizeof(char), nENCODEDFrameSize, pFile);
+					fflush(pFile);
+				}
+				*/
 
 				//VLOG("#EN# Encoding Frame: " + m_Tools.IntegertoStringConvert(m_iFrameNumber));
 

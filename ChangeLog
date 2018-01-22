@@ -1,10 +1,32 @@
+Release 12.23.1 (Date: 14-01-2018)
+---------------------------------
+- FrameRateController added for windows phone 
+
+
+Release 12.23 (Date: 31-12-2017)
+---------------------------------
+- Video call packet size made 820 to 920
+
+
+Release 12.22 (Date: 27-12-2017)
+---------------------------------
+- First call green screen issue fixed
+
+
+Release 12.21 (Date: 18-12-2017)
+---------------------------------
+- Channel beautificaiton added
+
+
 Release 12.20 (Date: 12-12-2017)
 ---------------------------------
 - Refactored Audio module [Issue# 2098]
 
+
 Release 12.19.1 (Date: 09-12-2017)
 ---------------------------------
 - Fixed crash of GetDeviceInformation [Issue# 5350]
+
 
 Release 12.19 (Date: 06-12-2017)
 ---------------------------------

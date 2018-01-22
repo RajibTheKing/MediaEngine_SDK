@@ -178,7 +178,7 @@ namespace MediaSDK
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER, bAudioCodecOpus);
 
 		if (bReturnedValue)
-			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
+			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming StartVideoCall completed ID %lld", llFriendID);
 
@@ -187,7 +187,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID)
+	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID, int nChannelType)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 1 ID %lld", llFriendID);
 
@@ -203,7 +203,7 @@ namespace MediaSDK
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT, true);
 
 		if (bReturnedValue)
-			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
+			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView StartVideoCall completed ID %lld", llFriendID);
 
@@ -229,7 +229,7 @@ namespace MediaSDK
 		if (llFriendID == SESSION_ID_FOR_SELF_VIEW)
 			bSelfViewOnly = true;
 
-		bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, nEntityType, nNetworkType, bAudioOnlyLive, bSelfViewOnly);
+		bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, nNetworkType, bAudioOnlyLive, bSelfViewOnly);
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall done ID %lld", llFriendID);
 		

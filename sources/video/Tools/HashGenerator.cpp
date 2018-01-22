@@ -56,7 +56,12 @@ namespace MediaSDK
 		unsigned long long hashedValue = HashSeedPair(m_nSeed, nframeNumber, nPacketNumber);
 
 		int newSize = hashedValue%MAX_PACKET_SIZE;
+
+		CLogPrinter_LOG(CALL_PACKET_SIZE_LOG, "CHashGenerator::Packetize GetHashedPacketSize %lld newSize %d", hashedValue, newSize);
+
 		newSize = MIN_PACKET_SIZE + hashedValue % (RANG_SIZE);
+
+		CLogPrinter_LOG(CALL_PACKET_SIZE_LOG, "CHashGenerator::Packetize GetHashedPacketSize 222 %lld newSize %d", hashedValue, newSize);
 
 		/*
 		while(newSize<MIN_PACKET_SIZE)

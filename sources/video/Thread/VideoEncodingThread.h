@@ -64,6 +64,8 @@ namespace MediaSDK
         
 	private:
 
+		//FILE *pFile;
+
 		CVideoCallSession *m_pVideoCallSession;
 
 		BitRateController *m_pBitRateController;

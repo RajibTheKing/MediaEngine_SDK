@@ -258,6 +258,8 @@ namespace MediaSDK
 		int iHeaderLength = packetHeader.GetHeaderLength();
 		int nPacketStartingIndex = packetHeader.GetPacketStartingIndex();
 
+		CLogPrinter_LOG(CALL_PACKET_SIZE_LOG, "CEncodedFrameDepacketizer::ResetEncodedFrameDepacketizer packetLength %d iHeaderLength %d", packetLength, iHeaderLength);
+
 		int isCompleteFrame = m_CVideoPacketBuffer[index].PushVideoPacket(in_data, packetLength, packetNumber, iHeaderLength, nPacketStartingIndex);
         
         CLogPrinter_WriteLog(CLogPrinter::DEBUGS, DEPACKETIZATION_LOG, "isCompleteFrame = : " + m_Tools.getText(isCompleteFrame));
