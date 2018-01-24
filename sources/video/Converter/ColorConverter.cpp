@@ -134,7 +134,10 @@ void CColorConverter::SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth)
 int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
-
+#if defined(HAVE_NEON)
+    m_pNeonAssemblyWrapper->convert_i420_to_nv21_assembly(convertingData, iVideoHeight, iVideoWidth);
+    return iVideoHeight * iVideoWidth * 3 / 2;
+#else
 	int i, j, k;
 
 	int YPlaneLength = iVideoHeight*iVideoWidth;
@@ -151,6 +154,7 @@ int CColorConverter::ConvertI420ToNV21(unsigned char *convertingData, int iVideo
 	}
 
 	return UVPlaneEnd;
+#endif
 }
 int CColorConverter::ConvertYV12ToI420(unsigned char *convertingData, int iVideoHeight, int iVideoWidth)
 {
