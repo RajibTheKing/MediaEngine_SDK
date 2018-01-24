@@ -199,7 +199,7 @@ print '1. Desktop & WindowsPhone both.'
 print '2. Desktop only.'
 print '3. WindowsPhone only'
 
-input = raw_input()
+input = 2
 	
 	
 	
