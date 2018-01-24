@@ -124,13 +124,16 @@ def copyLibs(thardPartyDirectory, dest, archi, platform):
 		else :
 			print '\t\t  Not Exists!!!!!!'	
 
-def makeZipFile(zipFileName, sourceDirectory):			
-	zf = zipfile.ZipFile(zipFileName, "w")
-	for dirname, subdirs, files in os.walk(sourceDirectory):
-		zf.write(dirname)
-		for filename in files:
-			zf.write(os.path.join(dirname, filename))
-	zf.close()
+def makeZipFile(zipFileName, sourceDirectory):
+	try:			
+		zf = zipfile.ZipFile(zipFileName, "w", zipfile.ZIP_DEFLATED)
+		for dirname, subdirs, files in os.walk(sourceDirectory):
+			zf.write(dirname)
+			for filename in files:
+				zf.write(os.path.join(dirname, filename))
+		zf.close()
+	except Exception, e:
+		print str(e)
 			
 	
 def makeDesktopBuild(zipFileName, tmpFileName):	
