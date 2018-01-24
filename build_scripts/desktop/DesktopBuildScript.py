@@ -5,10 +5,11 @@ import sys
 import time
 
 
-callsdk = r'D:\Dev\callsdk_v2'
-mediaEngine = r'D:\Dev\MediaEngine_dev';
-ringidSDK = r'D:\Dev\RingIDSDK'
-ringidDesktop = r'D:\Dev\ringid_clients\ringID_WPF'
+callsdk = r'D:\Work\Project\callsdk_v2'
+mediaEngine = r'D:\Work\Project\IPV-MediaEngine';
+ringidSDK = r'D:\Work\Project\IPV-RingIDSDK'
+ringidDesktop = r'D:\Work\Project\RingID-Desktop\ringID_WPF'
+libraryPath = r'E:\OnlyForDesktop\123\desktop'
 
 ret = 0
 clean_videoEngine = 0
@@ -200,6 +201,9 @@ if libraryRelease == 1:
 	buildEngine()
 	debugOrRelease = 1
 	buildEngine()
+	shutil.copy2( mediaEngine + r'\output\desktop\debug\MediaEngine_Windows.lib', libraryPath + r'\libs\Debug')
+	shutil.copy2( mediaEngine + r'\output\desktop\release\MediaEngine_Windows.lib', libraryPath + r'\libs\Release')
+	shutil.copy2( mediaEngine + r'\sources\common\InterfaceOfAudioVideoEngine.h', libraryPath + r'\include')
 
 else:
 	buildEngine()
