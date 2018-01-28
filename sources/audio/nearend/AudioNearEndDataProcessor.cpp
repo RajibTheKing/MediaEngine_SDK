@@ -90,6 +90,7 @@ namespace MediaSDK
 		m_pCancelledNE = new CAudioDumper("AEC.pcm", true);
 		m_pKichCutNE = new CAudioDumper("KC.pcm", true);
 		m_pProcessedNE = new CAudioDumper("processed.pcm", true);
+		m_pTraceRemoved = new CAudioDumper("tr.pcm", true);
 		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", true);
 
 		m_pTrace = new CTrace();
@@ -122,6 +123,11 @@ namespace MediaSDK
 		{
 			delete m_pGainedNE;
 			m_pGainedNE = nullptr;
+		}
+		if (m_pTraceRemoved != nullptr)
+		{
+			delete m_pTraceRemoved;
+			m_pTraceRemoved = nullptr;
 		}
 
 		if (m_pProcessed2NE != nullptr)
@@ -191,7 +197,7 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::ResetTrace()
 	{
-		MediaLog(LOG_CODE_TRACE, "Reset Trace Starting")
+		MediaLog(LOG_DEBUG, "Reset Trace Starting")
 		//Trace and Delay Related		
 		m_llTraceSendingTime = 0;
 		m_llTraceReceivingTime = 0;
@@ -202,7 +208,7 @@ namespace MediaSDK
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
-		m_iDeleteCount = (m_pTrace->m_iTracePatternLength / MAX_AUDIO_FRAME_SAMPLE_SIZE) + 1;
+		m_iDeleteCount = (m_pTrace->m_iTracePatternLength / MAX_AUDIO_FRAME_SAMPLE_SIZE) + 2;
 		m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
 		m_pAudioCallSession->m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
 		m_pAudioCallSession->m_pFarEndProcessor->m_llNextPlayingTime = -1;
@@ -211,7 +217,7 @@ namespace MediaSDK
 
 		m_pAudioCallSession->SetRecordingStarted(true);
 
-		MediaLog(LOG_CODE_TRACE, "Reset Trace Ending")
+		MediaLog(LOG_DEBUG, "Reset Trace Ending")
 	}
 
 	void AudioNearEndDataProcessor::HandleTrace(short *psaEncodingAudioData, unsigned int unLength)
@@ -278,8 +284,8 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[ANEDP] Delete Data After Trace Received, length: %d", unLength);
 		if (m_iDeleteCount > 0)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved");
-			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved %d, m_iDeleteCount = %d", m_bTraceRecieved, m_iDeleteCount);
+			memset(psaEncodingAudioData, 10000, sizeof(short) * unLength);
 			memset(m_saFarendData, 0, sizeof(short) * unLength);
 			m_iDeleteCount--;
 		}
@@ -489,6 +495,11 @@ namespace MediaSDK
 			//Some frames are deleted after detectiing trace, whether or not detection succeeds
 			DeleteDataB4TraceIsReceived(psaEncodingAudioData, unLength);
 
+			if (m_pAudioCallSession->GetEchoCanceler().get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
+			{
+				DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
+			}
+			m_pTraceRemoved->WriteDump(psaEncodingAudioData, 2, unLength);
 
 #ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
@@ -513,8 +524,8 @@ namespace MediaSDK
 				if (iFarendDataLength > 0)
 				{
 					//If trace is received, current and next frames are deleted
-					DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
-					m_pTraceDetectionDump->WriteDump(psaEncodingAudioData, 2, MAX_AUDIO_FRAME_SAMPLE_SIZE);
+					
+					
 #if !defined(TARGET_OS_IPHONE) && !defined(TARGET_IPHONE_SIMULATOR)
 					if (bIsGainWorking)
 					{
