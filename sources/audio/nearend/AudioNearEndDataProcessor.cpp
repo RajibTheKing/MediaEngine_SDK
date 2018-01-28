@@ -285,7 +285,14 @@ namespace MediaSDK
 		if (m_iDeleteCount > 0)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved %d, m_iDeleteCount = %d", m_bTraceRecieved, m_iDeleteCount);
-			memset(psaEncodingAudioData, 10000, sizeof(short) * unLength);
+			if (m_bTraceRecieved == true)
+			{
+				memset(psaEncodingAudioData, 10000, sizeof(short) * unLength);
+			}
+			else
+			{
+				memset(psaEncodingAudioData, -10000, sizeof(short) * unLength);
+			}
 			memset(m_saFarendData, 0, sizeof(short) * unLength);
 			m_iDeleteCount--;
 		}
