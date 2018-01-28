@@ -272,10 +272,10 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::DeleteDataB4TraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		MediaLog(LOG_DEBUG, "[ANEDP] Delete Data Before Trace Received, length: %d",unLength);
-		if (!m_bTraceRecieved && !m_bTraceWillNotBeReceived)
+		if (m_bTraceSent && !m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
-			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+			memset(psaEncodingAudioData, 20000, sizeof(short) * unLength);
 		}
 	}
 
