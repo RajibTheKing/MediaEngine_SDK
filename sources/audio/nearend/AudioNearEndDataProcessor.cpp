@@ -276,12 +276,14 @@ namespace MediaSDK
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
 			memset(m_saAudioTraceRemovalBuffer, 20000, sizeof(short) * unLength);
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 		else if (!m_bTraceSent && !m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
 			memset(m_saAudioTraceRemovalBuffer, 30000, sizeof(short) * unLength);
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
-		memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+		
 	}
 
 	void AudioNearEndDataProcessor::DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
