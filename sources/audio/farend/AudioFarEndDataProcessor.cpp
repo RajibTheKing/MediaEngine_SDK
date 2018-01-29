@@ -244,6 +244,8 @@ namespace MediaSDK
 
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 
+			m_pAudioCallSession->m_pPlayerSidePreGain->WriteDump(pshSentFrame, 2, nSentFrameSize);
+
 			if (m_nEntityType == ENTITY_TYPE_VIEWER && m_pAudioCallSession->GetPlayerGain().get())
 			{
 				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, nEchoStateFlags);
@@ -273,7 +275,8 @@ namespace MediaSDK
 
 		}
 		else
-		{			
+		{
+			m_pAudioCallSession->m_pPlayerSidePreGain->WriteDump(pshSentFrame, 2, nSentFrameSize);
 #ifdef __ANDROID__
 			if (m_pAudioCallSession->GetPlayerGain().get())
 			{

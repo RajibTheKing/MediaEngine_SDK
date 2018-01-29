@@ -143,6 +143,7 @@ namespace MediaSDK
 
 		m_pChunckedNE = new CAudioDumper("RecordedChuncked.pcm", false);
 		m_pPlayedFE = new CAudioDumper("Played.pcm", true);
+		m_pPlayerSidePreGain = new CAudioDumper("Ppg.pcm", true);
 		m_pPlayedPublisherFE = new CAudioDumper("PlayedPublisher.pcm", true);
 		m_pPlayedCalleeFE = new CAudioDumper("PlayedCallee.pcm", true);
 
@@ -229,6 +230,11 @@ namespace MediaSDK
 		{
 			delete m_pPlayedFE;
 			m_pPlayedFE = nullptr;
+		}
+		if (m_pPlayerSidePreGain != nullptr)
+		{
+			delete m_pPlayerSidePreGain;
+			m_pPlayerSidePreGain = nullptr;
 		}
 
 		if (m_pPlayedPublisherFE != nullptr)

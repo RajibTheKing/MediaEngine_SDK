@@ -143,7 +143,7 @@ namespace MediaSDK
 		SharedPointer<AudioShortBufferForPublisherFarEnd> m_PublisherBufferForMuxing;
 		SharedPointer<CAudioByteBuffer> m_FarEndBufferOpus;
 
-		CAudioDumper *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayedPublisherFE = nullptr,
+		CAudioDumper *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayerSidePreGain = nullptr, *m_pPlayedPublisherFE = nullptr,
 			*m_pPlayedCalleeFE = nullptr;
 		int m_iSpeakerType;
 		
