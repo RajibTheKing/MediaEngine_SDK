@@ -512,6 +512,7 @@ namespace MediaSDK
 		m_bRecordingStarted = false;
 		//if (m_iSpeakerType != iSpeakerType)
 		{
+			m_pNearEndProcessor->ClearRecordBuffer();
 			m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
 		}
 		m_iSpeakerType = iSpeakerType;
