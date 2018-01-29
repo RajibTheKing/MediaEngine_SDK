@@ -137,6 +137,8 @@ namespace MediaSDK
 		unsigned char m_ucaRawDataToSendNear[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 		unsigned char m_ucaRawDataToSendFar[MAX_AUDIO_DATA_TO_SEND_SIZE + 10];
 
+		short m_saAudioTraceRemovalBuffer[MAX_AUDIO_FRAME_SAMPLE_SIZE];
+
 		std::vector<int> m_vRawFrameLengthNear;
 		std::vector<int> m_vRawFrameLengthFar;
 		std::vector<std::pair<int, int>> m_vFrameMissingBlocks;

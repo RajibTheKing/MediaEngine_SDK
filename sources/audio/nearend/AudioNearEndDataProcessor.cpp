@@ -275,12 +275,13 @@ namespace MediaSDK
 		if (m_bTraceSent && !m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
-			memset(psaEncodingAudioData, 20000, sizeof(short) * unLength);
+			memset(m_saAudioTraceRemovalBuffer, 20000, sizeof(short) * unLength);
 		}
 		else if (!m_bTraceSent && !m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
-			memset(psaEncodingAudioData, 30000, sizeof(short) * unLength);
+			memset(m_saAudioTraceRemovalBuffer, 30000, sizeof(short) * unLength);
 		}
+		memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 	}
 
 	void AudioNearEndDataProcessor::DeleteDataAfterTraceIsReceived(short *psaEncodingAudioData, unsigned int unLength)
@@ -291,12 +292,13 @@ namespace MediaSDK
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved %d, m_iDeleteCount = %d", m_bTraceRecieved, m_iDeleteCount);
 			if (m_bTraceRecieved == true)
 			{
-				memset(psaEncodingAudioData, 10000, sizeof(short) * unLength);
+				memset(m_saAudioTraceRemovalBuffer, 10000, sizeof(short) * unLength);
 			}
 			else
 			{
-				memset(psaEncodingAudioData, -10000, sizeof(short) * unLength);
+				memset(m_saAudioTraceRemovalBuffer, -10000, sizeof(short) * unLength);
 			}
+			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			memset(m_saFarendData, 0, sizeof(short) * unLength);
 			m_iDeleteCount--;
 		}
@@ -504,13 +506,14 @@ namespace MediaSDK
 			//Handle Trace
 			HandleTrace(psaEncodingAudioData, unLength);
 			//Some frames are deleted after detectiing trace, whether or not detection succeeds
+			memcpy(m_saAudioTraceRemovalBuffer, psaEncodingAudioData, unLength * sizeof(short));
 			DeleteDataB4TraceIsReceived(psaEncodingAudioData, unLength);
 
 			if (m_pAudioCallSession->GetEchoCanceler().get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
 			{
 				DeleteDataAfterTraceIsReceived(psaEncodingAudioData, unLength);
 			}
-			m_pTraceRemoved->WriteDump(psaEncodingAudioData, 2, unLength);
+			m_pTraceRemoved->WriteDump(m_saAudioTraceRemovalBuffer, 2, unLength);
 
 #ifdef DUMP_FILE
 			fwrite(psaEncodingAudioData, 2, unLength, FileInputWithEcho);
