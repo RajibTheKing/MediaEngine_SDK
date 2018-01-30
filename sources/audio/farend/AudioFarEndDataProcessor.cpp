@@ -644,7 +644,7 @@ namespace MediaSDK
 	{
 		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 		
-		MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] CurrnetTime=%lld, NextPlayTime=%lld, bPlayingStarted=%d", llCurrentTimeStamp, m_llNextPlayingTime, m_bPlayingNotStartedYet);
+		MediaLog(LOG_DEBUG, "[ponlylog][FE][AFEDP][TS] CurrnetTime=%lld, NextPlayTime=%lld, bPlayingStarted=%d", llCurrentTimeStamp, m_llNextPlayingTime, m_bPlayingNotStartedYet);
 
 		if (m_bPlayingNotStartedYet)
 		{			
