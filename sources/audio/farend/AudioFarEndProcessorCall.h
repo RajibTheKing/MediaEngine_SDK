@@ -26,10 +26,9 @@ namespace MediaSDK
 
 
 	private:
-
 		bool IsQueueEmpty();
 		int m_iAudioVersionFriend = -1;
-
+		int m_iLastFarEndFrameNumber;
 	};
 
 } //namespace MediaSDK

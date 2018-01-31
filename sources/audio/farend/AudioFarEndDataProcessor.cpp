@@ -221,13 +221,13 @@ namespace MediaSDK
 
 			llNow = Tools::CurrentTimestamp();
 
-			MediaLog(LOG_INFO, "[AFEDP] Live Streaming Receiver Time Diff : %lld, DataLength: %d",
+			MediaLog(CODE_TRACE, "[AFEDP] Live Streaming Receiver Time Diff : %lld, DataLength: %d",
 				llNow - llLastTime, nSentFrameSize);
 
 			llLastTime = llNow;
 			if (false == m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
-				MediaLog(LOG_INFO, "[AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
+				MediaLog(CODE_TRACE, "[AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
 				int iStartIndex = 0;
 				int iEndIndex = 1599;
 				int iCalleeId = 1;
@@ -240,7 +240,7 @@ namespace MediaSDK
 				m_pAudioCallSession->m_PublisherBufferForMuxing->EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 			}
 
-			MediaLog(LOG_INFO, "[AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
+			MediaLog(LOG_DEBUG, "[AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 
@@ -644,7 +644,7 @@ namespace MediaSDK
 	{
 		long long llCurrentTimeStamp = Tools::CurrentTimestamp();
 		
-		MediaLog(LOG_DEBUG, "[ponlylog][FE][AFEDP][TS] CurrnetTime=%lld, NextPlayTime=%lld, bPlayingStarted=%d", llCurrentTimeStamp, m_llNextPlayingTime, m_bPlayingNotStartedYet);
+		MediaLog(LOG_DEBUG, "[FE][AFEDP][TS][POL] CurrnetTime=%lld, NextPlayTime=%lld, bPlayingStarted=%d", llCurrentTimeStamp, m_llNextPlayingTime, m_bPlayingNotStartedYet);
 
 		if (m_bPlayingNotStartedYet)
 		{			
