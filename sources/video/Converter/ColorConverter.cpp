@@ -2110,62 +2110,79 @@ int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, 
 	int centerPointY_3  = iPosY + h2 - smallRacRadius;
 	int centerPointX_4 = iPosX + w2 - smallRacRadius;
 	int centerPointY_4  = iPosY + h2 - smallRacRadius;
-
+    
 	for (int i = iPosY; i<(iPosY + h2); i++)
 	{
-		for (int j = iPosX; j<(iPosX + w2); j++)
-		{
-			int ii = i - iPosY;
-			int jj = j - iPosX;
-			int now1 = i*w1 + j;
-			int now2 = ii*w2 + jj;
-
-
-			if(j <= centerPointX_1 && i <= centerPointY_1)
-			{
-				int distanse_1 = (int)ceil(sqrt(((centerPointX_1 - j)*(centerPointX_1 - j)) + ((centerPointY_1 - i)*(centerPointY_1 - i))));
-				if(distanse_1 <= smallRacRadius)
-				{
-					pInData1[now1] = m_pSmallFrame[now2];
-					pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
-					pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
-				}
-			}else if(j >= centerPointX_2 && i <= centerPointY_2)
-			{
-				int distanse_2 = (int)ceil(sqrt(((centerPointX_2 - j)*(centerPointX_2 - j)) + ((centerPointY_2 - i)*(centerPointY_2 - i))));
-				if(distanse_2 <= smallRacRadius)
-				{
-					pInData1[now1] = m_pSmallFrame[now2];
-					pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
-					pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
-				}
-			}else if(j <= centerPointX_3 && i >= centerPointY_3)
-			{
-				int distanse_3 = (int)ceil(sqrt(((centerPointX_3 - j)*(centerPointX_3 - j)) + ((centerPointY_3 - i)*(centerPointY_3 - i))));
-				if(distanse_3 <= smallRacRadius)
-				{
-					pInData1[now1] = m_pSmallFrame[now2];
-					pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
-					pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
-				}
-			}else if(j >= centerPointX_4 && i >= centerPointY_4)
-			{
-				int distanse_4 = (int)ceil(sqrt(((centerPointX_4 - j)*(centerPointX_4 - j)) + ((centerPointY_4 - i)*(centerPointY_4 - i))));
-				if(distanse_4 <= smallRacRadius)
-				{
-					pInData1[now1] = m_pSmallFrame[now2];
-					pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
-					pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
-				}
-			}else{
-				pInData1[now1] = m_pSmallFrame[now2];
-				pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
-				pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
-			}
-
-		}
+        if(i>centerPointY_1 && i<centerPointY_3)
+        {
+            int j = iPosX;
+            int ii = i - iPosY;
+            int jj = j - iPosX;
+            int now1 = i*w1 + j;
+            int now2 = ii*w2 + jj;
+            memcpy(&pInData1[now1], &m_pSmallFrame[now2], w2);
+            memcpy(&pInData1[getUIndex(h1, w1, i, j, total1)], &m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)], w2/2);
+            memcpy(&pInData1[getVIndex(h1, w1, i, j, total1)], &m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)], w2/2);
+            
+        }
+        else
+        {
+            for (int j = iPosX; j<(iPosX + w2); j++)
+            {
+                int ii = i - iPosY;
+                int jj = j - iPosX;
+                int now1 = i*w1 + j;
+                int now2 = ii*w2 + jj;
+                
+                
+                if(j <= centerPointX_1 && i <= centerPointY_1)
+                {
+                    int distanse_1 = (int)ceil(sqrt(((centerPointX_1 - j)*(centerPointX_1 - j)) + ((centerPointY_1 - i)*(centerPointY_1 - i))));
+                    if(distanse_1 <= smallRacRadius)
+                    {
+                        pInData1[now1] = m_pSmallFrame[now2];
+                        pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+                        pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+                    }
+                }else if(j >= centerPointX_2 && i <= centerPointY_2)
+                {
+                    int distanse_2 = (int)ceil(sqrt(((centerPointX_2 - j)*(centerPointX_2 - j)) + ((centerPointY_2 - i)*(centerPointY_2 - i))));
+                    if(distanse_2 <= smallRacRadius)
+                    {
+                        pInData1[now1] = m_pSmallFrame[now2];
+                        pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+                        pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+                    }
+                }else if(j <= centerPointX_3 && i >= centerPointY_3)
+                {
+                    int distanse_3 = (int)ceil(sqrt(((centerPointX_3 - j)*(centerPointX_3 - j)) + ((centerPointY_3 - i)*(centerPointY_3 - i))));
+                    if(distanse_3 <= smallRacRadius)
+                    {
+                        pInData1[now1] = m_pSmallFrame[now2];
+                        pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+                        pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+                    }
+                }else if(j >= centerPointX_4 && i >= centerPointY_4)
+                {
+                    int distanse_4 = (int)ceil(sqrt(((centerPointX_4 - j)*(centerPointX_4 - j)) + ((centerPointY_4 - i)*(centerPointY_4 - i))));
+                    if(distanse_4 <= smallRacRadius)
+                    {
+                        pInData1[now1] = m_pSmallFrame[now2];
+                        pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+                        pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+                    }
+                }else{
+                    pInData1[now1] = m_pSmallFrame[now2];
+                    pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+                    pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+                }
+                
+            }
+        }
+		
 	}
-
+    
+    
 	return iLen1;
 }
 
