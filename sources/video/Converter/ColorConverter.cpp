@@ -2058,6 +2058,15 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 
 	for (int i = iPosY; i<(iPosY + h2); i++)
 	{
+        int j = iPosX;
+        int ii = i - iPosY;
+        int jj = j - iPosX;
+        int now1 = i*w1 + j;
+        int now2 = ii*w2 + jj;
+        memcpy(&pInData1[now1], &m_pSmallFrame[now2], w2);
+        memcpy(&pInData1[getUIndex(h1, w1, i, j, total1)], &m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)], w2/2);
+        memcpy(&pInData1[getVIndex(h1, w1, i, j, total1)], &m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)], w2/2);
+        /*
 		for (int j = iPosX; j<(iPosX + w2); j++)
 		{
 			int ii = i - iPosY;
@@ -2066,11 +2075,11 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 			int now2 = ii*w2 + jj;
 
 			pInData1[now1] = m_pSmallFrame[now2];
-			pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
-			pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
+			//pInData1[getUIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getUIndex(h2, w2, ii, jj, total2)];
+			//pInData1[getVIndex(h1, w1, i, j, total1)] = m_pSmallFrame[getVIndex(h2, w2, ii, jj, total2)];
 		}
+        */
 	}
-
 	return iLen1;
 }
 
