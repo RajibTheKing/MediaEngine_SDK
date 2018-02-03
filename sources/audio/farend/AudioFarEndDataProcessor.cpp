@@ -213,7 +213,7 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags)
 	{
-		MediaLog(LOG_INFO, "[AFEDP] SENT TO PLAYER DATA .................");
+		MediaLog(LOG_INFO, "[FE][AFEDP] SENT TO PLAYER DATA .................");
 		long long llNow = 0;
 
 		if (m_bIsLiveStreamingRunning == true)
@@ -221,13 +221,13 @@ namespace MediaSDK
 
 			llNow = Tools::CurrentTimestamp();
 
-			MediaLog(CODE_TRACE, "[AFEDP] Live Streaming Receiver Time Diff : %lld, DataLength: %d",
+			MediaLog(CODE_TRACE, "[FE][AFEDP] Live Streaming Receiver Time Diff : %lld, DataLength: %d",
 				llNow - llLastTime, nSentFrameSize);
 
 			llLastTime = llNow;
 			if (false == m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
 			{
-				MediaLog(CODE_TRACE, "[AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
+				MediaLog(CODE_TRACE, "[FE][AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
 				int iStartIndex = 0;
 				int iEndIndex = 1599;
 				int iCalleeId = 1;
@@ -240,7 +240,7 @@ namespace MediaSDK
 				m_pAudioCallSession->m_PublisherBufferForMuxing->EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
 			}
 
-			MediaLog(LOG_DEBUG, "[AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
+			MediaLog(LOG_DEBUG, "[FE][AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 
 			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 
@@ -261,7 +261,7 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					m_nPacketPlayed ++;
-					MediaLog(LOG_INFO, "[AFEDP] Viewer# To Player [SendToPlayer]\n");
+					MediaLog(LOG_INFO, "[FE][AFEDP] Viewer# To Player [SendToPlayer]\n");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
 					m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize);
 				}
@@ -319,7 +319,7 @@ namespace MediaSDK
 		iOffsetOfBlock = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_BLOCK_OFFSET);
 		nFrameLength = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_FRAME_LENGTH);
 		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_CALL_ECHO_STATE_FLAGS);
-		MediaLog(LOG_DEBUG, "[AFEDP] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);
+		MediaLog(LOG_DEBUG, "[FE][AFEDP] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);
 
 		if (iBlockNumber == -1)
 		{
@@ -350,13 +350,13 @@ namespace MediaSDK
 		timestamp = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_TIMESTAMP);
 		nEchoStateFlags = m_pAudioFarEndPacketHeader->GetInformation(INF_LIVE_ECHO_STATE_FLAGS);
 
-		MediaLog(LOG_DEBUG, "[AFEDP][ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);		
+		MediaLog(LOG_DEBUG, "[FE][AFEDP][ECHOFLAG] getting from header nEchoStateFlags = %d\n", nEchoStateFlags);		
 	}
 
 
 	bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType)
 	{
-		MediaLog(CODE_TRACE, "m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
+		MediaLog(CODE_TRACE, "[FE] m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
 
 		if (SERVICE_TYPE_CHANNEL == m_nServiceType)	//Channel
 		{
@@ -559,7 +559,7 @@ namespace MediaSDK
 
 			int nChangedBitRate = (iNumPacketRecvd * nCurrentBitRate) / AUDIO_SLOT_SIZE;
 			
-			MediaLog(LOG_INFO, "[AFEDP] @@@@------------------------>Bitrate: %d\n", nChangedBitRate);
+			MediaLog(LOG_INFO, "[FE][AFEDP] @@@@------------------------>Bitrate: %d\n", nChangedBitRate);
 			if (nChangedBitRate < AUDIO_LOW_BITRATE && nChangedBitRate >= AUDIO_MIN_BITRATE)
 			{
 				m_ihugeLossSlot = 0;
