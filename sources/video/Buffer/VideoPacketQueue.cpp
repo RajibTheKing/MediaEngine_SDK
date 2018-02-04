@@ -37,7 +37,7 @@ namespace MediaSDK
 
 		if (m_nQueueSize >= m_nQueueCapacity)
 		{
-			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Video Buffer OverFlow ( VideoPacketQueue ) --> OverFlow ");
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CVideoPacketQueue::Queue VIDEO PACKET or MINI PACKET Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 			return -1;
 		}
 		else

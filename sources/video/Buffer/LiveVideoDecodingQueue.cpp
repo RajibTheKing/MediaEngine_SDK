@@ -51,6 +51,8 @@ namespace MediaSDK
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "checked time");
 			LOG_AAC("#aac#b4q# LiveVideoDecodingQueueOverflow, Couldn't push!!!");
 
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "LiveVideoDecodingQueue::Queue LIVE DECODING Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+
 			IncreamentIndex(m_iPopIndex);
 		}
 		else

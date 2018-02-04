@@ -48,7 +48,7 @@ namespace MediaSDK
 		{
 			IncreamentIndex(m_iPopIndex);
 
-			CLogPrinter_WriteLog(CLogPrinter::DEBUGS, QUEUE_OVERFLOW_LOG, "Video Buffer OverFlow ( VideoFrameBuffer ) --> OverFlow");
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "VideoFrameBuffer::Queue VIDEO FRAME Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 		}
 		else
 		{

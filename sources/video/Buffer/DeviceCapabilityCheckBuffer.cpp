@@ -45,6 +45,8 @@ namespace MediaSDK
 		if (m_nQueueSize == m_nQueueCapacity)
 		{
 			IncreamentIndex(m_iPopIndex);
+
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CDeviceCapabilityCheckBuffer::Queue CHECK CAPABILITY Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 		}
 		else
 		{
