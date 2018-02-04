@@ -11,6 +11,7 @@
 #include "MediaLogger.h"
 #include "AudioMacros.h"
 #include "AudioDumper.h"
+#include "AudioCallInfo.h"
 
 
 namespace MediaSDK
@@ -75,6 +76,8 @@ namespace MediaSDK
 		void SetCallInLiveType(int nCallInLiveType);
 		void SetVolume(int iVolume, bool bRecorder);
 		void SetSpeakerType(int iSpeakerType);
+		void NotifyCameraStatus(bool bEnable);
+		void NotifyMicrophoneStatus(bool bEnable);		
 		void SetEchoCanceller(bool bOn);
 
 		/**
@@ -146,6 +149,7 @@ namespace MediaSDK
 		CAudioDumper *m_pChunckedNE = nullptr, *m_pPlayedFE = nullptr, *m_pPlayerSidePreGain = nullptr, *m_pPlayedPublisherFE = nullptr,
 			*m_pPlayedCalleeFE = nullptr;
 		int m_iSpeakerType;
+		CAudioCallInfo* m_pAudioCallInfo = nullptr;
 		
 		
 

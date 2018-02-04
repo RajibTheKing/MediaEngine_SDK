@@ -81,6 +81,8 @@ namespace MediaSDK
 
 		bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
 		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType);
+		void NotifyCameraStatus(const LongLong lFriendID, bool bEnable);
+		void NotifyMicrophoneStatus(const LongLong lFriendID, bool bEnable);
 		bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 		int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 

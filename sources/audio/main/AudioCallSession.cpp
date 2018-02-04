@@ -524,6 +524,16 @@ namespace MediaSDK
 		m_iSpeakerType = iSpeakerType;
 	}
 
+	void CAudioCallSession::NotifyCameraStatus(bool bEnable)
+	{
+		m_pAudioCallInfo->SetCamera(bEnable);
+	}
+
+	void CAudioCallSession::NotifyMicrophoneStatus(bool bEnable)
+	{
+		m_pAudioCallInfo->SetMicrophone(bEnable);
+	}
+
 	int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
 	{
 		return m_pFarEndProcessor->DecodeAudioData(nOffset, pucaDecodingAudioData, unLength, numberOfFrames, frameSizes, vMissingFrames);
