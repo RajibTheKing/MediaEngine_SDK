@@ -52,7 +52,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-#define DUPLICATE_AUDIO
 
 namespace MediaSDK
 {
