@@ -31,18 +31,11 @@ def copyFile(fromFile, toFile):
 def getGitInfo(mediaDir):
 	GitDirectory = MediaDirectory + '\.git'
 
-	branchFile = open(GitDirectory+'\\HEAD','r')
 	shaFile = open(GitDirectory+'\\logs\\HEAD','r')
 	
-	branch  = branchFile.readline()
-	branch = branch.replace('/',' ')
-	branch = branch.split()
-	branch = branch[len(branch) - 1]
-
 	p = subprocess.Popen(["git", "rev-parse", "--abbrev-ref", "HEAD"], stdout=subprocess.PIPE)
 	tmp = p.communicate()
 	branch = tmp[0][:len(tmp[0])-1]
-	#branch=subprocess.call(["git", "rev-parse", "--abbrev-ref", "HEAD"], shell=True)
 	
 	print '\t\tBranch Name: ', branch
 	
@@ -55,7 +48,6 @@ def getGitInfo(mediaDir):
 	print '\t\tSHA: ', sha
 
 		
-	branchFile.close() 
 	shaFile.close()
 	
 	return branch+'.'+sha
