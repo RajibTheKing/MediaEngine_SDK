@@ -525,12 +525,12 @@ namespace MediaSDK
 
 	void CAudioCallSession::NotifyCameraStatus(bool bEnable)
 	{
-		m_pAudioCallInfo->SetCamera(bEnable);
+		m_pAudioCallInfo->SetCameraEnablingMode(bEnable);
 	}
 
 	void CAudioCallSession::NotifyMicrophoneStatus(bool bEnable)
 	{
-		m_pAudioCallInfo->SetMicrophone(bEnable);
+		m_pAudioCallInfo->SetMicrophoneEnablingMode(bEnable);
 	}
 
 	int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
