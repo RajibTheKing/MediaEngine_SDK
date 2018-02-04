@@ -3,12 +3,12 @@
 
 namespace MediaSDK
 {
-	bool CAudioCallInfo::GetCamera()
+	bool CAudioCallInfo::IsCameraEnable()
 	{
 		return m_bCameraEnable;
 	}
 
-	bool CAudioCallInfo::GetMicrophone()
+	bool CAudioCallInfo::IsMicrophoneEnable()
 	{
 		return m_bMicrophoneEnable;
 	}
