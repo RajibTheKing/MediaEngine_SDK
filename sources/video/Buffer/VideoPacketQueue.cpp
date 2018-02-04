@@ -11,6 +11,7 @@ namespace MediaSDK
 		m_iPushIndex(0),
 		m_iPopIndex(0),
 		m_nQueueSize(0),
+		m_nMaxQueueSizeTillNow(0),
 		m_nQueueCapacity(MAX_VIDEO_PACKET_QUEUE_SIZE)
 
 	{
@@ -35,7 +36,10 @@ namespace MediaSDK
 	{
 		PacketQueueLocker lock(*m_pVideoPacketQueueMutex);
 
-		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CVideoPacketQueue::Queue VIDEO PACKET or MINI PACKET Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+		if (m_nQueueSize > m_nMaxQueueSizeTillNow)
+			m_nMaxQueueSizeTillNow = m_nQueueSize;
+
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CVideoPacketQueue::Queue VIDEO PACKET or MINI PACKET Buffer size %d m_nMaxQueueSizeTillNow %d m_nQueueCapacity %d", m_nQueueSize, m_nMaxQueueSizeTillNow, m_nQueueCapacity);
 
 		if (m_nQueueSize >= m_nQueueCapacity)
 		{

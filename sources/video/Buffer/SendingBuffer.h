@@ -32,6 +32,8 @@ namespace MediaSDK
 		int m_nQueueCapacity;
 		int m_nQueueSize;
 
+		int m_nMaxQueueSizeTillNow;
+
 		unsigned char m_uc2aSendingVideoPacketBuffer[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE][MAX_VIDEO_PACKET_SENDING_PACKET_SIZE];
 
 		int m_naBufferDataLengths[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];

@@ -10,6 +10,7 @@ namespace MediaSDK
 		m_iPushIndex(0),
 		m_iPopIndex(0),
 		m_nQueueSize(0),
+		m_nMaxQueueSizeTillNow(0),
 		m_nQueueCapacity(MAX_VIDEO_ENCODER_BUFFER_SIZE)
 
 	{
@@ -35,7 +36,10 @@ namespace MediaSDK
 	{
 		EncodingBufferLocker lock(*m_pEncodingBufferMutex);
 
-		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CEncodingBuffer::Queue ENCODING Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+		if (m_nQueueSize > m_nMaxQueueSizeTillNow)
+			m_nMaxQueueSizeTillNow = m_nQueueSize;
+
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CEncodingBuffer::Queue ENCODING Buffer size %d m_nMaxQueueSizeTillNow %d m_nQueueCapacity %d", m_nQueueSize, m_nMaxQueueSizeTillNow, m_nQueueCapacity);
 
 		memcpy(m_uc2aCapturedVideoDataBuffer[m_iPushIndex], ucaCapturedVideoFrameData, nLength);
 

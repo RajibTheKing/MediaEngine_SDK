@@ -12,6 +12,7 @@ namespace MediaSDK
 		m_iPushIndex(0),
 		m_iPopIndex(0),
 		m_nQueueSize(0),
+		m_nMaxQueueSizeTillNow(0),
 		m_nQueueCapacity(MAX_VIDEO_FRAME_BUFFER_SIZE)
 
 	{
@@ -34,12 +35,15 @@ namespace MediaSDK
 
 	int VideoFrameBuffer::Queue(unsigned char *ucaDecodedVideoFrameData, int nLength)
 	{
-		CLogPrinter_LOG(BUFFER_SIZE_LOG, "VideoFrameBuffer::Queue VIDEO FRAME Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
-
 		if (m_nQueueSize >= MAX_VIDEO_FRAME_BUFFER_SIZE)
 			printf("Rendering, VideoFrameBuffer = %d\n", m_nQueueSize);
 
 		VideoFrameBufferLocker lock(*m_pVideoFrameBufferMutex);
+
+		if (m_nQueueSize > m_nMaxQueueSizeTillNow)
+			m_nMaxQueueSizeTillNow = m_nQueueSize;
+
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "VideoFrameBuffer::Queue VIDEO FRAME Buffer size %d m_nMaxQueueSizeTillNow %d m_nQueueCapacity %d", m_nQueueSize, m_nMaxQueueSizeTillNow, m_nQueueCapacity);
 
 		memcpy(m_uc2aDecodedVideoDataBuffer[m_iPushIndex], ucaDecodedVideoFrameData, nLength);
 

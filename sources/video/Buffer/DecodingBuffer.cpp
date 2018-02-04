@@ -25,7 +25,10 @@ namespace MediaSDK
 	{
 		CDecodingBufferLocker lock(*m_pDecodingBufferMutex);
 
-		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CDecodingBuffer::Queue DECODING Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+		if (m_nQueueSize > m_nMaxQueueSizeTillNow)
+			m_nMaxQueueSizeTillNow = m_nQueueSize;
+
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CDecodingBuffer::Queue DECODING Buffer size %d m_nMaxQueueSizeTillNow %d m_nQueueCapacity %d", m_nQueueSize, m_nMaxQueueSizeTillNow, m_nQueueCapacity);
 
 		memcpy(m_uc2aEncodedVideoDataBuffer[m_iPushIndex], ucaEncodedVideoFrameData, nLength);
 

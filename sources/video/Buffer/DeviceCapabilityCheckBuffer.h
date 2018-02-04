@@ -31,6 +31,8 @@ namespace MediaSDK
 		int m_nQueueCapacity;
 		int m_nQueueSize;
 
+		int m_nMaxQueueSizeTillNow;
+
 		Tools m_Tools;
 
 		long long m_llaBufferFriendIDs[MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE];

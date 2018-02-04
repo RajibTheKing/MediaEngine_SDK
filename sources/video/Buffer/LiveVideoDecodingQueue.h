@@ -42,6 +42,8 @@ private:
     int m_nQueueCapacity;
     int m_nQueueSize;
 
+	int m_nMaxQueueSizeTillNow;
+
     unsigned char m_uchBuffer[LIVE_VIDEO_DECODING_QUEUE_SIZE][MAX_VIDEO_ENCODED_FRAME_SIZE];
     int m_naBufferDataLength[LIVE_VIDEO_DECODING_QUEUE_SIZE];
 

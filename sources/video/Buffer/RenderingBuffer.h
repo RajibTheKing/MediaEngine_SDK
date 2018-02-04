@@ -30,6 +30,8 @@ private:
 	int m_nQueueCapacity;
 	int m_nQueueSize;
 
+	int m_nMaxQueueSizeTillNow;
+
 	unsigned char m_uc2aDecodedVideoDataBuffer[MAX_VIDEO_RENDERER_BUFFER_SIZE][MAX_VIDEO_RENDERER_FRAME_SIZE];
 
 	int m_naBufferDataLengths[MAX_VIDEO_RENDERER_BUFFER_SIZE];

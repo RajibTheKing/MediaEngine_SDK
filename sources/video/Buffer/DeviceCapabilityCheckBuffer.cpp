@@ -10,6 +10,7 @@ namespace MediaSDK
 		m_iPushIndex(0),
 		m_iPopIndex(0),
 		m_nQueueSize(0),
+		m_nMaxQueueSizeTillNow(0),
 		m_nQueueCapacity(MAX_VIDEO_PACKET_SENDING_BUFFER_SIZE)
 
 	{
@@ -36,7 +37,10 @@ namespace MediaSDK
 		CapabilityLocker lock(*m_pDeviceCapabilityCheckBufferMutex);
 		//printf("DeviceCapabilityCheckBuffer QUEUE UN--Locked\n");
 
-		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CDeviceCapabilityCheckBuffer::Queue CHECK CAPABILITY Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+		if (m_nQueueSize > m_nMaxQueueSizeTillNow)
+			m_nMaxQueueSizeTillNow = m_nQueueSize;
+
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CDeviceCapabilityCheckBuffer::Queue CHECK CAPABILITY Buffer size %d m_nMaxQueueSizeTillNow %d m_nQueueCapacity %d", m_nQueueSize, m_nMaxQueueSizeTillNow, m_nQueueCapacity);
 
 		m_naBufferOperations[m_iPushIndex] = nOperation;
 		m_llaBufferFriendIDs[m_iPushIndex] = llFriendID;

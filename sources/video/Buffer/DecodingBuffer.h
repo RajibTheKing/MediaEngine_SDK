@@ -31,6 +31,8 @@ namespace MediaSDK
 		int m_nQueueCapacity;
 		int m_nQueueSize;
 
+		int m_nMaxQueueSizeTillNow;
+
 		Tools m_Tools;
 
 		unsigned char m_uc2aEncodedVideoDataBuffer[MAX_VIDEO_DECODER_BUFFER_SIZE][MAX_VIDEO_DECODER_FRAME_SIZE];
