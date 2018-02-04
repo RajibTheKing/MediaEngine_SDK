@@ -36,6 +36,8 @@ namespace MediaSDK
 		CapabilityLocker lock(*m_pDeviceCapabilityCheckBufferMutex);
 		//printf("DeviceCapabilityCheckBuffer QUEUE UN--Locked\n");
 
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CDeviceCapabilityCheckBuffer::Queue CHECK CAPABILITY Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+
 		m_naBufferOperations[m_iPushIndex] = nOperation;
 		m_llaBufferFriendIDs[m_iPushIndex] = llFriendID;
 		m_naBufferNotifications[m_iPushIndex] = nNotification;
@@ -46,7 +48,7 @@ namespace MediaSDK
 		{
 			IncreamentIndex(m_iPopIndex);
 
-			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CDeviceCapabilityCheckBuffer::Queue CHECK CAPABILITY Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CDeviceCapabilityCheckBuffer::Queue CHECK CAPABILITY Buffer OVERFLOW m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 		}
 		else
 		{

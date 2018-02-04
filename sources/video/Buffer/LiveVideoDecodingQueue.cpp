@@ -35,6 +35,8 @@ namespace MediaSDK
 	{
 		LiveDecodingQueueLocker lock(*m_pLiveVideoDecodingQueueMutex);
 
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "LiveVideoDecodingQueue::Queue LIVE DECODING Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+
 		if (nLength < 0 || nLength >= MAX_VIDEO_ENCODED_FRAME_SIZE)
 		{
 			CLogPrinter_WriteInstentTestLog(CLogPrinter::INFO, INSTENT_TEST_LOG_FF, "LiveVideoDecodingQueue::Queue   length : " + Tools::IntegertoStringConvert(nLength));
@@ -51,7 +53,7 @@ namespace MediaSDK
 			//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "checked time");
 			LOG_AAC("#aac#b4q# LiveVideoDecodingQueueOverflow, Couldn't push!!!");
 
-			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "LiveVideoDecodingQueue::Queue LIVE DECODING Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "LiveVideoDecodingQueue::Queue LIVE DECODING Buffer OVERFLOW m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 
 			IncreamentIndex(m_iPopIndex);
 		}

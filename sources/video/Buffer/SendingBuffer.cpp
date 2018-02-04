@@ -34,6 +34,8 @@ namespace MediaSDK
 	{
 		SendingBufferLocker lock(*m_pSendingBufferMutex);
 
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CSendingBuffer::Queue SENDING Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+
 		memcpy(m_uc2aSendingVideoPacketBuffer[m_iPushIndex], ucaSendingVideoPacketData, nLength);
 
 		m_naBufferDataLengths[m_iPushIndex] = nLength;
@@ -47,7 +49,7 @@ namespace MediaSDK
 		{
 			IncreamentIndex(m_iPopIndex);
 
-			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CSendingBuffer::Queue SENDING Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CSendingBuffer::Queue SENDING Buffer OVERFLOW m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 		}
 		else
 		{

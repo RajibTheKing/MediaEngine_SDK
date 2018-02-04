@@ -34,6 +34,8 @@ namespace MediaSDK
 
 	int CRenderingBuffer::Queue(long long nFrameNumber, unsigned char *ucaDecodedVideoFrameData, int nLength, long long llCaptureTimeDifference, int nVideoHeight, int nVideoWidth, int nOrientation, int nInsetHeight, int nInsetWidth)
 	{
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CRenderingBuffer::Queue RENDERING Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+
 		if (m_nQueueSize >= MAX_VIDEO_RENDERER_BUFFER_SIZE)
 			printf("Rendering, QUEUE SIZE = %d\n", m_nQueueSize);
 
@@ -56,7 +58,7 @@ namespace MediaSDK
 		{
 			IncreamentIndex(m_iPopIndex);
 
-			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CRenderingBuffer::Queue RENDERING Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CRenderingBuffer::Queue RENDERING Buffer OVERFLOW m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 		}
 		else
 		{

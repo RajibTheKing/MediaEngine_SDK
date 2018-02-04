@@ -35,9 +35,11 @@ namespace MediaSDK
 	{
 		PacketQueueLocker lock(*m_pVideoPacketQueueMutex);
 
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CVideoPacketQueue::Queue VIDEO PACKET or MINI PACKET Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+
 		if (m_nQueueSize >= m_nQueueCapacity)
 		{
-			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CVideoPacketQueue::Queue VIDEO PACKET or MINI PACKET Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CVideoPacketQueue::Queue VIDEO PACKET or MINI PACKET Buffer OVERFLOW m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 			return -1;
 		}
 		else

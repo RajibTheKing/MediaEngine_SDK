@@ -25,6 +25,8 @@ namespace MediaSDK
 	{
 		CDecodingBufferLocker lock(*m_pDecodingBufferMutex);
 
+		CLogPrinter_LOG(BUFFER_SIZE_LOG, "CDecodingBuffer::Queue DECODING Buffer size %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+
 		memcpy(m_uc2aEncodedVideoDataBuffer[m_iPushIndex], ucaEncodedVideoFrameData, nLength);
 
 		m_naBufferDataLengths[m_iPushIndex] = nLength;
@@ -37,7 +39,7 @@ namespace MediaSDK
 		{
 			IncreamentIndex(m_iPopIndex);
 
-			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CDecodingBuffer::Queue DECODING Buffer OverFlow m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
+			CLogPrinter_LOG(QUEUE_OVERFLOW_LOG, "CDecodingBuffer::Queue DECODING Buffer OVERFLOW m_nQueueSize %d m_nQueueCapacity %d", m_nQueueSize, m_nQueueCapacity);
 		}
 		else
 		{
