@@ -241,7 +241,7 @@ bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
 		return false;
 	}
 }
-void CController::SetCameraStatus(const long long& lFriendID, bool bCameraEnable)
+void CController::SetCameraMode(const long long& lFriendID, bool bCameraEnable)
 {
 	CameraStatusLocker lock1(*m_pAudioLockMutex);
 
@@ -250,11 +250,11 @@ void CController::SetCameraStatus(const long long& lFriendID, bool bCameraEnable
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSesssion);
 	if (bExist)
 	{
-		pAudioSesssion->SetCameraStatus(bCameraEnable);
+		pAudioSesssion->SetCameraMode(bCameraEnable);
 	}
 }
 
-void CController::SetMicrophoneStatus(const long long& lFriendID, bool bMicrophoneEnable)
+void CController::SetMicrophoneMode(const long long& lFriendID, bool bMicrophoneEnable)
 {
 	MicrophoneStatusLocker lock1(*m_pAudioLockMutex);
 
@@ -263,7 +263,7 @@ void CController::SetMicrophoneStatus(const long long& lFriendID, bool bMicropho
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->SetMicrophoneStatus(bMicrophoneEnable);
+		pAudioSession->SetMicrophoneMode(bMicrophoneEnable);
 	}
 }
 

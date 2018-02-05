@@ -44,8 +44,8 @@ namespace MediaSDK
 		bool StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, bool bOpusCodec);
 		bool SetVolume(const long long& lFriendID, int iVolume, bool bRecorder);		
 		bool SetSpeakerType(const long long& lFriendID, int iSpeakerType);
-		void SetCameraStatus(const long long& lFriendID, bool bCameraEnable);
-		void SetMicrophoneStatus(const long long& lFriendID, bool bMicrophoneEnable);
+		void SetCameraMode(const long long& lFriendID, bool bCameraEnable);
+		void SetMicrophoneMode(const long long& lFriendID, bool bMicrophoneEnable);
 		bool SetEchoCanceller(const long long& lFriendID, bool bOn);
 		bool StartVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nChannelType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly);
 		bool StartTestAudioCall(const long long& lFriendID);

@@ -6,12 +6,14 @@ namespace MediaSDK
 	class CAudioCallInfo
 	{
 	public:
+		CAudioCallInfo(bool bCameraEnable, bool bMicrophoneEnable);
+		~CAudioCallInfo();
 		//Getter
 		bool IsCameraEnable();
 		bool IsMicrophoneEnable();
 		//Setter
-		void SetCameraEnablingMode(bool bCameraEnable);
-		void SetMicrophoneEnablingMode(bool bMicrophoneEnable);
+		void SetCameraMode(bool bCameraEnable);
+		void SetMicrophoneMode(bool bMicrophoneEnable);
 	private:
 		bool m_bCameraEnable, m_bMicrophoneEnable;
 	};
