@@ -117,7 +117,7 @@ namespace MediaSDK
 			{
 				break;
 			}
-			Tools::SOSleep(5);
+			if(i==0) Tools::SOSleep(5);
 		}
 	}
 
