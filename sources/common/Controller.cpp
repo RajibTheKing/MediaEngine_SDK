@@ -241,6 +241,31 @@ bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
 		return false;
 	}
 }
+void CController::SetCameraMode(const long long& lFriendID, bool bCameraEnable)
+{
+	CameraStatusLocker lock1(*m_pAudioLockMutex);
+
+	CAudioCallSession* pAudioSesssion;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSesssion);
+	if (bExist)
+	{
+		pAudioSesssion->SetCameraMode(bCameraEnable);
+	}
+}
+
+void CController::SetMicrophoneMode(const long long& lFriendID, bool bMicrophoneEnable)
+{
+	MicrophoneStatusLocker lock1(*m_pAudioLockMutex);
+
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetMicrophoneMode(bMicrophoneEnable);
+	}
+}
 
 bool CController::SetEchoCanceller(const long long& lFriendID, bool bOn)
 {

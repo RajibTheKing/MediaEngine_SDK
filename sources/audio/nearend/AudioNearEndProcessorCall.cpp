@@ -88,27 +88,14 @@ namespace MediaSDK
 		}
 #endif
 
-#ifndef NO_CONNECTIVITY
-		
-		//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
-		if (m_pDataReadyListener != nullptr)
-		{
-			m_pDataReadyListener->OnDataReadyToSend(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
-		}
-#else
-		//m_pCommonElementsBucket->m_pEventNotifier->fireAudioPacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-		if (m_pPacketEventListener != nullptr)
-		{
-			m_pPacketEventListener->FirePacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
-		}
-#endif
+		bool bCameraEnable = m_pAudioCallSession->m_pAudioCallInfo->IsCameraEnable();
+		bool bMicrophoneEnable = m_pAudioCallSession->m_pAudioCallInfo->IsMicrophoneEnable();
 
-#ifdef  DUPLICATE_AUDIO
-		if (false == m_bIsLiveStreamingRunning && m_pCommonElementsBucket->m_pEventNotifier->IsVideoCallRunning())
+		for (int i = 0; i < MAX_NUMBER_OF_REPETITIVE_SENDING; i++)
 		{
-			Tools::SOSleep(5);
 #ifndef NO_CONNECTIVITY
-			//m_pCommonElementsBucket->SendFunctionPointer(m_FriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
+
+			//m_pCommonElementsBucket->SendFunctionPointer(m_llFriendID, MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, 0, std::vector< std::pair<int, int> >());
 			if (m_pDataReadyListener != nullptr)
 			{
 				m_pDataReadyListener->OnDataReadyToSend(MEDIA_TYPE_AUDIO, m_ucaEncodedFrame, m_nEncodedFrameSize + m_MyAudioHeadersize + 1);
@@ -120,8 +107,18 @@ namespace MediaSDK
 				m_pPacketEventListener->FirePacketEvent(200, m_nEncodedFrameSize + m_MyAudioHeadersize + 1, m_ucaEncodedFrame);
 			}
 #endif
-		}
+			if (bCameraEnable&&bMicrophoneEnable)
+			{
+#ifndef  DUPLICATE_AUDIO
+				break;
 #endif
+			}
+			else
+			{
+				break;
+			}
+			if(i==0) Tools::SOSleep(5);
+		}
 	}
 
 	void AudioNearEndProcessorCall::DecideToChangeComplexity(int iEncodingTime)

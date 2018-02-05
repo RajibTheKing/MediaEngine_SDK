@@ -435,6 +435,9 @@
     <ClCompile Include="..\..\..\sources\audio\main\AudioSessionStatistics.cpp">
       <Filter>audio\main</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\audio\main\AudioCallInfo.cpp">
+      <Filter>audio\main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\audio\buffers\AudioDecoderBuffer.h">
@@ -879,6 +882,9 @@
       <Filter>video\fps</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sources\audio\main\AudioSessionStatistics.h">
+      <Filter>audio\main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\audio\main\AudioCallInfo.h">
       <Filter>audio\main</Filter>
     </ClInclude>
   </ItemGroup>

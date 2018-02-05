@@ -573,6 +573,22 @@ namespace MediaSDK
 		CLockHandler& m_mutex;
 	};
 
+	class CameraStatusLocker {
+	public:
+		CameraStatusLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex) { m_mutex.lock(); }
+		~CameraStatusLocker() { m_mutex.unlock(); }
+	private:
+		CLockHandler& m_mutex;
+	};
+
+	class MicrophoneStatusLocker {
+	public:
+		MicrophoneStatusLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex) { m_mutex.lock(); }
+		~MicrophoneStatusLocker() { m_mutex.unlock(); }
+	private:
+		CLockHandler& m_mutex;
+	};
+
 	class SetEchoCancellerLocker {
 	public:
 		SetEchoCancellerLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex)	{ m_mutex.lock(); }

@@ -52,7 +52,6 @@
 #include <dispatch/dispatch.h>
 #endif
 
-#define DUPLICATE_AUDIO
 
 namespace MediaSDK
 {
@@ -522,6 +521,16 @@ namespace MediaSDK
 			m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
 		}
 		m_iSpeakerType = iSpeakerType;
+	}
+
+	void CAudioCallSession::SetCameraMode(bool bCameraEnable)
+	{
+		m_pAudioCallInfo->SetCameraMode(bCameraEnable);
+	}
+
+	void CAudioCallSession::SetMicrophoneMode(bool bMicrophoneEnable)
+	{
+		m_pAudioCallInfo->SetMicrophoneMode(bMicrophoneEnable);
 	}
 
 	int CAudioCallSession::DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)

@@ -186,6 +186,7 @@
     <ClInclude Include="..\..\..\sources\audio\farend\LiveAudioParserForCallee.h" />
     <ClInclude Include="..\..\..\sources\audio\farend\LiveAudioParserForChannel.h" />
     <ClInclude Include="..\..\..\sources\audio\farend\LiveAudioParserForPublisher.h" />
+    <ClInclude Include="..\..\..\sources\audio\main\AudioCallInfo.h" />
     <ClInclude Include="..\..\..\sources\audio\main\AudioCallSession.h" />
     <ClInclude Include="..\..\..\sources\audio\main\AudioCallSessionListHandler.h" />
     <ClInclude Include="..\..\..\sources\audio\main\AudioHeaderCall.h" />
@@ -323,6 +324,7 @@
     <ClCompile Include="..\..\..\sources\audio\farend\LiveAudioParserForCallee.cpp" />
     <ClCompile Include="..\..\..\sources\audio\farend\LiveAudioParserForChannel.cpp" />
     <ClCompile Include="..\..\..\sources\audio\farend\LiveAudioParserForPublisher.cpp" />
+    <ClCompile Include="..\..\..\sources\audio\main\AudioCallInfo.cpp" />
     <ClCompile Include="..\..\..\sources\audio\main\AudioCallSession.cpp" />
     <ClCompile Include="..\..\..\sources\audio\main\AudioCallSessionListHandler.cpp" />
     <ClCompile Include="..\..\..\sources\audio\main\AudioHeaderCall.cpp" />
