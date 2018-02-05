@@ -33,7 +33,7 @@ def getGitInfo(mediaDir):
 
 	shaFile = open(GitDirectory+'\\logs\\HEAD','r')
 	
-	p = subprocess.Popen(["git", "rev-parse", "--abbrev-ref", "HEAD"], stdout=subprocess.PIPE)
+	p = subprocess.Popen(["git", "name-rev", "--name-only", "HEAD"], stdout=subprocess.PIPE)
 	tmp = p.communicate()
 	branch = tmp[0][:len(tmp[0])-1]
 	
