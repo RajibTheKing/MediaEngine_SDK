@@ -13,13 +13,13 @@ namespace MediaSDK
 		return m_bMicrophoneEnable;
 	}
 
-	void CAudioCallInfo::SetCameraEnablingMode(bool CameraEnable)
+	void CAudioCallInfo::SetCameraEnablingMode(bool bCameraEnable)
 	{
-		m_bCameraEnable = CameraEnable;
+		m_bCameraEnable = bCameraEnable;
 	}
 
-	void CAudioCallInfo::SetMicrophoneEnablingMode(bool MicrophoneEnable)
+	void CAudioCallInfo::SetMicrophoneEnablingMode(bool bMicrophoneEnable)
 	{
-		m_bMicrophoneEnable = MicrophoneEnable;
+		m_bMicrophoneEnable = bMicrophoneEnable;
 	}
 }

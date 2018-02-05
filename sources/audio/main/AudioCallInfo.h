@@ -10,8 +10,8 @@ namespace MediaSDK
 		bool IsCameraEnable();
 		bool IsMicrophoneEnable();
 		//Setter
-		void SetCameraEnablingMode(bool CameraEnable);
-		void SetMicrophoneEnablingMode(bool MicrophoneEnable);
+		void SetCameraEnablingMode(bool bCameraEnable);
+		void SetMicrophoneEnablingMode(bool bMicrophoneEnable);
 	private:
 		bool m_bCameraEnable, m_bMicrophoneEnable;
 	};

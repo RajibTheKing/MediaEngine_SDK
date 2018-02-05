@@ -129,22 +129,22 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	void CInterfaceOfAudioVideoEngine::NotifyCameraStatus(const LongLong lFriendID, bool bEnable)
+	void CInterfaceOfAudioVideoEngine::SetCameraStatus(const LongLong lFriendID, bool bCameraEnable)
 	{
 		if (nullptr == m_pcController)
 		{
 			return;
 		}
-		m_pcController->NotifyCameraStatus(lFriendID, bEnable);
+		m_pcController->SetCameraStatus(lFriendID, bCameraEnable);
 	}
 
-	void CInterfaceOfAudioVideoEngine::NotifyMicrophoneStatus(const LongLong lFriendID, bool bEnable)
+	void CInterfaceOfAudioVideoEngine::SetMicrophoneStatus(const LongLong lFriendID, bool bMicrophoneEnable)
 	{
 		if (nullptr == m_pcController)
 		{
 			return;
 		}
-		m_pcController->NotifyMicrophoneStatus(lFriendID, bEnable);
+		m_pcController->SetMicrophoneStatus(lFriendID, bMicrophoneEnable);
 	}
 
 	bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bool bOn)

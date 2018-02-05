@@ -76,8 +76,8 @@ namespace MediaSDK
 		void SetCallInLiveType(int nCallInLiveType);
 		void SetVolume(int iVolume, bool bRecorder);
 		void SetSpeakerType(int iSpeakerType);
-		void NotifyCameraStatus(bool bEnable);
-		void NotifyMicrophoneStatus(bool bEnable);		
+		void SetCameraStatus(bool bCameraEnable);
+		void SetMicrophoneStatus(bool bMicrophoneEnable);
 		void SetEchoCanceller(bool bOn);
 
 		/**
