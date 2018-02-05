@@ -36,6 +36,9 @@ def getGitInfo(mediaDir):
 	p = subprocess.Popen(["git", "name-rev", "--name-only", "HEAD"], stdout=subprocess.PIPE)
 	tmp = p.communicate()
 	branch = tmp[0][:len(tmp[0])-1]
+	branch = branch.replace('/',' ')
+	branch = branch.split()
+	branch = branch[len(branch) - 1]
 	
 	print '\t\tBranch Name: ', branch
 	
