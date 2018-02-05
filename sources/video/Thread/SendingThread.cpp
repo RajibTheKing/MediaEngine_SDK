@@ -886,7 +886,7 @@ namespace MediaSDK
                          */
                         
 #endif
-                        toolsObject.SOSleep(0);
+                        toolsObject.SOSleep(1);
                         
 #ifdef  BANDWIDTH_CONTROLLING_TEST
                     }
