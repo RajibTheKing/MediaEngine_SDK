@@ -1,5 +1,9 @@
 Release 12.25 (Date: 06-02-2018)
 ---------------------------------
+- AUDIO: Destractor added. [5517]
+
+Release 12.25 (Date: 06-02-2018)
+---------------------------------
 - VIDEO: call bitrate logic changed
 - VIDEO: call sending thread sleep time increased
 
