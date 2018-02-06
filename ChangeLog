@@ -1,3 +1,13 @@
+Release 12.25 (Date: 06-02-2018)
+---------------------------------
+- VIDEO: call bitrate logic changed
+- VIDEO: call sending thread sleep time increased
+
+- AUDIO: Enabled Double sending with two new API(Camera and Microphone Mood) [5517]
+- AUDIO: Frequency based trace detection. [5327]
+- AUDIO: Handle Duplicate packet. [5516]
+
+
 Release 12.24 (Date: 30-01-2018)
 ---------------------------------
 - Video call issue fixed of no video data
