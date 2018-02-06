@@ -238,8 +238,14 @@ namespace MediaSDK
 			}
 			else
 			{
-				
-				m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES, iTraceInFrame, true);
+				if (IsTraceSendingEnabled())
+				{
+					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES, iTraceInFrame, true);
+				}
+				else
+				{
+					m_llDelayFraction = -1;
+				}
 				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
 				if (m_llDelayFraction != -1)
 				{
@@ -570,14 +576,28 @@ namespace MediaSDK
 							m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, m_pAudioCallSession->getIsAudioLiveStreamRunning());
 						}
 						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
-						nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+						if (m_bTraceRecieved)
+						{
+#endif
+							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+						}
+#endif
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
 						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					else
 					{
-						nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+						if(m_bTraceRecieved)
+						{
+#endif
+							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+						}
+#endif
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
