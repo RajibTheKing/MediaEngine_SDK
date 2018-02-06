@@ -482,7 +482,6 @@ namespace MediaSDK
 			}
 		}
 
-#ifdef USE_AECM
 
 		bool bIsGainWorking = (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER && m_pAudioCallSession->GetRecorderGain().get());
 
@@ -609,14 +608,6 @@ namespace MediaSDK
 				m_pAudioCallSession->GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
 			}
 		}
-
-#elif defined(DESKTOP_C_SHARP)
-		if ((m_iSpeakerType == AUDIO_PLAYER_LOUDSPEAKER) && GetRecorderGain().get())
-		{
-			GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
-		}
-		else LOGT("##TT encodeaudiodata no gain\n");
-#endif
 		return nEchoStateFlags;
 	}
 
