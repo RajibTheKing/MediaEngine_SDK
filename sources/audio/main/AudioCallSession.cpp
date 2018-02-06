@@ -36,6 +36,7 @@
 #include "AudioResources.h"
 #include "AudioDecoderBuffer.h"
 #include "AudioLinearBuffer.h"
+#include "AudioCallInfo.h"
 
 
 
@@ -79,6 +80,10 @@ namespace MediaSDK
 			m_PublisherBufferForMuxing.reset(new AudioShortBufferForPublisherFarEnd);
 		}
 		
+		bool bIsCameraEnalbed = false;
+		bool bIsMicrophoneEnabled = true;
+		m_pAudioCallInfo = new CAudioCallInfo(bIsCameraEnalbed, bIsMicrophoneEnabled);
+
 		m_FarendBuffer.reset(new CAudioShortBuffer);
 		m_AudioNearEndBuffer.reset(new CAudioShortBuffer);
 		m_ViewerInCallSentDataQueue.reset(new CAudioShortBuffer);
@@ -246,6 +251,12 @@ namespace MediaSDK
 		{
 			delete m_pPlayedCalleeFE;
 			m_pPlayedCalleeFE = nullptr;
+		}
+
+		if (nullptr != m_pAudioCallInfo)
+		{
+			delete m_pAudioCallInfo;
+			m_pAudioCallInfo = nullptr;
 		}
 
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);

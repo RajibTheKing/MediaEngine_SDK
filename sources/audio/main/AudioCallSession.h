@@ -11,7 +11,6 @@
 #include "MediaLogger.h"
 #include "AudioMacros.h"
 #include "AudioDumper.h"
-#include "AudioCallInfo.h"
 
 
 namespace MediaSDK
@@ -45,7 +44,7 @@ namespace MediaSDK
 	class CAudioShortBuffer;
 	class CAudioByteBuffer;
 	class SessionStatisticsInterface;
-
+	class CAudioCallInfo;
 
 	class CAudioCallSession : 
 		public DataReadyListenerInterface,
