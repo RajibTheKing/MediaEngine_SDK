@@ -7,6 +7,10 @@ namespace MediaSDK
 	{
 
 	}
+	CAudioCallInfo::~CAudioCallInfo()
+	{
+
+	}
 	bool CAudioCallInfo::IsCameraEnable()
 	{
 		return m_bCameraEnable;
