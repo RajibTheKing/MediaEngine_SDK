@@ -5,6 +5,7 @@
 #include "AudioDePacketizer.h"
 #include "LiveAudioDecodingQueue.h"
 #include "AudioFarEndDataProcessor.h"
+#include "AudioNearEndDataProcessor.h"
 #include "AudioDecoderBuffer.h"
 #include "AudioPacketHeader.h"
 #include "AudioTypes.h"
@@ -105,20 +106,23 @@ namespace MediaSDK
 				MediaLog(CODE_TRACE, "[FE][AFEDPC] AudioCall SendToPlayer");
 
 				SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
-#ifndef USE_AECM
-				ProcessPlayingData();
-#endif
+				if (!m_pAudioCallSession->m_pNearEndProcessor->IsEchoCancellerEnabled())
+				{
+					ProcessPlayingData();
+				}
 			}
 		}
 		else
 		{
-#ifndef USE_AECM
-			Tools::SOSleep(10);
-#endif
+			if (!m_pAudioCallSession->m_pNearEndProcessor->IsEchoCancellerEnabled())
+			{
+				Tools::SOSleep(10);
+			}
 		}
-#ifdef USE_AECM
-		ProcessPlayingData();	
-#endif
+		if (m_pAudioCallSession->m_pNearEndProcessor->IsEchoCancellerEnabled())
+		{
+			ProcessPlayingData();
+		}
 	}
 
 

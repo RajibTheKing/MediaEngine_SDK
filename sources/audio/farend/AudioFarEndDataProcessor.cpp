@@ -251,28 +251,30 @@ namespace MediaSDK
 				m_pAudioCallSession->GetPlayerGain()->AddGain(pshSentFrame, nSentFrameSize, true, nEchoStateFlags);
 			}
 
-#ifdef USE_AECM
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
-			{				
-				memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
+			if (m_pAudioCallSession->m_pNearEndProcessor->IsEchoCancellerEnabled())
+			{
+				if (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
+				{
+					memcpy(m_saPlayingData, pshSentFrame, nSentFrameSize * sizeof(short));
+				}
+				else
+				{
+					if (m_pDataEventListener != nullptr)
+					{
+						m_nPacketPlayed++;
+						MediaLog(LOG_INFO, "[FE][AFEDP] Viewer# To Player [SendToPlayer]\n");
+						m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+						m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize);
+					}
+				}
 			}
 			else
 			{
 				if (m_pDataEventListener != nullptr)
 				{
-					m_nPacketPlayed ++;
-					MediaLog(LOG_INFO, "[FE][AFEDP] Viewer# To Player [SendToPlayer]\n");
 					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-					m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize);
 				}
 			}
-#else
-			if (m_pDataEventListener != nullptr)
-			{
-				m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
-			}
-#endif
-
 		}
 		else
 		{
@@ -664,51 +666,53 @@ namespace MediaSDK
 
 	void AudioFarEndDataProcessor::ProcessPlayingData()
 	{
-#ifdef USE_AECM
-		if (m_pAudioCallSession->m_bRecordingStarted)
+		if (m_pAudioCallSession->m_pNearEndProcessor->IsEchoCancellerEnabled())
 		{
-			if (m_pAudioCallSession->m_pNearEndProcessor->IsTraceSendingEnabled() && m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains)
-			{				
-				m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains = m_pAudioCallSession->m_pNearEndProcessor->m_pTrace->GenerateTrace(m_saPlayingData, 800);
-				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] Buffer Size = %d, TraceTailRemains = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains);
-			}
-			
-			if (!m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent)
-			{				
-				m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
-				m_pAudioCallSession->m_pNearEndProcessor->m_llTraceSendingTime = Tools::CurrentTimestamp();
-				m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent = true;
-				MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] TraceSent!!!!# Buffer Size=%d, TraceSendingTime=%d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_pNearEndProcessor->m_llTraceSendingTime);
-			}
-
-			if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
+			if (m_pAudioCallSession->m_bRecordingStarted)
 			{
-				SyncPlayingTime();
-			}
+				if (m_pAudioCallSession->m_pNearEndProcessor->IsTraceSendingEnabled() && m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains)
+				{
+					m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains = m_pAudioCallSession->m_pNearEndProcessor->m_pTrace->GenerateTrace(m_saPlayingData, 800);
+					MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] Buffer Size = %d, TraceTailRemains = %d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_pNearEndProcessor->m_bTraceTailRemains);
+				}
 
-			long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-			if (m_pDataEventListener != nullptr)
-			{
-				MediaLog(LOG_CODE_TRACE, "[FE][AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
-				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
-				m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
+				if (!m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent)
+				{
+					m_pAudioCallSession->m_FarendBuffer->ResetBuffer();
+					m_pAudioCallSession->m_pNearEndProcessor->m_llTraceSendingTime = Tools::CurrentTimestamp();
+					m_pAudioCallSession->m_pNearEndProcessor->m_bTraceSent = true;
+					MediaLog(LOG_DEBUG, "[FE][AFEDP][TS] TraceSent!!!!# Buffer Size=%d, TraceSendingTime=%d", m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_pAudioCallSession->m_pNearEndProcessor->m_llTraceSendingTime);
+				}
+
+				if (m_pAudioCallSession->m_bEnablePlayerTimeSyncDuringEchoCancellation)
+				{
+					SyncPlayingTime();
+				}
+
+				long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+				if (m_pDataEventListener != nullptr)
+				{
+					MediaLog(LOG_CODE_TRACE, "[FE][AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
+					m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+					m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
+				}
+				m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
+				memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
+
 			}
-			m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);									
-			memset(m_saPlayingData, 0, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false) * sizeof(short));
-						
+			else
+			{
+				Tools::SOSleep(20);
+			}
 		}
 		else
 		{
-			Tools::SOSleep(20);
+			if (m_pDataEventListener != nullptr)
+			{
+				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+				m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
+			}
 		}
-
-#else
-		if (m_pDataEventListener != nullptr)
-		{
-			m_pDataEventListener->FireDataEvent(m_pAudioCallSession -> GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
-			m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
-		}
-#endif
 	}
 	
 	void AudioFarEndDataProcessor::SetEventCallback(DataEventListener* pDataListener, NetworkChangeListener* networkListener, AudioAlarmListener* alarmListener)
