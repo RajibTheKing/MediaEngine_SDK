@@ -1,4 +1,8 @@
-Release 12.25 (Date: 06-02-2018)
+Release 12.25.2 (Date: 11-02-2018)
+---------------------------------
+- AUDIO: AECM works on iOS only if trace is found. [5581]
+
+Release 12.25.1 (Date: 06-02-2018)
 ---------------------------------
 - AUDIO: Destractor added. [5517]
 
