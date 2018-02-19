@@ -39,6 +39,8 @@ namespace MediaSDK
 
 	void CEventNotifier::fireVideoEvent(long long friendID, int eventType, long long frameNumber, int dataLenth, unsigned char data[], int iVideoHeight, int iVideoWidth, int nInsetHeight, int nInsetWidth, int iDeviceOrientation)
 	{
+		CLogPrinter_LOG(VIDEO_FIRE_LOG, "CEventNotifier::fireVideoEvent eventType %d, frameNumber %lld, dataLenth %d, iVideoHeight %d, iVideoWidth %d, nInsetHeight %d, nInsetWidth %d, iDeviceOrientation %d", eventType, frameNumber, dataLenth, iVideoHeight, iVideoWidth, nInsetHeight, nInsetWidth, iDeviceOrientation);
+
 		notifyClientWithVideoDataCallback(friendID, eventType, data, dataLenth, iVideoHeight, iVideoWidth, nInsetHeight, nInsetWidth, iDeviceOrientation);
 	}
 

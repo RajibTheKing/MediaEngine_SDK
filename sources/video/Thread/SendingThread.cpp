@@ -284,6 +284,8 @@ namespace MediaSDK
             
             LOGSS("##SS## m_bPassOnlyAudio %d ", m_bPassOnlyAudio);
 
+			CLogPrinter_LOG(LIVE_TYPE_LOG, "CSendingThread::SendingThreadProcedure m_bPassOnlyAudio %d m_bAudioOnlyLive %d entityType %d callInLiveType %d ", m_bPassOnlyAudio, m_bAudioOnlyLive, m_pVideoCallSession->GetEntityType(), m_pVideoCallSession->GetCallInLiveType());
+
 			unsigned int uNumerOfFrames;
 			if (m_bPassOnlyAudio == true)
 			{
