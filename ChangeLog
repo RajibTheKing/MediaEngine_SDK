@@ -1,3 +1,7 @@
+Release 12.25.3 (Date: 19-02-2018)
+---------------------------------
+- AUDIO: Disable AECM and AGC for iOS. [5590]
+
 Release 12.25 (Date: 06-02-2018)
 ---------------------------------
 - AUDIO: Destractor added. [5517]
