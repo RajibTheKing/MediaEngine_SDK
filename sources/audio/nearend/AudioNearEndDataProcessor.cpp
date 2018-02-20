@@ -576,12 +576,17 @@ namespace MediaSDK
 							m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, m_pAudioCallSession->getIsAudioLiveStreamRunning());
 						}
 						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 						if (m_bTraceRecieved)
 						{
+#elif defined (__ANDROID__)
+						if ((m_bTraceRecieved && m_nServiceType == SERVICE_TYPE_CALL) || SERVICE_TYPE_LIVE_STREAM)
+						{
 #endif
 							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
 						}
 #endif
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
@@ -590,12 +595,15 @@ namespace MediaSDK
 					}
 					else
 					{
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
 						if(m_bTraceRecieved)
+						{
+#elif defined (__ANDROID__)
+						if ((m_bTraceRecieved && m_nServiceType == SERVICE_TYPE_CALL) || SERVICE_TYPE_LIVE_STREAM)
 						{
 #endif
 							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
 						}
 #endif
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
