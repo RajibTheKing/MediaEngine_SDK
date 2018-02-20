@@ -567,6 +567,15 @@ namespace MediaSDK
 
 					m_pAudioCallSession->GetEchoCanceler()->AddFarEndData(m_saFarendData, unLength);
 
+
+
+					bool bTaceBasedEcho = true;
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+					bTaceBasedEcho = m_bTraceRecieved;					
+#elif defined (__ANDROID__)
+					bTaceBasedEcho = (m_bTraceRecieved && m_nServiceType == SERVICE_TYPE_CALL) || m_nServiceType == SERVICE_TYPE_LIVE_STREAM;					
+#endif
+
 					if (IsKichCutterEnabled())
 					{
 						memcpy(m_saNoisyData, psaEncodingAudioData, unLength * sizeof(short));
@@ -577,48 +586,31 @@ namespace MediaSDK
 						}
 						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
 
-
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-						if (m_bTraceRecieved)
+						if (bTaceBasedEcho)
 						{
-#elif defined (__ANDROID__)
-						if ((m_bTraceRecieved && m_nServiceType == SERVICE_TYPE_CALL) || SERVICE_TYPE_LIVE_STREAM)
-						{
-#endif
 							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
 						}
-#endif
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
 						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					else
 					{
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
-						if(m_bTraceRecieved)
+						if (bTaceBasedEcho)
 						{
-#elif defined (__ANDROID__)
-						if ((m_bTraceRecieved && m_nServiceType == SERVICE_TYPE_CALL) || SERVICE_TYPE_LIVE_STREAM)
-						{
-#endif
 							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (__ANDROID__)
 						}
-#endif
+
 						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 
 					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
-
 				}
 				else
 				{
 					MediaLog(LOG_WARNING, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
 				}
-
-
 
 #ifdef DUMP_FILE
 				fwrite(psaEncodingAudioData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(m_pAudioCallSession->getIsAudioLiveStreamRunning()), FileInputPreGain);
