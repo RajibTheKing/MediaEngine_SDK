@@ -1,3 +1,7 @@
+Release 12.25.4 (Date: 20-02-2018)
+---------------------------------
+- AUDIO: Trace based AECM in Android for Regular Call. [5698]
+
 Release 12.25.2 (Date: 11-02-2018)
 ---------------------------------
 - AUDIO: AECM works on iOS only if trace is found. [5581]
