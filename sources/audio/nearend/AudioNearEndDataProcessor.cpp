@@ -367,7 +367,7 @@ namespace MediaSDK
 	{
 		MediaLog(LOG_DEBUG, "[ANEDP] Entered Echo Canceller Enabled")
 #ifdef USE_AECM
-#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (DESKTOP_C_SHARP)
+#if defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
 		if (!m_pAudioCallSession->getIsAudioLiveStreamRunning() || (m_pAudioCallSession->getIsAudioLiveStreamRunning() && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
 		{
 			return true;
