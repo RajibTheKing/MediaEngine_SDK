@@ -455,6 +455,7 @@ namespace MediaSDK
 	{
 		int iTV = 0;
 		iWLCount = 0;
+		string str = "m_sMyWL";
 		for (int i = 0; i < MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
 		{
 			if ((m_sTraceDetectionBuffer[i] <= 0 && m_sTraceDetectionBuffer[i + 1] > 0) || (m_sTraceDetectionBuffer[i] < 0 && m_sTraceDetectionBuffer[i + 1] >= 0)) //transition found
@@ -462,10 +463,21 @@ namespace MediaSDK
 				int iWaveLength = i - iTV;
 				m_sMyWL[iWLCount] = iWaveLength;
 				m_sMyWL_I[iWLCount] = i;
+
+				str += Tools::IntegertoStringConvert(i);
+				str += " : ";
+				str += Tools::IntegertoStringConvert(m_sMyWL[i]);
+				str += " , ";
+				if (i % 12 == 0)
+				{
+					str += "\n";
+				}
+
 				iWLCount++;
 				iTV = i;
 			}
 		}
+		//MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d, %s", iWLCount, str.c_str());
 	}
 
 	int CTrace::DetectTrace(short *sBuffer, int &iTraceInFrame)
@@ -488,7 +500,6 @@ namespace MediaSDK
 		CalCulateWaves(iWLCount);
 	
 
-		string str = "m_sMyWL";
 		iTraceInFrame = 0;
 		MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d", iWLCount);
 
@@ -499,15 +510,7 @@ namespace MediaSDK
 			{
 				continue;
 			}
-			str += Tools::IntegertoStringConvert(i);
-			str += " : ";
-			str += Tools::IntegertoStringConvert(m_sMyWL[i]);
-			str += " , ";
-			if (i % 12 == 0)
-			{
-				str += "\n";
-			}
-			
+
 			int k = 0;
 			for (k = 0; k < iMatchCountThreshold; k++)
 			{
@@ -535,7 +538,6 @@ namespace MediaSDK
 			}
 			
 		}
-		//MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d, %s", iWLCount, str.c_str());
 		return -1;
 	
 
