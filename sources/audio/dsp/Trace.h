@@ -20,7 +20,7 @@ namespace MediaSDK
 		~CTrace();
 		void Reset();
 		int GenerateTrace(short *sBuffer, int iTraceLength);
-		int DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength, int &iTraceInFrame, bool bUseWaveLength = false);
+		int DetectTrace(short *sBuffer, int &iTraceInFrame);
 
 		int m_iTracePatternLength;
 	};

@@ -240,7 +240,7 @@ namespace MediaSDK
 			{
 				if (IsTraceSendingEnabled())
 				{
-					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, unLength, TRACE_DETECTION_DURATION_IN_SAMPLES, iTraceInFrame, true);
+					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, iTraceInFrame);
 				}
 				else
 				{
