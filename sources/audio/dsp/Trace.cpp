@@ -505,12 +505,6 @@ namespace MediaSDK
 
 		for (int i = 0; i < iWLCount; i++)
 		{
-				
-			if (m_sMyWL[i] < 10)
-			{
-				continue;
-			}
-
 			int k = 0;
 			for (k = 0; k < iMatchCountThreshold; k++)
 			{
