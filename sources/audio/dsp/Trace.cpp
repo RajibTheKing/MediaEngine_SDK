@@ -612,6 +612,7 @@ namespace MediaSDK
 		return iDelay;
 		
 #endif
+		return -1;
 	}
 
 } //namespace MediaSDK
