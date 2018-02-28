@@ -6,6 +6,8 @@
 #include "Tools.h"
 #include "AudioDumper.h"
 
+#define INF_DELAY 10000
+
 namespace MediaSDK
 {
 	short g_sTraceArray[] =
@@ -561,7 +563,7 @@ namespace MediaSDK
 		int iTraceInFrame_0_2_10;
 
 		int iDelay_0_2_10 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_0_2_10);
-		int iActualDelay_0_2_10 = iDelay_0_2_10 + (iTraceInFrame_0_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE;
+		int iActualDelay_0_2_10 = iDelay_0_2_10 > -1 ? (iDelay_0_2_10 + (iTraceInFrame_0_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE) : INF_DELAY;
 
 		iStartingWave = 15;
 		iDiffThreshold = 2;
@@ -569,9 +571,9 @@ namespace MediaSDK
 		int iTraceInFrame_15_2_10;
 
 		int iDelay_15_2_10 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_15_2_10);
-		int iActualDelay_15_2_10 = iDelay_15_2_10 + (iTraceInFrame_15_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE;
+		int iActualDelay_15_2_10 = iDelay_15_2_10 > -1 ? (iDelay_15_2_10 + (iTraceInFrame_15_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE) : INF_DELAY;
 
-		if (iDelay_15_2_10 < 0)
+		if (iDelay_15_2_10 == -1)
 		{
 			b30VerifiedTrace = false;
 			iTraceInFrame = iTraceInFrame_0_2_10;
@@ -593,10 +595,15 @@ namespace MediaSDK
 			iTraceInFrame = -1;
 			iDelay = iActualDelay;
 		}
-		else
+		else if (iActualDelay < INF_DELAY)
 		{
 			iTraceInFrame = 0;
 			iDelay = iActualDelay - MAX_AUDIO_FRAME_SAMPLE_SIZE;
+		}
+		else
+		{
+			iTraceInFrame = 0;
+			iDelay = -1;
 		}
 		return iDelay;
 		
