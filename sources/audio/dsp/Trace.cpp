@@ -422,20 +422,6 @@ namespace MediaSDK
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
 	{
 #ifdef USE_AECM
-#ifdef USE_OLD_TRACE
-		for (int i = 0; i < iTraceLength; i++)
-		{
-			if (i % 8 < 4)
-			{
-				sBuffer[i] = 30000;
-			}
-			else
-			{
-				sBuffer[i] = -30000;
-			}
-		}
-		return 0;
-#else
 		MediaLog(LOG_DEBUG, "[CTrace] iTraceLength = %d, m_iTracePatternLength = %d, m_iSentLength = %d\n", iTraceLength, m_iTracePatternLength, m_iSentLength);
 		if (m_iSentLength + iTraceLength <= m_iTracePatternLength)
 		{
@@ -452,7 +438,6 @@ namespace MediaSDK
 			return 0;
 		}
 		return 0;
-#endif
 #endif
         return 0;
        
@@ -537,7 +522,6 @@ namespace MediaSDK
 			}
 		}
 		//MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d, %s", iWLCount, str.c_str());
-
 		return -1;
 	
 
