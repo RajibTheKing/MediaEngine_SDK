@@ -573,6 +573,8 @@ namespace MediaSDK
 		int iDelay_15_2_10 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_15_2_10);
 		int iActualDelay_15_2_10 = iDelay_15_2_10 > -1 ? (iDelay_15_2_10 + (iTraceInFrame_15_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE) : INF_DELAY;
 
+		MediaLog(LOG_DEBUG, "[CTrace] iActualDelay_0_2_10 = %d iActualDelay_15_2_10 = %d\n", iActualDelay_0_2_10, iActualDelay_15_2_10);
+
 		if (iDelay_15_2_10 == -1)
 		{
 			b30VerifiedTrace = false;
@@ -605,6 +607,8 @@ namespace MediaSDK
 			iTraceInFrame = 0;
 			iDelay = -1;
 		}
+
+		MediaLog(LOG_DEBUG, "[CTrace] iDelay_15_2_30\n", iDelay_15_2_30);
 		return iDelay;
 		
 #endif
