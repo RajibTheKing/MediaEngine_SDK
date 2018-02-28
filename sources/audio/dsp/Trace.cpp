@@ -380,14 +380,15 @@ namespace MediaSDK
 
 	short g_sWaveLengths[] =
 	{
-		20, 21, 20, 20, 20, 21, 20, 20, 21, 20, 20, 21,
-		20, 23, 19, 15, 14, 15, 17, 16, 13, 15, 17, 16,
-		13, 15, 17, 15, 13, 16, 17, 15, 13, 16, 16, 16,
-		13, 16, 16, 16, 14, 15, 17, 15, 13, 16, 16, 16,
-		13, 16, 16, 15, 14, 16, 16, 16, 13, 16, 16, 15,
-		14, 15, 17, 15, 14, 15, 17, 15, 14, 15, 17, 15,
-		13, 16, 17, 15, 14, 15, 17, 15, 13, 16, 16, 16,
-		13, 16, 16, 15, 14
+		20, 21, 20, 20, 20, 21, 20, 20, 21, 20,
+		20, 21, 20, 23, 19, 15, 14, 15, 17, 16,
+		13, 15, 17, 16, 13, 15, 17, 15, 13, 16,
+		17, 15, 13, 16, 16, 16, 13, 16, 16, 16,
+		14, 15, 17, 15, 13, 16, 16, 16, 13, 16,
+		16, 15, 14, 16, 16, 16, 13, 16, 16, 15,
+		14, 15, 17, 15, 14, 15, 17, 15, 14, 15,
+		17, 15, 13, 16, 17, 15, 14, 15, 17, 15,
+		13, 16, 16, 16, 13, 16, 16, 15, 14
 	};
 	CTrace::CTrace()
 	{
@@ -542,6 +543,64 @@ namespace MediaSDK
 
 #endif
         return 0;
+	}
+
+	int CTrace::DetectTrace3Times(short *sBuffer, int &iTraceInFrame, bool &b30VerifiedTrace)
+	{
+#ifdef USE_AECM
+		MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
+
+		CopyFrame(sBuffer);
+
+		int iWLCount;
+		CalCulateWaves(iWLCount);
+
+		int iStartingWave = 0;
+		int iDiffThreshold = 2;
+		int iMatchCountThreshold = 10;
+		int iTraceInFrame_0_2_10;
+
+		int iDelay_0_2_10 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_0_2_10);
+		int iActualDelay_0_2_10 = iDelay_0_2_10 + (iTraceInFrame_0_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE;
+
+		iStartingWave = 15;
+		iDiffThreshold = 2;
+		iMatchCountThreshold = 10;
+		int iTraceInFrame_15_2_10;
+
+		int iDelay_15_2_10 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_15_2_10);
+		int iActualDelay_15_2_10 = iDelay_15_2_10 + (iTraceInFrame_15_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE;
+
+		if (iDelay_15_2_10 < 0)
+		{
+			b30VerifiedTrace = false;
+			iTraceInFrame = iTraceInFrame_0_2_10;
+			return iDelay_0_2_10;
+		}
+
+		iStartingWave = 15;
+		iDiffThreshold = 2;
+		iMatchCountThreshold = 30;
+		int iTraceInFrame_15_2_30;
+
+		int iDelay_15_2_30 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_15_2_30);
+
+		b30VerifiedTrace = iDelay_15_2_30 < 0 ? false : true;
+		int iActualDelay = min(iActualDelay_0_2_10, iTraceInFrame_15_2_10);
+		int iDelay = 0;
+		if (iActualDelay < MAX_AUDIO_FRAME_SAMPLE_SIZE)
+		{
+			iTraceInFrame = -1;
+			iDelay = iActualDelay;
+		}
+		else
+		{
+			iTraceInFrame = 0;
+			iDelay = iActualDelay - MAX_AUDIO_FRAME_SAMPLE_SIZE;
+		}
+		return iDelay;
+		
+#endif
 	}
 
 } //namespace MediaSDK
