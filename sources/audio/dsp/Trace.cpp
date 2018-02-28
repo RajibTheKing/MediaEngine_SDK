@@ -8,7 +8,7 @@
 
 namespace MediaSDK
 {
-	short sTraceArray[] =
+	short g_sTraceArray[] =
 	{
 		-8984, -5511, -1524, 2620, 6505, 9783, 12132, 13324, 13243, 11909, 9450, 6102, 2176, -1946, -5898,
 		-9277, -11791, -13168, -13319, -12181, -9911, -6677, -2829, 1288, 5288, 8771, 11428, 13001, 13338, 12415,
@@ -378,7 +378,7 @@ namespace MediaSDK
 		-896, -1045, -1009, -791, -488, -75, 365, 692, 916, 1039, 941, 694, 387, 11, -387
 	};
 
-	short sWaveLengths[] =
+	short g_sWaveLengths[] =
 	{
 		20, 21, 20, 20, 20, 21, 20, 20, 21, 20, 20, 21,
 		20, 23, 19, 15, 14, 15, 17, 16, 13, 15, 17, 16,
@@ -391,17 +391,17 @@ namespace MediaSDK
 	};
 	CTrace::CTrace()
 	{
-		m_iTracePatternLength = sizeof(sTraceArray) / sizeof(short);
+		m_iTracePatternLength = sizeof(g_sTraceArray) / sizeof(short);
 		m_iSentLength = 0;
 		MediaLog(LOG_DEBUG, "[CTrace] m_iTracePatternLength = %d\n", m_iTracePatternLength);
 		memset(m_sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 		memset(m_sSum, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 		memset(m_sMyWL_I, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-		m_iTaceWaveCount = sizeof(sWaveLengths) / sizeof(short);
-		m_sSum[0] = sWaveLengths[0];
+		m_iTaceWaveCount = sizeof(g_sWaveLengths) / sizeof(short);
+		m_sSum[0] = g_sWaveLengths[0];
 		for (int i = 1; i < m_iTaceWaveCount; i++)
 		{
-			m_sSum[i] = m_sSum[i - 1] + sWaveLengths[i];
+			m_sSum[i] = m_sSum[i - 1] + g_sWaveLengths[i];
 		}
 		
 	}
@@ -425,7 +425,7 @@ namespace MediaSDK
 		MediaLog(LOG_DEBUG, "[CTrace] iTraceLength = %d, m_iTracePatternLength = %d, m_iSentLength = %d\n", iTraceLength, m_iTracePatternLength, m_iSentLength);
 		if (m_iSentLength + iTraceLength <= m_iTracePatternLength)
 		{
-			memcpy(sBuffer, sTraceArray + m_iSentLength, iTraceLength * sizeof(short));
+			memcpy(sBuffer, g_sTraceArray + m_iSentLength, iTraceLength * sizeof(short));
 			m_iSentLength += iTraceLength;
 			return 1;
 		}
@@ -433,7 +433,7 @@ namespace MediaSDK
 		{
 			memset(sBuffer, 0, iTraceLength * sizeof(short));
 			int iTraceSEndFraction = m_iTracePatternLength - m_iSentLength;
-			memcpy(sBuffer, sTraceArray + m_iSentLength, iTraceSEndFraction * sizeof(short));
+			memcpy(sBuffer, g_sTraceArray + m_iSentLength, iTraceSEndFraction * sizeof(short));
 			m_iSentLength = m_iTracePatternLength;
 			return 0;
 		}
@@ -508,7 +508,7 @@ namespace MediaSDK
 			int k = 0;
 			for (k = 0; k < iMatchCountThreshold; k++)
 			{
-				if (DIFF(m_sMyWL[i + k], sWaveLengths[k]) > iDiffThreshold)
+				if (DIFF(m_sMyWL[i + k], g_sWaveLengths[k]) > iDiffThreshold)
 				{
 					break;
 				}
