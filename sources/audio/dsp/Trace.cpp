@@ -492,8 +492,6 @@ namespace MediaSDK
 		int iDiffThreshold = 2;
 		int iMatchCountThreshold = 10;
 		
-		int iMatchCount = 0;
-		int iPrevMatchCount = -1;
 		MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
 
 		int iWLCount;
