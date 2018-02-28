@@ -439,27 +439,26 @@ namespace MediaSDK
 	}
 
 	void AudioNearEndDataProcessor::SyncRecordingTime()
-	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Recording time sync started");
+	{		
 		if (m_b1stRecordedDataSinceCallStarted)
 		{
 			Tools::SOSleep(RECORDER_STARTING_SLEEP_IN_MS);
 			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
 			m_b1stRecordedDataSinceCallStarted = false;
-			MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , 1st time,  ts = %lld", m_ll1stRecordedDataTime);
+			MediaLog(LOG_CODE_TRACE, "[NE][ACS][TS] SyncRecordingTime , 1st time,  ts = %lld", m_ll1stRecordedDataTime);
 		}
 		else
 		{
 			long long llNOw = Tools::CurrentTimestamp();
 			if (llNOw + 20 < m_llnextRecordedDataTime)
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = %lld", llNOw, m_llnextRecordedDataTime - llNOw - 20);
+				MediaLog(LOG_CODE_TRACE, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = %lld", llNOw, m_llnextRecordedDataTime - llNOw - 20);
 				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
 			}
 			else
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = 0", llNOw);
+				MediaLog(LOG_CODE_TRACE, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = 0", llNOw);
 			}
 			m_llnextRecordedDataTime += 100;
 		}
