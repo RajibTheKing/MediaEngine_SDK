@@ -9,11 +9,15 @@ namespace MediaSDK
 	{
 	private:		
 		int m_iSentLength;
-		short sTraceDetectionBuffer[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
-		short sSum[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
-		short sMyWL[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
-		short sMyWL_I[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short m_sTraceDetectionBuffer[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short m_sSum[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short m_sMyWL[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
+		short m_sMyWL_I[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		int m_iTaceWaveCount;
+
+		void CopyFrame(short *sBuffer);
+		void CalCulateWaves(int &iWLCount);
+		int DetectTrace(int &iTraceInFrame);
 
 	public:
 		CTrace();
