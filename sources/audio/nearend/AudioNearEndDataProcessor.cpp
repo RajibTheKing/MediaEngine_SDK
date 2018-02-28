@@ -314,7 +314,6 @@ namespace MediaSDK
 
 	bool AudioNearEndDataProcessor::IsTraceSendingEnabled()
 	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Entered Trace Sending Enabled");
 #ifdef USE_AECM
 #if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		if (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER)
@@ -334,8 +333,7 @@ namespace MediaSDK
 	}
 
 	bool AudioNearEndDataProcessor::IsKichCutterEnabled()
-	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Entered Kich Cutter Enabled");
+	{		
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		return false;
 #else
@@ -364,8 +362,7 @@ namespace MediaSDK
 	}
 
 	bool AudioNearEndDataProcessor::IsEchoCancellerEnabled()
-	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Entered Echo Canceller Enabled")
+	{		
 #ifdef USE_AECM
 #if defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
 		if (!m_pAudioCallSession->getIsAudioLiveStreamRunning() || (m_pAudioCallSession->getIsAudioLiveStreamRunning() && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
@@ -490,8 +487,13 @@ namespace MediaSDK
 
 
 		bool bIsGainWorking = (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER && m_pAudioCallSession->GetRecorderGain().get());
+		
+		bool bIsEchoCanceller = IsEchoCancellerEnabled();
+		bool bIsKitchCutter = IsKichCutterEnabled();
+		bool bIsTraceSending = IsTraceSendingEnabled();
 
-		MediaLog(LOG_DEBUG, "[NE][ACS][GAIN][NS] PreprocessAudioData# CurrentTime=%lld, IsGainWorking=%d, IsNS=%d", llCurrentTime, bIsGainWorking, bIsNsWorking);
+		MediaLog(LOG_DEBUG, "[NE][ACS][GAIN][NS] PreprocessAudioData# CurrentTime=%lld, IsGainWorking=%d, IsNS=%d, IsWebRtcAECM=%d, IsKitchCutter=%d, IsTraceSending=%d"
+			, llCurrentTime, bIsGainWorking, bIsNsWorking, bIsEchoCanceller, bIsKitchCutter, bIsTraceSending);
 
 		if (IsEchoCancellerEnabled())
 		{
