@@ -17,7 +17,7 @@ namespace MediaSDK
 
 		void CopyFrame(short *sBuffer);
 		void CalCulateWaves(int &iWLCount);
-		int DetectTrace(int &iTraceInFrame);
+		int DetectTrace(int iStartingWave, int iDiffThreshold, int iMatchCountThreshold, int iWLCount, int &iTraceInFrame);
 
 	public:
 		CTrace();
