@@ -202,9 +202,9 @@ namespace MediaSDK
 		m_llTraceSendingTime = 0;
 		m_llTraceReceivingTime = 0;
 		m_b1stRecordedDataSinceCallStarted = true;
-		m_llDelayFraction = 0;
+		m_llDelayFraction = -1;
 		m_llDelay = 0;
-		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = false;
+		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = m_b30VerifiedTrace = false;
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
@@ -224,7 +224,7 @@ namespace MediaSDK
 	{
 		MediaLog(LOG_DEBUG, "[ANEDP][HT] length: %d", unLength);
 		int iTraceInFrame = 1;
-		if (!m_bTraceRecieved && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
+		if (!m_b30VerifiedTrace && m_bTraceSent && m_nFramesRecvdSinceTraceSent < MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS][TS] HandleTrace->IsEchoCancellerEnabled->Trace handled");
 			m_nFramesRecvdSinceTraceSent++;
@@ -240,37 +240,37 @@ namespace MediaSDK
 			{
 				if (IsTraceSendingEnabled())
 				{
-					m_llDelayFraction = m_pTrace->DetectTrace(psaEncodingAudioData, iTraceInFrame);
-				}
-				else
-				{
-					m_llDelayFraction = -1;
-				}
-				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
-				if (m_llDelayFraction != -1)
-				{
-					m_llTraceReceivingTime = Tools::CurrentTimestamp();
-					m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
-					//m_llDelayFraction = m_llDelay % 100;
-					m_iDelayFractionOrig = m_llDelayFraction;
-					m_llDelayFraction /= 8;
-
-
-
-					memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
-					m_bTraceRecieved = true;
-					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d",
-						m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType);
-				}
-				if (iTraceInFrame < 0)
-				{
-					long long llTS;
-					for (int i = 0; i > iTraceInFrame; i--)
+					long long llDelayFraction = m_pTrace->DetectTrace3Times(psaEncodingAudioData, iTraceInFrame, m_b30VerifiedTrace); //we call it even after trace it received, in case m_b30VerifiedTrace is still false
+					if (llDelayFraction != -1 && m_bTraceRecieved == false) //just got the trace
 					{
-						MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] discarding farend");
-						int iFarendDataLength = m_pAudioCallSession->m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+						m_llDelayFraction = llDelayFraction;
+						m_llTraceReceivingTime = Tools::CurrentTimestamp();
+						m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+						//m_llDelayFraction = m_llDelay % 100;
+						m_iDelayFractionOrig = m_llDelayFraction;
+						m_llDelayFraction /= 8;
+
+						m_bTraceRecieved = true;
+
+						memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
+
+						MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d",
+							m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType);
+
+						if (iTraceInFrame < 0)
+						{
+							long long llTS;
+							for (int i = 0; i > iTraceInFrame; i--)
+							{
+								MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] discarding farend");
+								int iFarendDataLength = m_pAudioCallSession->m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+							}
+						}
 					}
 				}
+
+				MediaLog(LOG_DEBUG, "[NE][ACS] HandleTrace->IsEchoCancellerEnabled->Trace handled->m_llDelayFraction : %lld", m_llDelayFraction);
+				
 			}
 		}
 	}
@@ -571,9 +571,9 @@ namespace MediaSDK
 
 					bool bTaceBasedEcho = true;
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-					bTaceBasedEcho = m_bTraceRecieved;					
+					bTaceBasedEcho = m_b30VerifiedTrace;					
 #elif defined (__ANDROID__)
-					bTaceBasedEcho = (m_bTraceRecieved && m_nServiceType == SERVICE_TYPE_CALL) || m_nServiceType == SERVICE_TYPE_LIVE_STREAM;					
+					bTaceBasedEcho = (m_b30VerifiedTrace && m_nServiceType == SERVICE_TYPE_CALL) || m_nServiceType == SERVICE_TYPE_LIVE_STREAM;
 #endif
 
 					if (IsKichCutterEnabled())
