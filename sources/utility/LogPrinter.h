@@ -65,6 +65,7 @@
 #define VIDEO_NOTIFICATION_LOG  OFF
 #define MULTI_RESOLUTION_LOG    OFF
 #define LIVE_INSET_LOG			OFF
+#define BUFFER_SIZE_LOG         OFF
 
 
 
