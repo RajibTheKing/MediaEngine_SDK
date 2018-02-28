@@ -493,7 +493,7 @@ namespace MediaSDK
 		iTraceInFrame = 0;
 		MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d", iWLCount);
 
-		for (int i = 0; i < iWLCount; i++)
+		for (int i = 0; i < iWLCount - iMatchCountThreshold; i++)
 		{
 			int k = 0;
 			for (k = 0; k < iMatchCountThreshold; k++)
