@@ -558,12 +558,12 @@ namespace MediaSDK
 				{
 					str += "\n";
 				}
-				for (int j = 0; j < 2; j++)
+				//for (int j = 0; j < 2; j++)
 				{
 					int k = 0;
 					for (k = 0; k < iMatchCountThreshold; k++)
 					{
-						if (DIFF(sMyWL[i + k], sWaveLengths[j + k]) > iDiffThreshold)
+						if (DIFF(sMyWL[i + k], sWaveLengths[k]) > iDiffThreshold)
 						{
 							break;
 						}
@@ -571,8 +571,8 @@ namespace MediaSDK
 					if (k == iMatchCountThreshold)
 					{
 						
-						int iTraceStartPos = sMyWL_I[i] - sSum[j];
-						MediaLog(LOG_DEBUG, "[CTrace] Found, i = %d, j = %d, my position = %d, trace's position = %d", i, j, sMyWL_I[i], sSum[j], iTraceStartPos);
+						int iTraceStartPos = sMyWL_I[i] - sSum[k - 1];
+						MediaLog(LOG_DEBUG, "[CTrace] Found, i = %d,  my position = %d, trace's position = %d", i, sMyWL_I[i], iTraceStartPos);
 
 						if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 						{
