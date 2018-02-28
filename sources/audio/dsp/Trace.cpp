@@ -480,6 +480,11 @@ namespace MediaSDK
 		//MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d, %s", iWLCount, str.c_str());
 	}
 
+	short CTrace::Diff(short x, short y)
+	{
+		return abs(x - y);
+	}
+
 	int CTrace::DetectTrace(int iStartingWave, int iDiffThreshold, int iMatchCountThreshold, int iWLCount, int &iTraceInFrame)
 	{
 		iTraceInFrame = 0;
@@ -490,7 +495,7 @@ namespace MediaSDK
 			int k = 0;
 			for (k = 0; k < iMatchCountThreshold; k++)
 			{
-				if (DIFF(m_sMyWL[i + k], g_sWaveLengths[k + iStartingWave]) > iDiffThreshold)
+				if (Diff(m_sMyWL[i + k], g_sWaveLengths[k + iStartingWave]) > iDiffThreshold)
 				{
 					break;
 				}
@@ -509,30 +514,29 @@ namespace MediaSDK
 				{
 					iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
 				}
-				memset(m_sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 				return iTraceStartPos;
 			}
 
 		}
+		return -1;
 	}
 
 	int CTrace::DetectTrace(short *sBuffer, int &iTraceInFrame)
 	{
 #ifdef USE_AECM
-		iTraceInFrame = 0;
+
+		MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
 		
 		CopyFrame(sBuffer);
+
+		int iWLCount;
+		CalCulateWaves(iWLCount);
 		
 
 		int iStartingWave = 0;
 		int iDiffThreshold = 2;
 		int iMatchCountThreshold = 10;
 		
-		MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
-
-		int iWLCount;
-		CalCulateWaves(iWLCount);
-			
 		return DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame);
 	
 

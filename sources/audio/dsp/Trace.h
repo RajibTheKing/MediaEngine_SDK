@@ -15,6 +15,8 @@ namespace MediaSDK
 		short m_sMyWL_I[2 * MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		int m_iTaceWaveCount;
 
+		inline short Diff(short x, short y);
+
 		void CopyFrame(short *sBuffer);
 		void CalCulateWaves(int &iWLCount);
 		int DetectTrace(int iStartingWave, int iDiffThreshold, int iMatchCountThreshold, int iWLCount, int &iTraceInFrame);
