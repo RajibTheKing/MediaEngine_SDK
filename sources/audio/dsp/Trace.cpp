@@ -401,10 +401,10 @@ namespace MediaSDK
 		memset(m_sSum, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 		memset(m_sMyWL_I, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 		m_iTaceWaveCount = sizeof(g_sWaveLengths) / sizeof(short);
-		m_sSum[0] = g_sWaveLengths[0];
+		m_sSum[0] = 0;
 		for (int i = 1; i < m_iTaceWaveCount; i++)
 		{
-			m_sSum[i] = m_sSum[i - 1] + g_sWaveLengths[i];
+			m_sSum[i] = m_sSum[i - 1] + g_sWaveLengths[i - 1] ;
 		}
 		
 	}
@@ -590,7 +590,7 @@ namespace MediaSDK
 		int iDelay_15_2_30 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_15_2_30);
 
 		b30VerifiedTrace = iDelay_15_2_30 < 0 ? false : true;
-		int iActualDelay = min(iActualDelay_0_2_10, iTraceInFrame_15_2_10);
+		int iActualDelay = min(iActualDelay_0_2_10, iActualDelay_15_2_10);
 		int iDelay = 0;
 		if (iActualDelay < MAX_AUDIO_FRAME_SAMPLE_SIZE)
 		{
