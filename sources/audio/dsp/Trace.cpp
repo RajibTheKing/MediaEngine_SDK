@@ -506,7 +506,7 @@ namespace MediaSDK
 			if (k == iMatchCountThreshold)
 			{
 
-				int iTraceStartPos = m_sMyWL_I[i] - m_sSum[iMatchCountThreshold + iStartingWave - 1];
+				int iTraceStartPos = m_sMyWL_I[i + iMatchCountThreshold - 1] - m_sSum[iMatchCountThreshold + iStartingWave - 1];
 				MediaLog(LOG_DEBUG, "[CTrace] Found, i = %d,  my position = %d, trace's position = %d", i, m_sMyWL_I[i], iTraceStartPos);
 
 				if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
