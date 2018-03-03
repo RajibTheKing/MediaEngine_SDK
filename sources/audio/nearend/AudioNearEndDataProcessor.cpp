@@ -314,7 +314,6 @@ namespace MediaSDK
 
 	bool AudioNearEndDataProcessor::IsTraceSendingEnabled()
 	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Entered Trace Sending Enabled");
 #ifdef USE_AECM
 #if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		if (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER)
@@ -334,8 +333,7 @@ namespace MediaSDK
 	}
 
 	bool AudioNearEndDataProcessor::IsKichCutterEnabled()
-	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Entered Kich Cutter Enabled");
+	{		
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		return false;
 #else
@@ -364,8 +362,7 @@ namespace MediaSDK
 	}
 
 	bool AudioNearEndDataProcessor::IsEchoCancellerEnabled()
-	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Entered Echo Canceller Enabled")
+	{		
 #ifdef USE_AECM
 #if defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
 		if (!m_pAudioCallSession->getIsAudioLiveStreamRunning() || (m_pAudioCallSession->getIsAudioLiveStreamRunning() && (m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER || m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)))
@@ -442,27 +439,26 @@ namespace MediaSDK
 	}
 
 	void AudioNearEndDataProcessor::SyncRecordingTime()
-	{
-		MediaLog(LOG_DEBUG, "[ANEDP] Recording time sync started");
+	{		
 		if (m_b1stRecordedDataSinceCallStarted)
 		{
 			Tools::SOSleep(RECORDER_STARTING_SLEEP_IN_MS);
 			m_ll1stRecordedDataTime = Tools::CurrentTimestamp();
 			m_llnextRecordedDataTime = m_ll1stRecordedDataTime + 100;
 			m_b1stRecordedDataSinceCallStarted = false;
-			MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , 1st time,  ts = %lld", m_ll1stRecordedDataTime);
+			MediaLog(LOG_CODE_TRACE, "[NE][ACS][TS] SyncRecordingTime , 1st time,  ts = %lld", m_ll1stRecordedDataTime);
 		}
 		else
 		{
 			long long llNOw = Tools::CurrentTimestamp();
 			if (llNOw + 20 < m_llnextRecordedDataTime)
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = %lld", llNOw, m_llnextRecordedDataTime - llNOw - 20);
+				MediaLog(LOG_CODE_TRACE, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = %lld", llNOw, m_llnextRecordedDataTime - llNOw - 20);
 				Tools::SOSleep(m_llnextRecordedDataTime - llNOw - 20);
 			}
 			else
 			{
-				MediaLog(LOG_DEBUG, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = 0", llNOw);
+				MediaLog(LOG_CODE_TRACE, "[NE][ACS][TS] SyncRecordingTime , nth time,  ts = %lld sleeptime = 0", llNOw);
 			}
 			m_llnextRecordedDataTime += 100;
 		}
@@ -490,8 +486,13 @@ namespace MediaSDK
 
 
 		bool bIsGainWorking = (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER && m_pAudioCallSession->GetRecorderGain().get());
+		
+		bool bIsEchoCanceller = IsEchoCancellerEnabled();
+		bool bIsKitchCutter = IsKichCutterEnabled();
+		bool bIsTraceSending = IsTraceSendingEnabled();
 
-		MediaLog(LOG_DEBUG, "[NE][ACS][GAIN][NS] PreprocessAudioData# CurrentTime=%lld, IsGainWorking=%d, IsNS=%d", llCurrentTime, bIsGainWorking, bIsNsWorking);
+		MediaLog(LOG_DEBUG, "[NE][ACS][GAIN][NS] PreprocessAudioData# CurrentTime=%lld, IsGainWorking=%d, IsNS=%d, IsWebRtcAECM=%d, IsKitchCutter=%d, IsTraceSending=%d"
+			, llCurrentTime, bIsGainWorking, bIsNsWorking, bIsEchoCanceller, bIsKitchCutter, bIsTraceSending);
 
 		if (IsEchoCancellerEnabled())
 		{
