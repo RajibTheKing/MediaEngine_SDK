@@ -15,7 +15,8 @@ namespace MediaSDK
 {
 
 	FarEndProcessorViewer::FarEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
-		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
+		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning),
+		m_nLastPublisherFrame(-1)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorViewer::FarEndProcessorViewer()");
 		m_pCalleeDecoderOpus.reset(new DecoderOpus());
@@ -162,6 +163,13 @@ namespace MediaSDK
 
 			DumpDecodedFrame(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING);
 			MediaLog(LOG_INFO, "[AFEPV] Viewer-SendToPlayer# PublisherFN = %d, CalleeFN = %d", naFrameNumbers[0], naFrameNumbers[1]);
+
+			if (m_nLastPublisherFrame + 1 < naFrameNumbers[0]){
+				int nMissingFrames = naFrameNumbers[0] - m_nLastPublisherFrame - 1;
+				MediaLog(LOG_WARNING, "[FE][AFEPV][MISS] MISSING FRAMES ---------------------------------> %d  [%d-%d]\n", nMissingFrames, m_nLastPublisherFrame + 1, naFrameNumbers[0] - 1);
+			}
+
+			m_nLastPublisherFrame = naFrameNumbers[0];
 
 			SendToPlayer(m_saDecodedFrame, AUDIO_FRAME_SAMPLE_SIZE_FOR_LIVE_STREAMING, m_llLastTime, iPacketNumber, nEchoStateFlags);
 			Tools::SOSleep(0);

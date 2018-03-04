@@ -365,7 +365,7 @@ namespace MediaSDK
 				if (llLastChunkRelativeTime + m_pcController->m_llLastChunkDuration + MIN_CHUNK_DURATION_SAFE < llCurrentChunkRelativeTime)
 				{
 					long long llChunkGap = llCurrentChunkRelativeTime - llLastChunkRelativeTime - m_pcController->m_llLastChunkDuration;
-					MediaLog(LOG_WARNING, "[IAVE][RT] CHUNK# CHUNK MISSING !!!!!!!!!!!  Relative Time Gap: %lld RTlast:%lld[%lld] RTnow:%lld", 
+					MediaLog(LOG_WARNING, "[IAVE][RT][MISS] CHUNK# CHUNK MISSING !!!!!!!!!!!  Relative Time Gap: %lld RTlast:%lld[%lld] RTnow:%lld", 
 						llChunkGap, llLastChunkRelativeTime, m_pcController->m_llLastChunkDuration, llCurrentChunkRelativeTime);
 				}
 
@@ -376,21 +376,20 @@ namespace MediaSDK
 				int headerLength = m_Tools.GetMediaUnitHeaderLengthFromMediaChunck(in_data + nValidHeaderOffset);
 				int llCurrentChunkDuration = m_Tools.GetMediaUnitChunkDurationFromMediaChunck(in_data + nValidHeaderOffset);
 				m_pcController->m_llLastChunkDuration = llCurrentChunkDuration;
-				MediaLog(LOG_INFO, "[IAVE] CHUNK### RelativeTime: %lld Duration: %d DataLen: %u HeaderLength: %d Missing: %d", 
-					llCurrentChunkRelativeTime, llCurrentChunkDuration, unLength, headerLength, vMissingFrames.size());
+				//MediaLog(LOG_DEBUG, "[IAVE] CHUNK### RelativeTime: %lld Duration: %d DataLen: %u HeaderLength: %d Missing: %d", llCurrentChunkRelativeTime, llCurrentChunkDuration, unLength, headerLength, vMissingFrames.size());
 
 
 				if (m_llTimeOffset == -1)
 				{
 					m_llTimeOffset = itIsNow - llCurrentChunkRelativeTime;
 					m_pcController->m_llLastTimeStamp = llCurrentChunkRelativeTime;
-					MediaLog(LOG_INFO, "[IAVE][RT] First Chunk# ShiftOffset:%lld RelativeTime:%lld\n", m_llTimeOffset, llCurrentChunkRelativeTime);
+					MediaLog(LOG_INFO, "[IAVE][RT] First Chunk# ShiftOffset:%lld RelativeTime:%lld Missing: %d\n", m_llTimeOffset, llCurrentChunkRelativeTime, vMissingFrames.size());
 				}
 				else
 				{
 					long long expectedTime = itIsNow - m_llTimeOffset;										
-					MediaLog(LOG_INFO, "[IAVE][RT] RelativeTime:%lld ExpectedRT:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d "
-						, llCurrentChunkRelativeTime, expectedTime, llCurrentChunkRelativeTime - expectedTime, llCurrentChunkDuration, headerLength);
+					MediaLog(LOG_INFO, "[IAVE][RT] RelativeTime:%lld ExpectedRT:%lld  [%lld] CHUNK_DURA = %d HEAD_LEN = %d Missing: %d"
+						, llCurrentChunkRelativeTime, expectedTime, llCurrentChunkRelativeTime - expectedTime, llCurrentChunkDuration, headerLength, vMissingFrames.size());
 
 					if (llCurrentChunkRelativeTime < expectedTime - CHUNK_DELAY_TOLERANCE) {
 						if (!m_pcController->IsCallInLiveEnabled())
