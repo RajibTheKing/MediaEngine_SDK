@@ -241,6 +241,8 @@ namespace MediaSDK
 				if (IsTraceSendingEnabled())
 				{
 					long long llDelayFraction = m_pTrace->DetectTrace3Times(psaEncodingAudioData, iTraceInFrame, m_b30VerifiedTrace); //we call it even after trace it received, in case m_b30VerifiedTrace is still false
+					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d, m_b30VerifiedTrace = %d",
+						m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType, m_b30VerifiedTrace);
 					if (llDelayFraction != -1 && m_bTraceRecieved == false) //just got the trace
 					{
 						m_llDelayFraction = llDelayFraction;
