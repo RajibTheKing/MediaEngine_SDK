@@ -82,16 +82,16 @@ namespace MediaSDK
 		m_pAudioCallSession->File18BitType = fopen("/sdcard/File18BitType.pcm", "wb");
 		m_pAudioCallSession->File18BitData = fopen("/sdcard/File18BitData.pcm", "wb");
 #endif	
-
-		m_pRecordedNE = new CAudioDumper("Recorded.pcm", true);
-		m_pGainedNE = new CAudioDumper("Gained.pcm", true);
-		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", true);
-		m_pNoiseReducedNE = new CAudioDumper("NR.pcm", true);
-		m_pCancelledNE = new CAudioDumper("AEC.pcm", true);
-		m_pKichCutNE = new CAudioDumper("KC.pcm", true);
-		m_pProcessedNE = new CAudioDumper("processed.pcm", true);
-		m_pTraceRemoved = new CAudioDumper("tr.pcm", true);
-		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", true);
+		bool bEnableNearEndDumps = true;
+		m_pRecordedNE = new CAudioDumper("Recorded.pcm", bEnableNearEndDumps);
+		m_pGainedNE = new CAudioDumper("Gained.pcm", bEnableNearEndDumps);
+		m_pProcessed2NE = new CAudioDumper("AfterCancellation.pcm", bEnableNearEndDumps);
+		m_pNoiseReducedNE = new CAudioDumper("NR.pcm", bEnableNearEndDumps);
+		m_pCancelledNE = new CAudioDumper("AEC.pcm", bEnableNearEndDumps);
+		m_pKichCutNE = new CAudioDumper("KC.pcm", bEnableNearEndDumps);
+		m_pProcessedNE = new CAudioDumper("processed.pcm", bEnableNearEndDumps);
+		m_pTraceRemoved = new CAudioDumper("tr.pcm", bEnableNearEndDumps);
+		m_pTraceDetectionDump = new CAudioDumper("TD.pcm", bEnableNearEndDumps);
 
 		m_pTrace = new CTrace();
 		m_pKichCutter = nullptr;
