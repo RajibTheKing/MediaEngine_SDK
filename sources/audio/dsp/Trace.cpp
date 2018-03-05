@@ -6,9 +6,11 @@
 #include "Tools.h"
 #include "AudioDumper.h"
 
+#define INF_DELAY 10000
+
 namespace MediaSDK
 {
-	short sTraceArray[] =
+	short g_sTraceArray[] =
 	{
 		-8984, -5511, -1524, 2620, 6505, 9783, 12132, 13324, 13243, 11909, 9450, 6102, 2176, -1946, -5898,
 		-9277, -11791, -13168, -13319, -12181, -9911, -6677, -2829, 1288, 5288, 8771, 11428, 13001, 13338, 12415,
@@ -378,30 +380,31 @@ namespace MediaSDK
 		-896, -1045, -1009, -791, -488, -75, 365, 692, 916, 1039, 941, 694, 387, 11, -387
 	};
 
-	short sWaveLengths[] =
+	short g_sWaveLengths[] =
 	{
-		20, 21, 20, 20, 20, 21, 20, 20, 21, 20, 20, 21,
-		20, 23, 19, 15, 14, 15, 17, 16, 13, 15, 17, 16,
-		13, 15, 17, 15, 13, 16, 17, 15, 13, 16, 16, 16,
-		13, 16, 16, 16, 14, 15, 17, 15, 13, 16, 16, 16,
-		13, 16, 16, 15, 14, 16, 16, 16, 13, 16, 16, 15,
-		14, 15, 17, 15, 14, 15, 17, 15, 14, 15, 17, 15,
-		13, 16, 17, 15, 14, 15, 17, 15, 13, 16, 16, 16,
-		13, 16, 16, 15, 14
+		20, 21, 20, 20, 20, 21, 20, 20, 21, 20,
+		20, 21, 20, 23, 19, 15, 14, 15, 17, 16,
+		13, 15, 17, 16, 13, 15, 17, 15, 13, 16,
+		17, 15, 13, 16, 16, 16, 13, 16, 16, 16,
+		14, 15, 17, 15, 13, 16, 16, 16, 13, 16,
+		16, 15, 14, 16, 16, 16, 13, 16, 16, 15,
+		14, 15, 17, 15, 14, 15, 17, 15, 14, 15,
+		17, 15, 13, 16, 17, 15, 14, 15, 17, 15,
+		13, 16, 16, 16, 13, 16, 16, 15, 14
 	};
 	CTrace::CTrace()
 	{
-		m_iTracePatternLength = sizeof(sTraceArray) / sizeof(short);
+		m_iTracePatternLength = sizeof(g_sTraceArray) / sizeof(short);
 		m_iSentLength = 0;
 		MediaLog(LOG_DEBUG, "[CTrace] m_iTracePatternLength = %d\n", m_iTracePatternLength);
-		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-		memset(sSum, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-		memset(sMyWL_I, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-		m_iTaceWaveCount = sizeof(sWaveLengths) / sizeof(short);
-		sSum[0] = sWaveLengths[0];
+		memset(m_sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		memset(m_sSum, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		memset(m_sMyWL_I, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		m_iTaceWaveCount = sizeof(g_sWaveLengths) / sizeof(short);
+		m_sSum[0] = 0;
 		for (int i = 1; i < m_iTaceWaveCount; i++)
 		{
-			sSum[i] = sSum[i - 1] + sWaveLengths[i];
+			m_sSum[i] = m_sSum[i - 1] + g_sWaveLengths[i - 1] ;
 		}
 		
 	}
@@ -415,31 +418,17 @@ namespace MediaSDK
 	{
 		MediaLog(LOG_DEBUG, "[CTrace] Reset Called\n");
 		m_iSentLength = 0;
-		memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-		memset(sMyWL, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		memset(m_sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		memset(m_sMyWL, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
 	}
 
 	int CTrace::GenerateTrace(short *sBuffer, int iTraceLength)
 	{
 #ifdef USE_AECM
-#ifdef USE_OLD_TRACE
-		for (int i = 0; i < iTraceLength; i++)
-		{
-			if (i % 8 < 4)
-			{
-				sBuffer[i] = 30000;
-			}
-			else
-			{
-				sBuffer[i] = -30000;
-			}
-		}
-		return 0;
-#else
 		MediaLog(LOG_DEBUG, "[CTrace] iTraceLength = %d, m_iTracePatternLength = %d, m_iSentLength = %d\n", iTraceLength, m_iTracePatternLength, m_iSentLength);
 		if (m_iSentLength + iTraceLength <= m_iTracePatternLength)
 		{
-			memcpy(sBuffer, sTraceArray + m_iSentLength, iTraceLength * sizeof(short));
+			memcpy(sBuffer, g_sTraceArray + m_iSentLength, iTraceLength * sizeof(short));
 			m_iSentLength += iTraceLength;
 			return 1;
 		}
@@ -447,154 +436,186 @@ namespace MediaSDK
 		{
 			memset(sBuffer, 0, iTraceLength * sizeof(short));
 			int iTraceSEndFraction = m_iTracePatternLength - m_iSentLength;
-			memcpy(sBuffer, sTraceArray + m_iSentLength, iTraceSEndFraction * sizeof(short));
+			memcpy(sBuffer, g_sTraceArray + m_iSentLength, iTraceSEndFraction * sizeof(short));
 			m_iSentLength = m_iTracePatternLength;
 			return 0;
 		}
 		return 0;
 #endif
-#endif
         return 0;
        
 	}
 
-	int CTrace::DetectTrace(short *sBuffer, int iTraceSearchLength, int iTraceDetectionLength, int &iTraceInFrame, bool bUseWaveLength)
+	void CTrace::CopyFrame(short *sBuffer)
 	{
 #ifdef USE_AECM
-		iTraceInFrame = 0;
-		if (bUseWaveLength == false)
+		memcpy(m_sTraceDetectionBuffer, m_sTraceDetectionBuffer + MAX_AUDIO_FRAME_SAMPLE_SIZE, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+		memcpy(m_sTraceDetectionBuffer + MAX_AUDIO_FRAME_SAMPLE_SIZE, sBuffer, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
+#endif
+	}
+
+	void CTrace::CalCulateWaves(int &iWLCount)
+	{
+		int iTV = 0;
+		iWLCount = 0;
+		string str = "m_sMyWL";
+		for (int i = 0; i < MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
 		{
-			for (int i = 0; i < iTraceSearchLength - iTraceDetectionLength; i++)
+			if ((m_sTraceDetectionBuffer[i] <= 0 && m_sTraceDetectionBuffer[i + 1] > 0) || (m_sTraceDetectionBuffer[i] < 0 && m_sTraceDetectionBuffer[i + 1] >= 0)) //transition found
 			{
-				int j = 0;
-				for (; j < iTraceDetectionLength; j++)
-				{
-					if (j % 20 >= 3 && j % 20 <= 7 && sBuffer[i + j] <= 0)
-					{
-						break;
-					}
-					if (j % 20 >= 12 && j % 20 <= 15 && sBuffer[i + j] >= 0)
-					{
-						break;
-					}
+				int iWaveLength = i - iTV;
+				m_sMyWL[iWLCount] = iWaveLength;
+				m_sMyWL_I[iWLCount] = i;
 
-				}
-				if (j == iTraceDetectionLength)
-				{
-					return i;
-				}
-			}
-			return -1;
-		}
-		else
-		{
-			//ignores iTraceSearchLength and iTraceDetectionLength
-			memcpy(sTraceDetectionBuffer, sTraceDetectionBuffer + MAX_AUDIO_FRAME_SAMPLE_SIZE, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-			memcpy(sTraceDetectionBuffer + MAX_AUDIO_FRAME_SAMPLE_SIZE, sBuffer, MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-
-			int iTV = 0;
-			int iDiffThreshold = 2;
-			int iMatchCountThreshold = 10;
-			int iMatchCount = 0;
-			int iPrevMatchCount = -1;
-			MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
-
-			int iWLCount = 0;
-
-			for (int i = 0; i < MAX_AUDIO_FRAME_SAMPLE_SIZE * 2 - 1; i++)
-			{
-				if ((sTraceDetectionBuffer[i] <= 0 && sTraceDetectionBuffer[i + 1] > 0) || (sTraceDetectionBuffer[i] < 0 && sTraceDetectionBuffer[i + 1] >= 0)) //transition found
-				{
-					int iWaveLength = i - iTV;
-					sMyWL[iWLCount] = iWaveLength;
-					sMyWL_I[iWLCount] = i;
-					iWLCount++;
-					/*
-					if (DIFF(iWaveLength, sWaveLengths[iMatchCount]) <= iDiffThreshold)
-					{
-						iMatchCount++;
-					}
-					else
-					{
-						iMatchCount = 0;
-						if (iMatchCount != iPrevMatchCount && iPrevMatchCount >= iMatchCountThreshold)
-						{
-							int iTraceStartPos = i - sSum[iPrevMatchCount - 1];
-							MediaLog(LOG_DEBUG, "[CTrace] Found iTraceStartPos = %d, iPrevMatchCount = %d\n", iTraceStartPos, iPrevMatchCount);
-							
-							if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
-							{
-								iTraceInFrame = -1;
-							}
-							else
-							{
-								iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
-							}
-							memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-							return iTraceStartPos;
-						}
-					}
-					iPrevMatchCount = iMatchCount;*/
-					iTV = i;
-				}
-			}
-
-			string str = "sMyWL";
-			iTraceInFrame = 0;
-			MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d", iWLCount);
-
-			for (int i = 0; i < iWLCount; i++)
-			{
-				
-				if (sMyWL[i] < 10)
-				{
-					continue;
-				}
 				str += Tools::IntegertoStringConvert(i);
 				str += " : ";
-				str += Tools::IntegertoStringConvert(sMyWL[i]);
+				str += Tools::IntegertoStringConvert(m_sMyWL[i]);
 				str += " , ";
 				if (i % 12 == 0)
 				{
 					str += "\n";
 				}
-				//for (int j = 0; j < 2; j++)
-				{
-					int k = 0;
-					for (k = 0; k < iMatchCountThreshold; k++)
-					{
-						if (DIFF(sMyWL[i + k], sWaveLengths[k]) > iDiffThreshold)
-						{
-							break;
-						}
-					}
-					if (k == iMatchCountThreshold)
-					{
-						
-						int iTraceStartPos = sMyWL_I[i] - sSum[k - 1];
-						MediaLog(LOG_DEBUG, "[CTrace] Found, i = %d,  my position = %d, trace's position = %d", i, sMyWL_I[i], iTraceStartPos);
 
-						if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
-						{
-							iTraceInFrame = -1;
-						}
-						else
-						{
-							iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
-						}
-						memset(sTraceDetectionBuffer, 0, 2 * MAX_AUDIO_FRAME_SAMPLE_SIZE * sizeof(short));
-						return iTraceStartPos;
-					}
+				iWLCount++;
+				iTV = i;
+			}
+		}
+		//MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d, %s", iWLCount, str.c_str());
+	}
+
+	short CTrace::Diff(short x, short y)
+	{
+		return abs(x - y);
+	}
+
+	int CTrace::DetectTrace(int iStartingWave, int iDiffThreshold, int iMatchCountThreshold, int iWLCount, int &iTraceInFrame)
+	{
+		iTraceInFrame = 0;
+		MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d", iWLCount);
+
+		for (int i = 0; i < iWLCount - iMatchCountThreshold; i++)
+		{
+			int k = 0;
+			for (k = 0; k < iMatchCountThreshold; k++)
+			{
+				if (Diff(m_sMyWL[i + k], g_sWaveLengths[k + iStartingWave]) > iDiffThreshold)
+				{
+					break;
 				}
 			}
-			//MediaLog(LOG_DEBUG, "[CTrace] iWLCount = %d, %s", iWLCount, str.c_str());
+			if (k == iMatchCountThreshold)
+			{
 
-			return -1;
+				int iTraceStartPos = m_sMyWL_I[i + iMatchCountThreshold - 1] - m_sSum[iMatchCountThreshold + iStartingWave - 1];
+				MediaLog(LOG_DEBUG, "[CTrace] Found, i = %d,  my position = %d, trace's position = %d", i, m_sMyWL_I[i], iTraceStartPos);
+
+				if (iTraceStartPos < MAX_AUDIO_FRAME_SAMPLE_SIZE)
+				{
+					iTraceInFrame = -1;
+				}
+				else
+				{
+					iTraceStartPos -= MAX_AUDIO_FRAME_SAMPLE_SIZE;
+				}
+				return iTraceStartPos;
+			}
 
 		}
+		return -1;
+	}
+
+	/*
+		DetectTrace(short *sBuffer, int &iTraceInFrame): Right now this function is not in use.
+	*/
+	int CTrace::DetectTrace(short *sBuffer, int &iTraceInFrame)
+	{
+#ifdef USE_AECM
+
+		MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
+		
+		CopyFrame(sBuffer);
+
+		int iWLCount;
+		CalCulateWaves(iWLCount);
+		
+
+		int iStartingWave = 0;
+		int iDiffThreshold = 2;
+		int iMatchCountThreshold = 10;
+		
+		return DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame);
+	
 
 #endif
         return 0;
+	}
+
+	int CTrace::DetectTrace3Times(short *sBuffer, int &iTraceInFrame, bool &b30VerifiedTrace)
+	{
+#ifdef USE_AECM
+		MediaLog(LOG_DEBUG, "[CTrace] DetectTrace Called\n");
+
+		CopyFrame(sBuffer);
+
+		int iWLCount;
+		CalCulateWaves(iWLCount);
+
+		int iStartingWave = 0;
+		int iDiffThreshold = 2;
+		int iMatchCountThreshold = 10;
+		int iTraceInFrame_0_2_10;
+
+		int iDelay_0_2_10 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_0_2_10);
+		int iActualDelay_0_2_10 = iDelay_0_2_10 > -1 ? (iDelay_0_2_10 + (iTraceInFrame_0_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE) : INF_DELAY;
+
+		iStartingWave = 15;
+		iDiffThreshold = 2;
+		iMatchCountThreshold = 10;
+		int iTraceInFrame_15_2_10;
+
+		int iDelay_15_2_10 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_15_2_10);
+		int iActualDelay_15_2_10 = iDelay_15_2_10 > -1 ? (iDelay_15_2_10 + (iTraceInFrame_15_2_10 + 1) * MAX_AUDIO_FRAME_SAMPLE_SIZE) : INF_DELAY;
+
+		MediaLog(LOG_DEBUG, "[CTrace] iActualDelay_0_2_10 = %d iActualDelay_15_2_10 = %d\n", iActualDelay_0_2_10, iActualDelay_15_2_10);
+
+		if (iDelay_15_2_10 == -1)
+		{
+			b30VerifiedTrace = false;
+			iTraceInFrame = iTraceInFrame_0_2_10;
+			return iDelay_0_2_10;
+		}
+
+		iStartingWave = 15;
+		iDiffThreshold = 2;
+		iMatchCountThreshold = 30;
+		int iTraceInFrame_15_2_30;
+
+		int iDelay_15_2_30 = DetectTrace(iStartingWave, iDiffThreshold, iMatchCountThreshold, iWLCount, iTraceInFrame_15_2_30);
+
+		b30VerifiedTrace = iDelay_15_2_30 < 0 ? false : true;
+		int iActualDelay = min(iActualDelay_0_2_10, iActualDelay_15_2_10);
+		int iDelay = 0;
+		if (iActualDelay < MAX_AUDIO_FRAME_SAMPLE_SIZE)
+		{
+			iTraceInFrame = -1;
+			iDelay = iActualDelay;
+		}
+		else if (iActualDelay < INF_DELAY)
+		{
+			iTraceInFrame = 0;
+			iDelay = iActualDelay - MAX_AUDIO_FRAME_SAMPLE_SIZE;
+		}
+		else
+		{
+			iTraceInFrame = 0;
+			iDelay = -1;
+		}
+
+		MediaLog(LOG_DEBUG, "[CTrace] iDelay_15_2_30\n", iDelay_15_2_30);
+		return iDelay;
+		
+#endif
+		return -1;
 	}
 
 } //namespace MediaSDK
