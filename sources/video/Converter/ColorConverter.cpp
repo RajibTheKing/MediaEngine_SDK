@@ -2493,10 +2493,15 @@ int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, in
     
     for(int i=startYDiff; i<(inHeight-endYDiff); i++)
     {
+        /*
         for(int j=startXDiff; j<(inWidth-endXDiff); j++)
         {
             outputData[indx++] = pData[i*inWidth + j];
         }
+         */
+        
+        memcpy(outputData+indx, pData+(i*inWidth+startXDiff), (inWidth-endXDiff-startXDiff));
+        indx+=(inWidth-endXDiff-startXDiff);
     }
     
     
@@ -2509,6 +2514,7 @@ int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, in
     
     for(int i=startYDiff/2; i<(halfH-endYDiff/2); i++)
     {
+        /*
         for(int j=startXDiff; j<(inWidth-endXDiff); j+=2)
         {
             outputData[uIndex] = p[i*inWidth + j];
@@ -2516,6 +2522,10 @@ int CColorConverter::Crop_YUVNV12_YUVNV21(unsigned char* pData, int inHeight, in
             uIndex+=2;
             vIndex+=2;
         }
+        */
+        
+        memcpy(outputData+indx, p+(i*inWidth + startXDiff), inWidth-endXDiff-startXDiff);
+        indx+=(inWidth-endXDiff-startXDiff);
     }
     
     outHeight = inHeight - startYDiff - endYDiff;
