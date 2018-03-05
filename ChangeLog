@@ -1,3 +1,7 @@
+Release 12.26 (Date: 05-03-2018)
+---------------------------------
+- AUDIO: Three layer trace detection [5758]
+
 Release 12.25.4 (Date: 20-02-2018)
 ---------------------------------
 - AUDIO: Trace based AECM in Android for Regular Call. [5698]
