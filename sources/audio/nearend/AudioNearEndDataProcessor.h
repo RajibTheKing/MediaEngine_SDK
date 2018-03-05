@@ -79,7 +79,7 @@ namespace MediaSDK
 		
 		CAudioCallSession *m_pAudioCallSession = nullptr;
 		short m_saNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
-		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived;
+		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived, m_b30VerifiedTrace;
 		int  m_iDeleteCount;
 		CTrace *m_pTrace = nullptr;
 		long long m_llTraceSendingTime;
