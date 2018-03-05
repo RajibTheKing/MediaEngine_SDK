@@ -524,6 +524,9 @@ namespace MediaSDK
 		return -1;
 	}
 
+	/*
+		DetectTrace(short *sBuffer, int &iTraceInFrame): Right now this function is not in use.
+	*/
 	int CTrace::DetectTrace(short *sBuffer, int &iTraceInFrame)
 	{
 #ifdef USE_AECM

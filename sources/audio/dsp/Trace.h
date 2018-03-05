@@ -19,6 +19,15 @@ namespace MediaSDK
 
 		void CopyFrame(short *sBuffer);
 		void CalCulateWaves(int &iWLCount);
+
+		/*
+			@iTraceInFrame:
+				-1 => Trace in previous frame.
+				 0 => Trace in current frame.
+			@Return: 
+				-1 => Trace Not found.
+				Returned value >-1  => Valid delay.
+		*/
 		int DetectTrace(int iStartingWave, int iDiffThreshold, int iMatchCountThreshold, int iWLCount, int &iTraceInFrame);
 
 	public:
