@@ -611,6 +611,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() SetSmallFrame iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
                     int iOpponentVideoHeight = m_pVideoCallSession->GetOpponentVideoHeight();
                     int iOpponentVideoWidth = m_pVideoCallSession->GetOpponentVideoWidth();
+                    int iOpponentLibraryVersion = m_pVideoCallSession->getOpponentLibraryVersion();
                     
                     if(iOpponentVideoHeight !=-1 && iOpponentVideoWidth !=  -1)
                     {
@@ -618,11 +619,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                         {
                             int rotatedHeight, rotatedWidth;
                             m_pVideoCallSession->GetColorConverter()->RotateI420(m_ucaMirroredFrame, iHeight, iWidth, m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nDevice_orientation);
-                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP, iOpponentLibraryVersion);
                         }
                         else
                         {
-                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP, iOpponentLibraryVersion);
                         }
                         
                     }

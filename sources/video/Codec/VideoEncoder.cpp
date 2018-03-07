@@ -570,8 +570,8 @@ namespace MediaSDK
 	{
 		double aspectRatio_Screen, aspectRatio_VideoData;
 
-		int iScreenHeight = 1920;
-		int	iScreenWidth = 1130;
+		int iScreenHeight = DEVICE_SCREEN_HEIGHT;
+		int	iScreenWidth = DEVICE_SCREEN_WIDTH;
 
 		aspectRatio_Screen = iScreenHeight * 1.0 / iScreenWidth;
 		aspectRatio_VideoData = inHeight * 1.0 / inWidth;

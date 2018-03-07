@@ -307,7 +307,10 @@ namespace MediaSDK
 					videoHeaderObject.GetInsetWidths(m_naInsetWidths, nNumberOfInsets);
 
 					//nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + PACKET_HEADER_LENGTH, nFrameLength - PACKET_HEADER_LENGTH,0,0,0);
-					nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(), 0, 0, videoHeaderObject.GetDeviceOrientation(), m_naInsetHeights[0], m_naInsetWidths[0]);
+                    
+                    m_pVideoCallSession->setOpponentVideoLibraryVersion(videoHeaderObject.GetLibraryVersion());
+                    
+					nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame + videoHeaderObject.GetHeaderLength(), nFrameLength - videoHeaderObject.GetHeaderLength(), 0, 0, videoHeaderObject.GetDeviceOrientation(), m_naInsetHeights[0], m_naInsetWidths[0], videoHeaderObject.GetLibraryVersion());
 
 					llSlotTimeStamp = m_Tools.CurrentTimestamp();
 					toolsObject.SOSleep(1);
@@ -415,7 +418,7 @@ namespace MediaSDK
 				*/
 
 
-				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime, nOrientation, 0, 0);
+				nDecodingStatus = DecodeAndSendToClient(m_PacketizedFrame, nFrameLength, nFrameNumber, nEncodingTime, nOrientation, 0, 0, 0);
 				//printf("decode:  %d, nDecodingStatus %d\n", nFrameNumber, nDecodingStatus);
 				//			toolsObject.SOSleep(100);
 
@@ -555,7 +558,7 @@ namespace MediaSDK
 	}
 
 	long long nIDR_Frame_Gap = -1;
-	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, long long nFramNumber, long long nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth)
+	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, long long nFramNumber, long long nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth, int libraryVersion)
 	{
 		int nOrientationForRotation = nOrientation;
 
@@ -716,7 +719,7 @@ namespace MediaSDK
                 
 				CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient betfore setting small frame m_decodingHeight %d, m_decodingWidth %d, iHeight %d, iWidth %d", m_decodingHeight, m_decodingWidth, iHeight, iWidth);
 
-                this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP);
+                this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP, libraryVersion);
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 			{
