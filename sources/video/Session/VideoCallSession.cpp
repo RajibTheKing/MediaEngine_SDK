@@ -2290,6 +2290,16 @@ int CVideoCallSession::getLiveVideoQualityLevel()
 {
     return (int)m_bLiveVideoQuality;
 }
+    
+    void CVideoCallSession::setOpponentVideoLibraryVersion(int libraryVersion)
+    {
+        m_VideoOpponentLibraryVersion = libraryVersion;
+    }
+    
+    int CVideoCallSession::getOpponentLibraryVersion()
+    {
+        return m_VideoOpponentLibraryVersion;
+    }
 
 } //namespace MediaSDK
 

@@ -190,6 +190,9 @@ public:
 	}
 
 	int GetChannelType();
+    void setOpponentVideoLibraryVersion(int libraryVersion);
+    int getOpponentLibraryVersion();
+    
     
 	bool m_bVideoCallStarted;
     CController *m_pController;
@@ -345,7 +348,7 @@ private:
 	int m_nGivenFrameWidth;
     
 
-
+    int m_VideoOpponentLibraryVersion;
 protected:
 
 	SharedPointer<CLockHandler> m_pVideoCallSessionMutex;
