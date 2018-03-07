@@ -1309,7 +1309,7 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
     return iHeight * iWidth * 3 / 2;
 }
 
-void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped)
+void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped, int libraryVersion)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 
@@ -1324,14 +1324,22 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 
     iOutputHeight = iOutputHeight - iOutputHeight%4;
     iOutputWidth = iOutputWidth - iOutputWidth%4;
+    printf("TheKing--> iOutputHeight:iOutputWidth = %d:%d\n", iOutputHeight, iOutputWidth);
+
 
 	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 1 iOutputHeight %d, iOutputWidth %d", iOutputHeight, iOutputWidth);
     
     CLogPrinter::Log("TheKing--> iHeight, iWidth, iTargetHeight, iTargetWidth, outputHeight, outputWidth = %d:%d, %d:%d, %d:%d\n", iHeight, iWidth, iTargetHeight, iTargetWidth, iOutputHeight, iOutputWidth);
     
     int iLen = DownScaleYUV420_Dynamic_Version2(smallFrame, iHeight, iWidth, m_pSmallFrame, iOutputHeight, iOutputWidth);
+
+    
+
+        
+    
     iHeight = iOutputHeight;
     iWidth = iOutputWidth;
+    
     int iNewHeight, iNewWidth, diff_width, diff_height;
     
     if(bShouldBeCropped)
@@ -1358,6 +1366,26 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
         iHeight = iNewHeight;
         iWidth = iNewWidth;
     }
+    
+    //TheKing--> Trying to reduce the Height
+    printf("TheKing--> libraryVersion = %d\n", libraryVersion);
+    if(libraryVersion >= 9 )
+    {
+        iOutputHeight = iHeight;
+        iOutputWidth = iWidth;
+        
+        iOutputHeight = iOutputHeight * 3;
+        iOutputHeight = iOutputHeight >> 2;
+        iOutputHeight = iOutputHeight - iOutputHeight%4;
+        memcpy(smallFrame, m_pSmallFrame, iHeight * iWidth * 3 / 2);
+        Crop_YUV420(smallFrame, iHeight, iWidth, 0, 0, (iHeight - iOutputHeight)/2, (iHeight - iOutputHeight)/2, m_pSmallFrame, iOutputHeight, iOutputWidth);
+        printf("TheKing--> Updated: iOutputHeight:iOutputWidth = %d:%d\n", iOutputHeight, iOutputWidth);
+        
+        iHeight = iOutputHeight;
+        iWidth = iOutputWidth;
+    }
+    //End Reducing Height
+    
     
     m_iSmallFrameHeight = iHeight;
     m_iSmallFrameWidth = iWidth;

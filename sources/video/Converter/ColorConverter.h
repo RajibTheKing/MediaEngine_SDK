@@ -90,7 +90,7 @@ namespace MediaSDK
 		void SetDeviceHeightWidth(int iVideoHeight, int iVideoWidth);
 
 		int CreateFrameBorder(unsigned char* pData, int iHeight, int iWidth, int Y, int U, int V);
-		void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped);
+		void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped, int libraryVersion);
 		int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
 		int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
 		int getUIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total);
