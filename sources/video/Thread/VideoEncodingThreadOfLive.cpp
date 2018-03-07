@@ -622,7 +622,7 @@ m_VideoBeautificationer(NULL)
 
 						if (iOpponentVideoHeight != -1 && iOpponentVideoWidth != -1)
 						{
-							m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP);
+							m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP, 0);
 						}
 					}
 
