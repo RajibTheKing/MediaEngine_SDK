@@ -1378,8 +1378,8 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
         iOutputHeight = iHeight;
         iOutputWidth = iWidth;
         
-        iOutputHeight = iOutputHeight * 5;
-        iOutputHeight = iOutputHeight / 4;
+        iOutputHeight = iOutputHeight * 4;
+        iOutputHeight = iOutputHeight / 5;
         iOutputHeight = iOutputHeight - iOutputHeight%4;
         memcpy(smallFrame, m_pSmallFrame, iHeight * iWidth * 3 / 2);
         Crop_YUV420(smallFrame, iHeight, iWidth, 0, 0, (iHeight - iOutputHeight)/2, (iHeight - iOutputHeight)/2, m_pSmallFrame, iOutputHeight, iOutputWidth);

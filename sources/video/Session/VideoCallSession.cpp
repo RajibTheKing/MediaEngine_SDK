@@ -211,6 +211,7 @@ m_nPublisherInsetNumber(0)
 	m_nSmalledFrameWidth = 204;
     
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::CVideoCallSession 90");
+    m_VideoOpponentLibraryVersion = -1;
 }
 
 CVideoCallSession::~CVideoCallSession()

@@ -558,7 +558,7 @@ namespace MediaSDK
 	}
 
 	long long nIDR_Frame_Gap = -1;
-	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, long long nFramNumber, long long nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth, int libraryVersion)
+	int CVideoDecodingThread::DecodeAndSendToClient(unsigned char *in_data, unsigned int frameSize, long long nFramNumber, long long nTimeStampDiff, int nOrientation, int nInsetHeight, int nInsetWidth, int iOpponentLibraryVersion)
 	{
 		int nOrientationForRotation = nOrientation;
 
@@ -719,7 +719,7 @@ namespace MediaSDK
                 
 				CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoDecodingThread::DecodeAndSendToClient betfore setting small frame m_decodingHeight %d, m_decodingWidth %d, iHeight %d, iWidth %d", m_decodingHeight, m_decodingWidth, iHeight, iWidth);
 
-                this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP, libraryVersion);
+                this->m_pColorConverter->SetSmallFrame(m_DecodedFrame, m_decodingHeight, m_decodingWidth, m_decodedFrameSize, iHeight, iWidth, m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP, min(LIBRARY_VERSION, iOpponentLibraryVersion));
 			}
 			else if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE)
 			{

@@ -619,11 +619,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                         {
                             int rotatedHeight, rotatedWidth;
                             m_pVideoCallSession->GetColorConverter()->RotateI420(m_ucaMirroredFrame, iHeight, iWidth, m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nDevice_orientation);
-                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP, iOpponentLibraryVersion);
+                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaRotatedFrame, rotatedHeight, rotatedWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP, min(iOpponentLibraryVersion, LIBRARY_VERSION));
                         }
                         else
                         {
-                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP, iOpponentLibraryVersion);
+                            m_pVideoCallSession->GetColorConverter()->SetSmallFrame(m_ucaMirroredFrame, iHeight, iWidth, nEncodingFrameSize, iOpponentVideoHeight, iOpponentVideoWidth, m_pVideoCallSession->GetOponentDeviceType() != DEVICE_TYPE_DESKTOP, min(iOpponentLibraryVersion, LIBRARY_VERSION));
                         }
                         
                     }
