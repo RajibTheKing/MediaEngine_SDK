@@ -13,7 +13,7 @@
 
 #include <string.h>
 #include <stdio.h>
-
+#include "LogPrinter.h"
 
 
 NeonAssemblyWrapper::NeonAssemblyWrapper()
@@ -48,6 +48,17 @@ void NeonAssemblyWrapper::convert_i420_to_nv12_assembly(unsigned char*  src, int
     memcpy(src, m_pTempArray, iHeight * iWidth * 3 / 2);
 #endif
 }
+
+void NeonAssemblyWrapper::convert_i420_to_nv21_assembly(unsigned char*  src, int iHeight, int iWidth)
+{
+#if defined(HAVE_NEON)
+    //LOGE_MAIN("TheKing--> Inside convert_i420_to_nv21_assembly\n");
+    convert_i420_to_nv21_arm_neon(src, m_pTempArray, iHeight, iWidth);
+    memcpy(src, m_pTempArray, iHeight * iWidth * 3 / 2);
+#endif
+}
+
+
 void NeonAssemblyWrapper::Crop_yuv420_assembly(unsigned char* src, int inHeight, int inWidth, int startXDiff, int endXDiff, int startYDiff, int endYDiff, unsigned char* dst, int &outHeight, int &outWidth)
 {
 
