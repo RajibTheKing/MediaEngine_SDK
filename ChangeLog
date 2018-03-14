@@ -1,18 +1,29 @@
+Release 12.27 (Date: 14-03-2018)
+---------------------------------
+- VIDEO: Video call packet gap made 5 ms
+- VIDEO: Live inset size made 4/5061
+- VIDEO: Some assembly functions added
+
+
 Release 12.26 (Date: 05-03-2018)
 ---------------------------------
 - AUDIO: Three layer trace detection [5758]
+
 
 Release 12.25.4 (Date: 20-02-2018)
 ---------------------------------
 - AUDIO: Trace based AECM in Android for Regular Call. [5698]
 
+
 Release 12.25.2 (Date: 11-02-2018)
 ---------------------------------
 - AUDIO: AECM works on iOS only if trace is found. [5581]
 
+
 Release 12.25.1 (Date: 06-02-2018)
 ---------------------------------
 - AUDIO: Destractor added. [5517]
+
 
 Release 12.25 (Date: 06-02-2018)
 ---------------------------------
