@@ -37,6 +37,11 @@
 #define MAX_TOLERABLE_TRACE_WAITING_FRAME_COUNT 11
 #define TRACE_DETECTION_DURATION_IN_SAMPLES 60
 
+#define TR_TRACE_SENT 20000
+#define TR_TRACE_NOT_SENT 30000
+#define TR_TRACE_RECVD 10000
+#define TR_TRACE_WONT_BE_RECVD -10000
+
 namespace MediaSDK
 {
 
@@ -283,12 +288,12 @@ namespace MediaSDK
 		if (m_bTraceSent && !m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataB4TraceIsReceived->m_bTraceRecieved");
-			memset(m_saAudioTraceRemovalBuffer, 20000, sizeof(short) * unLength);
+			memset(m_saAudioTraceRemovalBuffer, TR_TRACE_SENT, sizeof(short) * unLength);
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 		else if (!m_bTraceSent && !m_bTraceRecieved && !m_bTraceWillNotBeReceived)
 		{
-			memset(m_saAudioTraceRemovalBuffer, 30000, sizeof(short) * unLength);
+			memset(m_saAudioTraceRemovalBuffer, TR_TRACE_NOT_SENT, sizeof(short) * unLength);
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 		}
 		
@@ -305,13 +310,13 @@ namespace MediaSDK
 				if (m_bJustWrittenTraceDump == false)
 				{
 					m_bJustWrittenTraceDump = true;
-					memset(m_saAudioTraceRemovalBuffer, 20000, sizeof(short) * (m_iDelayFractionOrig));
-					memset(m_saAudioTraceRemovalBuffer + m_iDelayFractionOrig, 10000, sizeof(short) * (unLength - m_iDelayFractionOrig));
+					memset(m_saAudioTraceRemovalBuffer, TR_TRACE_SENT, sizeof(short) * (m_iDelayFractionOrig));
+					memset(m_saAudioTraceRemovalBuffer + m_iDelayFractionOrig, TR_TRACE_RECVD, sizeof(short) * (unLength - m_iDelayFractionOrig));
 				}
 			}
 			else
 			{
-				memset(m_saAudioTraceRemovalBuffer, -10000, sizeof(short) * unLength);
+				memset(m_saAudioTraceRemovalBuffer, TR_TRACE_WONT_BE_RECVD, sizeof(short) * unLength);
 			}
 			memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 			memset(m_saFarendData, 0, sizeof(short) * unLength);
