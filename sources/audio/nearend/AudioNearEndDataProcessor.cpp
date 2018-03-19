@@ -204,7 +204,7 @@ namespace MediaSDK
 		m_b1stRecordedDataSinceCallStarted = true;
 		m_llDelayFraction = -1;
 		m_llDelay = 0;
-		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = m_b30VerifiedTrace = false;
+		m_bTraceSent = m_bTraceRecieved = m_bTraceWillNotBeReceived = m_b30VerifiedTrace = m_bJustWrittenTraceDump = false;
 		m_nFramesRecvdSinceTraceSent = 0;
 		m_bTraceTailRemains = true;
 		m_pTrace->Reset();
@@ -302,7 +302,12 @@ namespace MediaSDK
 			MediaLog(LOG_DEBUG, "[NE][ACS] DeleteDataAfterTraceIsReceived->IsEchoCancellerEnabled->Trace Recieved %d, m_iDeleteCount = %d", m_bTraceRecieved, m_iDeleteCount);
 			if (m_bTraceRecieved == true)
 			{
-				memset(m_saAudioTraceRemovalBuffer, 10000, sizeof(short) * unLength);
+				if (m_bJustWrittenTraceDump == false)
+				{
+					m_bJustWrittenTraceDump = true;
+					memset(m_saAudioTraceRemovalBuffer, 20000, sizeof(short) * (m_iDelayFractionOrig));
+					memset(m_saAudioTraceRemovalBuffer + m_iDelayFractionOrig, 10000, sizeof(short) * (unLength - m_iDelayFractionOrig));
+				}
 			}
 			else
 			{
