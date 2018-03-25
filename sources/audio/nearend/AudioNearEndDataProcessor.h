@@ -62,6 +62,9 @@ namespace MediaSDK
 		void ResetAudioEffects();
 		void SyncRecordingTime();
 
+		int GetTraceReceivedCount();
+		void SetTraceReceived();
+
 	protected:
 
 		int PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength);
@@ -128,6 +131,8 @@ namespace MediaSDK
 		int m_nEntityType;
 		int m_nStoredDataLengthNear;		
 		int m_nStoredDataLengthFar;
+
+		int m_iTraceReceivedCount = 0;
 
 		long long m_llFriendID;
 		long long m_llLastChunkLastFrameRT;
