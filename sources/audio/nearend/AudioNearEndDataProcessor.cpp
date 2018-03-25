@@ -253,7 +253,7 @@ namespace MediaSDK
 					
 					if (m_bTraceRecieved == false && b30VerifiedTrace == true)
 					{
-						m_bTraceRecieved = b30VerifiedTrace;
+						m_b30VerifiedTrace = b30VerifiedTrace;
 						SetTraceReceived();
 					}
 					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d, m_b30VerifiedTrace = %d",
