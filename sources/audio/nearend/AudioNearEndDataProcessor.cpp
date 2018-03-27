@@ -251,7 +251,7 @@ namespace MediaSDK
 					bool b30VerifiedTrace = false;
 					long long llDelayFraction = m_pTrace->DetectTrace3Times(psaEncodingAudioData, iTraceInFrame, b30VerifiedTrace); //we call it even after trace it received, in case m_b30VerifiedTrace is still false
 					
-					if (m_bTraceRecieved == false && b30VerifiedTrace == true)
+					if (m_b30VerifiedTrace == false && b30VerifiedTrace == true)
 					{
 						m_b30VerifiedTrace = b30VerifiedTrace;
 						SetTraceReceived();
@@ -528,7 +528,7 @@ namespace MediaSDK
 
 		if (IsEchoCancellerEnabled())
 		{
-			MediaLog(LOG_CODE_TRACE, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
+			MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
 
 			if (m_bNeedToResetAudioEffects)
 			{
