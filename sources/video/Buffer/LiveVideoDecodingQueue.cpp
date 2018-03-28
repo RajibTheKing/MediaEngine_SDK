@@ -32,7 +32,7 @@ namespace MediaSDK
 		m_nQueueSize = 0;
 	}
 
-	int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int nLength)
+	int LiveVideoDecodingQueue::Queue(unsigned char *saReceivedVideoFrameData, int nLength, long long llCurrentChunkRelativeTime)
 	{
 		LiveDecodingQueueLocker lock(*m_pLiveVideoDecodingQueueMutex);
 
@@ -51,6 +51,7 @@ namespace MediaSDK
 		memcpy(m_uchBuffer[m_iPushIndex], saReceivedVideoFrameData, nLength);
 
 		m_naBufferDataLength[m_iPushIndex] = nLength;
+		m_naBufferDataTimeStamp[m_iPushIndex] = llCurrentChunkRelativeTime;
 
 		if (m_nQueueSize == m_nQueueCapacity)
 		{
@@ -71,7 +72,7 @@ namespace MediaSDK
 		return 1;
 	}
 
-	int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedVideoFrameData)
+	int LiveVideoDecodingQueue::DeQueue(unsigned char *saReceivedVideoFrameData, long long &llCurrentChunkRelativeTime)
 	{
 		LiveDecodingQueueLocker lock(*m_pLiveVideoDecodingQueueMutex);
 
@@ -82,6 +83,8 @@ namespace MediaSDK
 		else
 		{
 			int length = m_naBufferDataLength[m_iPopIndex];
+
+			llCurrentChunkRelativeTime = m_naBufferDataTimeStamp[m_iPopIndex];
 
 			memcpy(saReceivedVideoFrameData, m_uchBuffer[m_iPopIndex], length);
 

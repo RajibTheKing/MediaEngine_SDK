@@ -238,7 +238,9 @@ namespace MediaSDK
 					long long diifTime;
 					CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThreadOfLive::DecodingThreadProcedure() Got packet for decoding");
 
-					nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
+					long long llCurrentChunkRelativeTime;
+
+					nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame, llCurrentChunkRelativeTime);
 					//packetHeaderObject.setPacketHeader(m_PacketizedFrame);
 					videoHeaderObject.SetPacketHeader(m_PacketizedFrame);
 

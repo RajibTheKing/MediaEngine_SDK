@@ -804,12 +804,12 @@ long long CVideoCallSession::GetFirstFrameEncodingTime(){
 	return m_nFirstFrameEncodingTimeDiff;
 }
 
-bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames)
+bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime)
 {
 	if (m_bLiveVideoStreamRunning)
 	{
 		if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
-			m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames, m_nServiceType);
+			m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames, m_nServiceType, llCurrentChunkRelativeTime);
 
 		return true;
 	}

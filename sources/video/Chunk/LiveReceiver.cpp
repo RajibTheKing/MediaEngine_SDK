@@ -198,7 +198,7 @@ namespace MediaSDK
 		return flag;
 	}
 
-	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, int serviceType)
+	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, int serviceType, long long llCurrentChunkRelativeTime)
 	{
 		CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector called");
 
@@ -233,7 +233,7 @@ namespace MediaSDK
 				videoHeader.SetPacketHeader(uchVideoData + 1 + iUsedLen);
 				int nCurrentFrameLen = videoHeader.GetPacketLength();
 
-				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
+				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength(), llCurrentChunkRelativeTime);
 			}
 		}
 		
@@ -248,9 +248,9 @@ namespace MediaSDK
 			int rightMost = vMissingFrames[numberOfMissingFrames - 1].second;
 
 			if (rightMost > iLen + 100)
-				CLogPrinter_LOG(BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector numberOfMissingFrames %d left %d right %d videoLength %d AUDIO", numberOfMissingFrames, vMissingFrames[0].first, vMissingFrames[0].second, iLen);
+				CLogPrinter_LOG(BROKEN_CHUNK_LOG, "LiveReceiver::PushVideoDataVector numberOfMissingFrames %d left %d right %d videoLength %d AUDIO", numberOfMissingFrames, vMissingFrames[0].first, vMissingFrames[0].second, iLen);
 			else
-				CLogPrinter_LOG(BROKEN_FRAME_LOG, "LiveReceiver::PushVideoDataVector numberOfMissingFrames %d left %d right %d videoLength %d", numberOfMissingFrames, vMissingFrames[0].first, vMissingFrames[0].second, iLen);
+				CLogPrinter_LOG(BROKEN_CHUNK_LOG, "LiveReceiver::PushVideoDataVector numberOfMissingFrames %d left %d right %d videoLength %d", numberOfMissingFrames, vMissingFrames[0].first, vMissingFrames[0].second, iLen);
 		}
 
 		for (int j = 0; iUsedLen < iLen; j++)
@@ -311,7 +311,7 @@ namespace MediaSDK
 				else
 					CLogPrinter_LOG(GOT_FRAME_TYPE_LOG, "LiveReceiver::PushVideoDataVector got correct P frame");
 
-				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength());
+				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength(), llCurrentChunkRelativeTime);
 			}
 			else
 			{
