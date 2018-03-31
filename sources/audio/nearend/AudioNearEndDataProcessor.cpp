@@ -337,7 +337,7 @@ namespace MediaSDK
 			return false;
 		}
 #elif defined (DESKTOP_C_SHARP)
-		return false;
+		return true;
 #endif
 #else
 		return false;
@@ -346,7 +346,7 @@ namespace MediaSDK
 
 	bool AudioNearEndDataProcessor::IsKichCutterEnabled()
 	{		
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (DESKTOP_C_SHARP)
 		return false;
 #else
 		if (IsEchoCancellerEnabled() &&
@@ -497,7 +497,11 @@ namespace MediaSDK
 		}
 
 
+#ifndef DESKTOP_C_SHARP
 		bool bIsGainWorking = (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER && m_pAudioCallSession->GetRecorderGain().get());
+#else
+		bool bIsGainWorking = m_pAudioCallSession->GetRecorderGain().get();
+#endif
 		
 		bool bIsEchoCanceller = IsEchoCancellerEnabled();
 		bool bIsKitchCutter = IsKichCutterEnabled();
@@ -585,9 +589,10 @@ namespace MediaSDK
 					bool bTaceBasedEcho = true;
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 					bTaceBasedEcho = m_b30VerifiedTrace;					
-#elif defined (__ANDROID__)
+#elif defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
 					bTaceBasedEcho = (m_b30VerifiedTrace && m_nServiceType == SERVICE_TYPE_CALL) || m_nServiceType == SERVICE_TYPE_LIVE_STREAM;
 #endif
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] bTaceBasedEcho = %d\n", bTaceBasedEcho);
 
 					if (IsKichCutterEnabled())
 					{
@@ -619,10 +624,11 @@ namespace MediaSDK
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 
 					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] Successful FarNear Interleave.");
 				}
 				else
 				{
-					MediaLog(LOG_WARNING, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
 				}
 
 #ifdef DUMP_FILE
