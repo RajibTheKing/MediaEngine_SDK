@@ -589,9 +589,10 @@ namespace MediaSDK
 					bool bTaceBasedEcho = true;
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 					bTaceBasedEcho = m_b30VerifiedTrace;					
-#elif defined (__ANDROID__)
+#elif defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
 					bTaceBasedEcho = (m_b30VerifiedTrace && m_nServiceType == SERVICE_TYPE_CALL) || m_nServiceType == SERVICE_TYPE_LIVE_STREAM;
 #endif
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] bTaceBasedEcho = %d\n", bTaceBasedEcho);
 
 					if (IsKichCutterEnabled())
 					{
