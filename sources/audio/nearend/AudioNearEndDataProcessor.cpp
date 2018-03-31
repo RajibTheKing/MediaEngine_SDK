@@ -327,7 +327,7 @@ namespace MediaSDK
 	bool AudioNearEndDataProcessor::IsTraceSendingEnabled()
 	{
 #ifdef USE_AECM
-#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(DESKTOP_C_SHARP)
+#if defined (__ANDROID__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 		if (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER)
 		{
 			return true;
@@ -337,7 +337,7 @@ namespace MediaSDK
 			return false;
 		}
 #elif defined (DESKTOP_C_SHARP)
-		return false;
+		return true;
 #endif
 #else
 		return false;
