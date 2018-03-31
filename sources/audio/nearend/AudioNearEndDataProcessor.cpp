@@ -497,7 +497,11 @@ namespace MediaSDK
 		}
 
 
+#ifndef DESKTOP_C_SHARP
 		bool bIsGainWorking = (m_pAudioCallSession->GetSpeakerType() == AUDIO_PLAYER_LOUDSPEAKER && m_pAudioCallSession->GetRecorderGain().get());
+#else
+		bool bIsGainWorking = m_pAudioCallSession->GetRecorderGain().get();
+#endif
 		
 		bool bIsEchoCanceller = IsEchoCancellerEnabled();
 		bool bIsKitchCutter = IsKichCutterEnabled();
