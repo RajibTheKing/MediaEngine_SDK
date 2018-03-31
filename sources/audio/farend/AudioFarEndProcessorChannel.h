@@ -17,7 +17,9 @@ namespace MediaSDK
 		~FarEndProcessorChannel() { }
 
 		void ProcessFarEndData();
-
+	
+	private: 
+		int m_iLastFarEndFrameNumber;
 	};
 
 } //namespace MediaSDK

@@ -10,7 +10,8 @@ namespace MediaSDK
 {
 
 	FarEndProcessorChannel::FarEndProcessorChannel(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
-		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
+		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning),
+		m_iLastFarEndFrameNumber(-1)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorChannel::FarEndProcessorChannel()");
 	}
@@ -55,6 +56,19 @@ namespace MediaSDK
 				MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding -> Removed based on packet type & corresponding role");
 				return;
 			}
+
+			if (m_iLastFarEndFrameNumber >= iPacketNumber)
+			{
+				MediaLog(LOG_WARNING, "[FE][AFEDPC] DISCURDING OLD FRAME. FN = %d", iPacketNumber);
+				return;
+			}
+
+			if (m_iLastFarEndFrameNumber + 1 < iPacketNumber){
+				int nMissingFrames = iPacketNumber - m_iLastFarEndFrameNumber - 1;
+				MediaLog(LOG_WARNING, "[FE][AFEPC][MISS] MISSING FRAMES ---------------------------------> %d  [%d-%d]\n", nMissingFrames, m_iLastFarEndFrameNumber + 1, iPacketNumber - 1);
+			}
+
+			m_iLastFarEndFrameNumber = iPacketNumber;
 
 			bool bIsCompleteFrame = true;
 			llNow = Tools::CurrentTimestamp();
