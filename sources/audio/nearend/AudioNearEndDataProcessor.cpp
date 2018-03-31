@@ -619,10 +619,11 @@ namespace MediaSDK
 					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
 
 					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] Successful FarNear Interleave.");
 				}
 				else
 				{
-					MediaLog(LOG_WARNING, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
 				}
 
 #ifdef DUMP_FILE
