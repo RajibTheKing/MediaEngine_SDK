@@ -346,7 +346,7 @@ namespace MediaSDK
 
 	bool AudioNearEndDataProcessor::IsKichCutterEnabled()
 	{		
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined (DESKTOP_C_SHARP)
 		return false;
 #else
 		if (IsEchoCancellerEnabled() &&
