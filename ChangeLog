@@ -1,3 +1,7 @@
+Release 12.28.2 (Date: 01-04-2018)
+---------------------------------
+- AUDIO: Traced Based Echo in Live-Call 
+
 Release 12.28.1 (Date: 31-03-2018)
 ---------------------------------
 - AUDIO: Fixed no sound issue in desktop call. [5926]
