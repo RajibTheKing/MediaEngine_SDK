@@ -42,6 +42,8 @@
 #define TR_TRACE_RECVD 10000
 #define TR_TRACE_WONT_BE_RECVD -10000
 
+#define TRACE_RECEIVED_COUNT_THRESHOLD 2
+
 namespace MediaSDK
 {
 
@@ -218,6 +220,7 @@ namespace MediaSDK
 		m_pAudioCallSession->m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
 		m_pAudioCallSession->m_pFarEndProcessor->m_llNextPlayingTime = -1;
 		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
+		m_iTraceReceivedCount = GetTraceReceivedCount();
 
 
 		m_pAudioCallSession->SetRecordingStarted(true);
@@ -245,7 +248,14 @@ namespace MediaSDK
 			{
 				if (IsTraceSendingEnabled())
 				{
-					long long llDelayFraction = m_pTrace->DetectTrace3Times(psaEncodingAudioData, iTraceInFrame, m_b30VerifiedTrace); //we call it even after trace it received, in case m_b30VerifiedTrace is still false
+					bool b30VerifiedTrace = false;
+					long long llDelayFraction = m_pTrace->DetectTrace3Times(psaEncodingAudioData, iTraceInFrame, b30VerifiedTrace); //we call it even after trace it received, in case m_b30VerifiedTrace is still false
+					
+					if (m_b30VerifiedTrace == false && b30VerifiedTrace == true)
+					{
+						m_b30VerifiedTrace = b30VerifiedTrace;
+						SetTraceReceived();
+					}
 					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d, m_b30VerifiedTrace = %d",
 						m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType, m_b30VerifiedTrace);
 					if (llDelayFraction != -1 && m_bTraceRecieved == false) //just got the trace
@@ -476,6 +486,16 @@ namespace MediaSDK
 		}
 	}
 
+	int AudioNearEndDataProcessor::GetTraceReceivedCount()
+	{
+		return 0;
+	}
+
+	void AudioNearEndDataProcessor::SetTraceReceived()
+	{
+
+	}
+
 	int AudioNearEndDataProcessor::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
 	{
 		m_pAudioSessionStatistics->UpdateEchoDelay(m_llDelay, m_llDelayFraction);
@@ -512,7 +532,7 @@ namespace MediaSDK
 
 		if (IsEchoCancellerEnabled())
 		{
-			MediaLog(LOG_CODE_TRACE, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
+			MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
 
 			if (m_bNeedToResetAudioEffects)
 			{
@@ -590,7 +610,7 @@ namespace MediaSDK
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 					bTaceBasedEcho = m_b30VerifiedTrace;					
 #elif defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
-					bTaceBasedEcho = (m_b30VerifiedTrace && m_nServiceType == SERVICE_TYPE_CALL) || m_nServiceType == SERVICE_TYPE_LIVE_STREAM;
+					bTaceBasedEcho = m_b30VerifiedTrace || m_iTraceReceivedCount >= TRACE_RECEIVED_COUNT_THRESHOLD;
 #endif
 					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] bTaceBasedEcho = %d\n", bTaceBasedEcho);
 
