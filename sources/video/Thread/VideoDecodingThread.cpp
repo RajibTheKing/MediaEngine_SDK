@@ -255,7 +255,9 @@ namespace MediaSDK
 					long long diifTime;
 					CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoDecodingThread::DecodingThreadProcedure() Got packet for decoding");
 
-					nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame);
+					long long llCurrentChunkRelativeTime;
+
+					nFrameLength = m_pLiveVideoDecodingQueue->DeQueue(m_PacketizedFrame, llCurrentChunkRelativeTime);
 					//packetHeaderObject.setPacketHeader(m_PacketizedFrame);
 					videoHeaderObject.SetPacketHeader(m_PacketizedFrame);
 
@@ -271,7 +273,15 @@ namespace MediaSDK
 						currentTime = m_Tools.CurrentTimestamp();
 						llFirstFrameTimeStamp = currentTime;
 						//llExpectedTimeOffset = llFirstFrameTimeStamp - packetHeaderObject.getTimeStamp();
-						llExpectedTimeOffset = llFirstFrameTimeStamp - videoHeaderObject.GetTimeStamp();
+
+						if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
+						{
+							llExpectedTimeOffset = llFirstFrameTimeStamp - llCurrentChunkRelativeTime;
+						}
+						else
+						{
+							llExpectedTimeOffset = llFirstFrameTimeStamp - videoHeaderObject.GetTimeStamp();
+						}
 
 						m_pVideoCallSession->SetOponentDeviceType(videoHeaderObject.GetSenderDeviceType());
 
