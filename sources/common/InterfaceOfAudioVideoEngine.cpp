@@ -13,7 +13,7 @@ namespace MediaSDK
 	CController* m_pcController = nullptr;
 	Tools m_Tools;
 
-#ifdef LIVE_CHUNK_DUMPLINGS
+#ifdef CHUNK_DUMPER
 	FILE *fp_live_data = nullptr, *fp_live_missing_vec = nullptr;
 	unsigned char temp_buffer[12];
 #endif
@@ -163,7 +163,7 @@ namespace MediaSDK
 	{
         CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth, iAudioCodecType) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth, iAudioCodecType);
 
-#ifdef LIVE_CHUNK_DUMPLINGS
+#ifdef CHUNK_DUMPER
 #if defined(__ANDROID__)
 		std::string dpath = "/sdcard/";
 #elif defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -279,7 +279,7 @@ namespace MediaSDK
 		HITLER("#@#@26022017# RECEIVING DATA FOR BOKKOR %u", unLength);
 		int iReturnedValue = 0;
 
-#ifdef LIVE_CHUNK_DUMPLINGS
+#ifdef CHUNK_DUMPER
 		long long DumpStartTime = m_Tools.CurrentTimestamp();
 		if(fp_live_missing_vec){
 			Tools::ConvertToCharArray(temp_buffer, vMissingFrames.size(), 4);
@@ -675,7 +675,7 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StopVideoCall done ID %lld", llFriendID);
 
-#ifdef LIVE_CHUNK_DUMPLINGS
+#ifdef CHUNK_DUMPER
 		if(fp_live_data) 
 		{
 			fclose(fp_live_data);

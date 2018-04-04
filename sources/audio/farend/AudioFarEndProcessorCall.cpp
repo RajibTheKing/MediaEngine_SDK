@@ -63,6 +63,11 @@ namespace MediaSDK
 				return;
 			}
 
+			if (m_iLastFarEndFrameNumber + 1 < iPacketNumber){
+				int nMissingFrames = iPacketNumber - m_iLastFarEndFrameNumber - 1;
+				MediaLog(LOG_WARNING, "[FE][AFEPC][MISS] MISSING FRAMES ---------------------------------> %d  [%d-%d]\n", nMissingFrames, m_iLastFarEndFrameNumber + 1, iPacketNumber - 1);
+			}
+
 			m_iLastFarEndFrameNumber = iPacketNumber;
 
 			if (!IsPacketTypeSupported(nCurrentAudioPacketType))

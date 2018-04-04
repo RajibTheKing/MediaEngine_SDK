@@ -36,7 +36,7 @@ namespace MediaSDK
 	#define LogScope(logSpecificCodes)
 #endif
 
-//#define	LIVE_CHUNK_DUMPLINGS
+//#define	CHUNK_DUMPER
 
 #define MIN_CHUNK_DURATION_SAFE 50
 
