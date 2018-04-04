@@ -1,3 +1,7 @@
+Release 12.29 (Date: 04-04-2018)
+---------------------------------
+- AUDIO: Relative time has been ignored for Viewer [5944]
+
 Release 12.28.2 (Date: 01-04-2018)
 ---------------------------------
 - AUDIO: Traced Based Echo in Live-Call 
