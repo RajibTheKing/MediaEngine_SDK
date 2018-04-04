@@ -415,10 +415,14 @@ namespace MediaSDK
 			{
 				return false;
 			}
-			if ((m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER) || (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE))
+
+			if ((m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER) 
+				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE
+				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
 			{
 				return true;
 			}
+
 			if (-1 == m_llDecodingTimeStampOffset)
 			{
 				Tools::SOSleep(LIVE_FIRST_FRAME_SLEEP_TIME_AUDIO);
