@@ -9,6 +9,7 @@
 #include "AudioDecoderBuffer.h"
 #include "AudioPacketHeader.h"
 #include "AudioTypes.h"
+#include "InterfaceOfAudioVideoEngine.h"
 
 
 namespace MediaSDK
