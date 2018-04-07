@@ -611,9 +611,9 @@ namespace MediaSDK
 		m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, eventType);
 	}
 
-	void CAudioCallSession::FireAudioAlarm(int eventType)
+	void CAudioCallSession::FireAudioAlarm(int eventType, size_t dataLength, int* dataBuffer)
 	{
-		m_pEventNotifier->fireAudioAlarm(eventType, 0, 0);
+		m_pEventNotifier->fireAudioAlarm(eventType, dataLength, dataBuffer);
 	}
 
 } //namespace MediaSDK

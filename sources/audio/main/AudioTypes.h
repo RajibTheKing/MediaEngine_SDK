@@ -41,7 +41,7 @@ namespace MediaSDK
 	class AudioAlarmListener
 	{
 	public: 
-		virtual void FireAudioAlarm(int eventType) = 0;
+		virtual void FireAudioAlarm(int eventType, size_t dataLength, int* dataBuffer) = 0;
 	};
 
 	class PackatizedDataListener

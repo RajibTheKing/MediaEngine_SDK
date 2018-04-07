@@ -124,7 +124,7 @@ namespace MediaSDK
 		void FirePacketEvent(int eventType, size_t dataLength, unsigned char* dataBuffer);
 		void FireDataEvent(int eventType, size_t dataLength, short* dataBuffer);
 		void FireNetworkChange(int eventType);
-		void FireAudioAlarm(int eventType);
+		void FireAudioAlarm(int eventType, size_t dataLength, int* dataBuffer);
 
 		void SetResources(AudioResources &audioResources);
 		void InitNearEndDataProcessing();
