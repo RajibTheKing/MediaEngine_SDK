@@ -254,7 +254,7 @@ namespace MediaSDK
 					if (m_b30VerifiedTrace == false && b30VerifiedTrace == true)
 					{
 						m_b30VerifiedTrace = b30VerifiedTrace;
-						SetTraceReceived(0,0,0);
+						NotifyTraceInfo(0,0,0);
 					}
 					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d, m_b30VerifiedTrace = %d",
 						m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType, m_b30VerifiedTrace);
@@ -491,9 +491,9 @@ namespace MediaSDK
 		return 0;
 	}
 
-	void AudioNearEndDataProcessor::SetTraceReceived(int nTR, int nNTR, int sDelay)
+	void AudioNearEndDataProcessor::NotifyTraceInfo(int nTR, int nNTR, int sDelay)
 	{
-		m_pAudioCallSession->SetTraceReceived(nTR, nNTR, sDelay);
+		m_pAudioCallSession->NotifyTraceInfo(nTR, nNTR, sDelay);
 	}
 
 	int AudioNearEndDataProcessor::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)

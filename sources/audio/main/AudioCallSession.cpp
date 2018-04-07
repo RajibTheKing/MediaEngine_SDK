@@ -267,7 +267,7 @@ namespace MediaSDK
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
 	}
 
-	void CAudioCallSession::SetTraceReceived(int nTR, int nNTR, int sDelay)
+	void CAudioCallSession::NotifyTraceInfo(int nTR, int nNTR, int sDelay)
 	{
 		int nTraceInfoArray[3];
 		nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD] = nTR;
