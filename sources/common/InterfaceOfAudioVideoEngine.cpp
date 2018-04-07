@@ -940,7 +940,7 @@ namespace MediaSDK
 		}
 	}
 
-	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, int*, int))
 	{
 		if (nullptr != m_pcController)
 		{

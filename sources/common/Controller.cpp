@@ -1491,7 +1491,7 @@ void CController::SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunct
 	m_EventNotifier.SetNotifyClientWithAudioPacketDataCallback(callBackFunctionPointer);
 }
 
-void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int))
+void CController::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, int*, int))
 {
 	m_EventNotifier.SetNotifyClientWithAudioAlarmCallback(callBackFunctionPointer);
 }

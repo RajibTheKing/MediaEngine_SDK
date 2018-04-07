@@ -110,7 +110,7 @@ namespace MediaSDK
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 		void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
 		void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
-		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
+		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, int*, int));
 
 
 		void SetSendFunctionPointer(SendFunctionPointerType callBackFunctionPointer);
