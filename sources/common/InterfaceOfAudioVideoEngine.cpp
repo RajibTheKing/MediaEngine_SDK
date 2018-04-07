@@ -93,7 +93,7 @@ namespace MediaSDK
 		return Ret;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType)
+	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, int nTraceInfoLength, int * npTraceInfo)
 	{
 		m_llTimeOffset = -1;
 
@@ -118,7 +118,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, int iSpeakerType)
+	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, int iSpeakerType, int nTraceInfoLength, int * npTraceInfo)
 	{
 		if (nullptr == m_pcController)
 		{
@@ -956,7 +956,7 @@ namespace MediaSDK
 		}
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType)
+	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo)
 	{
 		if (nullptr == m_pcController)
 		{

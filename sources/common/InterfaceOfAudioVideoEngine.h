@@ -83,10 +83,10 @@ namespace MediaSDK
 		bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
 		bool InitializeLibrary(const IPVLongType& llUserID);
 		bool SetUserName(const IPVLongType llUserName);
-		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType);
+		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, int nTraceInfoLength, int * npTraceInfo);
 
 		bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
-		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType);
+		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType, int nTraceInfoLength, int * npTraceInfo);
 
 		void NotifyCameraMode(const LongLong lFriendID, bool bCameraEnable);
 		void NotifyMicrophoneMode(const LongLong lFriendID, bool bMicrophoneEnable);
@@ -94,7 +94,7 @@ namespace MediaSDK
 		bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 		int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 
-		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType);
+		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo);
 		bool EndCallInLive(const IPVLongType llFriendID);
 
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
