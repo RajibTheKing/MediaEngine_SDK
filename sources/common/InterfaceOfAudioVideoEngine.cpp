@@ -103,6 +103,10 @@ namespace MediaSDK
 		}
 
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType, true);
+		if (bReturnedValue)
+		{
+			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, nTraceInfoLength, npTraceInfo);
+		}
 
 		return bReturnedValue;
 	}
@@ -126,6 +130,10 @@ namespace MediaSDK
 		}
 
 		bool bReturnedValue = m_pcController->SetSpeakerType(lFriendID, iSpeakerType);
+		if (bReturnedValue)
+		{
+			bReturnedValue = m_pcController->SetTraceInfo(lFriendID, nTraceInfoLength, npTraceInfo);
+		}
 		return bReturnedValue;
 	}
 
@@ -968,6 +976,10 @@ namespace MediaSDK
 		int nCalleeID = 1;
 
 		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
+		if (bReturnedValue)
+		{
+			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, nTraceInfoLength, npTraceInfo);
+		}
 
 		m_pcController->SetCallInLiveEnabled(true);
 
