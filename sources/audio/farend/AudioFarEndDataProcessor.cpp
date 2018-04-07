@@ -32,7 +32,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-
+#define AUDIO_FIXED_BITRATE
 
 namespace MediaSDK
 {
