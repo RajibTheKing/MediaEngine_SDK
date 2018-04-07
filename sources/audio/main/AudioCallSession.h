@@ -152,7 +152,7 @@ namespace MediaSDK
 		int m_iSpeakerType;
 		CAudioCallInfo* m_pAudioCallInfo = nullptr;
 		
-		
+		const bool& m_bIsVideoCallRunning;
 
 	#ifdef DUMP_FILE
 		FILE *FileInput;
@@ -173,7 +173,7 @@ namespace MediaSDK
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;
-		const bool& m_bIsVideoCallRunning;
+		
 
 		int m_iRole;
 		int m_iVolume;

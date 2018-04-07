@@ -599,7 +599,7 @@ namespace MediaSDK
 						m_pNetworkChangeListener->FireNetworkChange(CEventNotifier::NETWORK_STRENTH_BAD);
 					}
 		
-					if (m_pAudioAlarmListener != nullptr)
+					if (m_pAudioAlarmListener != nullptr && m_pAudioCallSession->m_bIsVideoCallRunning)
 					{
 						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
 					}

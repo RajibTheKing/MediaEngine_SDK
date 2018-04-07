@@ -114,13 +114,7 @@ namespace MediaSDK
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm " + Tools::IntegertoStringConvert(eventType));
 
-		if (((eventType == AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO || eventType == AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO) && m_pController->m_bLiveCallRunning)
-			||
-			(eventType != AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO && eventType != AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO)
-			)
-		{
-			notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
-		}
+		notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm 2");
 	}

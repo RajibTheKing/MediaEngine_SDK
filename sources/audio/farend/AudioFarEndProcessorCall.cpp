@@ -173,7 +173,7 @@ namespace MediaSDK
 			}
 			else if (AUDIO_NOVIDEO_PACKET_TYPE == nCurrentAudioPacketType)
 			{
-				if (false == m_bIsLiveStreamingRunning){
+				if (false == m_bIsLiveStreamingRunning && m_pAudioCallSession->m_bIsVideoCallRunning){
 					if (m_pAudioAlarmListener != nullptr)
 					{
 						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO, 0, 0);
