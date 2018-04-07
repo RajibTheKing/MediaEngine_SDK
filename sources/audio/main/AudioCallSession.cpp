@@ -53,6 +53,10 @@
 #include <dispatch/dispatch.h>
 #endif
 
+#define TI_NUMBER_OF_TRACE_RECVD 0
+#define TI_NUMBER_OF_TRACE_FAILED 1
+#define TI_SUM_OF_DELAY 2
+
 
 namespace MediaSDK
 {
@@ -261,6 +265,16 @@ namespace MediaSDK
 
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
+	}
+
+	void CAudioCallSession::SetTraceReceived(int nTR, int nNTR, int sDelay)
+	{
+		int nTraceInfoArray[3];
+		nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD] = nTR;
+		nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED] = nNTR;
+		nTraceInfoArray[TI_SUM_OF_DELAY] = sDelay;
+
+		//FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 	}
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)

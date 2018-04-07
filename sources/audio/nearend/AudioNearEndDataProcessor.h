@@ -63,7 +63,7 @@ namespace MediaSDK
 		void SyncRecordingTime();
 
 		int GetTraceReceivedCount();
-		void SetTraceReceived();
+		void SetTraceReceived(int nTR, int nNTR, int sDelay);
 
 	protected:
 

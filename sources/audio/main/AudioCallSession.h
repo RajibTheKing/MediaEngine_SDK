@@ -79,6 +79,8 @@ namespace MediaSDK
 		void SetMicrophoneMode(bool bMicrophoneEnable);
 		void SetEchoCanceller(bool bOn);
 
+		void SetTraceReceived(int nTR, int nNTR, int sDelay);
+
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
 		Server considers strength as STRONG(3) when packet loss is 0%-3%, MEDIUM(2) when loss is 4%-12% and WEAK(1) when loss is 13%-25%
