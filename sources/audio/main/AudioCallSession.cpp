@@ -274,7 +274,7 @@ namespace MediaSDK
 		nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED] = nNTR;
 		nTraceInfoArray[TI_SUM_OF_DELAY] = sDelay;
 
-		//FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+		FireAudioAlarm(AUDIO_EVENT_TRACE_NOTIFICATION, 3, nTraceInfoArray);
 	}
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)
