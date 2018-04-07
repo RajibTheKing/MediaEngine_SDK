@@ -277,6 +277,11 @@ namespace MediaSDK
 		FireAudioAlarm(AUDIO_EVENT_TRACE_NOTIFICATION, 3, nTraceInfoArray);
 	}
 
+	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * npTraceInfo)
+	{
+
+	}
+
 	void CAudioCallSession::SetResources(AudioResources &audioResources)
 	{
 		MR_DEBUG("#resource# CAudioCallSession::SetResources()");

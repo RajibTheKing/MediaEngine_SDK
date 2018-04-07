@@ -80,6 +80,7 @@ namespace MediaSDK
 		void SetEchoCanceller(bool bOn);
 
 		void NotifyTraceInfo(int nTR, int nNTR, int sDelay);
+		void SetTraceInfo(int nTraceInfoLength, int * npTraceInfo);
 
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.

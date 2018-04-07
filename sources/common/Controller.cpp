@@ -241,6 +241,25 @@ bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
 		return false;
 	}
 }
+
+bool CController::SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo)
+{
+	SetLoudSpeakerLocker lock1(*m_pAudioLockMutex);
+
+	CAudioCallSession* pAudioSession;
+
+	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
+	if (bExist)
+	{
+		pAudioSession->SetTraceInfo(nTraceInfoLength, npTraceInfo);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void CController::SetCameraMode(const long long& lFriendID, bool bCameraEnable)
 {
 	CameraStatusLocker lock1(*m_pAudioLockMutex);
