@@ -145,8 +145,7 @@ namespace MediaSDK
 		short m_saAudioTraceRemovalBuffer[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 
 		std::vector<int> m_vRawFrameLengthNear;
-		std::vector<int> m_vRawFrameLengthFar;
-		std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
+		std::vector<int> m_vRawFrameLengthFar;		
 
 		//SharedPointer<NoiseReducerInterface> m_pNoise;
 		//SharedPointer<std::thread> m_pAudioEncodingThread;

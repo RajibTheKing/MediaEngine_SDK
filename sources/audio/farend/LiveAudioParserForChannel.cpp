@@ -93,6 +93,7 @@ namespace MediaSDK
 		MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] #(AudioFrames)=%d, #(MissingBlocks)=%u", nNumberOfAudioFrames, nNumberOfMissingBlocks);
 		while (iFrameNumber < nNumberOfAudioFrames)
 		{
+			
 			bCompleteFrame = true;
 			bCompleteFrameHeader = true;
 
@@ -136,6 +137,9 @@ namespace MediaSDK
 			}
 
 			++iFrameNumber;
+
+			int nRelativeTimeOffset = iFrameNumber * AAC_FRAME_TIME_DURATION; 
+
 			MediaLog(LOG_CODE_TRACE, "[FE][LAPCh][PLA] FrameNo = %d", iFrameNumber);
 
 			if (!bCompleteFrame)
@@ -146,11 +150,11 @@ namespace MediaSDK
 			}
 
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
-			nProcessedFramsCounter++;
-			std::vector<std::pair<int, int>>vMissingFrame;
+			nProcessedFramsCounter++;			
+
 			if (m_vAudioFarEndBufferVector[iId])
 			{
-				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1, vMissingFrame);
+				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange + 1, nCurrentFrameLenWithMediaHeader - 1, nRelativeTimeOffset);
 			}
 		}
 

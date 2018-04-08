@@ -64,7 +64,7 @@ namespace MediaSDK
 		MediaLog(LOG_CODE_TRACE, "[AFEPV]  nQueueSize = %d nRequiredCallPerticipantNumber = %d", nQueueSize, nRequiredCallPerticipantNumber);
 
 		int nCalleeId = 1;
-		m_vFrameMissingBlocks.clear();
+		
 		int iTotalFrameCounter = 0;
 		int naFrameNumbers[2];
 		naFrameNumbers[0] = naFrameNumbers[1] = -1;
@@ -80,7 +80,7 @@ namespace MediaSDK
 					continue;
 				}								
 
-				m_nDecodingFrameSize = m_vAudioFarEndBufferVector[iterator]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
+				m_nDecodingFrameSize = m_vAudioFarEndBufferVector[iterator]->DeQueue(m_ucaDecodingFrame, m_nRelativeTimeOffset);
 
 				if (m_nDecodingFrameSize < 1)
 				{
@@ -114,7 +114,7 @@ namespace MediaSDK
 				MediaLog(LOG_CODE_TRACE, "[AFEPV] bIsCompleteFrame = %d\n", bIsCompleteFrame);
 				
 				/*Skip delay packet only for publisher.*/
-				if (0 == iterator && !IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+				if (0 == iterator && !IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType, m_nRelativeTimeOffset))
 				{
 					MediaLog(LOG_WARNING, "[AFEPV]  [Iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
 					continue;
@@ -192,146 +192,7 @@ namespace MediaSDK
 
 	void FarEndProcessorViewer::ProcessFarEndDataPCM()
 	{
-		//	MR_DEBUG("#farEnd# FarEndProcessorViewer::ProcessFarEndData()");
-
-		int nCurrentAudioPacketType = 0, iPacketNumber = 0, nCurrentPacketHeaderLength = 0;
-		long long llCapturedTime, nDecodingTime = 0, llRelativeTime = 0, llNow = 0;
-		double dbTotalTime = 0; //MeaningLess
-
-		int iDataSentInCurrentSec = 0; //NeedToFix.
-		long long llTimeStamp = 0;
-		int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
-		int nCalleeId = 1;
-		m_vFrameMissingBlocks.clear();
-		if (nQueueSize > 0)
-		{
-			m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
-			DOG("#18#FE#Viewer... ");
-
-			if (m_nDecodingFrameSize < 1)
-			{
-				//LOGE("##DE# CAudioCallSession::DecodingThreadProcedure queue size 0.");
-				return;
-			}
-
-			/// ----------------------------------------- TEST CODE FOR VIWER IN CALL ----------------------------------------------///
-
-			llCapturedTime = Tools::CurrentTimestamp();
-
-			int nPacketDataLength, nVersion;
-			int nEchoStateFlags;
-
-			ParseLiveHeader(nCurrentAudioPacketType, nCurrentPacketHeaderLength, nVersion, iPacketNumber, nPacketDataLength,
-				llRelativeTime, nEchoStateFlags, m_ucaDecodingFrame);
-			
-			//m_nDecodingFrameSize = nPacketDataLength;
-
-			MediaLog(LOG_CODE_TRACE, "[AFEPV] PT:%d PN:%d DataLen:%d RT:%lld ESF:%d", nCurrentAudioPacketType, iPacketNumber, nPacketDataLength, llRelativeTime, nEchoStateFlags);
-
-			if (!IsPacketProcessableBasedOnRole(nCurrentAudioPacketType))
-			{
-				MediaLog(LOG_WARNING, "[AFEPV] Not Processable based on Role!!!!!. PT = %d", nCurrentAudioPacketType);
-				return;
-			}
-
-			bool bIsCompleteFrame = true;	//(iBlockNumber, nNumberOfBlocks, iOffsetOfBlock, nFrameLength);
-			llNow = Tools::CurrentTimestamp();						
-							
-			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
-			{
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] REMOVED ON RELATIVE TIME");
-				return;
-			}
-
-			MediaLog(LOG_CODE_TRACE, "[AFEPV] WORKING ON COMPLETE FRAME . ");
-			m_nDecodingFrameSize -= nCurrentPacketHeaderLength;
-			MediaLog(LOG_CODE_TRACE, "[AFEPV] -> HEHE %d %d", m_nDecodingFrameSize, nCurrentPacketHeaderLength);
-
-			//DecodeAndPostProcessIfNeeded(iPacketNumber, nCurrentPacketHeaderLength, nCurrentAudioPacketType);
-
-			if (AUDIO_LIVE_PUBLISHER_PACKET_TYPE_MUXED == nCurrentAudioPacketType)
-			{
-				if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
-				{
-					nCalleeId = 1;	//Should be fixed.
-					long long nGetOwnFrameNumber;
-					nGetOwnFrameNumber = m_pAudioMixer->GetAudioFrameByParsingMixHeader(m_ucaDecodingFrame + nCurrentPacketHeaderLength, nCalleeId);
-					long long llLastFrameNumber;
-					int nSize;
-					bool bFound = false;
-
-					//MediaLog(LOG_CODE_TRACE, "[AFEPV] m_ViewerInCallSentDataQueue # Queue Size %d", m_pAudioCallSession->m_ViewerInCallSentDataQueue.GetQueueSize());
-
-					while (0 < m_pAudioCallSession->m_ViewerInCallSentDataQueue->GetQueueSize())
-					{
-						nSize = m_pAudioCallSession->m_ViewerInCallSentDataQueue->DeQueueForCallee(m_saCalleeSentData, llLastFrameNumber, nGetOwnFrameNumber);
-						MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND OWNFrame %lld, queued frame no, %lld", nGetOwnFrameNumber, llLastFrameNumber);
-
-						if (nSize == -1) {
-							MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND EITHER CURRENT FRAME IS GREATER THAN FRONT OF QUEUE OR NO DATA IN QUEUE");
-							break;
-						}
-
-						if (nGetOwnFrameNumber == llLastFrameNumber)
-						{
-							bFound = true;
-		 					break;
-						}
-					}
-					if (bFound)
-					{
-						MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA");
-						m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
-					}
-					else
-					{
-						//Do Some thing;
-						MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA with -1");
-						nCalleeId = -1;
-						m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
-					}
-				}
-				else //For Only Viewers
-				{
-					MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA ONLY VIEWR");
-					nCalleeId = -1;
-					m_nDecodedFrameSize = m_pAudioMixer->removeAudioData((unsigned char *)m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, (unsigned char *)m_saCalleeSentData, nCalleeId, m_vFrameMissingBlocks) / sizeof(short);
-				}
-			}
-			else
-			{
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] FOUND REMOVED AUDIO DATA ONLY VIEWR wrong media");
-				memcpy(m_saDecodedFrame, m_ucaDecodingFrame + nCurrentPacketHeaderLength, m_nDecodingFrameSize);
-				m_nDecodedFrameSize = m_nDecodingFrameSize / sizeof(short);
-			}
-
-			MediaLog(LOG_CODE_TRACE, "[AFEPV] Viewer  m_nDecodingFrameSize = %d", m_nDecodingFrameSize);
-			DumpDecodedFrame(m_saDecodedFrame, m_nDecodedFrameSize);
-			PrintDecodingTimeStats(llNow, llTimeStamp, iDataSentInCurrentSec, nDecodingTime, dbTotalTime, llCapturedTime);
-			MediaLog(LOG_CODE_TRACE, "[AFEPV] AFTER POST PROCESS ... deoding frame size %d", m_nDecodedFrameSize);
-			if (m_nDecodedFrameSize < 1)
-			{
-				MediaLog(LOG_CODE_TRACE, "[AFEPV] REMOVED FOR LOW SIZE.");
-				return;
-			}
-
-			MediaLog(LOG_INFO, "[AFEPV] Viewer# SendToPlayer, FN = %d", iPacketNumber); 
-			LOGFARQUAD("Farquad calling SendToPlayer viewer");
-			SendToPlayer(m_saDecodedFrame, m_nDecodedFrameSize, m_llLastTime, iPacketNumber, nEchoStateFlags);
-			Tools::SOSleep(0);			
-		}
-		else 
-		{
-			Tools::SOSleep(10);
-		}
-#ifdef USE_AECM
-		if (m_nEntityType == ENTITY_TYPE_VIEWER_CALLEE)
-		{
-			LOGFARQUAD("Farquad calling ProcessPlayingData viewer");
-			ProcessPlayingData();
-		}
-#endif
-		
+		//Romoved PCM Codes.
 	}
 
 } //namespace MediaSDK

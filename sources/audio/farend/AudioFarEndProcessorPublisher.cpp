@@ -28,12 +28,11 @@ namespace MediaSDK
 		int iDataSentInCurrentSec = 0; //NeedToFix.
 		long long llTimeStamp = 0;
 		int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
-		
-		m_vFrameMissingBlocks.clear();
+				
 
 		if (nQueueSize > 0)
 		{
-			const int nFarEndPacketSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
+			const int nFarEndPacketSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_nRelativeTimeOffset);
 
 			m_nDecodingFrameSize = nFarEndPacketSize - 1;
 			
@@ -69,7 +68,7 @@ namespace MediaSDK
 				m_pAudioCallSession->m_FarEndBufferOpus->EnQueue(m_ucaDecodingFrame, nFarEndPacketSize);
 			}
 			
-			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+			if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType, m_nRelativeTimeOffset))
 			{
 				MediaLog(LOG_WARNING, "[AFEPP] REMOVED ON RELATIVE TIME");
 				return;

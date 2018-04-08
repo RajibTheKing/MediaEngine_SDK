@@ -225,20 +225,6 @@ namespace MediaSDK
 				llNow - llLastTime, nSentFrameSize);
 
 			llLastTime = llNow;
-			if (false == m_pAudioCallSession->IsOpusEnable() && m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER)
-			{
-				MediaLog(CODE_TRACE, "[FE][AFEDP] PUb enq , packet type %d", iCurrentPacketNumber);
-				int iStartIndex = 0;
-				int iEndIndex = 1599;
-				int iCalleeId = 1;
-				int iTotalBlocks = 16;
-				int iFrameSize = 800;
-				int iMuxHeaderSize = AUDIO_MUX_HEADER_LENGHT;
-
-				MuxHeader audioMuxHeader(iCalleeId, iCurrentPacketNumber, m_vFrameMissingBlocks);
-				
-				m_pAudioCallSession->m_PublisherBufferForMuxing->EnQueue(pshSentFrame, nSentFrameSize, iCurrentPacketNumber, audioMuxHeader);
-			}
 
 			MediaLog(LOG_DEBUG, "[FE][AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 
@@ -406,7 +392,7 @@ namespace MediaSDK
 	}
 
 
-	bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType)
+	bool AudioFarEndDataProcessor::IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType, int nRelativeTimeOffset)
 	{
 #ifndef LOCAL_SERVER_LIVE_CALL
 		if (m_bIsLiveStreamingRunning)
@@ -426,7 +412,7 @@ namespace MediaSDK
 			if (-1 == m_llDecodingTimeStampOffset)
 			{
 				Tools::SOSleep(LIVE_FIRST_FRAME_SLEEP_TIME_AUDIO);
-				m_llDecodingTimeStampOffset = Tools::CurrentTimestamp() - llCurrentFrameRelativeTime;				
+				m_llDecodingTimeStampOffset = Tools::CurrentTimestamp() - llCurrentFrameRelativeTime + nRelativeTimeOffset;
 				m_nExpectedNextPacketNumber = iPacketNumber++;
 			}
 			else

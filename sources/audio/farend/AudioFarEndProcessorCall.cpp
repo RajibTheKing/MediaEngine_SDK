@@ -138,7 +138,7 @@ namespace MediaSDK
 #ifndef LOCAL_SERVER_LIVE_CALL
 			if (m_nEntityType != ENTITY_TYPE_PUBLISHER_CALLER)
 			{
-				decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
+				decodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_nRelativeTimeOffset);
 			}
 			else
 			{

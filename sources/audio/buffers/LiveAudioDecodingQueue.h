@@ -12,7 +12,7 @@
 namespace MediaSDK
 {
 	using PI = std::pair < int, int > ;
-	using VP = std::vector < PI > ;
+	using VP = int;
 
 	class LiveAudioDecodingQueue
 	{

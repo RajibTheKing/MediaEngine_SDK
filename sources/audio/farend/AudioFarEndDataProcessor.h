@@ -54,7 +54,7 @@ namespace MediaSDK
 
 		bool IsPacketTypeSupported(int &nCurrentAudioPacketType);
 		bool IsPacketProcessableBasedOnRole(int &nCurrentAudioPacketType);
-		bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType);
+		bool IsPacketProcessableBasedOnRelativeTime(long long &llCurrentFrameRelativeTime, int &iPacketNumber, int &nPacketType, int nRelativeTimeOffset);
 
 		//void SetSlotStatesAndDecideToChangeBitRate(int &nSlotNumber);
 		void DecodeAndPostProcessIfNeeded(const int iPacketNumber, const int nCurrentPacketHeaderLength, const int nCurrentAudioPacketType);
@@ -91,7 +91,7 @@ namespace MediaSDK
 		unsigned char m_ucaDecodingFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 		short m_saDecodedFrame[AUDIO_MAX_FRAME_LENGTH_IN_BYTE];
 
-		std::vector<std::pair<int, int>> m_vFrameMissingBlocks;
+		int m_nRelativeTimeOffset;
 		std::vector<LiveAudioDecodingQueue*> m_vAudioFarEndBufferVector;
 
 		CAudioCallSession *m_pAudioCallSession = nullptr;

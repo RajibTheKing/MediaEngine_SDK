@@ -187,18 +187,15 @@ namespace MediaSDK
 			{
 				MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] Discarding Packets# Not suitable for publisher. PT = %d", nPacketType);
 				continue;
-			}
+			}									
 						
-			MediaLog(LOG_CODE_TRACE, "[FE][LAPP][PLA] CompleteFrameNo = %lld", m_pAudioPacketHeader->GetInformation(INF_LIVE_PACKETNUMBER));
-			///calculate missing vector 
-			std::vector<std::pair<int, int> >vCurrentAudioFrameMissingBlock;
-			GenMissingBlock(uchAudioData, nFrameLeftRange, nFrameRightRange, vMissingBlocks, vCurrentAudioFrameMissingBlock);
-
 			nCurrentFrameLenWithMediaHeader = nFrameRightRange - nFrameLeftRange + 1;
 			nProcessedFramsCounter++;
+
 			if (m_vAudioFarEndBufferVector[iId])
 			{
-				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange, nCurrentFrameLenWithMediaHeader , vCurrentAudioFrameMissingBlock);
+				int m_nRelativeTimeOffset = 0;
+				m_vAudioFarEndBufferVector[iId]->EnQueue(uchAudioData + nFrameLeftRange, nCurrentFrameLenWithMediaHeader, m_nRelativeTimeOffset);
 			}
 		}
 

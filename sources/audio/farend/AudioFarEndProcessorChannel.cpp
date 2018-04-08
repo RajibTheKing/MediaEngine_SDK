@@ -28,12 +28,12 @@ namespace MediaSDK
 		int iDataSentInCurrentSec = 0; //NeedToFix.
 		long long llTimeStamp = 0;
 		int nQueueSize = m_vAudioFarEndBufferVector[0]->GetQueueSize();
-		m_vFrameMissingBlocks.clear();
+		
 		MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] QueueSize=%d", nQueueSize);
 		if (nQueueSize > 0)
 		{
-			m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_vFrameMissingBlocks);
-			MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding -> FrameSize=%d, #(FrameMissingBlocks)=%d", m_nDecodingFrameSize, (int)m_vFrameMissingBlocks.size());
+			m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_nRelativeTimeOffset);
+			MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding -> FrameSize=%d, m_nRelativeTimeOffset=%d", m_nDecodingFrameSize, m_nRelativeTimeOffset);
 			if (m_nDecodingFrameSize < 1)
 			{
 				MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding -> Removed for FrameSize<1");
@@ -79,7 +79,7 @@ namespace MediaSDK
 				MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] Complete[P=%d B=%d]", iPacketNumber, iBlockNumber);
 
 				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
-				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType))
+				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType, m_nRelativeTimeOffset))
 				{
 					MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding ->  Removed based on relative time");
 					return;
