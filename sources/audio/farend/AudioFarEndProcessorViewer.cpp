@@ -113,13 +113,6 @@ namespace MediaSDK
 
 				MediaLog(LOG_CODE_TRACE, "[AFEPV] bIsCompleteFrame = %d\n", bIsCompleteFrame);
 				
-				/*Skip delay packet only for publisher.*/
-				if (0 == iterator && !IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType, m_nRelativeTimeOffset))
-				{
-					MediaLog(LOG_WARNING, "[AFEPV]  [Iterator:%d] nCurrentAudioPacketType = %d", iterator, llRelativeTime);
-					continue;
-				}
-
 				llNow = Tools::CurrentTimestamp();
 															
 				if (0 == iterator)

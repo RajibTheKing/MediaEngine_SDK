@@ -33,7 +33,7 @@ namespace MediaSDK
 		if (nQueueSize > 0)
 		{
 			m_nDecodingFrameSize = m_vAudioFarEndBufferVector[0]->DeQueue(m_ucaDecodingFrame, m_nRelativeTimeOffset);
-			MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding -> FrameSize=%d, m_nRelativeTimeOffset=%d", m_nDecodingFrameSize, m_nRelativeTimeOffset);
+			MediaLog(LOG_DEBUG, "[FE][AFEPC] BeforeDecoding -> FrameSize=%d, m_nRelativeTimeOffset=%d", m_nDecodingFrameSize, m_nRelativeTimeOffset);
 			if (m_nDecodingFrameSize < 1)
 			{
 				MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding -> Removed for FrameSize<1");
