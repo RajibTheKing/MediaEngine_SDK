@@ -80,8 +80,7 @@ namespace MediaSDK
 
 				m_nDecodingFrameSize = m_pAudioDePacketizer->GetCompleteFrame(m_ucaDecodingFrame + nCurrentPacketHeaderLength) + nCurrentPacketHeaderLength;
 				if (!IsPacketProcessableBasedOnRelativeTime(llRelativeTime, iPacketNumber, nCurrentAudioPacketType, m_nRelativeTimeOffset))
-				{
-					MediaLog(LOG_CODE_TRACE, "[FE][AFEPC] BeforeDecoding ->  Removed based on relative time");
+				{					
 					return;
 				}
 			}

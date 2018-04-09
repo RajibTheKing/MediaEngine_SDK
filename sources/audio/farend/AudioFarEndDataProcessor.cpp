@@ -388,9 +388,10 @@ namespace MediaSDK
 				return false;
 			}
 
-			if ((m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER) 
+			if ( (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType) 
+				&& (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE
-				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
+				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER) )
 			{
 				return true;
 			}
@@ -410,24 +411,16 @@ namespace MediaSDK
 				if (m_nExpectedNextPacketNumber < iPacketNumber)
 				{
 					m_nPacketsLost += iPacketNumber - m_nExpectedNextPacketNumber;
-					/*MediaLog(CODE_TRACE, "Discarding because of loss, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
-						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
-						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
-						*/
 				}
 				m_nExpectedNextPacketNumber = iPacketNumber + 1;
+			
+				MediaLog(LOG_DEBUG, "[FE][PD] Delay Packet Discurding ->  PacketNo:%d WaitingTime:%lld RelativeTime:%lld CurrentTime:%lld Delta:%lld", 
+					iPacketNumber, llWaitingTime, llCurrentFrameRelativeTime, llNow, m_llDecodingTimeStampOffset);
 
-				//MediaLog(CODE_TRACE, "@@@@@@@@@--> relativeTime: [%lld] DELAY FRAME: %lld  currentTime: %lld, iPacketNumber = %d", llCurrentFrameRelativeTime, llWaitingTime, llNow, iPacketNumber);
-
-				
-				
 				if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
 				{										
 					m_nPacketsRecvdNotTimely++;
-					/*MediaLog(CODE_TRACE, "Discarding because of delay, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
-						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
-						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
-					*/
+
 					if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
 					{
 						return true; //Use delay frame for viewer.
@@ -438,14 +431,9 @@ namespace MediaSDK
 				else if (llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp > MAX_WAITING_TIME_FOR_CHANNEL)
 				{
 					m_nPacketsRecvdNotTimely++;
-					/*MediaLog(CODE_TRACE, "Discarding because of delay 2nd case, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
-						m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
-						m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
-					*/
+					
 					return false;
 				}
-				
-
 
 				while (llExpectedEncodingTimeStamp + __AUDIO_PLAY_TIMESTAMP_TOLERANCE__ < llCurrentFrameRelativeTime)
 				{
@@ -454,11 +442,6 @@ namespace MediaSDK
 					
 				}
 				m_nPacketsRecvdTimely++;
-				/*
-				MediaLog(CODE_TRACE, "Discarding sttistics, m_nPacketsRecvdTimely = %d, m_nPacketsRecvdNotTimely = %d, percentage = %f, m_nPacketsLost = %d, m_nPacketNotPlayed = %d",
-					m_nPacketsRecvdTimely, m_nPacketsRecvdNotTimely, m_nPacketsRecvdTimely == 0 ? 0 : (m_nPacketsRecvdNotTimely * 1.0 / m_nPacketsRecvdTimely) * 100,
-					m_nPacketsLost, m_nPacketsRecvdTimely - m_nPacketPlayed);
-				*/
 			}
 			return true;
 		}
