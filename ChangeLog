@@ -1,3 +1,8 @@
+Release 12.30 (Date: 08-04-2018)
+---------------------------------
+- AUDIO: Broken Audio in Channel [5978]
+- AUDIO: Fix of 12.29.
+
 Release 12.29 (Date: 04-04-2018)
 ---------------------------------
 - AUDIO: Relative time has been ignored for Viewer [5944]
