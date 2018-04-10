@@ -616,21 +616,23 @@ namespace MediaSDK
 
 					if (IsKichCutterEnabled())
 					{
-						memcpy(m_saNoisyData, psaEncodingAudioData, unLength * sizeof(short));
-
-						if (bIsNsWorking)
-						{
-							m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, m_pAudioCallSession->getIsAudioLiveStreamRunning());
-						}
-						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
-
 						if (bTaceBasedEcho)
 						{
+							memcpy(m_saNoisyData, psaEncodingAudioData, unLength * sizeof(short));
+
+							if (bIsNsWorking)
+							{
+								m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, m_pAudioCallSession->getIsAudioLiveStreamRunning());
+							}
+							m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+
+							
 							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
+							
+							m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
+							nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
+							m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
 						}
-						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
-						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
-						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
 					}
 					else
 					{
