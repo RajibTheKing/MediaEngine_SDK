@@ -261,10 +261,10 @@ namespace MediaSDK
 						m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType, m_b30VerifiedTrace);
 					if (llDelayFraction != -1 && m_bTraceRecieved == false) //just got the trace
 					{
-						NotifyTraceInfo(0, 0, llDelayFraction);
 						m_llDelayFraction = llDelayFraction;
 						m_llTraceReceivingTime = Tools::CurrentTimestamp();
 						m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
+						NotifyTraceInfo(0, 0, m_llDelay);
 						//m_llDelayFraction = m_llDelay % 100;
 						m_iDelayFractionOrig = m_llDelayFraction;
 						m_llDelayFraction /= 8;

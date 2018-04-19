@@ -296,6 +296,8 @@ namespace MediaSDK
 		if (m_nNumTraceReceived > 0)
 		{
 			m_fAvgDelay = m_nSumDelay * 1.0 / m_nNumTraceReceived;
+			m_nAvgDelayFrames = m_fAvgDelay / 100;
+			m_nAvgDelayFraction = (int)m_fAvgDelay % 100;
 		}
 
 		if (m_nNumTraceReceived + m_nNumTraceNotReceived > 0)
