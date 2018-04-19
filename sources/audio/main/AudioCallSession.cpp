@@ -269,17 +269,34 @@ namespace MediaSDK
 
 	void CAudioCallSession::NotifyTraceInfo(int nTR, int nNTR, int sDelay)
 	{
+		m_nNumTraceReceived += nTR;
+		m_nNumTraceNotReceived += nNTR;
+		m_nSumDelay += sDelay;
+
 		int nTraceInfoArray[3];
-		nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD] = nTR;
-		nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED] = nNTR;
-		nTraceInfoArray[TI_SUM_OF_DELAY] = sDelay;
+		nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD] = m_nNumTraceReceived;
+		nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED] = m_nNumTraceNotReceived;
+		nTraceInfoArray[TI_SUM_OF_DELAY] = m_nSumDelay;
 
 		FireAudioAlarm(AUDIO_EVENT_TRACE_NOTIFICATION, 3, nTraceInfoArray);
 	}
 
-	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * npTraceInfo)
+	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * nTraceInfoArray)
 	{
+		if (nTraceInfoLength < 3)
+		{
+			MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo falied.");
+			return;
+		}
+		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo successful.");
+		m_nNumTraceReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD];
+		m_nNumTraceNotReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED];
+		m_nSumDelay = nTraceInfoArray[TI_SUM_OF_DELAY];
 
+		if (m_nNumTraceReceived > 0)
+		{
+			m_fAvgDelay = m_nSumDelay * 1.0 / m_nNumTraceReceived;
+		}
 	}
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)

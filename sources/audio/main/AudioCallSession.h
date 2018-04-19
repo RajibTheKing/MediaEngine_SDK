@@ -140,6 +140,9 @@ namespace MediaSDK
 		//int m_iPrevRecvdSlotID;
 		int m_iReceivedPacketsInPrevSlot;
 
+		int m_nNumTraceReceived = 0, m_nNumTraceNotReceived = 0, m_nSumDelay = 0;
+		float m_fAvgDelay = 0;
+
 		AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 		AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
 		SharedPointer<CAudioShortBuffer> m_FarendBuffer;

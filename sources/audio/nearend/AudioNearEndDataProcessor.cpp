@@ -243,6 +243,7 @@ namespace MediaSDK
 				m_llDelay = 0;
 				m_bTraceWillNotBeReceived = true; // 8-(
 				MediaLog(LOG_DEBUG, "[ACS][ECHO][TS]  Detection Failed m_iSpeakerType = %d",  m_pAudioCallSession->m_iSpeakerType);
+				NotifyTraceInfo(0, 1, 0);
 			}
 			else
 			{
@@ -254,12 +255,13 @@ namespace MediaSDK
 					if (m_b30VerifiedTrace == false && b30VerifiedTrace == true)
 					{
 						m_b30VerifiedTrace = b30VerifiedTrace;
-						NotifyTraceInfo(0,0,0);
+						NotifyTraceInfo(1,0,0);
 					}
 					MediaLog(LOG_DEBUG, "[ACS][ECHO][TS] TimeDelay = %lldms, DelayFra,  = %lld[Sample:%d] iTraceInFrame = %d m_iSpeakerType = %d, m_b30VerifiedTrace = %d",
 						m_llDelay, m_llDelayFraction, m_iDelayFractionOrig, iTraceInFrame, m_pAudioCallSession->m_iSpeakerType, m_b30VerifiedTrace);
 					if (llDelayFraction != -1 && m_bTraceRecieved == false) //just got the trace
 					{
+						NotifyTraceInfo(0, 0, llDelayFraction);
 						m_llDelayFraction = llDelayFraction;
 						m_llTraceReceivingTime = Tools::CurrentTimestamp();
 						m_llDelay = m_llTraceReceivingTime - m_llTraceSendingTime;
