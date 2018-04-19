@@ -297,6 +297,11 @@ namespace MediaSDK
 		{
 			m_fAvgDelay = m_nSumDelay * 1.0 / m_nNumTraceReceived;
 		}
+
+		if (m_nNumTraceReceived + m_nNumTraceNotReceived > 0)
+		{
+			m_fTraceReceivingProbability = m_nNumTraceReceived * 1.0 / (m_nNumTraceReceived + m_nNumTraceNotReceived);
+		}
 	}
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)

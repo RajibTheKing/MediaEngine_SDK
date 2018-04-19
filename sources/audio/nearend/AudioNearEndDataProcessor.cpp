@@ -42,7 +42,7 @@
 #define TR_TRACE_RECVD 10000
 #define TR_TRACE_WONT_BE_RECVD -10000
 
-#define TRACE_RECEIVED_COUNT_THRESHOLD 2
+#define TRACE_PROBABILITY_THRESHOLD 0.5
 
 namespace MediaSDK
 {
@@ -220,7 +220,7 @@ namespace MediaSDK
 		m_pAudioCallSession->m_pFarEndProcessor->m_bPlayingNotStartedYet = true;
 		m_pAudioCallSession->m_pFarEndProcessor->m_llNextPlayingTime = -1;
 		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
-		m_iTraceReceivedCount = GetTraceReceivedCount();
+		m_iTraceReceivedCount = IsTraceReceivingProbilityHigh();
 
 
 		m_pAudioCallSession->SetRecordingStarted(true);
@@ -488,9 +488,9 @@ namespace MediaSDK
 		}
 	}
 
-	int AudioNearEndDataProcessor::GetTraceReceivedCount()
+	int AudioNearEndDataProcessor::IsTraceReceivingProbilityHigh()
 	{
-		return 0;
+		return m_pAudioCallSession->m_fTraceReceivingProbability >= TRACE_PROBABILITY_THRESHOLD;
 	}
 
 	void AudioNearEndDataProcessor::NotifyTraceInfo(int nTR, int nNTR, int sDelay)
@@ -612,7 +612,7 @@ namespace MediaSDK
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 					bTaceBasedEcho = m_b30VerifiedTrace;					
 #elif defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
-					bTaceBasedEcho = m_b30VerifiedTrace || m_iTraceReceivedCount >= TRACE_RECEIVED_COUNT_THRESHOLD;
+					bTaceBasedEcho = m_b30VerifiedTrace || IsTraceReceivingProbilityHigh();
 #endif
 					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] bTaceBasedEcho = %d\n", bTaceBasedEcho);
 

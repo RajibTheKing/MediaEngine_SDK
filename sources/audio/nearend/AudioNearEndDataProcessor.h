@@ -62,7 +62,7 @@ namespace MediaSDK
 		void ResetAudioEffects();
 		void SyncRecordingTime();
 
-		int GetTraceReceivedCount();
+		int IsTraceReceivingProbilityHigh();
 		void NotifyTraceInfo(int nTR, int nNTR, int sDelay);
 
 	protected:
