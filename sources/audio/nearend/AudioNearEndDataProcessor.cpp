@@ -572,6 +572,7 @@ namespace MediaSDK
 				if (m_bTraceWillNotBeReceived && IsTraceReceivingProbilityHigh() && m_iStoredFarendCount < m_pAudioCallSession->m_nAvgDelayFrames)
 				{
 					m_iStoredFarendCount++;
+					m_llDelayFraction = m_pAudioCallSession->m_nAvgDelayFraction;
 				}
 				else
 				{
