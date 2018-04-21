@@ -221,6 +221,7 @@ namespace MediaSDK
 		m_pAudioCallSession->m_pFarEndProcessor->m_llNextPlayingTime = -1;
 		m_iStartingBufferSize = m_iDelayFractionOrig = -1;
 		m_iTraceReceivedCount = IsTraceReceivingProbilityHigh();
+		m_iStoredFarendCount = 0;
 
 
 		m_pAudioCallSession->SetRecordingStarted(true);
@@ -534,6 +535,7 @@ namespace MediaSDK
 
 		if (IsEchoCancellerEnabled())
 		{
+			
 			MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] AECM Working!!! IsTimeSyncEnabled = %d", m_bEnableRecorderTimeSyncDuringEchoCancellation);
 
 			if (m_bNeedToResetAudioEffects)
@@ -567,90 +569,97 @@ namespace MediaSDK
 
 			if (m_pAudioCallSession->GetEchoCanceler().get() && (m_bTraceRecieved || m_bTraceWillNotBeReceived))
 			{
-				long long llTS;
-				if (m_iStartingBufferSize == -1)
+				if (m_bTraceWillNotBeReceived && IsTraceReceivingProbilityHigh() && m_iStoredFarendCount < m_pAudioCallSession->m_nAvgDelayFrames)
 				{
-					m_iStartingBufferSize = m_pAudioCallSession->m_FarendBuffer->GetQueueSize();
-					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] First Time Updated m_iStartingBufferSize = %d", m_iStartingBufferSize);
-					m_pAudioSessionStatistics->UpdateStartingBufferSize(m_iStartingBufferSize);
-				}
-
-				int iFarendDataLength = m_pAudioCallSession->m_FarendBuffer->DeQueue(m_saFarendData, llTS);
-				int nFarEndBufferSize = m_pAudioCallSession->m_FarendBuffer->GetQueueSize();
-
-				MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] DataLength=%dS, FarBufSize=%d[%d], IsGainWorking=%d", iFarendDataLength, nFarEndBufferSize, m_iStartingBufferSize, bIsGainWorking);
-
-
-				if (iFarendDataLength > 0)
-				{
-					//If trace is received, current and next frames are deleted
-					
-					
-#if !defined(TARGET_OS_IPHONE) && !defined(TARGET_IPHONE_SIMULATOR)
-					if (bIsGainWorking)
-					{
-						m_pAudioCallSession->GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
-						m_pAudioCallSession->GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
-						m_pGainedNE->WriteDump(psaEncodingAudioData, 2, unLength);
-					}
-#endif
-					long long llCurrentTimeStamp = Tools::CurrentTimestamp();
-					long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
-					m_llLastEchoLogTime = llCurrentTimeStamp;
-					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] FarendBufferSize = %d, m_iStartingBufferSize = %d,"
-						"m_llDelay = %lld, m_bTraceRecieved = %d llEchoLogTimeDiff = %lld, Time Taken = %lld, iFarendDataLength = %d FarBuffSize = %d",
-						m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
-						llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
-
-					m_pAudioSessionStatistics->UpdateCurrentBufferSize(m_pAudioCallSession->m_FarendBuffer->GetQueueSize());
-
-					m_pAudioCallSession->GetEchoCanceler()->AddFarEndData(m_saFarendData, unLength);
-
-
-
-					bool bTaceBasedEcho = true;
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-					bTaceBasedEcho = m_b30VerifiedTrace;					
-#elif defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
-					bTaceBasedEcho = m_b30VerifiedTrace || IsTraceReceivingProbilityHigh();
-#endif
-					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] bTaceBasedEcho = %d\n", bTaceBasedEcho);
-
-					if (IsKichCutterEnabled())
-					{
-						memcpy(m_saNoisyData, psaEncodingAudioData, unLength * sizeof(short));
-
-						if (bIsNsWorking)
-						{
-							m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, m_pAudioCallSession->getIsAudioLiveStreamRunning());
-						}
-						m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
-
-						if (bTaceBasedEcho)
-						{
-							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
-						}
-						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
-						nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
-						m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
-					}
-					else
-					{
-						if (bTaceBasedEcho)
-						{
-							nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
-						}
-
-						m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
-					}
-					//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
-
-					m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
-					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] Successful FarNear Interleave.");
+					m_iStoredFarendCount++;
 				}
 				else
 				{
-					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
+					long long llTS;
+					if (m_iStartingBufferSize == -1)
+					{
+						m_iStartingBufferSize = m_pAudioCallSession->m_FarendBuffer->GetQueueSize();
+						MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] First Time Updated m_iStartingBufferSize = %d", m_iStartingBufferSize);
+						m_pAudioSessionStatistics->UpdateStartingBufferSize(m_iStartingBufferSize);
+					}
+
+					int iFarendDataLength = m_pAudioCallSession->m_FarendBuffer->DeQueue(m_saFarendData, llTS);
+					int nFarEndBufferSize = m_pAudioCallSession->m_FarendBuffer->GetQueueSize();
+
+					MediaLog(LOG_DEBUG, "[NE][ACS][ECHO][GAIN] DataLength=%dS, FarBufSize=%d[%d], IsGainWorking=%d", iFarendDataLength, nFarEndBufferSize, m_iStartingBufferSize, bIsGainWorking);
+
+
+					if (iFarendDataLength > 0)
+					{
+						//If trace is received, current and next frames are deleted
+
+
+#if !defined(TARGET_OS_IPHONE) && !defined(TARGET_IPHONE_SIMULATOR)
+						if (bIsGainWorking)
+						{
+							m_pAudioCallSession->GetRecorderGain()->AddFarEnd(m_saFarendData, unLength);
+							m_pAudioCallSession->GetRecorderGain()->AddGain(psaEncodingAudioData, unLength, false, 0);
+							m_pGainedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						}
+#endif
+						long long llCurrentTimeStamp = Tools::CurrentTimestamp();
+						long long llEchoLogTimeDiff = llCurrentTimeStamp - m_llLastEchoLogTime;
+						m_llLastEchoLogTime = llCurrentTimeStamp;
+						MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] FarendBufferSize = %d, m_iStartingBufferSize = %d,"
+							"m_llDelay = %lld, m_bTraceRecieved = %d llEchoLogTimeDiff = %lld, Time Taken = %lld, iFarendDataLength = %d FarBuffSize = %d",
+							m_pAudioCallSession->m_FarendBuffer->GetQueueSize(), m_iStartingBufferSize, m_llDelay, m_bTraceRecieved,
+							llEchoLogTimeDiff, llCurrentTimeStamp - llb4Time, iFarendDataLength, nFarEndBufferSize);
+
+						m_pAudioSessionStatistics->UpdateCurrentBufferSize(m_pAudioCallSession->m_FarendBuffer->GetQueueSize());
+
+						m_pAudioCallSession->GetEchoCanceler()->AddFarEndData(m_saFarendData, unLength);
+
+
+
+						bool bTaceBasedEcho = true;
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+						bTaceBasedEcho = m_b30VerifiedTrace;					
+#elif defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
+						bTaceBasedEcho = m_b30VerifiedTrace || IsTraceReceivingProbilityHigh();
+#endif
+						MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] bTaceBasedEcho = %d\n", bTaceBasedEcho);
+
+						if (IsKichCutterEnabled())
+						{
+							memcpy(m_saNoisyData, psaEncodingAudioData, unLength * sizeof(short));
+
+							if (bIsNsWorking)
+							{
+								m_pAudioCallSession->GetNoiseReducer()->Denoise(psaEncodingAudioData, unLength, psaEncodingAudioData, m_pAudioCallSession->getIsAudioLiveStreamRunning());
+							}
+							m_pNoiseReducedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+
+							if (bTaceBasedEcho)
+							{
+								nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10, m_saNoisyData);
+							}
+							m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
+							nEchoStateFlags = m_pKichCutter->Despike(psaEncodingAudioData, nEchoStateFlags);
+							m_pKichCutNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						}
+						else
+						{
+							if (bTaceBasedEcho)
+							{
+								nEchoStateFlags = m_pAudioCallSession->GetEchoCanceler()->CancelEcho(psaEncodingAudioData, unLength, m_llDelayFraction + 10);
+							}
+
+							m_pCancelledNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						}
+						//MediaLog(LOG_DEBUG, "[NE][ACS][ECHOFLAG] nEchoStateFlags = %d\n", nEchoStateFlags);
+
+						m_pProcessedNE->WriteDump(psaEncodingAudioData, 2, unLength);
+						MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] Successful FarNear Interleave.");
+					}
+					else
+					{
+						MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] UnSuccessful FarNear Interleave.");
+					}
 				}
 
 #ifdef DUMP_FILE
