@@ -573,6 +573,14 @@ namespace MediaSDK
 		CLockHandler& m_mutex;
 	};
 
+	class SetTraceInfoLocker  {
+	public:
+		SetTraceInfoLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex)	{ m_mutex.lock(); }
+		~SetTraceInfoLocker() { m_mutex.unlock(); }
+	private:
+		CLockHandler& m_mutex;
+	};
+
 	class CameraStatusLocker {
 	public:
 		CameraStatusLocker(CLockHandler& mediaMutex) : m_mutex(mediaMutex) { m_mutex.lock(); }

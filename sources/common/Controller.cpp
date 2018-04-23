@@ -193,9 +193,9 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		AudioResources audioResources(audioSessionOptions);
 		MediaLog(LOG_INFO, "[C] OpusCodec %d", (int)bOpusCodec);
 		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, nAudioSpeakerType, bOpusCodec);
-
+		MediaLog(LOG_INFO, "controller ac done");
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
-
+		MediaLog(LOG_INFO, "controller list adding done");
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session started");
 
 		return true;
@@ -244,7 +244,8 @@ bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
 
 bool CController::SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo)
 {
-	SetLoudSpeakerLocker lock1(*m_pAudioLockMutex);
+	SetTraceInfoLocker lock1(*m_pAudioLockMutex);
+	MediaLog(LOG_INFO, "controller SetTraceInfo adding done");
 
 	CAudioCallSession* pAudioSession;
 

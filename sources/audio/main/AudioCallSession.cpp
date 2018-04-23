@@ -288,22 +288,33 @@ namespace MediaSDK
 			MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo falied.");
 			return;
 		}
-		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo successful.");
+		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo started, nTraceInfoLength = %d", nTraceInfoLength);
+		
 		m_nNumTraceReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD];
 		m_nNumTraceNotReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED];
 		m_nSumDelay = nTraceInfoArray[TI_SUM_OF_DELAY];
-
+		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo m_nNumTraceReceived = %d, m_nNumTraceNotReceived= %d, m_nSumDelay = %d",
+			m_nNumTraceReceived, m_nNumTraceNotReceived, m_nSumDelay);
 		if (m_nNumTraceReceived > 0)
 		{
 			m_fAvgDelay = m_nSumDelay * 1.0 / m_nNumTraceReceived;
 			m_nAvgDelayFrames = m_fAvgDelay / 100;
 			m_nAvgDelayFraction = (int)m_fAvgDelay % 100;
 		}
+		else
+		{
+			m_fAvgDelay = m_nAvgDelayFrames = m_nAvgDelayFraction = 0;
+		}
 
 		if (m_nNumTraceReceived + m_nNumTraceNotReceived > 0)
 		{
 			m_fTraceReceivingProbability = m_nNumTraceReceived * 1.0 / (m_nNumTraceReceived + m_nNumTraceNotReceived);
 		}
+		else
+		{
+			m_fTraceReceivingProbability = 0;
+		}
+		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo successful 2.");
 	}
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)
