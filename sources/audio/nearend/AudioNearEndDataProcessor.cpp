@@ -496,7 +496,10 @@ namespace MediaSDK
 
 	void AudioNearEndDataProcessor::NotifyTraceInfo(int nTR, int nNTR, int sDelay)
 	{
-		m_pAudioCallSession->NotifyTraceInfo(nTR, nNTR, sDelay);
+		if (IsTraceSendingEnabled())
+		{
+			m_pAudioCallSession->NotifyTraceInfo(nTR, nNTR, sDelay);
+		}
 	}
 
 	int AudioNearEndDataProcessor::PreprocessAudioData(short *psaEncodingAudioData, unsigned int unLength)
