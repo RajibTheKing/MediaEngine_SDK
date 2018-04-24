@@ -491,6 +491,7 @@ namespace MediaSDK
 
 	int AudioNearEndDataProcessor::IsTraceReceivingProbilityHigh()
 	{
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP] m_fTraceReceivingProbability = %f", m_pAudioCallSession->m_fTraceReceivingProbability);
 		return m_pAudioCallSession->m_fTraceReceivingProbability >= TRACE_PROBABILITY_THRESHOLD;
 	}
 
@@ -576,6 +577,7 @@ namespace MediaSDK
 				{
 					m_iStoredFarendCount++;
 					m_llDelayFraction = m_pAudioCallSession->m_nAvgDelayFraction;
+					MediaLog(LOG_DEBUG, "[NE][ACS][TP] m_iStoredFarendCount = %d, m_llDelayFraction = %d", m_iStoredFarendCount, m_llDelayFraction);
 				}
 				else
 				{
