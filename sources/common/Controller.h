@@ -44,6 +44,7 @@ namespace MediaSDK
 		bool StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, bool bOpusCodec);
 		bool SetVolume(const long long& lFriendID, int iVolume, bool bRecorder);		
 		bool SetSpeakerType(const long long& lFriendID, int iSpeakerType);
+		bool SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo);
 		void SetCameraMode(const long long& lFriendID, bool bCameraEnable);
 		void SetMicrophoneMode(const long long& lFriendID, bool bMicrophoneEnable);
 		bool SetEchoCanceller(const long long& lFriendID, bool bOn);
@@ -110,7 +111,7 @@ namespace MediaSDK
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 		void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
 		void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
-		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
+		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, int*, int));
 
 
 		void SetSendFunctionPointer(SendFunctionPointerType callBackFunctionPointer);

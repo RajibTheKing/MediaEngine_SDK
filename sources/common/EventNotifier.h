@@ -29,7 +29,7 @@ namespace MediaSDK
 
 		void fireAudioPacketEvent(int eventType, int dataLenth, unsigned char data[]);
 		void fireAudioEvent(long long friendID, int eventType, int dataLenth, short data[]);
-		void fireAudioAlarm(int eventType, int dataLenth, short data[]);
+		void fireAudioAlarm(int eventType, int dataLenth, int data[]);
 		void fireVideoNotificationEvent(long long callID, int eventType);
 		void fireNetworkStrengthNotificationEvent(long long callID, int eventType);
 
@@ -43,7 +43,7 @@ namespace MediaSDK
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(long long, int));
 		void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
 		void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(long long, unsigned char*, int));
-		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
+		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, int*, int));
 
 		static const int NETWORK_STRENTH_GOOD = 202;
 		static const int NETWORK_STRENTH_EXCELLENT = 204;

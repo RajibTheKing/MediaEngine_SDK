@@ -79,6 +79,9 @@ namespace MediaSDK
 		void SetMicrophoneMode(bool bMicrophoneEnable);
 		void SetEchoCanceller(bool bOn);
 
+		void NotifyTraceInfo(int nTR, int nNTR, int sDelay);
+		void SetTraceInfo(int nTraceInfoLength, int * npTraceInfo);
+
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
 		Server considers strength as STRONG(3) when packet loss is 0%-3%, MEDIUM(2) when loss is 4%-12% and WEAK(1) when loss is 13%-25%
@@ -122,7 +125,7 @@ namespace MediaSDK
 		void FirePacketEvent(int eventType, size_t dataLength, unsigned char* dataBuffer);
 		void FireDataEvent(int eventType, size_t dataLength, short* dataBuffer);
 		void FireNetworkChange(int eventType);
-		void FireAudioAlarm(int eventType);
+		void FireAudioAlarm(int eventType, size_t dataLength, int* dataBuffer);
 
 		void SetResources(AudioResources &audioResources);
 		void InitNearEndDataProcessing();
@@ -137,6 +140,9 @@ namespace MediaSDK
 		//int m_iPrevRecvdSlotID;
 		int m_iReceivedPacketsInPrevSlot;
 
+		int m_nNumTraceReceived = 0, m_nNumTraceNotReceived = 0, m_nSumDelay = 0, m_nAvgDelayFrames = 0, m_nAvgDelayFraction = 0;
+		float m_fAvgDelay = 0, m_fTraceReceivingProbability = 0;
+
 		AudioNearEndDataProcessor *m_pNearEndProcessor = NULL;
 		AudioFarEndDataProcessor *m_pFarEndProcessor = NULL;
 		SharedPointer<CAudioShortBuffer> m_FarendBuffer;
@@ -150,7 +156,7 @@ namespace MediaSDK
 		int m_iSpeakerType;
 		CAudioCallInfo* m_pAudioCallInfo = nullptr;
 		
-		
+		const bool& m_bIsVideoCallRunning;
 
 	#ifdef DUMP_FILE
 		FILE *FileInput;
@@ -171,7 +177,7 @@ namespace MediaSDK
 
 		bool m_bUsingLoudSpeaker;
 		bool m_bLiveAudioStreamRunning;
-		const bool& m_bIsVideoCallRunning;
+		
 
 		int m_iRole;
 		int m_iVolume;

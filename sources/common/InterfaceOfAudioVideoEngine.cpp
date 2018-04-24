@@ -21,7 +21,7 @@ namespace MediaSDK
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine()
 	{
 		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
-		MediaLogInit(LOG_DEBUG, false, bTerminalWriteEnabled);
+		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		G_pInterfaceOfAudioVideoEngine = this;
 		m_pcController = nullptr;
@@ -39,7 +39,7 @@ namespace MediaSDK
 	CInterfaceOfAudioVideoEngine::CInterfaceOfAudioVideoEngine(const char* szLoggerPath, int nLoggerPrintLevel)
 	{
 		bool bTerminalWriteEnabled = true;  //Always writes on file whether terminal is enabled or not. 
-		MediaLogInit(LOG_DEBUG, false, bTerminalWriteEnabled);
+		MediaLogInit(LOG_CODE_TRACE, false, bTerminalWriteEnabled);
 
 		m_pcController = nullptr;
 			
@@ -93,7 +93,7 @@ namespace MediaSDK
 		return Ret;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType)
+	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, int nTraceInfoLength, int * npTraceInfo)
 	{
 		m_llTimeOffset = -1;
 
@@ -103,6 +103,10 @@ namespace MediaSDK
 		}
 
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType, true);
+		if (bReturnedValue)
+		{
+			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, nTraceInfoLength, npTraceInfo);
+		}
 
 		return bReturnedValue;
 	}
@@ -118,7 +122,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, int iSpeakerType)
+	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, int iSpeakerType, int nTraceInfoLength, int * npTraceInfo)
 	{
 		if (nullptr == m_pcController)
 		{
@@ -126,6 +130,10 @@ namespace MediaSDK
 		}
 
 		bool bReturnedValue = m_pcController->SetSpeakerType(lFriendID, iSpeakerType);
+		if (bReturnedValue)
+		{
+			bReturnedValue = m_pcController->SetTraceInfo(lFriendID, nTraceInfoLength, npTraceInfo);
+		}
 		return bReturnedValue;
 	}
 
@@ -940,7 +948,7 @@ namespace MediaSDK
 		}
 	}
 
-	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, short*, int))
+	void CInterfaceOfAudioVideoEngine::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(LongLong, int*, int))
 	{
 		if (nullptr != m_pcController)
 		{
@@ -956,7 +964,7 @@ namespace MediaSDK
 		}
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType)
+	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo)
 	{
 		if (nullptr == m_pcController)
 		{
@@ -968,6 +976,10 @@ namespace MediaSDK
 		int nCalleeID = 1;
 
 		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
+		if (bReturnedValue)
+		{
+			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, nTraceInfoLength, npTraceInfo);
+		}
 
 		m_pcController->SetCallInLiveEnabled(true);
 

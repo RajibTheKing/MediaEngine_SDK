@@ -62,8 +62,8 @@ namespace MediaSDK
 		void ResetAudioEffects();
 		void SyncRecordingTime();
 
-		int GetTraceReceivedCount();
-		void SetTraceReceived();
+		int IsTraceReceivingProbilityHigh();
+		void NotifyTraceInfo(int nTR, int nNTR, int sDelay);
 
 	protected:
 
@@ -84,6 +84,7 @@ namespace MediaSDK
 		short m_saNoisyData[MAX_AUDIO_FRAME_SAMPLE_SIZE];
 		bool m_bTraceSent, m_bTraceRecieved, m_bTraceWillNotBeReceived, m_b30VerifiedTrace, m_bJustWrittenTraceDump;
 		int  m_iDeleteCount;
+		int m_iStoredFarendCount = 0;
 		CTrace *m_pTrace = nullptr;
 		long long m_llTraceSendingTime;
 		long long m_llTraceReceivingTime;

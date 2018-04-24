@@ -20,7 +20,7 @@ namespace MediaSDK
 	void(*notifyClientWithNetworkStrengthNotificationCallback)(long long, int) = NULL;
 	void(*notifyClientWithAudioDataCallback)(long long, int, short*, int) = NULL;
 	void(*notifyClientWithAudioPacketDataCallback)(long long, unsigned char*, int) = NULL;
-	void(*notifyClientWithAudioAlarmCallback)(long long, short*, int) = NULL;
+	void(*notifyClientWithAudioAlarmCallback)(long long, int*, int) = NULL;
 
 
 	CEventNotifier::CEventNotifier(CController *pController)
@@ -110,17 +110,11 @@ namespace MediaSDK
 		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioEvent 2");
 	}
 
-	void CEventNotifier::fireAudioAlarm(int eventType, int dataLenth, short data[])
+	void CEventNotifier::fireAudioAlarm(int eventType, int dataLenth, int data[])
 	{
 		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm " + Tools::IntegertoStringConvert(eventType));
 
-		if (((eventType == AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO || eventType == AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO) && m_pController->m_bLiveCallRunning)
-			||
-			(eventType != AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO && eventType != AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO)
-			)
-		{
-			notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
-		}
+		notifyClientWithAudioAlarmCallback(eventType, data, dataLenth);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CEventNotifier::fireAudioAlarm 2");
 	}
@@ -162,7 +156,7 @@ namespace MediaSDK
 		notifyClientWithAudioPacketDataCallback = callBackFunctionPointer;
 	}
 
-	void CEventNotifier::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int))
+	void CEventNotifier::SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, int*, int))
 	{
 		notifyClientWithAudioAlarmCallback = callBackFunctionPointer;
 	}
