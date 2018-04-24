@@ -285,15 +285,15 @@ namespace MediaSDK
 	{
 		if (nTraceInfoLength < 3)
 		{
-			MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo falied.");
+			MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo falied.");
 			return;
 		}
-		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo started, nTraceInfoLength = %d", nTraceInfoLength);
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo started, nTraceInfoLength = %d", nTraceInfoLength);
 		
 		m_nNumTraceReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD];
 		m_nNumTraceNotReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED];
 		m_nSumDelay = nTraceInfoArray[TI_SUM_OF_DELAY];
-		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo m_nNumTraceReceived = %d, m_nNumTraceNotReceived= %d, m_nSumDelay = %d",
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo m_nNumTraceReceived = %d, m_nNumTraceNotReceived= %d, m_nSumDelay = %d",
 			m_nNumTraceReceived, m_nNumTraceNotReceived, m_nSumDelay);
 		if (m_nNumTraceReceived > 0)
 		{
