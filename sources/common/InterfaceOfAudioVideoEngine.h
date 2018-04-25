@@ -47,6 +47,12 @@
 #define AUDIO_PLAYER_HEADPHONE 2
 #define AUDIO_PLAYER_LOUDSPEAKER 3
 
+#define AUDIO_EVENT_PEER_TOLD_TO_STOP_VIDEO 1
+#define AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO 2
+#define AUDIO_EVENT_FIRE_ENCODING_TIME 3
+#define AUDIO_EVENT_FIRE_AVG_ENCODING_TIME 4
+#define AUDIO_EVENT_TRACE_NOTIFICATION 5
+
 #define SESSION_ID_FOR_SELF_VIEW -1000
 
 typedef long long IPVLongType;
@@ -77,10 +83,10 @@ namespace MediaSDK
 		bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
 		bool InitializeLibrary(const IPVLongType& llUserID);
 		bool SetUserName(const IPVLongType llUserName);
-		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType);
+		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, int nTraceInfoLength, int * npTraceInfo);
 
 		bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
-		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType);
+		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType, int nTraceInfoLength, int * npTraceInfo);
 
 		void NotifyCameraMode(const LongLong lFriendID, bool bCameraEnable);
 		void NotifyMicrophoneMode(const LongLong lFriendID, bool bMicrophoneEnable);
@@ -88,7 +94,7 @@ namespace MediaSDK
 		bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 		int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 
-		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType);
+		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo);
 		bool EndCallInLive(const IPVLongType llFriendID);
 
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
@@ -136,7 +142,7 @@ namespace MediaSDK
 		void SetNotifyClientWithNetworkStrengthNotificationCallback(void(*callBackFunctionPointer)(IPVLongType, int));
 		void SetNotifyClientWithAudioDataCallback(void(*callBackFunctionPointer)(long long, int, short*, int));
 		void SetNotifyClientWithAudioPacketDataCallback(void(*callBackFunctionPointer)(IPVLongType, unsigned char*, int));
-		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, short*, int));
+		void SetNotifyClientWithAudioAlarmCallback(void(*callBackFunctionPointer)(long long, int*, int));
 
 		void SetSendFunctionPointer(void(*callBackFunctionPointer)(IPVLongType, int, unsigned char*, int, int, std::vector< std::pair<int, int> > vAudioBlocks));
 

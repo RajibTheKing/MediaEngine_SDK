@@ -53,6 +53,10 @@
 #include <dispatch/dispatch.h>
 #endif
 
+#define TI_NUMBER_OF_TRACE_RECVD 0
+#define TI_NUMBER_OF_TRACE_FAILED 1
+#define TI_SUM_OF_DELAY 2
+
 
 namespace MediaSDK
 {
@@ -261,6 +265,56 @@ namespace MediaSDK
 
 		SHARED_PTR_DELETE(m_pAudioCallSessionMutex);
 		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Uninitialization Successfull!!");
+	}
+
+	void CAudioCallSession::NotifyTraceInfo(int nTR, int nNTR, int sDelay)
+	{
+		m_nNumTraceReceived += nTR;
+		m_nNumTraceNotReceived += nNTR;
+		m_nSumDelay += sDelay;
+
+		int nTraceInfoArray[3];
+		nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD] = m_nNumTraceReceived;
+		nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED] = m_nNumTraceNotReceived;
+		nTraceInfoArray[TI_SUM_OF_DELAY] = m_nSumDelay;
+
+		FireAudioAlarm(AUDIO_EVENT_TRACE_NOTIFICATION, 3, nTraceInfoArray);
+	}
+
+	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * nTraceInfoArray)
+	{
+		if (nTraceInfoLength < 3)
+		{
+			MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo falied.");
+			return;
+		}
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo started, nTraceInfoLength = %d", nTraceInfoLength);
+		
+		m_nNumTraceReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD];
+		m_nNumTraceNotReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED];
+		m_nSumDelay = nTraceInfoArray[TI_SUM_OF_DELAY];
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo m_nNumTraceReceived = %d, m_nNumTraceNotReceived= %d, m_nSumDelay = %d",
+			m_nNumTraceReceived, m_nNumTraceNotReceived, m_nSumDelay);
+		if (m_nNumTraceReceived > 0)
+		{
+			m_fAvgDelay = m_nSumDelay * 1.0 / m_nNumTraceReceived;
+			m_nAvgDelayFrames = m_fAvgDelay / 100;
+			m_nAvgDelayFraction = (int)m_fAvgDelay % 100;
+		}
+		else
+		{
+			m_fAvgDelay = m_nAvgDelayFrames = m_nAvgDelayFraction = 0;
+		}
+
+		if (m_nNumTraceReceived + m_nNumTraceNotReceived > 0)
+		{
+			m_fTraceReceivingProbability = m_nNumTraceReceived * 1.0 / (m_nNumTraceReceived + m_nNumTraceNotReceived);
+		}
+		else
+		{
+			m_fTraceReceivingProbability = 0;
+		}
+		MediaLog(LOG_INFO, "[NE][ACS] SetTraceInfo successful 2.");
 	}
 
 	void CAudioCallSession::SetResources(AudioResources &audioResources)
@@ -597,9 +651,9 @@ namespace MediaSDK
 		m_pEventNotifier->fireNetworkStrengthNotificationEvent(m_FriendID, eventType);
 	}
 
-	void CAudioCallSession::FireAudioAlarm(int eventType)
+	void CAudioCallSession::FireAudioAlarm(int eventType, size_t dataLength, int* dataBuffer)
 	{
-		m_pEventNotifier->fireAudioAlarm(eventType, 0, 0);
+		m_pEventNotifier->fireAudioAlarm(eventType, dataLength, dataBuffer);
 	}
 
 } //namespace MediaSDK

@@ -32,7 +32,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
-
+#define AUDIO_FIXED_BITRATE
 
 namespace MediaSDK
 {
@@ -553,11 +553,10 @@ namespace MediaSDK
 					{
 						m_pNetworkChangeListener->FireNetworkChange(CEventNotifier::NETWORK_STRENTH_BAD);
 					}
-
-					//m_pCommonElementsBucket->m_pEventNotifier->fireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);		
-					if (m_pAudioAlarmListener != nullptr)
+		
+					if (m_pAudioAlarmListener != nullptr && m_pAudioCallSession->m_bIsVideoCallRunning)
 					{
-						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO);
+						m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_I_TOLD_TO_STOP_VIDEO, 0, 0);
 					}
 
 					m_bAudioShouldStopNotified = true;
