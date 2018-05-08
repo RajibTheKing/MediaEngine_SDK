@@ -1319,6 +1319,9 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 
 	memcpy(m_pSSSmallFrame, smallFrame, iHeight * iWidth * 3 / 2);
 
+	m_nOponentHeight = iHeight;
+	m_nOponentWidth = iWidth;
+
 	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 0 iHeight %d, iWidth %d, iTargetHeight %d, iTargetWidth %d", iHeight, iWidth, iTargetHeight, iTargetWidth);
     
     //int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);

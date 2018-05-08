@@ -117,6 +117,8 @@ namespace MediaSDK
 	
 	
 		unsigned char m_pSSSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
+		int m_nOponentHeight;
+		int m_nOponentWidth;
 
 	private:
 

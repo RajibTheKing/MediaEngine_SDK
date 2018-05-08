@@ -648,7 +648,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
 					// mirror ta check korte hobe 
-					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 
 					if (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
 					{
