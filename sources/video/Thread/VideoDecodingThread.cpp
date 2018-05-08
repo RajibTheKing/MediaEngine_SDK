@@ -515,7 +515,7 @@ namespace MediaSDK
 
 		if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 		{
-			this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+			this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 
 			this->m_pColorConverter->Merge_Two_Video2(m_PreviousDecodedFrameConvertedData, 0, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 		}
@@ -772,7 +772,7 @@ namespace MediaSDK
 
 				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 				{
-					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 
 					this->m_pColorConverter->Merge_Two_Video2(m_DecodedFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 				}
