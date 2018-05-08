@@ -1317,6 +1317,8 @@ void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 
+	memcpy(m_pSSSmallFrame, smallFrame, iHeight * iWidth * 3 / 2);
+
 	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CColorConverter::SetSmallFrame 0 iHeight %d, iWidth %d, iTargetHeight %d, iTargetWidth %d", iHeight, iWidth, iTargetHeight, iTargetWidth);
     
     //int iLen = DownScaleYUV420_Dynamic(smallFrame, iHeight, iWidth, m_pSmallFrame, 3 /*Making 1/3 rd of original Frame*/);
@@ -2108,6 +2110,80 @@ int CColorConverter::Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPo
 		}
         */
 	}
+	return iLen1;
+}
+
+int CColorConverter::Merge_Two_Video2(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth)
+{
+	ColorConverterLocker lock(*m_pColorConverterMutex);
+
+	if (m_bMergingSmallFrameEnabled == false)
+		return 0;
+
+	int h1 = iVideoHeight;
+	int w1 = iVideoWidth;
+	int h2 = /* m_iVideoHeight >> 2 */ iSmallHeight;
+	int w2 = /* m_iVideoWidth >> 2 */ iSmallWidth;
+
+	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::Merge_Two_Video h1 %d w1 %d h2 %d w2 %d", h1, w1, h2, w2);
+
+	int iLen1 = h1 * w1 * 3 / 2;
+	int iLen2 = h2 * w2 * 3 / 2;
+
+	int total1 = h1 * w1, total2 = h2 * w2;
+
+	for (int i = iPosY; i<(iPosY + h2); i++)
+	{
+		for (int j = iPosX; j<(iPosX + w2); j++)
+		{
+			int ii = i - iPosY;
+			int jj = j - iPosX;
+			int now1 = i*w1 + j;
+			int now2 = ii*w2 + jj;
+
+			pInData1[now1] = pSmallData[now2];
+			pInData1[getUIndex(h1, w1, i, j, total1)] = pSmallData[getUIndex(h2, w2, ii, jj, total2)];
+			pInData1[getVIndex(h1, w1, i, j, total1)] = pSmallData[getVIndex(h2, w2, ii, jj, total2)];
+		}
+	}
+
+	return iLen1;
+}
+
+int CColorConverter::Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth)
+{
+	ColorConverterLocker lock(*m_pColorConverterMutex);
+
+	if (m_bMergingSmallFrameEnabled == false)
+		return 0;
+
+	int h1 = iVideoHeight;
+	int w1 = iVideoWidth;
+	int h2 = /* m_iVideoHeight >> 2 */ iSmallHeight;
+	int w2 = /* m_iVideoWidth >> 2 */ iSmallWidth;
+
+	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::Merge_Two_Video h1 %d w1 %d h2 %d w2 %d", h1, w1, h2, w2);
+
+	int iLen1 = h1 * w1 * 3 / 2;
+	int iLen2 = h2 * w2 * 3 / 2;
+
+	int total1 = h1 * w1, total2 = h2 * w2;
+
+	for (int i = iPosY; i<(iPosY + h2); i++)
+	{
+		for (int j = iPosX; j<(iPosX + w2); j++)
+		{
+			int ii = i - iPosY;
+			int jj = j - iPosX;
+			int now1 = i*w1 + j;
+			int now2 = ii*w2 + jj;
+
+			pInData1[now1] = (unsigned char)0;
+			pInData1[getUIndex(h1, w1, i, j, total1)] = (unsigned char)128;
+			pInData1[getVIndex(h1, w1, i, j, total1)] = (unsigned char)128;
+		}
+	}
+
 	return iLen1;
 }
 

@@ -98,6 +98,10 @@ namespace MediaSDK
 		int getUIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 		int getVIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 		int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
+
+		int Merge_Two_Video2(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth);
+		int Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth);
+
 		int Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 		int Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 		int Merge_Two_VideoNV21(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
@@ -110,6 +114,10 @@ namespace MediaSDK
 		void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth);
 		int GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY);
         int RotateI420(unsigned char *pInput, int inHeight, int inWidth, unsigned char *pOutput, int &outHeight, int &outWidth, int rotationParameter);
+	
+	
+		unsigned char m_pSSSmallFrame[(MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH) >> 1];
+
 	private:
 
 		int m_iDeviceHeight;

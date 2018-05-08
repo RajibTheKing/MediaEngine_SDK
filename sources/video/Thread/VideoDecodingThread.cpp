@@ -513,7 +513,16 @@ namespace MediaSDK
 			m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 		}
 
-		this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+		if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+		{
+			this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+			this->m_pColorConverter->Merge_Two_Video2(m_PreviousDecodedFrameConvertedData, 0, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+		}
+		else
+		{
+			this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+		}
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -761,7 +770,16 @@ namespace MediaSDK
 					m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 				}
 
-				this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
+				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+				{
+					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+					this->m_pColorConverter->Merge_Two_Video2(m_DecodedFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+				}
+				else
+				{
+					this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
+				}
 			}
 			//TheKing-->Here
 

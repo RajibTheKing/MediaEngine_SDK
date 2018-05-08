@@ -114,6 +114,8 @@ namespace MediaSDK
 		unsigned char m_DecodedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
         unsigned char m_RotatedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 
+		unsigned char m_ucaTempFrame2[MAX_VIDEO_ENCODER_FRAME_SIZE];
+
 #if defined(TARGET_OS_WINDOWS_PHONE)
 
 		unsigned char m_TempDecodedFrame[ULTRA_MAX_VIDEO_DECODER_FRAME_SIZE];

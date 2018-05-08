@@ -966,6 +966,8 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo)
 	{
+		int nScreenSplitType = LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE;
+
 		if (nullptr == m_pcController)
 		{
 			return false;
@@ -985,7 +987,7 @@ namespace MediaSDK
 
 		if (bReturnedValue)
 		{
-			bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, nCallInLiveType, nCalleeID);
+			bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, nCallInLiveType, nCalleeID, nScreenSplitType);
 		}
 
 		return bReturnedValue;
