@@ -269,6 +269,8 @@ namespace MediaSDK
 
 	void CAudioCallSession::NotifyTraceInfo(int nTR, int nNTR, int sDelay)
 	{
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP] NotifyTraceInfo called, nTR = %d, nNTR= %d, sDelay= %d", nTR, nNTR, sDelay);
+
 		m_nNumTraceReceived += nTR;
 		m_nNumTraceNotReceived += nNTR;
 		m_nSumDelay += sDelay;

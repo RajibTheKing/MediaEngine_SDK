@@ -18,6 +18,9 @@ namespace MediaSDK
 	#define MEDIA_LOGGER_ENABLED
 #endif
 
+#define MEDIA_LOGGER_LOG_LEVEL LOG_DEBUG
+
+
 //#define BENCHMARK_ENABLED
 
 #ifdef LOG_ENABLED
