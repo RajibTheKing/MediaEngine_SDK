@@ -657,8 +657,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 						this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, iHeight / 2, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
 					}
 					else
@@ -670,8 +670,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 						this->m_pColorConverter->Merge_Two_Video3(m_ucaEncodingFrame, 0, iHeight / 2, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
 					}
 					else
@@ -681,8 +681,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 						this->m_pColorConverter->Merge_Two_Video3(m_ucaConvertedEncodingFrame, 0, iHeight / 2, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
 					}
 					else
