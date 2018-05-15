@@ -1,3 +1,7 @@
+Release 12.30.3 (Date: 15-05-2018)
+---------------------------------
+- AUDIO: Fired media internal AEC status. [6172]
+
 Release 12.30.2 (Date: 25-04-2018)
 ---------------------------------
 - AUDIO: Remembering trace history [5910]
