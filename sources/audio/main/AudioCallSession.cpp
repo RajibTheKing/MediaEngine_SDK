@@ -368,7 +368,7 @@ namespace MediaSDK
 		}
 
 		m_pNearEndProcessor->SetDataReadyCallback(this);
-		m_pNearEndProcessor->SetEventCallback(this);
+		m_pNearEndProcessor->SetEventCallback(this, this);
 	}
 
 

@@ -42,7 +42,11 @@ namespace MediaSDK
 		long long GetBaseOfRelativeTime();
 
 		void SetDataReadyCallback(DataReadyListenerInterface* pDataReady) { m_pDataReadyListener = pDataReady; }
-		void SetEventCallback(PacketEventListener* pEventListener) { m_pPacketEventListener = pEventListener; }
+		void SetEventCallback(PacketEventListener* pEventListener, AudioAlarmListener* pAudioAlarmListener)
+		{ 
+			m_pPacketEventListener = pEventListener; 
+			m_pAudioAlarmListener = pAudioAlarmListener;
+		}
 		unsigned int GetNumberOfFrameForChunk();
 		void ClearRecordBuffer();
 		void PushDataInRecordBuffer(short *data, int dataLen);
@@ -103,6 +107,7 @@ namespace MediaSDK
 		AudioLinearBuffer* m_recordBuffer = nullptr;
 
 		DataReadyListenerInterface* m_pDataReadyListener;
+		AudioAlarmListener* m_pAudioAlarmListener = nullptr;
 
 		bool m_bIsLiveStreamingRunning;
 
@@ -127,6 +132,7 @@ namespace MediaSDK
 		bool m_bIsReady;
 		bool m_bAudioEncodingThreadClosed;
 		bool m_bAudioEncodingThreadRunning;
+		bool m_bMediaAECStatusNotified;
 
 		int m_nServiceType;
 		int m_nEntityType;

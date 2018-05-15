@@ -63,7 +63,8 @@ namespace MediaSDK
 		m_llLastFrameRT(0),
 		m_pDataReadyListener(nullptr),
 		m_pPacketEventListener(nullptr),
-		m_bNeedToResetAudioEffects(true)
+		m_bNeedToResetAudioEffects(true),
+		m_bMediaAECStatusNotified(false)
 	{
 		m_recordBuffer = new AudioLinearBuffer(LINEAR_BUFFER_MAX_SIZE);
 
@@ -205,7 +206,9 @@ namespace MediaSDK
 	void AudioNearEndDataProcessor::ResetTrace()
 	{
 		MediaLog(LOG_DEBUG, "Reset Trace Starting")
-		//Trace and Delay Related		
+		//Trace and Delay Related	
+		
+		m_bMediaAECStatusNotified = false;
 		m_llTraceSendingTime = 0;
 		m_llTraceReceivingTime = 0;
 		m_b1stRecordedDataSinceCallStarted = true;
@@ -271,6 +274,7 @@ namespace MediaSDK
 						m_llDelayFraction /= 8;
 
 						m_bTraceRecieved = true;
+						//#Yes.
 
 						memset(psaEncodingAudioData, 0, sizeof(short) * unLength);
 
@@ -492,6 +496,7 @@ namespace MediaSDK
 	int AudioNearEndDataProcessor::IsTraceReceivingProbilityHigh()
 	{
 		MediaLog(LOG_DEBUG, "[NE][ACS][TP] m_fTraceReceivingProbability = %f", m_pAudioCallSession->m_fTraceReceivingProbability);
+
 		return m_pAudioCallSession->m_fTraceReceivingProbability >= TRACE_PROBABILITY_THRESHOLD;
 	}
 
@@ -627,6 +632,17 @@ namespace MediaSDK
 						bTaceBasedEcho = m_b30VerifiedTrace;					
 #elif defined (__ANDROID__) || defined (DESKTOP_C_SHARP)
 						bTaceBasedEcho = m_b30VerifiedTrace || IsTraceReceivingProbilityHigh();
+
+						if (false == m_bMediaAECStatusNotified)
+						{
+							m_bMediaAECStatusNotified = true;
+
+							if (nullptr != m_pAudioAlarmListener)
+							{
+								m_pAudioAlarmListener->FireAudioAlarm(AUDIO_EVENT_MEDIA_AEC_STATUS, (bTaceBasedEcho ? 1 : 0), nullptr);
+								MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] AUDIO_EVENT_MEDIA_AEC_STATUS = %d\n", bTaceBasedEcho);
+							}
+						}
 #endif
 						MediaLog(LOG_DEBUG, "[NE][ACS][ECHO] bTaceBasedEcho = %d\n", bTaceBasedEcho);
 
