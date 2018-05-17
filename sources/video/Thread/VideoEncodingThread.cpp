@@ -653,16 +653,28 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						{
 							CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() yyy bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaEncodingFrame, iHeight, iWidth, m_ucaTempFrame, 288, 480);
+#else
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, 288, 480);
-							// mirror ta check korte hobe 
+#endif
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, 288, 480);
+							
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, 288, 160);
 						}
 						else
 						{
 							CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() xxx bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
 
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaEncodingFrame, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+#else
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-							// mirror ta check korte hobe 
+#endif
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, iHeight / 2, iWidth / 2);
+							
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 						}
 					}	
@@ -676,14 +688,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth))
 						{
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, 288, 480);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, 288, 480);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
 							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, 288, iHeight, iWidth, m_ucaTempFrame2, iHeight - 288, iWidth);
 						}
 						else
 						{
 							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, upperOffset, iWidth);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame1, iHeight / 2, iWidth / 2);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2 - upperOffset, iWidth);
 						}		
