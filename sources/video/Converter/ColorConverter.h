@@ -116,7 +116,7 @@ namespace MediaSDK
         int RotateI420(unsigned char *pInput, int inHeight, int inWidth, unsigned char *pOutput, int &outHeight, int &outWidth, int rotationParameter);
 	
 	
-		unsigned char m_pSSSmallFrame[MAX_FRAME_HEIGHT * MAX_FRAME_WIDTH];
+		unsigned char m_pSSSmallFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 		int m_nOponentHeight;
 		int m_nOponentWidth;
 

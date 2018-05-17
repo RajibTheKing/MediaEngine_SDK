@@ -629,9 +629,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
 				}
 
-				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER)
+				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pColorConverter->GetSmallFrameStatus() == true)
 				{
-
 					int iInsetLowerPadding = (int)((iGotHeight * 10) / 100);
 
 					iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
@@ -642,14 +641,32 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					int iPosX = iWidth - iSmallWidth;
 					int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
+					int upperOffset = 0;
+
 					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 1 iPosX %d, iPosY %d", iPosX, iPosY);
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
-					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-					// mirror ta check korte hobe 
-					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+					{
+						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth))
+						{
+							CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() yyy bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
 
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, 288, 480);
+							// mirror ta check korte hobe 
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, 288, 160);
+						}
+						else
+						{
+							CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() xxx bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
+
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+							// mirror ta check korte hobe 
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						}
+					}	
+					
 					if (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
 					{
 						m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
@@ -657,9 +674,18 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, iHeight / 2, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
+						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth))
+						{
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, 288, 480);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
+							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, 288, iHeight, iWidth, m_ucaTempFrame2, iHeight - 288, iWidth);
+						}
+						else
+						{
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
+						}		
 					}
 					else
 					{
@@ -670,9 +696,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video3(m_ucaEncodingFrame, 0, iHeight / 2, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Merge_Two_Video3(m_ucaEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
 					}
 					else
 					{
@@ -681,9 +707,18 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, iWidth / 2, 0, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video3(m_ucaConvertedEncodingFrame, 0, iHeight / 2, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
+						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth))
+						{
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, 288, 480);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
+							this->m_pColorConverter->Merge_Two_Video3(m_ucaConvertedEncodingFrame, 0, 288, iHeight, iWidth, m_ucaTempFrame2, iHeight - 288, iWidth);
+						}
+						else
+						{
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							this->m_pColorConverter->Merge_Two_Video3(m_ucaConvertedEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth);
+						}		
 					}
 					else
 					{

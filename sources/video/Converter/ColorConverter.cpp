@@ -21,7 +21,9 @@ m_UVPlaneMidPoint(m_YPlaneLength + m_VPlaneLength),
 m_UVPlaneEnd(m_UVPlaneMidPoint + m_VPlaneLength),*/
 m_bMergingSmallFrameEnabled(false),
 m_pCommonElementsBucket(commonElementsBucket),
-m_lfriendID(lfriendID)
+m_lfriendID(lfriendID),
+m_nOponentHeight(1),
+m_nOponentWidth(1)
 
 {
 	CLogPrinter_Write(CLogPrinter::INFO, "CColorConverter::CColorConverter");
