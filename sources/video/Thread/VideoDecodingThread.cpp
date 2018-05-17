@@ -515,7 +515,7 @@ namespace MediaSDK
 
 		if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 		{
-			int upperOffset = 0;
+			int upperOffset = 56;
 
 			if (m_pColorConverter->GetSmallFrameStatus() == true)
 			{
@@ -786,7 +786,7 @@ namespace MediaSDK
 
 				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 				{
-					int upperOffset = 0;
+					int upperOffset = 56;
 
 					if (m_pColorConverter->GetSmallFrameStatus() == true)
 					{
