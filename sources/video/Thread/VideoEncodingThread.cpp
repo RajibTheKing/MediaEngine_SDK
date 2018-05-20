@@ -690,14 +690,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						{
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, 288, 480);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
-							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, 288, iHeight, iWidth, m_ucaTempFrame2, iHeight - 288, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, 288, iHeight, iWidth, iHeight - 288, iWidth);
 						}
 						else
 						{
-							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, upperOffset, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame1, iHeight / 2, iWidth / 2);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-							this->m_pColorConverter->Merge_Two_Video3(m_ucaMirroredFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2 - upperOffset, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
 						}		
 					}
 					else
@@ -709,10 +709,10 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_Video3(m_ucaEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, upperOffset, iWidth);
+						this->m_pColorConverter->Merge_Two_VideoI420(m_ucaEncodingFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
 						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
 						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video3(m_ucaEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2 - upperOffset, iWidth);
+						this->m_pColorConverter->Merge_Two_VideoI420(m_ucaEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
 					}
 					else
 					{
@@ -725,14 +725,14 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						{
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, 288, 480);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
-							this->m_pColorConverter->Merge_Two_Video3(m_ucaConvertedEncodingFrame, 0, 288, iHeight, iWidth, m_ucaTempFrame2, iHeight - 288, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, 288, iHeight, iWidth, iHeight - 288, iWidth);
 						}
 						else
 						{
-							this->m_pColorConverter->Merge_Two_Video3(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame2, upperOffset, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-							this->m_pColorConverter->Merge_Two_Video3(m_ucaConvertedEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2 - upperOffset, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
 						}		
 					}
 					else

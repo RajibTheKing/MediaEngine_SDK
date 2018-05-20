@@ -2139,6 +2139,15 @@ int CColorConverter::Merge_Two_Video2(unsigned char *pInData1, int iPosX, int iP
 
 	for (int i = iPosY; i<(iPosY + h2); i++)
 	{
+		int j = iPosX;
+		int ii = i - iPosY;
+		int jj = j - iPosX;
+		int now1 = i*w1 + j;
+		int now2 = ii*w2 + jj;
+		memcpy(&pInData1[now1], &pSmallData[now2], w2);
+		memcpy(&pInData1[getUIndex(h1, w1, i, j, total1)], &pSmallData[getUIndex(h2, w2, ii, jj, total2)], w2 / 2);
+		memcpy(&pInData1[getVIndex(h1, w1, i, j, total1)], &pSmallData[getVIndex(h2, w2, ii, jj, total2)], w2 / 2);
+		/*
 		for (int j = iPosX; j<(iPosX + w2); j++)
 		{
 			int ii = i - iPosY;
@@ -2150,12 +2159,33 @@ int CColorConverter::Merge_Two_Video2(unsigned char *pInData1, int iPosX, int iP
 			pInData1[getUIndex(h1, w1, i, j, total1)] = pSmallData[getUIndex(h2, w2, ii, jj, total2)];
 			pInData1[getVIndex(h1, w1, i, j, total1)] = pSmallData[getVIndex(h2, w2, ii, jj, total2)];
 		}
+		*/
 	}
 
 	return iLen1;
 }
 
-int CColorConverter::Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth)
+int CColorConverter::Merge_Two_VideoI420(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth)
+{
+	ColorConverterLocker lock(*m_pColorConverterMutex);
+
+	if (m_bMergingSmallFrameEnabled == false)
+		return 0;
+	
+	int totalSize = iVideoHeight * iVideoWidth;
+	int startPoint = iPosY * iVideoWidth + iPosX;
+	int length = iSmallHeight * iSmallWidth;
+	int colorStartPoint1 = totalSize + startPoint / 4;
+	int colorStartPoint2 = totalSize + totalSize / 4 + startPoint / 4;
+
+	memset(pInData1 + startPoint, (unsigned char)0, length);
+	memset(pInData1 + colorStartPoint1, (unsigned char)128, length / 4);
+	memset(pInData1 + colorStartPoint2, (unsigned char)128, length / 4);
+
+	return 0;
+}
+
+int CColorConverter::Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 
@@ -2164,8 +2194,8 @@ int CColorConverter::Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iP
 
 	int h1 = iVideoHeight;
 	int w1 = iVideoWidth;
-	int h2 = /* m_iVideoHeight >> 2 */ iSmallHeight;
-	int w2 = /* m_iVideoWidth >> 2 */ iSmallWidth;
+	int h2 = iSmallHeight;
+	int w2 = iSmallWidth;
 
 	CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::Merge_Two_Video h1 %d w1 %d h2 %d w2 %d", h1, w1, h2, w2);
 
@@ -2176,6 +2206,17 @@ int CColorConverter::Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iP
 
 	for (int i = iPosY; i<(iPosY + h2); i++)
 	{
+		int j = iPosX;
+		int ii = i - iPosY;
+		int jj = j - iPosX;
+		int now1 = i*w1 + j;
+		int now2 = ii*w2 + jj;
+
+		memset(&pInData1[now1], (unsigned char)0, w2);
+		memset(&pInData1[getUIndex(h1, w1, i, j, total1)], (unsigned char)128, w2 / 2);
+		memset(&pInData1[getVIndex(h1, w1, i, j, total1)], (unsigned char)128, w2 / 2);
+
+		/*
 		for (int j = iPosX; j<(iPosX + w2); j++)
 		{
 			int ii = i - iPosY;
@@ -2187,9 +2228,10 @@ int CColorConverter::Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iP
 			pInData1[getUIndex(h1, w1, i, j, total1)] = (unsigned char)128;
 			pInData1[getVIndex(h1, w1, i, j, total1)] = (unsigned char)128;
 		}
+		*/
 	}
 
-	return iLen1;
+	return 0;
 }
 
 int CColorConverter::Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth)
