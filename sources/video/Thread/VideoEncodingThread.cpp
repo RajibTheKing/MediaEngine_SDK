@@ -636,6 +636,11 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 					iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
+					int nSmallFrameHeight;
+					int nSmallFrameWidth;
+
+					this->m_pColorConverter->GetSmallFrame(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth);
+
 					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 000 iInsetLowerPadding %d, iSmallWidth %d, iSmallHeight %d", iInsetLowerPadding, iSmallWidth, iSmallHeight);
 
 					int iPosX = iWidth - iSmallWidth;
@@ -649,7 +654,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth))
+						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
 							CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() yyy bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
 
@@ -661,7 +666,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, 288, 480);
 							
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, 288, 160);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, 288, 160);
 						}
 						else
 						{
@@ -675,7 +680,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, iHeight / 2, iWidth / 2);
 							
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 						}
 					}	
 					
@@ -686,7 +691,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth))
+						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, 288, 480);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
@@ -721,7 +726,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #else
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth))
+						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, 288, 480);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);

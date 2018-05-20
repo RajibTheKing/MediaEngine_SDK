@@ -97,6 +97,7 @@ namespace MediaSDK
 		unsigned char m_ucaTempFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 		unsigned char m_ucaTempFrame1[MAX_VIDEO_ENCODER_FRAME_SIZE];
 		unsigned char m_ucaTempFrame2[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		unsigned char m_ucaOpponentSmallFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 
 		unsigned char m_ucaDummmyFrame[3][MAX_VIDEO_ENCODER_FRAME_SIZE];
 

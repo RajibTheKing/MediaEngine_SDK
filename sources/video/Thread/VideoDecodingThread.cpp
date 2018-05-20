@@ -519,15 +519,20 @@ namespace MediaSDK
 
 			if (m_pColorConverter->GetSmallFrameStatus() == true)
 			{
-				if ((this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth) && (m_pVideoCallSession->GetOponentDeviceType() == DEVICE_TYPE_DESKTOP && m_PreviousDecodingWidth > m_PreviousDecodingHeight))
+				int nSmallFrameHeight;
+				int nSmallFrameWidth;
+
+				this->m_pColorConverter->GetSmallFrame(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth);
+
+				if ((nSmallFrameHeight > nSmallFrameWidth) && (m_pVideoCallSession->GetOponentDeviceType() == DEVICE_TYPE_DESKTOP && m_PreviousDecodingWidth > m_PreviousDecodingHeight))
 				{
-					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, 288, 160);
+					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, 288, 160);
 
 					this->m_pColorConverter->Merge_Two_Video2(m_PreviousDecodedFrameConvertedData, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
 				}
 				else
 				{
-					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 
 					this->m_pColorConverter->Merge_Two_Video2(m_PreviousDecodedFrameConvertedData, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 				}
@@ -790,15 +795,20 @@ namespace MediaSDK
 
 					if (m_pColorConverter->GetSmallFrameStatus() == true)
 					{
-						if ((this->m_pColorConverter->m_nOponentHeight > this->m_pColorConverter->m_nOponentWidth) && (m_pVideoCallSession->GetOponentDeviceType() == DEVICE_TYPE_DESKTOP && m_PreviousDecodingWidth > m_PreviousDecodingHeight))
+						int nSmallFrameHeight;
+						int nSmallFrameWidth;
+
+						this->m_pColorConverter->GetSmallFrame(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth);
+
+						if ((nSmallFrameHeight > nSmallFrameWidth) && (m_pVideoCallSession->GetOponentDeviceType() == DEVICE_TYPE_DESKTOP && m_PreviousDecodingWidth > m_PreviousDecodingHeight))
 						{
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, 288, 160);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, 288, 160);
 
 							this->m_pColorConverter->Merge_Two_Video2(m_DecodedFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
 						}
 						else
 						{
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(this->m_pColorConverter->m_pSSSmallFrame, this->m_pColorConverter->m_nOponentHeight, this->m_pColorConverter->m_nOponentWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 
 							this->m_pColorConverter->Merge_Two_Video2(m_DecodedFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 						}

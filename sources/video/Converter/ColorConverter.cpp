@@ -1315,6 +1315,16 @@ int CColorConverter::CreateFrameBorder(unsigned char* pData, int iHeight, int iW
     return iHeight * iWidth * 3 / 2;
 }
 
+void CColorConverter::GetSmallFrame(unsigned char *smallFrame, int &iHeight, int &iWidth)
+{
+	ColorConverterLocker lock(*m_pColorConverterMutex);
+
+	memcpy(smallFrame, m_pSSSmallFrame, m_nOponentHeight * m_nOponentWidth * 3 / 2);
+
+	iHeight = m_nOponentHeight;
+	iWidth = m_nOponentWidth;
+}
+
 void CColorConverter::SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped, int libraryVersion)
 {
 	ColorConverterLocker lock(*m_pColorConverterMutex);
