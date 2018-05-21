@@ -1,10 +1,18 @@
+Release 13.0 (Date: 21-05-2018)
+---------------------------------
+- VIDEO: Start CallInLive API changed 
+- VIDEO: guest host call provided
+
+
 Release 12.30.3 (Date: 15-05-2018)
 ---------------------------------
 - AUDIO: Fired media internal AEC status. [6172]
 
+
 Release 12.30.2 (Date: 25-04-2018)
 ---------------------------------
 - AUDIO: Remembering trace history [5910]
+
 
 -Remember Trace History
 
@@ -18,17 +26,21 @@ Release 12.30 (Date: 08-04-2018)
 - AUDIO: Broken Audio in Channel [5978]
 - AUDIO: Fix of 12.29.
 
+
 Release 12.29 (Date: 04-04-2018)
 ---------------------------------
 - AUDIO: Relative time has been ignored for Viewer [5944]
+
 
 Release 12.28.2 (Date: 01-04-2018)
 ---------------------------------
 - AUDIO: Traced Based Echo in Live-Call 
 
+
 Release 12.28.1 (Date: 31-03-2018)
 ---------------------------------
 - AUDIO: Fixed no sound issue in desktop call. [5926]
+
 
 Release 12.28 (Date: 28-03-2018)
 ---------------------------------
