@@ -695,7 +695,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						{
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
 							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
 						}
 						else
 						{
