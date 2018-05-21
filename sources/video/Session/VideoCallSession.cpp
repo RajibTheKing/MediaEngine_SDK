@@ -69,6 +69,7 @@ m_bSelfViewOnly(bSelfViewOnly),
 m_nFrameCount(0),
 m_nDUCounter(0),
 m_bDoubleUpdate(false),
+m_nScreenSplitType(LIVE_CALL_SCREEN_SPLIT_TYPE_SUBSET),
 m_bDownscaled(false),
 
 #ifdef OLD_SENDING_THREAD
@@ -2047,13 +2048,19 @@ int CVideoCallSession::GetEntityType()
 	return m_nEntityType;
 }
 
-void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID)
+int CVideoCallSession::GetScreenSplitType()
+{
+	return m_nScreenSplitType;
+}
+
+void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID, int nScreenSplitType)
 {
 	if (m_iRole != 0)
 		return;
 	else
 	{
 		m_nCallInLiveType = nCallInLiveType;
+		m_nScreenSplitType = nScreenSplitType;
 
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
 		{

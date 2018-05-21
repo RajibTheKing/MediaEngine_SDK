@@ -72,7 +72,7 @@ public:
     
 	CFPSController* GetFPSController();
 
-	void StartCallInLive(int nCallInLiveType, int nCalleeID);
+	void StartCallInLive(int nCallInLiveType, int nCalleeID, int nScreenSplitType);
 	void EndCallInLive(int nCalleeID);
 
 	CSendingThreadOfCall *m_pSendingThreadOfCall;
@@ -131,6 +131,7 @@ public:
 	void SetCurrentVideoCallQualityLevel(int nVideoCallQualityLevel);
     int GetServiceType();
 	int GetEntityType();
+	int GetScreenSplitType();
 
 	BitRateController* GetBitRateController();
     bool isLiveVideoStreamRunning();
@@ -247,6 +248,8 @@ private:
 	bool m_bAudioOnlyLive;
 	bool m_bVideoOnlyLive;
 	bool m_bSelfViewOnly;
+
+	int m_nScreenSplitType;
 
 	int m_nCallInLiveType;
 	int m_nFrameCount;

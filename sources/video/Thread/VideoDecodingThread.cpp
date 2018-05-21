@@ -513,7 +513,35 @@ namespace MediaSDK
 			m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 		}
 
-		this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+		if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+		{
+			int upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
+
+			if (m_pColorConverter->GetSmallFrameStatus() == true)
+			{
+				int nSmallFrameHeight;
+				int nSmallFrameWidth;
+
+				this->m_pColorConverter->GetSmallFrame(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth);
+
+				if ((nSmallFrameHeight > nSmallFrameWidth) && (m_pVideoCallSession->GetOponentDeviceType() == DEVICE_TYPE_DESKTOP && m_PreviousDecodingWidth > m_PreviousDecodingHeight))
+				{
+					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+
+					this->m_pColorConverter->Merge_Two_Video2(m_PreviousDecodedFrameConvertedData, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+				}
+				else
+				{
+					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+					this->m_pColorConverter->Merge_Two_Video2(m_PreviousDecodedFrameConvertedData, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+				}
+			}
+		}
+		else
+		{
+			this->m_pColorConverter->Merge_Two_Video(m_PreviousDecodedFrameConvertedData, iPosX, iPosY, m_PreviousDecodingHeight, m_PreviousDecodingWidth);
+		}
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -761,7 +789,35 @@ namespace MediaSDK
 					m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 				}
 
-				this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
+				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+				{
+					int upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
+
+					if (m_pColorConverter->GetSmallFrameStatus() == true)
+					{
+						int nSmallFrameHeight;
+						int nSmallFrameWidth;
+
+						this->m_pColorConverter->GetSmallFrame(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth);
+
+						if ((nSmallFrameHeight > nSmallFrameWidth) && (m_pVideoCallSession->GetOponentDeviceType() == DEVICE_TYPE_DESKTOP && m_PreviousDecodingWidth > m_PreviousDecodingHeight))
+						{
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+
+							this->m_pColorConverter->Merge_Two_Video2(m_DecodedFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+						}
+						else
+						{
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+							this->m_pColorConverter->Merge_Two_Video2(m_DecodedFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						}
+					}
+				}
+				else
+				{
+					this->m_pColorConverter->Merge_Two_Video(m_DecodedFrame, iPosX, iPosY, iHeight, iWidth);
+				}
 			}
 			//TheKing-->Here
 

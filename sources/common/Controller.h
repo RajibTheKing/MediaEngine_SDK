@@ -118,7 +118,7 @@ namespace MediaSDK
 
 		bool StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType);
 		bool EndAudioCallInLive(const long long& lFriendID);
-		bool StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType, int nCalleeID);
+		bool StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType, int nCalleeID, int nScreenSplitType);
 		bool EndVideoCallInLive(const long long& lFriendID, int nCalleeID);
 		bool IsCallInLiveEnabled();
 		void SetCallInLiveEnabled(bool value);

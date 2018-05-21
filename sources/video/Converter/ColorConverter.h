@@ -91,6 +91,7 @@ namespace MediaSDK
 
 		int CreateFrameBorder(unsigned char* pData, int iHeight, int iWidth, int Y, int U, int V);
 		void SetSmallFrame(unsigned char * smallFrame, int iHeight, int iWidth, int nLength, int iTargetHeight, int iTargetWidth, bool bShouldBeCropped, int libraryVersion);
+		void GetSmallFrame(unsigned char * smallFrame, int &iHeight, int &iWidth);
 		int getUIndex(int h, int w, int yVertical, int xHorizontal, int& total);
 		int getVIndex(int h, int w, int yVertical, int xHorizontal, int& total);
 		int getUIndexforNV12(int h, int w, int yVertical, int xHorizontal, int& total);
@@ -98,6 +99,11 @@ namespace MediaSDK
 		int getUIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 		int getVIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 		int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
+
+		int Merge_Two_Video2(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth);
+		int Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth);
+		int Merge_Two_VideoI420(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth);
+
 		int Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 		int Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 		int Merge_Two_VideoNV21(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
@@ -110,6 +116,12 @@ namespace MediaSDK
 		void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth);
 		int GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY);
         int RotateI420(unsigned char *pInput, int inHeight, int inWidth, unsigned char *pOutput, int &outHeight, int &outWidth, int rotationParameter);
+	
+	
+		unsigned char m_pSSSmallFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
+		int m_nOponentHeight;
+		int m_nOponentWidth;
+
 	private:
 
 		int m_iDeviceHeight;
