@@ -964,10 +964,8 @@ namespace MediaSDK
 		}
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo)
+	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo, int nScreenSplitType)
 	{
-		int nScreenSplitType = LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE;
-
 		if (nullptr == m_pcController)
 		{
 			return false;

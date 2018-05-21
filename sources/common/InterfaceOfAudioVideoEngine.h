@@ -98,7 +98,7 @@ namespace MediaSDK
 		bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
 		int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
 
-		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo);
+		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo, int nScreenSplitType);
 		bool EndCallInLive(const IPVLongType llFriendID);
 
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
