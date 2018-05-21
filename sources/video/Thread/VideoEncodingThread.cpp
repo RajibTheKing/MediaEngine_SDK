@@ -646,7 +646,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					int iPosX = iWidth - iSmallWidth;
 					int iPosY = iHeight - iSmallHeight - iInsetLowerPadding;
 
-					int upperOffset = 56;
+					int upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
 
 					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 1 iPosX %d, iPosY %d", iPosX, iPosY);
 
@@ -660,13 +660,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaEncodingFrame, iHeight, iWidth, m_ucaTempFrame, 288, 480);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaEncodingFrame, iHeight, iWidth, m_ucaTempFrame, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
 #else
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, 288, 480);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaConvertedEncodingFrame, iHeight, iWidth, m_ucaTempFrame, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
 #endif
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, 288, 480);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
 							
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, 288, 160);
+							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
 						}
 						else
 						{
@@ -693,9 +693,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, 288, 480);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, 288, iHeight, iWidth, iHeight - 288, iWidth);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
 						}
 						else
 						{
@@ -728,9 +728,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, 288, 480);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 480, 0, iHeight, iWidth, m_ucaTempFrame2, 288, 160);
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, 288, iHeight, iWidth, iHeight - 288, iWidth);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
+							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
 						}
 						else
 						{
