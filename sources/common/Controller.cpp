@@ -242,7 +242,7 @@ bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
 	}
 }
 
-bool CController::SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo)
+bool CController::SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo, bool bDeviceHasAEC)
 {
 	SetTraceInfoLocker lock1(*m_pAudioLockMutex);
 	MediaLog(LOG_INFO, "controller SetTraceInfo adding done");
@@ -252,7 +252,7 @@ bool CController::SetTraceInfo(const long long& lFriendID, int nTraceInfoLength,
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->SetTraceInfo(nTraceInfoLength, npTraceInfo);
+		pAudioSession->SetTraceInfo(nTraceInfoLength, npTraceInfo, bDeviceHasAEC);
 		return true;
 	}
 	else

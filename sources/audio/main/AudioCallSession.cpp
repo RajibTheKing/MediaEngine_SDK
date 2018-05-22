@@ -283,7 +283,7 @@ namespace MediaSDK
 		FireAudioAlarm(AUDIO_EVENT_TRACE_NOTIFICATION, 3, nTraceInfoArray);
 	}
 
-	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * nTraceInfoArray)
+	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * nTraceInfoArray, bool bDeviceHasAEC)
 	{
 		if (nTraceInfoLength < 3)
 		{

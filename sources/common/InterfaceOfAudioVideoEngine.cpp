@@ -105,34 +105,34 @@ namespace MediaSDK
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, acParams.nAudioSpeakerType, true);
 		if (bReturnedValue)
 		{
-			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo);
+			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 		}
 
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder)
+	bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong llFriendID, int iVolume, bool bRecorder)
 	{
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->SetVolume(lFriendID, iVolume, bRecorder);
+		bool bReturnedValue = m_pcController->SetVolume(llFriendID, iVolume, bRecorder);
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, AudioCallParams acParams)
+	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong llFriendID, AudioCallParams acParams)
 	{
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->SetSpeakerType(lFriendID, acParams.nAudioSpeakerType);
+		bool bReturnedValue = m_pcController->SetSpeakerType(llFriendID, acParams.nAudioSpeakerType);
 		if (bReturnedValue)
 		{
-			bReturnedValue = m_pcController->SetTraceInfo(lFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo);
+			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 		}
 		return bReturnedValue;
 	}
@@ -955,7 +955,7 @@ namespace MediaSDK
 		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
 		if (bReturnedValue)
 		{
-			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo);
+			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 		}
 
 		m_pcController->SetCallInLiveEnabled(true);

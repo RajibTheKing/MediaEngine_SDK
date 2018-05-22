@@ -79,7 +79,7 @@ namespace MediaSDK
 		void SetMicrophoneMode(bool bMicrophoneEnable);
 
 		void NotifyTraceInfo(int nTR, int nNTR, int sDelay);
-		void SetTraceInfo(int nTraceInfoLength, int * npTraceInfo);
+		void SetTraceInfo(int nTraceInfoLength, int * npTraceInfo, bool bDeviceHasAEC);
 
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.
