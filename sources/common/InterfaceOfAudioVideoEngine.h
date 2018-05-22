@@ -102,9 +102,6 @@ namespace MediaSDK
 		void NotifyCameraMode(const LongLong lFriendID, bool bCameraEnable);
 		void NotifyMicrophoneMode(const LongLong lFriendID, bool bMicrophoneEnable);
 
-		bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
-		int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
-
 		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nScreenSplitType, AudioCallParams acParams);
 		bool EndCallInLive(const IPVLongType llFriendID);
 

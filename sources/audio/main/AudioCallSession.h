@@ -63,7 +63,7 @@ namespace MediaSDK
 		void EndCallInLive();
 
 		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);
-		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
+
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags);
@@ -77,7 +77,6 @@ namespace MediaSDK
 		void SetSpeakerType(int iSpeakerType);
 		void SetCameraMode(bool bCameraEnable);
 		void SetMicrophoneMode(bool bMicrophoneEnable);
-		void SetEchoCanceller(bool bOn);
 
 		void NotifyTraceInfo(int nTR, int nNTR, int sDelay);
 		void SetTraceInfo(int nTraceInfoLength, int * npTraceInfo);

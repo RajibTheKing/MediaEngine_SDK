@@ -155,18 +155,6 @@ namespace MediaSDK
 		m_pcController->SetMicrophoneMode(lFriendID, bMicrophoneEnable);
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bool bOn)
-	{
-		if (nullptr == m_pcController)
-		{
-			return false;
-		}
-
-		bool bReturnedValue = m_pcController->SetEchoCanceller(lFriendID, bOn);
-
-		return bReturnedValue;
-	}
-
 	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType)
 	{
         CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth, iAudioCodecType) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth, iAudioCodecType);
@@ -498,17 +486,6 @@ namespace MediaSDK
 		return iReturnedValue;
 	}
 
-	int CInterfaceOfAudioVideoEngine::CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength)
-	{
-		if (nullptr == m_pcController)
-		{
-			return false;
-		}
-
-		int iReturnedValue = m_pcController->CancelAudioData(llFriendID, in_data, unLength);
-
-		return iReturnedValue;
-	}
 
 
 	int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)

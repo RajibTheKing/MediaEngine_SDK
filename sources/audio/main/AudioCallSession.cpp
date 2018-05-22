@@ -399,12 +399,6 @@ namespace MediaSDK
 		m_pFarEndProcessor->SetEventCallback(this, this, this);
 	}
 
-
-	void CAudioCallSession::SetEchoCanceller(bool bOn)
-	{
-
-	}
-
 	bool CAudioCallSession::SetAudioQuality(int level)
 	{
 		if (level < 1 || level > 3) return false;
@@ -566,10 +560,6 @@ namespace MediaSDK
 		return 0;
 	}
 
-	int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
-	{
-		return true;
-	}
 
 	void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 	{

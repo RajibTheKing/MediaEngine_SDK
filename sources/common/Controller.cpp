@@ -287,24 +287,6 @@ void CController::SetMicrophoneMode(const long long& lFriendID, bool bMicrophone
 	}
 }
 
-bool CController::SetEchoCanceller(const long long& lFriendID, bool bOn)
-{
-	SetEchoCancellerLocker lock1(*m_pAudioLockMutex);
-	CAudioCallSession* pAudioSession;
-	//return false;
-
-	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
-	if (bExist)
-	{
-		pAudioSession->SetEchoCanceller(bOn);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 bool CController::StartTestAudioCall(const long long& lFriendID)
 {
 	CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() called");
@@ -690,28 +672,6 @@ int CController::SendAudioData(const long long& lFriendID, short *in_data, unsig
             return ret;
 		}
 		
-	}
-	else
-	{
-		return -1;
-	}
-}
-
-int CController::CancelAudioData(const long long& lFriendID, short *in_data, unsigned int in_size)
-{
-	CancelAudioDataLocker lock2(*m_pAudioLockMutex);
-	CAudioCallSession* pAudioSession;
-
-	CLogPrinter_Write(CLogPrinter::INFO, "CController::CancelAudioData");
-
-	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
-
-	CLogPrinter_Write(CLogPrinter::INFO, "CController::SendAudioData audio session exists");
-
-	if (bExist)
-	{
-		int ret = pAudioSession->CancelAudioData(in_data, in_size);
-		return ret;		
 	}
 	else
 	{

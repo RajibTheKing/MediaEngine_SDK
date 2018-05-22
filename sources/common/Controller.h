@@ -47,7 +47,7 @@ namespace MediaSDK
 		bool SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo);
 		void SetCameraMode(const long long& lFriendID, bool bCameraEnable);
 		void SetMicrophoneMode(const long long& lFriendID, bool bMicrophoneEnable);
-		bool SetEchoCanceller(const long long& lFriendID, bool bOn);
+
 		bool StartVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int nServiceType, int nChannelType, int nEntityType, int iNetworkType, bool bAudioOnlyLive, bool bSelfViewOnly);
 		bool StartTestAudioCall(const long long& lFriendID);
 		CVideoCallSession* StartTestVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
@@ -56,7 +56,7 @@ namespace MediaSDK
 		int PushPacketForDecodingVector(const long long& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime);
 		int PushAudioForDecoding(const long long& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 		int SendAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
-		int CancelAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
+
 		int SendVideoData(const long long& lFriendID, unsigned char *in_data, unsigned int in_size, unsigned int orientation_type, int device_orientation);
 		int SetEncoderHeightWidth(const long long& lFriendID, int height, int width, int nDataType);
 		int SetDeviceDisplayHeightWidth(int height, int width);
