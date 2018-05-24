@@ -2873,6 +2873,9 @@ void CColorConverter::ClearSmallScreen()
 	ColorConverterLocker lock(*m_pColorConverterMutex);
 
 	m_bMergingSmallFrameEnabled = false;
+
+	m_iSmallFrameHeight = 0;
+	m_iSmallFrameWidth = 0;
 }
 
 bool CColorConverter::GetSmallFrameStatus()
