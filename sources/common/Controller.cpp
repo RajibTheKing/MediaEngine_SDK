@@ -1563,10 +1563,14 @@ bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLi
 	StartCallInLiveLocker lock(*m_pVideoSendMutex);
 	StartCallInLiveLocker lock2(*m_pVideoReceiveMutex);
 
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG || CO_HOST_CALL_LOG, "CController::StartVideoCallInLive called 1 ID %lld nCallInLiveType %d nCalleeID %d nScreenSplitType %d", lFriendID, nCallInLiveType, nCalleeID, nScreenSplitType);
+
 	bool bExist = m_pCommonElementsBucket->m_pVideoCallSessionList->IsVideoSessionExist(lFriendID, pVideoSession);
 	
 	if (bExist)
 	{
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG || CO_HOST_CALL_LOG, "CController::StartVideoCallInLive called 2 ID %lld nCallInLiveType %d nCalleeID %d nScreenSplitType %d", lFriendID, nCallInLiveType, nCalleeID, nScreenSplitType);
+
 		pVideoSession->StartCallInLive(nCallInLiveType, nCalleeID, nScreenSplitType);
 
 		return true;
@@ -1575,6 +1579,8 @@ bool CController::StartVideoCallInLive(const long long& lFriendID, int nCallInLi
 	{
 		return false;
 	}
+
+	CLogPrinter_LOG(API_FLOW_CHECK_LOG || CO_HOST_CALL_LOG, "CController::StartVideoCallInLive done ID %lld nCallInLiveType %d nCalleeID %d nScreenSplitType %d", lFriendID, nCallInLiveType, nCalleeID, nScreenSplitType);
 }
 
 bool CController::EndVideoCallInLive(const long long& lFriendID, int nCalleeID)

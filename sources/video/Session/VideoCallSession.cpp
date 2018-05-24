@@ -2062,6 +2062,8 @@ void CVideoCallSession::StartCallInLive(int nCallInLiveType, int nCalleeID, int 
 		m_nCallInLiveType = nCallInLiveType;
 		m_nScreenSplitType = nScreenSplitType;
 
+		CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoCallSession::StartCallInLive nCallInLiveType %d nCalleeID %d nScreenSplitType %d", nCallInLiveType, nCalleeID, nScreenSplitType);
+
 		if (m_nEntityType == ENTITY_TYPE_PUBLISHER)
 		{
 			SetFirstVideoPacketTime(-1);

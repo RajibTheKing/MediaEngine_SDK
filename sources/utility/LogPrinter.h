@@ -67,6 +67,7 @@
 #define MULTI_RESOLUTION_LOG    OFF
 #define LIVE_INSET_LOG			OFF
 #define BUFFER_SIZE_LOG         OFF
+#define CO_HOST_CALL_LOG        OFF
 
 
 

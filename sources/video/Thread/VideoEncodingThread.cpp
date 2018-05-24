@@ -652,11 +652,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
+					CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
+
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
-							CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() yyy bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
+							CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() 1 nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -670,7 +672,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						}
 						else
 						{
-							CLogPrinter_LOG(BITRATE_INFO_LOG, "CVideoEncodingThread::EncodingThreadProcedure() xxx bitrate %d maxBitrate %d", m_pVideoEncoder->GetBitrate(), m_pVideoEncoder->GetMaxBitrate());
+							CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() 2 nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
