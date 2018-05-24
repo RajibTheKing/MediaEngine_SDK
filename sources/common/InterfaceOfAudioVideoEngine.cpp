@@ -966,7 +966,7 @@ namespace MediaSDK
 
 	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo, int nScreenSplitType)
 	{
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG || CO_HOST_CALL_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 1 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", lFriendID, iRole, nCallInLiveType, nScreenSplitType);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 1 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", llFriendID, iRole, nCallInLiveType, nScreenSplitType);
 
 		if (nullptr == m_pcController)
 		{
@@ -981,7 +981,7 @@ namespace MediaSDK
 
 		if (bReturnedValue)
 		{
-			CLogPrinter_LOG(API_FLOW_CHECK_LOG || CO_HOST_CALL_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 2 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", lFriendID, iRole, nCallInLiveType, nScreenSplitType);
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 2 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", llFriendID, iRole, nCallInLiveType, nScreenSplitType);
 
 			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, nTraceInfoLength, npTraceInfo);
 		}
@@ -990,12 +990,12 @@ namespace MediaSDK
 
 		if (bReturnedValue)
 		{
-			CLogPrinter_LOG(API_FLOW_CHECK_LOG || CO_HOST_CALL_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 3 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", lFriendID, iRole, nCallInLiveType, nScreenSplitType);
+			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 3 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", llFriendID, iRole, nCallInLiveType, nScreenSplitType);
 
 			bReturnedValue = m_pcController->StartVideoCallInLive(llFriendID, nCallInLiveType, nCalleeID, nScreenSplitType);
 		}
 
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG || CO_HOST_CALL_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive done ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", lFriendID, iRole, nCallInLiveType, nScreenSplitType);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive done ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", llFriendID, iRole, nCallInLiveType, nScreenSplitType);
 
 		return bReturnedValue;
 	}
