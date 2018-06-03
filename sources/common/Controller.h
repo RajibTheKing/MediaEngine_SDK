@@ -30,6 +30,7 @@ namespace MediaSDK
 
 	} VideoQuality;
 
+	struct AudioCallParams;
 
 	class CController
 	{
@@ -41,10 +42,10 @@ namespace MediaSDK
 		~CController();
 
 		bool SetUserName(const long long& lUserName);
-		bool StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, bool bOpusCodec);
+		bool StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, bool bOpusCodec, AudioCallParams acParams);
 		bool SetVolume(const long long& lFriendID, int iVolume, bool bRecorder);		
-		bool SetSpeakerType(const long long& lFriendID, int iSpeakerType);
-		bool SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo, bool bDeviceHasAEC);
+		bool SetSpeakerType(const long long& lFriendID, AudioCallParams acParams);
+
 		void SetCameraMode(const long long& lFriendID, bool bCameraEnable);
 		void SetMicrophoneMode(const long long& lFriendID, bool bMicrophoneEnable);
 

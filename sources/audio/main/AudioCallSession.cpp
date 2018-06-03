@@ -60,7 +60,9 @@
 
 namespace MediaSDK
 {
-	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType, bool bOpusCodec) :
+	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, bool bOpusCodec,
+	AudioCallParams acParams
+		) :
 		m_bIsVideoCallRunning(isVideoCallRunning),
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
@@ -111,7 +113,7 @@ namespace MediaSDK
 			}
 		}
 
-		m_iSpeakerType = nAudioSpeakerType;
+		m_iSpeakerType = acParams.nAudioSpeakerType;
 
 		SetSendFunction(pSharedObject->GetSendFunctionPointer());
 		SetEventNotifier(pSharedObject->m_pEventNotifier);
@@ -185,7 +187,9 @@ namespace MediaSDK
 			m_cFarEndProcessorThread->StartFarEndThread();
 		}
 
-		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d\n", nAudioSpeakerType);
+		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d\n", acParams.nAudioSpeakerType);
+
+		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 	}
@@ -569,7 +573,7 @@ namespace MediaSDK
 		}
 	}
 
-	void CAudioCallSession::SetSpeakerType(int iSpeakerType)
+	void CAudioCallSession::SetSpeakerType(AudioCallParams acParams)
 	{
 		m_bRecordingStarted = false;
 		//if (m_iSpeakerType != iSpeakerType)
@@ -577,7 +581,8 @@ namespace MediaSDK
 			m_pNearEndProcessor->ClearRecordBuffer();
 			m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
 		}
-		m_iSpeakerType = iSpeakerType;
+		m_iSpeakerType = acParams.nAudioSpeakerType;
+		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 	}
 
 	void CAudioCallSession::SetCameraMode(bool bCameraEnable)

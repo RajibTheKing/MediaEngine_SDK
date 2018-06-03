@@ -175,7 +175,7 @@ bool CController::SetUserName(const long long& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, bool bOpusCodec)
+bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, bool bOpusCodec, AudioCallParams acParams)
 {
 	StartAudioCallLocker lock3(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
@@ -192,7 +192,7 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
 		MediaLog(LOG_INFO, "[C] OpusCodec %d", (int)bOpusCodec);
-		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, nAudioSpeakerType, bOpusCodec);
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, bOpusCodec, acParams);
 		MediaLog(LOG_INFO, "controller ac done");
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 		MediaLog(LOG_INFO, "controller list adding done");
@@ -224,7 +224,7 @@ bool CController::SetVolume(const long long& lFriendID, int iVolume, bool bRecor
 	}
 }
 
-bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
+bool CController::SetSpeakerType(const long long& lFriendID, AudioCallParams acParams)
 {
 	SetLoudSpeakerLocker lock1(*m_pAudioLockMutex);
 
@@ -233,26 +233,7 @@ bool CController::SetSpeakerType(const long long& lFriendID, int iSpeakerType)
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->SetSpeakerType(iSpeakerType);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool CController::SetTraceInfo(const long long& lFriendID, int nTraceInfoLength, int * npTraceInfo, bool bDeviceHasAEC)
-{
-	SetTraceInfoLocker lock1(*m_pAudioLockMutex);
-	MediaLog(LOG_INFO, "controller SetTraceInfo adding done");
-
-	CAudioCallSession* pAudioSession;
-
-	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
-	if (bExist)
-	{
-		pAudioSession->SetTraceInfo(nTraceInfoLength, npTraceInfo, bDeviceHasAEC);
+		pAudioSession->SetSpeakerType(acParams);
 		return true;
 	}
 	else
@@ -304,7 +285,9 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 		audioSessionOptions.SetOptions(SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
 		AudioResources audioResources(audioSessionOptions);
 
-		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, AUDIO_PLAYER_DEFAULT, true);
+		AudioCallParams acParams;
+
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, true, acParams);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 

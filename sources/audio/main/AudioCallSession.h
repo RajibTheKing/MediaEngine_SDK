@@ -45,6 +45,7 @@ namespace MediaSDK
 	class CAudioByteBuffer;
 	class SessionStatisticsInterface;
 	class CAudioCallInfo;
+	struct AudioCallParams;
 
 	class CAudioCallSession : 
 		public DataReadyListenerInterface,
@@ -56,7 +57,8 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType, bool bOpusCodec);
+		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, bool bOpusCodec,
+			AudioCallParams acParams);
 		~CAudioCallSession();
 
 		void StartCallInLive(int iRole, int nCallInLiveType);
@@ -74,7 +76,7 @@ namespace MediaSDK
 
 		void SetCallInLiveType(int nCallInLiveType);
 		void SetVolume(int iVolume, bool bRecorder);
-		void SetSpeakerType(int iSpeakerType);
+		void SetSpeakerType(AudioCallParams acParams);
 		void SetCameraMode(bool bCameraEnable);
 		void SetMicrophoneMode(bool bMicrophoneEnable);
 

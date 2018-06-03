@@ -80,6 +80,26 @@ namespace MediaSDK
 		int nTraceInfoLength;
 		int * npTraceInfo;
 		bool bDeviceHasAEC;
+		std::string sManuName;
+		std::string sModelName;
+		std::string sOSVersion;
+		std::string sSDKVersion;
+
+	private:
+		int a_npTraceInfo[3];
+	public:
+		AudioCallParams()
+		{
+			a_npTraceInfo[0] = a_npTraceInfo[1] = a_npTraceInfo[2] = 0;
+			bDeviceHasAEC = true;
+			nAudioSpeakerType = AUDIO_PLAYER_DEFAULT;
+			nTraceInfoLength = 3;
+			npTraceInfo = a_npTraceInfo;
+			sManuName = "";
+			sModelName = "";
+			sOSVersion = "";
+			sSDKVersion = "";
+		}
 	};
 
 	class CInterfaceOfAudioVideoEngine
@@ -107,7 +127,7 @@ namespace MediaSDK
 
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
-		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType);
+		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType, AudioCallParams acParams);
 		bool StartChannelView(const IPVLongType llFriendID, int nChannelType);
 
 		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive);

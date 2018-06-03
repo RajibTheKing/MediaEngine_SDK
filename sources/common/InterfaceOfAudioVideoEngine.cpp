@@ -102,11 +102,8 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, acParams.nAudioSpeakerType, true);
-		if (bReturnedValue)
-		{
-			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
-		}
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType,  true,
+			acParams);
 
 		return bReturnedValue;
 	}
@@ -129,11 +126,8 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->SetSpeakerType(llFriendID, acParams.nAudioSpeakerType);
-		if (bReturnedValue)
-		{
-			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
-		}
+		bool bReturnedValue = m_pcController->SetSpeakerType(llFriendID, acParams);
+	
 		return bReturnedValue;
 	}
 
@@ -155,7 +149,7 @@ namespace MediaSDK
 		m_pcController->SetMicrophoneMode(lFriendID, bMicrophoneEnable);
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType)
+	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType, AudioCallParams acParams)
 	{
         CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth, iAudioCodecType) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth, iAudioCodecType);
 
@@ -189,7 +183,7 @@ namespace MediaSDK
 
 		bool bAudioCodecOpus = (AudioCodecType::AUDIO_CODEC_OPUS == iAudioCodecType);	//Enable opus codec for livestreaming.
 		
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER, bAudioCodecOpus);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, bAudioCodecOpus, acParams);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
@@ -214,7 +208,8 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT, true);
+		AudioCallParams acParams;
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, true, acParams);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
@@ -953,10 +948,6 @@ namespace MediaSDK
 		int nCalleeID = 1;
 
 		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
-		if (bReturnedValue)
-		{
-			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
-		}
 
 		m_pcController->SetCallInLiveEnabled(true);
 
