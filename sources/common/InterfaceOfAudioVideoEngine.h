@@ -83,7 +83,7 @@ namespace MediaSDK
 		std::string sManuName;
 		std::string sModelName;
 		std::string sOSVersion;
-		std::string sSDKVersion;
+		int nSDKVersion;
 
 	private:
 		int a_npTraceInfo[3];
@@ -98,7 +98,7 @@ namespace MediaSDK
 			sManuName = "";
 			sModelName = "";
 			sOSVersion = "";
-			sSDKVersion = "";
+			nSDKVersion = 0;
 		}
 	};
 
