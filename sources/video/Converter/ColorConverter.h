@@ -100,9 +100,9 @@ namespace MediaSDK
 		int getVIndexforNV21(int h, int w, int yVertical, int xHorizontal, int& total);
 		int Merge_Two_Video(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 
-		int Merge_Two_Video2(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth);
-		int Merge_Two_Video3(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth);
-		int Merge_Two_VideoI420(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth);
+		int Merge_Two_Video2(bool force, unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, unsigned char *pSmallData, int iSmallHeight, int iSmallWidth);
+		int Merge_Two_Video3(bool force, unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth);
+		int Merge_Two_VideoI420(bool force, unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth, int iSmallHeight, int iSmallWidth);
 
 		int Merge_Two_Video_With_Round_Corner(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);
 		int Merge_Two_VideoNV12(unsigned char *pInData1, int iPosX, int iPosY, int iVideoHeight, int iVideoWidth);

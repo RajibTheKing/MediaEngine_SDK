@@ -629,6 +629,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
 				}
 
+				CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 001 GetEntityType %d, GetSmallFrameStatus %d, GetScreenSplitType %d GetCallInLiveType %d", m_pVideoCallSession->GetEntityType(), m_pColorConverter->GetSmallFrameStatus(), m_pVideoCallSession->GetScreenSplitType(), m_pVideoCallSession->GetCallInLiveType());
+
 				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pColorConverter->GetSmallFrameStatus() == true || (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE && m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_ONLY)))
 				{
 					int iInsetLowerPadding = (int)((iGotHeight * 10) / 100);
@@ -648,7 +650,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					int upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
 
-					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 1 iPosX %d, iPosY %d", iPosX, iPosY);
+					bool audioOnlyCall = m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_ONLY;
+
+					CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 1 iPosX %d, iPosY %d audioOnlyCall %d GetCallInLiveType %d", iPosX, iPosY, audioOnlyCall, m_pVideoCallSession->GetCallInLiveType());
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
@@ -668,7 +672,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
 							
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+							if(m_pVideoCallSession->GetCallInLiveType() != CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+								this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
 						}
 						else
 						{
@@ -682,29 +687,48 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 #endif
 							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaMirroredFrame, iHeight, iWidth, m_ucaTempFrame1, iHeight / 2, iWidth / 2);
 							
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							if (m_pVideoCallSession->GetCallInLiveType() != CALL_IN_LIVE_TYPE_AUDIO_ONLY)
+								this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
 						}
 					}	
 					
 					if (m_pVideoCallSession->GetOwnDeviceType() != DEVICE_TYPE_DESKTOP)
 					{
+						CLogPrinter_LOG(LIVE_INSET_LOG, "CVideoEncodingThread::EncodingThreadProcedure() zzz iGotWidth %d iGotHeight %d nSmallFrameHeight %d nSmallFrameWidth %d", iGotWidth, iGotHeight, nSmallFrameHeight, nSmallFrameWidth);
+
 						m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 					}
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
+						CLogPrinter_LOG(LIVE_INSET_LOG, "CVideoEncodingThread::EncodingThreadProcedure() qqq iGotWidth %d iGotHeight %d nSmallFrameHeight %d nSmallFrameWidth %d", iGotWidth, iGotHeight, nSmallFrameHeight, nSmallFrameWidth);
+
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
+							CLogPrinter_LOG(LIVE_INSET_LOG, "CVideoEncodingThread::EncodingThreadProcedure() www iGotWidth %d iGotHeight %d nSmallFrameHeight %d nSmallFrameWidth %d", iGotWidth, iGotHeight, nSmallFrameHeight, nSmallFrameWidth);
+
+							this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaMirroredFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame1, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
+
+							if(audioOnlyCall)
+								this->m_pColorConverter->Merge_Two_Video3(audioOnlyCall, m_ucaMirroredFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+							else
+								this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaMirroredFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+
+							this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaMirroredFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
 						}
 						else
 						{
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame1, iHeight / 2, iWidth / 2);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaMirroredFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaMirroredFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
+							CLogPrinter_LOG(LIVE_INSET_LOG, "CVideoEncodingThread::EncodingThreadProcedure() eee iGotWidth %d iGotHeight %d nSmallFrameHeight %d nSmallFrameWidth %d", iGotWidth, iGotHeight, nSmallFrameHeight, nSmallFrameWidth);
+
+							this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaMirroredFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
+							this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaMirroredFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame1, iHeight / 2, iWidth / 2);
+
+							if (audioOnlyCall)
+								this->m_pColorConverter->Merge_Two_Video3(audioOnlyCall, m_ucaMirroredFrame, iWidth / 2, upperOffset, iHeight, iWidth, iHeight / 2, iWidth / 2);
+							else
+								this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaMirroredFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+							this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaMirroredFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
 						}		
 					}
 					else
@@ -716,10 +740,15 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
-						this->m_pColorConverter->Merge_Two_VideoI420(m_ucaEncodingFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_Video2(m_ucaEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-						this->m_pColorConverter->Merge_Two_VideoI420(m_ucaEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
+						this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaEncodingFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
+						this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+
+						if (audioOnlyCall)
+							this->m_pColorConverter->Merge_Two_Video3(audioOnlyCall, m_ucaEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, iHeight / 2, iWidth / 2);
+						else
+							this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+						this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
 					}
 					else
 					{
@@ -730,16 +759,26 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
+							this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, m_ucaTempFrame, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH);
+
+							if (audioOnlyCall)
+								this->m_pColorConverter->Merge_Two_Video3(audioOnlyCall, m_ucaConvertedEncodingFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+							else
+								this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaConvertedEncodingFrame, SPLIT_TYPE_DEVICE_DESKTOP_WIDTH, 0, iHeight, iWidth, m_ucaTempFrame2, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH);
+							
+							this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaConvertedEncodingFrame, 0, SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iHeight, iWidth, iHeight - SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT, iWidth);
 						}
 						else
 						{
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
-							this->m_pColorConverter->Merge_Two_Video2(m_ucaConvertedEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
-							this->m_pColorConverter->Merge_Two_VideoI420(m_ucaConvertedEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
+							this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaConvertedEncodingFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
+							this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaConvertedEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
+							
+							if (audioOnlyCall)
+								this->m_pColorConverter->Merge_Two_Video3(audioOnlyCall, m_ucaConvertedEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, iHeight / 2, iWidth / 2);
+							else
+								this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaConvertedEncodingFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+							this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaConvertedEncodingFrame, 0, iHeight / 2 + upperOffset, iHeight, iWidth, iHeight / 2 - upperOffset, iWidth);
 						}		
 					}
 					else
