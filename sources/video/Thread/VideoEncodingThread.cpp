@@ -629,7 +629,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
 				}
 
-				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && m_pColorConverter->GetSmallFrameStatus() == true)
+				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pColorConverter->GetSmallFrameStatus() == true || (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE && m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_ONLY)))
 				{
 					int iInsetLowerPadding = (int)((iGotHeight * 10) / 100);
 
