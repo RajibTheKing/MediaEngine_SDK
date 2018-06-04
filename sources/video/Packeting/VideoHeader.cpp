@@ -42,6 +42,9 @@
 #define VIDEO_HEIGTH_FOURTH_INDEX 39
 #define VIDEO_WIDTH_FOURTH_INDEX 40
 
+//Inset Upper offset
+#define INSET_UPPER_OFFSET_INDEX 41
+
 #define QUALITY_BITS_N      3
 #define ORIENTATION_BITS_N  2
 
@@ -108,6 +111,9 @@ namespace MediaSDK
         m_iVideoHeightFourth = 0; //1 byte
         m_iVideoWidthFourth = 0; //1 byte
         
+        //Inset Upper Offset
+        m_iInsetUppderOffset = 0; //2 byte
+        
 
 	}
 
@@ -145,7 +151,7 @@ namespace MediaSDK
 		SetInsetWidths(headerData + INSET_HEIGHT_WIDTH_INDEX, m_nNumberOfInset);    nowIndex += 2;
         
         
-        if(m_iVersionCode == 2 || m_iVersionCode == 3 || m_iVersionCode == 4 || m_iVersionCode == 5)
+        if(m_iVersionCode == 2 || m_iVersionCode == 3 || m_iVersionCode == 4 || m_iVersionCode == 5 || m_iVersionCode == 6)
         {
             printf("here inside new Header parsing\n");
             SetSigmaValue(headerData + SIGMA_VALUE_INDEX);                          nowIndex += 1;
@@ -156,23 +162,27 @@ namespace MediaSDK
             
         }
         
-        if(m_iVersionCode == 3 || m_iVersionCode == 4 || m_iVersionCode == 5)
+        if(m_iVersionCode == 3 || m_iVersionCode == 4 || m_iVersionCode == 5 || m_iVersionCode == 6)
         {
             SetLiveVideoQualityLevel(headerData + LIVE_VIDEO_QUALITY_LEVEL_INDEX);  nowIndex += 1;
         }
         
-        if(m_iVersionCode == 4 || m_iVersionCode == 5)
+        if(m_iVersionCode == 4 || m_iVersionCode == 5 || m_iVersionCode == 6)
         {
             setLiveStreamVideoBitrate(headerData + LIVE_STREAM_VIDEO_BITRATE_INDEX);         nowIndex += 3;
             setLiveStreamVideoMaxBitrate(headerData + LIVE_STREAM_VIDEO_MAX_BITRATE_INDEX);  nowIndex += 3;
         }
         
-        if(m_iVersionCode == 5)
+        if(m_iVersionCode == 5 || m_iVersionCode == 6)
         {
             setVideoHeightFourth(headerData + VIDEO_HEIGTH_FOURTH_INDEX);                   nowIndex += 1;
             setVideoWidthFourth(headerData + VIDEO_WIDTH_FOURTH_INDEX);                     nowIndex += 1;
         }
         
+        if(m_iVersionCode == 6)
+        {
+            setInsetUpperOffset(headerData + INSET_UPPER_OFFSET_INDEX);                     nowIndex += 2;
+        }
 	}
     
 	void CVideoHeader::SetPacketHeader(unsigned char packetType,
@@ -202,7 +212,8 @@ namespace MediaSDK
                                        int iLiveStreamBitrate,
                                        int iLiveStreamMaxBitrate,
                                        int iVideoHeightFourth,
-                                       int iVideoWidthFourth
+                                       int iVideoWidthFourth,
+                                       int iInsetUpperOffset
                                        
 		)
 	{
@@ -258,6 +269,9 @@ namespace MediaSDK
         //VideoHeightWidth by 4
         m_iVideoHeightFourth = iVideoHeightFourth;
         m_iVideoWidthFourth = iVideoWidthFourth;
+        
+        //InsetUpperOffset
+        m_iInsetUppderOffset = iInsetUpperOffset;
     }
 
 	void CVideoHeader::ShowDetails(string sTag)
@@ -650,6 +664,11 @@ namespace MediaSDK
     void CVideoHeader::setVideoWidthFourth(unsigned char *pData)
     {
         m_iVideoWidthFourth = (int)pData[0];
+    }
+    
+    void CVideoHeader::setInsetUpperOffset(unsigned char *pData)
+    {
+        m_iInsetUppderOffset = GetIntFromChar(pData, 0, 2);
     }
 
     

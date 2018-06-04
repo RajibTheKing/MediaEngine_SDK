@@ -7,7 +7,7 @@
 #include <string>
 #include <bitset>
 
-#define VIDEO_HEADER_LENGTH 41
+#define VIDEO_HEADER_LENGTH 43
 #define LIBRARY_VERSION 9
 
 namespace MediaSDK
@@ -48,7 +48,8 @@ namespace MediaSDK
                              int iLiveStreamBitrate,
                              int iLiveStreamMaxBitrate,
                              int iVideoHeightFourth,
-                             int iVideoWidthFourth
+                             int iVideoWidthFourth,
+                             int iInsetUpperOffset
 			);
         
         int GetHeaderInByteArray(unsigned char* data);
@@ -222,6 +223,12 @@ namespace MediaSDK
             return m_iVideoWidthFourth;
         }
         
+        void setInsetUpperOffset(unsigned char *pData);
+        int GetInsetUppperOffset()
+        {
+            return m_iInsetUppderOffset;
+        }
+        
         
         
 	private:
@@ -297,8 +304,9 @@ namespace MediaSDK
         int m_iVideoHeightFourth; //1 byte
         int m_iVideoWidthFourth; //1 byte
         //Total 39 + 2 = 41 byte
-
         
+        int m_iInsetUppderOffset; //2 byte
+        //Total 41 + 2 = 43 byte
 	};
 
 } //namespace MediaSDK
