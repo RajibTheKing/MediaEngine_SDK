@@ -1,3 +1,9 @@
+Release 13.1.1 (Date: 04-06-2018)
+---------------------------------
+- VIDEO: Video header modified inset upper offset added
+- VIDEO: split call inset size fire corrected 
+
+
 Release 13.1 (Date: 28-05-2018)
 ---------------------------------
 - VIDEO: Macro value modified as requested 
