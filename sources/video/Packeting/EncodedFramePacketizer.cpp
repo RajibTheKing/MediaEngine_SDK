@@ -94,6 +94,7 @@ namespace MediaSDK
         
         int iVideoHeight4th = m_pcVideoCallSession->getGivenFrameHeight()/ 8;
         int iVideoWidth4th = m_pcVideoCallSession->getGivenFrameWidth() / 8;
+        int iInsetUpperOffset = 0;
         
         //std::string sOperatingSystemVersion = "10.3";
         //std::string sDeviceModel = "Iphone6";
@@ -128,7 +129,8 @@ namespace MediaSDK
                                            iLiveVideoBitrate,                   //LiveiVideoQualityLevel
                                            iLiveVideoMaxBitrate,                   //LiveiVideoQualityLevel
                                            iVideoHeight4th,                         //VideoHeight4th
-                                           iVideoWidth4th                         //VideoWidth4th
+                                           iVideoWidth4th,                         //VideoWidth4th
+                                           iInsetUpperOffset                        //InsetUpperOffset
                                            );
 
 			m_ucaPacket[0] = VIDEO_PACKET_MEDIA_TYPE;
@@ -178,7 +180,8 @@ namespace MediaSDK
                                            iLiveVideoBitrate,                   //LiveiVideoQualityLevel
                                            iLiveVideoMaxBitrate,                   //LiveiVideoQualityLevel
                                            iVideoHeight4th,                         //VideoHeight4th
-                                           iVideoWidth4th                         //VideoWidth4th
+                                           iVideoWidth4th,                         //VideoWidth4th
+                                           iInsetUpperOffset                        //InsetUpperOffset
                                            );
 
 
@@ -259,7 +262,8 @@ namespace MediaSDK
                                                iLiveVideoBitrate,                   //LiveiVideoQualityLevel
                                                iLiveVideoMaxBitrate,                   //LiveiVideoQualityLevel
                                                iVideoHeight4th,                         //VideoHeight4th
-                                               iVideoWidth4th                         //VideoWidth4th
+                                               iVideoWidth4th,                         //VideoWidth4th
+                                               iInsetUpperOffset                        //InsetUpperOffset
                                                );
                 
                 
