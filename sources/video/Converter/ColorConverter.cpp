@@ -2457,6 +2457,21 @@ void CColorConverter::CalculateAspectRatioWithScreenAndModifyHeightWidth(int inH
     }
     //printf("ratio_screen = %f, ratio_VideoData = %f, diff = %f, inH:inW = %d:%d --> newH:newW = %d:%d\n", aspectRatio_Screen, aspectRatio_VideoData, fabs(aspectRatio_Screen-aspectRatio_VideoData), inHeight, inWidth, newHeight, newWidth);
 }
+
+int CColorConverter::GetOpponentHeightInSplitCall()
+{
+	ColorConverterLocker lock(*m_pColorConverterMutex);
+
+	return m_nOponentHeight;
+}
+
+int CColorConverter::GetOpponentWidthInSplitCall()
+{
+	ColorConverterLocker lock(*m_pColorConverterMutex);
+
+	return m_nOponentWidth;
+}
+
 int CColorConverter::GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY)
 {
     int newHeight, newWidth, diff_Height, diff_Width;

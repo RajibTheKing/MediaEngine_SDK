@@ -116,13 +116,15 @@ namespace MediaSDK
 		void CalculateAspectRatioWithScreenAndModifyHeightWidth(int inHeight, int inWidth, int iScreenHeight, int iScreenWidth, int &newHeight, int &newWidth);
 		int GetInsetLocation(int inHeight, int inWidth, int &iPosX, int &iPosY);
         int RotateI420(unsigned char *pInput, int inHeight, int inWidth, unsigned char *pOutput, int &outHeight, int &outWidth, int rotationParameter);
+
+		int GetOpponentHeightInSplitCall();
+		int GetOpponentWidthInSplitCall();
 	
-	
+	private:
+
 		unsigned char m_pSSSmallFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 		int m_nOponentHeight;
 		int m_nOponentWidth;
-
-	private:
 
 		int m_iDeviceHeight;
 		int m_iDeviceWidth;

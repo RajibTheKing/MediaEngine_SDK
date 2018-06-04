@@ -1008,6 +1008,23 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					{
                         //iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_RenderingRGBFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, RGB24);
                         
+						if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+						{
+							int nSmallFrameHeight = m_pColorConverter->GetOpponentHeightInSplitCall();
+							int nSmallFrameWidth = m_pColorConverter->GetOpponentWidthInSplitCall();
+
+							if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
+							{
+								iSmallHeight = SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT;
+								iSmallWidth = SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH;
+							}
+							else
+							{
+								iSmallHeight = iGotHeight / 2;
+								iSmallWidth = iGotWidth / 2;
+							}
+						}
+
                         //if(iScreenWidth == -1 || iScreenHeight == -1)
                             m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, iGotHeight, iGotWidth, iSmallHeight, iSmallWidth, nDevice_orientation);
                         //else
@@ -1039,8 +1056,16 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                         
                     //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
                     
-                    int insetHeight = m_pColorConverter->GetSmallFrameHeight();
-                    int insetWidth = m_pColorConverter->GetSmallFrameWidth();
+					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+					{
+						int insetHeight = iGotHeight / 2;
+						int insetWidth = iGotWidth / 2;
+					}
+					else
+					{
+						int insetHeight = m_pColorConverter->GetSmallFrameHeight();
+						int insetWidth = m_pColorConverter->GetSmallFrameWidth();
+					} 
                     
                     if(iScreenWidth == -1 || iScreenHeight == -1)
 					    m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((iGotHeight * iGotWidth * 3) / 2), m_ucaMirroredFrame, iGotHeight, iGotWidth, insetHeight, insetWidth, nDevice_orientation);
