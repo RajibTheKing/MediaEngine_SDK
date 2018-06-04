@@ -304,6 +304,7 @@ namespace MediaSDK
             + " LVMBR:" + Tools::getText(m_iLiveStreamMaxBitrate)
             + " H:" + Tools::getText(m_iVideoHeightFourth)
             + " W:" + Tools::getText(m_iVideoWidthFourth)
+            + " UpperOffset:" + Tools::getText(m_iInsetUppderOffset)
 			;
 
 		unsigned char pLocalData[100];

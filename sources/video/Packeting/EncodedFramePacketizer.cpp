@@ -94,7 +94,7 @@ namespace MediaSDK
         
         int iVideoHeight4th = m_pcVideoCallSession->getGivenFrameHeight()/ 8;
         int iVideoWidth4th = m_pcVideoCallSession->getGivenFrameWidth() / 8;
-        int iInsetUpperOffset = 0;
+        int iInsetUpperOffset = 320 - 32 - m_pcVideoCallSession->GetColorConverter()->GetSmallFrameHeight(); //এইখানে কাজ করতে হবে
         
         //std::string sOperatingSystemVersion = "10.3";
         //std::string sDeviceModel = "Iphone6";
