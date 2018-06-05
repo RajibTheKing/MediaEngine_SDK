@@ -1,3 +1,8 @@
+Release 13.2 (Date: 05-06-2018)
+---------------------------------
+- VIDEO: Made split call adaptive to future changes
+
+
 Release 13.1.2 (Date: 04-06-2018)
 ---------------------------------
 - VIDEO: Audio call split problem fixed
