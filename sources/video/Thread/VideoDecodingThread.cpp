@@ -36,7 +36,8 @@ namespace MediaSDK
 		m_VideoBeautificationer(NULL),
 		m_llFriendID(llFriendID),
 		m_nPreviousDecodingHeight(320),
-		m_nPreviousDecodingWidth(180)
+		m_nPreviousDecodingWidth(180),
+		m_nUpperOffsetOfInset(SPLIT_TYPE_DEVIDE_UPPER_OFFSET)
 
 	{
 #ifdef DESKTOP_C_SHARP 
@@ -264,6 +265,8 @@ namespace MediaSDK
 					videoHeaderObject.ShowDetails("##RCV : ");
 
 					printf("#V## DeviceOrientation from Header: %d\n",videoHeaderObject.GetDeviceOrientation());
+
+					m_nUpperOffsetOfInset = videoHeaderObject.GetInsetUppperOffset();
 
 					currentTime = m_Tools.CurrentTimestamp();
 
@@ -515,7 +518,12 @@ namespace MediaSDK
 
 		if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 		{
-			int upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
+			int upperOffset;
+			
+			if (m_nUpperOffsetOfInset > 4 && m_nUpperOffsetOfInset < 320)
+				upperOffset = m_nUpperOffsetOfInset;
+			else
+				upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
 
 			CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoDecodingThread::DecodeAndSendToClient2 nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
 
@@ -538,11 +546,24 @@ namespace MediaSDK
 				}
 				else
 				{
-					CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoDecodingThread::DecodeAndSendToClient2 3 nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
+					if (m_nPreviousInsetHeight > 16 && (m_nPreviousInsetHeight < iHeight / 2))
+					{
+						int nHeightDiff = iHeight / 2 - m_nPreviousInsetHeight;
+						int nSmallFrameModifiedHeight;
+						int nSmallFrameModifiedWidth;
 
-					this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempTempFrame, iHeight / 2, iWidth / 2);
 
-					this->m_pColorConverter->Merge_Two_Video2(false, m_PreviousDecodedFrameConvertedData, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+						this->m_pColorConverter->Crop_YUV420(m_ucaTempTempFrame, iHeight / 2, iWidth / 2, 0, 0, nHeightDiff / 2, nHeightDiff / 2, m_ucaTempFrame2, nSmallFrameModifiedHeight, nSmallFrameModifiedWidth);
+
+						this->m_pColorConverter->Merge_Two_Video2(false, m_PreviousDecodedFrameConvertedData, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2 - nHeightDiff, iWidth / 2);
+					}
+					else
+					{
+						this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+						this->m_pColorConverter->Merge_Two_Video2(false, m_PreviousDecodedFrameConvertedData, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+					}
 				}
 			}
 		}
@@ -801,7 +822,12 @@ namespace MediaSDK
 
 				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 				{
-					int upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
+					int upperOffset;
+
+					if (m_nUpperOffsetOfInset > 5 && m_nUpperOffsetOfInset < 320)
+						upperOffset = m_nUpperOffsetOfInset;
+					else
+						upperOffset = SPLIT_TYPE_DEVIDE_UPPER_OFFSET;
 
 					CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoDecodingThread::DecodeAndSendToClient nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
 
@@ -826,9 +852,29 @@ namespace MediaSDK
 						{
 							CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoDecodingThread::DecodeAndSendToClient 3 nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
 
-							this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							if (nInsetHeight > 16 && (nInsetHeight < iHeight / 2))
+							{
+								int nHeightDiff = iHeight / 2 - nInsetHeight;
+								int nSmallFrameModifiedHeight;
+								int nSmallFrameModifiedWidth;
 
-							this->m_pColorConverter->Merge_Two_Video2(false, m_DecodedFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+								this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempTempFrame, iHeight / 2, iWidth / 2);
+
+								this->m_pColorConverter->Crop_YUV420(m_ucaTempTempFrame, iHeight / 2, iWidth / 2, 0, 0, nHeightDiff / 2, nHeightDiff / 2, m_ucaTempFrame2, nSmallFrameModifiedHeight, nSmallFrameModifiedWidth);
+
+								this->m_pColorConverter->Merge_Two_Video2(false, m_DecodedFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2 - nHeightDiff, iWidth / 2);
+
+
+								this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+								this->m_pColorConverter->Merge_Two_Video2(false, m_DecodedFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							}
+							else
+							{
+								this->m_pColorConverter->DownScaleYUV420_Dynamic_Version222(m_ucaOpponentSmallFrame, nSmallFrameHeight, nSmallFrameWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+
+								this->m_pColorConverter->Merge_Two_Video2(false, m_DecodedFrame, iWidth / 2, upperOffset, iHeight, iWidth, m_ucaTempFrame2, iHeight / 2, iWidth / 2);
+							}
 						}
 					}
 				}

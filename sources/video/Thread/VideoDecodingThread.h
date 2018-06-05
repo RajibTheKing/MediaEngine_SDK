@@ -95,6 +95,7 @@ namespace MediaSDK
 		bool m_HasPreviousValues;
 
 		int m_Counter;
+		int m_nUpperOffsetOfInset;
 
 		int m_nCallFPS;
 
@@ -124,6 +125,7 @@ namespace MediaSDK
 
 #endif
 
+		unsigned char m_ucaTempTempFrame[MAX_VIDEO_ENCODER_FRAME_SIZE];
 		unsigned char m_CropedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 		unsigned char m_PacketizedFrame[MAX_VIDEO_DECODER_FRAME_SIZE];
 		unsigned char m_RenderingRGBFrame[MAX_VIDEO_DECODER_FRAME_SIZE];

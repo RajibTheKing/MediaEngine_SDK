@@ -335,7 +335,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
         if( m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1  && m_bIsCheckCall == false)
         {
-			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, /*SIZE*/ 0, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);
+			m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, /*SIZE*/ 0, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD, 0, 0);
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::EncodingThreadProcedure() Negotiation uncomplete");
 
@@ -354,7 +354,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame,
 													 2, /*m_iFrameNumber*/
 													 0, /*nCaptureTimeDifference*/0, 0,
-													 BLANK_DATA_MOOD);
+													 BLANK_DATA_MOOD, 0, 0);
 
 			}
 			
@@ -982,13 +982,58 @@ void CVideoEncodingThread::EncodingThreadProcedure()
             {
                 iNumberOfEncodeFailCounter++;
             }
+
+			if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
+			{
+
+#if defined(DESKTOP_C_SHARP)
+
+				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+				{
+					int nSmallFrameHeight = m_pColorConverter->GetOpponentHeightInSplitCall();
+					int nSmallFrameWidth = m_pColorConverter->GetOpponentWidthInSplitCall();
+
+					if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
+					{
+						iSmallHeight = SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT;
+						iSmallWidth = SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH;
+					}
+					else
+					{
+						iSmallHeight = iGotHeight / 2;
+						iSmallWidth = iGotWidth / 2;
+					}
+				}
+#else
+				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+				{
+					iSmallHeight = iGotHeight / 2;
+					iSmallWidth = iGotWidth / 2;
+				}
+				else
+				{
+					iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
+					iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
+				}
+#endif
+			}
             
 			//if (nENCODEDFrameSize > 0)
 			{
 
 				if (m_bSelfViewOnly == false)
 				{
-					m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
+					if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
+					{
+						if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+						{
+							m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD, iSmallHeight, iSmallWidth);
+						}
+						else
+							m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD, 0, 0);
+					}
+					else
+						m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD, 0, 0);
 				}	
 
 				if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
@@ -1046,23 +1091,6 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					else*/
 					{
                         //iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_RenderingRGBFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, RGB24);
-                        
-						if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
-						{
-							int nSmallFrameHeight = m_pColorConverter->GetOpponentHeightInSplitCall();
-							int nSmallFrameWidth = m_pColorConverter->GetOpponentWidthInSplitCall();
-
-							if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
-							{
-								iSmallHeight = SPLIT_TYPE_DEVICE_DESKTOP_HEIGHT;
-								iSmallWidth = SPLIT_TYPE_DEVICE_DESKTOP_MOBILE_WIDTH;
-							}
-							else
-							{
-								iSmallHeight = iGotHeight / 2;
-								iSmallWidth = iGotWidth / 2;
-							}
-						}
 
                         //if(iScreenWidth == -1 || iScreenHeight == -1)
                             m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, m_decodedFrameSize, m_RenderingRGBFrame, iGotHeight, iGotWidth, iSmallHeight, iSmallWidth, nDevice_orientation);
@@ -1093,23 +1121,12 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     iCroppedDataLen = this->m_pColorConverter->CropWithAspectRatio_YUVNV12_YUVNV21_RGB24(m_ucaMirroredFrame, iHeight, iWidth, iScreenHeight, iScreenWidth, m_ucaCropedFrame, iCropedHeight, iCropedWidth, nColorFormatType);
                     //printf("TheKing--> CropTimeDiff = %lld\n", m_Tools.CurrentTimestamp() - cropStartTime);
                         
-                    //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen);
-                    
-					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
-					{
-						int insetHeight = iGotHeight / 2;
-						int insetWidth = iGotWidth / 2;
-					}
-					else
-					{
-						int insetHeight = m_pColorConverter->GetSmallFrameHeight();
-						int insetWidth = m_pColorConverter->GetSmallFrameWidth();
-					} 
+                    //printf("iScreen, H:W = %d:%d,   iCroped H:W = %d:%d, iCroppedLen = %d\n",iScreenHeight, iScreenWidth, iCropedHeight, iCropedWidth, iCroppedDataLen); 
                     
                     if(iScreenWidth == -1 || iScreenHeight == -1)
-					    m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((iGotHeight * iGotWidth * 3) / 2), m_ucaMirroredFrame, iGotHeight, iGotWidth, insetHeight, insetWidth, nDevice_orientation);
+						m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((iGotHeight * iGotWidth * 3) / 2), m_ucaMirroredFrame, iGotHeight, iGotWidth, iSmallHeight, iSmallWidth, nDevice_orientation);
                     else
-                        m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, insetHeight, insetWidth, nDevice_orientation);
+						m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, iCroppedDataLen, m_ucaCropedFrame, iCropedHeight, iCropedWidth, iSmallHeight, iSmallWidth, nDevice_orientation);
                     
 #else
 					m_pCommonElementBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, m_iFrameNumber, ((iGotHeight * iGotWidth * 3) / 2), m_ucaMirroredFrame, iGotHeight, iGotWidth, nDevice_orientation);

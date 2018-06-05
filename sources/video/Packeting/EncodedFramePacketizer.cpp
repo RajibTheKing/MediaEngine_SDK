@@ -36,14 +36,25 @@ namespace MediaSDK
 		}
 	}
 
-	int CEncodedFramePacketizer::Packetize(long long llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy)
+	int CEncodedFramePacketizer::Packetize(long long llFriendID, unsigned char *ucaEncodedVideoFrameData, unsigned int unLength, int iFrameNumber, unsigned int unCaptureTimeDifference, int device_orientation, bool bIsDummy, int nSplitInsetHeight, int nSplitInsetWidth)
 	{
 		CLogPrinter_Write(CLogPrinter::DEBUGS, "CEncodedFramePacketizer::Packetize parsing started");
 
 		int nNumberOfInsets = 1;
 
-		int height = m_pcVideoCallSession->GetColorConverter()->GetSmallFrameHeight();
-		int width = m_pcVideoCallSession->GetColorConverter()->GetSmallFrameWidth();
+		int height;
+		int width;
+
+		if (nSplitInsetHeight > 0)
+		{
+			height = nSplitInsetHeight;
+			width = nSplitInsetWidth;
+		}
+		else
+		{
+			height = m_pcVideoCallSession->GetColorConverter()->GetSmallFrameHeight();
+			width = m_pcVideoCallSession->GetColorConverter()->GetSmallFrameWidth();
+		}
 
 		int pInsetHeights[] = { height, 0, 0 }, pInsetWidths[] = { width, 0, 0 }; //testing heights widths
 

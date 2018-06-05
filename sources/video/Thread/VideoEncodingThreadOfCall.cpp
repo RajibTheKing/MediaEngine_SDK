@@ -269,7 +269,7 @@ m_VideoBeautificationer(NULL),
 
 			if (m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false)
 			{
-				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, /*SIZE*/ 0, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD);
+				m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, /*SIZE*/ 0, /*m_iFrameNumber*/0, /*nCaptureTimeDifference*/0, 0, BLANK_DATA_MOOD, 0, 0);
 
 				CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThreadOfCall::EncodingThreadProcedure() Negotiation uncomplete");
 
@@ -288,7 +288,7 @@ m_VideoBeautificationer(NULL),
 					m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame,
 						2, /*m_iFrameNumber*/
 						0, /*nCaptureTimeDifference*/0, 0,
-						BLANK_DATA_MOOD);
+						BLANK_DATA_MOOD, 0, 0);
 
 				}
 
@@ -535,7 +535,7 @@ m_VideoBeautificationer(NULL),
 
 				if (m_bSelfViewOnly == false)
 				{
-					m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD);
+					m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD, 0, 0);
 				}
 
 				//CLogPrinter_WriteLog(CLogPrinter::INFO, OPERATION_TIME_LOG, " Packetize ",true, llCalculatingTime);
