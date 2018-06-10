@@ -522,6 +522,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 			int iSmallWidth = m_pColorConverter->GetSmallFrameWidth();
 			int iSmallHeight = m_pColorConverter->GetSmallFrameHeight();
 
+			int nCallScreenSplitType = m_pVideoCallSession->GetScreenSplitType();
+
 			if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 			{
 				int iWidth = iGotWidth;
@@ -629,9 +631,9 @@ void CVideoEncodingThread::EncodingThreadProcedure()
                     }
 				}
 
-				CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 001 GetEntityType %d, GetSmallFrameStatus %d, GetScreenSplitType %d GetCallInLiveType %d", m_pVideoCallSession->GetEntityType(), m_pColorConverter->GetSmallFrameStatus(), m_pVideoCallSession->GetScreenSplitType(), m_pVideoCallSession->GetCallInLiveType());
+				CLogPrinter_LOG(LIVE_INSET_LOG, "LIVE_INSET_LOG CVideoEncodingThread::EncodingThreadProcedure 001 GetEntityType %d, GetSmallFrameStatus %d, GetScreenSplitType %d GetCallInLiveType %d", m_pVideoCallSession->GetEntityType(), m_pColorConverter->GetSmallFrameStatus(), nCallScreenSplitType, m_pVideoCallSession->GetCallInLiveType());
 
-				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pColorConverter->GetSmallFrameStatus() == true || (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE && m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_ONLY)))
+				if (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER && (m_pColorConverter->GetSmallFrameStatus() == true || (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE && m_pVideoCallSession->GetCallInLiveType() == CALL_IN_LIVE_TYPE_AUDIO_ONLY)))
 				{
 					int iInsetLowerPadding = (int)((iGotHeight * 10) / 100);
 
@@ -656,13 +658,13 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 					CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG_2, "CVideoEncodingThread::EncodingThreadProcedure() Merge_Two_Video iHeight " + m_Tools.getText(iHeight) + " iWidth " + m_Tools.getText(iWidth));
 
-					CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
+					CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() nScreenSplitType %d", nCallScreenSplitType);
 
-					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+					if (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
-							CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() 1 nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
+							CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() 1 nScreenSplitType %d", nCallScreenSplitType);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -677,7 +679,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						}
 						else
 						{
-							CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() 2 nScreenSplitType %d", m_pVideoCallSession->GetScreenSplitType());
+							CLogPrinter_LOG(CO_HOST_CALL_LOG, "CVideoEncodingThread::EncodingThreadProcedure() 2 nScreenSplitType %d", nCallScreenSplitType);
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
@@ -699,7 +701,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						m_pColorConverter->GetInsetLocation(iHeight, iWidth, iPosX, iPosY);
 					}
 
-					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+					if (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
 						CLogPrinter_LOG(LIVE_INSET_LOG, "CVideoEncodingThread::EncodingThreadProcedure() qqq iGotWidth %d iGotHeight %d nSmallFrameHeight %d nSmallFrameWidth %d", iGotWidth, iGotHeight, nSmallFrameHeight, nSmallFrameWidth);
 
@@ -738,7 +740,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+					if (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
 						this->m_pColorConverter->Merge_Two_VideoI420(audioOnlyCall, m_ucaEncodingFrame, 0, 0, iHeight, iWidth, upperOffset, iWidth);
 						this->m_pColorConverter->Merge_Two_Video2(audioOnlyCall, m_ucaEncodingFrame, 0, upperOffset, iHeight, iWidth, m_ucaTempFrame, iHeight / 2, iWidth / 2);
@@ -755,7 +757,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 						this->m_pColorConverter->Merge_Two_Video(m_ucaEncodingFrame, iPosX, iPosY, iHeight, iWidth);
 					}
 #else
-					if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+					if (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 					{
 						if ((m_pVideoCallSession->GetOwnDeviceType() == DEVICE_TYPE_DESKTOP && iGotWidth > iGotHeight) && (nSmallFrameHeight > nSmallFrameWidth))
 						{
@@ -911,7 +913,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				if (nENCODEDFrameSize == 0)
 					m_EncodingFailedCounter++;
 
-				CLogPrinter_LOG(ENCODING_FAIL_LOG, "CVideoEncodingThread::EncodingThreadProcedure nENCODEDFrameSize %d m_iFrameNumber %d m_EncodingFailedCounter %d bitrate %d", nENCODEDFrameSize, m_iFrameNumber, m_EncodingFailedCounter, m_pVideoEncoder->GetBitrate());
+				CLogPrinter_LOG(ENCODING_FAIL_LOG, "CVideoEncodingThread::EncodingThreadProcedure nENCODEDFrameSize %d m_iFrameNumber %d m_EncodingFailedCounter %d bitrate %d GetScreenSplitType() %d", nENCODEDFrameSize, m_iFrameNumber, m_EncodingFailedCounter, m_pVideoEncoder->GetBitrate(), nCallScreenSplitType);
 
 
 				int timediff = (int)(m_Tools.CurrentTimestamp() - timeStampForEncoding);
@@ -988,7 +990,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 #if defined(DESKTOP_C_SHARP)
 
-				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+				if (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 				{
 					int nSmallFrameHeight = m_pColorConverter->GetOpponentHeightInSplitCall();
 					int nSmallFrameWidth = m_pColorConverter->GetOpponentWidthInSplitCall();
@@ -1005,7 +1007,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 					}
 				}
 #else
-				if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+				if (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 				{
 					iSmallHeight = iGotHeight / 2;
 					iSmallWidth = iGotWidth / 2;
@@ -1025,7 +1027,7 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 				{
 					if ((m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL) && (m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER || m_pVideoCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER))
 					{
-						if (m_pVideoCallSession->GetScreenSplitType() == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
+						if (nCallScreenSplitType == LIVE_CALL_SCREEN_SPLIT_TYPE_DIVIDE)
 						{
 							m_pEncodedFramePacketizer->Packetize(m_llFriendID, m_ucaEncodedFrame, nENCODEDFrameSize, m_iFrameNumber, nCaptureTimeDifference, nDevice_orientation, VIDEO_DATA_MOOD, iSmallHeight, iSmallWidth);
 						}
