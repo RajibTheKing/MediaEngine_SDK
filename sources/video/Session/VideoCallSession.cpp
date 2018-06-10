@@ -2256,6 +2256,7 @@ void CVideoCallSession::EndCallInLive(int nCalleeID)
 		}
 
 		m_iRole = 0;
+		m_nScreenSplitType = LIVE_CALL_SCREEN_SPLIT_TYPE_SUBSET;
 	}
 }
 
