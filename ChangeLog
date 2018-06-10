@@ -1,3 +1,8 @@
+Release 13.2.2 (Date: 10-06-2018)
+---------------------------------
+- VIDEO: Logic modified to help android solve inset issue
+
+
 Release 13.2.1 (Date: 06-06-2018)
 ---------------------------------
 - VIDEO: Inset Height Width made zero after call end
