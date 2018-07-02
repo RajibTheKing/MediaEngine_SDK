@@ -294,7 +294,7 @@ namespace MediaSDK
 	{
 		if (nTraceInfoLength < 3)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo falied.");
+			MediaLog(LOG_DEBUG, "[NE][ACS][TP][ACP] SetTraceInfo falied.");
 			return;
 		}
 		MediaLog(LOG_DEBUG, "[NE][ACS][TP][ACP] SetTraceInfo started, nTraceInfoLength = %d, tr = %d, ntr = %d delay = %d, bDeviceHasAEC = %d",
