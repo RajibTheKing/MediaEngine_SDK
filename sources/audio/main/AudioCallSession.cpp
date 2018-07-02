@@ -189,7 +189,7 @@ namespace MediaSDK
 
 		MediaLog(LOG_INFO, "[NE][ACS][ACP] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d, sManuName = %s, sModelName = %s, nSDKVersion = %d,\
 			bDeviceHasAEC = %d\n",
-			acParams.nAudioSpeakerType, acParams.sManuName, acParams.sModelName, acParams.sOSVersion, acParams.nSDKVersion,
+			acParams.nAudioSpeakerType, acParams.sManuName.c_str(), acParams.sModelName.c_str(), acParams.sOSVersion.c_str(), acParams.nSDKVersion,
 			acParams.bDeviceHasAEC);
 
 		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
