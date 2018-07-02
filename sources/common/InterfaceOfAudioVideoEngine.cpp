@@ -947,7 +947,7 @@ namespace MediaSDK
 
 		int nCalleeID = 1;
 
-		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
+		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType, acParams);
 
 		m_pcController->SetCallInLiveEnabled(true);
 

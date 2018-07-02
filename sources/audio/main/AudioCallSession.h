@@ -61,7 +61,7 @@ namespace MediaSDK
 			AudioCallParams acParams);
 		~CAudioCallSession();
 
-		void StartCallInLive(int iRole, int nCallInLiveType);
+		void StartCallInLive(int iRole, int nCallInLiveType, AudioCallParams acParams);
 		void EndCallInLive();
 
 		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);

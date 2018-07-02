@@ -117,7 +117,7 @@ namespace MediaSDK
 
 		void SetSendFunctionPointer(SendFunctionPointerType callBackFunctionPointer);
 
-		bool StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType);
+		bool StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType, AudioCallParams acParams);
 		bool EndAudioCallInLive(const long long& lFriendID);
 		bool StartVideoCallInLive(const long long& lFriendID, int nCallInLiveType, int nCalleeID, int nScreenSplitType);
 		bool EndVideoCallInLive(const long long& lFriendID, int nCalleeID);

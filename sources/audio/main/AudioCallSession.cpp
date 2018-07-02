@@ -187,7 +187,7 @@ namespace MediaSDK
 			m_cFarEndProcessorThread->StartFarEndThread();
 		}
 
-		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d, sManuName = %s, sModelName = %s, nSDKVersion = %d,
+		MediaLog(LOG_INFO, "[NE][ACS][ACP] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d, sManuName = %s, sModelName = %s, nSDKVersion = %d,\
 			bDeviceHasAEC = %d\n",
 			acParams.nAudioSpeakerType, acParams.sManuName, acParams.sModelName, acParams.sOSVersion, acParams.nSDKVersion,
 			acParams.bDeviceHasAEC);
@@ -297,7 +297,8 @@ namespace MediaSDK
 			MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo falied.");
 			return;
 		}
-		MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo started, nTraceInfoLength = %d", nTraceInfoLength);
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP][ACP] SetTraceInfo started, nTraceInfoLength = %d, tr = %d, ntr = %d delay = %d, bDeviceHasAEC = %d",
+			nTraceInfoLength, nTraceInfoArray[0], nTraceInfoArray[1], nTraceInfoArray[2], bDeviceHasAEC);
 		
 		m_nNumTraceReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD];
 		m_nNumTraceNotReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED];
@@ -417,7 +418,7 @@ namespace MediaSDK
 		return false;
 	}
 
-	void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
+	void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType, AudioCallParams acParams)
 	{
 		MediaLog(LOG_CODE_TRACE, "[NE][ACS] StartCallInLive Starting...");
 		if (iRole != ENTITY_TYPE_VIEWER_CALLEE && iRole != ENTITY_TYPE_PUBLISHER_CALLER)//Unsupported or inaccessible role
@@ -479,6 +480,8 @@ namespace MediaSDK
 		}
 #endif
 		m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
+
+		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");

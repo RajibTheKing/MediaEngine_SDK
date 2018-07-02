@@ -1464,7 +1464,7 @@ void CController::SetSendFunctionPointer(SendFunctionPointerType callBackFunctio
     m_pCommonElementsBucket->SetSendFunctionPointer(callBackFunctionPointer);
 }
 
-bool CController::StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType)
+bool CController::StartAudioCallInLive(const long long& lFriendID, int iRole, int nCallInLiveType, AudioCallParams acParams)
 {
 	StartAudioCallInLiveLocker lock(*m_pAudioLockMutex);
 
@@ -1473,7 +1473,7 @@ bool CController::StartAudioCallInLive(const long long& lFriendID, int iRole, in
 	bool bExist = m_pCommonElementsBucket->m_pAudioCallSessionList->IsAudioSessionExist(lFriendID, pAudioSession);
 	if (bExist)
 	{
-		pAudioSession->StartCallInLive(iRole, nCallInLiveType);
+		pAudioSession->StartCallInLive(iRole, nCallInLiveType, acParams);
 		return true;
 	}
 	else
