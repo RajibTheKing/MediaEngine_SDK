@@ -45,6 +45,7 @@ namespace MediaSDK
 	class CAudioByteBuffer;
 	class SessionStatisticsInterface;
 	class CAudioCallInfo;
+	struct AudioCallParams;
 
 	class CAudioCallSession : 
 		public DataReadyListenerInterface,
@@ -56,14 +57,15 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType, bool bOpusCodec);
+		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, bool bOpusCodec,
+			AudioCallParams acParams);
 		~CAudioCallSession();
 
-		void StartCallInLive(int iRole, int nCallInLiveType);
+		void StartCallInLive(int iRole, int nCallInLiveType, AudioCallParams acParams);
 		void EndCallInLive();
 
 		int PushAudioData(short *psaEncodingAudioData, unsigned int unLength);
-		int CancelAudioData(short *psaEncodingAudioData, unsigned int unLength);
+
 		int DecodeAudioData(int nOffset, unsigned char *pucaDecodingAudioData, unsigned int unLength, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 		void DumpDecodedFrame(short * psDecodedFrame, int nDecodedFrameSize);
 		void SendToPlayer(short* pshSentFrame, int nSentFrameSize, long long &llNow, long long &llLastTime, int iCurrentPacketNumber, int nEchoStateFlags);
@@ -74,13 +76,12 @@ namespace MediaSDK
 
 		void SetCallInLiveType(int nCallInLiveType);
 		void SetVolume(int iVolume, bool bRecorder);
-		void SetSpeakerType(int iSpeakerType);
+		void SetSpeakerType(AudioCallParams acParams);
 		void SetCameraMode(bool bCameraEnable);
 		void SetMicrophoneMode(bool bMicrophoneEnable);
-		void SetEchoCanceller(bool bOn);
 
 		void NotifyTraceInfo(int nTR, int nNTR, int sDelay);
-		void SetTraceInfo(int nTraceInfoLength, int * npTraceInfo);
+		void SetTraceInfo(int nTraceInfoLength, int * npTraceInfo, bool bDeviceHasAEC);
 
 		/**
 		Sets the quality of the audio. Quality adaption is done when server signals network strength.

@@ -60,7 +60,9 @@
 
 namespace MediaSDK
 {
-	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, int nAudioSpeakerType, bool bOpusCodec) :
+	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, bool bOpusCodec,
+	AudioCallParams acParams
+		) :
 		m_bIsVideoCallRunning(isVideoCallRunning),
 		m_nEntityType(nEntityType),
 		m_nServiceType(nServiceType),
@@ -111,7 +113,7 @@ namespace MediaSDK
 			}
 		}
 
-		m_iSpeakerType = nAudioSpeakerType;
+		m_iSpeakerType = acParams.nAudioSpeakerType;
 
 		SetSendFunction(pSharedObject->GetSendFunctionPointer());
 		SetEventNotifier(pSharedObject->m_pEventNotifier);
@@ -185,7 +187,12 @@ namespace MediaSDK
 			m_cFarEndProcessorThread->StartFarEndThread();
 		}
 
-		MediaLog(LOG_INFO, "[NE][ACS] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d\n", nAudioSpeakerType);
+		MediaLog(LOG_INFO, "[NE][ACS][ACP] AudioCallSession Initialization Successful!!, nAudioSpeakerType = %d, sManuName = %s, sModelName = %s, sOSVersion= %s, nSDKVersion = %d,\
+			bDeviceHasAEC = %d\n",
+			acParams.nAudioSpeakerType, acParams.sManuName.c_str(), acParams.sModelName.c_str(), acParams.sOSVersion.c_str(), acParams.nSDKVersion,
+			acParams.bDeviceHasAEC);
+
+		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 	}
@@ -283,14 +290,15 @@ namespace MediaSDK
 		FireAudioAlarm(AUDIO_EVENT_TRACE_NOTIFICATION, 3, nTraceInfoArray);
 	}
 
-	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * nTraceInfoArray)
+	void CAudioCallSession::SetTraceInfo(int nTraceInfoLength, int * nTraceInfoArray, bool bDeviceHasAEC)
 	{
 		if (nTraceInfoLength < 3)
 		{
-			MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo falied.");
+			MediaLog(LOG_DEBUG, "[NE][ACS][TP][ACP] SetTraceInfo falied, nTraceInfoLength = %d", nTraceInfoLength);
 			return;
 		}
-		MediaLog(LOG_DEBUG, "[NE][ACS][TP] SetTraceInfo started, nTraceInfoLength = %d", nTraceInfoLength);
+		MediaLog(LOG_DEBUG, "[NE][ACS][TP][ACP] SetTraceInfo started, nTraceInfoLength = %d, tr = %d, ntr = %d delay = %d, bDeviceHasAEC = %d",
+			nTraceInfoLength, nTraceInfoArray[0], nTraceInfoArray[1], nTraceInfoArray[2], bDeviceHasAEC);
 		
 		m_nNumTraceReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_RECVD];
 		m_nNumTraceNotReceived = nTraceInfoArray[TI_NUMBER_OF_TRACE_FAILED];
@@ -399,12 +407,6 @@ namespace MediaSDK
 		m_pFarEndProcessor->SetEventCallback(this, this, this);
 	}
 
-
-	void CAudioCallSession::SetEchoCanceller(bool bOn)
-	{
-
-	}
-
 	bool CAudioCallSession::SetAudioQuality(int level)
 	{
 		if (level < 1 || level > 3) return false;
@@ -416,7 +418,7 @@ namespace MediaSDK
 		return false;
 	}
 
-	void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType)
+	void CAudioCallSession::StartCallInLive(int iRole, int nCallInLiveType, AudioCallParams acParams)
 	{
 		MediaLog(LOG_CODE_TRACE, "[NE][ACS] StartCallInLive Starting...");
 		if (iRole != ENTITY_TYPE_VIEWER_CALLEE && iRole != ENTITY_TYPE_PUBLISHER_CALLER)//Unsupported or inaccessible role
@@ -478,6 +480,8 @@ namespace MediaSDK
 		}
 #endif
 		m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
+
+		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(false);
 
 		MediaLog(LOG_INFO, "\n\n[NE][ACS]!!!!!!!  StartCallInLive !!!!!!!!!\n\n");
@@ -566,10 +570,6 @@ namespace MediaSDK
 		return 0;
 	}
 
-	int CAudioCallSession::CancelAudioData(short *psaPlayingAudioData, unsigned int unLength)
-	{
-		return true;
-	}
 
 	void CAudioCallSession::SetVolume(int iVolume, bool bRecorder)
 	{
@@ -579,7 +579,7 @@ namespace MediaSDK
 		}
 	}
 
-	void CAudioCallSession::SetSpeakerType(int iSpeakerType)
+	void CAudioCallSession::SetSpeakerType(AudioCallParams acParams)
 	{
 		m_bRecordingStarted = false;
 		//if (m_iSpeakerType != iSpeakerType)
@@ -587,7 +587,8 @@ namespace MediaSDK
 			m_pNearEndProcessor->ClearRecordBuffer();
 			m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
 		}
-		m_iSpeakerType = iSpeakerType;
+		m_iSpeakerType = acParams.nAudioSpeakerType;
+		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 	}
 
 	void CAudioCallSession::SetCameraMode(bool bCameraEnable)

@@ -74,6 +74,33 @@ enum AudioCodecType
 
 namespace MediaSDK
 {
+	struct AudioCallParams
+	{
+		int nAudioSpeakerType;
+		int nTraceInfoLength;
+		int * npTraceInfo;
+		bool bDeviceHasAEC;
+		std::string sManuName;
+		std::string sModelName;
+		std::string sOSVersion;
+		int nSDKVersion;
+
+	private:
+		int a_npTraceInfo[3];
+	public:
+		AudioCallParams()
+		{
+			a_npTraceInfo[0] = a_npTraceInfo[1] = a_npTraceInfo[2] = 0;
+			bDeviceHasAEC = true;
+			nAudioSpeakerType = AUDIO_PLAYER_DEFAULT;
+			nTraceInfoLength = 3;
+			npTraceInfo = a_npTraceInfo;
+			sManuName = "";
+			sModelName = "";
+			sOSVersion = "";
+			nSDKVersion = 0;
+		}
+	};
 
 	class CInterfaceOfAudioVideoEngine
 	{
@@ -87,23 +114,20 @@ namespace MediaSDK
 		bool Init(const IPVLongType& llUserID, const char* szLoggerPath, int nLoggerPrintLevel);
 		bool InitializeLibrary(const IPVLongType& llUserID);
 		bool SetUserName(const IPVLongType llUserName);
-		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, int nTraceInfoLength, int * npTraceInfo);
+		bool StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, AudioCallParams acParams);
 
 		bool SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder);
-		bool SetSpeakerType(const LongLong lFriendID, int iSpeakerType, int nTraceInfoLength, int * npTraceInfo);
+		bool SetSpeakerType(const LongLong lFriendID, AudioCallParams acParams);
 
 		void NotifyCameraMode(const LongLong lFriendID, bool bCameraEnable);
 		void NotifyMicrophoneMode(const LongLong lFriendID, bool bMicrophoneEnable);
 
-		bool SetEchoCanceller(const IPVLongType llFriendID, bool bOn);
-		int CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength);
-
-		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo, int nScreenSplitType);
+		bool StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nScreenSplitType, AudioCallParams acParams);
 		bool EndCallInLive(const IPVLongType llFriendID);
 
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
-		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType);
+		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType, AudioCallParams acParams);
 		bool StartChannelView(const IPVLongType llFriendID, int nChannelType);
 
 		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive);

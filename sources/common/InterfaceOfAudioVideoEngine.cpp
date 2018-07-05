@@ -93,7 +93,7 @@ namespace MediaSDK
 		return Ret;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, int nAudioSpeakerType, int nTraceInfoLength, int * npTraceInfo)
+	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, AudioCallParams acParams)
 	{
 		m_llTimeOffset = -1;
 
@@ -102,38 +102,32 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, nAudioSpeakerType, true);
-		if (bReturnedValue)
-		{
-			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, nTraceInfoLength, npTraceInfo);
-		}
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType,  true,
+			acParams);
 
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong lFriendID, int iVolume, bool bRecorder)
+	bool CInterfaceOfAudioVideoEngine::SetVolume(const LongLong llFriendID, int iVolume, bool bRecorder)
 	{
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->SetVolume(lFriendID, iVolume, bRecorder);
+		bool bReturnedValue = m_pcController->SetVolume(llFriendID, iVolume, bRecorder);
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong lFriendID, int iSpeakerType, int nTraceInfoLength, int * npTraceInfo)
+	bool CInterfaceOfAudioVideoEngine::SetSpeakerType(const LongLong llFriendID, AudioCallParams acParams)
 	{
 		if (nullptr == m_pcController)
 		{
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->SetSpeakerType(lFriendID, iSpeakerType);
-		if (bReturnedValue)
-		{
-			bReturnedValue = m_pcController->SetTraceInfo(lFriendID, nTraceInfoLength, npTraceInfo);
-		}
+		bool bReturnedValue = m_pcController->SetSpeakerType(llFriendID, acParams);
+	
 		return bReturnedValue;
 	}
 
@@ -155,19 +149,7 @@ namespace MediaSDK
 		m_pcController->SetMicrophoneMode(lFriendID, bMicrophoneEnable);
 	}
 
-	bool CInterfaceOfAudioVideoEngine::SetEchoCanceller(const LongLong lFriendID, bool bOn)
-	{
-		if (nullptr == m_pcController)
-		{
-			return false;
-		}
-
-		bool bReturnedValue = m_pcController->SetEchoCanceller(lFriendID, bOn);
-
-		return bReturnedValue;
-	}
-
-	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType)
+	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType, AudioCallParams acParams)
 	{
         CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth, iAudioCodecType) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth, iAudioCodecType);
 
@@ -201,7 +183,7 @@ namespace MediaSDK
 
 		bool bAudioCodecOpus = (AudioCodecType::AUDIO_CODEC_OPUS == iAudioCodecType);	//Enable opus codec for livestreaming.
 		
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, AUDIO_PLAYER_LOUDSPEAKER, bAudioCodecOpus);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, bAudioCodecOpus, acParams);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
@@ -226,7 +208,8 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, AUDIO_PLAYER_DEFAULT, true);
+		AudioCallParams acParams;
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, true, acParams);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
@@ -498,17 +481,6 @@ namespace MediaSDK
 		return iReturnedValue;
 	}
 
-	int CInterfaceOfAudioVideoEngine::CancelAudioData(const IPVLongType llFriendID, short *in_data, unsigned int unLength)
-	{
-		if (nullptr == m_pcController)
-		{
-			return false;
-		}
-
-		int iReturnedValue = m_pcController->CancelAudioData(llFriendID, in_data, unLength);
-
-		return iReturnedValue;
-	}
 
 
 	int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
@@ -964,7 +936,7 @@ namespace MediaSDK
 		}
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nTraceInfoLength, int * npTraceInfo, int nScreenSplitType)
+	bool CInterfaceOfAudioVideoEngine::StartCallInLive(const IPVLongType llFriendID, int iRole, int nCallInLiveType, int nScreenSplitType, AudioCallParams acParams)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 1 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", llFriendID, iRole, nCallInLiveType, nScreenSplitType);
 
@@ -977,14 +949,7 @@ namespace MediaSDK
 
 		int nCalleeID = 1;
 
-		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType);
-
-		if (bReturnedValue)
-		{
-			CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartCallInLive called 2 ID %lld iRole %d nCallInLiveType %d nScreenSplitType %d", llFriendID, iRole, nCallInLiveType, nScreenSplitType);
-
-			bReturnedValue = m_pcController->SetTraceInfo(llFriendID, nTraceInfoLength, npTraceInfo);
-		}
+		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType, acParams);
 
 		m_pcController->SetCallInLiveEnabled(true);
 
