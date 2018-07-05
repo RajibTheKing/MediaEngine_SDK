@@ -186,11 +186,11 @@ namespace MediaSDK
 
 		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
 		{
-			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, acParams);
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_OPUS_LIVE_CHANNEL, nEntityType, acParams);
 		}
 		else if (acParams.nAudioCodecType == AUDIO_CODEC_AAC)
 		{
-			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_AAC_LIVE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
 		}
 
 		if (bReturnedValue)
@@ -219,11 +219,11 @@ namespace MediaSDK
 
 		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
 		{
-			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, acParams);
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_OPUS_LIVE_CHANNEL, nEntityType, acParams);
 		}
 		else if (acParams.nAudioCodecType == AUDIO_CODEC_AAC)
 		{
-			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_AAC_LIVE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
 		}
 
 		if (bReturnedValue)

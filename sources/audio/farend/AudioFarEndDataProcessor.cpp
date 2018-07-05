@@ -71,7 +71,7 @@ namespace MediaSDK
 			m_AudioReceivedBuffer->SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
 		}
 #endif
-		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
@@ -82,7 +82,7 @@ namespace MediaSDK
 				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetSessionStatListener());
 			}
 		}
-		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
+		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nServiceType)
 		{
 			m_pLiveAudioParser = new CLiveAudioParserForChannel(m_vAudioFarEndBufferVector);
 		}
@@ -228,7 +228,7 @@ namespace MediaSDK
 
 			MediaLog(LOG_DEBUG, "[FE][AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 
-			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+			//m_pEventNotifier->fireAudioEvent(m_llFriendID, AUDIO_FLOW_OPUS_LIVE_CHANNEL, nSentFrameSize, pshSentFrame);
 
 			m_pAudioCallSession->m_pPlayerSidePreGain->WriteDump(pshSentFrame, 2, nSentFrameSize);
 
@@ -249,7 +249,7 @@ namespace MediaSDK
 					{
 						m_nPacketPlayed++;
 						MediaLog(LOG_INFO, "[FE][AFEDP] Viewer# To Player [SendToPlayer]\n");
-						m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+						m_pDataEventListener->FireDataEvent(AUDIO_FLOW_OPUS_LIVE_CHANNEL, nSentFrameSize, pshSentFrame);
 						m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize);
 					}
 				}
@@ -258,7 +258,7 @@ namespace MediaSDK
 			{
 				if (m_pDataEventListener != nullptr)
 				{
-					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+					m_pDataEventListener->FireDataEvent(AUDIO_FLOW_OPUS_LIVE_CHANNEL, nSentFrameSize, pshSentFrame);
 				}
 			}
 		}
@@ -346,7 +346,7 @@ namespace MediaSDK
 	{
 		MediaLog(CODE_TRACE, "[FE] m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
 
-		if (SERVICE_TYPE_CHANNEL == m_nServiceType)	//Channel
+		if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nServiceType)	//Channel
 		{
 			if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)
 			{
@@ -354,7 +354,7 @@ namespace MediaSDK
 			}
 			return false;
 		}
-		else if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
+		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
 		{			
 			if (m_pAudioCallSession->IsOpusEnable())	
 			{
@@ -388,7 +388,7 @@ namespace MediaSDK
 				return false;
 			}
 
-			if ( (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType) 
+			if ( (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType) 
 				&& (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER) )

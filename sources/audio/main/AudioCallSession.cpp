@@ -105,7 +105,7 @@ namespace MediaSDK
 		if (GetRecorderGain().get())
 		{
 			GetRecorderGain()->Init(m_nServiceType);
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == AUDIO_FLOW_OPUS_LIVE_CHANNEL)
 			{
 				//Gain level is incremented to recover losses due to noise.
 				//And noise is only applied to publisher NOT in call.
@@ -125,7 +125,7 @@ namespace MediaSDK
 		m_bLiveAudioStreamRunning = false;
 
 
-		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
+		if (m_nServiceType == AUDIO_FLOW_OPUS_LIVE_CHANNEL || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == AUDIO_FLOW_AAC_LIVE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
 		}
@@ -339,7 +339,7 @@ namespace MediaSDK
 		{
 			m_pAudioEncoder->CreateAudioEncoder();
 			
-			if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType && IsOpusEnable())
+			if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType && IsOpusEnable())
 			{
 				m_pAudioEncoder->SetBitrate(OPUS_BITRATE_INIT_LIVE);
 			}
@@ -384,7 +384,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#farEnd# CAudioCallSession::StartFarEndDataProcessing()");
 
-		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
 		{
 			if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)		//Is Viewer or Callee.
 			{
@@ -395,7 +395,7 @@ namespace MediaSDK
 				m_pFarEndProcessor = new FarEndProcessorPublisher(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 			}
 		}
-		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
+		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nServiceType)
 		{
 			m_pFarEndProcessor = new FarEndProcessorChannel(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 		}

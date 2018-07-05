@@ -449,7 +449,7 @@ namespace MediaSDK
 
 		m_pAudioCallSession->SetRecorderGain(AudioGainInstanceProvider::GetAudioGainInstance(WebRTC_Gain));
 		m_pAudioCallSession->GetRecorderGain()->Init(m_nServiceType);
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == AUDIO_FLOW_OPUS_LIVE_CHANNEL)
 		{
 			//Gain level is incremented to recover losses due to noise.
 			//And noise is only applied to publisher NOT in call.
@@ -519,7 +519,7 @@ namespace MediaSDK
 		int nEchoStateFlags = 0;
 		bool bIsNsWorking = false;
 
-		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+		if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == AUDIO_FLOW_OPUS_LIVE_CHANNEL)
 		{
 			if (m_pAudioCallSession->GetNoiseReducer().get())
 			{
