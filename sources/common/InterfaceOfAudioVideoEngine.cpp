@@ -4,6 +4,7 @@
 #include "Tools.h"
 #include "MediaLogger.h"
 #include "CommonMacros.h"
+#include "AudioMacros.h"
 
 namespace MediaSDK
 {
