@@ -37,8 +37,8 @@
 namespace MediaSDK
 {
 
-	AudioFarEndDataProcessor::AudioFarEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
-		m_nServiceType(nServiceType),
+	AudioFarEndDataProcessor::AudioFarEndDataProcessor(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
+		m_nAudioFlowType(nAudioFlowType),
 		m_nEntityType(nEntityType),
 		m_pAudioCallSession(pAudioCallSession),
 		m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
@@ -66,12 +66,12 @@ namespace MediaSDK
 
 		m_pLiveAudioParser = nullptr;
 #if !defined(TARGET_OS_WINDOWS_PHONE)
-		if (AUDIO_FLOW_OPUS_CALL == m_nServiceType || AUDIO_FLOW_USELESS_CALL == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_CALL == m_nAudioFlowType || AUDIO_FLOW_USELESS_CALL == m_nAudioFlowType)
 		{
 			m_AudioReceivedBuffer->SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
 		}
 #endif
-		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || AUDIO_FLOW_USELESS_STREAM == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType || AUDIO_FLOW_USELESS_STREAM == m_nAudioFlowType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
@@ -82,7 +82,7 @@ namespace MediaSDK
 				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetSessionStatListener());
 			}
 		}
-		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nServiceType)
+		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nAudioFlowType)
 		{
 			m_pLiveAudioParser = new CLiveAudioParserForChannel(m_vAudioFarEndBufferVector);
 		}
@@ -346,7 +346,7 @@ namespace MediaSDK
 	{
 		MediaLog(CODE_TRACE, "[FE] m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
 
-		if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nServiceType)	//Channel
+		if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nAudioFlowType)	//Channel
 		{
 			if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)
 			{
@@ -354,7 +354,7 @@ namespace MediaSDK
 			}
 			return false;
 		}
-		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || AUDIO_FLOW_USELESS_STREAM == m_nServiceType)	//LiveStreaming.
+		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType || AUDIO_FLOW_USELESS_STREAM == m_nAudioFlowType)	//LiveStreaming.
 		{			
 			if (m_pAudioCallSession->IsOpusEnable())	
 			{
@@ -388,7 +388,7 @@ namespace MediaSDK
 				return false;
 			}
 
-			if ( (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || AUDIO_FLOW_USELESS_STREAM == m_nServiceType) 
+			if ( (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType || AUDIO_FLOW_USELESS_STREAM == m_nAudioFlowType) 
 				&& (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER) )
@@ -651,7 +651,7 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					MediaLog(LOG_CODE_TRACE, "[FE][AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
-					m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+					m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetAudioFlowType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 					m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
 				}
 				m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
@@ -667,7 +667,7 @@ namespace MediaSDK
 		{
 			if (m_pDataEventListener != nullptr)
 			{
-				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetAudioFlowType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 				m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
 			}
 		}

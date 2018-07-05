@@ -175,7 +175,7 @@ bool CController::SetUserName(const long long& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, AudioCallParams acParams)
+bool CController::StartAudioCall(const long long& lFriendID, int nAudioFlowType, int nEntityType, AudioCallParams acParams)
 {
 	StartAudioCallLocker lock3(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
@@ -189,9 +189,9 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		CLogPrinter_Write(CLogPrinter::INFO, "CController::StartAudioCall Session empty");
 
 		AudioSessionOptions audioSessionOptions;
-		audioSessionOptions.SetOptions(nServiceType, nEntityType);
+		audioSessionOptions.SetOptions(nAudioFlowType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
-		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, acParams);
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nAudioFlowType, nEntityType, audioResources, acParams);
 		MediaLog(LOG_INFO, "controller ac done");
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 		MediaLog(LOG_INFO, "controller list adding done");
@@ -612,8 +612,6 @@ int iDataSentInCurrentSec = 0;
 long long llTimeStamp = 0;
 int CController::SendAudioData(const long long& lFriendID, short *in_data, unsigned int in_size)
 {
-	//if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nCallInLiveType == CALL_IN_LIVE_TYPE_AUDIO_ONLY)
-	//	return -5;
 
 	long long llNow = m_Tools.CurrentTimestamp();
 	if(llNow - llTimeStamp >= 1000)
@@ -753,7 +751,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 				height = height / 4;
 				width = width / 4;
 			}
-			else if (nServiceType == AUDIO_FLOW_OPUS_CALL)
+			else if (nServiceType == SERVICE_TYPE_CALL)
 			{
 				if (m_nSupportedResolutionFPSLevel == VIDEO_CALL_TYPE_640_25FPS)
 				{

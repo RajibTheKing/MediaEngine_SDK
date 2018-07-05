@@ -49,8 +49,8 @@ namespace MediaSDK
 
 	void WebRTCGain::Init(int audioFlowType)
 	{
-		m_iServiceType = audioFlowType;
-		if (m_iServiceType == AUDIO_FLOW_AAC_LIVE_CHANNEL)
+		m_iAudioFlowType = audioFlowType;
+		if (m_iAudioFlowType == AUDIO_FLOW_AAC_LIVE_CHANNEL)
 		{
 			m_iSampleSize = 160;
 		}
@@ -124,9 +124,9 @@ namespace MediaSDK
 		WebRtcAgcConfig gain_config;
 
 		gain_config.targetLevelDbfs = 13 - m_iVolume;      /* m_iVolume's range is 1-10 */ /* so effective dbfs range is 12-3 */    /* possible range: 0 - 31 */
-		gain_config.compressionGaindB = m_iServiceType == AUDIO_FLOW_AAC_LIVE_CHANNEL ? 38 : 9;  /*For channel gain level 38 is set from hearing experience*/
+		gain_config.compressionGaindB = m_iAudioFlowType == AUDIO_FLOW_AAC_LIVE_CHANNEL ? 38 : 9;  /*For channel gain level 38 is set from hearing experience*/
 																										/* possible range: 0 - 90 */
-		gain_config.limiterEnable = m_iServiceType == AUDIO_FLOW_AAC_LIVE_CHANNEL ? false : true;
+		gain_config.limiterEnable = m_iAudioFlowType == AUDIO_FLOW_AAC_LIVE_CHANNEL ? false : true;
 
 		if (WebRtcAgc_set_config(AGC_instance, gain_config))
 		{

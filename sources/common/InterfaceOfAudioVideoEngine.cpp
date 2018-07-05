@@ -94,7 +94,7 @@ namespace MediaSDK
 		return Ret;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nServiceType, int nEntityType, AudioCallParams acParams)
+	bool CInterfaceOfAudioVideoEngine::StartAudioCall(const IPVLongType llFriendID, int nAudioFlowType, int nEntityType, AudioCallParams acParams)
 	{
 		m_llTimeOffset = -1;
 
@@ -203,7 +203,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartChannel(const IPVLongType llFriendID, int nChannelType, int nServiceType, int nEntityType, AudioCallParams acParams)
+	bool CInterfaceOfAudioVideoEngine::StartChannel(const IPVLongType llFriendID, int nChannelType, int nAudioFlowType, int nEntityType, AudioCallParams acParams)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel called 1 ID %lld", llFriendID);
 
@@ -236,7 +236,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive)
+	bool CInterfaceOfAudioVideoEngine::StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nAudioFlowType, int nEntityType, int nNetworkType, bool bAudioOnlyLive)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall called 1 ID %lld nVideoHeight %d nVideoWidth %d", llFriendID, nVideoHeight, nVideoWidth);
 
@@ -253,7 +253,7 @@ namespace MediaSDK
 		if (llFriendID == SESSION_ID_FOR_SELF_VIEW)
 			bSelfViewOnly = true;
 
-		bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nServiceType, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, nNetworkType, bAudioOnlyLive, bSelfViewOnly);
+		bool bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, nAudioFlowType, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, nNetworkType, bAudioOnlyLive, bSelfViewOnly);
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartVideoCall done ID %lld", llFriendID);
 		
@@ -448,15 +448,15 @@ namespace MediaSDK
 				}
 
 				int nEntityType = m_Tools.GetEntityTypeFromMediaChunck(in_data + nValidHeaderOffset);
-				int nServiceType = m_Tools.GetServiceTypeFromMediaChunck(in_data + nValidHeaderOffset);
+				int nAudioFlowType = m_Tools.GetServiceTypeFromMediaChunck(in_data + nValidHeaderOffset);
 				int nChunkNumber = m_Tools.GetMediaUnitChunkNumberFromMediaChunck(in_data + nValidHeaderOffset);
 
 				int audioStartingPosition = m_Tools.GetAudioBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 				int videoStartingPosition = m_Tools.GetVideoBlockStartingPositionFromMediaChunck(in_data + nValidHeaderOffset);
 
 				streamType = m_Tools.GetMediaUnitStreamTypeFromMediaChunck(in_data + nValidHeaderOffset);
-				CLogPrinter_LOG(HEADER_TEST_LOG, "streamType = %d, llCurrentChunkRelativeTime = %lld, version = %d, headerLength = %d, llCurrentChunkDuration = %d, lengthOfAudioData = %d, lengthOfVideoData = %d, blockInfoPosition = %d, numberOfAudioFrames = %d, numberOfVideoFrames = %d, nEntityType = %d, nServiceType = %d, nChunkNumber = %d, audioStartingPosition = %d, videoStartingPosition = %d",
-					streamType, llCurrentChunkRelativeTime, version, headerLength, llCurrentChunkDuration, lengthOfAudioData, lengthOfVideoData, blockInfoPosition, numberOfAudioFrames, numberOfVideoFrames, nEntityType, nServiceType, nChunkNumber, audioStartingPosition, videoStartingPosition);
+				CLogPrinter_LOG(HEADER_TEST_LOG, "streamType = %d, llCurrentChunkRelativeTime = %lld, version = %d, headerLength = %d, llCurrentChunkDuration = %d, lengthOfAudioData = %d, lengthOfVideoData = %d, blockInfoPosition = %d, numberOfAudioFrames = %d, numberOfVideoFrames = %d, nEntityType = %d, nAudioFlowType = %d, nChunkNumber = %d, audioStartingPosition = %d, videoStartingPosition = %d",
+					streamType, llCurrentChunkRelativeTime, version, headerLength, llCurrentChunkDuration, lengthOfAudioData, lengthOfVideoData, blockInfoPosition, numberOfAudioFrames, numberOfVideoFrames, nEntityType, nAudioFlowType, nChunkNumber, audioStartingPosition, videoStartingPosition);
 
 				iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, audioStartingPosition, in_data, lengthOfAudioData, numberOfAudioFrames, audioFrameSizes, vMissingFrames);
 

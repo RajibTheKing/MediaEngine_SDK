@@ -57,7 +57,7 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources,
+		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nAudioFlowType, int nEntityType, AudioResources &audioResources,
 			AudioCallParams acParams);
 		~CAudioCallSession();
 
@@ -97,7 +97,7 @@ namespace MediaSDK
 		void SetEventNotifier(CEventNotifier *pEventNotifier)          { m_pEventNotifier = pEventNotifier; }
 
 		int GetRole()        { return m_iRole; }
-		int GetServiceType() { return m_nServiceType; }
+		int GetAudioFlowType() { return m_nAudioFlowType; }
 		int GetEntityType()  { return m_nEntityType; }
 		int GetSpeakerType() { return m_iSpeakerType;  }
 		bool getIsAudioLiveStreamRunning() { return m_bLiveAudioStreamRunning; }
@@ -182,7 +182,7 @@ namespace MediaSDK
 
 		int m_iRole;
 		int m_iVolume;
-		int m_nServiceType;
+		int m_nAudioFlowType;
 		int m_nEntityType;
 		
 		int m_iAudioVersionFriend;

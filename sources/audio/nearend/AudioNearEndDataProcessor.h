@@ -31,7 +31,7 @@ namespace MediaSDK
 
 	public:
 
-		AudioNearEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+		AudioNearEndDataProcessor(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 		virtual ~AudioNearEndDataProcessor();
 		virtual void ProcessNearEndData() = 0;
 
@@ -134,7 +134,7 @@ namespace MediaSDK
 		bool m_bAudioEncodingThreadRunning;
 		bool m_bMediaAECStatusNotified;
 
-		int m_nServiceType;
+		int m_nAudioFlowType;
 		int m_nEntityType;
 		int m_nStoredDataLengthNear;		
 		int m_nStoredDataLengthFar;

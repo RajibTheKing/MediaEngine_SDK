@@ -13,7 +13,7 @@ namespace MediaSDK
 
 	public:
 
-		FarEndProcessorChannel(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning);
+		FarEndProcessorChannel(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning);
 		~FarEndProcessorChannel() { }
 
 		void ProcessFarEndData();
