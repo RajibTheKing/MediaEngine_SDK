@@ -195,7 +195,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID, int nChannelType)
+	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID, int nChannelType, AudioCallParams acParams)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 1 ID %lld", llFriendID);
 
@@ -208,7 +208,6 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
 
-		AudioCallParams acParams;
 		acParams.nAudioCodecType = AUDIO_CODEC_OPUS; //Wrong info, it's not opus, still not changing yet to maintain backward compatibility
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
 
