@@ -1,6 +1,7 @@
 #include "AudioSessionOptions.h"
 #include "LogPrinter.h"
 #include "InterfaceOfAudioVideoEngine.h"
+#include "AudioMacros.h"
 
 namespace MediaSDK
 {
