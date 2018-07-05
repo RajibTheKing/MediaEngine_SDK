@@ -207,8 +207,16 @@ namespace MediaSDK
 		}
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
+		bool bReturnedValue;
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
+		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
+		{
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, ENTITY_TYPE_VIEWER, acParams);
+		}
+		else if (acParams.nAudioCodecType == AUDIO_CODEC_AAC)
+		{
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
+		}
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
