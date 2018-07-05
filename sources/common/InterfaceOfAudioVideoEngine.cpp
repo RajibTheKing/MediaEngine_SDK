@@ -181,9 +181,16 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
+		bool bReturnedValue;
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, acParams);
+		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
+		{
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, acParams);
+		}
+		else if (acParams.nAudioCodecType == AUDIO_CODEC_AAC)
+		{
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
+		}
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
@@ -195,7 +202,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID, int nChannelType, AudioCallParams acParams)
+	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID, int nChannelType, int nServiceType, int nEntityType, AudioCallParams acParams)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 1 ID %lld", llFriendID);
 
@@ -211,7 +218,7 @@ namespace MediaSDK
 
 		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
 		{
-			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, ENTITY_TYPE_VIEWER, acParams);
+			bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, acParams);
 		}
 		else if (acParams.nAudioCodecType == AUDIO_CODEC_AAC)
 		{
