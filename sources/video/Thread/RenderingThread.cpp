@@ -205,7 +205,7 @@ namespace MediaSDK
 						if (m_pcVideoCallSession->GetEntityType() != ENTITY_TYPE_PUBLISHER_CALLER)
 						{
 
-							m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, insetHeight, insetWidth, orientation);
+							m_pcCommonElementsBucket->m_pEventNotifier->fireVideoEvent(m_llFriendID, m_pcVideoCallSession->GetServiceType(), nFrameNumber, frameSize, m_ucaRenderingFrame, videoHeight, videoWidth, insetHeight, insetWidth, orientation);
 						}
 
 						//                    llPrevTimeStamp = m_Tools.CurrentTimestamp();

@@ -279,7 +279,7 @@ namespace MediaSDK
 
 						if (m_pVideoCallSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 						{
-							llExpectedTimeOffset = llFirstFrameTimeStamp - llCurrentChunkRelativeTime;
+							llExpectedTimeOffset = llFirstFrameTimeStamp - llCurrentChunkRelativeTime;		// this will be for live also, it is much more appropiate 
 						}
 						else
 						{

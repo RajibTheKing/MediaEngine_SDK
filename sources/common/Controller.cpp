@@ -395,7 +395,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
     
     if(iVideoHeight > 640 || iVideoWidth > 640)
     {
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			iVideoHeight = iVideoHeight / 4;
 			iVideoWidth = iVideoWidth / 4;
@@ -756,7 +756,7 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 #else
 			if (pVideoSession->GetServiceType() == SERVICE_TYPE_CALL || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)
 				pVideoSession->m_pVideoEncodingThreadOfCall->SetOrientationType(orientation_type);
-			else if (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+			else if (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 				pVideoSession->m_pVideoEncodingThreadOfLive->SetOrientationType(orientation_type);
 #endif
 
@@ -806,7 +806,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 		{
 			int nServiceType = pVideoSession->GetServiceType();
 
-			if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+			if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 			{
 				height = height / 4;
 				width = width / 4;
