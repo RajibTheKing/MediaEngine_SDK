@@ -104,7 +104,7 @@ namespace MediaSDK
 		}
 
 		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, acParams);
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_OPUS_CALL, nEntityType, acParams);
 
 		return bReturnedValue;
 	}

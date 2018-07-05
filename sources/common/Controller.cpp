@@ -281,12 +281,12 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestAudioCall() session creating");
 		AudioSessionOptions audioSessionOptions;
-		audioSessionOptions.SetOptions(SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD);
+		audioSessionOptions.SetOptions(AUDIO_FLOW_OPUS_CALL, DEVICE_ABILITY_CHECK_MOOD);
 		AudioResources audioResources(audioSessionOptions);
 
 		AudioCallParams acParams;
 		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
-		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, acParams);
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, AUDIO_FLOW_OPUS_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, acParams);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 
@@ -315,7 +315,7 @@ CVideoCallSession* CController::StartTestVideoCall(const long long& lFriendID, i
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session creating");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, CHANNEL_TYPE_NOT_CHANNEL, ENTITY_TYPE_CALLER, false, false);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, AUDIO_FLOW_OPUS_CALL, CHANNEL_TYPE_NOT_CHANNEL, ENTITY_TYPE_CALLER, false, false);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType, false, VIDEO_CALL_TYPE_UNCHECKED);
 
@@ -345,7 +345,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 
-	if(nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CALL || nServiceType == SERVICE_TYPE_SELF_CALL)
+	if(nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == AUDIO_FLOW_OPUS_CALL || nServiceType == SERVICE_TYPE_SELF_CALL)
 	{
 		iVideoHeight = 1280;
 		iVideoWidth = 720;
@@ -364,7 +364,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
 			iVideoHeight = iVideoHeight / 4;
 			iVideoWidth = iVideoWidth / 4;
 		}
-		else if (nServiceType == SERVICE_TYPE_CALL)
+		else if (nServiceType == AUDIO_FLOW_OPUS_CALL)
 		{
 			if (m_nSupportedResolutionFPSLevel == VIDEO_CALL_TYPE_640_25FPS)
 			{
@@ -696,7 +696,7 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 
 				pVideoSession->m_pVideoEncodingThread->SetOrientationType(orientation_type);
 #else
-			if (pVideoSession->GetServiceType() == SERVICE_TYPE_CALL || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)
+			if (pVideoSession->GetServiceType() == AUDIO_FLOW_OPUS_CALL || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)
 				pVideoSession->m_pVideoEncodingThreadOfCall->SetOrientationType(orientation_type);
 			else if (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
 				pVideoSession->m_pVideoEncodingThreadOfLive->SetOrientationType(orientation_type);
@@ -753,7 +753,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 				height = height / 4;
 				width = width / 4;
 			}
-			else if (nServiceType == SERVICE_TYPE_CALL)
+			else if (nServiceType == AUDIO_FLOW_OPUS_CALL)
 			{
 				if (m_nSupportedResolutionFPSLevel == VIDEO_CALL_TYPE_640_25FPS)
 				{
