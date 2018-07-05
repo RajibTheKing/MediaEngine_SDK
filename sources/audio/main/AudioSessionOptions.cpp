@@ -46,7 +46,7 @@ namespace MediaSDK
 		{
 			return EntityChannel;
 		}
-		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == serviceType || SERVICE_TYPE_SELF_STREAM == serviceType)
+		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == serviceType || AUDIO_FLOW_USELESS_STREAM == serviceType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == entityType)
 			{

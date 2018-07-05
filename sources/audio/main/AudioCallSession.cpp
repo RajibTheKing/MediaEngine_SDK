@@ -125,7 +125,7 @@ namespace MediaSDK
 		m_bLiveAudioStreamRunning = false;
 
 
-		if (m_nServiceType == AUDIO_FLOW_OPUS_LIVE_CHANNEL || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == AUDIO_FLOW_AAC_LIVE_CHANNEL)
+		if (m_nServiceType == AUDIO_FLOW_OPUS_LIVE_CHANNEL || m_nServiceType == AUDIO_FLOW_USELESS_STREAM || m_nServiceType == AUDIO_FLOW_AAC_LIVE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
 		}
@@ -384,7 +384,7 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#farEnd# CAudioCallSession::StartFarEndDataProcessing()");
 
-		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || AUDIO_FLOW_USELESS_STREAM == m_nServiceType)
 		{
 			if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)		//Is Viewer or Callee.
 			{

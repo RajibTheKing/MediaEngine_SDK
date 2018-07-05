@@ -71,7 +71,7 @@ namespace MediaSDK
 			m_AudioReceivedBuffer->SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
 		}
 #endif
-		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || AUDIO_FLOW_USELESS_STREAM == m_nServiceType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
@@ -354,7 +354,7 @@ namespace MediaSDK
 			}
 			return false;
 		}
-		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
+		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || AUDIO_FLOW_USELESS_STREAM == m_nServiceType)	//LiveStreaming.
 		{			
 			if (m_pAudioCallSession->IsOpusEnable())	
 			{
@@ -388,7 +388,7 @@ namespace MediaSDK
 				return false;
 			}
 
-			if ( (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType) 
+			if ( (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nServiceType || AUDIO_FLOW_USELESS_STREAM == m_nServiceType) 
 				&& (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER) )
