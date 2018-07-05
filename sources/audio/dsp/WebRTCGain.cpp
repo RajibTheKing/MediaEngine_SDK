@@ -47,9 +47,9 @@ namespace MediaSDK
 #endif
 	}
 
-	void WebRTCGain::Init(int serviceType)
+	void WebRTCGain::Init(int audioFlowType)
 	{
-		m_iServiceType = serviceType;
+		m_iServiceType = audioFlowType;
 		if (m_iServiceType == AUDIO_FLOW_AAC_LIVE_CHANNEL)
 		{
 			m_iSampleSize = 160;
@@ -60,13 +60,13 @@ namespace MediaSDK
 		}
 #ifdef USE_AGC
 		
-		if (WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, WEBRTC_AGC_MAX_LEVEL, MODE_ADAPTIVE_DIGITAL, serviceType == AUDIO_FLOW_AAC_LIVE_CHANNEL ? 48000 : AUDIO_SAMPLE_RATE)) //Channel's audio sample rate is 44100 but webrtc fails on 44100
+		if (WebRtcAgc_Init(AGC_instance, WEBRTC_AGC_MIN_LEVEL, WEBRTC_AGC_MAX_LEVEL, MODE_ADAPTIVE_DIGITAL, audioFlowType == AUDIO_FLOW_AAC_LIVE_CHANNEL ? 48000 : AUDIO_SAMPLE_RATE)) //Channel's audio sample rate is 44100 but webrtc fails on 44100
 		{
 			//MediaLog(CODE_TRACE, "###GN## WebRtcAgc_Init failed");
 		}
 		else
 		{
-			//MediaLog(CODE_TRACE, "###GN## WebRtcAgc_Init successful servicetype:%d", serviceType);
+			//MediaLog(CODE_TRACE, "###GN## WebRtcAgc_Init successful servicetype:%d", audioFlowType);
 		}
 
 		SetGain(m_iVolume);

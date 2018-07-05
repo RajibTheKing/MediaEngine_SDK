@@ -36,17 +36,17 @@ namespace MediaSDK
 	}
 
 
-	AudioEntityRoleType AudioSessionOptions::GetEntityRoleType(int serviceType, int entityType)
+	AudioEntityRoleType AudioSessionOptions::GetEntityRoleType(int audioFlowType, int entityType)
 	{
-		if (serviceType == AUDIO_FLOW_OPUS_CALL || serviceType == AUDIO_FLOW_USELESS_CALL)
+		if (audioFlowType == AUDIO_FLOW_OPUS_CALL || audioFlowType == AUDIO_FLOW_USELESS_CALL)
 		{
 			return EntityInCall;
 		}
-		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == serviceType)
+		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == audioFlowType)
 		{
 			return EntityChannel;
 		}
-		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == serviceType || AUDIO_FLOW_USELESS_STREAM == serviceType)
+		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == audioFlowType || AUDIO_FLOW_USELESS_STREAM == audioFlowType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == entityType)
 			{
@@ -77,9 +77,9 @@ namespace MediaSDK
 	}
 
 
-	void AudioSessionOptions::SetOptions(int serviceType, int entityType)
+	void AudioSessionOptions::SetOptions(int audioFlowType, int entityType)
 	{
-		AudioEntityRoleType entityRoleType = GetEntityRoleType(serviceType, entityType);
+		AudioEntityRoleType entityRoleType = GetEntityRoleType(audioFlowType, entityType);
 
 		switch (entityRoleType)
 		{

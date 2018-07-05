@@ -33,7 +33,7 @@ namespace MediaSDK
 	public:
 		WebRTCGain();
 
-		void Init(int serviceType);
+		void Init(int audioFlowType);
 		virtual ~WebRTCGain();
 
 		bool SetGain(int iGain);

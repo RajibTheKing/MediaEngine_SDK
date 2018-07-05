@@ -33,7 +33,7 @@ namespace MediaSDK
 
 	protected:
 
-		AudioEntityRoleType GetEntityRoleType(int serviceType, int entityType);
+		AudioEntityRoleType GetEntityRoleType(int audioFlowType, int entityType);
 
 		void SetOptionsForCall();
 		void SetOptionsForChannel();
@@ -51,7 +51,7 @@ namespace MediaSDK
 		~AudioSessionOptions() { }
 
 		void ResetOptions();
-		void SetOptions(int serviceType, int entityType);
+		void SetOptions(int audioFlowType, int entityType);
 
 
 	public:
