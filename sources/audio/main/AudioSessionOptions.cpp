@@ -41,7 +41,7 @@ namespace MediaSDK
 		{
 			return EntityInCall;
 		}
-		else if (SERVICE_TYPE_CHANNEL == serviceType)
+		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == serviceType)
 		{
 			return EntityChannel;
 		}
