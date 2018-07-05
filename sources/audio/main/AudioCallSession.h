@@ -57,7 +57,7 @@ namespace MediaSDK
 
 	public:
 
-		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, bool bOpusCodec,
+		CAudioCallSession(const bool& isVideoCallRunning, long long llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources,
 			AudioCallParams acParams);
 		~CAudioCallSession();
 

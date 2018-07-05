@@ -102,8 +102,8 @@ namespace MediaSDK
 			return false;
 		}
 
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType,  true,
-			acParams);
+		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, nServiceType, nEntityType, acParams);
 
 		return bReturnedValue;
 	}
@@ -149,9 +149,9 @@ namespace MediaSDK
 		m_pcController->SetMicrophoneMode(lFriendID, bMicrophoneEnable);
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType, AudioCallParams acParams)
+	bool CInterfaceOfAudioVideoEngine::StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, AudioCallParams acParams)
 	{
-        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth, iAudioCodecType) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth, iAudioCodecType);
+        CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming (llFrindId, nEntityType, bAudioOnlyLive, nVideoheight, nVideoWidth) = (%llu, %d, %d, %d, %d, %d)", llFriendID, nEntityType, bAudioOnlyLive, nVideoHeight, nVideoWidth);
 
 #ifdef CHUNK_DUMPER
 #if defined(__ANDROID__)
@@ -181,9 +181,9 @@ namespace MediaSDK
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartLiveStreaming called 2 ID %lld", llFriendID);
 
-		bool bAudioCodecOpus = (AudioCodecType::AUDIO_CODEC_OPUS == iAudioCodecType);	//Enable opus codec for livestreaming.
-		
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, bAudioCodecOpus, acParams);
+		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
+
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_LIVE_STREAM, nEntityType, acParams);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_LIVE_STREAM, CHANNEL_TYPE_NOT_CHANNEL, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
@@ -209,7 +209,8 @@ namespace MediaSDK
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
 
 		AudioCallParams acParams;
-		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, true, acParams);
+		acParams.nAudioCodecType = AUDIO_CODEC_OPUS; //Wrong info, it's not opus, still not changing yet to maintain backward compatibility
+		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, SERVICE_TYPE_CHANNEL, ENTITY_TYPE_VIEWER, acParams);
 
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
@@ -949,6 +950,7 @@ namespace MediaSDK
 
 		int nCalleeID = 1;
 
+		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
 		bool bReturnedValue = m_pcController->StartAudioCallInLive(llFriendID, iRole, nCallInLiveType, acParams);
 
 		m_pcController->SetCallInLiveEnabled(true);

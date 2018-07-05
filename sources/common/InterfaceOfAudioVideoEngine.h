@@ -64,8 +64,10 @@ typedef long long LongLong;
 
 enum AudioCodecType
 {
+	AUDIO_CODEC_UNKNOWN = -1,
 	AUDIO_CODEC_PCM = 1,
-	AUDIO_CODEC_OPUS = 2
+	AUDIO_CODEC_OPUS = 2,
+	AUDIO_CODEC_AAC = 3
 };
 
 #define DECODED_MACRO_FRAME_SIZE_FOR_MULTI (480 * 640 * 3)/2 + 1
@@ -84,6 +86,7 @@ namespace MediaSDK
 		std::string sModelName;
 		std::string sOSVersion;
 		int nSDKVersion;
+		AudioCodecType nAudioCodecType;
 
 	private:
 		int a_npTraceInfo[3];
@@ -99,6 +102,7 @@ namespace MediaSDK
 			sModelName = "";
 			sOSVersion = "";
 			nSDKVersion = 0;
+			nAudioCodecType = AUDIO_CODEC_UNKNOWN;
 		}
 	};
 
@@ -127,7 +131,7 @@ namespace MediaSDK
 
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
-		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, int iAudioCodecType, AudioCallParams acParams);
+		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, AudioCallParams acParams);
 		bool StartChannelView(const IPVLongType llFriendID, int nChannelType);
 
 		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive);

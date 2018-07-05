@@ -175,7 +175,7 @@ bool CController::SetUserName(const long long& lUserName)
 	return true;
 }
 
-bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, bool bOpusCodec, AudioCallParams acParams)
+bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, int nEntityType, AudioCallParams acParams)
 {
 	StartAudioCallLocker lock3(*m_pAudioLockMutex);
 	CAudioCallSession* pAudioSession;
@@ -191,8 +191,7 @@ bool CController::StartAudioCall(const long long& lFriendID, int nServiceType, i
 		AudioSessionOptions audioSessionOptions;
 		audioSessionOptions.SetOptions(nServiceType, nEntityType);
 		AudioResources audioResources(audioSessionOptions);
-		MediaLog(LOG_INFO, "[C] OpusCodec %d", (int)bOpusCodec);
-		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, bOpusCodec, acParams);
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, nServiceType, nEntityType, audioResources, acParams);
 		MediaLog(LOG_INFO, "controller ac done");
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 		MediaLog(LOG_INFO, "controller list adding done");
@@ -286,8 +285,8 @@ bool CController::StartTestAudioCall(const long long& lFriendID)
 		AudioResources audioResources(audioSessionOptions);
 
 		AudioCallParams acParams;
-
-		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, true, acParams);
+		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
+		pAudioSession = new CAudioCallSession(m_bLiveCallRunning, lFriendID, m_pCommonElementsBucket, SERVICE_TYPE_CALL, DEVICE_ABILITY_CHECK_MOOD, audioResources, acParams);
 
 		m_pCommonElementsBucket->m_pAudioCallSessionList->AddToAudioSessionList(lFriendID, pAudioSession);
 

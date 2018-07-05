@@ -60,7 +60,7 @@
 
 namespace MediaSDK
 {
-	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, bool bOpusCodec,
+	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources,
 	AudioCallParams acParams
 		) :
 		m_bIsVideoCallRunning(isVideoCallRunning),
@@ -69,11 +69,11 @@ namespace MediaSDK
 		m_llLastPlayTime(0),
 		m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 		m_cNearEndProcessorThread(nullptr),
-		m_cFarEndProcessorThread(nullptr),
-		m_bIsOpusCodec(bOpusCodec)
+		m_cFarEndProcessorThread(nullptr)
 	{
 		m_bRecordingStarted = false;
-		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. ServiceType=%d, EntityType=%d, Opus[%d]----------\n", nServiceType, nEntityType, (int)m_bIsOpusCodec);
+		m_bIsOpusCodec = acParams.nAudioCodecType == AUDIO_CODEC_OPUS;
+		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. ServiceType=%d, EntityType=%d ----------\n", nServiceType, nEntityType, (int)m_bIsOpusCodec);
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
 
