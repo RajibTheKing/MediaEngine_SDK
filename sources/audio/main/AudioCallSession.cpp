@@ -399,7 +399,7 @@ namespace MediaSDK
 		{
 			m_pFarEndProcessor = new FarEndProcessorChannel(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 		}
-		else if (AUDIO_FLOW_OPUS_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
+		else if (AUDIO_FLOW_OPUS_CALL == m_nServiceType || AUDIO_FLOW_USELESS_CALL == m_nServiceType)
 		{
 			m_pFarEndProcessor = new FarEndProcessorCall(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 		}

@@ -38,7 +38,7 @@ namespace MediaSDK
 
 	AudioEntityRoleType AudioSessionOptions::GetEntityRoleType(int serviceType, int entityType)
 	{
-		if (serviceType == AUDIO_FLOW_OPUS_CALL || serviceType == SERVICE_TYPE_SELF_CALL)
+		if (serviceType == AUDIO_FLOW_OPUS_CALL || serviceType == AUDIO_FLOW_USELESS_CALL)
 		{
 			return EntityInCall;
 		}

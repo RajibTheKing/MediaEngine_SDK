@@ -66,7 +66,7 @@ namespace MediaSDK
 
 		m_pLiveAudioParser = nullptr;
 #if !defined(TARGET_OS_WINDOWS_PHONE)
-		if (AUDIO_FLOW_OPUS_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_CALL == m_nServiceType || AUDIO_FLOW_USELESS_CALL == m_nServiceType)
 		{
 			m_AudioReceivedBuffer->SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
 		}
