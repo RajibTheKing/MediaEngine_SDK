@@ -202,9 +202,9 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartChannelView(const IPVLongType llFriendID, int nChannelType, int nServiceType, int nEntityType, AudioCallParams acParams)
+	bool CInterfaceOfAudioVideoEngine::StartChannel(const IPVLongType llFriendID, int nChannelType, int nServiceType, int nEntityType, AudioCallParams acParams)
 	{
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 1 ID %lld", llFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel called 1 ID %lld", llFriendID);
 
 		m_llTimeOffset = -1;
 
@@ -213,7 +213,7 @@ namespace MediaSDK
 			return false;
 		}
 
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView called 2 ID %lld", llFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel called 2 ID %lld", llFriendID);
 		bool bReturnedValue;
 
 		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
@@ -228,9 +228,9 @@ namespace MediaSDK
 		if (bReturnedValue)
 			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
 
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView StartVideoCall completed ID %lld", llFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel StartVideoCall completed ID %lld", llFriendID);
 
-		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannelView done ID %lld", llFriendID);
+		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel done ID %lld", llFriendID);
 			
 		return bReturnedValue;
 	}

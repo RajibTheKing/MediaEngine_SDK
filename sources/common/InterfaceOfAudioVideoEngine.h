@@ -132,7 +132,7 @@ namespace MediaSDK
 		void SetCallInLiveType(const IPVLongType llFriendID, int nCallInLiveType);
 
 		bool StartLiveStreaming(const IPVLongType llFriendID, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, AudioCallParams acParams);
-		bool StartChannelView(const IPVLongType llFriendID, int nChannelType, int nServiceType, int nEntityType, AudioCallParams acParams);
+		bool StartChannel(const IPVLongType llFriendID, int nChannelType, int nServiceType, int nEntityType, AudioCallParams acParams);
 
 		bool StartVideoCall(const IPVLongType llFriendID, int nVideoHeight, int nVideoWidth, int nServiceType, int nEntityType, int nNetworkType, bool bAudioOnlyLive);
 		int EncodeAndTransfer(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength);
