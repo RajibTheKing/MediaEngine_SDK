@@ -198,7 +198,7 @@ namespace MediaSDK
 		return flag;
 	}
 
-	void LiveReceiver::PushVideoDataVector(int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, int serviceType, long long llCurrentChunkRelativeTime)
+	void LiveReceiver::PushVideoDataVector(bool isCheckForDuplicate, int offset, unsigned char* uchVideoData, int iLen, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, int serviceType, long long llCurrentChunkRelativeTime)
 	{
 		CLogPrinter_LOG(CRASH_CHECK_LOG, "LiveReceiver::PushVideoDataVector called");
 
@@ -215,7 +215,8 @@ namespace MediaSDK
 		int iUsedLen = 3, nFrames = 0;
 		int tillIndex = offset + 3;
 
-		if ((int)uchVideoData[0] != 0 && serviceType != SERVICE_TYPE_CHANNEL)
+		//if ((int)uchVideoData[0] != 0 && serviceType != SERVICE_TYPE_CHANNEL)
+		if (isCheckForDuplicate == true)
 		{
 			CLogPrinter_LOG(WRONG_ENTRY_LOG, "LiveReceiver::PushVideoDataVector Wrong Entry in concealing");
 
@@ -236,8 +237,8 @@ namespace MediaSDK
 				m_pLiveVideoDecodingQueue->Queue(uchVideoData + iUsedLen + 1, nCurrentFrameLen + videoHeader.GetHeaderLength(), llCurrentChunkRelativeTime);
 			}
 		}
-		
-		if (serviceType == SERVICE_TYPE_CHANNEL)
+		//if (serviceType == SERVICE_TYPE_CHANNEL)
+		else
 		{
 			iUsedLen = 0;
 			tillIndex = offset;
@@ -257,7 +258,8 @@ namespace MediaSDK
 		{
 			nFrames++;
 
-			if (serviceType != SERVICE_TYPE_CHANNEL && (int)uchVideoData[0] != 0 && (j == (int)uchVideoData[1] || j == (int)uchVideoData[2]))
+			//if (serviceType != SERVICE_TYPE_CHANNEL && (int)uchVideoData[0] != 0 && (j == (int)uchVideoData[1] || j == (int)uchVideoData[2]))
+			if (isCheckForDuplicate == true && (j == (int)uchVideoData[1] || j == (int)uchVideoData[2]))
 			{
 				iUsedLen += frameSizes[j];
 				continue;

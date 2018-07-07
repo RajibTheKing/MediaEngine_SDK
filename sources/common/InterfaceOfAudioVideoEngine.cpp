@@ -464,7 +464,18 @@ namespace MediaSDK
 
 				//m_Tools.SOSleep(100); //Temporary Fix to Sync Audio And Video Data for LIVE STREAM SERVICE
 #ifndef DISABLE_VIDEO_FOR_LIVE
-				iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, videoStartingPosition, in_data + videoStartingPosition, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames, llCurrentChunkRelativeTime);
+
+				bool isCheckForDuplicate = false;
+
+				if ((int)in_data[videoStartingPosition] == 2 && (int)in_data[videoStartingPosition + 1] == 1 && (int)in_data[videoStartingPosition + 2] == 1)
+					isCheckForDuplicate = true;
+				else if ((int)in_data[videoStartingPosition] == 0 && (int)in_data[videoStartingPosition + 1] == 0 && (int)in_data[videoStartingPosition + 2] == 0)
+				{
+					videoStartingPosition += 3;
+					lengthOfVideoData -= 3;
+				}
+
+				iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, isCheckForDuplicate, videoStartingPosition, in_data + videoStartingPosition, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames, llCurrentChunkRelativeTime);
 #endif
 
 			}

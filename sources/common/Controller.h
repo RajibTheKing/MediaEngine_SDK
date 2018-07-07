@@ -53,7 +53,7 @@ namespace MediaSDK
 		CVideoCallSession* StartTestVideoCall(const long long& lFriendID, int iVideoHeight, int iVideoWidth, int iNetworkType);
 		int EncodeVideoFrame(const long long& lFriendID, unsigned char *in_data, unsigned int in_size);
 		int PushPacketForDecoding(const long long& lFriendID, unsigned char *in_data, unsigned int in_size, int numberOfFrames = 0, int *frameSizes = NULL, int numberOfMissingFrames = 0, int *missingFrames = NULL);
-		int PushPacketForDecodingVector(const long long& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime);
+		int PushPacketForDecodingVector(const long long& lFriendID, bool isCheckForDuplicate, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime);
 		int PushAudioForDecoding(const long long& lFriendID, int nOffset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames);
 		int SendAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
 		int CancelAudioData(const long long& lFriendID, short *in_data, unsigned int in_size);
