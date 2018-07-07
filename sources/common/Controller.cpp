@@ -359,7 +359,7 @@ bool CController::StartVideoCall(const long long& lFriendID, int iVideoHeight, i
     
     if(iVideoHeight > 640 || iVideoWidth > 640)
     {
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			iVideoHeight = iVideoHeight / 4;
 			iVideoWidth = iVideoWidth / 4;
@@ -498,7 +498,7 @@ int CController::EncodeVideoFrame(const long long& lFriendID, unsigned char *in_
 	}
 }
 
-int CController::PushPacketForDecodingVector(const long long& lFriendID, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime)
+int CController::PushPacketForDecodingVector(const long long& lFriendID, bool isCheckForDuplicate, int offset, unsigned char *in_data, unsigned int in_size, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime)
 {
 	CVideoCallSession* pVideoSession = NULL;
 
@@ -522,7 +522,7 @@ int CController::PushPacketForDecodingVector(const long long& lFriendID, int off
 		//		LOGE("CController::ParseFrameIntoPackets got PushPacketForDecoding2");
 		//		CLogPrinter_WriteSpecific(CLogPrinter::DEBUGS, " CNTRL SIGBYTE: "+ m_Tools.IntegertoStringConvert((int)in_data[1+SIGNAL_BYTE_INDEX]));
 		if (pVideoSession)
-			return pVideoSession->PushPacketForMergingVector(offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames, llCurrentChunkRelativeTime);
+			return pVideoSession->PushPacketForMergingVector(isCheckForDuplicate, offset, in_data, in_size, false, numberOfFrames, frameSizes, vMissingFrames, llCurrentChunkRelativeTime);
 		else
 			return -1;
 	}
@@ -696,7 +696,7 @@ int CController::SendVideoData(const long long& lFriendID, unsigned char *in_dat
 #else
 			if (pVideoSession->GetServiceType() == AUDIO_FLOW_OPUS_CALL || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_CALL)
 				pVideoSession->m_pVideoEncodingThreadOfCall->SetOrientationType(orientation_type);
-			else if (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM)
+			else if (pVideoSession->GetServiceType() == SERVICE_TYPE_LIVE_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_SELF_STREAM || pVideoSession->GetServiceType() == SERVICE_TYPE_CHANNEL)
 				pVideoSession->m_pVideoEncodingThreadOfLive->SetOrientationType(orientation_type);
 #endif
 
@@ -746,7 +746,7 @@ int CController::SetEncoderHeightWidth(const long long& lFriendID, int height, i
 		{
 			int nServiceType = pVideoSession->GetServiceType();
 
-			if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+			if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 			{
 				height = height / 4;
 				width = width / 4;
