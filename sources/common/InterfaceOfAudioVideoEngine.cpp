@@ -203,7 +203,7 @@ namespace MediaSDK
 		return bReturnedValue;
 	}
 
-	bool CInterfaceOfAudioVideoEngine::StartChannel(const IPVLongType llFriendID, int nChannelType, int nServiceType, int nEntityType, AudioCallParams acParams)
+	bool CInterfaceOfAudioVideoEngine::StartChannel(const IPVLongType llFriendID, int nChannelType, int nEntityType, bool bAudioOnlyLive, int nVideoHeight, int nVideoWidth, AudioCallParams acParams)
 	{
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel called 1 ID %lld", llFriendID);
 
@@ -227,7 +227,7 @@ namespace MediaSDK
 		}
 
 		if (bReturnedValue)
-			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, ENTITY_TYPE_VIEWER, NETWORK_TYPE_NOT_2G, false, false);
+			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel StartVideoCall completed ID %lld", llFriendID);
 
