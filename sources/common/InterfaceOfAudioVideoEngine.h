@@ -62,13 +62,7 @@
 typedef long long IPVLongType;
 typedef long long LongLong;
 
-enum AudioCodecType
-{
-	AUDIO_CODEC_UNKNOWN = -1,
-	AUDIO_CODEC_PCM = 1,
-	AUDIO_CODEC_OPUS = 2,
-	AUDIO_CODEC_AAC = 3
-};
+
 
 #define DECODED_MACRO_FRAME_SIZE_FOR_MULTI (480 * 640 * 3)/2 + 1
 
@@ -76,6 +70,15 @@ enum AudioCodecType
 
 namespace MediaSDK
 {
+
+	enum AudioCodecTypeEnum
+	{
+		AUDIO_CODEC_UNKNOWN = -1,
+		AUDIO_CODEC_PCM = 1,
+		AUDIO_CODEC_OPUS = 2,
+		AUDIO_CODEC_AAC = 3
+	};
+
 	struct AudioCallParams
 	{
 		int nAudioSpeakerType;
@@ -86,9 +89,9 @@ namespace MediaSDK
 		std::string sModelName;
 		std::string sOSVersion;
 		int nSDKVersion;
-		AudioCodecType nAudioCodecType;
+		AudioCodecTypeEnum nAudioCodecType;
 
-	private:
+	private: 
 		int a_npTraceInfo[3];
 	public:
 		AudioCallParams()
