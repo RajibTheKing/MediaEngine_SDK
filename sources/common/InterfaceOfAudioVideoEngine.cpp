@@ -227,7 +227,7 @@ namespace MediaSDK
 		}
 
 		if (bReturnedValue)
-			bReturnedValue = m_pcController->StartVideoCall(llFriendID, 352, 288, SERVICE_TYPE_CHANNEL, nChannelType, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
+			bReturnedValue = m_pcController->StartVideoCall(llFriendID, nVideoHeight, nVideoWidth, SERVICE_TYPE_CHANNEL, nChannelType, nEntityType, NETWORK_TYPE_NOT_2G, bAudioOnlyLive, false);
 
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel StartVideoCall completed ID %lld", llFriendID);
 
