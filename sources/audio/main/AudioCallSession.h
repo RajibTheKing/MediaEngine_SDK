@@ -140,6 +140,7 @@ namespace MediaSDK
 		
 		//int m_iPrevRecvdSlotID;
 		int m_iReceivedPacketsInPrevSlot;
+		int m_nAudioServiceType;
 
 		int m_nNumTraceReceived = 0, m_nNumTraceNotReceived = 0, m_nSumDelay = 0, m_nAvgDelayFrames = 0, m_nAvgDelayFraction = 0;
 		float m_fAvgDelay = 0, m_fTraceReceivingProbability = 0;

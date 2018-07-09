@@ -90,6 +90,7 @@ namespace MediaSDK
 		std::string sOSVersion;
 		int nSDKVersion;
 		AudioCodecTypeEnum nAudioCodecType;
+		int nAudioServiceType;
 
 	private: 
 		int a_npTraceInfo[3];
@@ -106,6 +107,7 @@ namespace MediaSDK
 			sOSVersion = "";
 			nSDKVersion = 0;
 			nAudioCodecType = AUDIO_CODEC_UNKNOWN;
+			nAudioServiceType = SERVICE_TYPE_CALL;
 		}
 	};
 
