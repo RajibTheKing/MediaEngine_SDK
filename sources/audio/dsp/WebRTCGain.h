@@ -25,7 +25,7 @@ namespace MediaSDK
 		int m_iVolume;
 		int m_iSkipFrames;
 		int m_iSampleSize = -1;
-		int m_iServiceType = -1;
+		int m_iAudioFlowType = -1;
 
 		void* AGC_instance;
 
@@ -33,7 +33,7 @@ namespace MediaSDK
 	public:
 		WebRTCGain();
 
-		void Init(int serviceType);
+		void Init(int audioFlowType);
 		virtual ~WebRTCGain();
 
 		bool SetGain(int iGain);

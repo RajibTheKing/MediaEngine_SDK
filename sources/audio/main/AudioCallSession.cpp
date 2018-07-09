@@ -60,20 +60,21 @@
 
 namespace MediaSDK
 {
-	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nServiceType, int nEntityType, AudioResources &audioResources, bool bOpusCodec,
+	CAudioCallSession::CAudioCallSession(const bool& isVideoCallRunning, LongLong llFriendID, CCommonElementsBucket* pSharedObject, int nAudioFlowType, int nEntityType, AudioResources &audioResources,
 	AudioCallParams acParams
 		) :
 		m_bIsVideoCallRunning(isVideoCallRunning),
 		m_nEntityType(nEntityType),
-		m_nServiceType(nServiceType),
+		m_nAudioFlowType(nAudioFlowType),
 		m_llLastPlayTime(0),
 		m_nCallInLiveType(CALL_IN_LIVE_TYPE_AUDIO_VIDEO),
 		m_cNearEndProcessorThread(nullptr),
-		m_cFarEndProcessorThread(nullptr),
-		m_bIsOpusCodec(bOpusCodec)
+		m_cFarEndProcessorThread(nullptr)
 	{
 		m_bRecordingStarted = false;
-		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. ServiceType=%d, EntityType=%d, Opus[%d]----------\n", nServiceType, nEntityType, (int)m_bIsOpusCodec);
+		m_bIsOpusCodec = acParams.nAudioCodecType == AUDIO_CODEC_OPUS;
+		m_nAudioServiceType = acParams.nAudioServiceType;
+		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. AudioFlowType=%d, EntityType=%d ----------\n", nAudioFlowType, nEntityType, (int)m_bIsOpusCodec);
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
 
@@ -97,15 +98,15 @@ namespace MediaSDK
 		SetResources(audioResources);
 		if (GetPlayerGain().get())
 		{
-			GetPlayerGain()->Init(m_nServiceType);
+			GetPlayerGain()->Init(m_nAudioFlowType);
 			GetPlayerGain()->SetGain(0);
 			//GetPlayerGain()->SetGain(10); //TODO: remove this
 		}
 
 		if (GetRecorderGain().get())
 		{
-			GetRecorderGain()->Init(m_nServiceType);
-			if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nServiceType == SERVICE_TYPE_LIVE_STREAM)
+			GetRecorderGain()->Init(m_nAudioFlowType);
+			if (m_nEntityType == ENTITY_TYPE_PUBLISHER && m_nAudioFlowType == AUDIO_FLOW_OPUS_LIVE_CHANNEL)
 			{
 				//Gain level is incremented to recover losses due to noise.
 				//And noise is only applied to publisher NOT in call.
@@ -125,7 +126,7 @@ namespace MediaSDK
 		m_bLiveAudioStreamRunning = false;
 
 
-		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
+		if (m_nAudioFlowType == AUDIO_FLOW_OPUS_LIVE_CHANNEL || m_nAudioFlowType == AUDIO_FLOW_USELESS_STREAM || m_nAudioFlowType == AUDIO_FLOW_AAC_LIVE_CHANNEL)
 		{
 			m_bLiveAudioStreamRunning = true;
 		}
@@ -339,7 +340,7 @@ namespace MediaSDK
 		{
 			m_pAudioEncoder->CreateAudioEncoder();
 			
-			if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType && IsOpusEnable())
+			if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType && IsOpusEnable())
 			{
 				m_pAudioEncoder->SetBitrate(OPUS_BITRATE_INIT_LIVE);
 			}
@@ -363,16 +364,16 @@ namespace MediaSDK
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
-				m_pNearEndProcessor = new AudioNearEndProcessorPublisher(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
+				m_pNearEndProcessor = new AudioNearEndProcessorPublisher(m_nAudioFlowType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 			}
 			else if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)
 			{
-				m_pNearEndProcessor = new AudioNearEndProcessorViewer(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
+				m_pNearEndProcessor = new AudioNearEndProcessorViewer(m_nAudioFlowType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning);
 			}
 		}
 		else
 		{
-			m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nServiceType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning, m_bIsVideoCallRunning);
+			m_pNearEndProcessor = new AudioNearEndProcessorCall(m_nAudioFlowType, m_nEntityType, this, m_AudioNearEndBuffer, m_bLiveAudioStreamRunning, m_bIsVideoCallRunning);
 		}
 
 		m_pNearEndProcessor->SetDataReadyCallback(this);
@@ -384,24 +385,24 @@ namespace MediaSDK
 	{
 		MR_DEBUG("#farEnd# CAudioCallSession::StartFarEndDataProcessing()");
 
-		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType || AUDIO_FLOW_USELESS_STREAM == m_nAudioFlowType)
 		{
 			if (ENTITY_TYPE_VIEWER == m_nEntityType || ENTITY_TYPE_VIEWER_CALLEE == m_nEntityType)		//Is Viewer or Callee.
 			{
-				m_pFarEndProcessor = new FarEndProcessorViewer(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
+				m_pFarEndProcessor = new FarEndProcessorViewer(m_nAudioFlowType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 			}
 			else if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
-				m_pFarEndProcessor = new FarEndProcessorPublisher(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
+				m_pFarEndProcessor = new FarEndProcessorPublisher(m_nAudioFlowType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 			}
 		}
-		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
+		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nAudioFlowType)
 		{
-			m_pFarEndProcessor = new FarEndProcessorChannel(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
+			m_pFarEndProcessor = new FarEndProcessorChannel(m_nAudioFlowType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 		}
-		else if (SERVICE_TYPE_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
+		else if (AUDIO_FLOW_OPUS_CALL == m_nAudioFlowType || AUDIO_FLOW_USELESS_CALL == m_nAudioFlowType)
 		{
-			m_pFarEndProcessor = new FarEndProcessorCall(m_nServiceType, m_nEntityType, this, m_bLiveAudioStreamRunning);
+			m_pFarEndProcessor = new FarEndProcessorCall(m_nAudioFlowType, m_nEntityType, this, m_bLiveAudioStreamRunning);
 		}
 
 		m_pFarEndProcessor->SetEventCallback(this, this, this);
@@ -435,6 +436,7 @@ namespace MediaSDK
 
 		m_bRecordingStarted = false;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
+		m_nAudioServiceType = acParams.nAudioServiceType;
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
 			Tools::SOSleep(1);
@@ -588,6 +590,7 @@ namespace MediaSDK
 			m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
 		}
 		m_iSpeakerType = acParams.nAudioSpeakerType;
+		m_nAudioServiceType = acParams.nAudioServiceType;
 		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 	}
 

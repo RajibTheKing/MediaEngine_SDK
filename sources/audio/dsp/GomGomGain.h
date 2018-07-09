@@ -19,7 +19,7 @@ namespace MediaSDK
 
 		virtual ~GomGomGain();
 
-		void Init(int serviceType){};
+		void Init(int audioFlowType){};
 
 		bool SetGain(int iGain) { return true; };
 

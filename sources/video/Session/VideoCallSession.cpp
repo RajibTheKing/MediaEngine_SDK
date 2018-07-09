@@ -534,7 +534,7 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
     
 	if (downscaled)
     {
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_nGivenFrameHeight = iVideoHeight * 4;
 			m_nGivenFrameWidth = iVideoWidth * 4;
@@ -553,7 +553,7 @@ void CVideoCallSession::InitializeVideoSession(long long lFriendID, int iVideoHe
 			}
 		}
 
-		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (nServiceType == SERVICE_TYPE_LIVE_STREAM || nServiceType == SERVICE_TYPE_SELF_STREAM || nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
@@ -805,12 +805,12 @@ long long CVideoCallSession::GetFirstFrameEncodingTime(){
 	return m_nFirstFrameEncodingTimeDiff;
 }
 
-bool CVideoCallSession::PushPacketForMergingVector(int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime)
+bool CVideoCallSession::PushPacketForMergingVector(bool isCheckForDuplicate, int offset, unsigned char *in_data, unsigned int in_size, bool bSelfData, int numberOfFrames, int *frameSizes, std::vector< std::pair<int, int> > vMissingFrames, long long llCurrentChunkRelativeTime)
 {
 	if (m_bLiveVideoStreamRunning)
 	{
 		if (m_nEntityType != ENTITY_TYPE_PUBLISHER)
-			m_pLiveReceiverVideo->PushVideoDataVector(offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames, m_nServiceType, llCurrentChunkRelativeTime);
+			m_pLiveReceiverVideo->PushVideoDataVector(isCheckForDuplicate, offset, in_data, in_size, numberOfFrames, frameSizes, vMissingFrames, m_nServiceType, llCurrentChunkRelativeTime);
 
 		return true;
 	}
@@ -904,7 +904,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_VIEWER)
 		return 1;
 
-	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM) && m_nEntityType == ENTITY_TYPE_PUBLISHER && m_pFrameRateController->GetFrameStatus() == 0)
+	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && m_nEntityType == ENTITY_TYPE_PUBLISHER && m_pFrameRateController->GetFrameStatus() == 0)
 	{
 		return 1;
 	}
@@ -1653,7 +1653,7 @@ int CVideoCallSession::SetEncoderHeightWidth(const long long& lFriendID, int hei
 
 	if (bDownscaled)
 	{
-		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM)
+		if (m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL)
 		{
 			m_nGivenFrameHeight = height * 4;
 			m_nGivenFrameWidth = width * 4;

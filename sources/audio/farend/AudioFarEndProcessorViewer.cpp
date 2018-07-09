@@ -14,8 +14,8 @@
 namespace MediaSDK
 {
 
-	FarEndProcessorViewer::FarEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
-		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning),
+	FarEndProcessorViewer::FarEndProcessorViewer(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
+		AudioFarEndDataProcessor(nAudioFlowType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning),
 		m_nLastPublisherFrame(-1)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorViewer::FarEndProcessorViewer()");

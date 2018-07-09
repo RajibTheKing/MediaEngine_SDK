@@ -18,7 +18,7 @@ namespace MediaSDK
 
 	public:
 
-		AudioNearEndProcessorViewer(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
+		AudioNearEndProcessorViewer(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning);
 		~AudioNearEndProcessorViewer();
 
 		void ProcessNearEndData();	

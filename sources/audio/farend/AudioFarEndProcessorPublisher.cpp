@@ -12,8 +12,8 @@
 namespace MediaSDK
 {
 
-	FarEndProcessorPublisher::FarEndProcessorPublisher(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
-		AudioFarEndDataProcessor(nServiceType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
+	FarEndProcessorPublisher::FarEndProcessorPublisher(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
+		AudioFarEndDataProcessor(nAudioFlowType, nEntityType, pAudioCallSession, bIsLiveStreamingRunning)
 	{
 		MR_DEBUG("#farEnd# FarEndProcessorPublisher::FarEndProcessorPublisher()");
 	}

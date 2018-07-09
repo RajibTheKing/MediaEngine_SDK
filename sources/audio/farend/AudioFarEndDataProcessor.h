@@ -30,7 +30,7 @@ namespace MediaSDK
 
 	public:
 
-		AudioFarEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning);
+		AudioFarEndDataProcessor(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning);
 		virtual	~AudioFarEndDataProcessor();
 
 		virtual	void ProcessFarEndData() = 0;
@@ -110,7 +110,7 @@ namespace MediaSDK
 
 		int m_inoLossSlot;
 		int m_ihugeLossSlot;
-		int m_nServiceType;
+		int m_nAudioFlowType;
 		int m_iAudioVersionFriend = -1;
 		int m_iCurrentRecvdSlotID = -1;
 		int m_iLastDecodedPacketNumber = -1;

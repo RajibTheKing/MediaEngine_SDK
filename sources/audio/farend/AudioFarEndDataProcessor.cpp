@@ -37,8 +37,8 @@
 namespace MediaSDK
 {
 
-	AudioFarEndDataProcessor::AudioFarEndDataProcessor(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
-		m_nServiceType(nServiceType),
+	AudioFarEndDataProcessor::AudioFarEndDataProcessor(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, bool bIsLiveStreamingRunning) :
+		m_nAudioFlowType(nAudioFlowType),
 		m_nEntityType(nEntityType),
 		m_pAudioCallSession(pAudioCallSession),
 		m_bIsLiveStreamingRunning(bIsLiveStreamingRunning),
@@ -66,12 +66,12 @@ namespace MediaSDK
 
 		m_pLiveAudioParser = nullptr;
 #if !defined(TARGET_OS_WINDOWS_PHONE)
-		if (SERVICE_TYPE_CALL == m_nServiceType || SERVICE_TYPE_SELF_CALL == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_CALL == m_nAudioFlowType || AUDIO_FLOW_USELESS_CALL == m_nAudioFlowType)
 		{
 			m_AudioReceivedBuffer->SetQueueCapacity(MAX_AUDIO_DECODER_BUFFER_CAPACITY_FOR_CALL);
 		}
 #endif
-		if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)
+		if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType || AUDIO_FLOW_USELESS_STREAM == m_nAudioFlowType)
 		{
 			if (ENTITY_TYPE_PUBLISHER == m_nEntityType || ENTITY_TYPE_PUBLISHER_CALLER == m_nEntityType)
 			{
@@ -82,7 +82,7 @@ namespace MediaSDK
 				m_pLiveAudioParser = new CLiveAudioParserForCallee(m_vAudioFarEndBufferVector, m_pAudioCallSession->GetSessionStatListener());
 			}
 		}
-		else if (SERVICE_TYPE_CHANNEL == m_nServiceType)
+		else if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nAudioFlowType)
 		{
 			m_pLiveAudioParser = new CLiveAudioParserForChannel(m_vAudioFarEndBufferVector);
 		}
@@ -228,7 +228,7 @@ namespace MediaSDK
 
 			MediaLog(LOG_DEBUG, "[FE][AFEDP] STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 
-			//m_pEventNotifier->fireAudioEvent(m_llFriendID, SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+			//m_pEventNotifier->fireAudioEvent(m_llFriendID, AUDIO_FLOW_OPUS_LIVE_CHANNEL, nSentFrameSize, pshSentFrame);
 
 			m_pAudioCallSession->m_pPlayerSidePreGain->WriteDump(pshSentFrame, 2, nSentFrameSize);
 
@@ -249,7 +249,7 @@ namespace MediaSDK
 					{
 						m_nPacketPlayed++;
 						MediaLog(LOG_INFO, "[FE][AFEDP] Viewer# To Player [SendToPlayer]\n");
-						m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+						m_pDataEventListener->FireDataEvent(m_pAudioCallSession->m_nAudioServiceType, nSentFrameSize, pshSentFrame);
 						m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize);
 					}
 				}
@@ -258,12 +258,15 @@ namespace MediaSDK
 			{
 				if (m_pDataEventListener != nullptr)
 				{
-					m_pDataEventListener->FireDataEvent(SERVICE_TYPE_LIVE_STREAM, nSentFrameSize, pshSentFrame);
+					m_pAudioCallSession->m_pPlayedFE->WriteDump(pshSentFrame, 2, nSentFrameSize);
+					MediaLog(LOG_INFO, "[FE][AFEDP] FireDataEvent [SendToPlayer]\n");
+					m_pDataEventListener->FireDataEvent(m_pAudioCallSession->m_nAudioServiceType, nSentFrameSize, pshSentFrame);
 				}
 			}
 		}
 		else
 		{
+			MediaLog(LOG_DEBUG, "[FE][AFEDP] else condition STP -> PN: %d, FS: %d, STime: %lld", iCurrentPacketNumber, nSentFrameSize, Tools::CurrentTimestamp());
 			m_pAudioCallSession->m_pPlayerSidePreGain->WriteDump(pshSentFrame, 2, nSentFrameSize);
 #ifdef __ANDROID__
 			if (m_pAudioCallSession->GetPlayerGain().get())
@@ -346,7 +349,7 @@ namespace MediaSDK
 	{
 		MediaLog(CODE_TRACE, "[FE] m_iRole = %d, nCurrentAudioPacketType = %d\n", m_nEntityType, nCurrentAudioPacketType);
 
-		if (SERVICE_TYPE_CHANNEL == m_nServiceType)	//Channel
+		if (AUDIO_FLOW_AAC_LIVE_CHANNEL == m_nAudioFlowType)	//Channel
 		{
 			if (AUDIO_CHANNEL_PACKET_TYPE == nCurrentAudioPacketType)
 			{
@@ -354,7 +357,7 @@ namespace MediaSDK
 			}
 			return false;
 		}
-		else if (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType)	//LiveStreaming.
+		else if (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType || AUDIO_FLOW_USELESS_STREAM == m_nAudioFlowType)	//LiveStreaming.
 		{			
 			if (m_pAudioCallSession->IsOpusEnable())	
 			{
@@ -388,7 +391,7 @@ namespace MediaSDK
 				return false;
 			}
 
-			if ( (SERVICE_TYPE_LIVE_STREAM == m_nServiceType || SERVICE_TYPE_SELF_STREAM == m_nServiceType) 
+			if ( (AUDIO_FLOW_OPUS_LIVE_CHANNEL == m_nAudioFlowType || AUDIO_FLOW_USELESS_STREAM == m_nAudioFlowType) 
 				&& (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_PUBLISHER_CALLER
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER_CALLEE
 				|| m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER) )
@@ -400,7 +403,11 @@ namespace MediaSDK
 			{
 				Tools::SOSleep(LIVE_FIRST_FRAME_SLEEP_TIME_AUDIO);
 				m_llDecodingTimeStampOffset = Tools::CurrentTimestamp() - llCurrentFrameRelativeTime + nRelativeTimeOffset;
+				long long llNow = Tools::CurrentTimestamp();
+				long long llExpectedEncodingTimeStamp = llNow - m_llDecodingTimeStampOffset;
 				m_nExpectedNextPacketNumber = iPacketNumber++;
+				MediaLog(LOG_DEBUG, "[FE][PD] Delay Packet not Discurding 1st packet ->  PacketNo:%d m_llDecodingTimeStampOffset = %d llExpectedEncodingTimeStamp = %lld",
+					iPacketNumber, m_llDecodingTimeStampOffset, llExpectedEncodingTimeStamp);
 			}
 			else
 			{
@@ -414,22 +421,30 @@ namespace MediaSDK
 				}
 				m_nExpectedNextPacketNumber = iPacketNumber + 1;
 			
-				MediaLog(LOG_DEBUG, "[FE][PD] Delay Packet Discurding ->  PacketNo:%d WaitingTime:%lld RelativeTime:%lld CurrentTime:%lld Delta:%lld", 
-					iPacketNumber, llWaitingTime, llCurrentFrameRelativeTime, llNow, m_llDecodingTimeStampOffset);
+				MediaLog(LOG_DEBUG, "[FE][PD] Delay Packet Discurding ->  PacketNo:%d WaitingTime:%lld RelativeTime:%lld CurrentTime:%lld Delta:%lld, \
+									llExpectedEncodingTimeStamp = %lld, llCurrentFrameRelativeTime = %lld", 
+									iPacketNumber, llWaitingTime, llCurrentFrameRelativeTime, llNow, m_llDecodingTimeStampOffset, llExpectedEncodingTimeStamp, llCurrentFrameRelativeTime);
 
 				if (llExpectedEncodingTimeStamp - __AUDIO_DELAY_TIMESTAMP_TOLERANCE__ > llCurrentFrameRelativeTime)
-				{										
+				{	
+					MediaLog(LOG_DEBUG, "[FE][PD] discurding diff = %lld", llExpectedEncodingTimeStamp - llCurrentFrameRelativeTime);
 					m_nPacketsRecvdNotTimely++;
 
 					if (m_pAudioCallSession->GetEntityType() == ENTITY_TYPE_VIEWER)
 					{
+						MediaLog(LOG_DEBUG, "[FE][PD] not discurding entity viewer = %lld", llExpectedEncodingTimeStamp - llCurrentFrameRelativeTime);
 						return true; //Use delay frame for viewer.
+					}
+					else
+					{
+						MediaLog(LOG_DEBUG, "[FE][PD]  discurding entity not viewer = %lld", llExpectedEncodingTimeStamp - llCurrentFrameRelativeTime);
 					}
 					return false;
 
 				}
 				else if (llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp > MAX_WAITING_TIME_FOR_CHANNEL)
 				{
+					MediaLog(LOG_DEBUG, "[FE][PD]  discurding else condition diff = %lld", llCurrentFrameRelativeTime - llExpectedEncodingTimeStamp);
 					m_nPacketsRecvdNotTimely++;
 					
 					return false;
@@ -651,7 +666,7 @@ namespace MediaSDK
 				if (m_pDataEventListener != nullptr)
 				{
 					MediaLog(LOG_CODE_TRACE, "[FE][AFEDP] To Player# Playing Time: %lld Next: %lld [%lld]\n", llCurrentTimeStamp, m_llNextPlayingTime, m_llNextPlayingTime - llCurrentTimeStamp);
-					m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+					m_pDataEventListener->FireDataEvent(m_pAudioCallSession->m_nAudioServiceType, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 					m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
 				}
 				m_pAudioCallSession->m_FarendBuffer->EnQueue(m_saPlayingData, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), 0);
@@ -667,7 +682,7 @@ namespace MediaSDK
 		{
 			if (m_pDataEventListener != nullptr)
 			{
-				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetServiceType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetAudioFlowType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 				m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
 			}
 		}

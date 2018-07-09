@@ -17,7 +17,7 @@ namespace MediaSDK
 
 	public:
 
-		AudioNearEndProcessorCall(int nServiceType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning, const bool &isVideoCallRunning);
+		AudioNearEndProcessorCall(int nAudioFlowType, int nEntityType, CAudioCallSession *pAudioCallSession, SharedPointer<CAudioShortBuffer> pAudioEncodingBuffer, bool bIsLiveStreamingRunning, const bool &isVideoCallRunning);
 		~AudioNearEndProcessorCall() { }
 
 		void ProcessNearEndData();

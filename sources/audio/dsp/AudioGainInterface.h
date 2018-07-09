@@ -18,7 +18,7 @@ namespace MediaSDK
 
 	public:
 
-		virtual void Init(int serviceType) = 0;
+		virtual void Init(int audioFlowType) = 0;
 
 		virtual bool SetGain(int iGain) = 0;
 
