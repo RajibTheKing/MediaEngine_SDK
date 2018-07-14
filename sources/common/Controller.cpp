@@ -315,7 +315,7 @@ CVideoCallSession* CController::StartTestVideoCall(const long long& lFriendID, i
 	{
 		CLogPrinter_WriteLog(CLogPrinter::INFO, CHECK_CAPABILITY_LOG, "CController::StartTestVideoCall() session creating");
 
-		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, AUDIO_FLOW_OPUS_CALL, CHANNEL_TYPE_NOT_CHANNEL, ENTITY_TYPE_CALLER, false, false);
+		pVideoSession = new CVideoCallSession(this, lFriendID, m_pCommonElementsBucket, HIGH_FRAME_RATE, &m_nDeviceSupportedCallFPS, DEVICE_ABILITY_CHECK_MOOD, m_pDeviceCapabilityCheckBuffer, m_nSupportedResolutionFPSLevel, SERVICE_TYPE_CALL, CHANNEL_TYPE_NOT_CHANNEL, ENTITY_TYPE_CALLER, false, false);
 
 		pVideoSession->InitializeVideoSession(lFriendID, iVideoHeight, iVideoWidth, 11, iNetworkType, false, VIDEO_CALL_TYPE_UNCHECKED);
 
