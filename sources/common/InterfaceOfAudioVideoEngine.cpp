@@ -104,6 +104,7 @@ namespace MediaSDK
 		}
 
 		acParams.nAudioCodecType = AUDIO_CODEC_OPUS;
+		acParams.nAudioServiceType = nServiceType;
 		bool bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_OPUS_CALL, nEntityType, acParams);
 
 		return bReturnedValue;
@@ -184,6 +185,8 @@ namespace MediaSDK
 
 		bool bReturnedValue;
 
+		acParams.nAudioServiceType = SERVICE_TYPE_LIVE_STREAM;
+
 		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
 		{
 			bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_OPUS_LIVE_CHANNEL, nEntityType, acParams);
@@ -217,6 +220,7 @@ namespace MediaSDK
 		CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::StartChannel called 2 ID %lld", llFriendID);
 		bool bReturnedValue;
 
+		acParams.nAudioServiceType = SERVICE_TYPE_CHANNEL;
 		if (acParams.nAudioCodecType == AUDIO_CODEC_OPUS)
 		{
 			bReturnedValue = m_pcController->StartAudioCall(llFriendID, AUDIO_FLOW_OPUS_LIVE_CHANNEL, nEntityType, acParams);
