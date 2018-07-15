@@ -72,9 +72,11 @@ namespace MediaSDK
 		m_cFarEndProcessorThread(nullptr)
 	{
 		m_bRecordingStarted = false;
+
 		m_bIsOpusCodec = acParams.nAudioCodecType == AUDIO_CODEC_OPUS;
 		m_nAudioServiceType = acParams.nAudioServiceType;
-		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. AudioFlowType=%d, EntityType=%d ----------\n", nAudioFlowType, nEntityType, (int)m_bIsOpusCodec);
+
+		MediaLog(LOG_INFO, "\n[NE][ACS] AudioCallSession# Initialized. AudioFlowType=%d, Service Type = %d, EntityType=%d ----------\n", nAudioFlowType, m_nAudioServiceType, nEntityType, (int)m_bIsOpusCodec);
 
 		m_pAudioCallSessionMutex.reset(new CLockHandler);
 
@@ -436,7 +438,7 @@ namespace MediaSDK
 
 		m_bRecordingStarted = false;
 		m_pFarEndProcessor->m_pLiveAudioParser->SetRoleChanging(true);
-		m_nAudioServiceType = acParams.nAudioServiceType;
+		
 		while (m_pFarEndProcessor->m_pLiveAudioParser->IsParsingAudioData())
 		{
 			Tools::SOSleep(1);
@@ -590,7 +592,7 @@ namespace MediaSDK
 			m_pNearEndProcessor->SetNeedToResetAudioEffects(true);
 		}
 		m_iSpeakerType = acParams.nAudioSpeakerType;
-		m_nAudioServiceType = acParams.nAudioServiceType;
+		
 		SetTraceInfo(acParams.nTraceInfoLength, acParams.npTraceInfo, acParams.bDeviceHasAEC);
 	}
 
