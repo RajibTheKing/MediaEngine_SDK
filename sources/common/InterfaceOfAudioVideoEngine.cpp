@@ -469,12 +469,15 @@ namespace MediaSDK
 
 				bool isCheckForDuplicate = false;
 
-				if ((int)in_data[videoStartingPosition] == 2 && (int)in_data[videoStartingPosition + 1] == 1 && (int)in_data[videoStartingPosition + 2] == 1)
-					isCheckForDuplicate = true;
-				else if ((int)in_data[videoStartingPosition] == 0 && (int)in_data[videoStartingPosition + 1] == 0 && (int)in_data[videoStartingPosition + 2] == 0)
+				if (streamType == STREAM_TYPE_LIVE_STREAM)
 				{
-					videoStartingPosition += 3;
-					lengthOfVideoData -= 3;
+					if ((int)in_data[videoStartingPosition] == 2 && (int)in_data[videoStartingPosition + 1] == 1 && (int)in_data[videoStartingPosition + 2] == 1)
+						isCheckForDuplicate = true;
+					else if ((int)in_data[videoStartingPosition] == 0 && (int)in_data[videoStartingPosition + 1] == 0 && (int)in_data[videoStartingPosition + 2] == 0)
+					{
+						videoStartingPosition += 3;
+						lengthOfVideoData -= 3;
+					}
 				}
 
 				iReturnedValue = m_pcController->PushPacketForDecodingVector(llFriendID, isCheckForDuplicate, videoStartingPosition, in_data + videoStartingPosition, lengthOfVideoData, numberOfVideoFrames, videoFrameSizes, vMissingFrames, llCurrentChunkRelativeTime);
