@@ -289,6 +289,8 @@ namespace MediaSDK
 		HITLER("#@#@26022017# RECEIVING DATA FOR BOKKOR %u", unLength);
 		int iReturnedValue = 0;
 
+		CLogPrinter_LOG(API_FLOW_DATA_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector llFriendID %lld mediaType %d, nEntityType %d unLength %d", llFriendID, mediaType, nEntityType, unLength);
+
 #ifdef CHUNK_DUMPER
 		long long DumpStartTime = m_Tools.CurrentTimestamp();
 		if(fp_live_missing_vec){
@@ -486,6 +488,8 @@ namespace MediaSDK
 			}
 			else if (mediaType == MEDIA_TYPE_AUDIO || mediaType == MEDIA_TYPE_VIDEO)
 			{
+				CLogPrinter_LOG(API_FLOW_DATA_LOG, "CInterfaceOfAudioVideoEngine::PushAudioForDecodingVector mediaType %d", mediaType);
+
 				if (AUDIO_PACKET_MEDIA_TYPE == (int)in_data[0])
 				{
 					iReturnedValue = m_pcController->PushAudioForDecoding(llFriendID, 0, in_data + 1, unLength - 1, 0, NULL, vMissingFrames); //Skip First byte for Audio Data

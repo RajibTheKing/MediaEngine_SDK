@@ -977,7 +977,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 		//}
 
 		//LOGE("CVideoCallSession::PushIntoBufferForEncoding  GetVersionController()->GetCurrentCallVersion() == -1 && m_bIsCheckCall == false so returning" );
-
+		CLogPrinter_LOG(API_FLOW_DATA_LOG, "CVideoCallSession::PushIntoBufferForEncoding RETURNING GetCurrentCallVersion %d m_bIsCheckCall %d", GetVersionController()->GetCurrentCallVersion(), m_bIsCheckCall);
+		
 		return 1;
 	}
 
@@ -985,8 +986,12 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	{
 		//LOGE("CVideoCallSession::PushIntoBufferForEncoding  m_bVideoCallStarted == false && m_bIsCheckCall == false so returning");
 
-        if(m_bLiveVideoStreamRunning == false)
+		if (m_bLiveVideoStreamRunning == false)
+		{
+			CLogPrinter_LOG(API_FLOW_DATA_LOG, "CVideoCallSession::PushIntoBufferForEncoding RETURNING m_bVideoCallStarted %d m_bIsCheckCall %d, m_bLiveVideoStreamRunning %d", m_bVideoCallStarted, m_bIsCheckCall, m_bLiveVideoStreamRunning);
+
 			return 1;
+		}
 	}
 
 	//CLogPrinter_WriteLog(CLogPrinter::INFO, INSTENT_TEST_LOG, "CVideoCallSession::PushIntoBufferForEncoding 2");
@@ -1010,6 +1015,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	{
 		//LOGE("CVideoCallSession::PushIntoBufferForEncoding m_pVideoEncodingThread->IsThreadStarted() == false so returning");
 
+		CLogPrinter_LOG(API_FLOW_DATA_LOG, "CVideoCallSession::PushIntoBufferForEncoding RETURNING bIsThreadStartedFlag %d", bIsThreadStartedFlag);
+
 		return 1;
 	}
 
@@ -1020,6 +1027,8 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 	if (m_bIsCheckCall == true)
 	{
 		//LOGE("CVideoCallSession::PushIntoBufferForEncoding m_bIsCheckCall == true so returning");
+
+		CLogPrinter_LOG(API_FLOW_DATA_LOG, "CVideoCallSession::PushIntoBufferForEncoding RETURNING m_bIsCheckCall %d", m_bIsCheckCall);
 
 		return 1;
 	}

@@ -339,6 +339,8 @@ void CVideoEncodingThread::EncodingThreadProcedure()
 
 			CLogPrinter_WriteLog(CLogPrinter::INFO, THREAD_LOG, "CVideoEncodingThread::EncodingThreadProcedure() Negotiation uncomplete");
 
+			CLogPrinter_LOG(VIDEO_CALL_NEG_LOG, "CVideoEncodingThread::EncodingThreadProcedure Sending negotiation m_bIsCheckCall %d GetCurrentCallVersion %d", m_bIsCheckCall, m_pVideoCallSession->GetVersionController()->GetCurrentCallVersion());
+
             toolsObject.SOSleep(20);
             continue;
         }
