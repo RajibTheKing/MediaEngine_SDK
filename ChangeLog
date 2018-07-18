@@ -1,18 +1,27 @@
+Release 14.2 (Date: 18-07-2018)
+---------------------------------
+- VIDEO: Crash fixed by stream type check
+
+
 Release 14.1.1 (Date: 15-07-2018)
 ---------------------------------
 - AUDIO: Service type is set only while ACS is creating. [6299]
+
 
 Release 14.1 (Date: 14-07-2018)
 ---------------------------------
 - AUDIO: Fixed service type from video module. [6299]
 
+
 Release 14.0 (Date: 09-07-2018)
 ---------------------------------
 - AUDIO: Publish Channel. [6299]
 
+
 Release 13.3 (Date: 05-07-2018)
 ---------------------------------
 - AUDIO: Structure for audio parameters. [6203]
+
 
 Release 13.2.2 (Date: 10-06-2018)
 ---------------------------------
