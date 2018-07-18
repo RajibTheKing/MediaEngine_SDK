@@ -518,7 +518,7 @@ namespace MediaSDK
 
 	int CInterfaceOfAudioVideoEngine::SendVideoData(const IPVLongType llFriendID, unsigned char *in_data, unsigned int unLength, unsigned int nOrientationType, int device_orientation)
 	{
-        //CLogPrinter_LOG(API_FLOW_CHECK_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, unLength, nOrientationType,  device_orientation) = (%llu, %d, %d, %d)", llFriendID, unLength, nOrientationType, device_orientation);
+        CLogPrinter_LOG(API_FLOW_DATA_LOG, "CInterfaceOfAudioVideoEngine::SendVideoData (llFriendID, unLength, nOrientationType,  device_orientation) = (%llu, %d, %d, %d)", llFriendID, unLength, nOrientationType, device_orientation);
 		
 		if (nullptr == m_pcController)
 		{

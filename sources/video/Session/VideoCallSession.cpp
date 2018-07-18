@@ -895,6 +895,8 @@ int g_CapturingFrameCounter = 0;
 
 int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigned int in_size, int device_orientation)
 {
+	CLogPrinter_LOG(API_FLOW_DATA_LOG, "CVideoCallSession::PushIntoBufferForEncoding m_nServiceType %d, m_nEntityType %d, in_size %d device_orientation %d", m_nServiceType, m_nEntityType, in_size, device_orientation);
+
 	if ((m_nServiceType == SERVICE_TYPE_LIVE_STREAM || m_nServiceType == SERVICE_TYPE_SELF_STREAM || m_nServiceType == SERVICE_TYPE_CHANNEL) && (m_nEntityType == ENTITY_TYPE_PUBLISHER || m_nEntityType == ENTITY_TYPE_PUBLISHER_CALLER) && m_bAudioOnlyLive == true)
 		return -10;
 
@@ -1105,7 +1107,7 @@ int CVideoCallSession::PushIntoBufferForEncoding(unsigned char *in_data, unsigne
 
 	int returnedValue;
 
-	CLogPrinter_LOG(API_FLOW_CHECK_LOG, "LIVE_INSET_LOG CVideoCallSession::PushIntoBufferForEncoding m_nGivenFrameHeight %d, m_nGivenFrameWidth %d, m_nVideoCallHeight %d, m_nVideoCallWidth %d, in_size %d", m_nGivenFrameHeight, m_nGivenFrameWidth, m_nVideoCallHeight, m_nVideoCallWidth, in_size);
+	CLogPrinter_LOG(API_FLOW_DATA_LOG, "LIVE_INSET_LOG CVideoCallSession::PushIntoBufferForEncoding m_nGivenFrameHeight %d, m_nGivenFrameWidth %d, m_nVideoCallHeight %d, m_nVideoCallWidth %d, in_size %d", m_nGivenFrameHeight, m_nGivenFrameWidth, m_nVideoCallHeight, m_nVideoCallWidth, in_size);
 
 	if (m_bDownscaled)
 	{
