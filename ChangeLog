@@ -1,3 +1,7 @@
+Release 14.2.1 (Date: 23-07-2018)
+---------------------------------
+- AUDIO: Wrong service type in IOS [6390]
+
 Release 14.2 (Date: 18-07-2018)
 ---------------------------------
 - VIDEO: Crash fixed by stream type check
