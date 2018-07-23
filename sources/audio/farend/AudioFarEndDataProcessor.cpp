@@ -682,7 +682,7 @@ namespace MediaSDK
 		{
 			if (m_pDataEventListener != nullptr)
 			{
-				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->GetAudioFlowType(), CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
+				m_pDataEventListener->FireDataEvent(m_pAudioCallSession->m_nAudioServiceType, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false), m_saPlayingData);
 				m_pAudioCallSession->m_pPlayedFE->WriteDump(m_saPlayingData, 2, CURRENT_AUDIO_FRAME_SAMPLE_SIZE(false));
 			}
 		}
